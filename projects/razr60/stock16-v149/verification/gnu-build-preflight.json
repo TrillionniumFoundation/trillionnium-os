@@ -1,0 +1,42 @@
+{
+  "schema": "razr60-gnu-fresh-build-preflight-v149.1",
+  "checked_utc": "2026-11-03",
+  "recipe": "backend/frozen-intake-v142/gnu-core-provenance/build-script.py",
+  "status_at_source_snapshot": "BLOCKED_MISSING_DECLARED_GNU_TOOLCHAIN_INPUTS",
+  "fresh_gnu_compile_performed": false,
+  "source_closure": "Complete 1453-file fixed Git baseline + four hash-verified overlays assembled; offline locked Cargo metadata found 24 packages.",
+  "own_checks": [
+    {
+      "host": "pocket4",
+      "observations": "{\"matching_existing_runtime_build_dirs\": []}\n"
+    },
+    {
+      "host": "ai395",
+      "observations": "{\"cargo\": null, \"rustc\": null, \"aarch64-linux-gnu-gcc-13\": null, \"aarch64-linux-gnu-gcc\": null, \"qemu-aarch64-static\": null, \"aarch64-linux-gnu-readelf\": null, \"fsck.erofs\": null, \"known_dirs\": {\"/usr/aarch64-linux-gnu\": false, \"/usr/lib/gcc-cross/aarch64-linux-gnu/13\": false}}\n"
+    },
+    {
+      "host": "x230",
+      "observations": "{\"cargo\": null, \"rustc\": null, \"aarch64-linux-gnu-gcc-13\": null, \"aarch64-linux-gnu-gcc\": null, \"qemu-aarch64-static\": null, \"aarch64-linux-gnu-readelf\": null, \"fsck.erofs\": null, \"known_dirs\": {\"/usr/aarch64-linux-gnu\": false, \"/usr/lib/gcc-cross/aarch64-linux-gnu/13\": false}}\n"
+    }
+  ],
+  "peer_checks": {
+    "host": "rog",
+    "reported_by": "ui_source_audit",
+    "missing": [
+      "/usr/aarch64-linux-gnu",
+      "GNU cross GCC13",
+      "qemu-aarch64-static",
+      "aarch64-linux-gnu-readelf",
+      "aarch64 Rust target std"
+    ],
+    "available": [
+      "native x86 GCC13",
+      "Rust stable",
+      "Cargo registry"
+    ],
+    "available_disk_gb_approx": 164
+  },
+  "bounded_search_limit": "Declared known paths and scoped historical build directories, not a claim that all possible copies on all disks were searched.",
+  "followup": "User-authorized isolated recovery of fixed official compiler/sysroot/target std dependencies; no global install, no existing rustup mutation, no phone or service changes; later fresh GNU receipt must remain distinct from this source snapshot.",
+  "rootfs_rebuild_claimed": false
+}

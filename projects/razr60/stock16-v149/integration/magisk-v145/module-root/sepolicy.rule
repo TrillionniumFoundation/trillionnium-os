@@ -1,0 +1,401 @@
+# Genuine HEPTA TE expanded using official AOSP16 macros; no adbroot fragment.
+# Built-in Magisk rules are supplied by official Magisk, not repeated here.
+type trillionnium_owner_open_bootstrap domain
+typeattribute trillionnium_owner_open_bootstrap { coredomain }
+type trillionnium_owner_open_bootstrap_exec exec_type
+typeattribute trillionnium_owner_open_bootstrap_exec { system_file_type file_type }
+allow init trillionnium_owner_open_bootstrap_exec file { getattr open read execute map }
+allow init trillionnium_owner_open_bootstrap process transition
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap_exec file { entrypoint open read execute getattr map }
+dontaudit init trillionnium_owner_open_bootstrap process noatsecure
+allow init trillionnium_owner_open_bootstrap process { siginh rlimitinh }
+type_transition init trillionnium_owner_open_bootstrap_exec process trillionnium_owner_open_bootstrap
+typeattribute trillionnium_owner_open_bootstrap netdomain
+type trillionnium_owner_open_ingress domain
+typeattribute trillionnium_owner_open_ingress { coredomain }
+typeattribute trillionnium_owner_open_ingress mlstrustedsubject
+type trillionnium_owner_open_ingress_exec exec_type
+typeattribute trillionnium_owner_open_ingress_exec { system_file_type file_type }
+allow init trillionnium_owner_open_ingress_exec file { getattr open read execute map }
+allow init trillionnium_owner_open_ingress process transition
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress_exec file { entrypoint open read execute getattr map }
+dontaudit init trillionnium_owner_open_ingress process noatsecure
+allow init trillionnium_owner_open_ingress process { siginh rlimitinh }
+type_transition init trillionnium_owner_open_ingress_exec process trillionnium_owner_open_ingress
+type trillionnium_owner_open_emergency_stop domain
+typeattribute trillionnium_owner_open_emergency_stop { coredomain }
+type trillionnium_owner_open_emergency_stop_exec exec_type
+typeattribute trillionnium_owner_open_emergency_stop_exec { system_file_type file_type }
+allow init trillionnium_owner_open_emergency_stop_exec file { getattr open read execute map }
+allow init trillionnium_owner_open_emergency_stop process transition
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop_exec file { entrypoint open read execute getattr map }
+dontaudit init trillionnium_owner_open_emergency_stop process noatsecure
+allow init trillionnium_owner_open_emergency_stop process { siginh rlimitinh }
+type_transition init trillionnium_owner_open_emergency_stop_exec process trillionnium_owner_open_emergency_stop
+type trillionnium_owner_open_client domain
+typeattribute trillionnium_owner_open_client appdomain
+type_transition trillionnium_owner_open_client tmpfs file appdomain_tmpfs
+attribute trillionnium_owner_open_client_userfaultfd_private_inert_attribute
+type trillionnium_owner_open_client_userfaultfd trillionnium_owner_open_client_userfaultfd_private_inert_attribute
+type_transition trillionnium_owner_open_client trillionnium_owner_open_client anon_inode trillionnium_owner_open_client_userfaultfd [userfaultfd]
+allow trillionnium_owner_open_client trillionnium_owner_open_client_userfaultfd anon_inode { create ioctl read }
+dontaudit su trillionnium_owner_open_client_userfaultfd anon_inode *
+allow trillionnium_owner_open_client appdomain_tmpfs file { execute getattr map read write ioctl }
+allowxperm trillionnium_owner_open_client appdomain_tmpfs file ioctl { 0x7701 0x7702 0x7703 0x7704 0x7705 0x7706 0x7707 0x7708 0x7709 0x770a 0x770b }
+type trillionnium_owner_open_inhibit_file file_type
+typeattribute trillionnium_owner_open_inhibit_file { data_file_type core_data_file_type }
+type trillionnium_owner_open_state_file file_type
+typeattribute trillionnium_owner_open_state_file { data_file_type core_data_file_type }
+type trillionnium_owner_open_payload_file file_type
+typeattribute trillionnium_owner_open_payload_file { system_file_type }
+type trillionnium_owner_open_payload_exec file_type
+typeattribute trillionnium_owner_open_payload_exec { system_file_type exec_type }
+type trillionnium_owner_open_prop property_type
+typeattribute trillionnium_owner_open_prop { system_property_type system_internal_property_type }
+type trillionnium_owner_open_stop_prop property_type
+typeattribute trillionnium_owner_open_stop_prop { system_property_type system_internal_property_type }
+allow init trillionnium_owner_open_state_file dir mounton
+allow init trillionnium_owner_open_payload_file dir mounton
+allow init trillionnium_owner_open_payload_file dir search
+allow init trillionnium_owner_open_payload_file file { getattr open read }
+allow kernel trillionnium_owner_open_payload_file file read
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap capability { kill sys_chroot }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap process { fork getpgid getsched setpgid setsched signal sigkill sigstop }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap unix_stream_socket { create ioctl read getattr write setattr lock append bind connect getopt setopt shutdown map listen accept }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap tcp_socket { create ioctl read getattr write setattr lock append bind connect getopt setopt shutdown map listen accept }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file file { getattr open read ioctl lock map watch watch_reads }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_exec file { execute execute_no_trans getattr map open read }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file dir { getattr open read search }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file dir { create reparent rename rmdir setattr open getattr read search ioctl lock watch watch_reads open search write add_name remove_name lock }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file file { create rename setattr unlink getattr open read ioctl lock map watch watch_reads open append write lock map }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file sock_file { create rename setattr unlink getattr open read ioctl lock map watch watch_reads open append write lock map }
+allow trillionnium_owner_open_bootstrap proc filesystem getattr
+allow trillionnium_owner_open_bootstrap sysfs filesystem getattr
+allow trillionnium_owner_open_bootstrap property_socket sock_file write
+allow trillionnium_owner_open_bootstrap init unix_stream_socket connectto
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_prop property_service set
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_prop file { getattr open read map }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_prop file { getattr open read map }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress unix_stream_socket { create ioctl read getattr write setattr lock append bind connect getopt setopt shutdown map listen accept }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file dir { add_name getattr open read search write }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file file { getattr open read ioctl lock map watch watch_reads }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file sock_file write
+allow trillionnium_owner_open_ingress trillionnium_owner_open_bootstrap unix_stream_socket connectto
+allow trillionnium_owner_open_ingress trillionnium_owner_open_prop file { getattr open read map }
+allow trillionnium_owner_open_client trillionnium_owner_open_client unix_stream_socket { create ioctl read getattr write setattr lock append bind connect getopt setopt shutdown map listen accept }
+allow trillionnium_owner_open_client trillionnium_owner_open_ingress unix_stream_socket connectto
+allow trillionnium_owner_open_client app_api_service service_manager find
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_ingress_exec file { getattr open read }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_emergency_stop_exec file { getattr open read }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file dir { add_name getattr open read search write }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_inhibit_file file { create getattr open read write }
+allow trillionnium_owner_open_emergency_stop property_socket sock_file write
+allow trillionnium_owner_open_emergency_stop init unix_stream_socket connectto
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_prop property_service set
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_prop file { getattr open read map }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_prop file { getattr open read map }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap dir { open getattr read search ioctl lock watch watch_reads }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap file { getattr open read ioctl lock map watch watch_reads }
+type_transition trillionnium_owner_open_ingress trillionnium_owner_open_state_file file trillionnium_owner_open_inhibit_file emergency-stop
+type_transition trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file file trillionnium_owner_open_inhibit_file emergency-stop
+type_transition trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file file trillionnium_owner_open_inhibit_file emergency-stop
+allow trillionnium_owner_open_ingress trillionnium_owner_open_inhibit_file file { create getattr open read write }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_inhibit_file file { getattr open read }
+allow trillionnium_owner_open_ingress property_socket sock_file write
+allow trillionnium_owner_open_ingress init unix_stream_socket connectto
+allow trillionnium_owner_open_ingress trillionnium_owner_open_stop_prop property_service set
+allow trillionnium_owner_open_ingress trillionnium_owner_open_stop_prop file { getattr open read map }
+enforce trillionnium_owner_open_bootstrap
+enforce trillionnium_owner_open_ingress
+enforce trillionnium_owner_open_emergency_stop
+enforce trillionnium_owner_open_client
+
+# Stock16 observed init duties: owned directories and early context bind targets.
+allow init trillionnium_owner_open_state_file dir { create getattr setattr search open read write add_name }
+allow init mac_perms_file file { getattr mounton relabelto }
+allow init seapp_contexts_file file { getattr mounton relabelto }
+
+# Exact Stock16 targeted runtime AVCs, own domains and owned payload only.
+allow init trillionnium_owner_open_payload_file dir getattr
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap lnk_file read
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress process getsched
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress unix_dgram_socket create
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress dir search
+
+# Observed supervisor IPC pipe and native diagnostic socket, own domain only.
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap fifo_file { read write getattr ioctl }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap unix_dgram_socket create
+
+# Exact ordinary Stock16 app self IPC/process rules; no cross-domain or network classes.
+allow trillionnium_owner_open_client trillionnium_owner_open_client unix_dgram_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown sendto }
+allow trillionnium_owner_open_client trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client trillionnium_owner_open_client process { fork sigchld sigkill sigstop signull signal ptrace getsched setsched getsession getpgid setpgid getcap setcap getattr setrlimit execmem }
+allow trillionnium_owner_open_client trillionnium_owner_open_client dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client trillionnium_owner_open_client fifo_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client trillionnium_owner_open_client lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client trillionnium_owner_open_client file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client trillionnium_owner_open_client unix_stream_socket { ioctl read write create getattr setattr lock append map bind connect listen accept getopt setopt shutdown connectto }
+
+# Ordinary Stock16 app grants; preserve dedicated private userfaultfd target.
+allow trillionnium_owner_open_client hwservicemanager binder { call transfer }
+allow trillionnium_owner_open_client hal_renderscript_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client hal_omx_server binder { call transfer }
+allow trillionnium_owner_open_client gpuservice fd { use }
+allow hal_drm_server trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client dmabuf_system_secure_heap_device chr_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client pdx_performance_client_channel_socket_type unix_stream_socket { read write getattr setattr lock append getopt setopt shutdown }
+allow trillionnium_owner_open_client same_process_hal_file file { read getattr map execute open }
+allow trillionnium_owner_open_client vendor_persist_camera_prop file { read getattr map open }
+allow pdx_performance_client_server_type trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client hal_configstore_ISurfaceFlingerConfigs hwservice_manager { find }
+allow trillionnium_owner_open_client appdomain_tmpfs file { ioctl read write getattr map execute }
+allowxperm trillionnium_owner_open_client appdomain_tmpfs file ioctl { 0x7701-0x770B }
+allow trillionnium_owner_open_client trillionnium_owner_open_client unix_dgram_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown sendto }
+allow trillionnium_owner_open_client trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client hal_cas_service service_manager { find }
+allow trillionnium_owner_open_client textclassifier_data_file file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client logd_socket sock_file { write }
+allow trillionnium_owner_open_client shell_exec file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans }
+allow trillionnium_owner_open_client privapp_data_file file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads }
+allowxperm trillionnium_owner_open_client privapp_data_file file ioctl { 0x6686 }
+allow credstore trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client media_rw_data_file file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads }
+allow runas trillionnium_owner_open_client process { dyntransition }
+allow trillionnium_owner_open_client heapprofd unix_stream_socket { connectto }
+allow trillionnium_owner_open_client hal_allocator_server binder { call transfer }
+allow trillionnium_owner_open_client pdx_bufferhub_client_server_type fd { use }
+allow trillionnium_owner_open_client vendor_app_file lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow vendor_hal_perf_default trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client app_data_file dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir }
+allow trillionnium_owner_open_client vendor_dpmtcm_socket sock_file { write lock append map open }
+allow trillionnium_owner_open_client trillionnium_owner_open_client rawip_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client rawip_socket ioctl { 0x8B01 0x8B05 0x8B07 0x8B09 0x8B0B 0x8B0D 0x8B0F 0x8B11-0x8B13 0x8B21 0x8B23 0x8B25 0x8B27 0x8B29 0x8B2D }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client rawip_socket ioctl { 0x8906-0x8907 0x8910 0x8912-0x8913 0x8915 0x8917 0x8919 0x891B 0x8921 0x8933 0x8938 0x8942 }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client rawip_socket ioctl { 0x5401-0x5404 0x540B 0x540E-0x5411 0x5413-0x5414 0x5450-0x5451 }
+allow trillionnium_owner_open_client port_type udp_socket { name_bind }
+allow trillionnium_owner_open_client pdx_performance_client_endpoint_dir_type dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client servicemanager binder { call transfer }
+allow trillionnium_owner_open_client traced_perf unix_stream_socket { connectto }
+allow trillionnium_owner_open_client vendor_app_file dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client hal_graphics_allocator_service service_manager { find }
+allow surfaceflinger trillionnium_owner_open_client unix_stream_socket { read write }
+allow trillionnium_owner_open_client vendor_hal_hexlp_server fd { use }
+allow hal_codec2_server trillionnium_owner_open_client fifo_file { read }
+allow trillionnium_owner_open_client keystore keystore2_key { delete get_info grant rebind update use }
+allow trillionnium_owner_open_client credstore fd { use }
+allow trillionnium_owner_open_client trillionnium_owner_open_client process { fork sigchld sigkill sigstop signull signal ptrace getsched setsched getsession getpgid setpgid getcap setcap getattr setrlimit execmem }
+allow trillionnium_owner_open_client gpuservice binder { call transfer }
+allow trillionnium_owner_open_client hal_drm_hwservice hwservice_manager { find }
+allow hal_camera_default trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client sysfs_thermal lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client rootfs lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client pdx_display_manager_endpoint_socket_type unix_stream_socket { read write shutdown connectto }
+allow trillionnium_owner_open_client hal_cas_hwservice hwservice_manager { find }
+allow credstore trillionnium_owner_open_client binder { call transfer }
+allow heapprofd trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client trillionnium_owner_open_client dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client trillionnium_owner_open_client fifo_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client usbaccessory_device chr_file { read write getattr }
+allow trillionnium_owner_open_client keystore fd { use }
+allow virtual_camera trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client vendor_sysfs_public file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client hal_neuralnetworks_service service_manager { find }
+allow trillionnium_owner_open_client vendor_microdroid_file file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client hal_codec2_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client node_type tcp_socket { node_bind }
+allow trillionnium_owner_open_client sysfs_thermal dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client privapp_data_file dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir }
+allow traced_perf trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client pdx_display_vsync_endpoint_socket_type sock_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client magisk unix_stream_socket { getopt connectto }
+allow keystore trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client hidl_memory_hwservice hwservice_manager { find }
+allow hal_allocator_server trillionnium_owner_open_client binder { transfer }
+allow trillionnium_owner_open_client system_app_data_file file { read write getattr map }
+allow trillionnium_owner_open_client port_type tcp_socket { name_bind }
+allow trillionnium_owner_open_client hidl_allocator_hwservice hwservice_manager { find }
+allow hal_sensors_default trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client radio_data_file file { read write getattr }
+allow trillionnium_owner_open_client pdx_display_client_endpoint_socket_type sock_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client pdx_performance_client_server_type fd { use }
+allow trillionnium_owner_open_client trillionnium_owner_open_client udp_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client udp_socket ioctl { 0x8B01 0x8B05 0x8B07 0x8B09 0x8B0B 0x8B0D 0x8B0F 0x8B11-0x8B13 0x8B21 0x8B23 0x8B25 0x8B27 0x8B29 0x8B2D }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client udp_socket ioctl { 0x8906-0x8907 0x8910 0x8912-0x8913 0x8915 0x8917 0x8919 0x891B 0x8921 0x8933 0x8938 0x8942 }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client udp_socket ioctl { 0x5401-0x5404 0x540B 0x540E-0x5411 0x5413-0x5414 0x5450-0x5451 }
+allow trillionnium_owner_open_client vendor_sysfs_kgsl_gpu_model file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client pdx_display_manager_server_type fd { use }
+allow trillionnium_owner_open_client node_type rawip_socket { node_bind }
+allow trillionnium_owner_open_client hidl_manager_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client usb_device chr_file { ioctl read write getattr }
+allow trillionnium_owner_open_client credstore binder { call transfer }
+allow trillionnium_owner_open_client pdx_display_client_channel_socket_type unix_stream_socket { read write getattr setattr lock append getopt setopt shutdown }
+allow trillionnium_owner_open_client keystore_maintenance_service service_manager { find }
+allow trillionnium_owner_open_client vendor_sysfs_public lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client vendor_microdroid_file lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client storage_file lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client mnt_user_file lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client hal_configstore_server binder { call transfer }
+allow trillionnium_owner_open_client nnapi_ext_deny_product_prop file { read getattr map open }
+allow trillionnium_owner_open_client vendor_sysfs_public dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client hal_neuralnetworks_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client trillionnium_owner_open_client lockdown { integrity confidentiality }
+allow crash_dump trillionnium_owner_open_client process { sigchld sigkill sigstop signal ptrace }
+allow trillionnium_owner_open_client hal_audio_default fd { use }
+allow trillionnium_owner_open_client keystore binder { call transfer }
+allow trillionnium_owner_open_client vendor_file dir { read open }
+allow trillionnium_owner_open_client sdk_sandbox_data_file fd { use }
+allow trillionnium_owner_open_client hal_cas_server fd { use }
+allow hal_codec2_server trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client hal_graphics_allocator_server binder { call transfer }
+allow trillionnium_owner_open_client camera_cfa_prop file { read getattr map open }
+allow trillionnium_owner_open_client node_type icmp_socket { node_bind }
+allow trillionnium_owner_open_client trillionnium_owner_open_client lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client tmpfs dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client legacykeystore_service service_manager { find }
+allow traced_perf trillionnium_owner_open_client process { signal }
+allow trillionnium_owner_open_client hal_configstore_server fd { use }
+allow hal_drm_server trillionnium_owner_open_client binder { call transfer }
+allow trillionnium_owner_open_client binder_device chr_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client pdx_display_manager_channel_socket_type unix_stream_socket { read write getattr setattr lock append getopt setopt shutdown }
+allow trillionnium_owner_open_client app_data_file file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads }
+allowxperm trillionnium_owner_open_client app_data_file file ioctl { 0x6686 }
+allow trillionnium_owner_open_client pdx_display_vsync_endpoint_socket_type unix_stream_socket { read write shutdown connectto }
+allow hal_cas_server trillionnium_owner_open_client binder { call transfer }
+allow trillionnium_owner_open_client hal_omx_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client fuse file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads }
+allow trillionnium_owner_open_client pdx_bufferhub_client_channel_socket_type unix_stream_socket { read write getattr setattr lock append getopt setopt shutdown }
+allow trillionnium_owner_open_client media_rw_data_file dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir }
+allow heapprofd trillionnium_owner_open_client file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client gpu_device chr_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client hal_codec2_server binder { call transfer }
+allow trillionnium_owner_open_client pdx_display_manager_endpoint_dir_type dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client hal_allocator_server fd { use }
+allow keystore trillionnium_owner_open_client binder { call transfer }
+allow trillionnium_owner_open_client hal_tv_tuner_server fd { use }
+allow trillionnium_owner_open_client media_variant_prop file { read getattr map open }
+allow trillionnium_owner_open_client vendor_app_file file { ioctl read getattr lock map execute open watch watch_reads }
+allow trillionnium_owner_open_client hal_drm_service service_manager { find }
+allow trillionnium_owner_open_client surfaceflinger_service service_manager { find }
+allow trillionnium_owner_open_client trillionnium_owner_open_client tcp_socket { ioctl read write create getattr setattr lock append map bind connect listen accept getopt setopt shutdown }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client tcp_socket ioctl { 0x8B01 0x8B05 0x8B07 0x8B09 0x8B0B 0x8B0D 0x8B0F 0x8B11-0x8B13 0x8B21 0x8B23 0x8B25 0x8B27 0x8B29 0x8B2D }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client tcp_socket ioctl { 0x8906-0x8907 0x8910 0x8912-0x8913 0x8915 0x8917 0x8919 0x891B 0x8921 0x8933 0x8938 0x8942 }
+allowxperm trillionnium_owner_open_client trillionnium_owner_open_client tcp_socket ioctl { 0x5401-0x5404 0x540B 0x540E-0x5411 0x5413-0x5414 0x5450-0x5451 }
+allow trillionnium_owner_open_client vendor_sysfs_kgsl_gpubusy file { ioctl read getattr lock map open watch watch_reads }
+allow pdx_display_vsync_server_type trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client hidl_token_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client themeservice_app_data_file file { read getattr map open }
+allow trillionnium_owner_open_client node_type udp_socket { node_bind }
+allow trillionnium_owner_open_client hal_power_server fd { use }
+allow trillionnium_owner_open_client vendor_hal_perf_default fd { use }
+allow trillionnium_owner_open_client pdx_display_manager_endpoint_socket_type sock_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client hal_omx_server fd { use }
+allow trillionnium_owner_open_client trillionnium_owner_open_client netlink_route_socket { read write create getattr setattr lock append connect getopt setopt shutdown nlmsg_read }
+allow heapprofd trillionnium_owner_open_client dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client sdcard_type file { ioctl read write create getattr setattr lock append map unlink rename open watch watch_reads }
+allow hwservicemanager trillionnium_owner_open_client binder { call transfer }
+allow pdx_display_client_server_type trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client logd unix_stream_socket { connectto }
+allow trillionnium_owner_open_client vendor_microdroid_file dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client persistent_data_block_service service_manager { find }
+allow trillionnium_owner_open_client vendor_dpmd unix_stream_socket { connectto }
+allow trillionnium_owner_open_client hal_cas_server binder { call transfer }
+allow trillionnium_owner_open_client servicemanager_prop file { read getattr map open }
+allow hal_omx_server trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client hal_graphics_mapper_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client keystore_service service_manager { find }
+allow trillionnium_owner_open_client dmabuf_system_heap_device chr_file { ioctl read getattr lock map open watch watch_reads }
+allow vendor_dpmd trillionnium_owner_open_client tcp_socket { ioctl read write getattr setattr lock append map bind connect getopt setopt shutdown }
+allow hal_omx_server trillionnium_owner_open_client binder { call transfer }
+allow trillionnium_owner_open_client apc_service service_manager { find }
+allow trillionnium_owner_open_client heapprofd fd { use }
+allow pdx_display_manager_server_type trillionnium_owner_open_client fd { use }
+allow vendor_dpmd trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client textclassifier_data_file dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client vendor_mot_camera_aux_prop file { read getattr map open }
+allow trillionnium_owner_open_client tun_device chr_file { ioctl read write getattr append }
+allowxperm trillionnium_owner_open_client tun_device chr_file ioctl { 0x54D2 }
+allow trillionnium_owner_open_client hal_codec2_service service_manager { find }
+allow trillionnium_owner_open_client pdx_display_vsync_endpoint_dir_type dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client hal_drm_server fd { use }
+allow trillionnium_owner_open_client pdx_performance_client_endpoint_socket_type sock_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client tmpfs lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client textclassifier_data_file lnk_file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client gpu_device dir { ioctl read getattr lock open watch watch_reads search }
+allow hal_codec2_server trillionnium_owner_open_client binder { call transfer }
+allow trillionnium_owner_open_client sysfs_thermal file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client pdx_performance_client_endpoint_socket_type unix_stream_socket { read write shutdown connectto }
+allow traced_perf trillionnium_owner_open_client file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client credstore_service service_manager { find }
+allow trillionnium_owner_open_client vendor_hal_perf_default binder { call transfer }
+allow trillionnium_owner_open_client vendor_sysfs_kgsl dir { search }
+allow trillionnium_owner_open_client sysfs_gpu file { ioctl read getattr lock map open watch watch_reads }
+allow trillionnium_owner_open_client device_config_nnapi_native_prop file { read getattr map open }
+allow trillionnium_owner_open_client hal_camera_default fd { use }
+allow vendor_hal_perf_default trillionnium_owner_open_client binder { call transfer }
+allow trillionnium_owner_open_client servicemanager fd { use }
+allow trillionnium_owner_open_client hal_graphics_allocator_hwservice hwservice_manager { find }
+allow trillionnium_owner_open_client toolbox_exec file { ioctl read getattr lock map execute open watch watch_reads execute_no_trans }
+allow trillionnium_owner_open_client pdx_display_client_server_type fd { use }
+allow trillionnium_owner_open_client pdx_display_client_endpoint_socket_type unix_stream_socket { read write shutdown connectto }
+allow servicemanager trillionnium_owner_open_client binder { transfer }
+allow pdx_bufferhub_client_server_type trillionnium_owner_open_client fd { use }
+allow trillionnium_owner_open_client hal_codec2_server fd { use }
+allow hal_configstore_server trillionnium_owner_open_client binder { transfer }
+allow trillionnium_owner_open_client trillionnium_owner_open_client file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client hal_graphics_mapper_service service_manager { find }
+allow trillionnium_owner_open_client codec2_config_prop file { read getattr map open }
+allow hal_cas_server trillionnium_owner_open_client fd { use }
+allow hal_graphics_allocator_server trillionnium_owner_open_client binder { transfer }
+allow heapprofd trillionnium_owner_open_client process { signal }
+allow trillionnium_owner_open_client heapprofd_socket sock_file { write }
+allow trillionnium_owner_open_client pdx_display_vsync_server_type fd { use }
+allow traced_perf trillionnium_owner_open_client dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client hwbinder_device chr_file { ioctl read write getattr lock append map open watch watch_reads }
+allow trillionnium_owner_open_client trillionnium_owner_open_client unix_stream_socket { ioctl read write create getattr setattr lock append map bind connect listen accept getopt setopt shutdown connectto }
+allow trillionnium_owner_open_client storage_file dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client hwservicemanager_prop file { read getattr map open }
+allow trillionnium_owner_open_client sdk_sandbox_data_file file { write }
+allow trillionnium_owner_open_client fuse dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir }
+allow trillionnium_owner_open_client heapprofd_tmpfs file { read write getattr map }
+allow trillionnium_owner_open_client themeservice_app_data_file dir { search }
+allow trillionnium_owner_open_client pdx_display_client_endpoint_dir_type dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client mnt_user_file dir { ioctl read getattr lock open watch watch_reads search }
+allow trillionnium_owner_open_client mnt_media_rw_file dir { search }
+allow trillionnium_owner_open_client hal_drm_server binder { call transfer }
+allow trillionnium_owner_open_client trillionnium_owner_open_client icmp_socket { ioctl read write create getattr setattr lock append map bind connect getopt setopt shutdown }
+allow trillionnium_owner_open_client hal_graphics_allocator_server fd { use }
+allow trillionnium_owner_open_client traced_perf_socket sock_file { write }
+allow trillionnium_owner_open_client ion_device chr_file { ioctl read getattr lock map open watch watch_reads }
+allow gpuservice trillionnium_owner_open_client binder { transfer }
+allow trillionnium_owner_open_client sdcard_type dir { ioctl read write create getattr setattr lock rename open watch watch_reads add_name remove_name reparent search rmdir }
+allow trillionnium_owner_open_client pdx_display_vsync_channel_socket_type unix_stream_socket { read write getattr setattr lock append getopt setopt shutdown }
+
+# Direct common self baseline of stock init, shell, and normal app.
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap process { fork getattr getcap getpgid getsched getsession setcap setpgid setrlimit setsched sigchld sigkill signal signull sigstop }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap fd { use }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap dir { getattr ioctl lock open read search watch watch_reads }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap file { append getattr ioctl lock map open read watch watch_reads write }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap lnk_file { getattr ioctl lock map open read watch watch_reads }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap fifo_file { append getattr ioctl lock map open read watch watch_reads write }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen lock map read setattr setopt shutdown write }
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_bootstrap unix_dgram_socket { append bind connect create getattr getopt ioctl lock map read sendto setattr setopt shutdown write }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress process { fork getattr getcap getpgid getsched getsession setcap setpgid setrlimit setsched sigchld sigkill signal signull sigstop }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress fd { use }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress dir { getattr ioctl lock open read search watch watch_reads }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress file { append getattr ioctl lock map open read watch watch_reads write }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress lnk_file { getattr ioctl lock map open read watch watch_reads }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress fifo_file { append getattr ioctl lock map open read watch watch_reads write }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen lock map read setattr setopt shutdown write }
+allow trillionnium_owner_open_ingress trillionnium_owner_open_ingress unix_dgram_socket { append bind connect create getattr getopt ioctl lock map read sendto setattr setopt shutdown write }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop process { fork getattr getcap getpgid getsched getsession setcap setpgid setrlimit setsched sigchld sigkill signal signull sigstop }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop fd { use }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop dir { getattr ioctl lock open read search watch watch_reads }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop file { append getattr ioctl lock map open read watch watch_reads write }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop lnk_file { getattr ioctl lock map open read watch watch_reads }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop fifo_file { append getattr ioctl lock map open read watch watch_reads write }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop unix_stream_socket { accept append bind connect connectto create getattr getopt ioctl listen lock map read setattr setopt shutdown write }
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_emergency_stop unix_dgram_socket { append bind connect create getattr getopt ioctl lock map read sendto setattr setopt shutdown write }
+
+# Relay bind: same port/node bind grants as Stock16 ordinary app; code binds loopback15038.
+allow trillionnium_owner_open_bootstrap port_type tcp_socket name_bind
+allow trillionnium_owner_open_bootstrap node_type tcp_socket node_bind

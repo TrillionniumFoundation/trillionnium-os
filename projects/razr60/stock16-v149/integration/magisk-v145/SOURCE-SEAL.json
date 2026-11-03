@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.guarded-boot-autostart.source-seal.v1",
+  "files": {
+    "AUTHOR-STATIC-CHECKS.json": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/AUTHOR-STATIC-CHECKS.json",
+      "sha256": "8b2bb75c2da9f06c59c1ac036de2077d38641824a5fc6dd089f06da43ff1db16",
+      "bytes": 1444,
+      "lines": 35
+    },
+    "ROOT-INSTALL-AND-LIFETIME-CONTRACT.json": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/ROOT-INSTALL-AND-LIFETIME-CONTRACT.json",
+      "sha256": "17923ed306f8328f762bf7bc3bf13231b52029f60cab2a3786d10d05fdc00a29",
+      "bytes": 5180,
+      "lines": 66
+    },
+    "SOURCE-HANDOFF.json": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/SOURCE-HANDOFF.json",
+      "sha256": "1ec1f45602a48da0a9382b1a85796f686fe0cb2c49f10f6c8970311ad99d8c69",
+      "bytes": 2945,
+      "lines": 61
+    },
+    "SOURCE-SELECTION.json": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/SOURCE-SELECTION.json",
+      "sha256": "b1d3a25d1f87bfe1f4209c65c7e7f6a1690ec1feb57ce885eaa9c7791c4a5421",
+      "bytes": 1207,
+      "lines": 27
+    },
+    "module-root/module.prop": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/module-root/module.prop",
+      "sha256": "782b3139d193200ea61b02ad08f27f41b56e08cb73a901254950340b930ebec8",
+      "bytes": 214,
+      "lines": 6
+    },
+    "module-root/service.sh": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/module-root/service.sh",
+      "sha256": "6128b62397e5aa2e5eba8f8b9597cd1162fc934c13e26ba3594db1fb7097c9f6",
+      "bytes": 7033,
+      "lines": 154
+    },
+    "module.prop.COMPLETE.literal.diff": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/module.prop.COMPLETE.literal.diff",
+      "sha256": "636d0b8bd370325cc497d5efb409fbb295488a12b24d153cf5b793e3c8c73e79",
+      "bytes": 681,
+      "lines": 13
+    },
+    "service.sh.COMPLETE.literal.diff": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/service.sh.COMPLETE.literal.diff",
+      "sha256": "5444378472383c5ff1646601c3af730011404cbf8f272b91120e8c03eb58d877",
+      "bytes": 6113,
+      "lines": 131
+    }
+  },
+  "immutable_after_this_seal": true
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.focused-unicode-helper.contract.v1",
+  "canonical_phone_jar": "/data/local/tmp/hepta-unicode-v148-r2/input.jar",
+  "jar": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-unicode-helper-B-v148-r2/build-01/hepta-unicode-input-v148.jar",
+    "bytes": 16076,
+    "sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2"
+  },
+  "main_class": "org.trillionnium.hepta.input.UnicodeInput",
+  "shell_uid_required": 2000,
+  "display_supported": 0,
+  "argv": [
+    "set-text",
+    "--operation-id",
+    "SAFE_CALL_ID",
+    "--display",
+    "0",
+    "--package",
+    "EXACT_FOREGROUND_PACKAGE",
+    "--view-id",
+    "EXACT_FOCUSED_EDITABLE_RESOURCE_ID",
+    "--expected-text-b64",
+    "CANONICAL_BASE64_OR_DASH",
+    "--text-b64",
+    "CANONICAL_BASE64_OR_DASH"
+  ],
+  "launch": "CLASSPATH=/data/local/tmp/hepta-unicode-v148-r2/input.jar app_process /system/bin org.trillionnium.hepta.input.UnicodeInput ARGV",
+  "base64": "Standard canonical padded Base64 of strict UTF8; dash represents empty. At most4096 decoded bytes; NUL/malformed/surrogate UTF8 rejected. Provider must encode plaintext deterministically.",
+  "target_guard": [
+    "foreground root package exactly matches",
+    "unique visible enabled focused editable non-password node with exact resource-id",
+    "application window active and focused; root/node window ids and requested display0 agree",
+    "ACTION_SET_TEXT advertised; nonempty node/window bounds intersect",
+    "expected prior effective text exactly matches (visible hint is empty draft)",
+    "immediately re-observe same underlying node and text before effect"
+  ],
+  "action": "Exactly one ACTION_SET_TEXT; if already exact, no action. Only readback can be polled, never another action.",
+  "receipt": "set_verified or already_exact with exact requested UTF8 readback base64 and hashes. Unknown actual other text is never returned.",
+  "exit_codes": {
+    "0": "exact requested text observed",
+    "20": "pre-action rejection/setup failure; not_started",
+    "22": "action attempted but receipt not verified/outcome unknown; do not retry",
+    "25": "own test-service cleanup not confirmed; no effect retry"
+  },
+  "cleanup": "finally disconnect own UiAutomation and shutdown own UiAutomationConnection object; quit own callback thread. No Android daemon shutdown.",
+  "no_persistent_modifications": [
+    "No IME installation, selection or keyboard switch",
+    "No AccessibilityService settings changes; temporary own test service uses DONT_SUPPRESS_ACCESSIBILITY_SERVICES",
+    "No app/core/APK/SELinux permission changes",
+    "No su/root execution, ADB lifecycle/USB/reboot",
+    "No direct app-state-file writes, no message Send/Submit",
+    "No persistent helper replay store; outer R5 immutable identity/no-redispatch remains required"
+  ],
+  "root_fixture_example": {
+    "package": "org.trillionnium.hepta.controlprobe",
+    "view_id": "org.trillionnium.hepta.controlprobe:id/unicode_input",
+    "preparation": "Root or model must focus the observed field by its actual UI before invoking. First use expected=- text=- to verify setup without changing field.",
+    "verification": "For actual Chinese text, retain helper set_verified receipt plus separate actual App UI readback; pressing fixture Submit is a separate explicitly chosen UI action."
+  },
+  "known_limits": [
+    "Only observed default display0 qualified; caller must verify active physical display/rotation before dispatch. Nondefault is rejected, not redirected.",
+    "Hidden constructor/connect/teardown APIs must be qualified on actual stock A16 by Root; source presence and host build alone do not prove runtime reflection access.",
+    "Password, unfocused, custom drawn/noneditable, ambiguous or stale targets rejected.",
+    "Resource id is required; anonymous editable virtual nodes are not covered by this version."
+  ],
+  "r2_correction": "Prepare missing main Looper before UiAutomation setup; actual Root R1 failure was a UiAutomation/AIC Handler NullPointerException before field access, not USB or radio. No new persistent settings."
+}

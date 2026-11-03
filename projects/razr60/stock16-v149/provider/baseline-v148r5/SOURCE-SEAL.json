@@ -1,0 +1,96 @@
+{
+  "files": {
+    "CANDIDATE-HANDOFF.json": {
+      "sha256": "bc91545e4c37d8f0734b957a64cb65fee7b4d215f42e6bf82ea88fef357e7dda",
+      "bytes": 5171
+    },
+    "CURRENT-CLAIMS-SNAPSHOT.json": {
+      "sha256": "14399fb767115dbf707aac3ea7a8e71b7b1fa0cf2c0250d2058617acc89ba38e",
+      "bytes": 2635
+    },
+    "INSTALL-PLAN.json": {
+      "sha256": "6896a661c08c691fd22150312d65a01acd6c779502ed436725cbcb2c7f271d99",
+      "bytes": 7913
+    },
+    "OFFLINE-CAPACITY-RACE-CHECKS.json": {
+      "sha256": "2d034257837ab2d66ebd74c173d02f399b622e3e89aa922465b081315508e8ff",
+      "bytes": 1641
+    },
+    "OFFLINE-LEGACY-CHECKS.json": {
+      "sha256": "b100408fea80274803b7497f5f4e960acf7965a6b075dd26b5fa6c371088865c",
+      "bytes": 855
+    },
+    "OFFLINE-PHONE-TOOLS-CHECKS.json": {
+      "sha256": "f516c8b9a6ed27de460474ec9e1186cd22a08e3c38e30afa789d98e7e4316343",
+      "bytes": 2187
+    },
+    "R4-TO-R5.diff": {
+      "sha256": "813c1c4caca8d364648f4cd3e31fdb6f18b8c585a9218d17a2ccd250816486e1",
+      "bytes": 1877
+    },
+    "R5-MINIMAL-CHECKS.json": {
+      "sha256": "1f579687780a993ad66872efd5f7c6523eaf3627f08da1a686fb141a7ab2ddc8",
+      "bytes": 777
+    },
+    "baseline-launchagents/org.trillionnium.hepta.daily-bridge.plist": {
+      "sha256": "62d5833bcc1412994bd530e4492ee24c7e7f0b7d7094e9e527beb239c93ac27f",
+      "bytes": 2214
+    },
+    "baseline-launchagents/org.trillionnium.hepta.daily-provider.plist": {
+      "sha256": "c505f763f05ae435f90a584cbaf31f33e1640761b1099755562f907a0585c1e4",
+      "bytes": 2054
+    },
+    "launchagents/org.trillionnium.hepta.daily-bridge.plist": {
+      "sha256": "a2e276f6e8f972bdd822af2e5693c6e3c989cf7bc077027ff660f4997e929856",
+      "bytes": 2214
+    },
+    "launchagents/org.trillionnium.hepta.daily-provider.plist": {
+      "sha256": "9b4aa02e42ee1aab928dfc8e9b8758d8011cf5f83139fadbd5de87f4ef01e380",
+      "bytes": 2054
+    },
+    "offline_capacity_race_checks.py": {
+      "sha256": "9a1035d9b5fff2765dcf44dab9e448e7f25949696c25022cadb09e34521f8052",
+      "bytes": 5735
+    },
+    "offline_legacy_checks.py": {
+      "sha256": "c0eefd5e39cb16caf39df296d2c6334140ad6d89536fb2212391e97a869989ed",
+      "bytes": 4449
+    },
+    "offline_phone_tools_checks.py": {
+      "sha256": "87eb3951e2dec709412a91e977d4ce0405ade4cc4af49ee96961657141fdbe92",
+      "bytes": 14126
+    },
+    "package_candidate.py": {
+      "sha256": "d4790da5972da986b1786dc37f2ac6c50f096eb6a82e53b4ac91aed286c47f6e",
+      "bytes": 10032
+    },
+    "retained-claims.json": {
+      "sha256": "929815622aa8ec0f278b9b3cca2fd3f99361cbb6e71f627871d3da16a85b856b",
+      "bytes": 460
+    },
+    "source/daily_provider.py": {
+      "sha256": "359acc41a67d001f0c84269e450f05afd31801a397b28e1ff9e43a889bde391f",
+      "bytes": 16360
+    },
+    "source/phone_observation_tools.py": {
+      "sha256": "40232edb40b8261385da64b37ab27fb14883daa51cd8f0403006f0c4c40d276f",
+      "bytes": 26030
+    },
+    "source/provider_codex_host.py": {
+      "sha256": "85c6f3d5def493d591f73b9820c89b1b6e3d78a609863879b4a19356c575a713",
+      "bytes": 38063
+    },
+    "source/provider_openai_compatible.py": {
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
+      "bytes": 17247
+    },
+    "source/ssh_exec_persistent_bridge.py": {
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec",
+      "bytes": 18394
+    }
+  },
+  "model_operations": 0,
+  "phone_operations": 0,
+  "service_operations": 0,
+  "claims_changed": false
+}

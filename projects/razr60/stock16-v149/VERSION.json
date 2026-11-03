@@ -1,0 +1,173 @@
+{
+  "schema": "razr60-unified-stock16-source-version-v149.1",
+  "date_utc": "2026-11-03",
+  "line": "stock-android-16",
+  "scope": "Source composition, fresh host rebuilds, installed payload identities; model task acceptance remains independent",
+  "repository": {
+    "name": "TrillionniumFoundation/trillionnium-os",
+    "url": "https://github.com/TrillionniumFoundation/trillionnium-os",
+    "frozen_backend_commit": "4b687742fca939bc32122857f21067ec28d30a23",
+    "publication": "Dedicated branch based on frozen backend; no merge to main"
+  },
+  "android": {
+    "hepta49": {
+      "package": "org.trillionnium.owneropen",
+      "version_code": 49,
+      "version_name": "1.4.3",
+      "min_sdk": 36,
+      "target_sdk": 37,
+      "installed_apk_sha256": "56c4e302cbe7448dffc9a0d8cfa8db2c2cb019fcb055fab36b815105dd55592f",
+      "source_inventory_sha256": "45921011babe2edbb8d09a37d22694c0b54f2661db59e662f95962c261d34b3e",
+      "source": "android/hepta49/source",
+      "fresh_unsigned_compile": true,
+      "installed_payload_match_members": 18,
+      "total_payload_members": 19,
+      "differing_members": [
+        "classes.dex"
+      ],
+      "bit_identical": false,
+      "signed_rebuild": false
+    },
+    "desktop_sidecar": {
+      "source": "android/desktop-sidecar-v145",
+      "installed_apk_sha256": "b3da2d3835534b95669429d59488e0edc3a47bab4af4ab95aa68afd1c0810239",
+      "fresh_unsigned_compile": true,
+      "payload_members_match": "7/7"
+    },
+    "unicode": {
+      "source": "android/unicode-v148r2",
+      "jar_sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2",
+      "fresh_build_bit_identical": true
+    },
+    "screen_codec": {
+      "source": "android/screen-codec-v148r1",
+      "jar_sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639",
+      "fresh_build_bit_identical": true
+    },
+    "visual_probe": {
+      "source": "android/visual-probe-v148r1",
+      "signed_reference_sha256": "4548c7da2c7aa39e6bf99ea3d93c6e4355fdfefd2355957c0851c7bb4478a405",
+      "fresh_unsigned_compile": true,
+      "payload_members_match": "3/3",
+      "purpose": "qualification-only"
+    }
+  },
+  "native": {
+    "source": "native/api36/source",
+    "build_driver": "native/api36/rebuild.py",
+    "fresh_compile": true,
+    "binaries_bit_identical": 3,
+    "dependency_items_pre_and_post_checked": 1038,
+    "headers": "retained AOSP17",
+    "link_libraries": "stock16",
+    "target_api": 36,
+    "sha256": {
+      "bootstrap": "4ebfa93024056d46c597f4479d53a08335f031d30ca3ca789de73bffc69837b5",
+      "ingress": "465b7f964106dc301d485118e5dc6256f94a291687a9425868878fb26a76fbba",
+      "emergency-stop": "4ff94cde7050eb4bf67c74a777df2e43f46eb1fc697bef73ae59bfd80416f6f5"
+    }
+  },
+  "backend": {
+    "source_intake": "backend/frozen-intake-v142",
+    "source_intake_is_complete_cargo_workspace": false,
+    "missing_workspace_members_in_subset": 13,
+    "complete_workspace_recipe": "backend/prepare_workspace.py",
+    "source_baseline": "4b687742fca939bc32122857f21067ec28d30a23",
+    "overlay_directory": "backend/frozen-intake-v142/gnu-core-proposed",
+    "overlay_count": 4,
+    "gnu_core_sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+    "fresh_gnu_rebuild": false,
+    "rootfs": {
+      "sha256": "5b17d4e356525e02ebd9354e74b4a5334678837ccc5a1895b3507eaa01264cda",
+      "bytes": 40198144,
+      "manifest_entry_count": 931,
+      "fresh_image_hash_verified": true,
+      "fresh_full_image_rebuild": false
+    },
+    "fresh_full_source_prepare": true,
+    "fresh_full_source_files": 1453,
+    "fresh_baseline_manifest_hashes_matched": 407,
+    "fresh_cargo_metadata": {
+      "offline": true,
+      "locked": true,
+      "no_deps": true,
+      "rc": 0,
+      "members": 24,
+      "packages": 24,
+      "Cargo_lock_unchanged": true
+    }
+  },
+  "provider": {
+    "baseline": "provider/baseline-v148r5",
+    "current": "provider/v149-r1",
+    "candidate": "stock16-hepta-task-provider-C-v149-r1",
+    "manifest_sha256": "d25fb3a1f8327a923e2cfccab23a7191c12475f67de9a136fb810e2ada1f1a82",
+    "source_tree_sha256": "ce654aaca0841022db82074ba6c94410f400a047b649dac098c105fb249e2dd1",
+    "daily_source_sha256": "44b2f708846447b57cee3a8da0c9c0aee1d250d7e123337fb08d0156b9a31ccc",
+    "frozen_candidate_checks_passed": 156,
+    "root_independent_mac_checks_passed": 157,
+    "root_reported_host_switch_succeeded": true,
+    "root_reported_daily_pid_at_switch": 7436,
+    "configured_model": "gpt-6.1-sol",
+    "workers": 2,
+    "claim_values_archived": false,
+    "live_acceptance": "Root single-dispatch live health request completed as failed: observed_unavailable / usage_limit_exceeded; no phone tools; not an end-to-end task pass",
+    "deployment_evidence": [
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-delivery-Root-v149-r1/HOST-UPGRADE-V149-RESULT.json",
+        "sha256": "f8673dea419e419ead0a4b86281bf2b4727a69b5151318de099a86c57050e927",
+        "bytes": 16290,
+        "contents_archived": false
+      },
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-task-provider-C-v149-r1/SOURCE-SEAL.json",
+        "sha256": "cef95750956b28124be20a6400577a0f4b9b76bcc82d150eb352c0d73fc8e451",
+        "bytes": 6385,
+        "contents_archived": false
+      },
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-task-provider-C-v149-r1/INSTALL-PLAN.json",
+        "sha256": "9c102f9024c6d17432b946aa807724f70d98a0378c80152e1dde6162ac4d6bfd",
+        "bytes": 6690,
+        "contents_archived": false
+      }
+    ],
+    "latest_root_health": {
+      "status": "observed_unavailable",
+      "reason": "usage_limit_exceeded",
+      "started_utc": "2026-11-03T10:26:56.557Z",
+      "finished_utc": "2026-11-03T10:27:05.674Z",
+      "elapsed_seconds": 9.117,
+      "phone_tools": 0,
+      "owned_child_joined": true,
+      "previous_claim_hashes_unchanged": 15,
+      "total_claim_count_after_request": 16,
+      "claim_contents_archived": false,
+      "native_journal_readback_status_at_freeze": "Root verifying separately",
+      "qualification": "model health probe only; fresh business task acceptance blocked"
+    },
+    "fixed_acceptance_set": {
+      "directory": "provider/v149-r1/qa",
+      "qa_manifest_sha256": "02ca9c914ac138b2c0fd3dc2e27b7f0a62e5f8fa1aaffe48831b7e3cfd6d492a",
+      "cases": 19,
+      "real_model_cases": 4,
+      "component_cases": 1,
+      "negative_cases": 14,
+      "executed_cases": 0,
+      "automatic_execution": false
+    }
+  },
+  "integration": {
+    "source": "integration/magisk-v145",
+    "module_payload_binaries_archived": false
+  },
+  "constraints": {
+    "phone_operations_from_independent_builds": 0,
+    "private_signing_keys_archived": false,
+    "credentials_archived": false,
+    "live_state_or_user_session_inputs_archived": false,
+    "original_production_source_bytes_preserved": true,
+    "site_specific_routing_defaults_present": true,
+    "portable_clean_clone_full_runtime_claimed": false
+  }
+}

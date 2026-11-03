@@ -1,0 +1,262 @@
+{
+  "path": "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/build-receipt.json",
+  "sha256": "de9097067c0fcdb3fc114168222131b9e5159b6e8dab91032a9b4e2d4b7b866d",
+  "bytes": 10714,
+  "keys": [
+    "schema",
+    "state",
+    "started_utc",
+    "profile",
+    "output",
+    "source",
+    "source_sha256",
+    "build_script_sha256",
+    "package",
+    "version_code",
+    "version_name",
+    "min_sdk",
+    "target_sdk",
+    "java_language_level",
+    "compiled",
+    "signed",
+    "signature_verified",
+    "installed",
+    "phone_operations",
+    "model_requests_issued",
+    "stop_reset",
+    "whole_device_acceptance",
+    "steps",
+    "compiler_inputs",
+    "java_source_count",
+    "class_count",
+    "dex",
+    "compile_sdk",
+    "apk",
+    "finished_utc"
+  ],
+  "receipt": {
+    "schema": "razr.owneropen.ui.r8.build.v1",
+    "state": "UNSIGNED_UI_CANDIDATE_BUILT",
+    "started_utc": "2026-11-03T10:09:52.100846+00:00",
+    "profile": "pocket4",
+    "output": "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2",
+    "source": "/home/alex/razr60-unified-main-v149-20261103/android/hepta49/source",
+    "source_sha256": "45921011babe2edbb8d09a37d22694c0b54f2661db59e662f95962c261d34b3e",
+    "build_script_sha256": "ed7007635fe69bb0337bceef15d1d5787d72bb5d02b3d71ed151891871465714",
+    "package": "org.trillionnium.owneropen",
+    "version_code": 49,
+    "version_name": "1.4.3",
+    "min_sdk": 36,
+    "target_sdk": 37,
+    "java_language_level": 17,
+    "compiled": true,
+    "signed": false,
+    "signature_verified": false,
+    "installed": false,
+    "phone_operations": 0,
+    "model_requests_issued": false,
+    "stop_reset": false,
+    "whole_device_acceptance": "closed_by_user",
+    "steps": [
+      {
+        "name": "aapt2-version",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/aapt2",
+          "version"
+        ],
+        "started_utc": "2026-11-03T10:09:52.225608+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:52.228031+00:00"
+      },
+      {
+        "name": "resources-compile",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/aapt2",
+          "compile",
+          "--dir",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/res",
+          "-o",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/compiled-res.zip"
+        ],
+        "started_utc": "2026-11-03T10:09:52.228233+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:52.230875+00:00"
+      },
+      {
+        "name": "resources-link",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/aapt2",
+          "link",
+          "-I",
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/android.jar",
+          "--manifest",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/AndroidManifest.xml",
+          "-R",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/compiled-res.zip",
+          "-o",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/resources.apk",
+          "--java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/generated",
+          "--min-sdk-version",
+          "36",
+          "--target-sdk-version",
+          "37",
+          "--version-code",
+          "49",
+          "--version-name",
+          "1.4.3",
+          "--replace-version",
+          "--auto-add-overlay"
+        ],
+        "started_utc": "2026-11-03T10:09:52.231041+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:52.268620+00:00"
+      },
+      {
+        "name": "javac",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/javac",
+          "-J-XX:ActiveProcessorCount=2",
+          "-J-Xmx2g",
+          "-encoding",
+          "UTF-8",
+          "-source",
+          "17",
+          "-target",
+          "17",
+          "-XDstringConcat=inline",
+          "--system",
+          "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/system",
+          "-classpath",
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/android.jar",
+          "-d",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/classes",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenClient.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenClientState.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenClientStateCodec.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenClientStateStore.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenCoverEntryActivity.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenStateBackupProvider.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenTileService.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenTurnEvidence.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiDraftStore.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiEventFormatter.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdown.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdownRenderer.java",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/generated/org/trillionnium/owneropen/R.java"
+        ],
+        "started_utc": "2026-11-03T10:09:52.269190+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:53.233576+00:00"
+      },
+      {
+        "name": "d8",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/java",
+          "-XX:ActiveProcessorCount=2",
+          "-Xmx2g",
+          "-cp",
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/R8_9_3_27/r8-9.3.27.jar",
+          "com.android.tools.r8.D8",
+          "--release",
+          "--min-api",
+          "36",
+          "--lib",
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/android.jar",
+          "--output",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/dex",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/classes.jar"
+        ],
+        "started_utc": "2026-11-03T10:09:53.236084+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:54.714907+00:00"
+      },
+      {
+        "name": "zipalign",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/zipalign",
+          "-p",
+          "4",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/HEPTA-SystemUI-v49-unaligned.apk",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/HEPTA-SystemUI-v49-unsigned.apk"
+        ],
+        "started_utc": "2026-11-03T10:09:54.716952+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:54.721033+00:00"
+      },
+      {
+        "name": "alignment-verify",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/zipalign",
+          "-c",
+          "-p",
+          "4",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/HEPTA-SystemUI-v49-unsigned.apk"
+        ],
+        "started_utc": "2026-11-03T10:09:54.721149+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:54.722228+00:00"
+      },
+      {
+        "name": "manifest-badging",
+        "argv": [
+          "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/aapt2",
+          "dump",
+          "badging",
+          "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/HEPTA-SystemUI-v49-unsigned.apk"
+        ],
+        "started_utc": "2026-11-03T10:09:54.722320+00:00",
+        "state": "passed",
+        "exit_code": 0,
+        "finished_utc": "2026-11-03T10:09:54.723922+00:00"
+      }
+    ],
+    "compiler_inputs": {
+      "sdk": {
+        "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/android.jar",
+        "sha256": "4f3d35e16d20fda03abdc7f81b49ab50010742fb5effc51b821b4b9646697ead"
+      },
+      "aapt2": {
+        "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/aapt2",
+        "sha256": "3f7b9e7b6568c08aea46dac795a66af6b98d9dbb959b6282149c434e4d210df8"
+      },
+      "zipalign": {
+        "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/zipalign",
+        "sha256": "2f5ebdded1fe910913926ac486c4cf3eef9874c6a7a1d1480875c9375a478ca4"
+      },
+      "d8": {
+        "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/R8_9_3_27/r8-9.3.27.jar",
+        "sha256": "8a2b7d414c3b5542ec6a7fcc61d45c8728163b3a9ed37a072d58ac53e614a40a"
+      },
+      "system_modules": {
+        "path": "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/system",
+        "sha256": "3897cbb1bc984057f7636d545c9c2219fede95bf871e1cd775c0969c9ef1cc7b"
+      }
+    },
+    "java_source_count": 15,
+    "class_count": 58,
+    "dex": [
+      {
+        "name": "classes.dex",
+        "bytes": 164060,
+        "sha256": "64c60afd22dc4527332b0f66c37e5a80d70623b6ed9f06b476a38221b0067e1b"
+      }
+    ],
+    "compile_sdk": 36,
+    "apk": {
+      "path": "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/HEPTA-SystemUI-v49-unsigned.apk",
+      "bytes": 181922,
+      "sha256": "3f50c4e567064899b4aa8b7ce64ee0c88caa9b7e89b9ed7f3fbc0a6b1b7647a4"
+    },
+    "finished_utc": "2026-11-03T10:09:54.724530+00:00"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.control-probe.source-seal.v1",
+  "files": {
+    "source/AndroidManifest.xml": {
+      "sha256": "efca265f743afd372e61be78a81b4d56f302702157195abae762609040dca423",
+      "bytes": 836
+    },
+    "source/res/values/ids.xml": {
+      "sha256": "8398c72d73284cd22c7ed07aaeb901ba4ddce767f3215d670246eba3441a3c7c",
+      "bytes": 304
+    },
+    "source/src/org/trillionnium/hepta/controlprobe/ProbeUi.java": {
+      "sha256": "a045119f751e114d8fee5acee5c86e094055efad06d3dc7e92d2e20572a8ed40",
+      "bytes": 2305
+    },
+    "source/src/org/trillionnium/hepta/controlprobe/TextEntryActivity.java": {
+      "sha256": "0897864e8fa16717e320dc8b50f8672c4cd3c06f4fe9229939dd9cb13b35ee63",
+      "bytes": 3046
+    },
+    "source/src/org/trillionnium/hepta/controlprobe/VisualChallengeActivity.java": {
+      "sha256": "03a542fb1fd26c660239fad32abd8b6205c30e8b5e260e4d60e6eff124acb18a",
+      "bytes": 8269
+    },
+    "build_unsigned.py": {
+      "sha256": "902d033689add511873f0b08e00eda3472d1d4226e2c85f8be0d0621c710115b",
+      "bytes": 4238
+    },
+    "sign_new_test_key.py": {
+      "sha256": "5eef121e1a701fcd40f96918e5f844fc2cbc4b5b37932cd800398f827a8b975b",
+      "bytes": 3888
+    },
+    "ROOT-OPERATING-CONTRACT.json": {
+      "sha256": "b387ba8b661ab8f9f153d90607314c749b14a0d4d64fb65dbfe29ebff5092554",
+      "bytes": 4534
+    },
+    "SOURCE-HANDOFF.json": {
+      "sha256": "2817dfb39349cbc301d5c07392555c374ac5d8d54358d9f7209c0492de3f75ff",
+      "bytes": 2125
+    },
+    "AUTHOR-VERIFICATION.json": {
+      "sha256": "c6219f20c6d989db5cfb9c62c704bf5a556d2db6f4df0767dc9bbaa4ce81e756",
+      "bytes": 1032
+    },
+    "build-02/BUILD-RECEIPT.json": {
+      "sha256": "dd72b6ff6642547897141467e61fb2c54d5a8f92d2406f1ac9a8cbcda4dbd737",
+      "bytes": 5470
+    },
+    "build-02/d8.stderr.txt": {
+      "sha256": "4356c6626cdff57bde7a707d456ed0ed15351937f90b99cc130faea862a94962",
+      "bytes": 104
+    },
+    "build-02/HEPTA-Control-Probe-v1-unsigned.apk": {
+      "sha256": "5fc06ef548ac2f0a5e6123a2f5bad6e56ee93bfe821fc95c96940460bc479034",
+      "bytes": 16388
+    },
+    "signed-v1/SIGNING-RESULT.json": {
+      "sha256": "2c277292a1c465e6a4c6c40e089d3f148a2ad6c5d85021fb7915d9aa1ada9d97",
+      "bytes": 1392
+    },
+    "signed-v1/HEPTA-Control-Probe-v1.apk": {
+      "sha256": "4548c7da2c7aa39e6bf99ea3d93c6e4355fdfefd2355957c0851c7bb4478a405",
+      "bytes": 24780
+    },
+    "signed-v1/hepta-control-probe-cert.der": {
+      "sha256": "31f08082e7a414b8aa395e8aaa7fafc4cc520d114b1250e18d79d04af9732bdb",
+      "bytes": 1151
+    }
+  },
+  "phone_operations": 0,
+  "private_key_material_not_in_seal": true
+}

@@ -1,0 +1,45 @@
+[package]
+name = "trillionnium-owner-open-host"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+publish = false
+autobins = false
+
+[features]
+default = []
+
+[dependencies]
+base64.workspace = true
+libc.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+trillionnium-owner-open-call-registry.workspace = true
+trillionnium-owner-open-event-store.workspace = true
+trillionnium-owner-open-job-registry.workspace = true
+trillionnium-owner-open-job-runtime.workspace = true
+trillionnium-owner-open-provider-jsonl.workspace = true
+trillionnium-owner-open-runtime.workspace = true
+trillionnium-owner-open-stream-window.workspace = true
+trillionnium-owner-open-turn-loop.workspace = true
+trillionnium-owner-open-types.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+tempfile.workspace = true
+
+[[bin]]
+name = "trillionnium-owner-open-host"
+path = "src/main.rs"
+
+[[bin]]
+name = "trillionnium-owner-open-r5-core"
+path = "src/bin/r5_control_host_v7.rs"
+
+[[bin]]
+name = "trillionnium-owner-open-r5-host"
+path = "src/bin/r5_transport_host.rs"

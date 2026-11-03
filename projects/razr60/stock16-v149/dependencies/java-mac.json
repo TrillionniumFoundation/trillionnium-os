@@ -1,0 +1,50 @@
+{
+  "schema": "razr60-java-mac-input-pins-v1",
+  "inputs": [
+    {
+      "path": "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+      "bytes": 26361808,
+      "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad"
+    },
+    {
+      "path": "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/aapt2",
+      "bytes": 10240448,
+      "sha256": "22d092d529b050c71016f3f4402f53fadcd358a65fe16df408c400f0fe9ffe62"
+    },
+    {
+      "path": "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/zipalign",
+      "bytes": 559232,
+      "sha256": "4e0bf80ede4ddb7f48d83a7f0d09b343acebf44b8ff3224a6130f9f470957706"
+    },
+    {
+      "path": "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/lib/d8.jar",
+      "bytes": 14929869,
+      "sha256": "d43c8a94c9b1f1da1a7cc49c32b81e8cee1708b37ee8b530a81a0688222b42c0"
+    },
+    {
+      "path": "/Users/qianqi/Library/Android/sdk/build-tools/34.0.0/lib/apksigner.jar",
+      "bytes": 1034092,
+      "sha256": "eefdd6aed9db9fb849e4c98a50d8741e19d1b674ba6547220bcb9c3ed152123a"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/java",
+      "bytes": 28208,
+      "sha256": "be6cc6b785dcd1893ce4726bf3cd92590d2d31a987c99e00a83e98c114c3d38f"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/bin/javac",
+      "bytes": 28208,
+      "sha256": "520a565c285dd7d8e7da4979fc6d2e99abee7a7d534693eeb56155e85f4d1005"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/lib/modules",
+      "bytes": 128036083,
+      "sha256": "31c766f05f2ba6cdb082bf541ee72335e1761361b2e8999f59dd273ec6362d1b"
+    },
+    {
+      "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home/release",
+      "bytes": 1593,
+      "sha256": "f5ab87cf4fee29f01ab4b1e2164af015113d567f59acda42088630c1cdf9d732"
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schema": "razr60-full-backend-source-closure-validation-v1",
+  "steps": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "--bare",
+        "--quiet",
+        "/home/alex/razr60-backend-source-closure-v149-20261103/baseline.git"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/alex/razr60-backend-source-closure-v149-20261103/baseline.git",
+        "fetch",
+        "--depth=1",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/trillionnium-os.git",
+        "4b687742fca939bc32122857f21067ec28d30a23"
+      ],
+      "rc": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "/home/alex/razr60-backend-source-closure-v149-20261103/source/backend/prepare_workspace.py",
+        "--checkout",
+        "/home/alex/razr60-backend-source-closure-v149-20261103/baseline.git",
+        "--out",
+        "/home/alex/razr60-backend-source-closure-v149-20261103/prepared"
+      ],
+      "rc": 0
+    }
+  ],
+  "all_pass": true,
+  "phone_operations": 0,
+  "gnu_compile": false,
+  "rootfs_build": false,
+  "source_receipt": {
+    "schema": "razr60-complete-frozen-backend-source-v1",
+    "utc": "2026-11-03T10:32:14.053340+00:00",
+    "commit": "4b687742fca939bc32122857f21067ec28d30a23",
+    "git_tree": "dd43572722373c7e1a3e3f9cee269ba1f92d67b0",
+    "archive_sha256": "4aac151859be4ae0cfc116198b3ed8d200befdc7c160b58b7b38a475c2d4ec67",
+    "extracted_files": 1453,
+    "checked_baseline_manifest_files": 407,
+    "workspace_members": [
+      "apps/trillionnium-owner-open-host",
+      "apps/trillionniumd",
+      "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-event-store",
+      "crates/trillionnium-owner-open-job-registry",
+      "crates/trillionnium-owner-open-job-runtime",
+      "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
+      "crates/trillionnium-owner-open-tool-bridge",
+      "crates/trillionnium-owner-open-turn-loop",
+      "crates/trillionnium-owner-open-types",
+      "crates/trillionnium-owner-open-runtime",
+      "crates/trillionnium-os-types",
+      "crates/trillionnium-agent-api-uds",
+      "crates/trillionnium-task-registry",
+      "crates/trillionnium-policy-system",
+      "crates/trillionnium-audit-sqlite",
+      "crates/trillionnium-privilege-broker-protocol",
+      "crates/trillionnium-tool-runtime",
+      "crates/trillionnium-agent-direct-tools",
+      "crates/trillionnium-shell-exec",
+      "crates/trillionnium-dbus",
+      "apps/trillionnium-agent-privilege-broker",
+      "apps/trillionnium-agent-stdio-proxy"
+    ],
+    "overlays": [
+      {
+        "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+        "before": "270ae2206d092bc590b1f241d9f77eee21fc941445a76511369b5f58b81bd93e",
+        "after": "070bb8e6bd56e065f56e7eaa2ebc6ab9e0bd0dde1050942f3b8ab5136823fc26"
+      },
+      {
+        "path": "tools/owner-open/owner_open_broker_admission_v2.py",
+        "before": "74c801798fce3817cbd0853d88bbbe25d32e7442d229f736aceeefe2aa721927",
+        "after": "76131b9d99e8b51affea4680e79c00236992a48d13f20ddf8541a539e6995d15"
+      },
+      {
+        "path": "tools/tests/test_owner_open_inspect_observation_lane.py",
+        "before": null,
+        "after": "1a11e65e27e5eb805e8337912eb45f3673d9e6fc0a452ae516d992d26b11ac97"
+      },
+      {
+        "path": "apps/trillionnium-owner-open-host/tests/r5_late_cancel_known_terminal.rs",
+        "before": null,
+        "after": "9b136958e9060d09166c467e59342cf231d19108a2d06b7e26f046af7826e435"
+      }
+    ],
+    "source_closed": true,
+    "fresh_gnu_build": false,
+    "fresh_rootfs_build": false,
+    "network_operations": 0,
+    "phone_operations": 0
+  },
+  "source_receipt_sha256": "e43029d9c9085987980cb9fd5b4cfe8c9a9450a06281afb23a4eb36edf107c1c"
+}

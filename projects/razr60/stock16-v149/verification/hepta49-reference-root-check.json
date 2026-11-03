@@ -1,0 +1,11 @@
+{
+  "script_sha256": "0a422d2a3660de2ceafb616b1daa0abaf8d28f64dadc29b377a8da6ec318bd61",
+  "rc": 0,
+  "state": "UNSIGNED_UI_CANDIDATE_BUILT",
+  "source_sha256": "45921011babe2edbb8d09a37d22694c0b54f2661db59e662f95962c261d34b3e",
+  "members_identical_to_r2": true,
+  "classes_dex_sha256": "64c60afd22dc4527332b0f66c37e5a80d70623b6ed9f06b476a38221b0067e1b",
+  "signed": false,
+  "phone_operations": 0,
+  "limitation": "same 4 enum bridge methods differ from installed signed APK as r2"
+}

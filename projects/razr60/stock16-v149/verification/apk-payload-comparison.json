@@ -1,0 +1,54 @@
+{
+  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/APK-PAYLOAD-COMPARISON.json",
+  "bytes": 2775,
+  "sha256": "43f485d318aed238d031d6cee5ea26beac1f1342e1d1659557c1ae71dc99d73f",
+  "receipt": {
+    "schema": "razr60-independent-unsigned-apk-payload-comparison-v1",
+    "utc": "2026-11-03T10:09:37.492841+00:00",
+    "results": [
+      {
+        "component": "desktop-sidecar-v145",
+        "baseline_apk": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/signed-v1/HEPTA-Desktop-Entry-v1.apk",
+        "baseline_apk_sha256": "b3da2d3835534b95669429d59488e0edc3a47bab4af4ab95aa68afd1c0810239",
+        "unsigned_apk_sha256": "27ccab6cc843b1813d01c6fdb6e6515527f13e4c8e8cf95578dbab12246b0dd8",
+        "payload_entries_match": true,
+        "entry_count": 7,
+        "differing_entries": [],
+        "entry_sha256": {
+          "AndroidManifest.xml": "cbf706e862ebe502d53dc43ad52adb5c34d4730a08dc6b9ef983b7d8c855d22f",
+          "res/drawable/ic_hepta_entry.xml": "9ea9da85d53ed009fa3f7c8e4f824216206ec26206759cf216b332084b0fa96d",
+          "res/drawable/widget_background.xml": "065ae8c4d0996143d578a33857252dfe199b7b2c9dfcf32c1d115fe27fa886ad",
+          "res/layout/hepta_entry_widget.xml": "dd4765368c41739d99114a0b0b5695f1e0c2e05eb1828831238fbd48aa6b622c",
+          "res/xml/hepta_entry_widget.xml": "380668113dc9abfa1a4ee51cf9a76a50d6320292ed15bc42b888d4cbbe54a818",
+          "resources.arsc": "e2818beff406355ed48930ff044b471b3754502ec240443d2076f85e09f3317a",
+          "classes.dex": "58f9f74cf6768bcee437120cca58fe6743f66556c37d1e48ece749a0262fe2c3"
+        },
+        "signature_verification_returncode": 0,
+        "public_certificate_sha256_lines": [
+          "Signer #1 certificate SHA-256 digest: 0aafa43a499c7e44e2a4a475d8675baff321bb3092319a0760c4e48ea854dd60"
+        ],
+        "signed_bitwise_identity_claimed": false
+      },
+      {
+        "component": "visual-probe-v148r1",
+        "baseline_apk": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/signed-v1/HEPTA-Control-Probe-v1.apk",
+        "baseline_apk_sha256": "4548c7da2c7aa39e6bf99ea3d93c6e4355fdfefd2355957c0851c7bb4478a405",
+        "unsigned_apk_sha256": "4226a7a285423cd913934e06696be999495e8176e22147803e223ace6545e505",
+        "payload_entries_match": true,
+        "entry_count": 3,
+        "differing_entries": [],
+        "entry_sha256": {
+          "AndroidManifest.xml": "dd9214bf9417a41fb08e72af004fe013321a1bbdec8d32846a0803e751b7d955",
+          "resources.arsc": "8a532e4e0e4ddef188ebbac8521e75f0a751a1a45424915d4233fb0af7f2d512",
+          "classes.dex": "c0d3aaa52bd94eb4cc741abeeb7f0200cbdb3a9861a0f8627256cec73dc02ef1"
+        },
+        "signature_verification_returncode": 0,
+        "public_certificate_sha256_lines": [
+          "Signer #1 certificate SHA-256 digest: 31f08082e7a414b8aa395e8aaa7fafc4cc520d114b1250e18d79d04af9732bdb"
+        ],
+        "signed_bitwise_identity_claimed": false
+      }
+    ],
+    "phone_operations": 0
+  }
+}

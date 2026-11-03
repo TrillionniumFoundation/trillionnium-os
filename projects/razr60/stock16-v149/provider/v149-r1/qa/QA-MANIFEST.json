@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.fixed-qa-addon-manifest.v149.1",
+  "created_utc": "2026-11-03T10:31:05.838288+00:00",
+  "candidate_manifest_sha256": "d25fb3a1f8327a923e2cfccab23a7191c12475f67de9a136fb810e2ada1f1a82",
+  "original_candidate_files_unchanged": true,
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3026,
+      "sha256": "a1f5177399e621be8be60e1b4d39352d61619ddaebed95d5a51b3c28afa1fe97"
+    },
+    {
+      "path": "case-result-template.json",
+      "bytes": 2863,
+      "sha256": "c829ba1a35589e3e6700fa05d36395b829cd0323f773a75ff36f9f11a804413b"
+    },
+    {
+      "path": "fixed-acceptance-set.json",
+      "bytes": 36217,
+      "sha256": "07433e17cb71592a011a54c787ac61947b727ec5ae6f507bca22f8fa6dfb0736"
+    }
+  ],
+  "executed_cases": 0,
+  "automatic_execution": false
+}

@@ -1,0 +1,101 @@
+[workspace]
+members = [
+  "apps/trillionnium-owner-open-host",
+  "apps/trillionniumd",
+  "crates/trillionnium-owner-open-call-registry",
+  "crates/trillionnium-owner-open-event-store",
+  "crates/trillionnium-owner-open-job-registry",
+  "crates/trillionnium-owner-open-job-runtime",
+  "crates/trillionnium-owner-open-provider-jsonl",
+  "crates/trillionnium-owner-open-stream-window",
+  "crates/trillionnium-owner-open-tool-bridge",
+  "crates/trillionnium-owner-open-turn-loop",
+  "crates/trillionnium-owner-open-types",
+  "crates/trillionnium-owner-open-runtime",
+  "crates/trillionnium-os-types",
+  "crates/trillionnium-agent-api-uds",
+  "crates/trillionnium-task-registry",
+  "crates/trillionnium-policy-system",
+  "crates/trillionnium-audit-sqlite",
+  "crates/trillionnium-privilege-broker-protocol",
+  "crates/trillionnium-tool-runtime",
+  "crates/trillionnium-agent-direct-tools",
+  "crates/trillionnium-shell-exec",
+  "crates/trillionnium-dbus",
+  "apps/trillionnium-agent-privilege-broker",
+  "apps/trillionnium-agent-stdio-proxy",
+]
+# Keep unqualified cargo build/test on the complete isolated owner-open source
+# closure. Legacy plan/Authority/broker packages remain explicit workspace
+# targets and cannot enter this graph through feature unification.
+default-members = [
+  "apps/trillionnium-owner-open-host",
+  "crates/trillionnium-owner-open-call-registry",
+  "crates/trillionnium-owner-open-event-store",
+  "crates/trillionnium-owner-open-job-registry",
+  "crates/trillionnium-owner-open-job-runtime",
+  "crates/trillionnium-owner-open-provider-jsonl",
+  "crates/trillionnium-owner-open-stream-window",
+  "crates/trillionnium-owner-open-tool-bridge",
+  "crates/trillionnium-owner-open-turn-loop",
+  "crates/trillionnium-owner-open-types",
+  "crates/trillionnium-owner-open-runtime",
+]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Qianqi + Trillionnium OS contributors"]
+rust-version = "1.93"
+
+[workspace.dependencies]
+trillionnium-owner-open-call-registry = { path = "crates/trillionnium-owner-open-call-registry" }
+trillionnium-owner-open-event-store = { path = "crates/trillionnium-owner-open-event-store" }
+trillionnium-owner-open-job-registry = { path = "crates/trillionnium-owner-open-job-registry" }
+trillionnium-owner-open-job-runtime = { path = "crates/trillionnium-owner-open-job-runtime" }
+trillionnium-owner-open-provider-jsonl = { path = "crates/trillionnium-owner-open-provider-jsonl" }
+trillionnium-owner-open-stream-window = { path = "crates/trillionnium-owner-open-stream-window" }
+trillionnium-owner-open-tool-bridge = { path = "crates/trillionnium-owner-open-tool-bridge" }
+trillionnium-owner-open-turn-loop = { path = "crates/trillionnium-owner-open-turn-loop" }
+trillionnium-owner-open-types = { path = "crates/trillionnium-owner-open-types" }
+trillionnium-owner-open-runtime = { path = "crates/trillionnium-owner-open-runtime" }
+trillionnium-os-types = { path = "crates/trillionnium-os-types" }
+trillionnium-agent-api-uds = { path = "crates/trillionnium-agent-api-uds" }
+trillionnium-task-registry = { path = "crates/trillionnium-task-registry" }
+trillionnium-policy-system = { path = "crates/trillionnium-policy-system" }
+trillionnium-audit-sqlite = { path = "crates/trillionnium-audit-sqlite" }
+trillionnium-privilege-broker-protocol = { path = "crates/trillionnium-privilege-broker-protocol" }
+trillionnium-tool-runtime = { path = "crates/trillionnium-tool-runtime" }
+trillionnium-agent-direct-tools = { path = "crates/trillionnium-agent-direct-tools" }
+trillionnium-shell-exec = { path = "crates/trillionnium-shell-exec" }
+trillionnium-dbus = { path = "crates/trillionnium-dbus" }
+anyhow = "1"
+base64 = "0.22"
+chacha20poly1305 = "0.10"
+hmac = "0.12"
+jsonschema = "0.17"
+p256 = { version = "0.13", features = ["ecdsa", "pkcs8"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+rustix = { version = "1", features = ["thread"] }
+schemars = { version = "0.8", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_jcs = "0.2"
+sha2 = "0.10"
+thiserror = "2"
+tempfile = "3"
+toml = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time"] }
+zeroize = "1.8"
+libc = "0.2"
+uuid = { version = "1", features = ["v4", "serde"] }
+url = "2"
+
+[profile.release]
+opt-level = 3
+debug = 0
+debug-assertions = false
+incremental = false
+strip = "symbols"

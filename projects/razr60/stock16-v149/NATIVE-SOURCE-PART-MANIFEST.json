@@ -1,0 +1,97 @@
+{
+  "schema": "razr60-native-source-part-v1",
+  "files": [
+    {
+      "path": "native/api36/source/owner_open_peer_identity.h",
+      "source": "/home/alex/razr-flash-validation-canonical-20261014/tools/r11r4-native-source-review-r4/native/owner_open_peer_identity.h",
+      "bytes": 1749,
+      "sha256": "65c41828bbf32c76fd7f8f67d5b8cc26d861632b335771c6a7065a3757ed08df"
+    },
+    {
+      "path": "native/api36/source/owner_open_kernel_boot.h",
+      "source": "/home/alex/razr-flash-validation-canonical-20261014/tools/r11r4-native-source-review-r4/native/owner_open_kernel_boot.h",
+      "bytes": 3327,
+      "sha256": "5996212560d1e5d9784494b37afe030f8c9f7f409235e11a02019ed986fca649"
+    },
+    {
+      "path": "native/api36/source/owner_open_bootstrap.cpp",
+      "source": "/home/alex/codex-stock16-hepta-backend-api36-candidate-c-v143-r1/source/owner_open_bootstrap.cpp",
+      "bytes": 66911,
+      "sha256": "2b014037cd028329ff460b3f10fe1e800edcc8f5acf604646a4d54f81eec1677"
+    },
+    {
+      "path": "native/api36/source/owner_open_peer_identity_test.cpp",
+      "source": "/home/alex/razr-flash-validation-canonical-20261014/tools/r11r4-native-source-review-r4/native/owner_open_peer_identity_test.cpp",
+      "bytes": 1006,
+      "sha256": "4aaede0dcd2575931dca24c8d89b1aa15590f43efeea19f34b9d1e0f139f3153"
+    },
+    {
+      "path": "native/api36/source/owner_open_emergency_inhibit.h",
+      "source": "/home/alex/razr-flash-validation-canonical-20261014/tools/r11r4-native-source-review-r4/native/owner_open_emergency_inhibit.h",
+      "bytes": 3116,
+      "sha256": "e11824af72afd7d94e866458451b44a020d6d953642b7bf82d2302d8783623b2"
+    },
+    {
+      "path": "native/api36/source/owner_open_emergency_stop.cpp",
+      "source": "/home/alex/razr-flash-validation-canonical-20261014/tools/r11r4-native-source-review-r4/native/owner_open_emergency_stop.cpp",
+      "bytes": 1075,
+      "sha256": "1998ed7f92462b9a50e75ab3402191fc12e698ffcdffc78f88fe64b0d938394a"
+    },
+    {
+      "path": "native/api36/source/owner_open_ingress_proxy.cpp",
+      "source": "/home/alex/razr-flash-validation-canonical-20261014/tools/r11r4-native-source-review-r4/native/owner_open_ingress_proxy.cpp",
+      "bytes": 25808,
+      "sha256": "ae86b706cfa6e4d56a00ab786f4b6de6bfe74a2ecc3b46555319a325a610acb4"
+    },
+    {
+      "path": "native/api36/provenance/v142r1_ACTOR.py",
+      "source": "/home/alex/codex-stock16-hepta-native-api36-build-c-v142-r1/ACTOR.py",
+      "bytes": 17756,
+      "sha256": "c23eeebedc809769eee4b46625cb068400af53e05a858a5cf55d28d673fa9a84"
+    },
+    {
+      "path": "native/api36/provenance/v143_ACTOR.py",
+      "source": "/home/alex/codex-stock16-hepta-backend-api36-candidate-c-v143-r1/ACTOR.py",
+      "bytes": 23080,
+      "sha256": "5df7eaaff9ebc8385ad3d3a1dc07151a7bdf6eef6859b041896ffb06113700d7"
+    },
+    {
+      "path": "native/api36/config/stock16-backend-init.source.rc",
+      "source": "/home/alex/codex-stock16-hepta-backend-api36-candidate-c-v143-r1/payload/system_ext/etc/trillionnium/owner-open/stock16-backend-init.source.rc",
+      "bytes": 4305,
+      "sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca"
+    },
+    {
+      "path": "native/api36/config/profile-codex-host-relay-v1.json",
+      "source": "/home/alex/codex-stock16-hepta-backend-api36-candidate-c-v143-r1/payload/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json",
+      "bytes": 6957,
+      "sha256": "b21f931b7e923aa3e332f6d3e8c03effbe0dd86a82edf7e2358fe0b3b8238724"
+    },
+    {
+      "path": "native/api36/policy/property_contexts",
+      "source": "/home/alex/codex-stock16-hepta-backend-api36-candidate-c-v143-r1/policy-input/property_contexts",
+      "bytes": 2091,
+      "sha256": "baa09d90673d9a7feb245f894044d4ce29d1be04af10a5cb57dc9827c9f52cfd"
+    },
+    {
+      "path": "native/api36/recipes/bootstrap.rsp",
+      "source": "/home/alex/codex-stock16-hepta-backend-api36-candidate-c-v143-r1/work/api36/trillionnium-owner-open-bootstrap.new.rsp",
+      "bytes": 445,
+      "sha256": "0fb3b30cc62c192d8a26fb4423e85afe75cdcd6e8e39805c834d704767e03bab"
+    },
+    {
+      "path": "native/api36/recipes/ingress.rsp",
+      "source": "/home/alex/codex-stock16-hepta-native-api36-build-c-v142-r1/api36/trillionnium-owner-open-ingress.new.rsp",
+      "bytes": 422,
+      "sha256": "3df49009c8991274112b6855d095835afe74165433a60ce413dd784b000a2ded"
+    },
+    {
+      "path": "native/api36/recipes/emergency-stop.rsp",
+      "source": "/home/alex/codex-stock16-hepta-native-api36-build-c-v142-r1/api36-emergency/trillionnium-owner-open-emergency-stop.new.rsp",
+      "bytes": 387,
+      "sha256": "c706fd0781601c58f21657f8241087dd8ff99ee1d406b6901737615f813f0e43"
+    }
+  ],
+  "count": 15,
+  "bytes": 158435
+}

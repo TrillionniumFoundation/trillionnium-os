@@ -1,0 +1,43 @@
+{
+  "candidate": "stock16-hepta-task-provider-C-v149-r1",
+  "utc": "2026-11-03T10:16:52.240758+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "checks": [
+    {
+      "command": "python3 -B /workspace/scratch/472dd7e6824f/razr60-v149-provider/tests/offline_v149_checks.py",
+      "resolved_python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "cwd": "/workspace/scratch/472dd7e6824f",
+      "exit_code": 0,
+      "checks_passed": 96,
+      "result_path": "validation/offline_v149_checks.py.json",
+      "result_sha256": "ea8057af015b511a60a6390c2a620fab68db7f5246de4232634dc9a9cc10feb7"
+    },
+    {
+      "command": "python3 -B /workspace/scratch/472dd7e6824f/razr60-v149-provider/tests/offline_phone_tools_checks.py",
+      "resolved_python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "cwd": "/workspace/scratch/472dd7e6824f",
+      "exit_code": 0,
+      "checks_passed": 35,
+      "result_path": "validation/offline_phone_tools_checks.py.json",
+      "result_sha256": "70eea9385da3c6aa961d58dd551557203f56d69aaca72da0486fa5d4a1a02cb6"
+    },
+    {
+      "command": "python3 -B /workspace/scratch/472dd7e6824f/razr60-v149-provider/tests/offline_capacity_race_checks.py",
+      "resolved_python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "cwd": "/workspace/scratch/472dd7e6824f",
+      "exit_code": 0,
+      "checks_passed": 25,
+      "result_path": "validation/offline_capacity_race_checks.py.json",
+      "result_sha256": "2d034257837ab2d66ebd74c173d02f399b622e3e89aa922465b081315508e8ff"
+    }
+  ],
+  "total_checks_passed": 156,
+  "syntax_all_source_files": true,
+  "source_pins_verified": true,
+  "real_model_calls": 0,
+  "phone_operations": 0,
+  "live_services_modified": false,
+  "direct_device_acceptance": false,
+  "end_to_end_model_acceptance": false
+}

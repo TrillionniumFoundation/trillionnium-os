@@ -1,0 +1,3 @@
+# adbd must discover and call the root service before switching UID.
+allow adbd adbroot:binder call;
+allow adbd adbroot_service:service_manager find;

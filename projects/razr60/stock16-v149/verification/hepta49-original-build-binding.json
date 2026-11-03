@@ -1,0 +1,81 @@
+{
+  "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/build-receipt.json",
+  "state": "SIGNED_UI_APK_BUILT",
+  "source_sha256": "45921011babe2edbb8d09a37d22694c0b54f2661db59e662f95962c261d34b3e",
+  "compiler_inputs": {
+    "sdk": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/android.jar",
+      "sha256": "4f3d35e16d20fda03abdc7f81b49ab50010742fb5effc51b821b4b9646697ead"
+    },
+    "aapt2": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/aapt2",
+      "sha256": "3f7b9e7b6568c08aea46dac795a66af6b98d9dbb959b6282149c434e4d210df8"
+    },
+    "zipalign": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/zipalign",
+      "sha256": "2f5ebdded1fe910913926ac486c4cf3eef9874c6a7a1d1480875c9375a478ca4"
+    },
+    "d8": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/R8_9_3_27/r8-9.3.27.jar",
+      "sha256": "8a2b7d414c3b5542ec6a7fcc61d45c8728163b3a9ed37a072d58ac53e614a40a"
+    },
+    "system_modules": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/private/count8-native-636cdc93-1aaf-4c49-8c0d-88922aec6943/upper/soong/.intermediates/libcore/core-all-system-modules/android_common/system",
+      "sha256": "0c6b79c98ed6415dc44fdec2c4741a2b598a75dc75fe69ef61a3d26713633729"
+    }
+  },
+  "dex": [
+    {
+      "name": "classes.dex",
+      "bytes": 164356,
+      "sha256": "1f81d08c7d45ef0eae47d24d94ff0ae1d846f2818edcef34c33953e7dce2c5dc"
+    }
+  ],
+  "apk": {
+    "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/HEPTA-SystemUI-v49-platform.apk",
+    "bytes": 189950,
+    "sha256": "56c4e302cbe7448dffc9a0d8cfa8db2c2cb019fcb055fab36b815105dd55592f"
+  },
+  "javac_command": [
+    {
+      "name": "javac",
+      "argv": [
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/javac",
+        "-J-XX:ActiveProcessorCount=2",
+        "-J-Xmx2g",
+        "-encoding",
+        "UTF-8",
+        "-source",
+        "17",
+        "-target",
+        "17",
+        "-XDstringConcat=inline",
+        "--system",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/private/count8-native-636cdc93-1aaf-4c49-8c0d-88922aec6943/upper/soong/.intermediates/libcore/core-all-system-modules/android_common/system",
+        "-classpath",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/android.jar",
+        "-d",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/classes",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenClient.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenClientState.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenClientStateCodec.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenClientStateStore.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenCoverEntryActivity.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenStateBackupProvider.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenTileService.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenTurnEvidence.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiDraftStore.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiEventFormatter.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdown.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdownRenderer.java",
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/codex-ui-20261018/hepta/v49-ime/build-v49-r2/generated/org/trillionnium/owneropen/R.java"
+      ],
+      "started_utc": "2026-10-19T01:30:33.123350+00:00",
+      "state": "passed",
+      "exit_code": 0,
+      "finished_utc": "2026-10-19T01:30:34.126323+00:00"
+    }
+  ]
+}

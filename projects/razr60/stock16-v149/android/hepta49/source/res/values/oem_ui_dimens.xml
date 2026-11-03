@@ -1,0 +1,11 @@
+<resources>
+    <dimen name="oem_ui_card_radius">20.0dip</dimen>
+    <dimen name="oem_ui_control_radius">24.0dip</dimen>
+    <dimen name="oem_ui_spacing_small">8.0dip</dimen>
+    <dimen name="oem_ui_spacing_medium">12.0dip</dimen>
+    <dimen name="oem_ui_spacing_large">20.0dip</dimen>
+    <dimen name="oem_ui_icon_size">24.0dip</dimen>
+    <dimen name="oem_ui_touch_target">48.0dip</dimen>
+    <dimen name="oem_ui_body_text_size">16.0sp</dimen>
+    <dimen name="oem_ui_toolbar_height">56.0dip</dimen>
+</resources>

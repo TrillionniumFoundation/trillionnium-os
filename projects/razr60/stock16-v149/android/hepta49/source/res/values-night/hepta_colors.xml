@@ -1,0 +1,14 @@
+<resources>
+    <color name="hepta_background">@color/oem_ui_background</color>
+    <color name="hepta_surface">@color/oem_ui_surface</color>
+    <color name="hepta_composer">@color/oem_ui_surface</color>
+    <color name="hepta_text">@color/oem_ui_foreground</color>
+    <color name="hepta_muted">@color/oem_ui_muted</color>
+    <color name="hepta_border">#3C4249</color>
+    <color name="hepta_accent">#B4CEC4</color>
+    <color name="hepta_accent_text">#18362D</color>
+    <color name="hepta_stop">#FFB4AB</color>
+    <color name="hepta_stop_surface">#3D2527</color>
+    <color name="hepta_user">#2A4039</color>
+    <color name="hepta_user_text">#E2EFE9</color>
+</resources>

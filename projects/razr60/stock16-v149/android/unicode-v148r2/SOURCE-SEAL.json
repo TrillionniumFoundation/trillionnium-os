@@ -1,0 +1,51 @@
+{
+  "files": {
+    "build.py": {
+      "sha256": "0ade6f3c59b75ee2c23eb14e17fde6d665b30a6a7029d8b38a69c2b76e2150a4",
+      "bytes": 2834
+    },
+    "source/org/trillionnium/hepta/input/InputContract.java": {
+      "sha256": "0d98b33af6ce578c93707cd3d596ae0f8a0e3f0df3ec97d8116e67cf2832c4ba",
+      "bytes": 4785
+    },
+    "source/org/trillionnium/hepta/input/UnicodeInput.java": {
+      "sha256": "9163adf754ce450f9a7ece496257e4135cea8f63bd53d2ab92f7007b5d3bbf9e",
+      "bytes": 13213
+    },
+    "checks/ContractChecks.java": {
+      "sha256": "9d17def971893ab5365215df80d6bb7c7d999c00cf1356171e875b9db24d2aaf",
+      "bytes": 3250
+    },
+    "checks/CONTRACT-CHECK-RECEIPT.json": {
+      "sha256": "4e13c5524869a89507cedbff5f1d768fa49109e8b50bf903523f52d253aa1846",
+      "bytes": 156
+    },
+    "build-01/BUILD-RECEIPT.json": {
+      "sha256": "64d16b258f0d38b12fcc2aa382a4a0bcf1b5fd7cdfbda2948e62215608eb523f",
+      "bytes": 3214
+    },
+    "build-01/hepta-unicode-input-v148.jar": {
+      "sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2",
+      "bytes": 16076
+    },
+    "CONTRACT.json": {
+      "sha256": "b1e97d28b87bf4029dacc6b55270434a500f709e6e6dba5bb7b48d508b39dc47",
+      "bytes": 4133
+    },
+    "SOURCE-API-EVIDENCE.json": {
+      "sha256": "f247ceb18c51bdb574563c3b8d2c83e6b37d1eefa5ca2663ac6beb8f90f39283",
+      "bytes": 1765
+    },
+    "R1-TO-R2.diff": {
+      "sha256": "f241cd684a43b7411c4ad5f066ee8ead44646986847a90ab110bfeb8a1044209",
+      "bytes": 694
+    },
+    "HANDOFF.json": {
+      "sha256": "7c63c95c74e6bf0b2565e27a27870725d149583450dc40d779e8c341598d43c6",
+      "bytes": 1368
+    }
+  },
+  "phone_operations": 0,
+  "SSH_operations": 0,
+  "runtime_service_mutations": 0
+}

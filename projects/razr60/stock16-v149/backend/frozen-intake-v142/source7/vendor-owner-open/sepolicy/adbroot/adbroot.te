@@ -1,0 +1,20 @@
+# ADB root Binder service for the explicit owner-open dogfood lane.
+# This directory is appended to SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS only when the
+# product opt-in and userdebug/eng build guard both evaluate true.
+type adbroot, domain, coredomain;
+type adbroot_exec, exec_type, file_type, system_file_type;
+
+init_daemon_domain(adbroot)
+
+binder_use(adbroot)
+binder_service(adbroot)
+add_service(adbroot, adbroot_service)
+
+allow adbroot package_native_service:service_manager find;
+binder_call(adbroot, system_server)
+
+allow adbroot adbroot_data_file:dir rw_dir_perms;
+allow adbroot adbroot_data_file:file create_file_perms;
+
+set_prop(adbroot, shell_prop)
+set_prop(adbroot, ctl_adbd_prop)

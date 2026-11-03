@@ -1,0 +1,82 @@
+{
+  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/JAVA-REBUILD-SUMMARY.json",
+  "bytes": 4345,
+  "sha256": "dec03ddd7aa858b14976359cfd7a9f4caeb7c921122fd1c4620d9a26f1719e8d",
+  "receipt": {
+    "schema": "razr60-fresh-independent-java-rebuild-v1",
+    "started_utc": "2026-11-03T09:59:39.077386+00:00",
+    "finished_utc": "2026-11-03T09:59:45.129942+00:00",
+    "results": [
+      {
+        "component": "unicode-v148r2",
+        "returncode": 0,
+        "started_source_script": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-unified-source-v149-20261103/android/unicode-v148r2/build.py",
+        "script_sha256": "0ade6f3c59b75ee2c23eb14e17fde6d665b30a6a7029d8b38a69c2b76e2150a4",
+        "receipt": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/unicode-v148r2/BUILD-RECEIPT.json",
+        "output": {
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/unicode-v148r2/hepta-unicode-input-v148.jar",
+          "bytes": 16076,
+          "sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2"
+        },
+        "expected_installed_jar_sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2",
+        "installed_jar_byte_match": true,
+        "phone_operations": 0,
+        "signed": false,
+        "deployed": false
+      },
+      {
+        "component": "screen-codec-v148r1",
+        "returncode": 0,
+        "started_source_script": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-unified-source-v149-20261103/android/screen-codec-v148r1/build.py",
+        "script_sha256": "550573eed2be2a1bd08b38a4f717c4e9b00915fedd2dd92cb1a33e44fe22869a",
+        "receipt": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/screen-codec-v148r1/BUILD-RECEIPT.json",
+        "output": {
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/screen-codec-v148r1/hepta-screen-codec-v148.jar",
+          "bytes": 16064,
+          "sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639"
+        },
+        "expected_installed_jar_sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639",
+        "installed_jar_byte_match": true,
+        "phone_operations": 0,
+        "signed": false,
+        "deployed": false
+      },
+      {
+        "component": "desktop-sidecar-v145",
+        "returncode": 0,
+        "started_source_script": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-unified-source-v149-20261103/android/desktop-sidecar-v145/build_unsigned.py",
+        "script_sha256": "3d0c8810ef8f545654495da842ff014aff021d804e974f87654be003bb7fc6cc",
+        "receipt": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/desktop-sidecar-v145/BUILD-RECEIPT.json",
+        "output": {
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/desktop-sidecar-v145/HEPTA-Desktop-Entry-v1-unsigned.apk",
+          "sha256": "27ccab6cc843b1813d01c6fdb6e6515527f13e4c8e8cf95578dbab12246b0dd8",
+          "bytes": 18688
+        },
+        "expected_installed_jar_sha256": null,
+        "installed_jar_byte_match": null,
+        "phone_operations": 0,
+        "signed": false,
+        "deployed": false
+      },
+      {
+        "component": "visual-probe-v148r1",
+        "returncode": 0,
+        "started_source_script": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-unified-source-v149-20261103/android/visual-probe-v148r1/build_unsigned.py",
+        "script_sha256": "902d033689add511873f0b08e00eda3472d1d4226e2c85f8be0d0621c710115b",
+        "receipt": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/visual-probe-v148r1/BUILD-RECEIPT.json",
+        "output": {
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-rebuild-v149-20261103/visual-probe-v148r1/HEPTA-Control-Probe-v1-unsigned.apk",
+          "sha256": "4226a7a285423cd913934e06696be999495e8176e22147803e223ace6545e505",
+          "bytes": 16388
+        },
+        "expected_installed_jar_sha256": null,
+        "installed_jar_byte_match": null,
+        "phone_operations": 0,
+        "signed": false,
+        "deployed": false
+      }
+    ],
+    "all_compile_pass": true,
+    "scope": "Fresh compiler runs in new isolated output dirs; no signatures or phone deployment"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "path": "/home/alex/razr60-independent-native-rebuild-v149-20261103/NATIVE-REBUILD-RECEIPT.json",
+  "sha256": "501ac594f7d31f589ad95adf1fca07cc7db7a836772e5443c2758581c36dc8d9",
+  "bytes": 142485,
+  "keys": [
+    "schema",
+    "started_utc",
+    "script_sha256",
+    "recipes_sha256",
+    "source_pins",
+    "commands",
+    "modules",
+    "phone_operations",
+    "target_program_executions",
+    "network_namespace",
+    "qualification",
+    "compiler_success",
+    "all_binaries_match_installed",
+    "external_dependency_count",
+    "external_dependency_pins_sha256",
+    "external_dependencies_unchanged",
+    "source_unchanged",
+    "finished_utc",
+    "pass"
+  ],
+  "summary": {
+    "schema": "razr60-native-api36-fresh-rebuild-v1",
+    "started_utc": "2026-11-03T10:03:19.098420+00:00",
+    "script_sha256": "0d943ca8a9bf87b0c7b140c178d4c4a2026d46587567d3b65558b0680d831188",
+    "recipes_sha256": "007f40adcf8bbdc5403ecab61de7f5c2dfcafd5609cb53cd31395a518902b088",
+    "source_pins": {
+      "owner_open_bootstrap.cpp": {
+        "sha256": "2b014037cd028329ff460b3f10fe1e800edcc8f5acf604646a4d54f81eec1677",
+        "bytes": 66911
+      },
+      "owner_open_emergency_inhibit.h": {
+        "sha256": "e11824af72afd7d94e866458451b44a020d6d953642b7bf82d2302d8783623b2",
+        "bytes": 3116
+      },
+      "owner_open_emergency_stop.cpp": {
+        "sha256": "1998ed7f92462b9a50e75ab3402191fc12e698ffcdffc78f88fe64b0d938394a",
+        "bytes": 1075
+      },
+      "owner_open_ingress_proxy.cpp": {
+        "sha256": "ae86b706cfa6e4d56a00ab786f4b6de6bfe74a2ecc3b46555319a325a610acb4",
+        "bytes": 25808
+      },
+      "owner_open_kernel_boot.h": {
+        "sha256": "5996212560d1e5d9784494b37afe030f8c9f7f409235e11a02019ed986fca649",
+        "bytes": 3327
+      },
+      "owner_open_peer_identity.h": {
+        "sha256": "65c41828bbf32c76fd7f8f67d5b8cc26d861632b335771c6a7065a3757ed08df",
+        "bytes": 1749
+      },
+      "owner_open_peer_identity_test.cpp": {
+        "sha256": "4aaede0dcd2575931dca24c8d89b1aa15590f43efeea19f34b9d1e0f139f3153",
+        "bytes": 1006
+      }
+    },
+    "modules": [
+      {
+        "component": "bootstrap",
+        "binary": "/home/alex/razr60-independent-native-rebuild-v149-20261103/work/api36/trillionnium-owner-open-bootstrap",
+        "observed": {
+          "sha256": "4ebfa93024056d46c597f4479d53a08335f031d30ca3ca789de73bffc69837b5",
+          "bytes": 116888
+        },
+        "expected_installed": {
+          "sha256": "4ebfa93024056d46c597f4479d53a08335f031d30ca3ca789de73bffc69837b5",
+          "bytes": 116888
+        },
+        "matches_installed": true
+      },
+      {
+        "component": "ingress",
+        "binary": "/home/alex/razr60-independent-native-rebuild-v149-20261103/work/api36/trillionnium-owner-open-ingress",
+        "observed": {
+          "sha256": "465b7f964106dc301d485118e5dc6256f94a291687a9425868878fb26a76fbba",
+          "bytes": 81952
+        },
+        "expected_installed": {
+          "sha256": "465b7f964106dc301d485118e5dc6256f94a291687a9425868878fb26a76fbba",
+          "bytes": 81952
+        },
+        "matches_installed": true
+      },
+      {
+        "component": "emergency-stop",
+        "binary": "/home/alex/razr60-independent-native-rebuild-v149-20261103/work/api36-emergency/trillionnium-owner-open-emergency-stop",
+        "observed": {
+          "sha256": "4ff94cde7050eb4bf67c74a777df2e43f46eb1fc697bef73ae59bfd80416f6f5",
+          "bytes": 52776
+        },
+        "expected_installed": {
+          "sha256": "4ff94cde7050eb4bf67c74a777df2e43f46eb1fc697bef73ae59bfd80416f6f5",
+          "bytes": 52776
+        },
+        "matches_installed": true
+      }
+    ],
+    "phone_operations": 0,
+    "target_program_executions": 0,
+    "network_namespace": "isolated",
+    "qualification": "API36 retarget using retained AOSP17 headers and stock16 link libraries",
+    "compiler_success": true,
+    "all_binaries_match_installed": true,
+    "external_dependency_count": 1038,
+    "external_dependency_pins_sha256": "9c1da05a31b4b9ba01c969e952a8fce0f714ed51065aa6aaba3bb34ae1956fbb",
+    "external_dependencies_unchanged": true,
+    "source_unchanged": true,
+    "finished_utc": "2026-11-03T10:03:21.842381+00:00",
+    "pass": true
+  }
+}

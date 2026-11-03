@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="oem_ui_background">#ff09111b</color>
+    <color name="oem_ui_surface">#ff262a32</color>
+    <color name="oem_ui_foreground">#ffffffff</color>
+    <color name="oem_ui_muted">#ffcac4d0</color>
+</resources>
+

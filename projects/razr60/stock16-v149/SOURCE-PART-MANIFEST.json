@@ -1,0 +1,617 @@
+{
+  "schema": "razr60-unified-safe-source-part-v1",
+  "host": "main",
+  "utc": "2026-11-03T09:56:15.203586+00:00",
+  "exclusions": [
+    "all private-signing-v1 and key material",
+    "runtime state, sessions, user inputs, screenshots",
+    "compiled APK/JAR/DEX outputs",
+    "third-party toolchains/rootfs"
+  ],
+  "files": [
+    {
+      "path": "android/hepta49/source/AndroidManifest.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/AndroidManifest.xml",
+      "bytes": 2784,
+      "sha256": "1e748b29bdbace4e4b554b1a4ca2ccf33f52e25e12e7d9034b7687b016cc2a43",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_back.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_back.xml",
+      "bytes": 336,
+      "sha256": "c0e09711f8eb496d83421c9ec5a907bd5cf03504839eed2214c1d15f9ccf9343",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_chevron.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_chevron.xml",
+      "bytes": 311,
+      "sha256": "ef3101c6db93f1eb1f47c375993463e9b8caccb4f91be47d298b33bed4f0be35",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_connect.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_connect.xml",
+      "bytes": 447,
+      "sha256": "aed7273b4a03f2dfed91677d7f75370d3cfb7b7de55ee5b8cef7fe59a950e3bb",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_conversation.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_conversation.xml",
+      "bytes": 447,
+      "sha256": "6dfe2254cd13c27312c26ce7e7b327bba541cc5e77ce737bafed0f9a8669556d",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_history.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_history.xml",
+      "bytes": 554,
+      "sha256": "9050bcc4b7e2bc6df562d8c9d6340196573ad5d0721d5e1826892eac8fbcd14c",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_play.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_play.xml",
+      "bytes": 278,
+      "sha256": "4dd29f0c5823d8cc2d522ec9d4c7ba780aa182b0dbc2f58a97624605bad5091b",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_settings.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_settings.xml",
+      "bytes": 659,
+      "sha256": "fac1f966981c74b4fc6db651a975192cc2e22dad620b06605c7dced7fedc9ded",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_status.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_status.xml",
+      "bytes": 512,
+      "sha256": "217afc88f093b03a1d2ecb9e1b545a8e2c5514aef7865f0e90afea3ef8adcac1",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_stop.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_stop.xml",
+      "bytes": 284,
+      "sha256": "5b0ad8538a13f5f652f446236ae2036af406c7eba41ef3eadacbf00726713f10",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_task.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/hepta_ic_task.xml",
+      "bytes": 477,
+      "sha256": "70018117771ae9d21c8cea8e8929c0a4062f03304bb111630cc139c43bf03f06",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/ic_hepta_launcher_background.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/ic_hepta_launcher_background.xml",
+      "bytes": 392,
+      "sha256": "2e7c1b5dc4fe6b6043a9d41fbd7231759695df49249a14bb2eabf5e219000fc8",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/ic_hepta_launcher_foreground.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/ic_hepta_launcher_foreground.xml",
+      "bytes": 565,
+      "sha256": "74b5353e744a5fa6fc6e1aa647278cbfedbe3d3e6768d46755f904571bf425c6",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/ic_owner_open_entry.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/ic_owner_open_entry.xml",
+      "bytes": 447,
+      "sha256": "6dfe2254cd13c27312c26ce7e7b327bba541cc5e77ce737bafed0f9a8669556d",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/oem_motoexternaldisplaylauncher_ic_send.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/oem_motoexternaldisplaylauncher_ic_send.xml",
+      "bytes": 374,
+      "sha256": "c40c1f204dd229c16d6a2548ab13d42dbf016443f930a81a81c74ce84b430684",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/oem_motosystemui_ic_more_vert.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/drawable/oem_motosystemui_ic_more_vert.xml",
+      "bytes": 466,
+      "sha256": "f41f3b5baddf706babbc2792a24fdf07ad15cfb8bf1b50e572274287d7a9aa73",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/mipmap-anydpi/ic_hepta_launcher.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/mipmap-anydpi/ic_hepta_launcher.xml",
+      "bytes": 681,
+      "sha256": "88776b48c0a0d057d4d4c472b6e411c4c17f95229431935e5aa133ce96449b9d",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/mipmap-anydpi-v26/ic_hepta_launcher.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/mipmap-anydpi-v26/ic_hepta_launcher.xml",
+      "bytes": 320,
+      "sha256": "b8b1697fbb2498a4f01a34f3a4937da68bc70506382314e49455fc009a707bbd",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/values/hepta_colors.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values/hepta_colors.xml",
+      "bytes": 677,
+      "sha256": "29b792d602e7bd42031033f28c4e4aae29fbf8cdf7e8cf80ef9396b212fa9d9c",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values/oem_ui_colors.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values/oem_ui_colors.xml",
+      "bytes": 273,
+      "sha256": "fc0968b4f939f746515287151affe4d9240d947ec0498035280b3825d26dd736",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values/oem_ui_dimens.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values/oem_ui_dimens.xml",
+      "bytes": 515,
+      "sha256": "7e2e6017fcba09cd7744563f8063f507adbaf8a0804b5b45bbc894c8b81455eb",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values/strings.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values/strings.xml",
+      "bytes": 1276,
+      "sha256": "262196f2d69719d7398e0fec2854f9d537faca07d1cf16fc9beab1ff6d9c97d6",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values/styles.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values/styles.xml",
+      "bytes": 752,
+      "sha256": "fc5104102ff04effbf2bb5ab34e5e029fcd2d7ec78435d049f3b9d92b45ef8c9",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values/ui_ids.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values/ui_ids.xml",
+      "bytes": 590,
+      "sha256": "e9be33a7c3872fa918c83cc4eff57c82106657a496fb0ef95e9813661c7206cc",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values-night/hepta_colors.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values-night/hepta_colors.xml",
+      "bytes": 677,
+      "sha256": "56a5fc38c0e6bb5c2c18cab65128aa2afea89fba7f11d0839365a483d31b4c2a",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values-night/oem_ui_colors.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values-night/oem_ui_colors.xml",
+      "bytes": 273,
+      "sha256": "46e38b4ed9cea4f25cb97ed495ad2a38751bb5a2c256610362291fedec3f924a",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values-night/styles.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values-night/styles.xml",
+      "bytes": 748,
+      "sha256": "f8f8c32b713f01071ec31c4d46171ee61ef72ac44da96b93ec9ea17c1f6a96d1",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/res/values-zh-rCN/strings.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values-zh-rCN/strings.xml",
+      "bytes": 1148,
+      "sha256": "feb32b18fc0c4ad764e4097b654a72b4dc6fc1dccb64bae5adb1cc81ef90208e",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/res/values-zh-rCN/systemui_entry.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/res/values-zh-rCN/systemui_entry.xml",
+      "bytes": 623,
+      "sha256": "7cd54747ff80d5c592fe6ed4cd70ea7938139e98f65a33b3bddb00ad9da3a82e",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClient.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenClient.java",
+      "bytes": 11700,
+      "sha256": "a7ca75383202a0194f2b0844f8f8e55104170a0a13e06e0d2cf71be64c05160a",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClientState.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenClientState.java",
+      "bytes": 8618,
+      "sha256": "f754b2803fd3bc58fe35052a2d73ec2aaebe533ceddf5d9fdd3262cd2dabb41e",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClientStateCodec.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenClientStateCodec.java",
+      "bytes": 7529,
+      "sha256": "c7427d0f0be41f77530c4bb71dfc80d503404610d9be2683f5b841f657fcf7fc",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClientStateStore.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenClientStateStore.java",
+      "bytes": 12868,
+      "sha256": "85cde8447c88c4b9cae2959ad3976413c8e851e36f1b8ca9e11f15e982e6b06f",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenCoverEntryActivity.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenCoverEntryActivity.java",
+      "bytes": 1609,
+      "sha256": "e89892e85b20c5cdc9cd006aa1246f333ef5d0c98aaabfbb844f92a36bd26dde",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
+      "bytes": 14987,
+      "sha256": "ecba861122fadf4837297ed73d79ea7759226399fb92fee3d0e688cb104bc0e1",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
+      "bytes": 88996,
+      "sha256": "fb1b48031068479f0eb7cdd5fc00764e7cf5fbd02d03de5997f44013392c3630",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenStateBackupProvider.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenStateBackupProvider.java",
+      "bytes": 4866,
+      "sha256": "8dc7962e71043bd705ecd973c981ad8efcbdddf81374c271b63713be0c42afe3",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenTileService.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenTileService.java",
+      "bytes": 2029,
+      "sha256": "ee7382f6bf83af6f8a617d163ee58f8f2a9d17845c543193fda47f0f59cf30a6",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenTurnEvidence.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenTurnEvidence.java",
+      "bytes": 14902,
+      "sha256": "5e8f9c71cf42ef4ce691b4bf0b9d3ce903632a00e711f0b9db5411774f8a25ba",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiDraftStore.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenUiDraftStore.java",
+      "bytes": 10314,
+      "sha256": "03a1c9a04105ae597d44880265cb429b7a9dfd79f2352ef0e1b2123238c5bebe",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiEventFormatter.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenUiEventFormatter.java",
+      "bytes": 40806,
+      "sha256": "bed70d7c1e5790320da00cd78b36acc52fedd205badf0ad00d3725a8711825fe",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdown.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdown.java",
+      "bytes": 11786,
+      "sha256": "711bdeb14e8502f0544fd0c658e6cf8ce39bf62d08afef34d9488fd4824353ee",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdownRenderer.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdownRenderer.java",
+      "bytes": 4665,
+      "sha256": "6c9a9724641a33843d1a1247479efd162b36918b2affcf7af8c913d0deb2e04d",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/hepta49/build_hepta.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-v49/build_hepta.py",
+      "bytes": 13963,
+      "sha256": "ed7007635fe69bb0337bceef15d1d5787d72bb5d02b3d71ed151891871465714",
+      "mode": "0o600"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/AndroidManifest.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/AndroidManifest.xml",
+      "bytes": 1582,
+      "sha256": "82ec4f79ec0f85abf59e0d52f96c9368dac316c282e5ba2cd17c3b4c72b2f4da",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/drawable/ic_hepta_entry.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/drawable/ic_hepta_entry.xml",
+      "bytes": 452,
+      "sha256": "1dd83407c1cd604c046b850486470468bdbc7c70b3636350a81e4d20f859aad8",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/drawable/widget_background.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/drawable/widget_background.xml",
+      "bytes": 178,
+      "sha256": "10f7e4ee18b100cf85fe768967ffda900ca2ecc5766b1c4d316321a810c1e25d",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/layout/hepta_entry_widget.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/layout/hepta_entry_widget.xml",
+      "bytes": 1163,
+      "sha256": "82311bf62599c6aed6f07bb47bc63b44e61950123d5b3bde2946ad7f13c36fef",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/values/strings.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/values/strings.xml",
+      "bytes": 1281,
+      "sha256": "3d882216e31676782975c47d09eabe9034b941e2ec2e306804abbcd26cbad75c",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/xml/hepta_entry_widget.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/xml/hepta_entry_widget.xml",
+      "bytes": 424,
+      "sha256": "21409d65f1ac0a7737d7816958cc5e6615938cb392f40caf6913c0653f240c46",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/EntryIntents.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/EntryIntents.java",
+      "bytes": 1164,
+      "sha256": "19ca8bbf559bbe0be9507b98b1c194cedc0c3a3a37971ac1b6bc7e46bd4cb070",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/EntrySetupActivity.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/EntrySetupActivity.java",
+      "bytes": 6117,
+      "sha256": "5825a938f0d93df12c42664a9f87979707365d68436259b260666b5d1edbf7ff",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/HeptaEntryWidget.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/HeptaEntryWidget.java",
+      "bytes": 930,
+      "sha256": "0a6c78bfb92f5ec56f43b4f00f71cb65fe9cb8f01f623aab66c1b7dd3acd5ade",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/OpenHeptaActivity.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/OpenHeptaActivity.java",
+      "bytes": 1252,
+      "sha256": "0e6bdd7c54af6413dc390aa96e312d06bd7c5fdd7d127c8c8b4b72e958c67fe2",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/ShortcutPinnedReceiver.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/ShortcutPinnedReceiver.java",
+      "bytes": 1099,
+      "sha256": "28db2abdb1f84bf267c745ee38fa376aec73bcf9f4c0841dcb40ea953190f8d6",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/build_unsigned.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/build_unsigned.py",
+      "bytes": 4209,
+      "sha256": "3d0c8810ef8f545654495da842ff014aff021d804e974f87654be003bb7fc6cc",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/SOURCE-SEAL.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/SOURCE-SEAL.json",
+      "bytes": 9885,
+      "sha256": "7d93b46cbbe6bc1d60361c51a52e2591cd1b1d4b28f4b4d58a5903735e58b231",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/ROOT-OPERATING-CONTRACT.md",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/ROOT-OPERATING-CONTRACT.md",
+      "bytes": 3708,
+      "sha256": "da89258f0e424d0ba34b359828febf29d0c9edffa6f8ac878d8d232a15f5e165",
+      "mode": "0o444"
+    },
+    {
+      "path": "android/unicode-v148r2/source/org/trillionnium/hepta/input/InputContract.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-unicode-helper-B-v148-r2/source/org/trillionnium/hepta/input/InputContract.java",
+      "bytes": 4785,
+      "sha256": "0d98b33af6ce578c93707cd3d596ae0f8a0e3f0df3ec97d8116e67cf2832c4ba",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/unicode-v148r2/source/org/trillionnium/hepta/input/UnicodeInput.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-unicode-helper-B-v148-r2/source/org/trillionnium/hepta/input/UnicodeInput.java",
+      "bytes": 13213,
+      "sha256": "9163adf754ce450f9a7ece496257e4135cea8f63bd53d2ab92f7007b5d3bbf9e",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/unicode-v148r2/build.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-unicode-helper-B-v148-r2/build.py",
+      "bytes": 2834,
+      "sha256": "0ade6f3c59b75ee2c23eb14e17fde6d665b30a6a7029d8b38a69c2b76e2150a4",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/unicode-v148r2/CONTRACT.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-unicode-helper-B-v148-r2/CONTRACT.json",
+      "bytes": 4133,
+      "sha256": "b1e97d28b87bf4029dacc6b55270434a500f709e6e6dba5bb7b48d508b39dc47",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/unicode-v148r2/SOURCE-SEAL.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-unicode-helper-B-v148-r2/SOURCE-SEAL.json",
+      "bytes": 1734,
+      "sha256": "9ec7284d1bbf48eeb73715165d16b07aa15994bd66e3e926c1803b5efeab2796",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/screen-codec-v148r1/source/org/trillionnium/hepta/screen/ScreenContract.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-screen-codec-D-v148-r1/source/org/trillionnium/hepta/screen/ScreenContract.java",
+      "bytes": 9233,
+      "sha256": "6bf974d539792f54d43ee50edd98e822d0eb23b44b02ac98882b42451251f144",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/screen-codec-v148r1/source/org/trillionnium/hepta/screen/ScreenshotCodec.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-screen-codec-D-v148-r1/source/org/trillionnium/hepta/screen/ScreenshotCodec.java",
+      "bytes": 10204,
+      "sha256": "cf11757a3de7c7000d8a9410115cf28648458c37106d4956446b8180c313c26c",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/screen-codec-v148r1/build.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-screen-codec-D-v148-r1/build.py",
+      "bytes": 2833,
+      "sha256": "550573eed2be2a1bd08b38a4f717c4e9b00915fedd2dd92cb1a33e44fe22869a",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/screen-codec-v148r1/CONTRACT.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-screen-codec-D-v148-r1/CONTRACT.json",
+      "bytes": 5825,
+      "sha256": "f10107093973c84e4aed6227e4c8baeb8ae1ae7ebae8d7990e7e59c84d636cef",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/screen-codec-v148r1/SOURCE-SEAL.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-screen-codec-D-v148-r1/SOURCE-SEAL.json",
+      "bytes": 1932,
+      "sha256": "30f2175283e8fcb018b864db55a74b1c60f20c5c74b2059db8968b3d61491916",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/AndroidManifest.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/source/AndroidManifest.xml",
+      "bytes": 836,
+      "sha256": "efca265f743afd372e61be78a81b4d56f302702157195abae762609040dca423",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/res/values/ids.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/source/res/values/ids.xml",
+      "bytes": 304,
+      "sha256": "8398c72d73284cd22c7ed07aaeb901ba4ddce767f3215d670246eba3441a3c7c",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/ProbeUi.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/source/src/org/trillionnium/hepta/controlprobe/ProbeUi.java",
+      "bytes": 2305,
+      "sha256": "a045119f751e114d8fee5acee5c86e094055efad06d3dc7e92d2e20572a8ed40",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/TextEntryActivity.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/source/src/org/trillionnium/hepta/controlprobe/TextEntryActivity.java",
+      "bytes": 3046,
+      "sha256": "0897864e8fa16717e320dc8b50f8672c4cd3c06f4fe9229939dd9cb13b35ee63",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/VisualChallengeActivity.java",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/source/src/org/trillionnium/hepta/controlprobe/VisualChallengeActivity.java",
+      "bytes": 8269,
+      "sha256": "03a542fb1fd26c660239fad32abd8b6205c30e8b5e260e4d60e6eff124acb18a",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/build_unsigned.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/build_unsigned.py",
+      "bytes": 4238,
+      "sha256": "902d033689add511873f0b08e00eda3472d1d4226e2c85f8be0d0621c710115b",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/ROOT-OPERATING-CONTRACT.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/ROOT-OPERATING-CONTRACT.json",
+      "bytes": 4534,
+      "sha256": "b387ba8b661ab8f9f153d90607314c749b14a0d4d64fb65dbfe29ebff5092554",
+      "mode": "0o644"
+    },
+    {
+      "path": "android/visual-probe-v148r1/SOURCE-SEAL.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-visual-probe-D-v148-r1/SOURCE-SEAL.json",
+      "bytes": 2632,
+      "sha256": "e7f788144594a32c96c7702fdd2f72c0ea7a39a1c792109f4ae3c6813c830c1e",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/daily_provider.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/source/daily_provider.py",
+      "bytes": 16360,
+      "sha256": "359acc41a67d001f0c84269e450f05afd31801a397b28e1ff9e43a889bde391f",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/phone_observation_tools.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/source/phone_observation_tools.py",
+      "bytes": 26030,
+      "sha256": "40232edb40b8261385da64b37ab27fb14883daa51cd8f0403006f0c4c40d276f",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/provider_codex_host.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/source/provider_codex_host.py",
+      "bytes": 38063,
+      "sha256": "85c6f3d5def493d591f73b9820c89b1b6e3d78a609863879b4a19356c575a713",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/provider_openai_compatible.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/source/provider_openai_compatible.py",
+      "bytes": 17247,
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/ssh_exec_persistent_bridge.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/source/ssh_exec_persistent_bridge.py",
+      "bytes": 18394,
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/package_candidate.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/package_candidate.py",
+      "bytes": 10032,
+      "sha256": "d4790da5972da986b1786dc37f2ac6c50f096eb6a82e53b4ac91aed286c47f6e",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/offline_capacity_race_checks.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/offline_capacity_race_checks.py",
+      "bytes": 5735,
+      "sha256": "9a1035d9b5fff2765dcf44dab9e448e7f25949696c25022cadb09e34521f8052",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/offline_phone_tools_checks.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/offline_phone_tools_checks.py",
+      "bytes": 14126,
+      "sha256": "87eb3951e2dec709412a91e977d4ce0405ade4cc4af49ee96961657141fdbe92",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/offline_legacy_checks.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/offline_legacy_checks.py",
+      "bytes": 4449,
+      "sha256": "c0eefd5e39cb16caf39df296d2c6334140ad6d89536fb2212391e97a869989ed",
+      "mode": "0o644"
+    },
+    {
+      "path": "provider/baseline-v148r5/SOURCE-SEAL.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-vision-provider-C-v148-r5/SOURCE-SEAL.json",
+      "bytes": 3502,
+      "sha256": "41c813ff051d2499956aa8d9b3872f242b8961f87cb79ac73a76f29f070f01a8",
+      "mode": "0o644"
+    }
+  ],
+  "count": 86,
+  "bytes": 537796
+}

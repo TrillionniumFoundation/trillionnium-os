@@ -1,0 +1,15 @@
+[
+  {
+    "id": "visual_public_receipt",
+    "kind": "visual_receipt_matches_challenge",
+    "package": "org.trillionnium.hepta.controlprobe",
+    "challenge_view_id": "org.trillionnium.hepta.controlprobe:id/visual_challenge_code",
+    "receipt_view_id": "org.trillionnium.hepta.controlprobe:id/visual_receipt",
+    "challenge_prefix": "挑战码：",
+    "receipt_prefix": "HEPTA_VISUAL_OK "
+  },
+  {
+    "id": "return_to_hepta",
+    "kind": "foreground_hepta"
+  }
+]

@@ -1,0 +1,16 @@
+<resources>
+    <item type="id" name="ui_prompt"/>
+    <item type="id" name="ui_send"/>
+    <item type="id" name="ui_tools"/>
+    <item type="id" name="ui_stop"/>
+    <item type="id" name="ui_feed"/>
+    <item type="id" name="ui_control_status"/>
+    <item type="id" name="ui_log"/>
+    <item type="id" name="ui_cancel"/>
+    <item type="id" name="ui_inspect"/>
+    <item type="id" name="ui_reconnect"/>
+    <item type="id" name="ui_stop_status"/>
+    <item type="id" name="ui_details"/>
+    <item type="id" name="ui_task_summary"/>
+    <item type="id" name="ui_permissions"/>
+</resources>

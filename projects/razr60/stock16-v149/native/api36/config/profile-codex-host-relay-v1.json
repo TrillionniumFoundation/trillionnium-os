@@ -1,0 +1,150 @@
+{
+  "schema": "org.trillionnium.owner-open.android-runtime-profile.v5",
+  "revision": "2026-11-02-leap-api36-hepta-backend-init-source",
+  "profile_id": "leap-stock16-codex-host-relay-v1",
+  "enabled_property": "ro.trillionnium.owner_open.enabled",
+  "data_ready_property": "trillionnium.owner_open.data_ready",
+  "ready_property": "trillionnium.owner_open.ready",
+  "emergency_stop_property": "sys.trillionnium.owner_open.stop",
+  "rootlinux_payload": {
+    "image": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs",
+    "image_sha256": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+    "image_manifest": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+    "mount_root": "/data/trillionnium/owner-open/root",
+    "state_root": "/data/trillionnium/owner-open/state",
+    "read_only_lower": true
+  },
+  "android_services": {
+    "bootstrap": "trillionnium-owner-open-bootstrap",
+    "ingress": "trillionnium-owner-open-ingress",
+    "emergency_stop": "trillionnium-owner-open-emergency-stop"
+  },
+  "android_ingress": {
+    "abstract_socket": "trillionnium_owner_open",
+    "allowed_peer_domain": "u:r:trillionnium_owner_open_client:s0",
+    "upstream_socket": "/data/trillionnium/owner-open/state/boots/{kernel_boot_id}/broker/owner-open.sock",
+    "broker_token": "/data/trillionnium/owner-open/state/broker/owner-open.token",
+    "maximum_connections": 32,
+    "automatic_redispatch": false
+  },
+  "rootlinux_supervisor": {
+    "executable": "/usr/bin/python3",
+    "entry": "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+    "config": "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
+    "runtime_namespace": "kernel_boot_id_v1"
+  },
+  "claims": {
+    "source_modules_authored": true,
+    "soong_compiled": false,
+    "selinux_compiled": false,
+    "target_files_built": false,
+    "image_included": false,
+    "physical_device_observed": false,
+    "public_release": false
+  },
+  "claim_ceiling": "LEAP_API36_SOURCE_CANDIDATE_NOT_DEVICE_QUALIFIED",
+  "mount_handoff": {
+    "owner": "android_init",
+    "verified_property": "trillionnium.owner_open.verified",
+    "mount_ready_property": "trillionnium.owner_open.mount_ready",
+    "service_mount_namespace": "mnt",
+    "bootstrap_mount_operations": false
+  },
+  "provider": {
+    "role": "host_codex",
+    "phone_adapter": "/usr/libexec/trillionnium/provider-adapter",
+    "config": "/etc/trillionnium/owner-open/provider-host-relay-v1.json",
+    "long_lived_credentials_on_phone": false,
+    "automatic_reconnect": false,
+    "automatic_redispatch": false
+  },
+  "owner_client_control": {
+    "schema": "org.trillionnium.owner-open.ingress-control.v1",
+    "version": 1,
+    "first_frame_required": true,
+    "maximum_line_bytes": 4096,
+    "maximum_pending_controls": 64,
+    "explicit_user_stop_required": true,
+    "control_available_while_runtime_unready": true,
+    "persistent_inhibit_leaf": "/data/trillionnium/owner-open/state/emergency-stop",
+    "automatic_redispatch": false,
+    "automatic_resume": false,
+    "process_quiescence_claim": "unknown_until_observed",
+    "selinux_source_sha256": null,
+    "operation_id_format": "[a-z0-9-]{1,96}",
+    "mechanical_stop_attempts_per_ingress_process": 4096,
+    "mechanical_stop_attempt_deduplication": "operation_id_within_ingress_process_no_eviction",
+    "new_mechanical_stop_requires_new_explicit_user_confirmation": true,
+    "status_never_requests_stop": true,
+    "client_request_deadline_milliseconds": 5000,
+    "client_stop_queue_capacity": 1,
+    "client_status_queue_capacity": 1,
+    "local_stop_intent_persistence": "best_effort_shared_preferences",
+    "local_missing_or_unreadable_state": "inhibit_until_explicit_absent_unfenced_status_and_committed_initialization",
+    "normal_writes_fenced_before_property_and_storage": true,
+    "selinux_source_binding": "UNKNOWN_PENDING_NEW_MAGISK_MODULE_POLICY_BINDING_NOT_OLD_GSI_POLICY_HASHES"
+  },
+  "component_measurement": {
+    "schema": "org.trillionnium.owner-open.fixed-component-measurement.v1",
+    "valid_property": "trillionnium.owner_open.measurement.valid",
+    "fixed_root": "/system_ext",
+    "component_count": 8,
+    "core_digest_properties": [
+      "trillionnium.owner_open.measurement.bootstrap_sha256",
+      "trillionnium.owner_open.measurement.manifest_sha256",
+      "trillionnium.owner_open.measurement.image_sha256"
+    ],
+    "additional_components": [
+      {
+        "relative_path": "etc/build.prop",
+        "property": "trillionnium.owner_open.measurement.system_ext_build_prop_sha256",
+        "maximum_bytes": 1048576
+      },
+      {
+        "relative_path": "bin/trillionnium-owner-open-ingress",
+        "property": "trillionnium.owner_open.measurement.ingress_sha256",
+        "maximum_bytes": 33554432
+      },
+      {
+        "relative_path": "bin/trillionnium-owner-open-emergency-stop",
+        "property": "trillionnium.owner_open.measurement.emergency_stop_sha256",
+        "maximum_bytes": 8388608
+      },
+      {
+        "relative_path": "app/TrillionniumOwnerOpenShell/TrillionniumOwnerOpenShell.apk",
+        "property": "trillionnium.owner_open.measurement.shell_apk_sha256",
+        "maximum_bytes": 67108864
+      },
+      {
+        "relative_path": "etc/trillionnium/owner-open/stock16-backend-init.source.rc",
+        "property": "trillionnium.owner_open.measurement.backend_init_source_sha256",
+        "maximum_bytes": 1048576
+      }
+    ],
+    "publish_protocol": "valid0_clear_all_hash_stable_fd_publish_all_valid1",
+    "claim_ceiling": "fixed_components_and_init_source_audit_copy_same_boot_not_effective_init_partition_or_hardware_attestation"
+  },
+  "android_client_entry": {
+    "schema": "org.trillionnium.owner-open.stock16-client-entry.v1",
+    "package": "org.trillionnium.owneropen",
+    "workspace_component": "org.trillionnium.owneropen/.OwnerOpenShellActivity",
+    "tile_component": "org.trillionnium.owneropen/.OwnerOpenTileService",
+    "systemui_overlay_included": false,
+    "automatic_connect": false,
+    "automatic_send": false,
+    "automatic_resume": false,
+    "scope": "APK entry only; stock permission/display/QS policy and actual communication remain separately verified."
+  },
+  "startup_source_binding": {
+    "schema": "org.trillionnium.owner-open.init-source-copy-binding.v1",
+    "boot_overlay_input_sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca",
+    "measured_audit_copy": "/system_ext/etc/trillionnium/owner-open/stock16-backend-init.source.rc",
+    "copy_sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca",
+    "input_copy_byte_equal": true,
+    "measurement_scope": "same_boot_fixed_file_audit_copy_only",
+    "effective_init_execution_proven": false,
+    "automatic_enable": false,
+    "payload_ready_property": "trillionnium.owner_open.payload_ready",
+    "payload_ready_until_real_files_and_contexts_checked": false
+  }
+}

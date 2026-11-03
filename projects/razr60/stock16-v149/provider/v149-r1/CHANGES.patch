@@ -1,0 +1,1163 @@
+--- a/source/daily_provider.py
++++ b/source/daily_provider.py
+@@ -22,9 +22,12 @@
+ import uuid
+ 
+ PARENTS = {
+-    'provider_codex_host.py': '85c6f3d5def493d591f73b9820c89b1b6e3d78a609863879b4a19356c575a713',
+-    'provider_openai_compatible.py': 'de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0',
+-    'phone_observation_tools.py': '40232edb40b8261385da64b37ab27fb14883daa51cd8f0403006f0c4c40d276f',
++    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
++    "provider_openai_compatible.py": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
++    "phone_observation_tools.py": "8b350c35d1b349649f11000c629ff59ff581c89e255729b45ac3cc9ccd58b975",
++    "model_health.py": "778104cc0c5f4d8f8b23d3b8af049b7efaebb9721ae460e5768fd1933bc09a82",
++    "phone_task_guards.py": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59",
++    "task_postconditions.py": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+ }
+ CLI_SHA = '50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8'
+ IDENTITY = ('session_id', 'profile_id', 'task_id', 'turn_id')
+@@ -52,6 +55,7 @@
+     require(sha(Path(__file__).resolve().with_name(_name)) == _expected, 'protocol source pin differs')
+ sys.path.insert(0, str(Path(__file__).resolve().parent))
+ from provider_codex_host import CodexAdapter
++from model_health import ModelHealth, ModelFailure
+ from provider_openai_compatible import ProviderError, MAX_LINE
+ 
+ 
+@@ -120,6 +124,7 @@
+         self.shutdown = shutdown
+         self.child_lock = threading.Lock()
+         self.child = None
++        self.health_attempt = None
+ 
+     def receive(self, expected=None, timeout=.05):
+         if self.shutdown.is_set():
+@@ -136,6 +141,7 @@
+             self.atomic_record(self.run_dir/f'codex-{self.round:02d}.spawn-intent.json',
+                                {'argv_sha256': hashlib.sha256(json.dumps(argv).encode()).hexdigest(),
+                                 'state': 'attempt_reserved; actual_spawn_not_yet_observed'})
++            self.health_attempt = self.args.model_health.begin()
+             process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, start_new_session=True, bufsize=0)
+             self.child = process
+@@ -145,8 +151,18 @@
+             return process
+ 
+     def completion(self, messages):
++        self.health_attempt = None
+         try:
+-            return super().completion(messages)
++            result = super().completion(messages)
++            if result is not None and self.health_attempt is not None:
++                self.args.model_health.success(self.health_attempt)
++            return result
++        except ModelFailure as error:
++            self.atomic_record(self.run_dir/f'codex-{self.round:02d}.model-failure.json',
++                               {**error.receipt(), 'model': self.args.model, 'attempt': self.health_attempt})
++            if self.health_attempt is not None:
++                self.args.model_health.failure(self.health_attempt, error)
++            raise
+         finally:
+             self.join_child()
+ 
+@@ -188,8 +204,8 @@
+ 
+ _EXPECTED_RUN_NAME = re.compile(r'[0-9]{8}-[0-9]{6}-[0-9a-f]{32}\Z')
+ _EXPECTED_EVIDENCE_TEMP = re.compile(
+-    r'(?:codex-[0-9]{2}\.(?:spawn-intent|spawned|joined|images)\.json\.new'
+-    r'|dispatch-[0-9]{3}\.json\.new|terminal\.json\.new'
++    r'(?:codex-[0-9]{2}\.(?:spawn-intent|spawned|joined|images|model-failure)\.json\.new'
++    r'|dispatch-[0-9]{3}\.json\.new|terminal\.json\.new|business-outcome\.json\.new|task-contract\.json\.new'
+     r'|(?:result|semantic)-[0-9a-f]{64}\.json\.new'
+     r'|capture-[0-9a-f]{32}\.json\.new'
+     r'|(?:connection-ended|cleanup-failure)\.json\.[0-9a-f]{32}\.new)\Z')
+@@ -245,6 +261,10 @@
+     for intent in args.evidence.glob('*/codex-*.spawn-intent.json'):
+         joined = intent.with_name(intent.name.replace('.spawn-intent.json', '.joined.json'))
+         require(joined.is_file(), 'unjoined prior CLI round; inspect exact receipts before service restart')
++    args.contracts = args.state/'task-contracts'
++    for directory in [args.contracts, args.contracts/'templates', args.contracts/'bindings']:
++        private_dir(directory)
++    args.model_health = ModelHealth(args.state/'model-health.json', args.model, replace_json)
+     shutdown = threading.Event()
+     adapters, workers_lock = set(), threading.Lock()
+     slots = threading.BoundedSemaphore(args.workers)
+@@ -320,7 +340,9 @@
+         replace_json(args.state/'ready.json', {'schema': 'hepta.daily-provider.ready.v1',
+                      'pid': os.getpid(), 'instance': instance, 'port': args.port,
+                      'source_sha256': sha(Path(__file__)), 'cli_sha256': CLI_SHA,
+-                     'model': args.model, 'workers': args.workers, 'accepting': True})
++                     'model': args.model, 'workers': args.workers, 'accepting': True,
++                     'readiness_scope': 'transport_only',
++                     'model_health_path': str(args.state/'model-health.json')})
+         try:
+             while not shutdown.is_set():
+                 if not slots.acquire(timeout=.5):
+@@ -376,3 +398,4 @@
+ 
+ if __name__ == '__main__':
+     main()
++
+--- /dev/null
++++ b/source/model_health.py
+@@ -0,0 +1,150 @@
++"""Observed CLI health, separate from transport readiness and task acceptance.
++
++Only original top-level CLI failure events enter this classifier. Tool output,
++model prose and phone receipts never update model availability. A failed turn
++remains consumed; this module neither retries nor changes account or model.
++"""
++import datetime
++import hashlib
++import json
++import os
++import re
++import stat
++import threading
++
++from provider_openai_compatible import ProviderError
++
++
++def utc():
++    return datetime.datetime.now(datetime.timezone.utc).isoformat()
++
++
++PUBLIC_ERRORS = {
++    'usage_limit_exceeded': '模型额度已用尽；本次任务未完成。请在额度恢复后明确发起新任务，已执行动作不会自动重放。',
++    'authentication_failed': '模型登录或授权失效；本次任务未完成，需要检查当前已选账号的授权。',
++    'rate_limit_exceeded': '模型请求受到速率限制；本次任务未完成，未自动重试。',
++    'request_rejected': '模型服务拒绝了请求；本次任务未完成，未切换模型或重试。',
++    'transport_unavailable': '模型连接失败；本次任务结果不完整，未自动重试。',
++    'model_timeout': '模型请求超时；本次任务结果不完整，已执行动作不会自动重放。',
++    'unknown_model_failure': '模型请求失败，具体原因未获确认；本次任务未完成，未自动重试。',
++}
++
++
++class ModelFailure(ProviderError):
++    def __init__(self, category, event=None):
++        if category not in PUBLIC_ERRORS:
++            raise ValueError('unknown model failure category')
++        self.category = category
++        self.event_sha256 = (hashlib.sha256(json.dumps(event, sort_keys=True,
++            ensure_ascii=False, separators=(',', ':')).encode()).hexdigest() if event is not None else None)
++        super().__init__('[' + category + '] ' + PUBLIC_ERRORS[category])
++
++    def receipt(self):
++        return {'category': self.category, 'event_sha256': self.event_sha256,
++                'public_error': str(self), 'automatic_retry': False,
++                'account_or_model_changed': False, 'business_verified': False}
++
++
++def cli_failure(event):
++    """Classify only two trusted event envelopes, never arbitrary nested text."""
++    if not isinstance(event, dict) or event.get('type') not in {'error', 'turn.failed'}:
++        raise ValueError('not a top-level CLI failure event')
++    error = event.get('error')
++    error = error if isinstance(error, dict) else {}
++    codes = {str(value).lower() for value in (event.get('code'), error.get('code'),
++                                            error.get('type')) if isinstance(value, str)}
++    message = event.get('message', error.get('message')) if event.get('type') == 'error' else error.get('message')
++    text = message.lower().replace('’', "'") if isinstance(message, str) else ''
++    if codes & {'usage_limit_exceeded', 'insufficient_quota', 'quota_exceeded'} or re.search(
++            r"\b(?:you've hit your usage limit|usage limit (?:has been )?exceeded|insufficient quota)\b", text):
++        category = 'usage_limit_exceeded'
++    elif codes & {'authentication_error', 'invalid_api_key', 'unauthorized', 'authentication_failed'} or re.search(
++            r'\b(?:authentication (?:failed|error)|invalid api key|not authenticated|login required)\b', text):
++        category = 'authentication_failed'
++    elif codes & {'rate_limit_exceeded', 'rate_limit_error'} or re.search(r'\brate limit (?:reached|exceeded)\b', text):
++        category = 'rate_limit_exceeded'
++    elif codes & {'invalid_request_error', 'bad_request', 'request_rejected'}:
++        category = 'request_rejected'
++    elif codes & {'timeout', 'request_timeout', 'deadline_exceeded'} or re.search(r'\b(?:request timed out|request timeout|deadline exceeded)\b', text):
++        category = 'model_timeout'
++    elif codes & {'connection_error', 'network_error', 'service_unavailable'} or re.search(
++            r'\b(?:connection (?:reset|refused|closed)|network is unreachable|service unavailable)\b', text):
++        category = 'transport_unavailable'
++    else:
++        category = 'unknown_model_failure'
++    return ModelFailure(category, event)
++
++
++class ModelHealth:
++    """Persist observations with an in-flight ordering fence.
++
++    A success from a request already in flight when a failure was observed
++    cannot clear that failure. Only a later-started successful request can do
++    so. No availability prediction or quota probe is performed here.
++    """
++    SCHEMA = 'hepta.model-health.v149.1'
++
++    def __init__(self, path, model, writer):
++        self.path, self.model, self.writer = path, model, writer
++        self.lock = threading.Lock()
++        self.value = {'schema': self.SCHEMA, 'model': model, 'availability': 'unknown',
++                      'reason': 'not_observed', 'issued': 0, 'failure_fence': 0,
++                      'last_success': None, 'last_failure': None,
++                      'readiness_is_model_health': False, 'automatic_probe_or_retry': False}
++        try:
++            path.lstat()
++            exists = True
++        except FileNotFoundError:
++            exists = False
++        if exists:
++            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
++            try:
++                info = os.fstat(fd)
++                if (not stat.S_ISREG(info.st_mode) or info.st_nlink != 1 or info.st_uid != os.getuid()
++                        or stat.S_IMODE(info.st_mode) != 0o600 or not 0 < info.st_size <= 16384):
++                    raise ProviderError('model health state identity is invalid')
++                raw = os.read(fd, 16385)
++                after, named = os.fstat(fd), path.lstat()
++                fields = ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns', 'st_nlink')
++                if len(raw) != info.st_size or any(getattr(info, field) != getattr(after, field)
++                        or getattr(info, field) != getattr(named, field) for field in fields):
++                    raise ProviderError('model health state changed while read')
++            finally:
++                os.close(fd)
++            value = json.loads(raw)
++            if (value.get('schema') != self.SCHEMA or value.get('model') != model
++                    or type(value.get('issued')) is not int or value['issued'] < 0
++                    or type(value.get('failure_fence')) is not int
++                    or not 0 <= value['failure_fence'] <= value['issued']
++                    or value.get('availability') not in {'unknown', 'observed_available', 'observed_unavailable'}):
++                raise ProviderError('model health state schema differs')
++            self.value.update(value)
++        self.writer(self.path, self.value)
++
++    def begin(self):
++        with self.lock:
++            self.value['issued'] += 1
++            attempt = {'id': self.value['issued'], 'started_utc': utc()}
++            self.writer(self.path, self.value)
++            return attempt
++
++    def success(self, attempt):
++        with self.lock:
++            observation = {**attempt, 'observed_utc': utc()}
++            self.value['last_success'] = observation
++            if attempt['id'] > self.value['failure_fence']:
++                self.value.update(availability='observed_available', reason='successful_structured_decision')
++            self.writer(self.path, self.value)
++
++    def failure(self, attempt, error):
++        if not isinstance(error, ModelFailure):
++            raise ValueError('only a classified model failure updates availability')
++        with self.lock:
++            self.value['last_failure'] = {**attempt, 'observed_utc': utc(), **error.receipt()}
++            self.value['failure_fence'] = self.value['issued']
++            protected = self.value['availability'] == 'observed_unavailable' and self.value['reason'] in {
++                'usage_limit_exceeded', 'authentication_failed'}
++            reason = self.value['reason'] if protected and error.category not in {
++                'usage_limit_exceeded', 'authentication_failed'} else error.category
++            self.value.update(availability='observed_unavailable', reason=reason)
++            self.writer(self.path, self.value)
+--- a/source/phone_observation_tools.py
++++ b/source/phone_observation_tools.py
+@@ -16,6 +16,8 @@
+ import time
+ 
+ from provider_openai_compatible import ProviderError
++from phone_task_guards import (page_state, page_capture, b64_variable, page_equality_guard,
++    return_command, verify_return, public_text_command, verify_public_text, decode_text, HEPTA_FULL_COMPONENT)
+ 
+ SERIAL = 'ZY22LS7WZT'
+ PHYSICAL_DISPLAY = '4630947043778501779'
+@@ -193,6 +195,9 @@
+         self.encoded_bytes_used = 0
+         self.latest = None
+         self.round = 0
++        self.verified_facts = {}
++        self.last_result_call_id = None
++        self.visual_read_constraints = []
+ 
+     def bind(self, identity):
+         require(self.binding is None, 'phone tool turn binding already exists')
+@@ -228,16 +233,22 @@
+             shell += 'test ! -e ' + shlex.quote(path) + ' && test ! -L ' + shlex.quote(path) + ' || exit 66; '
+             cleanup = 'hepta_capture_rc=$?; trap - 0; rm -f -- ' + shlex.quote(path) + ' || exit 69; exit "$hepta_capture_rc"'
+             shell += 'trap ' + shlex.quote(cleanup) + ' 0; '
++            shell += page_capture('hepta_page_before')
+             shell += "hepta_vp_before=$(dumpsys display | grep 'mViewports='); "
+             shell += 'screencap -d ' + PHYSICAL_DISPLAY + ' -p ' + shlex.quote(path) + ' || exit 67; '
+             shell += "hepta_vp_after=$(dumpsys display | grep 'mViewports='); "
++            shell += page_capture('hepta_page_after')
++            shell += b64_variable('hepta_page_before', 'hepta_page_before_b64')
++            shell += b64_variable('hepta_page_after', 'hepta_page_after_b64')
+             shell += "hepta_before_b64=$(printf '%s' \"$hepta_vp_before\" | base64 | tr -d '\\r\\n'); "
+             shell += "hepta_after_b64=$(printf '%s' \"$hepta_vp_after\" | base64 | tr -d '\\r\\n'); "
+             argv = ['encode', '--capture-id', token, '--input', path, '--serial', SERIAL,
+                     '--viewport-before-b64', '$hepta_before_b64', '--viewport-after-b64', '$hepta_after_b64',
+                     '--max-bytes', str(budget)]
+             quoted = [('\"' + value + '\"') if value.startswith('$hepta_') else shlex.quote(value) for value in argv]
+-            shell += 'CLASSPATH=' + shlex.quote(SCREEN_JAR) + ' app_process /system/bin org.trillionnium.hepta.screen.ScreenshotCodec ' + ' '.join(quoted)
++            shell += 'hepta_codec=$(CLASSPATH=' + shlex.quote(SCREEN_JAR) + ' app_process /system/bin org.trillionnium.hepta.screen.ScreenshotCodec ' + ' '.join(quoted) + ') || exit 72; '
++            template = '{"schema":"hepta.capture-page-envelope.v149.1","capture_id":"' + token + '","page_before_b64":"%s","page_after_b64":"%s","screenshot":%s}\n'
++            shell += 'printf ' + shlex.quote(template) + ' "$hepta_page_before_b64" "$hepta_page_after_b64" "$hepta_codec"'
+             record.update(max_image_bytes=budget, source_png_path=path)
+             self.invalidate()
+         elif tool == 'phone.input_text':
+@@ -267,9 +278,40 @@
+             require(0 <= original_x < ORIGINAL_SIZE[0] and 0 <= original_y < ORIGINAL_SIZE[1],
+                     'phone.tap mapped coordinate is outside the original display')
+             shell = self._serial_guard() + '[ "$(dumpsys display | grep \'mViewports=\')" = ' + shlex.quote(self.latest['viewport']) + ' ] || exit 68; '
++            shell += page_equality_guard(self.latest['page_state'])
++            guard_path = '/data/local/tmp/hepta-tap-guard-' + token + '.png'
++            shell += 'umask 077; test ! -e ' + shlex.quote(guard_path) + ' && test ! -L ' + shlex.quote(guard_path) + ' || exit 66; '
++            cleanup = 'hepta_guard_rc=$?; trap - 0; rm -f -- ' + shlex.quote(guard_path) + ' || exit 69; exit "$hepta_guard_rc"'
++            shell += 'trap ' + shlex.quote(cleanup) + ' 0; '
++            shell += 'screencap -d ' + PHYSICAL_DISPLAY + ' -p ' + shlex.quote(guard_path) + ' || exit 67; '
++            shell += '[ "$(sha256sum ' + shlex.quote(guard_path) + " | cut -d ' ' -f 1)\" = " + shlex.quote(self.latest['source_png_sha256']) + ' ] || exit 71; '
++            shell += page_equality_guard(self.latest['page_state'])
++            shell += '[ "$(dumpsys display | grep \'mViewports=\')" = ' + shlex.quote(self.latest['viewport']) + ' ] || exit 68; '
+             shell += 'input -d 0 tap ' + str(original_x) + ' ' + str(original_y)
+             record.update(source_image_call_id=args[0], source_image_sha256=self.latest['image_sha256'],
+-                          encoded_xy=[x, y], original_xy=[original_x, original_y])
++                          encoded_xy=[x, y], original_xy=[original_x, original_y],
++                          page_state_sha256=self.latest['page_state_sha256'],
++                          source_png_sha256=self.latest['source_png_sha256'],
++                          exact_pixel_and_focus_guard=True, guard_png_path=guard_path,
++                          package=self.latest['observed_page']['component'].split('/')[0])
++            self.invalidate()
++        elif tool == 'phone.read_text':
++            require(command == '' and 2 <= len(args) <= 6 and PACKAGE.fullmatch(args[0])
++                    and len(set(args[1:])) == len(args[1:]) and all(VIEW_ID.fullmatch(v) for v in args[1:]),
++                    'read_text requires package and one to five unique exact public view IDs')
++            for condition in self.visual_read_constraints:
++                if args[0] == condition['package'] and condition['challenge_view_id'] in args[1:]:
++                    require(any(fact['kind'] == 'visual_tap_executed' and fact['package'] == args[0]
++                                for fact in self.verified_facts.values()),
++                            'visual challenge readback requires a completed screenshot-bound visual tap first')
++            xml_path = '/data/local/tmp/hepta-public-read-' + token + '.xml'
++            shell = public_text_command(self._serial_guard(), token, args[0], xml_path)
++            record.update(package=args[0], view_ids=args[1:], source_xml_path=xml_path)
++            self.invalidate()
++        elif tool == 'phone.return_hepta':
++            require(command == '' and args == [], 'return_hepta requires empty command and argv')
++            shell = return_command(self._serial_guard(), token)
++            record.update(postcondition='actual_inner_display_focused_resumed_HEPTA')
+             self.invalidate()
+         else:
+             raise ProviderError('unrecognized phone semantic tool')
+@@ -289,8 +331,16 @@
+             return old
+         raw = native_streams(reply, call_id)
+         require(len(raw) <= 600000, 'screenshot JSON exceeds its transport bound')
+-        value = strict_json(raw)
+-        require(set(value) == SCREEN_FIELDS
++        envelope = strict_json(raw)
++        require(set(envelope) == {'schema', 'capture_id', 'page_before_b64', 'page_after_b64', 'screenshot'}
++                and envelope['schema'] == 'hepta.capture-page-envelope.v149.1'
++                and envelope['capture_id'] == call['capture_id'], 'screenshot page envelope differs')
++        page_before = decode_text(envelope['page_before_b64'], 'page before capture')
++        page_after = decode_text(envelope['page_after_b64'], 'page after capture')
++        require(page_before == page_after, 'page focus changed during screenshot capture')
++        observed_page = page_state(page_before)
++        value = envelope['screenshot']
++        require(isinstance(value, dict) and set(value) == SCREEN_FIELDS
+                 and value.get('schema') == 'hepta.phone-screenshot.v1' and value.get('status') == 'encoded'
+                 and value.get('capture_id') == call['capture_id'] and value.get('serial') == SERIAL
+                 and type(value.get('logical_display_id')) is int and value['logical_display_id'] == 0
+@@ -329,11 +379,17 @@
+         result.update(path=str(path), call_id=call_id, turn=self.binding,
+                       original_result_sha256=source_hash, viewport_sha256=viewport_sha,
+                       encoded_size=list(size), viewport=before, received_monotonic=time.monotonic(),
++                      page_state=page_before, page_state_sha256=sha(page_before.encode()),
++                      observed_page=observed_page,
+                       observation_kind='lossy_scaled_actual_phone_screenshot_not_UI_XML',
+                       pixel_mapping='round_half_up(encoded_coordinate*original_dimension/encoded_dimension)',
+                       turn_image_bytes_used=self.encoded_bytes_used)
+         self.atomic_record(self.run_dir / ('capture-' + call['capture_id'] + '.json'), result)
+         self.images[call_id] = result
++        if observed_page['component'] == HEPTA_FULL_COMPONENT:
++            self.verified_facts[call_id] = {'kind': 'foreground_hepta', 'call_id': call_id,
++                'original_result_sha256': source_hash, 'component': observed_page['component'],
++                'display_id': 0, 'evidence_type': 'screenshot_page_focus'}
+         return result
+ 
+     def _read_image(self, path):
+@@ -359,6 +415,8 @@
+         require(len(messages) == len(rendered), 'model transcript projection count differs')
+         self.round = round_number
+         self.latest = None
++        self.last_result_call_id = next((m.get('tool_call_id') for m in reversed(messages)
++                                        if m.get('role') == 'tool'), None)
+         output, attached = [], []
+         for index, (original, projected) in enumerate(zip(messages, rendered)):
+             if original.get('role') != 'tool' or original.get('tool_call_id') not in self.calls:
+@@ -369,7 +427,7 @@
+                 actual = strict_json(original['content']); image = self._image(actual, original['content'], call)
+                 fresh = index == len(messages) - 1
+                 public = {key: value for key, value in image.items()
+-                          if key not in {'path', 'received_monotonic', 'viewport'}}
++                          if key not in {'path', 'received_monotonic', 'viewport', 'page_state'}}
+                 public.update(image_attached_in_this_completion=fresh, stale_for_actions=not fresh)
+                 reply['_hepta_image_observation'] = public
+                 # This is a derived model view, not a changed wire/native record.
+@@ -416,8 +474,45 @@
+                     'view_id': call['view_id'], 'actual_readback_utf8': readback.decode(),
+                     'actual_utf8_sha256': sha(readback), 'status': value['status'],
+                     'own_automation_disconnected': True, 'original_wire_evidence_unchanged': True}
++                self.verified_facts[call_id] = {'kind': 'text_readback_exact', 'call_id': call_id,
++                    'package': call['package'], 'view_id': call['view_id'], 'utf8_sha256': sha(readback),
++                    'original_result_sha256': sha(original['content'].encode()),
++                    'evidence_type': 'focused_unicode_helper_exact_readback'}
++            elif call['semantic_tool'] == 'phone.tap':
++                actual = strict_json(original['content'])
++                raw = native_streams(actual, call_id)
++                require(raw == b'', 'qualified tap produced unexpected output')
++                self.verified_facts[call_id] = {'kind': 'visual_tap_executed', 'call_id': call_id,
++                    'package': call['package'], 'source_image_call_id': call['source_image_call_id'],
++                    'source_image_sha256': call['source_image_sha256'],
++                    'original_result_sha256': sha(original['content'].encode()),
++                    'exact_pixel_and_focus_guard': True}
++            elif call['semantic_tool'] == 'phone.read_text':
++                actual = strict_json(original['content'])
++                raw = native_streams(actual, call_id)
++                require(len(raw) <= 400000, 'public text receipt exceeds transport bound')
++                observation, viewport = verify_public_text(strict_json(raw), call['capture_id'],
++                                                            call['package'], call['view_ids'])
++                validate_viewport(viewport)
++                fact = {'kind': 'public_text_observation', 'call_id': call_id,
++                        'original_result_sha256': sha(original['content'].encode()),
++                        **observation, 'evidence_type': 'focused_public_UI_XML_unique_view_readback'}
++                self.verified_facts[call_id] = fact
++                reply['_hepta_verified_public_text'] = fact
++            elif call['semantic_tool'] == 'phone.return_hepta':
++                actual = strict_json(original['content'])
++                value = strict_json(native_streams(actual, call_id))
++                observed, viewport = verify_return(value, call['capture_id'])
++                validate_viewport(viewport)
++                fact = {'kind': 'foreground_hepta', 'call_id': call_id,
++                        'original_result_sha256': sha(original['content'].encode()),
++                        'component': observed['component'], 'display_id': 0,
++                        'evidence_type': 'explicit_return_launch_and_actual_focus'}
++                self.verified_facts[call_id] = fact
++                reply['_hepta_verified_return'] = fact
+             output.append({**projected, 'content': json.dumps(reply, ensure_ascii=False, separators=(',', ':'))})
+         self.atomic_record(self.run_dir / f'codex-{round_number:02d}.images.json',
+                            {'turn': self.binding, 'images': [{k: v for k, v in image.items() if k != 'received_monotonic'} for image in attached],
+                             'direct_host_tools_enabled': False, 'old_images_attached': False})
+         return output, [image['path'] for image in attached]
++
+--- /dev/null
++++ b/source/phone_task_guards.py
+@@ -0,0 +1,192 @@
++"""Pure mappings and parsers for qualified inner-display page/return receipts.
++
++This module executes no phone command. Guard failures precede input; a launch
++return code alone cannot establish the HEPTA foreground postcondition.
++"""
++import base64
++import hashlib
++import re
++import shlex
++import xml.etree.ElementTree as ET
++
++from provider_openai_compatible import ProviderError
++
++HEPTA_COMPONENT = 'org.trillionnium.owneropen/.OwnerOpenShellActivity'
++HEPTA_FULL_COMPONENT = 'org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity'
++PAGE_STATE_COMMAND = (
++    "dumpsys window | grep -E '^[[:space:]]*(Display: mDisplayId=|mTopFocusedDisplayId=|mCurrentFocus=|mFocusedApp=|isKeyguardShowing=)'; "
++    "dumpsys activity activities | grep -E '^[[:space:]]*topResumedActivity='"
++)
++
++
++def require(ok, reason):
++    if not ok:
++        raise ProviderError('[phone_postcondition] ' + reason)
++
++
++def decode_text(value, label, maximum=16384):
++    require(isinstance(value, str) and 0 < len(value) <= maximum * 2, label + ' encoding missing or oversized')
++    try:
++        raw = base64.b64decode(value, validate=True)
++        text = raw.decode('utf-8', errors='strict')
++    except (ValueError, UnicodeError) as error:
++        raise ProviderError('[phone_postcondition] ' + label + ' is not canonical UTF8/base64') from error
++    require(base64.b64encode(raw).decode() == value and 0 < len(raw) <= maximum and '\0' not in text,
++            label + ' bound or canonical encoding differs')
++    return text
++
++
++def component(text):
++    values = re.findall(r'(?<![A-Za-z0-9_.$/])([A-Za-z][A-Za-z0-9_.$]*/[A-Za-z0-9_.$]+)(?![A-Za-z0-9_.$/])', text)
++    require(len(values) == 1, 'foreground component is missing or ambiguous')
++    package, activity = values[0].split('/')
++    if activity.startswith('.'):
++        activity = package + activity
++    return package + '/' + activity
++
++
++def page_state(text):
++    require(isinstance(text, str) and 0 < len(text.encode()) <= 16384 and '\0' not in text,
++            'page state is missing or oversized')
++    sections, top_ids, resumed = {}, [], []
++    current = None
++    for line in text.splitlines():
++        line = line.strip()
++        if not line:
++            continue
++        match = re.fullmatch(r'Display: mDisplayId=([0-9]+)(?:\s+.*)?', line)
++        if match:
++            current = int(match.group(1))
++            require(current not in sections, 'duplicate display section')
++            sections[current] = {}
++            continue
++        match = re.fullmatch(r'mTopFocusedDisplayId=([0-9]+)', line)
++        if match:
++            top_ids.append(int(match.group(1)))
++            continue
++        if line.startswith('topResumedActivity='):
++            resumed.append(line.split('=', 1)[1])
++            continue
++        match = re.fullmatch(r'(mCurrentFocus|mFocusedApp|isKeyguardShowing)=(.*)', line)
++        require(match is not None and current in sections, 'page state line is outside a qualified display section')
++        key, value = match.groups()
++        require(key not in sections[current], 'duplicate display focus field')
++        sections[current][key] = value
++    require(top_ids == [0] and 0 in sections, 'top focused display is not the qualified inner display')
++    active = sections[0]
++    require(set(active) == {'mCurrentFocus', 'mFocusedApp', 'isKeyguardShowing'}
++            and active['isKeyguardShowing'] == 'false', 'inner display focus or unlocked state is unconfirmed')
++    require(active['mCurrentFocus'].startswith('Window{') and active['mFocusedApp'].startswith('ActivityRecord{'),
++            'inner display focus is null or not an app window')
++    require(len(resumed) == 1 and resumed[0].startswith('ActivityRecord{'), 'resumed activity is missing or ambiguous')
++    actual = component(active['mCurrentFocus'])
++    require(component(active['mFocusedApp']) == actual and component(resumed[0]) == actual,
++            'focused window, focused app and resumed activity disagree')
++    return {'display_id': 0, 'component': actual, 'keyguard_showing': False}
++
++
++def page_capture(variable):
++    return variable + '=$(' + PAGE_STATE_COMMAND + '); '
++
++
++def b64_variable(source, target):
++    return target + "=$(printf '%s' \"$" + source + "\" | base64 | tr -d '\\r\\n'); "
++
++
++def page_equality_guard(expected):
++    return page_capture('hepta_page_now') + '[ "$hepta_page_now" = ' + shlex.quote(expected) + ' ] || exit 70; '
++
++
++def return_command(serial_guard, token):
++    # Capture am's exit code immediately. All observations are read-only and
++    # cannot replace a failed launch status with the last printf/grep status.
++    shell = serial_guard + 'hepta_launch=$(am start -W -n ' + shlex.quote(HEPTA_COMPONENT) + ' 2>&1); hepta_launch_rc=$?; '
++    shell += page_capture('hepta_return_page')
++    shell += "hepta_return_viewport=$(dumpsys display | grep 'mViewports='); "
++    for source, target in [('hepta_launch', 'hepta_launch_b64'), ('hepta_return_page', 'hepta_page_b64'),
++                           ('hepta_return_viewport', 'hepta_viewport_b64')]:
++        shell += b64_variable(source, target)
++    template = '{"schema":"hepta.return-receipt.v149.1","operation_id":"' + token + '","launch_exit_code":%s,"launch_b64":"%s","page_b64":"%s","viewport_b64":"%s"}\n'
++    shell += 'printf ' + shlex.quote(template) + ' "$hepta_launch_rc" "$hepta_launch_b64" "$hepta_page_b64" "$hepta_viewport_b64"; exit "$hepta_launch_rc"'
++    return shell
++
++
++def verify_return(value, token):
++    require(isinstance(value, dict) and set(value) == {'schema', 'operation_id', 'launch_exit_code', 'launch_b64', 'page_b64', 'viewport_b64'}
++            and value['schema'] == 'hepta.return-receipt.v149.1' and value['operation_id'] == token
++            and type(value['launch_exit_code']) is int and value['launch_exit_code'] == 0,
++            'return receipt identity or launch exit status differs')
++    launch = decode_text(value['launch_b64'], 'launch receipt', 8192)
++    require(re.findall(r'^Status:\s*(\S+)\s*$', launch, re.MULTILINE) == ['ok']
++            and not re.search(r'^\s*(?:Error|Exception|SecurityException)\b', launch, re.MULTILINE),
++            'activity launch did not report one successful status')
++    activities = re.findall(r'^Activity:\s*(\S+)\s*$', launch, re.MULTILINE)
++    require(len(activities) == 1 and component(activities[0]) == HEPTA_FULL_COMPONENT,
++            'activity launch reported a different target')
++    page = decode_text(value['page_b64'], 'return page')
++    observed = page_state(page)
++    require(observed['component'] == HEPTA_FULL_COMPONENT, 'HEPTA is not the actual focused and resumed activity')
++    return observed, decode_text(value['viewport_b64'], 'return viewport')
++
++
++def public_text_command(serial_guard, token, package, path):
++    shell = serial_guard + 'umask 077; test ! -e ' + shlex.quote(path) + ' && test ! -L ' + shlex.quote(path) + ' || exit 66; '
++    cleanup = 'hepta_read_rc=$?; trap - 0; rm -f -- ' + shlex.quote(path) + ' || exit 69; exit "$hepta_read_rc"'
++    shell += 'trap ' + shlex.quote(cleanup) + ' 0; '
++    shell += page_capture('hepta_page_before')
++    shell += "hepta_vp_before=$(dumpsys display | grep 'mViewports='); "
++    shell += 'hepta_dump=$(uiautomator dump ' + shlex.quote(path) + ' 2>&1) || { printf \'%s\\n\' "$hepta_dump" >&2; exit 73; }; '
++    shell += '[ "$(wc -c < ' + shlex.quote(path) + ')" -le 196608 ] || exit 74; '
++    shell += "hepta_vp_after=$(dumpsys display | grep 'mViewports='); "
++    shell += page_capture('hepta_page_after')
++    for source, target in [('hepta_page_before', 'hepta_page_before_b64'), ('hepta_page_after', 'hepta_page_after_b64'),
++                           ('hepta_vp_before', 'hepta_vp_before_b64'), ('hepta_vp_after', 'hepta_vp_after_b64')]:
++        shell += b64_variable(source, target)
++    shell += 'hepta_xml_b64=$(base64 < ' + shlex.quote(path) + " | tr -d '\\r\\n'); "
++    template = ('{"schema":"hepta.public-text-receipt.v149.1","operation_id":"' + token + '","package":"' + package
++                + '","page_before_b64":"%s","page_after_b64":"%s","viewport_before_b64":"%s","viewport_after_b64":"%s","xml_b64":"%s"}\n')
++    shell += 'printf ' + shlex.quote(template) + ' "$hepta_page_before_b64" "$hepta_page_after_b64" "$hepta_vp_before_b64" "$hepta_vp_after_b64" "$hepta_xml_b64"'
++    return shell
++
++
++def verify_public_text(value, token, package, view_ids):
++    require(isinstance(value, dict) and set(value) == {'schema', 'operation_id', 'package', 'page_before_b64',
++            'page_after_b64', 'viewport_before_b64', 'viewport_after_b64', 'xml_b64'}
++            and value['schema'] == 'hepta.public-text-receipt.v149.1'
++            and value['operation_id'] == token and value['package'] == package,
++            'public text receipt identity differs')
++    before = decode_text(value['page_before_b64'], 'public text page before')
++    after = decode_text(value['page_after_b64'], 'public text page after')
++    require(before == after, 'public text page focus changed during observation')
++    observed = page_state(before)
++    require(observed['component'].split('/')[0] == package, 'public text target is not the focused package')
++    viewport_before = decode_text(value['viewport_before_b64'], 'public text viewport before')
++    viewport_after = decode_text(value['viewport_after_b64'], 'public text viewport after')
++    require(viewport_before == viewport_after, 'public text display changed during observation')
++    xml = decode_text(value['xml_b64'], 'public UI hierarchy', 196608)
++    require('<!DOCTYPE' not in xml and '<!ENTITY' not in xml, 'public UI XML declarations are forbidden')
++    try:
++        root = ET.fromstring(xml)
++    except ET.ParseError as error:
++        raise ProviderError('[phone_postcondition] public UI XML is malformed') from error
++    require(root.tag == 'hierarchy' and root.get('rotation') == '0', 'public UI root or rotation differs')
++    nodes = list(root.iter())
++    require(len(nodes) <= 4096 and all(node.tag in {'hierarchy', 'node'} for node in nodes), 'public UI node bound or type differs')
++    values = []
++    for view_id in view_ids:
++        matches = [node for node in nodes if node.get('resource-id') == view_id]
++        require(len(matches) == 1, 'public view is missing or ambiguous: ' + view_id)
++        node = matches[0]
++        require(node.get('package') == package and node.get('password') == 'false'
++                and node.get('enabled') == 'true' and node.get('visible-to-user', 'true') == 'true',
++                'public view package, password, visibility or enabled state differs')
++        bounds = re.fullmatch(r'\[([0-9]+),([0-9]+)\]\[([0-9]+),([0-9]+)\]', node.get('bounds', ''))
++        require(bounds is not None, 'public view bounds are missing')
++        x1, y1, x2, y2 = map(int, bounds.groups())
++        require(0 <= x1 < x2 <= 1224 and 0 <= y1 < y2 <= 2992, 'public view bounds leave the qualified screen')
++        text = node.get('text')
++        require(isinstance(text, str) and '\0' not in text and len(text.encode()) <= 4096, 'public view text is absent or oversized')
++        values.append({'view_id': view_id, 'text': text, 'utf8_sha256': hashlib.sha256(text.encode()).hexdigest(),
++                       'bounds': [x1, y1, x2, y2]})
++    return {'package': package, 'component': observed['component'], 'display_id': 0,
++            'xml_sha256': hashlib.sha256(xml.encode()).hexdigest(), 'values': values}, viewport_before
+--- a/source/provider_codex_host.py
++++ b/source/provider_codex_host.py
+@@ -25,18 +25,21 @@
+ sys.path.insert(0, str(Path(__file__).parent))
+ from provider_openai_compatible import Adapter, ProviderError, PROTOCOL, MAX_LINE, decode, known_tool_result
+ from phone_observation_tools import PhoneTools
++from model_health import ModelFailure, cli_failure
++from task_postconditions import load_contract, evaluate, terminal_fields
+ 
+ SCHEMA = {
+     "type": "object", "additionalProperties": False,
+     "properties": {
+         "kind": {"type": "string", "enum": ["tool.call", "turn.complete"]},
+         "call_id": {"type": "string"},
+-        "tool": {"type": "string", "enum": ["shell.exec", "adb.exec", "phone.screenshot", "phone.tap", "phone.input_text", "none"]},
++        "tool": {"type": "string", "enum": ["shell.exec", "adb.exec", "phone.screenshot", "phone.tap", "phone.input_text", "phone.return_hepta", "phone.read_text", "none"]},
+         "command": {"type": "string"},
+         "argv": {"type": "array", "items": {"type": "string"}},
+         "summary": {"type": "string"},
++        "task_status": {"type": "string", "enum": ["in_progress", "completed", "partial", "failed", "unknown"]},
+     },
+-    "required": ["kind", "call_id", "tool", "command", "argv", "summary"],
++    "required": ["kind", "call_id", "tool", "command", "argv", "summary", "task_status"],
+ }
+ 
+ MAX_RENDERED_TOOL_BYTES = 256 * 1024
+@@ -50,10 +53,10 @@
+     "Trusted HEPTA session navigation target for this exact installation: package "
+     "org.trillionnium.owneropen, activity org.trillionnium.owneropen/.OwnerOpenShellActivity. "
+     "This target is verified Host configuration, not untrusted screen content. When the owner "
+-    "asks to return to HEPTA, choose safe observed Back/Recents navigation or ask the Host to "
+-    "launch this verified activity as appropriate. Do not infer a HEPTA launcher from package "
+-    "names containing hepta. After the chosen return, observe the actual foreground/focus "
+-    "before claiming that the HEPTA session is back. "
++    "explicitly asks to return to HEPTA, select phone.return_hepta with command='' and argv=[]. "
++    "This typed tool launches only the verified activity once and verifies the real foreground, "
++    "focus and display. Do not substitute a guessed launcher or generic shell return. A return "
++    "is not required for a task that does not request it. "
+     "Before phone effects, verify ro.serialno is ZY22LS7WZT. Keep read-only observations concise: "
+     "use filtered foreground/current-focus, active-display and rotation fields plus wm size/density, "
+     "not full dumpsys activity or display output. You may first resolve the requested app's "
+@@ -87,6 +90,13 @@
+     "An observed hint with no entered text means an empty expected text. Do not encode base64 "
+     "yourself. The qualified Shell helper requires one visible focused non-password editor and "
+     "verifies exact text plus cleanup; it does not change the keyboard or permissions. "
++    "Input readback proves only the editor at that moment, not submission or an app receipt. "
++    "To verify public app results after confirming an operation, select phone.read_text with "
++    "command='' and argv=[exact_active_package, exact_public_view_id, optional_additional_view_ids]. "
++    "It reads at most five unique visible public text nodes from one current UI snapshot. "
++    "Never read internal app data to choose a visual control. For a visual receipt contract, "
++    "choose from the attached screenshot and complete its typed tap before reading the public "
++    "challenge/receipt pair. Only a matching real app receipt can verify that control selection. "
+     "For an image-only page, select phone.screenshot with command='' and argv=['0']; the Host "
+     "will capture the actual active inner display once and return a bounded lossy JPEG derived "
+     "from that capture. Its verified pixels are attached to your immediately following decision "
+@@ -95,7 +105,9 @@
+     "To tap a point seen in it, select phone.tap with command='' and argv=[screenshot_call_id, "
+     "x_in_encoded_image, y_in_encoded_image], with integer coordinates represented as strings. "
+     "The provider maps that point to original display pixels using the recorded dimensions, "
+-    "then the Host checks the viewport still matches before input. This consumes the image; "
++    "then the Host checks the viewport, focused page and an exact fresh PNG hash before input. "
++    "A changed page, overlay or any changed pixel prevents input; do not repeat a failed effect. "
++    "This conservative guard can reject an animated page or changed status clock. This consumes the image; "
+     "after any action, obtain a new explicit screenshot to verify the resulting visual UI. "
+     "Never pass original-display coordinates to phone.tap and never use an old image after "
+     "another tool result or a display change. Do not bypass screenshot binding with a guessed "
+@@ -206,14 +218,14 @@
+     """
+     kind = event.get("type")
+     if kind == "turn.failed":
+-        raise ProviderError("Codex turn failed; no fallback or retry")
++        raise cli_failure(event)
+     if kind != "error":
+         return previous_attempt
+     message = event.get("message")
+     match = (re.fullmatch(r"Reconnecting\.\.\. ([1-5])/5 \(request timed out\)", message)
+              if set(event) == {"type", "message"} and isinstance(message, str) else None)
+     if match is None:
+-        raise ProviderError("Codex turn failed; no fallback or retry")
++        raise cli_failure(event)
+     attempt = int(match.group(1))
+     if not 0 <= previous_attempt < attempt <= 5:
+         raise ProviderError("Codex reconnect diagnostic exceeds its monotonic bound")
+@@ -239,6 +251,9 @@
+         self.pending_call_id = None
+         self.terminal = None
+         self.phone_tools = PhoneTools(self.run_dir, self.atomic_record)
++        self.task_contract = None
++        self.model_task_status = "unknown"
++        self.accepted_identity = None
+ 
+     def reader(self):
+         # The serial host relay reads its socket in receive(), without a blocked
+@@ -266,6 +281,12 @@
+     def emit(self, kind, **fields):
+         if self.terminal is not None:
+             raise ProviderError("provider already persisted a terminal")
++        if kind in {"turn.complete", "turn.cancelled", "turn.fail"}:
++            outcome = evaluate(self.task_contract, list(self.phone_tools.verified_facts.values()),
++                               self.phone_tools.last_result_call_id, self.model_task_status, kind)
++            kind, fields = terminal_fields(kind, fields, outcome, bool(self.dispatched_calls))
++            outcome.update(emitted_protocol_terminal=kind, identity=self.accepted_identity)
++            self.atomic_record(self.run_dir / "business-outcome.json", outcome)
+         raw = json.dumps({"protocol": PROTOCOL, "kind": kind,
+                           "seq": self.out_seq, **fields}, ensure_ascii=False,
+                          separators=(",", ":")) + "\n"
+@@ -367,7 +388,16 @@
+             finally:
+                 os.close(parent)
+             self.claimed = True
+-            self.phone_tools.bind({name: turn[name] for name in names})
++            self.accepted_identity = {name: turn[name] for name in names}
++            self.phone_tools.bind(self.accepted_identity)
++            self.task_contract = load_contract(getattr(self.args, 'contracts', None), turn,
++                                               str(turn.get('user_input', '')))
++            self.phone_tools.visual_read_constraints = [condition for condition in
++                (self.task_contract['contract']['postconditions'] if self.task_contract else [])
++                if condition['kind'] == 'visual_receipt_matches_challenge']
++            self.atomic_record(self.run_dir / 'task-contract.json',
++                               self.task_contract or {'status': 'no_trusted_contract',
++                                                      'business_verified': False})
+         return value
+ 
+     def completion(self, messages):
+@@ -390,9 +420,16 @@
+             "be empty. Do not fabricate results. Once a tool result is accepted, never repeat "
+             "its effect for uncertainty, cancellation, transport loss or failure. For completion "
+             "set tool=none, command='', argv=[], call_id='' and report the observed evidence. "
++            "For tool calls task_status must be in_progress. For completion task_status must be "
++            "completed, partial, failed or unknown. Use completed only when the requested task is "
++            "fully observed; partial/failed/unknown produce a non-success terminal. A tool or CLI "
++            "exit0 alone is not business success. "
+             "Do not invoke the Codex CLI's own tools, read its filesystem or search its host. "
+             + PHONE_UI_INSTRUCTION + "Trusted current phone turn scope (non-secret identifiers): "
+-            + json.dumps(trusted_turn_scope, ensure_ascii=False) + ". UI dump path prefix: "
++            + json.dumps(trusted_turn_scope, ensure_ascii=False)
++            + ". Trusted task postconditions (null means no independent business qualification): "
++            + json.dumps(self.task_contract["contract"]["postconditions"] if self.task_contract else None, ensure_ascii=False)
++            + ". UI dump path prefix: "
+             + ui_dump_prefix + ". Append only this call's safe call_id/nonce and .xml. "
+             + "The following JSON is the actual turn transcript, including externally returned tool evidence:\n"
+             + json.dumps(model_messages, ensure_ascii=False)
+@@ -439,7 +476,7 @@
+                 if self.cancelled.is_set():
+                     return None
+                 if time.monotonic() >= deadline:
+-                    raise ProviderError("Codex deadline expired; result unknown; no retry")
++                    raise ModelFailure("model_timeout")
+                 if answer_path.exists() and answer_path.stat().st_size > MAX_LINE:
+                     raise ProviderError("Codex structured decision exceeds file bound")
+                 for ready, _mask in streams.select(0.01):
+@@ -463,7 +500,7 @@
+                                 raise ProviderError("Codex output exceeded streaming byte bound")
+                             target.extend(chunk)
+                             if name == "stderr" and b'"invalid_request_error"' in stderr:
+-                                raise ProviderError("Codex backend rejected the request; no fallback or retry")
++                                raise ModelFailure("request_rejected")
+                             if name == "stdout":
+                                 event_partial.extend(chunk)
+                                 while b"\n" in event_partial:
+@@ -492,7 +529,7 @@
+                 for event in events:
+                     final_reconnect_attempt = advance_cli_error_diagnostic(event, final_reconnect_attempt)
+                 if process.returncode or not any(x.get("type") == "turn.completed" for x in events):
+-                    raise ProviderError("Codex turn failed; no fallback or retry")
++                    raise ModelFailure("unknown_model_failure")
+                 allowed_items = {"agent_message", "reasoning"}
+                 if any(isinstance(x.get("item"), dict) and x["item"].get("type") not in allowed_items and not selected_tool_disable_notice(x["item"]) for x in events):
+                     raise ProviderError("Codex used an unselected host tool; decision rejected")
+@@ -501,23 +538,28 @@
+                 decision = decode(answer_path.read_bytes())
+                 if set(decision) != set(SCHEMA["required"]):
+                     raise ProviderError("Codex decision fields differ")
+-                if (any(not isinstance(decision[name], str) for name in ("kind", "call_id", "tool", "command", "summary"))
++                if (any(not isinstance(decision[name], str) for name in ("kind", "call_id", "tool", "command", "summary", "task_status"))
+                         or not isinstance(decision["argv"], list)
+                         or any(not isinstance(arg, str) for arg in decision["argv"])):
+                     raise ProviderError("Codex decision value types differ")
+                 message = {"role": "assistant", "content": decision["summary"]}
+                 if decision["kind"] == "turn.complete":
++                    if decision["task_status"] not in {"completed", "partial", "failed", "unknown"}:
++                        raise ProviderError("completion task status differs")
++                    self.model_task_status = decision["task_status"]
+                     if (decision["tool"] != "none" or decision["command"] or decision["argv"]
+                             or decision["call_id"]):
+                         raise ProviderError("completion contains tool effect fields")
+                 elif decision["kind"] == "tool.call":
++                    if decision["task_status"] != "in_progress":
++                        raise ProviderError("tool decision task status must be in_progress")
+                     if decision["tool"] == "shell.exec" and not decision["argv"]:
+                         self.phone_tools.invalidate()
+                         name, arguments = "shell_exec", {"command": decision["command"]}
+                     elif decision["tool"] == "adb.exec" and not decision["command"]:
+                         self.phone_tools.invalidate()
+                         name, arguments = "adb_exec", {"argv": decision["argv"]}
+-                    elif decision["tool"] in {"phone.screenshot", "phone.tap", "phone.input_text"}:
++                    elif decision["tool"] in {"phone.screenshot", "phone.tap", "phone.input_text", "phone.return_hepta", "phone.read_text"}:
+                         name, arguments = "adb_exec", {"argv": self.phone_tools.map(decision)}
+                     else:
+                         raise ProviderError("tool selection or argument fields differ")
+@@ -638,3 +680,4 @@
+     if not 1 <= args.timeout <= 300 or not 1 <= args.port <= 65535 or not 512 * MAX_LINE <= args.max_evidence_bytes <= 16 * 1024 * MAX_LINE:
+         p.error("timeout or loopback port exceeds service bound")
+     serve(args)
++
+--- /dev/null
++++ b/source/task_postconditions.py
+@@ -0,0 +1,261 @@
++"""Trusted, request-bound business postconditions; no new wire fields.
++
++The operator may pre-create a private contract for a new semantic turn. Model
++text cannot create or relax it. Protocol completion is distinct from verified
++business completion. Facts are verified native receipts, never model claims.
++"""
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import stat
++
++from provider_openai_compatible import ProviderError
++
++IDENTITY = ('session_id', 'profile_id', 'task_id', 'turn_id')
++SHA = re.compile(r'[0-9a-f]{64}\Z')
++ID = re.compile(r'[A-Za-z0-9_-]{1,64}\Z')
++PACKAGE = re.compile(r'[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+\Z')
++VIEW = re.compile(r'[A-Za-z][A-Za-z0-9_.]*:id/[A-Za-z0-9_]+\Z')
++
++
++def require(ok, reason):
++    if not ok:
++        raise ProviderError('task contract: ' + reason)
++
++
++def identity_key(identity):
++    return hashlib.sha256(json.dumps([identity[name] for name in IDENTITY],
++                                    separators=(',', ':')).encode()).hexdigest()
++
++
++def request_hash(text):
++    return hashlib.sha256(text.encode()).hexdigest()
++
++
++def private_directory(directory):
++    info = directory.lstat()
++    require(stat.S_ISDIR(info.st_mode) and info.st_uid == os.getuid()
++            and stat.S_IMODE(info.st_mode) == 0o700 and directory.resolve() == directory,
++            'directory must be private and canonical')
++
++
++def private_json(path):
++    try:
++        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
++    except FileNotFoundError:
++        return None
++    try:
++        info = os.fstat(fd)
++        require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and info.st_uid == os.getuid()
++                and stat.S_IMODE(info.st_mode) == 0o600 and 0 < info.st_size <= 16384,
++                'file identity or size differs')
++        raw = os.read(fd, 16385)
++        after, named = os.fstat(fd), path.lstat()
++        fields = ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns', 'st_nlink')
++        require(len(raw) == info.st_size and all(getattr(info, key) == getattr(after, key)
++                == getattr(named, key) for key in fields), 'file changed while read')
++    finally:
++        os.close(fd)
++    def unique(items):
++        result = {}
++        for key, value in items:
++            require(key not in result, 'duplicate key')
++            result[key] = value
++        return result
++    value = json.loads(raw, object_pairs_hook=unique)
++    require(isinstance(value, dict), 'JSON object required')
++    return value, hashlib.sha256(raw).hexdigest()
++
++
++def validate_conditions(conditions):
++    require(isinstance(conditions, list) and 1 <= len(conditions) <= 8, 'postcondition count differs')
++    seen = set()
++    for condition in conditions:
++        require(isinstance(condition, dict) and isinstance(condition.get('id'), str)
++                and ID.fullmatch(condition['id']) and condition['id'] not in seen, 'condition id differs')
++        seen.add(condition['id'])
++        kind = condition.get('kind')
++        if kind == 'foreground_hepta':
++            require(set(condition) == {'id', 'kind'}, 'foreground fields differ')
++        elif kind in {'text_readback_exact', 'public_text_exact'}:
++            require(set(condition) == {'id', 'kind', 'package', 'view_id', 'utf8_sha256'}
++                    and isinstance(condition['package'], str) and PACKAGE.fullmatch(condition['package'])
++                    and isinstance(condition['view_id'], str) and VIEW.fullmatch(condition['view_id'])
++                    and isinstance(condition['utf8_sha256'], str) and SHA.fullmatch(condition['utf8_sha256']),
++                    'text readback fields differ')
++        elif kind == 'visual_receipt_matches_challenge':
++            require(set(condition) == {'id', 'kind', 'package', 'challenge_view_id', 'receipt_view_id', 'receipt_prefix', 'challenge_prefix'}
++                    and isinstance(condition['package'], str) and PACKAGE.fullmatch(condition['package'])
++                    and all(isinstance(condition[key], str) and VIEW.fullmatch(condition[key])
++                            for key in ('challenge_view_id', 'receipt_view_id'))
++                    and condition['challenge_view_id'] != condition['receipt_view_id']
++                    and isinstance(condition['receipt_prefix'], str)
++                    and 0 < len(condition['receipt_prefix'].encode()) <= 256 and '\0' not in condition['receipt_prefix']
++                    and isinstance(condition['challenge_prefix'], str)
++                    and 0 < len(condition['challenge_prefix'].encode()) <= 256 and '\0' not in condition['challenge_prefix'],
++                    'visual public receipt fields differ')
++        else:
++            raise ProviderError('task contract: unsupported postcondition')
++
++
++def write_exclusive(path, value):
++    raw = (json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':')) + '\n').encode()
++    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
++    try:
++        with os.fdopen(fd, 'wb', closefd=False) as stream:
++            stream.write(raw)
++            stream.flush()
++            os.fsync(fd)
++    finally:
++        os.close(fd)
++    parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
++    try:
++        os.fsync(parent)
++    finally:
++        os.close(parent)
++    return hashlib.sha256(raw).hexdigest()
++
++
++def validate_template(value):
++    require(set(value) == {'schema', 'expected_scope', 'request_sha256', 'nonce', 'postconditions', 'coverage'}
++            and value['schema'] == 'hepta.task-template.v149.1', 'template schema differs')
++    scope = value['expected_scope']
++    require(isinstance(scope, dict) and set(scope) == {'session_id', 'profile_id'}
++            and all(isinstance(item, str) and 0 < len(item.encode()) <= 256 and '\0' not in item
++                    for item in scope.values()), 'template scope differs')
++    require(isinstance(value['request_sha256'], str) and SHA.fullmatch(value['request_sha256'])
++            and isinstance(value['nonce'], str)
++            and re.fullmatch(r'[A-Za-z0-9_-]{16,64}', value['nonce']), 'template request hash or nonce differs')
++    require(value['coverage'] in {'entire_request', 'declared_postconditions_only'}, 'template coverage differs')
++    validate_conditions(value['postconditions'])
++
++
++def load_contract(directory, identity, request):
++    if directory is None:
++        return None
++    directory = Path(directory)
++    if not directory.exists():
++        return None
++    private_directory(directory)
++    exact = private_json(directory / (identity_key(identity) + '.json'))
++    if exact is not None:
++        value, source_sha = exact
++        require(set(value) == {'schema', 'identity', 'request_sha256', 'postconditions', 'coverage'}
++                and value['schema'] == 'hepta.task-contract.v149.1', 'schema differs')
++        require(value['identity'] == {key: identity[key] for key in IDENTITY}
++                and value['request_sha256'] == request_hash(request), 'turn or request binding differs')
++        validate_conditions(value['postconditions'])
++        require(value['coverage'] in {'entire_request', 'declared_postconditions_only'}, 'contract coverage differs')
++        return {'contract': value, 'source_sha256': source_sha, 'binding_kind': 'exact_identity'}
++    templates, bindings = directory/'templates', directory/'bindings'
++    if not templates.exists():
++        return None
++    private_directory(templates)
++    template = private_json(templates / (request_hash(request) + '.json'))
++    if template is None:
++        return None
++    value, template_sha = template
++    validate_template(value)
++    require(value['request_sha256'] == request_hash(request) and request.count(value['nonce']) == 1
++            and value['expected_scope'] == {key: identity[key] for key in ('session_id', 'profile_id')},
++            'template request, nonce or known scope differs')
++    private_directory(bindings)
++    bound_identity = {key: identity[key] for key in IDENTITY}
++    binding = {'schema': 'hepta.task-template-binding.v149.1', 'identity': bound_identity,
++               'request_sha256': value['request_sha256'], 'template_sha256': template_sha,
++               'nonce': value['nonce'], 'state': 'consumed_no_reuse'}
++    try:
++        binding_sha = write_exclusive(bindings / (value['request_sha256'] + '.json'), binding)
++    except FileExistsError as error:
++        raise ProviderError('task contract: one-time request template already consumed; no task dispatch') from error
++    contract = {'schema': 'hepta.task-contract.v149.1', 'identity': bound_identity,
++                'request_sha256': value['request_sha256'], 'postconditions': value['postconditions'], 'coverage': value['coverage']}
++    contract_sha = hashlib.sha256(json.dumps(contract, sort_keys=True, ensure_ascii=False,
++                                           separators=(',', ':')).encode()).hexdigest()
++    return {'contract': contract, 'source_sha256': contract_sha,
++            'binding_kind': 'one_time_request_template', 'template_sha256': template_sha,
++            'binding_sha256': binding_sha}
++
++
++def evaluate(contract, facts, last_result_call_id, model_status, protocol_kind):
++    checks = []
++    for condition in (contract['contract']['postconditions'] if contract else []):
++        if condition['kind'] == 'foreground_hepta':
++            candidates = [fact for fact in facts if fact['kind'] == 'foreground_hepta'
++                          and fact['call_id'] == last_result_call_id]
++        elif condition['kind'] == 'text_readback_exact':
++            # Exact readback is a receipt at that point in the task, not an
++            # assertion that app state persists after later navigation.
++            candidates = [fact for fact in facts if fact['kind'] == 'text_readback_exact'
++                          and fact['package'] == condition['package'] and fact['view_id'] == condition['view_id']]
++            if candidates:
++                candidates = candidates[-1:]
++            candidates = [fact for fact in candidates if fact['utf8_sha256'] == condition['utf8_sha256']]
++        elif condition['kind'] == 'public_text_exact':
++            candidates = []
++            for fact in facts:
++                if fact['kind'] != 'public_text_observation' or fact['package'] != condition['package']:
++                    continue
++                for value in fact['values']:
++                    if value['view_id'] == condition['view_id']:
++                        candidates.append({**fact, 'matched_value': value})
++            if candidates:
++                candidates = candidates[-1:]
++            candidates = [fact for fact in candidates if fact['matched_value']['utf8_sha256'] == condition['utf8_sha256']]
++        else:
++            candidates, last_tap = [], None
++            for fact in facts:
++                if fact['kind'] == 'visual_tap_executed' and fact['package'] == condition['package']:
++                    last_tap = fact
++                if fact['kind'] != 'public_text_observation' or fact['package'] != condition['package']:
++                    continue
++                values = {value['view_id']: value for value in fact['values']}
++                if condition['challenge_view_id'] not in values or condition['receipt_view_id'] not in values:
++                    continue
++                challenge, receipt = values[condition['challenge_view_id']], values[condition['receipt_view_id']]
++                # Qualified control-probe format: literal trusted prefix,
++                # then exactly one eight-character uppercase hexadecimal code.
++                # Never strip whitespace, normalize case, or pick one of many.
++                text = challenge['text']
++                code = text[len(condition['challenge_prefix']):] if text.startswith(condition['challenge_prefix']) else ''
++                matched = bool(last_tap and re.fullmatch(r'[0-9A-F]{8}', code)
++                               and receipt['text'] == condition['receipt_prefix'] + code)
++                # The latest pair in one public snapshot is authoritative;
++                # older good receipts never override a later mismatch.
++                candidates = [{**fact, 'matched_challenge': challenge, 'matched_receipt': receipt,
++                               'preceding_visual_tap': last_tap}] if matched else []
++        checks.append({'id': condition['id'], 'kind': condition['kind'], 'satisfied': bool(candidates),
++                       'evidence': candidates[-1] if candidates else None})
++    conditions_verified = bool(contract and checks and all(check['satisfied'] for check in checks))
++    verified = bool(conditions_verified and contract['contract']['coverage'] == 'entire_request'
++                    and model_status == 'completed' and protocol_kind == 'turn.complete')
++    status = ('verified' if verified else 'unverified_no_contract' if not contract
++              else 'partial' if any(check['satisfied'] for check in checks) else 'unverified')
++    return {'schema': 'hepta.business-outcome.v149.1', 'business_verified': verified,
++            'status': status, 'model_reported_status': model_status,
++            'requested_protocol_terminal': protocol_kind,
++            'coverage': contract['contract']['coverage'] if contract else None,
++            'postconditions_verified': conditions_verified,
++            'contract_sha256': contract['source_sha256'] if contract else None,
++            'postconditions': checks, 'verified_facts': facts,
++            'missing_postconditions': [item['id'] for item in checks if not item['satisfied']],
++            'native_completed_is_business_success': False}
++
++
++def terminal_fields(kind, fields, outcome, has_actions):
++    """Return only existing turn.* fields accepted by the native protocol."""
++    if kind != 'turn.complete':
++        return kind, fields
++    model_status = outcome['model_reported_status']
++    contract_failed = outcome['contract_sha256'] is not None and not outcome['business_verified']
++    if contract_failed or model_status in {'partial', 'failed', 'unknown'}:
++        missing = ', '.join(outcome['missing_postconditions']) or (
++            '合约只覆盖列出的局部后条件，尚不能确认整项任务' if outcome['coverage'] == 'declared_postconditions_only'
++            else '模型报告任务尚未完成或无法确认')
++        return 'turn.fail', {'error': '[business_not_verified] 业务未完成或仅部分完成；未验证后条件：'
++                            + missing + '。已执行动作不会自动重放。'}
++    prefix = ('[业务已按明确后条件验证] ' if outcome['business_verified'] else
++              '[业务未独立验证；流程已结束] ' if has_actions else '[无动作；业务未独立验证] ')
++    return kind, {'summary': prefix + str(fields.get('summary', ''))}
+--- /dev/null
++++ b/register_task_contract.py
+@@ -0,0 +1,55 @@
++#!/usr/bin/env python3
++"""Register an operator-owned one-time task contract; no device/model access.
++
++The exact UTF8 request file must include its fresh nonce once. Use the exact
++same bytes in a new UI Send. Admission later binds the generated task/turn IDs.
++No existing template or consumed binding is overwritten or removed.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import sys
++
++sys.path.insert(0, str(Path(__file__).resolve().parent/'source'))
++from task_postconditions import (private_directory, validate_template, write_exclusive,
++                                 request_hash, require)
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument('--state', type=Path, required=True)
++    parser.add_argument('--request-file', type=Path, required=True)
++    parser.add_argument('--postconditions-file', type=Path, required=True)
++    parser.add_argument('--session-id', required=True)
++    parser.add_argument('--profile-id', required=True)
++    parser.add_argument('--nonce', required=True)
++    parser.add_argument('--coverage', choices=['entire_request', 'declared_postconditions_only'],
++                        default='declared_postconditions_only')
++    args = parser.parse_args()
++    state = args.state.absolute()
++    private_directory(state)
++    raw = args.request_file.read_bytes()
++    require(0 < len(raw) <= 512*1024 and b'\0' not in raw, 'request file size or text differs')
++    request = raw.decode('utf-8', errors='strict')
++    require(request.count(args.nonce) == 1, 'fresh nonce must occur exactly once in the request')
++    conditions = json.loads(args.postconditions_file.read_bytes())
++    template = {'schema': 'hepta.task-template.v149.1',
++                'expected_scope': {'session_id': args.session_id, 'profile_id': args.profile_id},
++                'request_sha256': request_hash(request), 'nonce': args.nonce,
++                'postconditions': conditions, 'coverage': args.coverage}
++    validate_template(template)
++    contracts = state/'task-contracts'
++    for directory in (contracts, contracts/'templates', contracts/'bindings'):
++        directory.mkdir(mode=0o700, exist_ok=True)
++        private_directory(directory)
++    target = contracts/'templates'/(template['request_sha256']+'.json')
++    require(not (contracts/'bindings'/target.name).exists(), 'request nonce already consumed')
++    source_sha = write_exclusive(target, template)
++    print(json.dumps({'status': 'registered_one_time_request_contract', 'path': str(target),
++                      'template_sha256': source_sha, 'request_sha256': template['request_sha256'],
++                      'phone_operations': 0, 'model_operations': 0}, ensure_ascii=False))
++
++
++if __name__ == '__main__':
++    main()

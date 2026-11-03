@@ -1,0 +1,33 @@
+{
+  "schema": "razr60-hepta49-linux-input-pins-v1",
+  "compiler_inputs": {
+    "sdk": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/android.jar",
+      "sha256": "4f3d35e16d20fda03abdc7f81b49ab50010742fb5effc51b821b4b9646697ead"
+    },
+    "aapt2": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/aapt2",
+      "sha256": "3f7b9e7b6568c08aea46dac795a66af6b98d9dbb959b6282149c434e4d210df8"
+    },
+    "zipalign": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/tools/linux/bin/zipalign",
+      "sha256": "2f5ebdded1fe910913926ac486c4cf3eef9874c6a7a1d1480875c9375a478ca4"
+    },
+    "d8": {
+      "path": "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/R8_9_3_27/r8-9.3.27.jar",
+      "sha256": "8a2b7d414c3b5542ec6a7fcc61d45c8728163b3a9ed37a072d58ac53e614a40a"
+    },
+    "system_modules": {
+      "path": "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/system",
+      "sha256": "3897cbb1bc984057f7636d545c9c2219fede95bf871e1cd775c0969c9ef1cc7b"
+    }
+  },
+  "system_modules_preparation": {
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/core-for-system-modules.jar": "f31de8c02da7ef7f610c5026e129bcbb4f698db9303eca1ed2c46995a51293ad",
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/javac": "18351d7a271f6b8bd17f9e8fef6bb04baa7cf008cbc8a3a782a93a2f5c48ecfa",
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/jmod": "46d1963813dfd5141c44d89a25382861f105dfabb0448a41db188444536428bc",
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/jlink": "cf5cfcaf7762d1ea0bced4cf1505ccc9f8ebade87d4dfd3f7870b2b86e96b5d1"
+  },
+  "original_installed_system_modules_sha256": "0c6b79c98ed6415dc44fdec2c4741a2b598a75dc75fe69ef61a3d26713633729",
+  "missing_original_system_modules": true
+}

@@ -1,0 +1,1736 @@
+{
+  "schema": "razr60-unified-source-manifest-v149.1",
+  "created_utc": "2026-11-03T10:39:13.496538+00:00",
+  "files": [
+    {
+      "path": "BACKEND-SOURCE-PART-MANIFEST.json",
+      "bytes": 77928,
+      "sha256": "a864627d63c09ea41622217eeacbbe32c1a01078e9d6de5eab1386f90a61cbb9"
+    },
+    {
+      "path": "BUILD.md",
+      "bytes": 7863,
+      "sha256": "18f3843d62867688b1cf9f06f09fea1e72d308f2156f2d862e55e7e972e9018f"
+    },
+    {
+      "path": "NATIVE-SOURCE-PART-MANIFEST.json",
+      "bytes": 4780,
+      "sha256": "610f72d4d6c1a21b2c1037fb848e4b2000d5ab5cf2367e4aab54cfda0b566038"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9696,
+      "sha256": "d62acd0f50499e6c182df27b9d6dcb7214249ddbcc1c4603d79f149a9a533450"
+    },
+    {
+      "path": "SOURCE-PART-MANIFEST.json",
+      "bytes": 32269,
+      "sha256": "52c3d99b6488e8e2314e39c6196efe48e477ff160fc65e4d20bcfbb787b87931"
+    },
+    {
+      "path": "VERSION.json",
+      "bytes": 7115,
+      "sha256": "3350899676864c851170ab8f94f35770d52a8512d9dc1c55d397b6da31945e92"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/ROOT-OPERATING-CONTRACT.md",
+      "bytes": 3708,
+      "sha256": "da89258f0e424d0ba34b359828febf29d0c9edffa6f8ac878d8d232a15f5e165"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/SOURCE-SEAL.json",
+      "bytes": 9885,
+      "sha256": "7d93b46cbbe6bc1d60361c51a52e2591cd1b1d4b28f4b4d58a5903735e58b231"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/build_unsigned.py",
+      "bytes": 4209,
+      "sha256": "3d0c8810ef8f545654495da842ff014aff021d804e974f87654be003bb7fc6cc"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/AndroidManifest.xml",
+      "bytes": 1582,
+      "sha256": "82ec4f79ec0f85abf59e0d52f96c9368dac316c282e5ba2cd17c3b4c72b2f4da"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/drawable/ic_hepta_entry.xml",
+      "bytes": 452,
+      "sha256": "1dd83407c1cd604c046b850486470468bdbc7c70b3636350a81e4d20f859aad8"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/drawable/widget_background.xml",
+      "bytes": 178,
+      "sha256": "10f7e4ee18b100cf85fe768967ffda900ca2ecc5766b1c4d316321a810c1e25d"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/layout/hepta_entry_widget.xml",
+      "bytes": 1163,
+      "sha256": "82311bf62599c6aed6f07bb47bc63b44e61950123d5b3bde2946ad7f13c36fef"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/values/strings.xml",
+      "bytes": 1281,
+      "sha256": "3d882216e31676782975c47d09eabe9034b941e2ec2e306804abbcd26cbad75c"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/res/xml/hepta_entry_widget.xml",
+      "bytes": 424,
+      "sha256": "21409d65f1ac0a7737d7816958cc5e6615938cb392f40caf6913c0653f240c46"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/EntryIntents.java",
+      "bytes": 1164,
+      "sha256": "19ca8bbf559bbe0be9507b98b1c194cedc0c3a3a37971ac1b6bc7e46bd4cb070"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/EntrySetupActivity.java",
+      "bytes": 6117,
+      "sha256": "5825a938f0d93df12c42664a9f87979707365d68436259b260666b5d1edbf7ff"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/HeptaEntryWidget.java",
+      "bytes": 930,
+      "sha256": "0a6c78bfb92f5ec56f43b4f00f71cb65fe9cb8f01f623aab66c1b7dd3acd5ade"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/OpenHeptaActivity.java",
+      "bytes": 1252,
+      "sha256": "0e6bdd7c54af6413dc390aa96e312d06bd7c5fdd7d127c8c8b4b72e958c67fe2"
+    },
+    {
+      "path": "android/desktop-sidecar-v145/source/src/org/trillionnium/hepta/entry/ShortcutPinnedReceiver.java",
+      "bytes": 1099,
+      "sha256": "28db2abdb1f84bf267c745ee38fa376aec73bcf9f4c0841dcb40ea953190f8d6"
+    },
+    {
+      "path": "android/hepta49/build_hepta.py",
+      "bytes": 13963,
+      "sha256": "ed7007635fe69bb0337bceef15d1d5787d72bb5d02b3d71ed151891871465714"
+    },
+    {
+      "path": "android/hepta49/prepare_system_modules.py",
+      "bytes": 3841,
+      "sha256": "ebd8143577fc70f843c3b2815e3fe238ce0b01fece0fc647b18bcf63583322cf"
+    },
+    {
+      "path": "android/hepta49/rebuild_unsigned.py",
+      "bytes": 2113,
+      "sha256": "0a422d2a3660de2ceafb616b1daa0abaf8d28f64dadc29b377a8da6ec318bd61"
+    },
+    {
+      "path": "android/hepta49/source/AndroidManifest.xml",
+      "bytes": 2784,
+      "sha256": "1e748b29bdbace4e4b554b1a4ca2ccf33f52e25e12e7d9034b7687b016cc2a43"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_back.xml",
+      "bytes": 336,
+      "sha256": "c0e09711f8eb496d83421c9ec5a907bd5cf03504839eed2214c1d15f9ccf9343"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_chevron.xml",
+      "bytes": 311,
+      "sha256": "ef3101c6db93f1eb1f47c375993463e9b8caccb4f91be47d298b33bed4f0be35"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_connect.xml",
+      "bytes": 447,
+      "sha256": "aed7273b4a03f2dfed91677d7f75370d3cfb7b7de55ee5b8cef7fe59a950e3bb"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_conversation.xml",
+      "bytes": 447,
+      "sha256": "6dfe2254cd13c27312c26ce7e7b327bba541cc5e77ce737bafed0f9a8669556d"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_history.xml",
+      "bytes": 554,
+      "sha256": "9050bcc4b7e2bc6df562d8c9d6340196573ad5d0721d5e1826892eac8fbcd14c"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_play.xml",
+      "bytes": 278,
+      "sha256": "4dd29f0c5823d8cc2d522ec9d4c7ba780aa182b0dbc2f58a97624605bad5091b"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_settings.xml",
+      "bytes": 659,
+      "sha256": "fac1f966981c74b4fc6db651a975192cc2e22dad620b06605c7dced7fedc9ded"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_status.xml",
+      "bytes": 512,
+      "sha256": "217afc88f093b03a1d2ecb9e1b545a8e2c5514aef7865f0e90afea3ef8adcac1"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_stop.xml",
+      "bytes": 284,
+      "sha256": "5b0ad8538a13f5f652f446236ae2036af406c7eba41ef3eadacbf00726713f10"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/hepta_ic_task.xml",
+      "bytes": 477,
+      "sha256": "70018117771ae9d21c8cea8e8929c0a4062f03304bb111630cc139c43bf03f06"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/ic_hepta_launcher_background.xml",
+      "bytes": 392,
+      "sha256": "2e7c1b5dc4fe6b6043a9d41fbd7231759695df49249a14bb2eabf5e219000fc8"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/ic_hepta_launcher_foreground.xml",
+      "bytes": 565,
+      "sha256": "74b5353e744a5fa6fc6e1aa647278cbfedbe3d3e6768d46755f904571bf425c6"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/ic_owner_open_entry.xml",
+      "bytes": 447,
+      "sha256": "6dfe2254cd13c27312c26ce7e7b327bba541cc5e77ce737bafed0f9a8669556d"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/oem_motoexternaldisplaylauncher_ic_send.xml",
+      "bytes": 374,
+      "sha256": "c40c1f204dd229c16d6a2548ab13d42dbf016443f930a81a81c74ce84b430684"
+    },
+    {
+      "path": "android/hepta49/source/res/drawable/oem_motosystemui_ic_more_vert.xml",
+      "bytes": 466,
+      "sha256": "f41f3b5baddf706babbc2792a24fdf07ad15cfb8bf1b50e572274287d7a9aa73"
+    },
+    {
+      "path": "android/hepta49/source/res/mipmap-anydpi/ic_hepta_launcher.xml",
+      "bytes": 681,
+      "sha256": "88776b48c0a0d057d4d4c472b6e411c4c17f95229431935e5aa133ce96449b9d"
+    },
+    {
+      "path": "android/hepta49/source/res/mipmap-anydpi-v26/ic_hepta_launcher.xml",
+      "bytes": 320,
+      "sha256": "b8b1697fbb2498a4f01a34f3a4937da68bc70506382314e49455fc009a707bbd"
+    },
+    {
+      "path": "android/hepta49/source/res/values/hepta_colors.xml",
+      "bytes": 677,
+      "sha256": "29b792d602e7bd42031033f28c4e4aae29fbf8cdf7e8cf80ef9396b212fa9d9c"
+    },
+    {
+      "path": "android/hepta49/source/res/values/oem_ui_colors.xml",
+      "bytes": 273,
+      "sha256": "fc0968b4f939f746515287151affe4d9240d947ec0498035280b3825d26dd736"
+    },
+    {
+      "path": "android/hepta49/source/res/values/oem_ui_dimens.xml",
+      "bytes": 515,
+      "sha256": "7e2e6017fcba09cd7744563f8063f507adbaf8a0804b5b45bbc894c8b81455eb"
+    },
+    {
+      "path": "android/hepta49/source/res/values/strings.xml",
+      "bytes": 1276,
+      "sha256": "262196f2d69719d7398e0fec2854f9d537faca07d1cf16fc9beab1ff6d9c97d6"
+    },
+    {
+      "path": "android/hepta49/source/res/values/styles.xml",
+      "bytes": 752,
+      "sha256": "fc5104102ff04effbf2bb5ab34e5e029fcd2d7ec78435d049f3b9d92b45ef8c9"
+    },
+    {
+      "path": "android/hepta49/source/res/values/ui_ids.xml",
+      "bytes": 590,
+      "sha256": "e9be33a7c3872fa918c83cc4eff57c82106657a496fb0ef95e9813661c7206cc"
+    },
+    {
+      "path": "android/hepta49/source/res/values-night/hepta_colors.xml",
+      "bytes": 677,
+      "sha256": "56a5fc38c0e6bb5c2c18cab65128aa2afea89fba7f11d0839365a483d31b4c2a"
+    },
+    {
+      "path": "android/hepta49/source/res/values-night/oem_ui_colors.xml",
+      "bytes": 273,
+      "sha256": "46e38b4ed9cea4f25cb97ed495ad2a38751bb5a2c256610362291fedec3f924a"
+    },
+    {
+      "path": "android/hepta49/source/res/values-night/styles.xml",
+      "bytes": 748,
+      "sha256": "f8f8c32b713f01071ec31c4d46171ee61ef72ac44da96b93ec9ea17c1f6a96d1"
+    },
+    {
+      "path": "android/hepta49/source/res/values-zh-rCN/strings.xml",
+      "bytes": 1148,
+      "sha256": "feb32b18fc0c4ad764e4097b654a72b4dc6fc1dccb64bae5adb1cc81ef90208e"
+    },
+    {
+      "path": "android/hepta49/source/res/values-zh-rCN/systemui_entry.xml",
+      "bytes": 623,
+      "sha256": "7cd54747ff80d5c592fe6ed4cd70ea7938139e98f65a33b3bddb00ad9da3a82e"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClient.java",
+      "bytes": 11700,
+      "sha256": "a7ca75383202a0194f2b0844f8f8e55104170a0a13e06e0d2cf71be64c05160a"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClientState.java",
+      "bytes": 8618,
+      "sha256": "f754b2803fd3bc58fe35052a2d73ec2aaebe533ceddf5d9fdd3262cd2dabb41e"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClientStateCodec.java",
+      "bytes": 7529,
+      "sha256": "c7427d0f0be41f77530c4bb71dfc80d503404610d9be2683f5b841f657fcf7fc"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClientStateStore.java",
+      "bytes": 12868,
+      "sha256": "85cde8447c88c4b9cae2959ad3976413c8e851e36f1b8ca9e11f15e982e6b06f"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenCoverEntryActivity.java",
+      "bytes": 1609,
+      "sha256": "e89892e85b20c5cdc9cd006aa1246f333ef5d0c98aaabfbb844f92a36bd26dde"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
+      "bytes": 14987,
+      "sha256": "ecba861122fadf4837297ed73d79ea7759226399fb92fee3d0e688cb104bc0e1"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
+      "bytes": 88996,
+      "sha256": "fb1b48031068479f0eb7cdd5fc00764e7cf5fbd02d03de5997f44013392c3630"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenStateBackupProvider.java",
+      "bytes": 4866,
+      "sha256": "8dc7962e71043bd705ecd973c981ad8efcbdddf81374c271b63713be0c42afe3"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenTileService.java",
+      "bytes": 2029,
+      "sha256": "ee7382f6bf83af6f8a617d163ee58f8f2a9d17845c543193fda47f0f59cf30a6"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenTurnEvidence.java",
+      "bytes": 14902,
+      "sha256": "5e8f9c71cf42ef4ce691b4bf0b9d3ce903632a00e711f0b9db5411774f8a25ba"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiDraftStore.java",
+      "bytes": 10314,
+      "sha256": "03a1c9a04105ae597d44880265cb429b7a9dfd79f2352ef0e1b2123238c5bebe"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiEventFormatter.java",
+      "bytes": 40806,
+      "sha256": "bed70d7c1e5790320da00cd78b36acc52fedd205badf0ad00d3725a8711825fe"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdown.java",
+      "bytes": 11786,
+      "sha256": "711bdeb14e8502f0544fd0c658e6cf8ce39bf62d08afef34d9488fd4824353ee"
+    },
+    {
+      "path": "android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenUiMarkdownRenderer.java",
+      "bytes": 4665,
+      "sha256": "6c9a9724641a33843d1a1247479efd162b36918b2affcf7af8c913d0deb2e04d"
+    },
+    {
+      "path": "android/rebuild_dex_helper.py",
+      "bytes": 2907,
+      "sha256": "3e3d99d937df032c33f39211aa0ab9ffdf6b5f53f3b098bf4247634835597d2f"
+    },
+    {
+      "path": "android/screen-codec-v148r1/CONTRACT.json",
+      "bytes": 5825,
+      "sha256": "f10107093973c84e4aed6227e4c8baeb8ae1ae7ebae8d7990e7e59c84d636cef"
+    },
+    {
+      "path": "android/screen-codec-v148r1/SOURCE-SEAL.json",
+      "bytes": 1932,
+      "sha256": "30f2175283e8fcb018b864db55a74b1c60f20c5c74b2059db8968b3d61491916"
+    },
+    {
+      "path": "android/screen-codec-v148r1/build.py",
+      "bytes": 2833,
+      "sha256": "550573eed2be2a1bd08b38a4f717c4e9b00915fedd2dd92cb1a33e44fe22869a"
+    },
+    {
+      "path": "android/screen-codec-v148r1/source/org/trillionnium/hepta/screen/ScreenContract.java",
+      "bytes": 9233,
+      "sha256": "6bf974d539792f54d43ee50edd98e822d0eb23b44b02ac98882b42451251f144"
+    },
+    {
+      "path": "android/screen-codec-v148r1/source/org/trillionnium/hepta/screen/ScreenshotCodec.java",
+      "bytes": 10204,
+      "sha256": "cf11757a3de7c7000d8a9410115cf28648458c37106d4956446b8180c313c26c"
+    },
+    {
+      "path": "android/unicode-v148r2/CONTRACT.json",
+      "bytes": 4133,
+      "sha256": "b1e97d28b87bf4029dacc6b55270434a500f709e6e6dba5bb7b48d508b39dc47"
+    },
+    {
+      "path": "android/unicode-v148r2/SOURCE-SEAL.json",
+      "bytes": 1734,
+      "sha256": "9ec7284d1bbf48eeb73715165d16b07aa15994bd66e3e926c1803b5efeab2796"
+    },
+    {
+      "path": "android/unicode-v148r2/build.py",
+      "bytes": 2834,
+      "sha256": "0ade6f3c59b75ee2c23eb14e17fde6d665b30a6a7029d8b38a69c2b76e2150a4"
+    },
+    {
+      "path": "android/unicode-v148r2/source/org/trillionnium/hepta/input/InputContract.java",
+      "bytes": 4785,
+      "sha256": "0d98b33af6ce578c93707cd3d596ae0f8a0e3f0df3ec97d8116e67cf2832c4ba"
+    },
+    {
+      "path": "android/unicode-v148r2/source/org/trillionnium/hepta/input/UnicodeInput.java",
+      "bytes": 13213,
+      "sha256": "9163adf754ce450f9a7ece496257e4135cea8f63bd53d2ab92f7007b5d3bbf9e"
+    },
+    {
+      "path": "android/visual-probe-v148r1/ROOT-OPERATING-CONTRACT.json",
+      "bytes": 4534,
+      "sha256": "b387ba8b661ab8f9f153d90607314c749b14a0d4d64fb65dbfe29ebff5092554"
+    },
+    {
+      "path": "android/visual-probe-v148r1/SOURCE-SEAL.json",
+      "bytes": 2632,
+      "sha256": "e7f788144594a32c96c7702fdd2f72c0ea7a39a1c792109f4ae3c6813c830c1e"
+    },
+    {
+      "path": "android/visual-probe-v148r1/build_unsigned.py",
+      "bytes": 4238,
+      "sha256": "902d033689add511873f0b08e00eda3472d1d4226e2c85f8be0d0621c710115b"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/AndroidManifest.xml",
+      "bytes": 836,
+      "sha256": "efca265f743afd372e61be78a81b4d56f302702157195abae762609040dca423"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/res/values/ids.xml",
+      "bytes": 304,
+      "sha256": "8398c72d73284cd22c7ed07aaeb901ba4ddce767f3215d670246eba3441a3c7c"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/ProbeUi.java",
+      "bytes": 2305,
+      "sha256": "a045119f751e114d8fee5acee5c86e094055efad06d3dc7e92d2e20572a8ed40"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/TextEntryActivity.java",
+      "bytes": 3046,
+      "sha256": "0897864e8fa16717e320dc8b50f8672c4cd3c06f4fe9229939dd9cb13b35ee63"
+    },
+    {
+      "path": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/VisualChallengeActivity.java",
+      "bytes": 8269,
+      "sha256": "03a542fb1fd26c660239fad32abd8b6205c30e8b5e260e4d60e6eff124acb18a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "bytes": 28896,
+      "sha256": "070bb8e6bd56e065f56e7eaa2ebc6ab9e0bd0dde1050942f3b8ab5136823fc26"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/apps/trillionnium-owner-open-host/tests/r5_late_cancel_known_terminal.rs",
+      "bytes": 5441,
+      "sha256": "9b136958e9060d09166c467e59342cf231d19108a2d06b7e26f046af7826e435"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/tools/owner-open/owner_open_broker_admission_v2.py",
+      "bytes": 36419,
+      "sha256": "76131b9d99e8b51affea4680e79c00236992a48d13f20ddf8541a539e6995d15"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/tools/tests/test_owner_open_inspect_observation_lane.py",
+      "bytes": 7392,
+      "sha256": "1a11e65e27e5eb805e8337912eb45f3673d9e6fc0a452ae516d992d26b11ac97"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/build-script.py",
+      "bytes": 10196,
+      "sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/frozen-source-manifest.json",
+      "bytes": 55499,
+      "sha256": "ccbcbb37cf35b2e26054f351276fae64699703c2f90cdc6024df9960a80d75a5"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/manifest.json",
+      "bytes": 6009,
+      "sha256": "59bcaa1a0516b386f45377b0798fe5f3945e2477b62426766f22e5e959321a88"
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/source-handoff-final.json",
+      "bytes": 3694,
+      "sha256": "59d77a569a0fbd1189686cfcd9c5839e60316f3c513de78dfcee5e6cdf53c32c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_bootstrap.cpp",
+      "bytes": 66868,
+      "sha256": "6dcc7c6062f6d8c38bb36115a5a0b5a6cb3b5695c21678688a80b84e9f99ffdb"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_emergency_inhibit.h",
+      "bytes": 3116,
+      "sha256": "e11824af72afd7d94e866458451b44a020d6d953642b7bf82d2302d8783623b2"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_emergency_stop.cpp",
+      "bytes": 1075,
+      "sha256": "1998ed7f92462b9a50e75ab3402191fc12e698ffcdffc78f88fe64b0d938394a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_ingress_proxy.cpp",
+      "bytes": 25808,
+      "sha256": "ae86b706cfa6e4d56a00ab786f4b6de6bfe74a2ecc3b46555319a325a610acb4"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_kernel_boot.h",
+      "bytes": 3327,
+      "sha256": "5996212560d1e5d9784494b37afe030f8c9f7f409235e11a02019ed986fca649"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_peer_identity.h",
+      "bytes": 1749,
+      "sha256": "65c41828bbf32c76fd7f8f67d5b8cc26d861632b335771c6a7065a3757ed08df"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_peer_identity_test.cpp",
+      "bytes": 1006,
+      "sha256": "4aaede0dcd2575931dca24c8d89b1aa15590f43efeea19f34b9d1e0f139f3153"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/owner_open_bootstrap.proposed.cpp",
+      "bytes": 66868,
+      "sha256": "6dcc7c6062f6d8c38bb36115a5a0b5a6cb3b5695c21678688a80b84e9f99ffdb"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/owner_open_ingress_proxy.proposed.cpp",
+      "bytes": 25808,
+      "sha256": "ae86b706cfa6e4d56a00ab786f4b6de6bfe74a2ecc3b46555319a325a610acb4"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/owner_open_kernel_boot.h",
+      "bytes": 3327,
+      "sha256": "5996212560d1e5d9784494b37afe030f8c9f7f409235e11a02019ed986fca649"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/property_contexts.proposed",
+      "bytes": 1918,
+      "sha256": "35232f85940650620356a7458ab6011a136af475462852931177f32e327cbe68"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_module_build.py",
+      "bytes": 8516,
+      "sha256": "501c543fadbe0193b5f81babe7346cfa34b787c87b683ca3971eb3c5ba69427a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_module_build_r2.py",
+      "bytes": 9328,
+      "sha256": "7eb62869da657a5c97281568d06f25815ccde04c51192ff1b083ef4c536fdbe9"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_module_build_r3.py",
+      "bytes": 9591,
+      "sha256": "0cb7871db5c751b51a26f82a1158617acc68f24037fbbcd2c378bde63b8b9936"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_sourceqa.py",
+      "bytes": 7279,
+      "sha256": "ddac79430d06473123cdc1769f49ceb32734aef564b1ef24944723fb865535d3"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_sourceqa_r2.py",
+      "bytes": 7445,
+      "sha256": "14aa11e26b6d8665a0f8292f7f6790f6559bdb8c6c87a50e65f99161838ca43b"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_proc_policy_audit.py",
+      "bytes": 5219,
+      "sha256": "bc057f7c1e6e69f8ef98e6bbe26bf13000b28a067e29de371d3343f077a71541"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_proc_policy_query.c",
+      "bytes": 2303,
+      "sha256": "6bd609b547a0b04586ae966dda13e847b67b3b98a518acec480b7a841966f616"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/trillionnium-owner-open.proposed.rc",
+      "bytes": 3925,
+      "sha256": "a4c42e0d976de0746d96c2ec9e7ad1356e6f4f67f308e5db814d9fe78bb271e6"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/r11r4_build_rootfs.py",
+      "bytes": 7790,
+      "sha256": "256a18d098604df5f3e8d1e039d5658c06668312a67e6dc69b68777b36acdbf5"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/r11r4_build_rootfs_r2.py",
+      "bytes": 7888,
+      "sha256": "5db4052772d4cdcf049c317a2a81f8d8676d36979e433f82e118e18f23a5e182"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/r11r4_build_rootfs_r3.py",
+      "bytes": 7900,
+      "sha256": "9ce952bcb883f87fa088bc93b59457be44b2f072194ec1b4d93bf866bbc05f30"
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/supervisor.py",
+      "bytes": 55666,
+      "sha256": "de9f5cb8af02bb523384df35c4263655faa940fe85d43782ccbe90ee254ad42f"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/Cargo.lock",
+      "bytes": 63221,
+      "sha256": "2a9c12114e6844a97fad887717350572c62d124090f639c939f2a380a6e37da3"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/Cargo.toml",
+      "bytes": 4405,
+      "sha256": "1aeeba96e2bff7ca3377be01f926956d3060fc0aebaf07fcf1b467304cf38478"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/Cargo.toml",
+      "bytes": 1190,
+      "sha256": "b638ac8e9f0c69b2c3ce093215cc0aa42a418441d8e164ab24dd31fee55294fa"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/README.md",
+      "bytes": 4662,
+      "sha256": "14354826db3837fc0327359c92d94756a5df056503ca884185a0a45b935c34c7"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs",
+      "bytes": 50018,
+      "sha256": "8b2ff211d9dd529a0a97718ad3d80f4543f7ef9c9625113609069ee579c02f26"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs",
+      "bytes": 61180,
+      "sha256": "9d578fd974a92df2a30390f652e351e24867adf750bb746a324f153be2933ca3"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v3.rs",
+      "bytes": 295,
+      "sha256": "b48f5259d41cdd028c236229e578c006698e3fc20dfae336eab7358e55f4e6b2"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs",
+      "bytes": 3045,
+      "sha256": "cca62d069c37850b935ad00e9142c6bf713db2163587ffa3ffe712d153304063"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs",
+      "bytes": 6845,
+      "sha256": "81c3443026bfdd9a24510da724007e28f996aebbf95e3e1deed31e1e7a3f1a53"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_handlers.rs",
+      "bytes": 11538,
+      "sha256": "ca55b384685108b8f3dab84cc4ec397d67a94dff923ca3715df0977b38ab8c2a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_parse.rs",
+      "bytes": 7586,
+      "sha256": "8b2e99d279d5688e5ef2a6eaf3c83beda8aa922cdd5cb3d77b2326cb86b46143"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "bytes": 21545,
+      "sha256": "270ae2206d092bc590b1f241d9f77eee21fc941445a76511369b5f58b81bd93e"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4.rs",
+      "bytes": 769,
+      "sha256": "70253057bd1e9f031107f2440bc31b09182212443b87765038bde1ff7718f928"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/entry.rs",
+      "bytes": 5685,
+      "sha256": "da06bbbba5d5cae1415ad659a2d94bcec84715db347d58195ae453f058d4e0c6"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/process.rs",
+      "bytes": 23115,
+      "sha256": "52603c1bb87b7f4945df559cbdbd9b8c9f88708f23c4e7e2a8ffdf285c03673b"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/wire.rs",
+      "bytes": 19473,
+      "sha256": "241785423e3f6aa6348a24a505641645a4b5431b65bce1eda7320e90028f9064"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs",
+      "bytes": 773,
+      "sha256": "761680261172d514ad2d05e5e0002fa588558c1367027983c4568e4af1c282b8"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+      "bytes": 7190,
+      "sha256": "0ba35b039601b7e02ac3e969b6b26cb8280b11747ab8b7f8ca385564080085e6"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs",
+      "bytes": 1209,
+      "sha256": "40aa42c38fd1af4493b6a69d982e64517f83a50d69fe10023ce67222360b4d8c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
+      "bytes": 114832,
+      "sha256": "97cf1bd7b5669a384647f8b5f04cbe7dd73ef6d28334d795d20c344c95510339"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
+      "bytes": 33921,
+      "sha256": "7b8546da83c2b2df6555d55a5171d832b0bb4f503125093bb352f2791c95450e"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs",
+      "bytes": 828,
+      "sha256": "15a20f991d649fcfeb76ea24caa999bb876d58af59714594c55833d0dad88ee8"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_host.rs",
+      "bytes": 28888,
+      "sha256": "e16f92d94dbbbe6ee8831d6c45d2b234d9d9b3dedb3823ffb8c8e20a5049b1c5"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs",
+      "bytes": 31510,
+      "sha256": "0d0b4b3b7733e5a9440e19c9efbe21d6533afb0e425b5d589c4bec7b5fc1af7c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/imports.rs",
+      "bytes": 2610,
+      "sha256": "ed0479749a716b7558d6777d88a3a7bbce098fd655314dc0c07c204df3fca34e"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/options.rs",
+      "bytes": 4586,
+      "sha256": "87d8184d70f7dc62cb64a635622375a0360a0a5296657b4756a5c70c55ae812c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/state.rs",
+      "bytes": 55175,
+      "sha256": "a428eb1f1cef57b34e695f5ebe335497c5d6a741a25ece59cd41be99e85bf3d7"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry.rs",
+      "bytes": 88,
+      "sha256": "95c5b7bd2dee18aab7261da09408cf4a14bc4b52b49c0ea048dfb158275964c9"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/queue.rs",
+      "bytes": 8961,
+      "sha256": "c95ea2f7e6e3096d07301a86d1c3cfcdd621508cbde31a5e5fb0497b666298d0"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs",
+      "bytes": 45,
+      "sha256": "8de194696916e6be4c90292746f1c86545d7280a2cc58a22f00445d64cd36892"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/tests.rs",
+      "bytes": 11773,
+      "sha256": "518914fd27d654249ffbc9ce858bb9ffb464af9e97638e326ffbd6f908a96fc1"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/types.rs",
+      "bytes": 5214,
+      "sha256": "1d321e4f4c19a5dbbb8e1d670357177b72decbc1883ed3138176724747657748"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/window.rs",
+      "bytes": 5023,
+      "sha256": "070174eedda80bc4b338278ff281e0056dacea880ffcf067b0d26e1be546c395"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow.rs",
+      "bytes": 81,
+      "sha256": "9f50576bb116dd61f4ab0b3e8db9d258e9b462c840f32f2275a4dabbf45d3274"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/journal.rs",
+      "bytes": 6576,
+      "sha256": "ed337d485d775b707c98b778761c41c7a9d5a6283d10cdd6f393c05848df604c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/handlers.rs",
+      "bytes": 74960,
+      "sha256": "e7c67dfcc149bd3d6371021644f69f59d955d84ef5d58b79524cb5b1bdb81c31"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs",
+      "bytes": 29124,
+      "sha256": "b5377b4402c5a7f7341297e28165725fc4bc4c4829b600d571fecd800268f64e"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/run.rs",
+      "bytes": 76122,
+      "sha256": "e5c34544dbe7bd2a42c08415f9bea02ce91e880c74cbdf197d05d7ac001210a6"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process.rs",
+      "bytes": 88,
+      "sha256": "ccccb65bfafcef6b676a705bd4129681eeb951a665c6efe6ada08882d43bf84e"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/protocol.rs",
+      "bytes": 11332,
+      "sha256": "1389f95d40b3e6ceef252823ecf1d893b115d3ce5e73e558db3bae268ee6c0cd"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs",
+      "bytes": 511,
+      "sha256": "760c8742bb6bf6d3de1e0d8366f427ef5b9c193a668a92462fe20ab664afbf45"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/lib.rs",
+      "bytes": 19040,
+      "sha256": "72043e92f9ea0a41cc53e2caa29d3c3d94982540ee9560a15b614160be8747a0"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/main.rs",
+      "bytes": 10444,
+      "sha256": "6f2463e1366789fd20c3b96a3116835ecb103fd380f165a16b3a30d4d4be4a37"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+      "bytes": 19179,
+      "sha256": "12efac6888546845f28ed13daf7e478e440346e9c315f17407f6b98b6be9185a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-call-registry/Cargo.toml",
+      "bytes": 244,
+      "sha256": "7b7a485fd5f614783a6b45d7f7cc3810dd72fa87e887ce249528c891e75dd357"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-call-registry/src/lib.rs",
+      "bytes": 48860,
+      "sha256": "19a90ee02ff80a26c46b2009476005c460f0759363c9501b73906158d213f5cf"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-event-store/Cargo.toml",
+      "bytes": 410,
+      "sha256": "048c4ac9c9ba8e9f25f3fa2de01cfdb32ac5eb2cffdd385210dbe54f275b791f"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-event-store/src/lib.rs",
+      "bytes": 166377,
+      "sha256": "99b2f280ba4798cd8ee3f74fa9e9c901893c3a4949800dc13083d5842ac38018"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-event-store/src/strict_json.rs",
+      "bytes": 3176,
+      "sha256": "11aae2509a860f09e533e071873f87ad48d9591fb611086fdda25e8cbc645445"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/Cargo.toml",
+      "bytes": 293,
+      "sha256": "7373351540752310819b8615e13039a5933847097f06d40b556a31f918686514"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/lib.rs",
+      "bytes": 461,
+      "sha256": "6eb26d8fc931044ede7cbdf2a1a1a13f9302b8c1db7ca7ca48eeb139bd889090"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/registry.rs",
+      "bytes": 38049,
+      "sha256": "86a36287c2b091328d453e7bcffedfb5a246dd87b692d7287f77e7aab03d9b38"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/types.rs",
+      "bytes": 8711,
+      "sha256": "fb8264f808cf171b32e22081d115f4d7bbfed24a5ae381706468ea000acd148a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/validate.rs",
+      "bytes": 1841,
+      "sha256": "969d544449e5ccf401187a35ec2070cd539f688950ba6c0e6fe2b89ba6739676"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/Cargo.toml",
+      "bytes": 517,
+      "sha256": "86d5ced299b5f28feef8c96aa5911e933a27b73cd7e9b9197e7c46b329f47101"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
+      "bytes": 6292,
+      "sha256": "b5cfed9000227dc28aa5e1cf44e43ca03974950a64cdc681f77fc24d5a86bbb8"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/journal.rs",
+      "bytes": 58688,
+      "sha256": "89e9f44f958d3f029dda3f624a379fc461ec913f5960dc57510edc683865e9ea"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/lib.rs",
+      "bytes": 871,
+      "sha256": "73a5bc625f88dfdfbb7ec4f831b52c911f6056a3be3b426475fd2997147efaff"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+      "bytes": 111963,
+      "sha256": "e684e3007cbaacc64d1b302f65a45ad03add1fc063f463c12e2bb23aaf4ff039"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/process.rs",
+      "bytes": 62044,
+      "sha256": "46f0e7dc71d9f797fe4ddefbf018abf2a7ead5c6c89ff8334c1462dfdf72cf88"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/types.rs",
+      "bytes": 11986,
+      "sha256": "50b865eda53260dcd18a9b3db92a67b69c4e1696b83e3de76b4b8a2485fdd61d"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/validate.rs",
+      "bytes": 1272,
+      "sha256": "de168b99882da51ea76e29aaa5fd83c958ff9084d1d562be3aa52cfb2571d2e1"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/Cargo.toml",
+      "bytes": 719,
+      "sha256": "6df6c5e365201f9c6b425ae52804b563ae0bd24c54e866449a0a3ed1d926459c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+      "bytes": 41933,
+      "sha256": "df2ccb8fc10c2ccf53b46dc48bf3b96be1526848dff548d718ee7b35c4be54ae"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+      "bytes": 15330,
+      "sha256": "9a92601c0b4f2a308b043febd478a1443eec320836bb3a85348301e36b26aa6e"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+      "bytes": 44492,
+      "sha256": "d922d20fb87d913eb49002ab37bcbfc44fe266c31fea6c7284829bb02e903a3b"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
+      "bytes": 34226,
+      "sha256": "a77c06e761e06f858d56c1dbe5b372317ebed86bd4304f44cf3da50a8c5ba64f"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/strict_json.rs",
+      "bytes": 3196,
+      "sha256": "2aace9fb080c5401a7f3147c48afc6303599f69419d347870d651f2c9ac159e1"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/Cargo.toml",
+      "bytes": 333,
+      "sha256": "957b43e0488ea798bba03c52d9764c7247cb1ad7cab9792777b55bff4c818a1c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/lib.rs",
+      "bytes": 9714,
+      "sha256": "13dd11879a60ba3935438f7285645925bc660351111b645663f8c94784095728"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/process.rs",
+      "bytes": 64939,
+      "sha256": "19a8c50a5ed44670fdd913ba267b922faa79ecb1f99deb675bdb49e7bbf24632"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/raw_adb.rs",
+      "bytes": 2492,
+      "sha256": "d367af431d18c36a4c767a3725e158e4354e80c8a3d96c97b3d1eb7558e20215"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/types.rs",
+      "bytes": 22047,
+      "sha256": "e8bc46d0b734bfc294cec2c70222f9cf8fd364618af3d1eef7dc2afffc2080a3"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/validate.rs",
+      "bytes": 9036,
+      "sha256": "d36d987f3350dff6d10013af75aa6b15163f3ef3ed68865036bf49189a7aa798"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-stream-window/Cargo.toml",
+      "bytes": 271,
+      "sha256": "8d1021d310be82578b1eea87c9499eea5ca5277be6c346d2724fea0847cdc388"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-stream-window/src/lib.rs",
+      "bytes": 18764,
+      "sha256": "902b635eaf1a97c4a601107222baee8e0361cf1ad143b6f57565a9bd17798cbd"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-tool-bridge/Cargo.toml",
+      "bytes": 442,
+      "sha256": "dfbb5ed4b5f1d2c80f35389183a8843a207aba2d0e2aec7978a59d62ed622d96"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
+      "bytes": 36688,
+      "sha256": "50276548f8fd083c0823e32e48d994fc25e8e01930639ccdb9e5b2c6f4c22a55"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-turn-loop/Cargo.toml",
+      "bytes": 470,
+      "sha256": "714b471cc28dd617ac291086ac10a80d59f8c1729bc04740e201aa9219058059"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+      "bytes": 31140,
+      "sha256": "e732eedcf5b8c768ce96a41bea99d1c651331a8427d0734873e4c7a4836ebd82"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/Cargo.toml",
+      "bytes": 388,
+      "sha256": "d405d06dd1c4a81e42dae0541221b07e0b170076d933866bab22370c881cbeaf"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/bin/generate_module_contract_schemas.rs",
+      "bytes": 574,
+      "sha256": "bb031101bb4ff9576c6e89d6c74c977941711e25419a122837d6b4a94d635e91"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/generated.rs",
+      "bytes": 907,
+      "sha256": "a9ef8c6ab7b79ac753e51a83ffb3e62745fac6eaa4373422b47c5a25cfdc701e"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/lib.rs",
+      "bytes": 43497,
+      "sha256": "f113d287ce7f0e80a3b8a3ec937c9628bb23edf0eef687f6466d86b804f2a8f6"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/module_contract.rs",
+      "bytes": 8336,
+      "sha256": "865f50ff6457c4be8b21c95ef6d19b09a9883e18fc297c3b2091b2cd50101ac9"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/README.md",
+      "bytes": 9962,
+      "sha256": "b2ed5cbea2c850836655e514d2d74e412d836d8ea1cf810a40cd9268796cbf5f"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/build_owner_open_erofs_release.py",
+      "bytes": 5942,
+      "sha256": "4fe30eb329476ee0e198443e854b0435ab9f432d1974bb61d2c81e082dc05165"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/build_owner_open_rootfs_image_release.py",
+      "bytes": 26866,
+      "sha256": "edb84d355c30d2fa5603bc4e757a6afa3d530e7e15fe96ee4621ba2c4b64eadd"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/jsonl_provider_runtime.py",
+      "bytes": 24165,
+      "sha256": "055697e7564af0d0c76c64064b28104d5cec95a46ad3e53df964ab09f438cbcd"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_adb_relay.py",
+      "bytes": 17070,
+      "sha256": "604db49fcca4117d65ef1f5b4400c1f0e1d3b3b03e4088879fab760f1e429389"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_adb_relay_v2.py",
+      "bytes": 17337,
+      "sha256": "e621f876434ad47c229b47cf3b01d0c50eb269307465f20c9433cc5b6ee717b5"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_admission_v2.py",
+      "bytes": 33358,
+      "sha256": "74c801798fce3817cbd0853d88bbbe25d32e7442d229f736aceeefe2aa721927"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_audit.py",
+      "bytes": 21817,
+      "sha256": "6f4ab4eccf04b148a4d3642c05a2558409000d94ab15b12d95535b2f3d0ebf18"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_base_v2.py",
+      "bytes": 26858,
+      "sha256": "8333d1295297af6a6ade8ed91f6978a86614effbe1a7cff4b56dd0fa6ed940c4"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_client.py",
+      "bytes": 8801,
+      "sha256": "d4fdbad3154902c3dd3f9f976abb328a69ca5dbf57842359ee1cd21eb8fcb94a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_common.py",
+      "bytes": 16177,
+      "sha256": "71b20cce8782fb1f065aa85d6f1e84a0ed29ca5d0c618d135ddf8b17c380d783"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_connections.py",
+      "bytes": 9436,
+      "sha256": "ac25938ed0b690eedf74bc5a1e588e8570d6d1de4238441ab140307eb0233e1f"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_convergence_v2.py",
+      "bytes": 42927,
+      "sha256": "d3c10d858c8041b4be3ff40873c1b359e80fcaf69dafc57349359ca30b3f2200"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_mux.py",
+      "bytes": 31152,
+      "sha256": "7d483edc3c2c7791162d6500f221bd73de06d5795e2d84d9ccf95ef72235cd8b"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_runtime.py",
+      "bytes": 21106,
+      "sha256": "d0146f7b66c27abbed573b5e9e7f9a1d9cdf4e02e26dd8cf7f00152ec3776329"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_server_v2.py",
+      "bytes": 11244,
+      "sha256": "e34a60551552277ab72cf92e0dce9bf716624c6aa477f983b7429a0b32d3b5af"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_connection_broker.py",
+      "bytes": 702,
+      "sha256": "702240c72eec01a9449dffb234037d4c68abe8619126d2739c3ad285f6b72f59"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_connection_broker_v2.py",
+      "bytes": 3758,
+      "sha256": "8eae99d0933e7cea97276c65119ee4effae666f18bc125c968c81112942a87e1"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_mcp_common.py",
+      "bytes": 4977,
+      "sha256": "ff1f6e0f41c5afb5731b8be9550a9b9ad145f462ce1965950cbefb2dd7a07d6c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_mcp_host.py",
+      "bytes": 9180,
+      "sha256": "8771e7f101b9f62436a877e16473c814cc539d5c5748d2023a58b0673a01f33a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_mcp_jobs.py",
+      "bytes": 17750,
+      "sha256": "b03fad573a6bc393cdba6c87faf64904e93302cc42f8b694d67653d1b970e59d"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_rootlinux_supervisor.py",
+      "bytes": 47607,
+      "sha256": "1ee28821c479955a694f9b62ac7d2355eadf5a685231574e276f9e6cb3f8a7f5"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/provider_host_relay.py",
+      "bytes": 7913,
+      "sha256": "5e48a5bfb06b9aeecbc7e510f07100df89321765545590cd7a6e97f780aff164"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/stage_owner_open_rootfs_payload_release.py",
+      "bytes": 18778,
+      "sha256": "a92e07bd3083083029d307a1b0aff221f30eca4275b32a1b09135cd5e6e823e4"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/Android.bp",
+      "bytes": 4320,
+      "sha256": "58140de60cde0f2572e5fad347cdef263efc5dc7114a341956d09a3078e0f27a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/init/trillionnium-owner-open.rc",
+      "bytes": 3788,
+      "sha256": "bc5496d666e9037513aaeca2ba92dda2af6a0fc6830653841b19476690067a80"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/init/trillionnium-sun-btfm-modprobe.rc",
+      "bytes": 660,
+      "sha256": "ea5ab9a7f992a2ae70ee6dc8dd006fa59fa1fa49e2fa6c71dff7e137571df0cc"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_bootstrap.cpp",
+      "bytes": 58532,
+      "sha256": "a87dacd9a5c9eae4ef9f0890b190ad9acf4debe6d16d906a326d38323b4af0b3"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_emergency_inhibit.h",
+      "bytes": 3116,
+      "sha256": "e11824af72afd7d94e866458451b44a020d6d953642b7bf82d2302d8783623b2"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_emergency_stop.cpp",
+      "bytes": 1075,
+      "sha256": "1998ed7f92462b9a50e75ab3402191fc12e698ffcdffc78f88fe64b0d938394a"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_ingress_proxy.cpp",
+      "bytes": 25581,
+      "sha256": "935dba1b0f72bd5b13896b36bd4e5eefca71203b45821fa05e1a0b0d9e66a6d9"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_peer_identity.h",
+      "bytes": 1749,
+      "sha256": "65c41828bbf32c76fd7f8f67d5b8cc26d861632b335771c6a7065a3757ed08df"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_peer_identity_test.cpp",
+      "bytes": 1006,
+      "sha256": "4aaede0dcd2575931dca24c8d89b1aa15590f43efeea19f34b9d1e0f139f3153"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/product-codex-host-relay-v1.mk",
+      "bytes": 803,
+      "sha256": "6aa085c08627b03d835c1ef044b4ed28337f6816ba11980e1ab508d226b2e579"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/product.mk",
+      "bytes": 3188,
+      "sha256": "5b452ec6d2be1fd2e1e7586d378e60f6e3a3aab6b6bb1bc8cd420b07181d7e58"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/adbd.te",
+      "bytes": 150,
+      "sha256": "d95f966553e6ab0d7054c4a63cc273db98eb804ee4547629035f7055b77d0629"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/adbroot.te",
+      "bytes": 686,
+      "sha256": "2f25b298d9d8ff8c325b8368fd4985bfa52ad1e6b30be1b1a623535a9727fb03"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/file.te",
+      "bytes": 72,
+      "sha256": "128db39ea4be1eba8b9cd4a5273c4083c6b646c6326b3abc6f11d539abf540e1"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/file_contexts",
+      "bytes": 236,
+      "sha256": "d0a32a2756f4ee667f1b08ba699dd6e845d0cf1b6b705184aa271951280f508c"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/service.te",
+      "bytes": 44,
+      "sha256": "5e68aa42e45cc1e4465404a445ae996a335207fe1bb00fbc771122c66b4fe410"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/service_contexts",
+      "bytes": 72,
+      "sha256": "217aaee9d25c72e16bab4a706ed4136ea3c42a0c90b0f7918367d7f11b505005"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/system_server.te",
+      "bytes": 58,
+      "sha256": "041364093eb17908e9b63a494f326a362f57a9938803d67cc93c9d0bfd417716"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/domains.te",
+      "bytes": 6217,
+      "sha256": "25e1bebefde7bcd0e4176eaf9adb816a25cdc64f6bb402ebbf9cff4dc4ec744b"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/file_contexts",
+      "bytes": 778,
+      "sha256": "dc0818aae7c6809665ac35854a1dc2d382e4da98c5dc29e1813e015907363798"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/property_contexts",
+      "bytes": 1654,
+      "sha256": "b0b4f6465cdbce096380d1093fa859aa6d37f733e8f1a31518a29deadc822e5f"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/seapp_contexts",
+      "bytes": 146,
+      "sha256": "06c87b1957ec3be9419a657d8c2e51a22e826c42bc3391fdcdac6b2e787d0367"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/types.te",
+      "bytes": 1857,
+      "sha256": "aa689d5f0b55fc698f5f0ce25c33de4ab70cf044d867260d46ef5edf8a81a516"
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/tools/verify_owner_open_materialized_erofs_payload.py",
+      "bytes": 17811,
+      "sha256": "f229390ba8d2360ac456085ce40232fdb634f6fe723835b77db4cb809d31fd03"
+    },
+    {
+      "path": "backend/prepare_workspace.py",
+      "bytes": 5754,
+      "sha256": "71a15e4bc32300b01a1cf8dd23168781e5f95330e07040894db026335621f8cd"
+    },
+    {
+      "path": "dependencies/hepta49-linux.json",
+      "bytes": 2437,
+      "sha256": "914fbbd78212bde4d373bc902815ac577461b732a6659ad45d6f047907dae511"
+    },
+    {
+      "path": "dependencies/java-mac.json",
+      "bytes": 1910,
+      "sha256": "255a2cb0174451b19c1a4722081009f52ce8af7bd04c16e1ac86221d84271669"
+    },
+    {
+      "path": "integration/magisk-v145/ROOT-INSTALL-AND-LIFETIME-CONTRACT.json",
+      "bytes": 5180,
+      "sha256": "17923ed306f8328f762bf7bc3bf13231b52029f60cab2a3786d10d05fdc00a29"
+    },
+    {
+      "path": "integration/magisk-v145/SOURCE-SEAL.json",
+      "bytes": 2695,
+      "sha256": "e27918c82c44142216693ad29216e52e59899badb8bab00fc694aaeeddfe4f15"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/customize.sh",
+      "bytes": 1842,
+      "sha256": "cec6bfc529371129edcbecdea6e569d810577d711f3d8da19697a81b8f13e143"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/module.prop",
+      "bytes": 214,
+      "sha256": "782b3139d193200ea61b02ad08f27f41b56e08cb73a901254950340b930ebec8"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/mounted-files.sha256",
+      "bytes": 1646,
+      "sha256": "f1359c3f81b831cfea7125d14462dac3af8441264236944893b7e7899765cfef"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/post-fs-data.sh",
+      "bytes": 2473,
+      "sha256": "4a5698a1c9f1efaba396ebf1e53b295cc84479071626187f882411890af4591f"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/sepolicy.rule",
+      "bytes": 40935,
+      "sha256": "8671d042d9e592337f635d394f463d705dd82486ae9e3109c1f0e008e6bdfab4"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/service.sh",
+      "bytes": 7033,
+      "sha256": "6128b62397e5aa2e5eba8f8b9597cd1162fc934c13e26ba3594db1fb7097c9f6"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_file_contexts",
+      "bytes": 9064,
+      "sha256": "d591b0d8fb002aa30c9a361441e26e730be2b576a1d702877ed5966b97705e3f"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_mac_permissions.xml",
+      "bytes": 4589,
+      "sha256": "d9adfcd8f5ff01d593780715d61d24c9234dfe2d87397eaa4b4a672a2ef5b84b"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_property_contexts",
+      "bytes": 24937,
+      "sha256": "a9caca7740a783c8aa983f0469084371a1b038c3086ac104e8b436399ded46c0"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_seapp_contexts",
+      "bytes": 5593,
+      "sha256": "5938ddc7ba197a6dc2ec289548194745e187057b77c42f491ab34dfab164820b"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json",
+      "bytes": 7020,
+      "sha256": "f767fdb37665e44b8e54bc428b773c82d63ec51f2cf76b34471ebf3bc75e7d8a"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/owner-open/stock16-backend-init.source.rc",
+      "bytes": 4305,
+      "sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+      "bytes": 65,
+      "sha256": "98ec81aa5a21d122081581fea34a61ee03ab64ce420e7d5e99a4d49244ae13ff"
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+      "bytes": 400115,
+      "sha256": "e54a2adf831c6cbf4d8f482e5ef574c39fbb6dcd598554ba29d8a36c6d91cf3b"
+    },
+    {
+      "path": "native/api36/config/profile-codex-host-relay-v1.json",
+      "bytes": 6957,
+      "sha256": "b21f931b7e923aa3e332f6d3e8c03effbe0dd86a82edf7e2358fe0b3b8238724"
+    },
+    {
+      "path": "native/api36/config/stock16-backend-init.source.rc",
+      "bytes": 4305,
+      "sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca"
+    },
+    {
+      "path": "native/api36/policy/property_contexts",
+      "bytes": 2091,
+      "sha256": "baa09d90673d9a7feb245f894044d4ce29d1be04af10a5cb57dc9827c9f52cfd"
+    },
+    {
+      "path": "native/api36/provenance/v142r1_ACTOR.py",
+      "bytes": 17756,
+      "sha256": "c23eeebedc809769eee4b46625cb068400af53e05a858a5cf55d28d673fa9a84"
+    },
+    {
+      "path": "native/api36/provenance/v143_ACTOR.py",
+      "bytes": 23080,
+      "sha256": "5df7eaaff9ebc8385ad3d3a1dc07151a7bdf6eef6859b041896ffb06113700d7"
+    },
+    {
+      "path": "native/api36/rebuild.py",
+      "bytes": 8605,
+      "sha256": "cd09da1afd9926f54c9ea909f268c50412494f2170cff5e26c6a1fb7a1467f39"
+    },
+    {
+      "path": "native/api36/recipes/bootstrap.rsp",
+      "bytes": 445,
+      "sha256": "0fb3b30cc62c192d8a26fb4423e85afe75cdcd6e8e39805c834d704767e03bab"
+    },
+    {
+      "path": "native/api36/recipes/emergency-stop.rsp",
+      "bytes": 387,
+      "sha256": "c706fd0781601c58f21657f8241087dd8ff99ee1d406b6901737615f813f0e43"
+    },
+    {
+      "path": "native/api36/recipes/ingress.rsp",
+      "bytes": 422,
+      "sha256": "3df49009c8991274112b6855d095835afe74165433a60ce413dd784b000a2ded"
+    },
+    {
+      "path": "native/api36/recipes.json",
+      "bytes": 452842,
+      "sha256": "007f40adcf8bbdc5403ecab61de7f5c2dfcafd5609cb53cd31395a518902b088"
+    },
+    {
+      "path": "native/api36/source/owner_open_bootstrap.cpp",
+      "bytes": 66911,
+      "sha256": "2b014037cd028329ff460b3f10fe1e800edcc8f5acf604646a4d54f81eec1677"
+    },
+    {
+      "path": "native/api36/source/owner_open_emergency_inhibit.h",
+      "bytes": 3116,
+      "sha256": "e11824af72afd7d94e866458451b44a020d6d953642b7bf82d2302d8783623b2"
+    },
+    {
+      "path": "native/api36/source/owner_open_emergency_stop.cpp",
+      "bytes": 1075,
+      "sha256": "1998ed7f92462b9a50e75ab3402191fc12e698ffcdffc78f88fe64b0d938394a"
+    },
+    {
+      "path": "native/api36/source/owner_open_ingress_proxy.cpp",
+      "bytes": 25808,
+      "sha256": "ae86b706cfa6e4d56a00ab786f4b6de6bfe74a2ecc3b46555319a325a610acb4"
+    },
+    {
+      "path": "native/api36/source/owner_open_kernel_boot.h",
+      "bytes": 3327,
+      "sha256": "5996212560d1e5d9784494b37afe030f8c9f7f409235e11a02019ed986fca649"
+    },
+    {
+      "path": "native/api36/source/owner_open_peer_identity.h",
+      "bytes": 1749,
+      "sha256": "65c41828bbf32c76fd7f8f67d5b8cc26d861632b335771c6a7065a3757ed08df"
+    },
+    {
+      "path": "native/api36/source/owner_open_peer_identity_test.cpp",
+      "bytes": 1006,
+      "sha256": "4aaede0dcd2575931dca24c8d89b1aa15590f43efeea19f34b9d1e0f139f3153"
+    },
+    {
+      "path": "ops/v149/README.md",
+      "bytes": 2190,
+      "sha256": "161d6a52645bd8c1bc62ac01fb9740347482da8a6bdd2e758e7a21ada06ed38b"
+    },
+    {
+      "path": "ops/v149/component_probe.py",
+      "bytes": 7977,
+      "sha256": "a448a8ffdc62d78061c42488d7c9ae0da641b35783881543ccf8b6c316bd630f"
+    },
+    {
+      "path": "ops/v149/prepare_candidate.py",
+      "bytes": 6210,
+      "sha256": "ad205f0a12b84f340c3c900dc73e5663e93301df2cbf3e5b9fe2ae25cab30128"
+    },
+    {
+      "path": "ops/v149/stock_phone.py",
+      "bytes": 3485,
+      "sha256": "128b63c317f0f2b2c335d2a45857280558dc2db89c43fcb91796976a92c24a0d"
+    },
+    {
+      "path": "ops/v149/upgrade_host_once.py",
+      "bytes": 7617,
+      "sha256": "4bf9eb0d92b31789aff7939defe2707dc9b61214493e3635c463dd25835adb0e"
+    },
+    {
+      "path": "provider/baseline-v148r5/SOURCE-SEAL.json",
+      "bytes": 3502,
+      "sha256": "41c813ff051d2499956aa8d9b3872f242b8961f87cb79ac73a76f29f070f01a8"
+    },
+    {
+      "path": "provider/baseline-v148r5/offline_capacity_race_checks.py",
+      "bytes": 5735,
+      "sha256": "9a1035d9b5fff2765dcf44dab9e448e7f25949696c25022cadb09e34521f8052"
+    },
+    {
+      "path": "provider/baseline-v148r5/offline_legacy_checks.py",
+      "bytes": 4449,
+      "sha256": "c0eefd5e39cb16caf39df296d2c6334140ad6d89536fb2212391e97a869989ed"
+    },
+    {
+      "path": "provider/baseline-v148r5/offline_phone_tools_checks.py",
+      "bytes": 14126,
+      "sha256": "87eb3951e2dec709412a91e977d4ce0405ade4cc4af49ee96961657141fdbe92"
+    },
+    {
+      "path": "provider/baseline-v148r5/package_candidate.py",
+      "bytes": 10032,
+      "sha256": "d4790da5972da986b1786dc37f2ac6c50f096eb6a82e53b4ac91aed286c47f6e"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/daily_provider.py",
+      "bytes": 16360,
+      "sha256": "359acc41a67d001f0c84269e450f05afd31801a397b28e1ff9e43a889bde391f"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/phone_observation_tools.py",
+      "bytes": 26030,
+      "sha256": "40232edb40b8261385da64b37ab27fb14883daa51cd8f0403006f0c4c40d276f"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/provider_codex_host.py",
+      "bytes": 38063,
+      "sha256": "85c6f3d5def493d591f73b9820c89b1b6e3d78a609863879b4a19356c575a713"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/provider_openai_compatible.py",
+      "bytes": 17247,
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0"
+    },
+    {
+      "path": "provider/baseline-v148r5/source/ssh_exec_persistent_bridge.py",
+      "bytes": 18394,
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec"
+    },
+    {
+      "path": "provider/v149-r1/CHANGES.patch",
+      "bytes": 71257,
+      "sha256": "75e9e81338b7e2d2e366c849457817f7084971850f54a23051575f020184ba7d"
+    },
+    {
+      "path": "provider/v149-r1/MANIFEST.json",
+      "bytes": 4687,
+      "sha256": "d25fb3a1f8327a923e2cfccab23a7191c12475f67de9a136fb810e2ada1f1a82"
+    },
+    {
+      "path": "provider/v149-r1/README.md",
+      "bytes": 11625,
+      "sha256": "c9c9696cc5d2bcd13488ae4619fcab59c2063826d9877c6688c26f542b29d09f"
+    },
+    {
+      "path": "provider/v149-r1/baseline/daily_provider.py",
+      "bytes": 16360,
+      "sha256": "359acc41a67d001f0c84269e450f05afd31801a397b28e1ff9e43a889bde391f"
+    },
+    {
+      "path": "provider/v149-r1/baseline/phone_observation_tools.py",
+      "bytes": 26030,
+      "sha256": "40232edb40b8261385da64b37ab27fb14883daa51cd8f0403006f0c4c40d276f"
+    },
+    {
+      "path": "provider/v149-r1/baseline/provider_codex_host.py",
+      "bytes": 38063,
+      "sha256": "85c6f3d5def493d591f73b9820c89b1b6e3d78a609863879b4a19356c575a713"
+    },
+    {
+      "path": "provider/v149-r1/baseline/provider_openai_compatible.py",
+      "bytes": 17247,
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0"
+    },
+    {
+      "path": "provider/v149-r1/baseline/ssh_exec_persistent_bridge.py",
+      "bytes": 18394,
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec"
+    },
+    {
+      "path": "provider/v149-r1/examples/visual-postconditions.json",
+      "bytes": 468,
+      "sha256": "95c95c06b8f4afd0e662d728dbe690386674f25fe76afd3c85aef9592fbf2dc3"
+    },
+    {
+      "path": "provider/v149-r1/qa/QA-MANIFEST.json",
+      "bytes": 790,
+      "sha256": "02ca9c914ac138b2c0fd3dc2e27b7f0a62e5f8fa1aaffe48831b7e3cfd6d492a"
+    },
+    {
+      "path": "provider/v149-r1/qa/README.md",
+      "bytes": 3026,
+      "sha256": "a1f5177399e621be8be60e1b4d39352d61619ddaebed95d5a51b3c28afa1fe97"
+    },
+    {
+      "path": "provider/v149-r1/qa/case-result-template.json",
+      "bytes": 2863,
+      "sha256": "c829ba1a35589e3e6700fa05d36395b829cd0323f773a75ff36f9f11a804413b"
+    },
+    {
+      "path": "provider/v149-r1/qa/fixed-acceptance-set.json",
+      "bytes": 36217,
+      "sha256": "07433e17cb71592a011a54c787ac61947b727ec5ae6f507bca22f8fa6dfb0736"
+    },
+    {
+      "path": "provider/v149-r1/register_task_contract.py",
+      "bytes": 2730,
+      "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+    },
+    {
+      "path": "provider/v149-r1/source/daily_provider.py",
+      "bytes": 17849,
+      "sha256": "44b2f708846447b57cee3a8da0c9c0aee1d250d7e123337fb08d0156b9a31ccc"
+    },
+    {
+      "path": "provider/v149-r1/source/model_health.py",
+      "bytes": 8127,
+      "sha256": "778104cc0c5f4d8f8b23d3b8af049b7efaebb9721ae460e5768fd1933bc09a82"
+    },
+    {
+      "path": "provider/v149-r1/source/phone_observation_tools.py",
+      "bytes": 33548,
+      "sha256": "8b350c35d1b349649f11000c629ff59ff581c89e255729b45ac3cc9ccd58b975"
+    },
+    {
+      "path": "provider/v149-r1/source/phone_task_guards.py",
+      "bytes": 11368,
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "path": "provider/v149-r1/source/provider_codex_host.py",
+      "bytes": 41510,
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "path": "provider/v149-r1/source/provider_openai_compatible.py",
+      "bytes": 17247,
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0"
+    },
+    {
+      "path": "provider/v149-r1/source/ssh_exec_persistent_bridge.py",
+      "bytes": 18394,
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec"
+    },
+    {
+      "path": "provider/v149-r1/source/task_postconditions.py",
+      "bytes": 14744,
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+    },
+    {
+      "path": "provider/v149-r1/tests/fixtures.py",
+      "bytes": 2832,
+      "sha256": "6fee5591825b727b7c3a48de7dea7d51b3f465385a5f32760dc83a5141032db1"
+    },
+    {
+      "path": "provider/v149-r1/tests/offline_capacity_race_checks.py",
+      "bytes": 5843,
+      "sha256": "f3b902c28f50079d4bc03e53eec5cdc70a9f9ebc6b701eaa6bea2646193b28f2"
+    },
+    {
+      "path": "provider/v149-r1/tests/offline_phone_tools_checks.py",
+      "bytes": 14421,
+      "sha256": "c19a880bc0b89fb127bf3b92ddca08235805d2624356b14d569e181ffbb8669b"
+    },
+    {
+      "path": "provider/v149-r1/tests/offline_v149_checks.py",
+      "bytes": 28458,
+      "sha256": "e888a97cd46b21b8040f5fcb875cfa98652ad82c7af4afb16a22d924b9fd75e8"
+    },
+    {
+      "path": "provider/v149-r1/validation/RUN-RESULT.json",
+      "bytes": 1969,
+      "sha256": "30539512b0cdb3fc9e7811acc03dc3b849db91274325f4794d7ab817a2b8fc9b"
+    },
+    {
+      "path": "provider/v149-r1/validation/offline_capacity_race_checks.py.json",
+      "bytes": 1641,
+      "sha256": "2d034257837ab2d66ebd74c173d02f399b622e3e89aa922465b081315508e8ff"
+    },
+    {
+      "path": "provider/v149-r1/validation/offline_phone_tools_checks.py.json",
+      "bytes": 2108,
+      "sha256": "70eea9385da3c6aa961d58dd551557203f56d69aaca72da0486fa5d4a1a02cb6"
+    },
+    {
+      "path": "provider/v149-r1/validation/offline_v149_checks.py.json",
+      "bytes": 5521,
+      "sha256": "ea8057af015b511a60a6390c2a620fab68db7f5246de4232634dc9a9cc10feb7"
+    },
+    {
+      "path": "verification/apk-payload-comparison.json",
+      "bytes": 3131,
+      "sha256": "fe0f085c1c7d450d598b7b02b7149705edde8ebbc45403b2cea18b8baf8dde84"
+    },
+    {
+      "path": "verification/backend-cargo-workspace-check.json",
+      "bytes": 310,
+      "sha256": "aaa117d0a01bc8f711cd504c4a5455b922291a9d4f454781855ece8513e49d16"
+    },
+    {
+      "path": "verification/backend-source-closure.json",
+      "bytes": 3856,
+      "sha256": "e726299d05b2c52d0765cefdcefe45e7da7039cd830515dc750305b63726b801"
+    },
+    {
+      "path": "verification/gnu-build-preflight.json",
+      "bytes": 2133,
+      "sha256": "6b2619e6ef85002bb99c1fd6a6ebfbf757b46ddf3ce5c6d446c30257681d3468"
+    },
+    {
+      "path": "verification/hepta49-build-receipt.json",
+      "bytes": 11956,
+      "sha256": "4d5fa45ef29e62c1596b76a5c8b119392ed574449e2f90eb9a8ec5cee631ba81"
+    },
+    {
+      "path": "verification/hepta49-normalized-dex-diff.json",
+      "bytes": 4993,
+      "sha256": "e82a8e04dfc8c6a68e7542f4ec02b0b01b100ff1b8370689fe85f46c11e75c76"
+    },
+    {
+      "path": "verification/hepta49-original-build-binding.json",
+      "bytes": 6028,
+      "sha256": "2aaed9d89db346c6a0e8976e572e6994836b6b026898eaa2d806e8182f7d4227"
+    },
+    {
+      "path": "verification/hepta49-rebuild-comparison.json",
+      "bytes": 3965,
+      "sha256": "9fb1cd609a107f686e49044d163e928293f85b823102e95e3ceffb3e03ad0e64"
+    },
+    {
+      "path": "verification/hepta49-reference-root-check.json",
+      "bytes": 486,
+      "sha256": "2bb39af75269807418e8d1640904356ee5d2efea917d4095369dd84979e934ee"
+    },
+    {
+      "path": "verification/hepta49-system-modules-receipt.json",
+      "bytes": 3434,
+      "sha256": "bf3f92974620258094f45e71787f42bd145dc1336dacfe34503997933ea06784"
+    },
+    {
+      "path": "verification/java-rebuild-summary.json",
+      "bytes": 4755,
+      "sha256": "8f119c61ddacac0f8e653936e5dadd96aee07f35ec9ded8c7366df334d30f7b4"
+    },
+    {
+      "path": "verification/native-rebuild-summary.json",
+      "bytes": 4247,
+      "sha256": "60ea17d7326ae9d750b1ef3105d604a3067833da001437afbb6e768873db1aa5"
+    },
+    {
+      "path": "verification/relocated-helper-check.json",
+      "bytes": 1145,
+      "sha256": "91c9da268734a48910aa65dcce8ebd3f74df4a16fec93e4183fa1ec2130d65d6"
+    },
+    {
+      "path": "verify_sources.py",
+      "bytes": 1454,
+      "sha256": "84a50f56cd83ae2689ea18dc555ad1599ef922d717f8c71aab9d1df21a7c2d92"
+    }
+  ],
+  "file_count": 344,
+  "total_bytes": 5201098,
+  "content_tree_sha256": "45c94dc71174dfd6861cf7e8895406614c43c1ef6d118f58294a9323e13be40a",
+  "excluded": [
+    "SOURCE-MANIFEST.json itself",
+    "generated binaries and large third-party runtimes",
+    "credentials and private signing keys",
+    "live claims/state/user inputs",
+    "generated deployment plans and raw phone results"
+  ]
+}

@@ -45,6 +45,53 @@ from owner_open_broker_runtime import (
 _FENCE_STATE_INIT_LOCK = threading.Lock()
 
 
+def inspection_observation_key(
+    frame: dict[str, Any],
+    expected: frozenset[str],
+    expected_job: str | None,
+    effect_ordering_key: str,
+) -> str | None:
+    """Admit only the closed, read-only turn/call Inspect grammar to its own lane.
+
+    This never clears an effect fence or changes the stable request preimage.
+    Kind-like payload text, arbitrary expected kinds, and effect fields cannot
+    select this lane. The Host still validates the digest and returns the
+    original records; an observation is never authority to repeat an effect.
+    """
+    kind = frame.get("kind")
+    if kind not in {"turn.inspect", "call.inspect"}:
+        return None
+    if expected != frozenset({kind + ".result", "host.error"}) or expected_job is not None:
+        raise BrokerError("read-only inspection requires its exact response kinds and no job binding")
+    normalized = canonical_request_frame(frame)
+    if set(normalized) != {"kind", "payload"}:
+        raise BrokerError("read-only inspection has unsupported envelope fields")
+    payload = normalized["payload"]
+    required = {"session_id", "profile_id", "task_id", "turn_id", "turn_stream_id"}
+    allowed = required | {"request_sha256", "turn_request_sha256", "inclusive_cursor", "limit"}
+    if kind == "call.inspect":
+        required.add("call_id")
+        allowed.add("call_id")
+    if not required <= payload.keys() or not payload.keys() <= allowed:
+        raise BrokerError("read-only inspection requires complete scope and no effect fields")
+    digests = [payload[name] for name in ("request_sha256", "turn_request_sha256") if name in payload]
+    if (not digests or any(not isinstance(value, str) or len(value) != 64
+                          or any(character not in "0123456789abcdef" for character in value)
+                          for value in digests) or any(value != digests[0] for value in digests)):
+        raise BrokerError("read-only inspection requires one unambiguous original request SHA-256")
+    cursor, limit = payload.get("inclusive_cursor", 0), payload.get("limit", 64)
+    if (type(cursor) is not int or not 0 <= cursor <= 2**64 - 1
+            or type(limit) is not int or not 1 <= limit <= 256):
+        raise BrokerError("read-only inspection cursor/limit exceeds the Host bounds")
+    # The caller first derives the ordinary key with ordering_key_for_frame,
+    # which validates the complete immutable lineage and all mirrored aliases.
+    if not effect_ordering_key.startswith("effect:v1:"):
+        raise BrokerError("read-only inspection lacks a validated effect lineage")
+    return "observation:v1:" + hashlib.sha256(canonical([
+        "read-only-inspection-v1", kind, effect_ordering_key,
+    ])).hexdigest()
+
+
 class BrokerAdmissionMixin:
     def _fence_state(self) -> tuple[threading.Lock, threading.Event]:
         lock = getattr(self, "admission_fence_lock", None)
@@ -460,6 +507,10 @@ class BrokerAdmissionMixin:
             ordering_key,
         )
         request_sha256 = hashlib.sha256(canonical(preimage)).hexdigest()
+        # Keep the original canonical preimage for exact reconnect/old journal
+        # compatibility. Only the scheduler lane changes for a fresh closed
+        # read-only inspection; the original effect fence remains intact.
+        ordering_key = inspection_observation_key(frame, expected, expected_job, ordering_key) or ordering_key
 
         # Serialize only the bounded per-client metadata reservation.  In
         # particular, this gate must be released before ``audit.admit`` or

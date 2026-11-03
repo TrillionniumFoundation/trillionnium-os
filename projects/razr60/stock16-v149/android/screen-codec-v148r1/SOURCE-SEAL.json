@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.screen-codec.source-seal.v1",
+  "files": {
+    "source/org/trillionnium/hepta/screen/ScreenContract.java": {
+      "sha256": "6bf974d539792f54d43ee50edd98e822d0eb23b44b02ac98882b42451251f144",
+      "bytes": 9233
+    },
+    "source/org/trillionnium/hepta/screen/ScreenshotCodec.java": {
+      "sha256": "cf11757a3de7c7000d8a9410115cf28648458c37106d4956446b8180c313c26c",
+      "bytes": 10204
+    },
+    "build.py": {
+      "sha256": "550573eed2be2a1bd08b38a4f717c4e9b00915fedd2dd92cb1a33e44fe22869a",
+      "bytes": 2833
+    },
+    "build-04/BUILD-RECEIPT.json": {
+      "sha256": "e01ab5079859b1ea7048b3984f7832a0c5e0a0013410f3fa475236eca3d0939b",
+      "bytes": 3213
+    },
+    "build-04/hepta-screen-codec-v148.jar": {
+      "sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639",
+      "bytes": 16064
+    },
+    "build-04/d8.stderr.txt": {
+      "sha256": "4356c6626cdff57bde7a707d456ed0ed15351937f90b99cc130faea862a94962",
+      "bytes": 104
+    },
+    "checks/ScreenContractCheck.java": {
+      "sha256": "2ebbb99f634014476e7a3ab378e762ea4756ab797216e97becd4c59b4ce5667d",
+      "bytes": 5905
+    },
+    "checks/FINAL-CONTRACT-CHECKS.json": {
+      "sha256": "2351243347caf121501803dcd45dda4e5a781ec498080470fae4f143267c4b30",
+      "bytes": 653
+    },
+    "checks/run-final.stdout.txt": {
+      "sha256": "ce8d43b6f30c6ecff572a910046c9226011913f593a9bb44ace5632ba5c957ce",
+      "bytes": 58
+    },
+    "checks/run-final.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "CONTRACT.json": {
+      "sha256": "f10107093973c84e4aed6227e4c8baeb8ae1ae7ebae8d7990e7e59c84d636cef",
+      "bytes": 5825
+    },
+    "SOURCE-HANDOFF.json": {
+      "sha256": "05e00a2cd203229e63522c382ecd108352d91219090c12f2f14deba2e0713191",
+      "bytes": 900
+    }
+  },
+  "phone_operations": 0,
+  "bitmap_runtime_executed": false
+}

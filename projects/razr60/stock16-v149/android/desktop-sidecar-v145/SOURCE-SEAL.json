@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.desktop-entry.source-seal.v1",
+  "files": [
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/SOURCE-SELECTION.json",
+      "sha256": "369985cb9fcc2ef8307e6a6648d13e1aba0d56880c1bdfe6fb57f26a66ffefbf",
+      "bytes": 3814,
+      "lines": 78
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/SOURCE-HANDOFF.json",
+      "sha256": "8ba2c2f4a7938b96be5a00b22809a90f0a13b7825e82a0543290f405b2efd988",
+      "bytes": 2950,
+      "lines": 57
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/ROOT-OPERATING-CONTRACT.md",
+      "sha256": "da89258f0e424d0ba34b359828febf29d0c9edffa6f8ac878d8d232a15f5e165",
+      "bytes": 3708,
+      "lines": 34
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/AUTHOR-VERIFICATION.json",
+      "sha256": "7e504643f470567b51ff19dda17d4dfe2600480b4708013b34ac279e813a9b88",
+      "bytes": 1929,
+      "lines": 68
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/EXISTING-SOURCE-NAVIGATION.json",
+      "sha256": "323ef73c884890d9b3848ac456c0457f4178cf7e9590d8ca3c5d314f24d11c5a",
+      "bytes": 1925,
+      "lines": 41
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/AndroidManifest.xml",
+      "sha256": "82ec4f79ec0f85abf59e0d52f96c9368dac316c282e5ba2cd17c3b4c72b2f4da",
+      "bytes": 1582,
+      "lines": 25
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/drawable/ic_hepta_entry.xml",
+      "sha256": "1dd83407c1cd604c046b850486470468bdbc7c70b3636350a81e4d20f859aad8",
+      "bytes": 452,
+      "lines": 3
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/drawable/widget_background.xml",
+      "sha256": "10f7e4ee18b100cf85fe768967ffda900ca2ecc5766b1c4d316321a810c1e25d",
+      "bytes": 178,
+      "lines": 4
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/layout/hepta_entry_widget.xml",
+      "sha256": "82311bf62599c6aed6f07bb47bc63b44e61950123d5b3bde2946ad7f13c36fef",
+      "bytes": 1163,
+      "lines": 15
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/values/strings.xml",
+      "sha256": "3d882216e31676782975c47d09eabe9034b941e2ec2e306804abbcd26cbad75c",
+      "bytes": 1281,
+      "lines": 18
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/res/xml/hepta_entry_widget.xml",
+      "sha256": "21409d65f1ac0a7737d7816958cc5e6615938cb392f40caf6913c0653f240c46",
+      "bytes": 424,
+      "lines": 7
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/EntryIntents.java",
+      "sha256": "19ca8bbf559bbe0be9507b98b1c194cedc0c3a3a37971ac1b6bc7e46bd4cb070",
+      "bytes": 1164,
+      "lines": 31
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/EntrySetupActivity.java",
+      "sha256": "5825a938f0d93df12c42664a9f87979707365d68436259b260666b5d1edbf7ff",
+      "bytes": 6117,
+      "lines": 136
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/HeptaEntryWidget.java",
+      "sha256": "0a6c78bfb92f5ec56f43b4f00f71cb65fe9cb8f01f623aab66c1b7dd3acd5ade",
+      "bytes": 930,
+      "lines": 20
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/OpenHeptaActivity.java",
+      "sha256": "0e6bdd7c54af6413dc390aa96e312d06bd7c5fdd7d127c8c8b4b72e958c67fe2",
+      "bytes": 1252,
+      "lines": 29
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/source/src/org/trillionnium/hepta/entry/ShortcutPinnedReceiver.java",
+      "sha256": "28db2abdb1f84bf267c745ee38fa376aec73bcf9f4c0841dcb40ea953190f8d6",
+      "bytes": 1099,
+      "lines": 26
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/build_unsigned.py",
+      "sha256": "3d0c8810ef8f545654495da842ff014aff021d804e974f87654be003bb7fc6cc",
+      "bytes": 4209,
+      "lines": 72
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/build_unsigned.py.ADDED.complete.literal.diff",
+      "sha256": "8e8f92437665650d445d9c6d030e40509b0ecc2e0b02b105a6c5d20f3201f7a1",
+      "bytes": 4334,
+      "lines": 75
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/AndroidManifest.xml.ADDED.complete.literal.diff",
+      "sha256": "61ea85d187a7e61dfa4abd3d868d62d99a0e2fdc6c1bcc0980781bc4f2c1b3f7",
+      "bytes": 1669,
+      "lines": 28
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/res/drawable/ic_hepta_entry.xml.ADDED.complete.literal.diff",
+      "sha256": "73bb92fa669e470a68682a5eae83e255263d359d4446989d6dd826a71f2050be",
+      "bytes": 528,
+      "lines": 6
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/res/drawable/widget_background.xml.ADDED.complete.literal.diff",
+      "sha256": "d592ba8e3949c39493dfe5efc32338441524bc6bf2d27638a16c32f1bfccdef0",
+      "bytes": 258,
+      "lines": 7
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/res/layout/hepta_entry_widget.xml.ADDED.complete.literal.diff",
+      "sha256": "38ad5a3229562006c5495f17aae1ac42770270dcfe0985fd08807fff9154a6cc",
+      "bytes": 1254,
+      "lines": 18
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/res/values/strings.xml.ADDED.complete.literal.diff",
+      "sha256": "1923442928eaebdd2ca64a222b8871469cdcf43c64b56de9531a09a2de53ab60",
+      "bytes": 1364,
+      "lines": 21
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/res/xml/hepta_entry_widget.xml.ADDED.complete.literal.diff",
+      "sha256": "40549a68fcb106838ecda4cbd9f3755f623fc6c15991f4a2430019504d605efc",
+      "bytes": 503,
+      "lines": 10
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/src/org/trillionnium/hepta/entry/EntryIntents.java.ADDED.complete.literal.diff",
+      "sha256": "ab9879f3e7728a66ee2adc49e1e88125a3963fa78689efb9609e6862d8d2c93a",
+      "bytes": 1288,
+      "lines": 34
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/src/org/trillionnium/hepta/entry/EntrySetupActivity.java.ADDED.complete.literal.diff",
+      "sha256": "2ab37d9241d19a92d8c45d8e326e094835605038912ff9c5df9e5d669ed8cbd3",
+      "bytes": 6353,
+      "lines": 139
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/src/org/trillionnium/hepta/entry/HeptaEntryWidget.java.ADDED.complete.literal.diff",
+      "sha256": "9474c89ca188afae4d36ae039ae41b9f9ac907cb4035a38df7ef1d01c42c8802",
+      "bytes": 1047,
+      "lines": 23
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/src/org/trillionnium/hepta/entry/OpenHeptaActivity.java.ADDED.complete.literal.diff",
+      "sha256": "ef7e1cc2cdbd2f1cb16970f12662cbdaf1916d7243764e4ff3e782d801f43b68",
+      "bytes": 1379,
+      "lines": 32
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/complete-literal-diffs/source/src/org/trillionnium/hepta/entry/ShortcutPinnedReceiver.java.ADDED.complete.literal.diff",
+      "sha256": "9b344116195cbf0a1a8dfa8cb412218fa63e4eacf521a27fcca74a2acedbb785",
+      "bytes": 1228,
+      "lines": 29
+    }
+  ],
+  "apk": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/hepta-stock16-desktop-entry-sidecar-B-v145-r1/build-03/HEPTA-Desktop-Entry-v1-unsigned.apk",
+    "sha256": "7100a78b48b5e8544e5570cd231e8779ce671a98b0611fc3f16f6156aaa22e07",
+    "bytes": 18688,
+    "lines": 80
+  },
+  "status": "FROZEN_R1_NEW_FINDINGS_REQUIRE_SUCCESSOR"
+}

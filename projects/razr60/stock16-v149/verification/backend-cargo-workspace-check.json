@@ -1,0 +1,13 @@
+{
+  "rc": 0,
+  "workspace_member_count": 24,
+  "package_count": 24,
+  "cargo_lock_sha256": "2a9c12114e6844a97fad887717350572c62d124090f639c939f2a380a6e37da3",
+  "cargo_lock_unchanged": true,
+  "offline": true,
+  "locked": true,
+  "no_deps": true,
+  "compiled": false,
+  "phone_operations": 0,
+  "stderr": ""
+}

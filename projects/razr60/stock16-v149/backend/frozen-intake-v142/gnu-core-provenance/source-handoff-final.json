@@ -1,0 +1,69 @@
+{
+  "schema": "razr.r11r4.latecancel-core-broker-ui.source-handoff.v1",
+  "scope": "SOURCE_AND_HOST_FIXTURES_ONLY_NO_PHONE_OR_MODEL",
+  "frozen_source_commit": "4b687742fca939bc32122857f21067ec28d30a23",
+  "core_broker_files": [
+    {
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "original_sha256": "270ae2206d092bc590b1f241d9f77eee21fc941445a76511369b5f58b81bd93e",
+      "proposed_sha256": "070bb8e6bd56e065f56e7eaa2ebc6ab9e0bd0dde1050942f3b8ab5136823fc26",
+      "bytes": 28896,
+      "role": "production"
+    },
+    {
+      "path": "tools/owner-open/owner_open_broker_admission_v2.py",
+      "original_sha256": "74c801798fce3817cbd0853d88bbbe25d32e7442d229f736aceeefe2aa721927",
+      "proposed_sha256": "76131b9d99e8b51affea4680e79c00236992a48d13f20ddf8541a539e6995d15",
+      "bytes": 36419,
+      "role": "production"
+    },
+    {
+      "path": "tools/tests/test_owner_open_inspect_observation_lane.py",
+      "original_sha256": null,
+      "proposed_sha256": "1a11e65e27e5eb805e8337912eb45f3673d9e6fc0a452ae516d992d26b11ac97",
+      "bytes": 7392,
+      "role": "host-only-fixture"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/tests/r5_late_cancel_known_terminal.rs",
+      "original_sha256": null,
+      "proposed_sha256": "9b136958e9060d09166c467e59342cf231d19108a2d06b7e26f046af7826e435",
+      "bytes": 5441,
+      "role": "host-only-fixture"
+    }
+  ],
+  "core_broker_patch_sha256": "d860ed5b015bd37e41c12181d60c57ffaf8dfffc2bf03a081b2bd20639ab5715",
+  "UI": {
+    "actual_original_source": "canonical staging/razr-p1-resume-20261014-r2/candidate-source/android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
+    "original_sha256": "a1b99c57a97d530994b835cf903a4ab68537465b708ee615189f53497ae30dfe",
+    "proposed_copy": "OwnerOpenShellActivity.latecancel-proposed.java",
+    "proposed_sha256": "2a6b1402060a15fbd26ef370cadebec4dc7efa358b0e86010f2f1ea8766677e9",
+    "patch": "known-terminal-local-cancel-only.patch",
+    "patch_sha256": "ceafa46fde26b7de03dde3321ce24b8bd8a4d1e2b554cbc4b8a67681285083a2",
+    "not_compiled_or_installed": true
+  },
+  "source_peer": {
+    "core_and_broker": "pocket4_audio: no new blocking issue; strictfullscope/tuple/closedreadonlygrammar; originaleffectfence/UNKNOWN preserved",
+    "UI": "review_build_fix: no new blocking issue; completeReadback includes knownterminal; no Bundle or text authority"
+  },
+  "host_tests": {
+    "original_and_new_unit": "94 Rust core/transport;52 Python concurrency/correlation/mux;4 new closed grammar+real Unixsocket unknown/fence/readonly/replay PASS",
+    "real_Host_Core_integration": "new full transport+Core fixture tests turn.cancel and tool.cancel after completed local tool; exact original control IDs; original durable segmented store byte unchanged; provider invoked once; original fullInspect remains completed; PASS",
+    "related_existing_integrations": "active turn and targettool Cancel2; incomplete original UNKNOWN with no provider spawn1; postturn digest conflict1 PASS",
+    "test_evidence": [
+      "host-fixture-results.json",
+      "host-integration-result.json",
+      "fixture-logs/"
+    ]
+  },
+  "runtime_limits": [
+    "No actual phone qualification or P1 pass inferred.",
+    "Old lateCancel7 UNKNOWN and all old effect/audit records retained.",
+    "New Bookworm GNU binary build/ELF/runtime evidence is separate pending.",
+    "Recompute runtime profile Java/source reference hashes and protected full8 for final candidate."
+  ],
+  "phone_operations": 0,
+  "model_generations": 0,
+  "production_process_changes": 0,
+  "P1_pass": false
+}

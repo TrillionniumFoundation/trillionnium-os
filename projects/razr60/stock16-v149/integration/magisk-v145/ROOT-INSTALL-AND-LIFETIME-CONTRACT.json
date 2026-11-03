@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.guarded-boot-autostart.root-install-contract.v1",
+  "module_id": "trillionnium_hepta_stock16_v143",
+  "root_active_module": "/data/adb/modules/trillionnium_hepta_stock16_v143",
+  "installation": "Root may replace only the two reviewed regular source files at the existing active module, or merge those two files into the complete current fullmodule package. This is not a standalone two-fileMagiskZIP; all19 basepackage members/payloads must be retained.",
+  "expected_parent_sources": {
+    "service.sh": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/service.sh",
+      "sha256": "2623c41dadfc83ac9780cc5c0f48887dc26823123e3c5fed0f5fabdab59fd2bb",
+      "bytes": 2945,
+      "lines": 50
+    },
+    "module.prop": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/module.prop",
+      "sha256": "d3bfb1363ca0d2ab90ee748f3f01c6b9cbb22a5f334cc879bab4695cfa3e435b",
+      "bytes": 193,
+      "lines": 6
+    },
+    "mounted-files.sha256": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/mounted-files.sha256",
+      "sha256": "f1359c3f81b831cfea7125d14462dac3af8441264236944893b7e7899765cfef",
+      "bytes": 1646,
+      "lines": 13
+    },
+    "system/system_ext/etc/trillionnium/owner-open/stock16-backend-init.source.rc": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/trillionnium/owner-open/stock16-backend-init.source.rc",
+      "sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca",
+      "bytes": 4305,
+      "lines": 91
+    }
+  },
+  "new_source_selection": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/SOURCE-SELECTION.json",
+    "sha256": "b1d3a25d1f87bfe1f4209c65c7e7f6a1690ec1feb57ce885eaa9c7791c4a5421",
+    "bytes": 1207,
+    "lines": 27
+  },
+  "effects": {
+    "preserved_prechecks": "ExactStock16fingerprint/API36/Enforcing, original13mountedfilehashes, original2ownedbinds+4flags+strictnative/statecontextchecks; addrootUID andmodule-disable/remove hold.",
+    "stop_guard": "State directory must be canonical root:root0700 anddata_ready mustbe1. Successful directory listing proves emergency-stop basename absent; anyobjecttype withthatname orstopproperty notempty/0 holds. Listing/getprop failure is unknown/hold. No markercontents are read orremoved.",
+    "already_enabled": "Afterprechecks/inhibit, ro.enabled=true requires exactprofile andpayload_ready1 then returnsvalidated/no_restart; no propertywrite/native-start is repeated, nohealthclaimmade.",
+    "fresh_start": "Onlyempty ro.enabled andexact0 payload/verified/mount_ready/ready qualify. Atomicmkdirclaim per kernelbootid serializes automaticattempts; anysamebootclaimorcreationunknown holds. Thenfreshstop/enable gates andprofile\u2192payload_ready1\u2192ro.enabledtrue publications.",
+    "ownership": "ExistingearlyRC alone startsingress/verify, andafterverified mounts/startsbootstrap. The scriptdoesnot callstart/restart, launchapp, sendtask, executeCLI ormanageUSB/ADB.",
+    "history": "Onlynewmetadata under/data/adb/trillionnium-hepta-autostart/<kernel_boot_id> withintent,exit-code andstartup-requested iswritten; oldattemptsandallnative state/boots/session/journal/task/PID/diagnostic files retained. Noautomatic retryoroldtaskredispatch.",
+    "outcome": "Sourceecho says startuprequested, nativereadinessnotyetclaimed. Rootmustobserveexistingnativeverification/readiness afterinstallation/boot."
+  },
+  "stop_race_boundary": "Shellobservationsandpropertypublication arenot a filesystem/propertyCAS transaction. Existingnativebootstrap independently checks EmergencyStopPresent beforeverify/run; it remainsunchanged. This Source makes no atomicno-call-after-last-check promise.",
+  "not_changed": [
+    "native3binaries",
+    "HEPTA49 APK/UID/certificate/appdata",
+    "RFS/bootstrapprofile/measurements",
+    "111+lateracceptedpolicy/cache",
+    "ramdisk/earlyRC/repairedinitff159",
+    "SystemUI/Launcher/DSU/layouts",
+    "USB/adbd/server configuration",
+    "Macprovider/bridge/launchd/credentials"
+  ],
+  "root_validation_needed": [
+    "IndependentRoot/B Sourcepeer before use; authorchecks are notpeeracceptance.",
+    "Replace onlycorrectactiveModulefiles afterconfirming parentpins; preserveallothermodulemembers.",
+    "A currentalreadyenabledrun must show configvalidated/no_restart, not a secondnativeverify/start.",
+    "Nextboot maypublishstartup onlywhenallguardspositive; checkactualnative ready/service/context/hash facts andUSB/deviceendstate usingRootsolephone actor.",
+    "Explicitstopmarker mustremainpresent andpreventautomaticstartup untilanexplicit separate authorizedresumeflow; thisscript neverclearsit."
+  ],
+  "phone_or_service_or_ssh_or_target_execution_by_author": false
+}

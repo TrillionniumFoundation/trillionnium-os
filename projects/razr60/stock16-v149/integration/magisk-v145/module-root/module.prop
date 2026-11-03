@@ -1,0 +1,6 @@
+id=trillionnium_hepta_stock16_v143
+name=HEPTA Stock16 backend v145
+version=v145-guarded-autostart
+versionCode=145
+author=HEPTA
+description=Validated boot autostart; persistent emergency-stop remains authoritative.

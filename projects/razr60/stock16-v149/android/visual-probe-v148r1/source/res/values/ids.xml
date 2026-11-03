@@ -1,0 +1,8 @@
+<resources>
+    <item type="id" name="visual_receipt" />
+    <item type="id" name="visual_challenge_code" />
+    <item type="id" name="unicode_input" />
+    <item type="id" name="unicode_submit" />
+    <item type="id" name="unicode_readback" />
+    <item type="id" name="unicode_receipt" />
+</resources>

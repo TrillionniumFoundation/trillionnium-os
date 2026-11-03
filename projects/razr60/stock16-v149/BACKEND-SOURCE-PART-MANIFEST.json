@@ -1,0 +1,1090 @@
+{
+  "schema": "razr60-backend-source-part-v1",
+  "files": [
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/r11r4_build_rootfs.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-rootfs-source-r1/r11r4_build_rootfs.py",
+      "sha256": "256a18d098604df5f3e8d1e039d5658c06668312a67e6dc69b68777b36acdbf5",
+      "bytes": 7790
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/r11r4_build_rootfs_r2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-rootfs-source-r1/r11r4_build_rootfs_r2.py",
+      "sha256": "5db4052772d4cdcf049c317a2a81f8d8676d36979e433f82e118e18f23a5e182",
+      "bytes": 7888
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/r11r4_build_rootfs_r3.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-rootfs-source-r1/r11r4_build_rootfs_r3.py",
+      "sha256": "9ce952bcb883f87fa088bc93b59457be44b2f072194ec1b4d93bf866bbc05f30",
+      "bytes": 7900
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-rootfs-source-r1/supervisor.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-rootfs-source-r1/supervisor.py",
+      "sha256": "de9f5cb8af02bb523384df35c4263655faa940fe85d43782ccbe90ee254ad42f",
+      "bytes": 55666
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/owner_open_bootstrap.proposed.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/owner_open_bootstrap.proposed.cpp",
+      "sha256": "6dcc7c6062f6d8c38bb36115a5a0b5a6cb3b5695c21678688a80b84e9f99ffdb",
+      "bytes": 66868
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/owner_open_ingress_proxy.proposed.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/owner_open_ingress_proxy.proposed.cpp",
+      "sha256": "ae86b706cfa6e4d56a00ab786f4b6de6bfe74a2ecc3b46555319a325a610acb4",
+      "bytes": 25808
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/owner_open_kernel_boot.h",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/owner_open_kernel_boot.h",
+      "sha256": "5996212560d1e5d9784494b37afe030f8c9f7f409235e11a02019ed986fca649",
+      "bytes": 3327
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/property_contexts.proposed",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/property_contexts.proposed",
+      "sha256": "35232f85940650620356a7458ab6011a136af475462852931177f32e327cbe68",
+      "bytes": 1918
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_module_build.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/r11r4_native_module_build.py",
+      "sha256": "501c543fadbe0193b5f81babe7346cfa34b787c87b683ca3971eb3c5ba69427a",
+      "bytes": 8516
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_module_build_r2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/r11r4_native_module_build_r2.py",
+      "sha256": "7eb62869da657a5c97281568d06f25815ccde04c51192ff1b083ef4c536fdbe9",
+      "bytes": 9328
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_module_build_r3.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/r11r4_native_module_build_r3.py",
+      "sha256": "0cb7871db5c751b51a26f82a1158617acc68f24037fbbcd2c378bde63b8b9936",
+      "bytes": 9591
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_sourceqa.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/r11r4_native_sourceqa.py",
+      "sha256": "ddac79430d06473123cdc1769f49ceb32734aef564b1ef24944723fb865535d3",
+      "bytes": 7279
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_native_sourceqa_r2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/r11r4_native_sourceqa_r2.py",
+      "sha256": "14aa11e26b6d8665a0f8292f7f6790f6559bdb8c6c87a50e65f99161838ca43b",
+      "bytes": 7445
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_proc_policy_audit.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/r11r4_proc_policy_audit.py",
+      "sha256": "bc057f7c1e6e69f8ef98e6bbe26bf13000b28a067e29de371d3343f077a71541",
+      "bytes": 5219
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/r11r4_proc_policy_query.c",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/r11r4_proc_policy_query.c",
+      "sha256": "6bd609b547a0b04586ae966dda13e847b67b3b98a518acec480b7a841966f616",
+      "bytes": 2303
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/trillionnium-owner-open.proposed.rc",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/trillionnium-owner-open.proposed.rc",
+      "sha256": "a4c42e0d976de0746d96c2ec9e7ad1356e6f4f67f308e5db814d9fe78bb271e6",
+      "bytes": 3925
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_bootstrap.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/native/owner_open_bootstrap.cpp",
+      "sha256": "6dcc7c6062f6d8c38bb36115a5a0b5a6cb3b5695c21678688a80b84e9f99ffdb",
+      "bytes": 66868
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_emergency_inhibit.h",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/native/owner_open_emergency_inhibit.h",
+      "sha256": "e11824af72afd7d94e866458451b44a020d6d953642b7bf82d2302d8783623b2",
+      "bytes": 3116
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_emergency_stop.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/native/owner_open_emergency_stop.cpp",
+      "sha256": "1998ed7f92462b9a50e75ab3402191fc12e698ffcdffc78f88fe64b0d938394a",
+      "bytes": 1075
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_ingress_proxy.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/native/owner_open_ingress_proxy.cpp",
+      "sha256": "ae86b706cfa6e4d56a00ab786f4b6de6bfe74a2ecc3b46555319a325a610acb4",
+      "bytes": 25808
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_kernel_boot.h",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/native/owner_open_kernel_boot.h",
+      "sha256": "5996212560d1e5d9784494b37afe030f8c9f7f409235e11a02019ed986fca649",
+      "bytes": 3327
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_peer_identity.h",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/native/owner_open_peer_identity.h",
+      "sha256": "65c41828bbf32c76fd7f8f67d5b8cc26d861632b335771c6a7065a3757ed08df",
+      "bytes": 1749
+    },
+    {
+      "path": "backend/frozen-intake-v142/r11r4-native-source-review-r4/native/owner_open_peer_identity_test.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/r11r4-native-source-review-r4/native/owner_open_peer_identity_test.cpp",
+      "sha256": "4aaede0dcd2575931dca24c8d89b1aa15590f43efeea19f34b9d1e0f139f3153",
+      "bytes": 1006
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/Android.bp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/Android.bp",
+      "sha256": "58140de60cde0f2572e5fad347cdef263efc5dc7114a341956d09a3078e0f27a",
+      "bytes": 4320
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/product.mk",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/product.mk",
+      "sha256": "5b452ec6d2be1fd2e1e7586d378e60f6e3a3aab6b6bb1bc8cd420b07181d7e58",
+      "bytes": 3188
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/product-codex-host-relay-v1.mk",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/product-codex-host-relay-v1.mk",
+      "sha256": "6aa085c08627b03d835c1ef044b4ed28337f6816ba11980e1ab508d226b2e579",
+      "bytes": 803
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_bootstrap.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/native/owner_open_bootstrap.cpp",
+      "sha256": "a87dacd9a5c9eae4ef9f0890b190ad9acf4debe6d16d906a326d38323b4af0b3",
+      "bytes": 58532
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_emergency_inhibit.h",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/native/owner_open_emergency_inhibit.h",
+      "sha256": "e11824af72afd7d94e866458451b44a020d6d953642b7bf82d2302d8783623b2",
+      "bytes": 3116
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_emergency_stop.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/native/owner_open_emergency_stop.cpp",
+      "sha256": "1998ed7f92462b9a50e75ab3402191fc12e698ffcdffc78f88fe64b0d938394a",
+      "bytes": 1075
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_ingress_proxy.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/native/owner_open_ingress_proxy.cpp",
+      "sha256": "935dba1b0f72bd5b13896b36bd4e5eefca71203b45821fa05e1a0b0d9e66a6d9",
+      "bytes": 25581
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_peer_identity.h",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/native/owner_open_peer_identity.h",
+      "sha256": "65c41828bbf32c76fd7f8f67d5b8cc26d861632b335771c6a7065a3757ed08df",
+      "bytes": 1749
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/native/owner_open_peer_identity_test.cpp",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/native/owner_open_peer_identity_test.cpp",
+      "sha256": "4aaede0dcd2575931dca24c8d89b1aa15590f43efeea19f34b9d1e0f139f3153",
+      "bytes": 1006
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/init/trillionnium-owner-open.rc",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/init/trillionnium-owner-open.rc",
+      "sha256": "bc5496d666e9037513aaeca2ba92dda2af6a0fc6830653841b19476690067a80",
+      "bytes": 3788
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/init/trillionnium-sun-btfm-modprobe.rc",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/init/trillionnium-sun-btfm-modprobe.rc",
+      "sha256": "ea5ab9a7f992a2ae70ee6dc8dd006fa59fa1fa49e2fa6c71dff7e137571df0cc",
+      "bytes": 660
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/adbd.te",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/adbroot/adbd.te",
+      "sha256": "d95f966553e6ab0d7054c4a63cc273db98eb804ee4547629035f7055b77d0629",
+      "bytes": 150
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/adbroot.te",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/adbroot/adbroot.te",
+      "sha256": "2f25b298d9d8ff8c325b8368fd4985bfa52ad1e6b30be1b1a623535a9727fb03",
+      "bytes": 686
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/file.te",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/adbroot/file.te",
+      "sha256": "128db39ea4be1eba8b9cd4a5273c4083c6b646c6326b3abc6f11d539abf540e1",
+      "bytes": 72
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/file_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/adbroot/file_contexts",
+      "sha256": "d0a32a2756f4ee667f1b08ba699dd6e845d0cf1b6b705184aa271951280f508c",
+      "bytes": 236
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/service.te",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/adbroot/service.te",
+      "sha256": "5e68aa42e45cc1e4465404a445ae996a335207fe1bb00fbc771122c66b4fe410",
+      "bytes": 44
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/service_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/adbroot/service_contexts",
+      "sha256": "217aaee9d25c72e16bab4a706ed4136ea3c42a0c90b0f7918367d7f11b505005",
+      "bytes": 72
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/adbroot/system_server.te",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/adbroot/system_server.te",
+      "sha256": "041364093eb17908e9b63a494f326a362f57a9938803d67cc93c9d0bfd417716",
+      "bytes": 58
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/domains.te",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/private/domains.te",
+      "sha256": "25e1bebefde7bcd0e4176eaf9adb816a25cdc64f6bb402ebbf9cff4dc4ec744b",
+      "bytes": 6217
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/file_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/private/file_contexts",
+      "sha256": "dc0818aae7c6809665ac35854a1dc2d382e4da98c5dc29e1813e015907363798",
+      "bytes": 778
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/property_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/private/property_contexts",
+      "sha256": "b0b4f6465cdbce096380d1093fa859aa6d37f733e8f1a31518a29deadc822e5f",
+      "bytes": 1654
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/seapp_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/private/seapp_contexts",
+      "sha256": "06c87b1957ec3be9419a657d8c2e51a22e826c42bc3391fdcdac6b2e787d0367",
+      "bytes": 146
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/sepolicy/private/types.te",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/sepolicy/private/types.te",
+      "sha256": "aa689d5f0b55fc698f5f0ce25c33de4ab70cf044d867260d46ef5edf8a81a516",
+      "bytes": 1857
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/README.md",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/README.md",
+      "sha256": "b2ed5cbea2c850836655e514d2d74e412d836d8ea1cf810a40cd9268796cbf5f",
+      "bytes": 9962
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/build_owner_open_erofs_release.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/build_owner_open_erofs_release.py",
+      "sha256": "4fe30eb329476ee0e198443e854b0435ab9f432d1974bb61d2c81e082dc05165",
+      "bytes": 5942
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/build_owner_open_rootfs_image_release.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/build_owner_open_rootfs_image_release.py",
+      "sha256": "edb84d355c30d2fa5603bc4e757a6afa3d530e7e15fe96ee4621ba2c4b64eadd",
+      "bytes": 26866
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/jsonl_provider_runtime.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/jsonl_provider_runtime.py",
+      "sha256": "055697e7564af0d0c76c64064b28104d5cec95a46ad3e53df964ab09f438cbcd",
+      "bytes": 24165
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_adb_relay.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_adb_relay.py",
+      "sha256": "604db49fcca4117d65ef1f5b4400c1f0e1d3b3b03e4088879fab760f1e429389",
+      "bytes": 17070
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_adb_relay_v2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_adb_relay_v2.py",
+      "sha256": "e621f876434ad47c229b47cf3b01d0c50eb269307465f20c9433cc5b6ee717b5",
+      "bytes": 17337
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_admission_v2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_admission_v2.py",
+      "sha256": "74c801798fce3817cbd0853d88bbbe25d32e7442d229f736aceeefe2aa721927",
+      "bytes": 33358
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_audit.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_audit.py",
+      "sha256": "6f4ab4eccf04b148a4d3642c05a2558409000d94ab15b12d95535b2f3d0ebf18",
+      "bytes": 21817
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_base_v2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_base_v2.py",
+      "sha256": "8333d1295297af6a6ade8ed91f6978a86614effbe1a7cff4b56dd0fa6ed940c4",
+      "bytes": 26858
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_client.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_client.py",
+      "sha256": "d4fdbad3154902c3dd3f9f976abb328a69ca5dbf57842359ee1cd21eb8fcb94a",
+      "bytes": 8801
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_common.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_common.py",
+      "sha256": "71b20cce8782fb1f065aa85d6f1e84a0ed29ca5d0c618d135ddf8b17c380d783",
+      "bytes": 16177
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_connections.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_connections.py",
+      "sha256": "ac25938ed0b690eedf74bc5a1e588e8570d6d1de4238441ab140307eb0233e1f",
+      "bytes": 9436
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_convergence_v2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_convergence_v2.py",
+      "sha256": "d3c10d858c8041b4be3ff40873c1b359e80fcaf69dafc57349359ca30b3f2200",
+      "bytes": 42927
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_mux.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_mux.py",
+      "sha256": "7d483edc3c2c7791162d6500f221bd73de06d5795e2d84d9ccf95ef72235cd8b",
+      "bytes": 31152
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_runtime.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_runtime.py",
+      "sha256": "d0146f7b66c27abbed573b5e9e7f9a1d9cdf4e02e26dd8cf7f00152ec3776329",
+      "bytes": 21106
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_broker_server_v2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_broker_server_v2.py",
+      "sha256": "e34a60551552277ab72cf92e0dce9bf716624c6aa477f983b7429a0b32d3b5af",
+      "bytes": 11244
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_connection_broker.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_connection_broker.py",
+      "sha256": "702240c72eec01a9449dffb234037d4c68abe8619126d2739c3ad285f6b72f59",
+      "bytes": 702
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_connection_broker_v2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_connection_broker_v2.py",
+      "sha256": "8eae99d0933e7cea97276c65119ee4effae666f18bc125c968c81112942a87e1",
+      "bytes": 3758
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_mcp_common.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_mcp_common.py",
+      "sha256": "ff1f6e0f41c5afb5731b8be9550a9b9ad145f462ce1965950cbefb2dd7a07d6c",
+      "bytes": 4977
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_mcp_host.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_mcp_host.py",
+      "sha256": "8771e7f101b9f62436a877e16473c814cc539d5c5748d2023a58b0673a01f33a",
+      "bytes": 9180
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_mcp_jobs.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_mcp_jobs.py",
+      "sha256": "b03fad573a6bc393cdba6c87faf64904e93302cc42f8b694d67653d1b970e59d",
+      "bytes": 17750
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/owner_open_rootlinux_supervisor.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/owner_open_rootlinux_supervisor.py",
+      "sha256": "1ee28821c479955a694f9b62ac7d2355eadf5a685231574e276f9e6cb3f8a7f5",
+      "bytes": 47607
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/provider_host_relay.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/provider_host_relay.py",
+      "sha256": "5e48a5bfb06b9aeecbc7e510f07100df89321765545590cd7a6e97f780aff164",
+      "bytes": 7913
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/tools-owner-open/stage_owner_open_rootfs_payload_release.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/tools-owner-open/stage_owner_open_rootfs_payload_release.py",
+      "sha256": "a92e07bd3083083029d307a1b0aff221f30eca4275b32a1b09135cd5e6e823e4",
+      "bytes": 18778
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/Cargo.toml",
+      "sha256": "1aeeba96e2bff7ca3377be01f926956d3060fc0aebaf07fcf1b467304cf38478",
+      "bytes": 4405
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/Cargo.lock",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/Cargo.lock",
+      "sha256": "2a9c12114e6844a97fad887717350572c62d124090f639c939f2a380a6e37da3",
+      "bytes": 63221
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/Cargo.toml",
+      "sha256": "b638ac8e9f0c69b2c3ce093215cc0aa42a418441d8e164ab24dd31fee55294fa",
+      "bytes": 1190
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/README.md",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/README.md",
+      "sha256": "14354826db3837fc0327359c92d94756a5df056503ca884185a0a45b935c34c7",
+      "bytes": 4662
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs",
+      "sha256": "8b2ff211d9dd529a0a97718ad3d80f4543f7ef9c9625113609069ee579c02f26",
+      "bytes": 50018
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs",
+      "sha256": "9d578fd974a92df2a30390f652e351e24867adf750bb746a324f153be2933ca3",
+      "bytes": 61180
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v3.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v3.rs",
+      "sha256": "b48f5259d41cdd028c236229e578c006698e3fc20dfae336eab7358e55f4e6b2",
+      "bytes": 295
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs",
+      "sha256": "cca62d069c37850b935ad00e9142c6bf713db2163587ffa3ffe712d153304063",
+      "bytes": 3045
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs",
+      "sha256": "81c3443026bfdd9a24510da724007e28f996aebbf95e3e1deed31e1e7a3f1a53",
+      "bytes": 6845
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_handlers.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_handlers.rs",
+      "sha256": "ca55b384685108b8f3dab84cc4ec397d67a94dff923ca3715df0977b38ab8c2a",
+      "bytes": 11538
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_parse.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_parse.rs",
+      "sha256": "8b2e99d279d5688e5ef2a6eaf3c83beda8aa922cdd5cb3d77b2326cb86b46143",
+      "bytes": 7586
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "sha256": "270ae2206d092bc590b1f241d9f77eee21fc941445a76511369b5f58b81bd93e",
+      "bytes": 21545
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4.rs",
+      "sha256": "70253057bd1e9f031107f2440bc31b09182212443b87765038bde1ff7718f928",
+      "bytes": 769
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/entry.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/entry.rs",
+      "sha256": "da06bbbba5d5cae1415ad659a2d94bcec84715db347d58195ae453f058d4e0c6",
+      "bytes": 5685
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/process.rs",
+      "sha256": "52603c1bb87b7f4945df559cbdbd9b8c9f88708f23c4e7e2a8ffdf285c03673b",
+      "bytes": 23115
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/wire.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/wire.rs",
+      "sha256": "241785423e3f6aa6348a24a505641645a4b5431b65bce1eda7320e90028f9064",
+      "bytes": 19473
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs",
+      "sha256": "761680261172d514ad2d05e5e0002fa588558c1367027983c4568e4af1c282b8",
+      "bytes": 773
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+      "sha256": "0ba35b039601b7e02ac3e969b6b26cb8280b11747ab8b7f8ca385564080085e6",
+      "bytes": 7190
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs",
+      "sha256": "40aa42c38fd1af4493b6a69d982e64517f83a50d69fe10023ce67222360b4d8c",
+      "bytes": 1209
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
+      "sha256": "97cf1bd7b5669a384647f8b5f04cbe7dd73ef6d28334d795d20c344c95510339",
+      "bytes": 114832
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
+      "sha256": "7b8546da83c2b2df6555d55a5171d832b0bb4f503125093bb352f2791c95450e",
+      "bytes": 33921
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs",
+      "sha256": "15a20f991d649fcfeb76ea24caa999bb876d58af59714594c55833d0dad88ee8",
+      "bytes": 828
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_host.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_host.rs",
+      "sha256": "e16f92d94dbbbe6ee8831d6c45d2b234d9d9b3dedb3823ffb8c8e20a5049b1c5",
+      "bytes": 28888
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs",
+      "sha256": "0d0b4b3b7733e5a9440e19c9efbe21d6533afb0e425b5d589c4bec7b5fc1af7c",
+      "bytes": 31510
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/imports.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/imports.rs",
+      "sha256": "ed0479749a716b7558d6777d88a3a7bbce098fd655314dc0c07c204df3fca34e",
+      "bytes": 2610
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/options.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/options.rs",
+      "sha256": "87d8184d70f7dc62cb64a635622375a0360a0a5296657b4756a5c70c55ae812c",
+      "bytes": 4586
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/state.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/state.rs",
+      "sha256": "a428eb1f1cef57b34e695f5ebe335497c5d6a741a25ece59cd41be99e85bf3d7",
+      "bytes": 55175
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry.rs",
+      "sha256": "95c5b7bd2dee18aab7261da09408cf4a14bc4b52b49c0ea048dfb158275964c9",
+      "bytes": 88
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/queue.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/queue.rs",
+      "sha256": "c95ea2f7e6e3096d07301a86d1c3cfcdd621508cbde31a5e5fb0497b666298d0",
+      "bytes": 8961
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs",
+      "sha256": "8de194696916e6be4c90292746f1c86545d7280a2cc58a22f00445d64cd36892",
+      "bytes": 45
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/tests.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/tests.rs",
+      "sha256": "518914fd27d654249ffbc9ce858bb9ffb464af9e97638e326ffbd6f908a96fc1",
+      "bytes": 11773
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/types.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/types.rs",
+      "sha256": "1d321e4f4c19a5dbbb8e1d670357177b72decbc1883ed3138176724747657748",
+      "bytes": 5214
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/window.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/window.rs",
+      "sha256": "070174eedda80bc4b338278ff281e0056dacea880ffcf067b0d26e1be546c395",
+      "bytes": 5023
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow.rs",
+      "sha256": "9f50576bb116dd61f4ab0b3e8db9d258e9b462c840f32f2275a4dabbf45d3274",
+      "bytes": 81
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/journal.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/journal.rs",
+      "sha256": "ed337d485d775b707c98b778761c41c7a9d5a6283d10cdd6f393c05848df604c",
+      "bytes": 6576
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/handlers.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/handlers.rs",
+      "sha256": "e7c67dfcc149bd3d6371021644f69f59d955d84ef5d58b79524cb5b1bdb81c31",
+      "bytes": 74960
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs",
+      "sha256": "b5377b4402c5a7f7341297e28165725fc4bc4c4829b600d571fecd800268f64e",
+      "bytes": 29124
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/run.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/run.rs",
+      "sha256": "e5c34544dbe7bd2a42c08415f9bea02ce91e880c74cbdf197d05d7ac001210a6",
+      "bytes": 76122
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process.rs",
+      "sha256": "ccccb65bfafcef6b676a705bd4129681eeb951a665c6efe6ada08882d43bf84e",
+      "bytes": 88
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/protocol.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host/protocol.rs",
+      "sha256": "1389f95d40b3e6ceef252823ecf1d893b115d3ce5e73e558db3bae268ee6c0cd",
+      "bytes": 11332
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs",
+      "sha256": "760c8742bb6bf6d3de1e0d8366f427ef5b9c193a668a92462fe20ab664afbf45",
+      "bytes": 511
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/lib.rs",
+      "sha256": "72043e92f9ea0a41cc53e2caa29d3c3d94982540ee9560a15b614160be8747a0",
+      "bytes": 19040
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/main.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/main.rs",
+      "sha256": "6f2463e1366789fd20c3b96a3116835ecb103fd380f165a16b3a30d4d4be4a37",
+      "bytes": 10444
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+      "sha256": "12efac6888546845f28ed13daf7e478e440346e9c315f17407f6b98b6be9185a",
+      "bytes": 19179
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-proposed/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "sha256": "070bb8e6bd56e065f56e7eaa2ebc6ab9e0bd0dde1050942f3b8ab5136823fc26",
+      "bytes": 28896
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/apps/trillionnium-owner-open-host/tests/r5_late_cancel_known_terminal.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-proposed/apps/trillionnium-owner-open-host/tests/r5_late_cancel_known_terminal.rs",
+      "sha256": "9b136958e9060d09166c467e59342cf231d19108a2d06b7e26f046af7826e435",
+      "bytes": 5441
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/tools/owner-open/owner_open_broker_admission_v2.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-proposed/tools/owner-open/owner_open_broker_admission_v2.py",
+      "sha256": "76131b9d99e8b51affea4680e79c00236992a48d13f20ddf8541a539e6995d15",
+      "bytes": 36419
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-proposed/tools/tests/test_owner_open_inspect_observation_lane.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-proposed/tools/tests/test_owner_open_inspect_observation_lane.py",
+      "sha256": "1a11e65e27e5eb805e8337912eb45f3673d9e6fc0a452ae516d992d26b11ac97",
+      "bytes": 7392
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/build-script.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-provenance/build-script.py",
+      "sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff",
+      "bytes": 10196
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/manifest.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-provenance/manifest.json",
+      "sha256": "59bcaa1a0516b386f45377b0798fe5f3945e2477b62426766f22e5e959321a88",
+      "bytes": 6009
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/frozen-source-manifest.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-provenance/frozen-source-manifest.json",
+      "sha256": "ccbcbb37cf35b2e26054f351276fae64699703c2f90cdc6024df9960a80d75a5",
+      "bytes": 55499
+    },
+    {
+      "path": "backend/frozen-intake-v142/gnu-core-provenance/source-handoff-final.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/gnu-core-provenance/source-handoff-final.json",
+      "sha256": "59d77a569a0fbd1189686cfcd9c5839e60316f3c513de78dfcee5e6cdf53c32c",
+      "bytes": 3694
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-call-registry/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-call-registry/Cargo.toml",
+      "sha256": "7b7a485fd5f614783a6b45d7f7cc3810dd72fa87e887ce249528c891e75dd357",
+      "bytes": 244
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-call-registry/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-call-registry/src/lib.rs",
+      "sha256": "19a90ee02ff80a26c46b2009476005c460f0759363c9501b73906158d213f5cf",
+      "bytes": 48860
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-event-store/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-event-store/Cargo.toml",
+      "sha256": "048c4ac9c9ba8e9f25f3fa2de01cfdb32ac5eb2cffdd385210dbe54f275b791f",
+      "bytes": 410
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-event-store/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-event-store/src/lib.rs",
+      "sha256": "99b2f280ba4798cd8ee3f74fa9e9c901893c3a4949800dc13083d5842ac38018",
+      "bytes": 166377
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-event-store/src/strict_json.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-event-store/src/strict_json.rs",
+      "sha256": "11aae2509a860f09e533e071873f87ad48d9591fb611086fdda25e8cbc645445",
+      "bytes": 3176
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-registry/Cargo.toml",
+      "sha256": "7373351540752310819b8615e13039a5933847097f06d40b556a31f918686514",
+      "bytes": 293
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-registry/src/lib.rs",
+      "sha256": "6eb26d8fc931044ede7cbdf2a1a1a13f9302b8c1db7ca7ca48eeb139bd889090",
+      "bytes": 461
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/registry.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-registry/src/registry.rs",
+      "sha256": "86a36287c2b091328d453e7bcffedfb5a246dd87b692d7287f77e7aab03d9b38",
+      "bytes": 38049
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/types.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-registry/src/types.rs",
+      "sha256": "fb8264f808cf171b32e22081d115f4d7bbfed24a5ae381706468ea000acd148a",
+      "bytes": 8711
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-registry/src/validate.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-registry/src/validate.rs",
+      "sha256": "969d544449e5ccf401187a35ec2070cd539f688950ba6c0e6fe2b89ba6739676",
+      "bytes": 1841
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/Cargo.toml",
+      "sha256": "86d5ced299b5f28feef8c96aa5911e933a27b73cd7e9b9197e7c46b329f47101",
+      "bytes": 517
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
+      "sha256": "b5cfed9000227dc28aa5e1cf44e43ca03974950a64cdc681f77fc24d5a86bbb8",
+      "bytes": 6292
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/journal.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/src/journal.rs",
+      "sha256": "89e9f44f958d3f029dda3f624a379fc461ec913f5960dc57510edc683865e9ea",
+      "bytes": 58688
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/src/lib.rs",
+      "sha256": "73a5bc625f88dfdfbb7ec4f831b52c911f6056a3be3b426475fd2997147efaff",
+      "bytes": 871
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+      "sha256": "e684e3007cbaacc64d1b302f65a45ad03add1fc063f463c12e2bb23aaf4ff039",
+      "bytes": 111963
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/src/process.rs",
+      "sha256": "46f0e7dc71d9f797fe4ddefbf018abf2a7ead5c6c89ff8334c1462dfdf72cf88",
+      "bytes": 62044
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/types.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/src/types.rs",
+      "sha256": "50b865eda53260dcd18a9b3db92a67b69c4e1696b83e3de76b4b8a2485fdd61d",
+      "bytes": 11986
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-job-runtime/src/validate.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-job-runtime/src/validate.rs",
+      "sha256": "de168b99882da51ea76e29aaa5fd83c958ff9084d1d562be3aa52cfb2571d2e1",
+      "bytes": 1272
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-provider-jsonl/Cargo.toml",
+      "sha256": "6df6c5e365201f9c6b425ae52804b563ae0bd24c54e866449a0a3ed1d926459c",
+      "bytes": 719
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+      "sha256": "df2ccb8fc10c2ccf53b46dc48bf3b96be1526848dff548d718ee7b35c4be54ae",
+      "bytes": 41933
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+      "sha256": "9a92601c0b4f2a308b043febd478a1443eec320836bb3a85348301e36b26aa6e",
+      "bytes": 15330
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+      "sha256": "d922d20fb87d913eb49002ab37bcbfc44fe266c31fea6c7284829bb02e903a3b",
+      "bytes": 44492
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
+      "sha256": "a77c06e761e06f858d56c1dbe5b372317ebed86bd4304f44cf3da50a8c5ba64f",
+      "bytes": 34226
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-provider-jsonl/src/strict_json.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-provider-jsonl/src/strict_json.rs",
+      "sha256": "2aace9fb080c5401a7f3147c48afc6303599f69419d347870d651f2c9ac159e1",
+      "bytes": 3196
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-runtime/Cargo.toml",
+      "sha256": "957b43e0488ea798bba03c52d9764c7247cb1ad7cab9792777b55bff4c818a1c",
+      "bytes": 333
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-runtime/src/lib.rs",
+      "sha256": "13dd11879a60ba3935438f7285645925bc660351111b645663f8c94784095728",
+      "bytes": 9714
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/process.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-runtime/src/process.rs",
+      "sha256": "19a8c50a5ed44670fdd913ba267b922faa79ecb1f99deb675bdb49e7bbf24632",
+      "bytes": 64939
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/raw_adb.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-runtime/src/raw_adb.rs",
+      "sha256": "d367af431d18c36a4c767a3725e158e4354e80c8a3d96c97b3d1eb7558e20215",
+      "bytes": 2492
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/types.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-runtime/src/types.rs",
+      "sha256": "e8bc46d0b734bfc294cec2c70222f9cf8fd364618af3d1eef7dc2afffc2080a3",
+      "bytes": 22047
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-runtime/src/validate.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-runtime/src/validate.rs",
+      "sha256": "d36d987f3350dff6d10013af75aa6b15163f3ef3ed68865036bf49189a7aa798",
+      "bytes": 9036
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-stream-window/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-stream-window/Cargo.toml",
+      "sha256": "8d1021d310be82578b1eea87c9499eea5ca5277be6c346d2724fea0847cdc388",
+      "bytes": 271
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-stream-window/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-stream-window/src/lib.rs",
+      "sha256": "902b635eaf1a97c4a601107222baee8e0361cf1ad143b6f57565a9bd17798cbd",
+      "bytes": 18764
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-tool-bridge/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-tool-bridge/Cargo.toml",
+      "sha256": "dfbb5ed4b5f1d2c80f35389183a8843a207aba2d0e2aec7978a59d62ed622d96",
+      "bytes": 442
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
+      "sha256": "50276548f8fd083c0823e32e48d994fc25e8e01930639ccdb9e5b2c6f4c22a55",
+      "bytes": 36688
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-turn-loop/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-turn-loop/Cargo.toml",
+      "sha256": "714b471cc28dd617ac291086ac10a80d59f8c1729bc04740e201aa9219058059",
+      "bytes": 470
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+      "sha256": "e732eedcf5b8c768ce96a41bea99d1c651331a8427d0734873e4c7a4836ebd82",
+      "bytes": 31140
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/Cargo.toml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-types/Cargo.toml",
+      "sha256": "d405d06dd1c4a81e42dae0541221b07e0b170076d933866bab22370c881cbeaf",
+      "bytes": 388
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/bin/generate_module_contract_schemas.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-types/src/bin/generate_module_contract_schemas.rs",
+      "sha256": "bb031101bb4ff9576c6e89d6c74c977941711e25419a122837d6b4a94d635e91",
+      "bytes": 574
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/generated.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-types/src/generated.rs",
+      "sha256": "a9ef8c6ab7b79ac753e51a83ffb3e62745fac6eaa4373422b47c5a25cfdc701e",
+      "bytes": 907
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/lib.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-types/src/lib.rs",
+      "sha256": "f113d287ce7f0e80a3b8a3ec937c9628bb23edf0eef687f6466d86b804f2a8f6",
+      "bytes": 43497
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/crates/trillionnium-owner-open-types/src/module_contract.rs",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/crates/trillionnium-owner-open-types/src/module_contract.rs",
+      "sha256": "865f50ff6457c4be8b21c95ef6d19b09a9883e18fc297c3b2091b2cd50101ac9",
+      "bytes": 8336
+    },
+    {
+      "path": "backend/frozen-intake-v142/source7/vendor-owner-open/tools/verify_owner_open_materialized_erofs_payload.py",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-backend-genuine-source-intake-C-v142-r2/sources/source7/vendor-owner-open/tools/verify_owner_open_materialized_erofs_payload.py",
+      "sha256": "f229390ba8d2360ac456085ce40232fdb634f6fe723835b77db4cb809d31fd03",
+      "bytes": 17811
+    },
+    {
+      "path": "integration/magisk-v145/module-root/customize.sh",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/customize.sh",
+      "sha256": "cec6bfc529371129edcbecdea6e569d810577d711f3d8da19697a81b8f13e143",
+      "bytes": 1842
+    },
+    {
+      "path": "integration/magisk-v145/module-root/mounted-files.sha256",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/mounted-files.sha256",
+      "sha256": "f1359c3f81b831cfea7125d14462dac3af8441264236944893b7e7899765cfef",
+      "bytes": 1646
+    },
+    {
+      "path": "integration/magisk-v145/module-root/post-fs-data.sh",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/post-fs-data.sh",
+      "sha256": "4a5698a1c9f1efaba396ebf1e53b295cc84479071626187f882411890af4591f",
+      "bytes": 2473
+    },
+    {
+      "path": "integration/magisk-v145/module-root/sepolicy.rule",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/sepolicy.rule",
+      "sha256": "8671d042d9e592337f635d394f463d705dd82486ae9e3109c1f0e008e6bdfab4",
+      "bytes": 40935
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_file_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/selinux/system_ext_file_contexts",
+      "sha256": "d591b0d8fb002aa30c9a361441e26e730be2b576a1d702877ed5966b97705e3f",
+      "bytes": 9064
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_mac_permissions.xml",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/selinux/system_ext_mac_permissions.xml",
+      "sha256": "d9adfcd8f5ff01d593780715d61d24c9234dfe2d87397eaa4b4a672a2ef5b84b",
+      "bytes": 4589
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_property_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/selinux/system_ext_property_contexts",
+      "sha256": "a9caca7740a783c8aa983f0469084371a1b038c3086ac104e8b436399ded46c0",
+      "bytes": 24937
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/selinux/system_ext_seapp_contexts",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/selinux/system_ext_seapp_contexts",
+      "sha256": "5938ddc7ba197a6dc2ec289548194745e187057b77c42f491ab34dfab164820b",
+      "bytes": 5593
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json",
+      "sha256": "f767fdb37665e44b8e54bc428b773c82d63ec51f2cf76b34471ebf3bc75e7d8a",
+      "bytes": 7020
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/owner-open/stock16-backend-init.source.rc",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/trillionnium/owner-open/stock16-backend-init.source.rc",
+      "sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca",
+      "bytes": 4305
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+      "sha256": "98ec81aa5a21d122081581fea34a61ee03ab64ce420e7d5e99a4d49244ae13ff",
+      "bytes": 65
+    },
+    {
+      "path": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-magisk-deploy-Root-v144-r1/runtime-final-module-r2/module-root/system/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+      "sha256": "e54a2adf831c6cbf4d8f482e5ef574c39fbb6dcd598554ba29d8a36c6d91cf3b",
+      "bytes": 400115
+    },
+    {
+      "path": "integration/magisk-v145/module-root/service.sh",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/module-root/service.sh",
+      "sha256": "6128b62397e5aa2e5eba8f8b9597cd1162fc934c13e26ba3594db1fb7097c9f6",
+      "bytes": 7033
+    },
+    {
+      "path": "integration/magisk-v145/module-root/module.prop",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/module-root/module.prop",
+      "sha256": "782b3139d193200ea61b02ad08f27f41b56e08cb73a901254950340b930ebec8",
+      "bytes": 214
+    },
+    {
+      "path": "integration/magisk-v145/ROOT-INSTALL-AND-LIFETIME-CONTRACT.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/ROOT-INSTALL-AND-LIFETIME-CONTRACT.json",
+      "sha256": "17923ed306f8328f762bf7bc3bf13231b52029f60cab2a3786d10d05fdc00a29",
+      "bytes": 5180
+    },
+    {
+      "path": "integration/magisk-v145/SOURCE-SEAL.json",
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-guarded-boot-autostart-D-v145-r1/SOURCE-SEAL.json",
+      "sha256": "e27918c82c44142216693ad29216e52e59899badb8bab00fc694aaeeddfe4f15",
+      "bytes": 2695
+    }
+  ],
+  "count": 180,
+  "bytes": 3330098,
+  "rootfs_identity": "5b17d4e356525e02ebd9354e74b4a5334678837ccc5a1895b3507eaa01264cda",
+  "rootfs_rebuilt_in_this_work": false,
+  "source_scope": "Frozen intake and GNU core source overlay preserved; not a complete 931-file rootfs/toolchain archive"
+}

@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">HEPTA 桌面入口</string>
+    <string name="hepta_name">HEPTA</string>
+    <string name="description">从 Moto 桌面打开 HEPTA。添加快捷方式或桌面组件后，在桌面弹窗中确认位置。</string>
+    <string name="open_hepta">打开 HEPTA</string>
+    <string name="pin_shortcut">添加到主屏幕</string>
+    <string name="pin_widget">添加桌面组件</string>
+    <string name="hepta_available">HEPTA 已安装</string>
+    <string name="hepta_unavailable">暂时找不到可打开的 HEPTA，请先完成安装。</string>
+    <string name="open_failed">暂时无法在此屏幕打开 HEPTA。</string>
+    <string name="shortcut_unsupported">当前桌面不支持快捷添加，请从应用列表长按 HEPTA。</string>
+    <string name="widget_unsupported">请从桌面的组件列表中添加 HEPTA。</string>
+    <string name="confirm_in_launcher">请在桌面弹窗中确认添加。</string>
+    <string name="pin_not_submitted">未能提交添加请求，请从桌面手动添加。</string>
+    <string name="shortcut_pinned">桌面已保存 HEPTA 快捷方式。</string>
+    <string name="widget_name">HEPTA 会话入口</string>
+    <string name="widget_hint">轻点打开会话</string>
+</resources>

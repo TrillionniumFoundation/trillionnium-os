@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">HEPTA</string>
+    <string name="prompt_hint">发消息或交代任务…</string>
+    <string name="send">发送</string>
+    <string name="cancel">取消任务</string>
+    <string name="inspect">查看任务结果</string>
+    <string name="reconnect">连接服务</string>
+    <string name="emergency_stop">紧急停止</string>
+    <string name="emergency_status">停止状态</string>
+    <string name="emergency_confirm">停止 AI 执行，并在重启后继续保持暂停？进行中的操作可能已经生效。应用不会自动重发停止请求，也不会自动恢复任务。</string>
+    <string name="emergency_retry_confirm">使用新的操作编号再次请求停止？这只会再次取消执行，不会重发任务、重复操作、解除暂停，也不能证明之前的操作已经撤销。</string>
+    <string name="initialize_control">启用新任务</string>
+    <string name="initialize_confirm">本机控制状态不可用。请先确认设备没有停止锁定，再允许新任务。之前的结果仍可能未知，之前的任务不会再次执行。</string>
+</resources>

@@ -1,0 +1,29 @@
+{
+  "script_sha256": "3e3d99d937df032c33f39211aa0ab9ffdf6b5f53f3b098bf4247634835597d2f",
+  "results": [
+    {
+      "component": "unicode-v148r2",
+      "rc": 0,
+      "jar": {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-helper-relocated-v149-20261103/unicode-v148r2/hepta-unicode-input-v148.jar",
+        "bytes": 16076,
+        "sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2"
+      },
+      "expected_installed": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2",
+      "match": true
+    },
+    {
+      "component": "screen-codec-v148r1",
+      "rc": 0,
+      "jar": {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/razr60-independent-helper-relocated-v149-20261103/screen-codec-v148r1/hepta-screen-codec-v148.jar",
+        "bytes": 16064,
+        "sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639"
+      },
+      "expected_installed": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639",
+      "match": true
+    }
+  ],
+  "all_pass": true,
+  "phone_operations": 0
+}

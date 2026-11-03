@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.trillionnium.hepta.controlprobe">
+    <uses-sdk android:minSdkVersion="36" android:targetSdkVersion="36" />
+    <application android:label="HEPTA 控制验证" android:allowBackup="false"
+        android:debuggable="false" android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar"
+        android:usesCleartextTraffic="false">
+        <activity android:name=".VisualChallengeActivity" android:exported="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|density" />
+        <activity android:name=".TextEntryActivity" android:exported="true"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+    </application>
+</manifest>

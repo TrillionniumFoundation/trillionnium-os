@@ -336,16 +336,27 @@ fn process_messages_with_control_seq<W: Write>(
                         &mut delivery_attached,
                         &mut delivery_error,
                     ),
-                    FRAME_TURN_CANCEL | FRAME_TOOL_CANCEL => deliver_host_error(
-                        &mut writer,
-                        &mut output,
-                        None,
-                        "no_active_turn",
-                        "the control frame has no active turn",
-                        limits.max_frame_bytes,
-                        &mut delivery_attached,
-                        &mut delivery_error,
-                    ),
+                    FRAME_TURN_CANCEL | FRAME_TOOL_CANCEL => {
+                        match no_active_cancel_reply(&frame, &mut output) {
+                            Ok(reply) => deliver_frame(
+                                &mut writer,
+                                &reply,
+                                limits.max_frame_bytes,
+                                &mut delivery_attached,
+                                &mut delivery_error,
+                            ),
+                            Err(error) => deliver_host_error(
+                                &mut writer,
+                                &mut output,
+                                None,
+                                "invalid_control_context",
+                                &error,
+                                limits.max_frame_bytes,
+                                &mut delivery_attached,
+                                &mut delivery_error,
+                            ),
+                        }
+                    }
                     other => deliver_host_error(
                         &mut writer,
                         &mut output,
@@ -465,5 +476,140 @@ fn process_messages_with_control_seq<W: Write>(
                 }
             }
         }
+    }
+}
+
+/// A no-active rejection completes this control request, not the original turn.
+/// Retain its exact broker tuple and full lineage in the connection-control
+/// domain. Never append a duplicate turn terminal, reset its replay cursor, or
+/// claim that a prior effect was cancelled or undone.
+fn no_active_cancel_reply(
+    frame: &RunTurnFrame,
+    output: &mut OutputState,
+) -> Result<RunTurnFrame, String> {
+    if !matches!(frame.kind.as_str(), FRAME_TURN_CANCEL | FRAME_TOOL_CANCEL)
+        || !frame.payload.is_object()
+    {
+        return Err("expected an object cancellation control".to_string());
+    }
+    let session_id = correlated_id(frame, "session_id", frame.session_id.as_deref())?;
+    let profile_id = correlated_id(frame, "profile_id", frame.profile_id.as_deref())?;
+    let task_id = correlated_id(frame, "task_id", frame.task_id.as_deref())?;
+    let turn_id = correlated_id(frame, "turn_id", frame.turn_id.as_deref())?;
+    for (name, value) in [
+        ("session_id", &session_id), ("profile_id", &profile_id),
+        ("task_id", &task_id), ("turn_id", &turn_id),
+    ] {
+        if !valid_id(value) { return Err(format!("{name} is malformed")); }
+    }
+    let turn_stream_id = optional_correlated_id(frame, "turn_stream_id", frame.turn_stream_id.as_deref())?;
+    let stream_alias = optional_correlated_id(frame, "stream_id", frame.stream_id.as_deref())?;
+    if let (Some(left), Some(right)) = (&turn_stream_id, &stream_alias)
+        && left != right
+    { return Err("conflicting cancellation stream aliases".to_string()); }
+    let stream = turn_stream_id.or(stream_alias)
+        .ok_or_else(|| "cancellation requires its complete stream scope".to_string())?;
+    if stream != stable_stream_id(&session_id, &profile_id, &task_id, &turn_id)? {
+        return Err("cancellation stream does not match its stable scope".to_string());
+    }
+    let call_id = optional_correlated_id(frame, "call_id", frame.call_id.as_deref())?;
+    if frame.kind == FRAME_TOOL_CANCEL
+        && !call_id.as_deref().is_some_and(valid_id)
+    { return Err("tool.cancel requires a valid call_id".to_string()); }
+    if frame.kind == FRAME_TURN_CANCEL && call_id.is_some() {
+        return Err("turn.cancel cannot claim a call identity".to_string());
+    }
+
+    let mut broker = serde_json::Map::new();
+    for name in ["broker_request_id", "broker_request_sha256", "broker_request_upstream_seq"] {
+        let envelope = frame.extensions.get(name);
+        let mirror = frame.payload.get(name);
+        if let (Some(left), Some(right)) = (envelope, mirror)
+            && left != right
+        { return Err(format!("conflicting cancellation {name} mirrors")); }
+        if let Some(value) = envelope.or(mirror) {
+            let valid = match name {
+                "broker_request_id" => value.as_str().is_some_and(valid_id),
+                "broker_request_sha256" => value.as_str().is_some_and(valid_sha256),
+                _ => value.as_u64().is_some(),
+            };
+            if !valid { return Err(format!("malformed cancellation {name}")); }
+            broker.insert(name.to_string(), value.clone());
+        }
+    }
+    if !broker.is_empty() && broker.len() != 3 {
+        return Err("partial cancellation broker tuple".to_string());
+    }
+    let mut reply = output.frame(
+        "host.error",
+        json!({
+            "code": "no_active_turn",
+            "message": "the control frame has no active turn; no cancellation was requested",
+            "request_kind": frame.kind,
+            "session_id": session_id, "profile_id": profile_id,
+            "task_id": task_id, "turn_id": turn_id, "turn_stream_id": stream,
+            "automatic_redispatch": false, "cancel_requested": false,
+            "prior_effect_outcome": "unknown",
+        }),
+        None,
+        EventCorrelation { call_id, ..EventCorrelation::default() },
+    );
+    for (name, value) in broker {
+        reply.extensions.insert(name.clone(), value.clone());
+        reply.payload[name] = value;
+    }
+    Ok(reply)
+}
+
+#[cfg(test)]
+mod inactive_cancel_tests {
+    use super::*;
+
+    fn request(kind: &str) -> RunTurnFrame {
+        let stream = stable_stream_id("session-cancel", "owner-open", "task-cancel", "turn-cancel").unwrap();
+        let mut value = json!({"kind":kind,"seq":7,"payload":{
+            "session_id":"session-cancel","profile_id":"owner-open","task_id":"task-cancel",
+            "turn_id":"turn-cancel","turn_stream_id":stream},
+            "broker_request_id":"client:7","broker_request_sha256":"a".repeat(64),
+            "broker_request_upstream_seq":17});
+        if kind == "tool.cancel" { value["payload"]["call_id"] = json!("call-cancel"); }
+        serde_json::from_value(value).unwrap()
+    }
+
+    #[test]
+    fn no_active_reply_preserves_exact_control_tuple_without_turn_terminal() {
+        let mut output = OutputState::new("connection-inactive".to_string());
+        output.next_host_seq = 42;
+        for kind in ["turn.cancel", "tool.cancel"] {
+            let request = request(kind);
+            let reply = no_active_cancel_reply(&request,&mut output).unwrap();
+            assert_eq!(reply.kind,"host.error");
+            assert_eq!(reply.payload["code"],"no_active_turn");
+            assert_eq!(reply.payload["request_kind"],kind);
+            assert_eq!(reply.extensions["broker_request_id"],"client:7");
+            assert_eq!(reply.extensions["broker_request_upstream_seq"],17);
+            assert_eq!(reply.payload["broker_request_sha256"],"a".repeat(64));
+            assert_eq!(reply.payload["cancel_requested"],false);
+            assert_eq!(output.next_host_seq,42);
+            assert_eq!(reply.call_id.as_deref(), if kind == "tool.cancel" { Some("call-cancel") } else { None });
+        }
+    }
+
+    #[test]
+    fn inactive_cancel_rejects_conflicting_scope_or_partial_control_tuple() {
+        for field in ["session_id","profile_id","task_id","turn_id","turn_stream_id"] {
+            let mut request = request("turn.cancel");
+            request.payload[field] = json!("conflicting");
+            assert!(no_active_cancel_reply(&request,&mut OutputState::new("c".into())).is_err());
+        }
+        let mut partial = request("turn.cancel");
+        partial.extensions.remove("broker_request_sha256");
+        assert!(no_active_cancel_reply(&partial,&mut OutputState::new("c".into())).is_err());
+        let mut mirrored = request("turn.cancel");
+        mirrored.payload["broker_request_id"] = json!("another-control");
+        assert!(no_active_cancel_reply(&mirrored,&mut OutputState::new("c".into())).is_err());
+        let mut aliases = request("turn.cancel");
+        aliases.payload["stream_id"] = json!("different-stream");
+        assert!(no_active_cancel_reply(&aliases,&mut OutputState::new("c".into())).is_err());
     }
 }

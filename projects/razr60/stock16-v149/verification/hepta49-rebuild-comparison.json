@@ -1,0 +1,73 @@
+{
+  "path": "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/HEPTA49-REBUILD-COMPARISON.json",
+  "sha256": "d27a1208343d4763b9d995547a180f1740cde572d09ce36fe5ef412955b4059c",
+  "bytes": 3256,
+  "keys": [
+    "schema",
+    "utc",
+    "returncode",
+    "receipt",
+    "state",
+    "error",
+    "compiled",
+    "source_sha256",
+    "candidate",
+    "baseline_signed_apk_sha256",
+    "unsigned_payload_match",
+    "entry_count",
+    "entry_sha256",
+    "differing_entries",
+    "signed_bitwise_identity_claimed",
+    "path_repair",
+    "phone_operations",
+    "signed",
+    "installed"
+  ],
+  "receipt": {
+    "schema": "razr60-fresh-hepta49-unsigned-rebuild-comparison-v2",
+    "utc": "2026-11-03T10:09:54.736119+00:00",
+    "returncode": 0,
+    "receipt": "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/build-receipt.json",
+    "state": "UNSIGNED_UI_CANDIDATE_BUILT",
+    "error": null,
+    "compiled": true,
+    "source_sha256": "45921011babe2edbb8d09a37d22694c0b54f2661db59e662f95962c261d34b3e",
+    "candidate": {
+      "path": "/home/alex/razr60-independent-hepta49-rebuild-v149-20261103-r2/HEPTA-SystemUI-v49-unsigned.apk",
+      "bytes": 181922,
+      "sha256": "3f50c4e567064899b4aa8b7ce64ee0c88caa9b7e89b9ed7f3fbc0a6b1b7647a4"
+    },
+    "baseline_signed_apk_sha256": "56c4e302cbe7448dffc9a0d8cfa8db2c2cb019fcb055fab36b815105dd55592f",
+    "unsigned_payload_match": false,
+    "entry_count": 19,
+    "entry_sha256": {
+      "AndroidManifest.xml": "de58b79c551554c4c4b0183ef79ad2d59d8e2d0282f8687d855a8e85ee2240ac",
+      "res/drawable/hepta_ic_back.xml": "30e3e4a2b8d3eb8e293ca9ab4c3d87065f18200bf94e96d6ff5fe3875cf8dccb",
+      "res/drawable/hepta_ic_chevron.xml": "b79fc8f5db09d1c6a5558e344c02fb64faa13708e4be3ae1e34d8b461aac3634",
+      "res/drawable/hepta_ic_connect.xml": "0b0e723643f88fbb6403191f0f4576edf184809ca1ca1f6fafedf6ab79321f1a",
+      "res/drawable/hepta_ic_conversation.xml": "edb5b63a37a02f227380171edd04a6ec111c24319a5e11de19f099332330c88c",
+      "res/drawable/hepta_ic_history.xml": "3e7ceac6613bf2eb67ed426d4896b29195dfb7ae2bd31f14a194e42115a7ce50",
+      "res/drawable/hepta_ic_play.xml": "6dc110ee70453ed0602337f54c28fd4d63c4cfa507407f2f4c5e35714daec3d4",
+      "res/drawable/hepta_ic_settings.xml": "ca8077f48aeb1bc1628f6aae740924d36c46e5ae3e8daf00dc23661f71c347cb",
+      "res/drawable/hepta_ic_status.xml": "882a93306c2a10d74a1f10333ab3fbd766f4fb1ac5385c38375bef047d6a8f64",
+      "res/drawable/hepta_ic_stop.xml": "5a7295ee1ec2fe93adfc66e7f34d11701a2d4bddd2c894d5d9c2a164cee764fc",
+      "res/drawable/hepta_ic_task.xml": "7322c882dec615b8268ee7a51d458650847f5625640aafd830dbe8000959785e",
+      "res/drawable/ic_hepta_launcher_background.xml": "d54e1af62872f29b5da8db975c8c8f8b954356b92342420ea3897e908e858b71",
+      "res/drawable/ic_hepta_launcher_foreground.xml": "3615570e5853617b58c921265ca55585045a9659fb919e267784f90b4efccd1e",
+      "res/drawable/ic_owner_open_entry.xml": "edb5b63a37a02f227380171edd04a6ec111c24319a5e11de19f099332330c88c",
+      "res/drawable/oem_motoexternaldisplaylauncher_ic_send.xml": "21bad719863856db6993a2d3e0ab6333caf08c1756a9876ea4db1f0b8c8ae462",
+      "res/drawable/oem_motosystemui_ic_more_vert.xml": "10c25b2fa74f301ebd24a5ab0649c5fa640dd5045761e49e0dafc66455a2efca",
+      "res/mipmap-anydpi-v26/ic_hepta_launcher.xml": "504103c2c7cd7d1f73acb43c8c1d0e9c3f792cfcd4e18b54405ee43a41fe2cc7",
+      "resources.arsc": "ea55843bbf7b0a8405053563c3bfb233f0427f4a03eaec8a7d6a39eb4bbbf8bd",
+      "classes.dex": "64c60afd22dc4527332b0f66c37e5a80d70623b6ed9f06b476a38221b0067e1b"
+    },
+    "differing_entries": [
+      "classes.dex"
+    ],
+    "signed_bitwise_identity_claimed": false,
+    "path_repair": "Captured Pocket4 builder missing historical Soong system image; freshly regenerate from pinned core-for-system-modules.jar/JDK21 and override only system dependency in isolated driver",
+    "phone_operations": 0,
+    "signed": false,
+    "installed": false
+  }
+}

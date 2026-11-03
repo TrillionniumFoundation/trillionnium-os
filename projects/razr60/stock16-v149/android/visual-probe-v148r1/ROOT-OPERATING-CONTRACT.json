@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.control-probe.root-operating-contract.v1",
+  "status": "BUILT_AND_SIGNED_CANDIDATE_NOT_INSTALLED",
+  "operator": "Root only performs phone/ADB/SSH/install/launch/test; this author performed local filesystem/build/signing operations only.",
+  "package": "org.trillionnium.hepta.controlprobe",
+  "sdk": {
+    "compile": 34,
+    "min": 36,
+    "target": 36,
+    "D8_warning_recorded": "build-02/d8.stderr.txt"
+  },
+  "permissions": [],
+  "launcher_or_home_or_services": false,
+  "visual": {
+    "component": "org.trillionnium.hepta.controlprobe/.VisualChallengeActivity",
+    "randomness": "Each new Activity creates a SecureRandom public8hex challenge code, shuffled9 unique color/shape combinations and unique Chinese labels, independent random target and small position jitter. No Intent seed/answer overrides, no stored seed/target or logging.",
+    "pre_action_accessibility": "Instructions, desired target, grid labels, shape/color and targets are Canvas pixels only; no content-desc/text nodes. Canvas is NO_HIDE_DESCENDANTS. Root must confirm actual hierarchy has no answer-bearing nodes.",
+    "single_attempt": "Only first ACTION_UP within any card resolves. Correct -> HEPTA_VISUAL_OK CODE; wrong -> HEPTA_VISUAL_MISS CODE. Further target attempts cannot change outcome; no visible reset/hidden success route.",
+    "result_node": "org.trillionnium.hepta.controlprobe:id/visual_receipt",
+    "challenge_code_node_after_resolution": "org.trillionnium.hepta.controlprobe:id/visual_challenge_code",
+    "generic_model_task": "按HEPTA图片验证页画面上方的要求，只点击一次正确图卡，读出回执和挑战码。不要枚举目标或读应用内部状态。",
+    "proof": [
+      "Model actual screenshot request must originate in phone Host tool result, bound to current turn/call/display.",
+      "Same completion must attach derived verified PNG as an image; raw XML alone cannot establish vision.",
+      "Model-generated tap must match screenshot target; Root must not provide seed/target answer or coordinates.",
+      "Actual post-action UI receipt must be HEPTA_VISUAL_OK and code must match screenshot public code.",
+      "Use two new challenges if practical, preserve any MISS; do not classify a lucky blind click or source/static check as vision success."
+    ],
+    "fresh_challenge": "A normal explicit new launch creates a new Activity/challenge. Keep display/rotation stable during each screenshot->tap; any newActivity/recreation/resize requires new observation."
+  },
+  "unicode": {
+    "component": "org.trillionnium.hepta.controlprobe/.TextEntryActivity",
+    "field": "org.trillionnium.hepta.controlprobe:id/unicode_input",
+    "submit": "org.trillionnium.hepta.controlprobe:id/unicode_submit",
+    "readback": "org.trillionnium.hepta.controlprobe:id/unicode_readback",
+    "receipt": "org.trillionnium.hepta.controlprobe:id/unicode_receipt",
+    "behavior": "Initial EditText empty; no Intent extras accepted. Submit reads actual input.getText, copies exact String to readback, and computes SHA256 UTF8 bytes/codepoints. No expected phrase preloaded.",
+    "suggested_value": "你好，摩托罗拉。HEPTA 中文输入验证：山水🌙\n第二行 123",
+    "proof": [
+      "Focus actual editable field using fresh hierarchy.",
+      "Execute one scoped Unicode helper setText through real phone Host; no IME/default-keyboard/clipboard substitution.",
+      "Helper exact real readback equals requested UTF8 bytes and digest.",
+      "Model taps actual confirm button; post-action readback and receipt must match requested text, SHA256, UTF8 bytes and codepoint count.",
+      "Root can read default IME/enabled accessibility settings before/after to confirm unchanged; no write to these settings is authorized by this app contract."
+    ]
+  },
+  "install_scope": "A new ordinary independent test package only, after Root verifies absent/expected state; no replacement of HEPTA49/Moto apps or signing identities.",
+  "private_key": "New dedicated key under private-signing-v1;0700 directory/0600 files. No existing HEPTA/Moto key read. Do not print password/key bytes.",
+  "phone_operations_by_author": 0,
+  "SSH_operations_by_author": 0,
+  "models_executed_by_author": 0,
+  "limits": [
+    "ActualAndroid36 install/render/input/receipt is not yet observed.",
+    "This is a controlled proof fixture, not a replacement for validation on real third-party apps.",
+    "No screenshots or expected target coordinates are pre-generated or supplied to the model."
+  ]
+}

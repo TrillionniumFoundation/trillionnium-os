@@ -1,0 +1,69 @@
+{
+  "schema": "razr60-android-system-modules-build-v1",
+  "started_utc": "2026-11-03T10:07:55.469451+00:00",
+  "inputs": {
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/core-for-system-modules.jar": "f31de8c02da7ef7f610c5026e129bcbb4f698db9303eca1ed2c46995a51293ad",
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/javac": "18351d7a271f6b8bd17f9e8fef6bb04baa7cf008cbc8a3a782a93a2f5c48ecfa",
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/jmod": "46d1963813dfd5141c44d89a25382861f105dfabb0448a41db188444536428bc",
+    "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/jlink": "cf5cfcaf7762d1ea0bced4cf1505ccc9f8ebade87d4dfd3f7870b2b86e96b5d1"
+  },
+  "commands": [
+    {
+      "label": "javac-module",
+      "argv": [
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/javac",
+        "-J-XX:ActiveProcessorCount=2",
+        "--system=none",
+        "--patch-module=java.base=/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/sdk/current/public/core-for-system-modules.jar",
+        "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/module-info.java"
+      ],
+      "returncode": 0
+    },
+    {
+      "label": "jlink-version",
+      "argv": [
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/jlink",
+        "--version"
+      ],
+      "returncode": 0
+    },
+    {
+      "label": "jmod",
+      "argv": [
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/jmod",
+        "create",
+        "--module-version",
+        "21.0.4",
+        "--target-platform",
+        "LINUX-OTHER",
+        "--class-path",
+        "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/module.jar",
+        "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/jmod/java.base.jmod"
+      ],
+      "returncode": 0
+    },
+    {
+      "label": "jlink",
+      "argv": [
+        "/home/alex/razr-flash-validation-canonical-20261014/staging/rog-r57-count8-source-and-build/inputs/source_3/prebuilts/jdk/jdk21/linux-x86/bin/jlink",
+        "-J-XX:ActiveProcessorCount=2",
+        "--module-path",
+        "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/jmod",
+        "--add-modules",
+        "java.base",
+        "--output",
+        "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/system",
+        "--disable-plugin",
+        "system-modules"
+      ],
+      "returncode": 0
+    }
+  ],
+  "phone_operations": 0,
+  "success": true,
+  "system": "/home/alex/razr60-independent-hepta49-system-modules-v149-20261103/system",
+  "system_modules_sha256": "3897cbb1bc984057f7636d545c9c2219fede95bf871e1cd775c0969c9ef1cc7b",
+  "package_count": 86,
+  "core_jar_unchanged": true,
+  "finished_utc": "2026-11-03T10:07:56.486961+00:00"
+}

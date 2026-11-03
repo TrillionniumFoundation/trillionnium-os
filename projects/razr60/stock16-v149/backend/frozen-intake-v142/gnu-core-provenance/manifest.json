@@ -1,0 +1,159 @@
+{
+  "schema": "razr.r11r4.GNU-core-artifact.v1",
+  "scope": "HOST_BUILD_NOT_PHONE_QUALIFICATION",
+  "files": {
+    "bin/trillionnium-owner-open-r5-core": {
+      "bytes": 2757408,
+      "sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+      "mode": "0o555"
+    },
+    "provenance/actual-GNU-core-build.stderr": {
+      "bytes": 3370,
+      "sha256": "30cb306f24fa168bedd738275e029da9dfc0bc56250371ebcc7a010214be968f",
+      "mode": "0o600"
+    },
+    "provenance/actual-GNU-core-build.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o600"
+    },
+    "provenance/actual-core-ELF.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o600"
+    },
+    "provenance/actual-core-ELF.stdout": {
+      "bytes": 8463,
+      "sha256": "56172920d57fe45e91d77fc1130fdaedaa4899a8a0eea27fe00563b4cf2460de",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-core-help-r3.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-core-help-r3.stdout": {
+      "bytes": 968,
+      "sha256": "53c33cdf88aff3a1d16f9498db3867987ed38e716dc59776fab046255340a687",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-core-help.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-core-help.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-inactive-tool.cancel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-inactive-tool.cancel.stdout": {
+      "bytes": 992,
+      "sha256": "9c1b04bfe4b6cb57d0fd01cf780e0e9ae44a3cab8709a7bdcdb79e98b9f90a51",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-inactive-turn.cancel.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "0o600"
+    },
+    "provenance/actual-runtime-QEMU-inactive-turn.cancel.stdout": {
+      "bytes": 965,
+      "sha256": "7109918f1f03bdcdbcac4b98a41afd68d0bcbefc8860b976177c736f0b9ec693",
+      "mode": "0o600"
+    },
+    "provenance/actual-target-link-argv.nul": {
+      "bytes": 15647,
+      "sha256": "f3313e7fb28f6612b13ba735d7e300e74b0f7adbceee8ea69be5dadcd44e0c96",
+      "mode": "0o600"
+    },
+    "provenance/build-and-actual-runtime-proof-r2.json": {
+      "bytes": 6720,
+      "sha256": "c2501a7306227480e5c6473018958d674569ee5cf7a6f534300fbc93e65af9de",
+      "mode": "0o600"
+    },
+    "provenance/build-script.py": {
+      "bytes": 10196,
+      "sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff",
+      "mode": "0o600"
+    },
+    "provenance/post-build-actual-runtime-audit.py": {
+      "bytes": 8207,
+      "sha256": "82d1bbbde7a6237163eb5e30e2b264c2540c0f2ad1237299f29bd38fdb1ebe8b",
+      "mode": "0o600"
+    },
+    "provenance/tool-inputs.json": {
+      "bytes": 277851,
+      "sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b",
+      "mode": "0o600"
+    },
+    "runtime/actual-public-libs-manifest.json": {
+      "bytes": 1600,
+      "sha256": "0bb197a636625d6edf2a82f8cf27fdc76ccea8a0c8a04b5fb254be446b7b06c7",
+      "mode": "0o600"
+    },
+    "source/OwnerOpenShellActivity.java": {
+      "bytes": 34021,
+      "sha256": "2a6b1402060a15fbd26ef370cadebec4dc7efa358b0e86010f2f1ea8766677e9",
+      "mode": "0o600"
+    },
+    "source/UI-known-terminal-local-cancel-only.patch": {
+      "bytes": 3336,
+      "sha256": "ceafa46fde26b7de03dde3321ce24b8bd8a4d1e2b554cbc4b8a67681285083a2",
+      "mode": "0o600"
+    },
+    "source/core-broker-latecancel-final.patch": {
+      "bytes": 25994,
+      "sha256": "d860ed5b015bd37e41c12181d60c57ffaf8dfffc2bf03a081b2bd20639ab5715",
+      "mode": "0o600"
+    },
+    "source/frozen-source-manifest.json": {
+      "bytes": 55499,
+      "sha256": "ccbcbb37cf35b2e26054f351276fae64699703c2f90cdc6024df9960a80d75a5",
+      "mode": "0o600"
+    },
+    "source/host-fixture-results.json": {
+      "bytes": 2598,
+      "sha256": "47ed4ee8f6516d521e5d49efa45165bf232e3cb13941a3deb0b50962b1098281",
+      "mode": "0o600"
+    },
+    "source/host-integration-result.json": {
+      "bytes": 554,
+      "sha256": "dbe16542fb99d9ff87425629d9da2173a392bcd436028bb7dfff9c342de0a7d1",
+      "mode": "0o600"
+    },
+    "source/proposed/apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs": {
+      "bytes": 28896,
+      "sha256": "070bb8e6bd56e065f56e7eaa2ebc6ab9e0bd0dde1050942f3b8ab5136823fc26",
+      "mode": "0o600"
+    },
+    "source/proposed/apps/trillionnium-owner-open-host/tests/r5_late_cancel_known_terminal.rs": {
+      "bytes": 5441,
+      "sha256": "9b136958e9060d09166c467e59342cf231d19108a2d06b7e26f046af7826e435",
+      "mode": "0o600"
+    },
+    "source/proposed/tools/owner-open/owner_open_broker_admission_v2.py": {
+      "bytes": 36419,
+      "sha256": "76131b9d99e8b51affea4680e79c00236992a48d13f20ddf8541a539e6995d15",
+      "mode": "0o600"
+    },
+    "source/proposed/tools/tests/test_owner_open_inspect_observation_lane.py": {
+      "bytes": 7392,
+      "sha256": "1a11e65e27e5eb805e8337912eb45f3673d9e6fc0a452ae516d992d26b11ac97",
+      "mode": "0o600"
+    },
+    "source/source-handoff-final.json": {
+      "bytes": 3694,
+      "sha256": "59d77a569a0fbd1189686cfcd9c5839e60316f3c513de78dfcee5e6cdf53c32c",
+      "mode": "0o600"
+    }
+  },
+  "source_commit_baseline": "4b687742fca939bc32122857f21067ec28d30a23",
+  "new_core_sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+  "P1_actual_pass": false
+}
