@@ -140,3 +140,26 @@ status fields and operator obligations. Source-only reproduction:
 ```sh
 python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
 ```
+
+### State storage and single-writer admission
+
+Before any carrier starts, the supervisor owns an exclusive advisory lock on the
+private state-root directory and has pinned all state/output/inhibit parents
+without following symlinks. The installer must provision stable, private,
+owner-controlled directories; existing permissive parents are rejected, not
+silently repaired. A second cooperating supervisor must not use the same root.
+This lock is not cgroup containment or a supervisor-crash recovery proof.
+
+Event writes complete partial writes, synchronize file and directory, and fence
+this instance after I/O/integrity failure. A torn newline tail blocks startup
+without automatic repair. Status writes complete a fresh temporary file, fsync,
+replace within the pinned parent, and fsync the directory; a post-rename fsync
+failure remains durability-unknown even if new status is readable. Handled
+pre-rename failures remove the attempt's temporary file. Settled leaders are all
+reaped before cleanup events are emitted, so log failure cannot abandon reaping.
+
+The existing supervisor test command above runs the state-I/O failure matrix,
+real competing-process lock test and bounded local lifecycle tests together.
+Local injected errors and ordinary fsync success do not close installed L2,
+physical L4 or destructive L5 gaps. Consult `MOD-ROOTLINUX` sections 10 and 13 for
+exact write boundaries, compatibility changes and offline migration procedure.

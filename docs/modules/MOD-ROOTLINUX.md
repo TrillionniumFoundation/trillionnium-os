@@ -184,6 +184,57 @@ existence. Test-only subreaping collects fixture orphans. Both exact-head and
 synthetic-merge source lanes explicitly run this suite. No fixture is evidence
 of a physical device, target installation or external-effect rollback.
 
+### Supervisor state-directory and persistence contract
+
+The supervisor acquires a nonblocking exclusive `flock` on the opened state-root
+directory **before writing status/events or starting any carrier**. Every state
+root and output-parent component is opened with directory/no-follow semantics;
+new private parents are created relative to retained descriptors and their parent
+entries are synchronized. Existing non-private state directories are rejected,
+not silently chmodded. The same rule applies to nested emergency-marker parents.
+The directory lock is advisory, local to the inode and retained until final
+cleanup/reporting; a competing cooperating supervisor gets a startup error
+without changing the first instance's files or spawning children.
+
+State I/O uses the retained parent descriptors, not re-opened absolute output
+paths. Namespace checks detect replaced, missing, symlinked or permission-changed
+state directories before admission and on inhibit checks. An unavailable parent
+is an inhibit condition, **not** evidence that the marker is absent. Descriptors
+are close-on-exec and are released on successful, inhibited and failed exits.
+Config pathnames are limited to 4,096 UTF-8 bytes and 64 components; at most the
+three output-parent chains are retained. These are finite source bounds, not a
+measurement of installed descriptor use or filesystem latency.
+
+The two persistence protocols differ:
+
+| Operation/cut | Required source behavior |
+|---|---|
+| Event write returns a positive short count | Continue writing the remaining bounded bytes; no early success |
+| Event write returns zero or an invalid count | Fail immediately; do not spin |
+| Event write/file-fsync/directory-fsync fails | Fence further event appends and new carrier admission for this instance; preserve uncertain bytes |
+| Existing event tail lacks newline | Reject before first spawn; do not truncate, synthesize a terminal or concatenate another record |
+| Event file is symlinked, multiply linked, non-private or non-regular | Reject without writing; use nonblocking open so a FIFO cannot stall the check |
+| New event file is written | Synchronize file bytes and parent directory entry before returning success |
+| Status write or file-fsync fails before rename | Preserve prior status; remove this attempt's temporary leaf during handled failure |
+| Status publication succeeds | Complete write, fsync temporary file, descriptor-relative atomic replace, then fsync parent |
+| Parent fsync fails after status rename | Return failure: new bytes may be visible but durability is unknown; do not infer rollback |
+| Cleanup audit append fails | Reap all already-settled direct leaders first; storage failure cannot abandon later anchors |
+
+The startup `supervisor_starting` event is an observation and log-health check,
+not an acceptance record for a semantic job. Event-tail checking verifies the
+record delimiter only; it is not a complete journal-schema/history verifier.
+Supervisor events/status must never substitute for the Host's authoritative job
+acceptance and reconciliation protocol. No failure path authorizes effect replay.
+
+**Trust and failure limits:** this directory lock does not fence distributed
+writers, a renamed/replaced root inode, malicious same-UID/root actors or child
+processes surviving a supervisor crash. The installed service manager must keep
+the state namespace stable and enforce cgroup-wide cleanup before restarting a
+dead supervisor. Rechecking a pathname is not an atomic barrier against a marker
+created concurrently with process spawn. Filesystem fsync calls in local tests
+are not evidence of real power-loss durability. Those remain installed L2/L5
+qualification obligations; `escaped_descendants_absence_proven` remains false.
+
 ## 11. Security and trust boundaries
 
 Root capability is minimized and mechanically scoped. Packaging cannot add semantic policy, substitute unpinned provider bytes, broaden namespaces or silently select a legacy authority path.
@@ -212,6 +263,20 @@ Rolling compatibility is supported under the explicit compatibility and fencing 
 Image and service upgrades are manifest-bound. A new service epoch starts only after payload, ownership, mount and state-schema checks pass; rollback restores the last compatible immutable image and fences newer writers.
 
 Rollback is fail-closed. Stateful modules restore the last compatible durable state, fence newer writers and reconcile external effects before admission. A rollback may restore software and state compatibility; it cannot erase an effect already attempted outside the module.
+
+The supervisor configuration and output schema IDs remain `v1`; existing
+well-formed private paths and newline-terminated event files remain readable.
+Admission is intentionally stricter for non-private parents, symlinked ancestors,
+unsafe event leaves and competing owners. During an offline upgrade, stop the
+service through its independently administered inhibit, verify no old carriers
+remain, inspect owner/mode and every state path component, and explicitly prepare
+private directories. Never change permissions or replace a state-root directory
+under a running supervisor to make validation pass. Preserve torn event bytes
+for operator reconciliation; do not delete/truncate them as an automatic repair.
+A terminated process can leave its temporary status file; remove only verified
+inactive temporary artifacts during controlled maintenance, not while a writer
+holds the root. Rolling back to an older binary removes these new local checks
+and therefore needs renewed qualification rather than inherited assurance.
 
 ## 14. Observability
 
