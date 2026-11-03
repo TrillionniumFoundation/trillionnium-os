@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.cli-binding.independent-host-suite.v1",
+  "host": "pocket4",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "captured_utc": "2026-11-03T12:56:18.197954+00:00",
+  "files": [
+    {
+      "path": "register_task_contract.py",
+      "bytes": 2730,
+      "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+    },
+    {
+      "path": "source/daily_provider.py",
+      "bytes": 19993,
+      "sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb"
+    },
+    {
+      "path": "source/model_health.py",
+      "bytes": 8127,
+      "sha256": "778104cc0c5f4d8f8b23d3b8af049b7efaebb9721ae460e5768fd1933bc09a82"
+    },
+    {
+      "path": "source/phone_observation_tools.py",
+      "bytes": 33548,
+      "sha256": "8b350c35d1b349649f11000c629ff59ff581c89e255729b45ac3cc9ccd58b975"
+    },
+    {
+      "path": "source/phone_task_guards.py",
+      "bytes": 11368,
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "path": "source/provider_codex_host.py",
+      "bytes": 41510,
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "path": "source/provider_openai_compatible.py",
+      "bytes": 17247,
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0"
+    },
+    {
+      "path": "source/ssh_exec_persistent_bridge.py",
+      "bytes": 18394,
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec"
+    },
+    {
+      "path": "source/task_postconditions.py",
+      "bytes": 14744,
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+    },
+    {
+      "path": "tests/fixtures.py",
+      "bytes": 2832,
+      "sha256": "6fee5591825b727b7c3a48de7dea7d51b3f465385a5f32760dc83a5141032db1"
+    },
+    {
+      "path": "tests/offline_capacity_race_checks.py",
+      "bytes": 5843,
+      "sha256": "f3b902c28f50079d4bc03e53eec5cdc70a9f9ebc6b701eaa6bea2646193b28f2"
+    },
+    {
+      "path": "tests/offline_phone_tools_checks.py",
+      "bytes": 14421,
+      "sha256": "c19a880bc0b89fb127bf3b92ddca08235805d2624356b14d569e181ffbb8669b"
+    },
+    {
+      "path": "tests/offline_v149_checks.py",
+      "bytes": 28619,
+      "sha256": "a833896d2d1b89d3d5c642e51be7897accb2b2c56d2ffcd821bd9576bf0417f3"
+    },
+    {
+      "path": "tests/test_cli_binding.py",
+      "bytes": 7699,
+      "sha256": "9d4e3108374800ed1fdca7c77c6177ccd504ee12e71c08ea1199e2bb0ead56c0"
+    }
+  ],
+  "results": [
+    {
+      "test": "test_cli_binding.py",
+      "returncode": 0,
+      "wall_seconds": 0.12042406399268657,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "15046ffb5f22debe91886c0f3cad9d7ead371e6d1a288a5a01e169c58573e5aa",
+      "tests_passed": 9
+    },
+    {
+      "test": "offline_v149_checks.py",
+      "returncode": 0,
+      "wall_seconds": 1.062712116050534,
+      "stdout_sha256": "ea8057af015b511a60a6390c2a620fab68db7f5246de4232634dc9a9cc10feb7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 96
+    },
+    {
+      "test": "offline_phone_tools_checks.py",
+      "returncode": 0,
+      "wall_seconds": 0.19300741702318192,
+      "stdout_sha256": "70eea9385da3c6aa961d58dd551557203f56d69aaca72da0486fa5d4a1a02cb6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 35
+    },
+    {
+      "test": "offline_capacity_race_checks.py",
+      "returncode": 0,
+      "wall_seconds": 0.09308601496741176,
+      "stdout_sha256": "2d034257837ab2d66ebd74c173d02f399b622e3e89aa922465b081315508e8ff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 25
+    }
+  ],
+  "real_model_calls": 0,
+  "phone_calls": 0,
+  "live_services_modified": false
+}

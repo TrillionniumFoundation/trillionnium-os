@@ -347,8 +347,8 @@
         },
         {
           "path": "tools/owner-open/owner_open_broker_admission_v2.py",
-          "sha256": "74c801798fce3817cbd0853d88bbbe25d32e7442d229f736aceeefe2aa721927",
-          "size": 33358
+          "sha256": "76131b9d99e8b51affea4680e79c00236992a48d13f20ddf8541a539e6995d15",
+          "size": 36419
         },
         {
           "path": "tools/owner-open/owner_open_broker_audit.py",

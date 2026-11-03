@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.a16.provider-current-state.v149-r2",
+  "snapshot_captured_utc": "2026-11-03T13:29:44.088349+00:00",
+  "source_repository": "TrillionniumFoundation/trillionnium-os",
+  "source_commit": "038f33f85e6b2e4796c369d310ed4e256e23ca78",
+  "source_tree": "57c557f3dd5e05478f64293378a1db8d2dae904a",
+  "source_prefix": "projects/razr60/provider-v149-r2",
+  "deployed_version": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r2",
+  "provider_source_sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb",
+  "provider_instance": "62410d46636041299543a259e7eeb613",
+  "provider_pid": 81988,
+  "bridge_pid": 82023,
+  "cli_binding": {
+    "executable": {
+      "file_identity": [
+        16777233,
+        586549291,
+        267754128,
+        1793368231726101200,
+        1793711547153622000
+      ],
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r2/runtime/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+      "sha256": "58a91f6ea19bea477ae3a2ec48d619f0039afe75d3476260747e11d201fa7cea"
+    },
+    "launcher": {
+      "file_identity": [
+        16777233,
+        586549297,
+        328,
+        1791492613000000000,
+        1793711547153751300
+      ],
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r2/runtime/codex-cli/bin/codex",
+      "sha256": "50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8"
+    },
+    "schema": "hepta.cli-executable-binding.v1"
+  },
+  "retained_original_claims": 17,
+  "original_claim_hashes_unchanged": true,
+  "frozen_runtime_manifest_sha256": "fe7d49e07385d6754cf9a714cbb11f480ff39d64fb8282c73f121772332fe1b1",
+  "status": "HOST_DEPLOYED_TRANSPORT_READY_MODEL_UNAVAILABLE",
+  "transport_qualification": "passive same-generation remote READY and live SSH child, without new business dispatch",
+  "model_health": {
+    "automatic_probe_or_retry": false,
+    "availability": "observed_unavailable",
+    "failure_fence": 1,
+    "issued": 2,
+    "last_failure": {
+      "account_or_model_changed": false,
+      "automatic_retry": false,
+      "business_verified": false,
+      "category": "usage_limit_exceeded",
+      "event_sha256": "fceb74d9e6aecf8dd56e14c0c18a21270565b14e8dbb1fc5e0fa4ae2e0e698a0",
+      "id": 1,
+      "observed_utc": "2026-11-03T10:27:05.674569+00:00",
+      "public_error": "[usage_limit_exceeded] 模型额度已用尽；本次任务未完成。请在额度恢复后明确发起新任务，已执行动作不会自动重放。",
+      "started_utc": "2026-11-03T10:26:56.557082+00:00"
+    },
+    "last_success": null,
+    "model": "gpt-6.1-sol",
+    "readiness_is_model_health": false,
+    "reason": "usage_limit_exceeded",
+    "schema": "hepta.model-health.v149.1"
+  },
+  "model_health_unchanged_during_deployment": true,
+  "new_model_calls": 0,
+  "new_phone_calls": 0,
+  "real_task_acceptance": false,
+  "fixed_19_case_live_acceptance": "NOT_RERUN_MODEL_QUOTA_BLOCKED",
+  "deployment_attempts": [
+    {
+      "job": "1a1a192639b-fc05-502",
+      "result": "FAILED_BEFORE_CONFIGURATION_CHANGE",
+      "reason": "launchctl bootout returned before prior daemon released lock; immediate old bootstrap also failed during unload"
+    },
+    {
+      "job": "1a1a1965d93-fc05-526",
+      "result": "SUCCEEDED_AFTER_CONFIRMED_UNLOAD"
+    }
+  ],
+  "original_source_manifest_preserved": true,
+  "broader_repository_ci": {
+    "source_commit": "038f33f85e6b2e4796c369d310ed4e256e23ca78",
+    "run_id": 41640975586,
+    "status": "FAILED",
+    "failures": [
+      "generated broker compatibility artifact drift",
+      "cargo fmt in r5_late_cancel_known_terminal.rs"
+    ],
+    "repair_status": "IN_PROGRESS"
+  },
+  "receipts": [
+    {
+      "file": "deployment/deployment-result.json",
+      "sha256": "900df806abaccfc633d6977383a56137068b6747841e17913f867afa76362309",
+      "bytes": 4003
+    },
+    {
+      "file": "deployment/post-deployment-transport.json",
+      "sha256": "3c8138aa78be04a83e5356afbac4455ffab3ae2f58632acced35577c6cc40ffe",
+      "bytes": 3370
+    },
+    {
+      "file": "deployment/deployment-preflight.json",
+      "sha256": "bd258855b5a0aa71316cdf1c1fe064e7590327b0766428281a3fa6887eb91127",
+      "bytes": 10228
+    },
+    {
+      "file": "deployment/fixed-runtime-stage-final.json",
+      "sha256": "fe7d49e07385d6754cf9a714cbb11f480ff39d64fb8282c73f121772332fe1b1",
+      "bytes": 18969
+    },
+    {
+      "file": "deployment/deployment-plan.json",
+      "sha256": "9dad4af3fab74b138985ce04066a554a4f565b630ff1b67aa8e780e0b7f34735",
+      "bytes": 8695
+    },
+    {
+      "file": "deployment/deployment-events.jsonl",
+      "sha256": "6dfb195227e8835ea700eeee14823118ca318dbd624ab14683b7cb50fc1fa0fd",
+      "bytes": 3794
+    }
+  ],
+  "original_host_snapshot": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-delivery-Root-v149-r1/CURRENT-STATE-V149.json",
+    "sha256": "8826cce8912e8357fcd568c64ba86f4cde6125777592f739ea5ea92f579e52ba",
+    "preserved": true
+  }
+}

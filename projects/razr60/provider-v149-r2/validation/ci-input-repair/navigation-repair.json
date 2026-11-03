@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.a16.navigation-supplement.v1",
+  "base_commit": "038f33f85e6b2e4796c369d310ed4e256e23ca78",
+  "original_frozen_blobs_preserved": 405,
+  "original_manifests_unchanged": true,
+  "supplement_outside_original_manifests": [
+    {
+      "path": "projects/razr60/stock16-v149/backend/frozen-intake-v142/source7/docs/modules/MOD-EXECUTION-CORE.md",
+      "baseline_doc_blob": "9c0d3f12ea08ba057af5b6058a79aa46ddbac558",
+      "sha256": "a66b8a0f9f7250615e626ff9323975afbec159cdf95965d199d7629320b0c8b4"
+    },
+    {
+      "path": "projects/razr60/stock16-v149/backend/frozen-intake-v142/source7/docs/modules/MOD-TRANSPORT.md",
+      "baseline_doc_blob": "368020e6473763e9a8c227abb81db1a9bbed773d",
+      "sha256": "bbee0c3a4d63c691ee6a5cbe8b9de847c4fa9c80a1c9fed87ea63dd0f64fb32b"
+    },
+    {
+      "path": "projects/razr60/stock16-v149/backend/frozen-intake-v142/docs/modules/MOD-ROOTLINUX.md",
+      "baseline_doc_blob": "97a20b56a8ab07e4690933bb871f917973a5637b",
+      "sha256": "7289f69dba29eedd8b5f0a1525c89bb0713695ae2eb17df95bb3140f91926967"
+    }
+  ],
+  "verifier_modified": false
+}

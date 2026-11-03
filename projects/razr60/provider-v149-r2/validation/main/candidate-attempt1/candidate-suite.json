@@ -1,0 +1,38 @@
+{
+  "results": [
+    {
+      "test": "test_cli_binding.py",
+      "returncode": 1,
+      "wall_seconds": 0.07263691583648324,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8e8b7491425784cea6c0c19d1f67513e8e874edf291e45d609940785cdc4204e"
+    },
+    {
+      "test": "offline_v149_checks.py",
+      "returncode": 1,
+      "wall_seconds": 1.363148583099246,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d4f797ec3aa11e8a119c72d53f8b1744de65c6522ca6acb845962633c4316813"
+    },
+    {
+      "test": "offline_phone_tools_checks.py",
+      "returncode": 0,
+      "wall_seconds": 0.12016650009900331,
+      "stdout_sha256": "2bfc01fc25438ce5cc8cd7e5fe2debf29a071907f5492f912e0f455d871a062b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 35
+    },
+    {
+      "test": "offline_capacity_race_checks.py",
+      "returncode": 0,
+      "wall_seconds": 0.06527604209259152,
+      "stdout_sha256": "2d034257837ab2d66ebd74c173d02f399b622e3e89aa922465b081315508e8ff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 25
+    }
+  ],
+  "source_sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb",
+  "real_model_calls": 0,
+  "phone_calls": 0,
+  "live_services_modified": false
+}

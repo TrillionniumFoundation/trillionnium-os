@@ -1,0 +1,94 @@
+[
+  {
+    "name": "before-rustfmt",
+    "argv": [
+      "/home/alex/.cargo/bin/cargo",
+      "+1.93.0",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "returncode": 1,
+    "wall_seconds": 1.621350321918726,
+    "log_sha256": "026183fd0cdf29021fae490efb5e2d0899260832af983e1c0d3aadc675772360",
+    "tail": "tes(&events);\n     assert!(!original_events.is_empty());\n-    let scope=json!({\"profile_id\":\"owner-open\",\"session_id\":\"session-late-fixture\",\n+    let scope = json!({\"profile_id\":\"owner-open\",\"session_id\":\"session-late-fixture\",\n       \"task_id\":\"task-late-fixture\",\"turn_id\":\"turn-late-fixture\",\"turn_stream_id\":stream});\n-    for (index,kind,id) in [(1,\"turn.cancel\",\"late-cancel:2\"),(2,\"tool.cancel\",\"late-tool-cancel:3\")] {\n-        let mut payload=scope.clone();\n-        if kind==\"tool.cancel\" { payload[\"call_id\"]=json!(\"call-late-fixture\"); }\n-        send(&mut stdin,&json!({\"kind\":kind,\"seq\":index,\"direction\":\"client_to_host\",\n+    for (index, kind, id) in [\n+        (1, \"turn.cancel\", \"late-cancel:2\"),\n+        (2, \"tool.cancel\", \"late-tool-cancel:3\"),\n+    ] {\n+        let mut payload = scope.clone();\n+        if kind == \"tool.cancel\" {\n+            payload[\"call_id\"] = json!(\"call-late-fixture\");\n+        }\n+        send(\n+            &mut stdin,\n+            &json!({\"kind\":kind,\"seq\":index,\"direction\":\"client_to_host\",\n             \"broker_request_id\":id,\"broker_request_sha256\":\"c\".repeat(64),\"broker_request_upstream_seq\":11+index,\n-            \"payload\":payload}));\n-        let reply=read_until(&mut stdout,\"host.error\");\n-        assert_eq!(reply[\"payload\"][\"code\"],\"no_active_turn\");\n-        assert_eq!(reply[\"payload\"][\"request_kind\"],kind);\n-        assert_eq!(reply[\"broker_request_id\"],id);\n-        assert_eq!(reply[\"broker_request_sha256\"],\"c\".repeat(64));\n-        assert_eq!(reply[\"broker_request_upstream_seq\"],11+index);\n-        assert_eq!(reply[\"payload\"][\"cancel_requested\"],false);\n-        assert_eq!(read_event_store_bytes(&events),original_events);\n+            \"payload\":payload}),\n+        );\n+        let reply = read_until(&mut stdout, \"host.error\");\n+        assert_eq!(reply[\"payload\"][\"code\"], \"no_active_turn\");\n+        assert_eq!(reply[\"payload\"][\"request_kind\"], kind);\n+        assert_eq!(reply[\"broker_request_id\"], id);\n+        assert_eq!(reply[\"broker_request_sha256\"], \"c\".repeat(64));\n+        assert_eq!(reply[\"broker_request_upstream_seq\"], 11 + index);\n+        assert_eq!(reply[\"payload\"][\"cancel_requested\"], false);\n+        assert_eq!(read_event_store_bytes(&events), original_events);\n     }\n-    let mut inspect=scope;\n-    inspect[\"request_sha256\"]=json!(digest);\n-    inspect[\"inclusive_cursor\"]=json!(0); inspect[\"limit\"]=json!(256);\n-    send(&mut stdin,&json!({\"kind\":\"turn.inspect\",\"seq\":3,\"direction\":\"client_to_host\",\n+    let mut inspect = scope;\n+    inspect[\"request_sha256\"] = json!(digest);\n+    inspect[\"inclusive_cursor\"] = json!(0);\n+    inspect[\"limit\"] = json!(256);\n+    send(\n+        &mut stdin,\n+        &json!({\"kind\":\"turn.inspect\",\"seq\":3,\"direction\":\"client_to_host\",\n         \"broker_request_id\":\"inspect:4\",\"broker_request_sha256\":\"d\".repeat(64),\"broker_request_upstream_seq\":14,\n-        \"payload\":inspect}));\n-    let readback=read_until(&mut stdout,\"turn.inspect.result\");\n-    assert_eq!(readback[\"broker_request_id\"],\"inspect:4\");\n-    let payload=&readback[\"payload\"];\n-    assert_eq!(payload[\"complete\"],true); assert_eq!(payload[\"has_more\"],false);\n-    assert_eq!(payload[\"inclusive_cursor\"],0);\n-    let frames=payload[\"frames\"].as_array().unwrap();\n-    assert_eq!(frames.iter().filter(|v|v[\"kind\"]==\"tool.started\").count(),1);\n-    assert_eq!(frames.last().unwrap()[\"payload\"][\"status\"],\"completed\");\n-    assert_eq!(read_event_store_bytes(&events),original_events);\n-    assert_eq!(fs::read_to_string(&invocations).unwrap(),\"once\\n\");\n-    drop(stdin); let mut remainder=String::new(); stdout.read_to_string(&mut remainder).unwrap();\n-    let status=child.wait().unwrap(); let mut stderr=String::new();\n-    child.stderr.take().unwrap().read_to_string(&mut stderr).unwrap();\n-    assert!(status.success(),\"Host fixture failed: {stderr}\");\n+        \"payload\":inspect}),\n+    );\n+    let readback = read_until(&mut stdout, \"turn.inspect.result\");\n+    assert_eq!(readback[\"broker_request_id\"], \"inspect:4\");\n+    let payload = &readback[\"payload\"];\n+    assert_eq!(payload[\"complete\"], true);\n+    assert_eq!(payload[\"has_more\"], false);\n+    assert_eq!(payload[\"inclusive_cursor\"], 0);\n+    let frames = payload[\"frames\"].as_array().unwrap();\n+    assert_eq!(\n+        frames\n+            .iter()\n+            .filter(|v| v[\"kind\"] == \"tool.started\")\n+            .count(),\n+        1\n+    );\n+    assert_eq!(frames.last().unwrap()[\"payload\"][\"status\"], \"completed\");\n+    assert_eq!(read_event_store_bytes(&events), original_events);\n+    assert_eq!(fs::read_to_string(&invocations).unwrap(), \"once\\n\");\n+    drop(stdin);\n+    let mut remainder = String::new();\n+    stdout.read_to_string(&mut remainder).unwrap();\n+    let status = child.wait().unwrap();\n+    let mut stderr = String::new();\n+    child\n+        .stderr\n+        .take()\n+        .unwrap()\n+        .read_to_string(&mut stderr)\n+        .unwrap();\n+    assert!(status.success(), \"Host fixture failed: {stderr}\");\n }\n \n"
+  },
+  {
+    "name": "before-contracts",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/contracts/generate_module_contracts.py",
+      "--check"
+    ],
+    "returncode": 2,
+    "wall_seconds": 0.11474862496834248,
+    "log_sha256": "7e8546b5a13d3701b6f3bbc7a8a139f1a2ebf63221c1ff04c3e493b56411d20b",
+    "tail": "module-contract verification failed: generated artifact drift: schemas/modules/broker/compatibility.json\n"
+  },
+  {
+    "name": "apply-rustfmt",
+    "argv": [
+      "/home/alex/.cargo/bin/cargo",
+      "+1.93.0",
+      "fmt",
+      "--all"
+    ],
+    "returncode": 0,
+    "wall_seconds": 1.3205527568934485,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tail": ""
+  },
+  {
+    "name": "regenerate-contracts",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/contracts/generate_module_contracts.py",
+      "--write"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.21504032099619508,
+    "log_sha256": "b4f0d37c03a61438a49f9c7b056d6c7b0310230cb033f22b6c226b3308174778",
+    "tail": "{\"android_build_host_invalid\": 384, \"android_build_host_valid\": 48, \"public_release\": false}\n{\"module_contracts\": true, \"public_release\": false, \"result\": \"PASS\"}\n"
+  },
+  {
+    "name": "after-contracts",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/contracts/generate_module_contracts.py",
+      "--verify"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.21551125694531947,
+    "log_sha256": "b4f0d37c03a61438a49f9c7b056d6c7b0310230cb033f22b6c226b3308174778",
+    "tail": "{\"android_build_host_invalid\": 384, \"android_build_host_valid\": 48, \"public_release\": false}\n{\"module_contracts\": true, \"public_release\": false, \"result\": \"PASS\"}\n"
+  },
+  {
+    "name": "docs-check",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/docs/generate_global_docs.py",
+      "--check"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.06479304295498878,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tail": ""
+  },
+  {
+    "name": "docs-verify",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/docs/verify_global_docs.py"
+    ],
+    "returncode": 1,
+    "wall_seconds": 0.6672135900007561,
+    "log_sha256": "c211d4a2cd159867a5abc859e50a09a0174d4342a7c03a9bc850974705c22722",
+    "tail": "{\"android_build_host_invalid\": 384, \"android_build_host_valid\": 48, \"public_release\": false}\n{\"module_contracts\": true, \"public_release\": false, \"result\": \"PASS\"}\neffect lifecycle verification passed\nrepository authority verification failed: projects/razr60/stock16-v149/backend/frozen-intake-v142/source7/apps/trillionnium-owner-open-host/README.md: visible line 5 inline Markdown link target does not exist: ../../docs/modules/MOD-EXECUTION-CORE.md\nG1 documentation verification failed: repository authority/profile verification failed\n"
+  }
+]

@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.cli-binding.candidate-suite.v1",
+  "results": [
+    {
+      "test": "test_cli_binding.py",
+      "returncode": 0,
+      "wall_seconds": 0.18783608311787248,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e8590627e6d1c17e8ecc377dc035d2f9fcf88bde3b874e85625d799fe9c58d1c",
+      "tests_passed": 9
+    },
+    {
+      "test": "offline_v149_checks.py",
+      "returncode": 0,
+      "wall_seconds": 7.4406822910532355,
+      "stdout_sha256": "ea8057af015b511a60a6390c2a620fab68db7f5246de4232634dc9a9cc10feb7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 96
+    },
+    {
+      "test": "offline_phone_tools_checks.py",
+      "returncode": 0,
+      "wall_seconds": 0.1372203752398491,
+      "stdout_sha256": "2bfc01fc25438ce5cc8cd7e5fe2debf29a071907f5492f912e0f455d871a062b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 35
+    },
+    {
+      "test": "offline_capacity_race_checks.py",
+      "returncode": 0,
+      "wall_seconds": 0.06496241595596075,
+      "stdout_sha256": "2d034257837ab2d66ebd74c173d02f399b622e3e89aa922465b081315508e8ff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "checks_passed": 25
+    }
+  ],
+  "source_sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb",
+  "real_model_calls": 0,
+  "phone_calls": 0,
+  "live_services_modified": false
+}

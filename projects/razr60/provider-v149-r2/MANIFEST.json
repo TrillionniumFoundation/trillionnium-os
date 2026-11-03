@@ -1,0 +1,238 @@
+{
+  "schema": "hepta.provider-cli-binding-candidate.v1",
+  "status": "CODE_VERIFIED_NOT_DEPLOYED",
+  "base_commit": "0152dc425b6eec188dfd0efdd62aa004b59c76c5",
+  "base_tree": "bd8b75a33cd65a227ccea329e491018f84539ee0",
+  "base_source_prefix": "projects/razr60/stock16-v149/provider/v149-r1",
+  "candidate_prefix": "projects/razr60/provider-v149-r2",
+  "created_utc": "2026-11-03T13:00:33.905803+00:00",
+  "source_files": 8,
+  "files": [
+    {
+      "path": "BASE-SOURCE-MANIFEST.json",
+      "bytes": 3195,
+      "sha256": "fb8cc512664ca5fcd46e93ad26f485a7d22eb39c89b47a25a26d90645a273a08",
+      "git_blob_sha": "940013b9e9a04e58a19abdca3bb780e3e91e09a6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5662,
+      "sha256": "b0b1e2fd0898604226240916a63e61bdb899bdf04e40506c8d65404eb6aea928",
+      "git_blob_sha": "b3c81bafe343501658de0a92c2e02a94ef1da10c"
+    },
+    {
+      "path": "register_task_contract.py",
+      "bytes": 2730,
+      "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230",
+      "git_blob_sha": "d1d48558e8e6e8d127c06a0d54673c44fcdca3ea"
+    },
+    {
+      "path": "source/daily_provider.py",
+      "bytes": 19993,
+      "sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb",
+      "git_blob_sha": "131d1436019c2657e847937ed78041f6ad868ab6"
+    },
+    {
+      "path": "source/model_health.py",
+      "bytes": 8127,
+      "sha256": "778104cc0c5f4d8f8b23d3b8af049b7efaebb9721ae460e5768fd1933bc09a82",
+      "git_blob_sha": "b734d66daabdf06da2ba28277b5f2ffea26f8cd6"
+    },
+    {
+      "path": "source/phone_observation_tools.py",
+      "bytes": 33548,
+      "sha256": "8b350c35d1b349649f11000c629ff59ff581c89e255729b45ac3cc9ccd58b975",
+      "git_blob_sha": "6df6a26fff5070b874f12bfecee4280f3bc1ce74"
+    },
+    {
+      "path": "source/phone_task_guards.py",
+      "bytes": 11368,
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59",
+      "git_blob_sha": "fda9b6cf891eb8b7a08caf08cfe9cdecb67ba55c"
+    },
+    {
+      "path": "source/provider_codex_host.py",
+      "bytes": 41510,
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+      "git_blob_sha": "b4c4111db218d876a963d941c93fb84505bdf3eb"
+    },
+    {
+      "path": "source/provider_openai_compatible.py",
+      "bytes": 17247,
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
+      "git_blob_sha": "be479de0155ba3c1e61f9c9712328ad8bab1687a"
+    },
+    {
+      "path": "source/ssh_exec_persistent_bridge.py",
+      "bytes": 18394,
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec",
+      "git_blob_sha": "b5781c95117a7a3f7d26de0e59f3f35ac34e4862"
+    },
+    {
+      "path": "source/task_postconditions.py",
+      "bytes": 14744,
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4",
+      "git_blob_sha": "eda758eff50f6a21c6fffda441ab7bbade32f4a3"
+    },
+    {
+      "path": "tests/fixtures.py",
+      "bytes": 2832,
+      "sha256": "6fee5591825b727b7c3a48de7dea7d51b3f465385a5f32760dc83a5141032db1",
+      "git_blob_sha": "0efb5ec6f8653c04486d30b4a93bcf27986741ac"
+    },
+    {
+      "path": "tests/offline_capacity_race_checks.py",
+      "bytes": 5843,
+      "sha256": "f3b902c28f50079d4bc03e53eec5cdc70a9f9ebc6b701eaa6bea2646193b28f2",
+      "git_blob_sha": "34ee6b403b367ee4ecc3315941230041bcdc0ed1"
+    },
+    {
+      "path": "tests/offline_phone_tools_checks.py",
+      "bytes": 14421,
+      "sha256": "c19a880bc0b89fb127bf3b92ddca08235805d2624356b14d569e181ffbb8669b",
+      "git_blob_sha": "34a22d2f04a69d6975a90cb926d779a871efda65"
+    },
+    {
+      "path": "tests/offline_v149_checks.py",
+      "bytes": 28619,
+      "sha256": "a833896d2d1b89d3d5c642e51be7897accb2b2c56d2ffcd821bd9576bf0417f3",
+      "git_blob_sha": "909f6adc521fc9b83d7cb061d7752bb5b9279374"
+    },
+    {
+      "path": "tests/test_cli_binding.py",
+      "bytes": 7699,
+      "sha256": "9d4e3108374800ed1fdca7c77c6177ccd504ee12e71c08ea1199e2bb0ead56c0",
+      "git_blob_sha": "1a389fd52878e3f25802c72648e185f73411ecb7"
+    },
+    {
+      "path": "validation/main/CHANGES.patch",
+      "bytes": 6178,
+      "sha256": "f3c834dc7ec81d9f1f4adea54482d8ab7495d237e2e8691a83bd96a2ffebd2b4",
+      "git_blob_sha": "de53e4e13ca32c5fd18ec9c3c97221401910c32a"
+    },
+    {
+      "path": "validation/main/baseline-suite.json",
+      "bytes": 1097,
+      "sha256": "36680fdd9159c1944a92869f67c3d4d8a32016f54d9bdf9d3c280f31a62ff829",
+      "git_blob_sha": "2aad6d0276bb2eba602d69d92e0fc4c6545282cf"
+    },
+    {
+      "path": "validation/main/candidate-attempt1/CHANGES.patch",
+      "bytes": 6165,
+      "sha256": "cc4e1a7b5939117540ee9f6ca7b2170c35cd4a60e9a75e97c9f3f0682f73addb",
+      "git_blob_sha": "a613b1f560f1975c8c976c4bca27aec864648b3b"
+    },
+    {
+      "path": "validation/main/candidate-attempt1/candidate-offline_v149_checks.py.stderr.txt",
+      "bytes": 1076,
+      "sha256": "d4f797ec3aa11e8a119c72d53f8b1744de65c6522ca6acb845962633c4316813",
+      "git_blob_sha": "8a02c936f2f0300b33c1f578921c1b8cdf7ea3fa"
+    },
+    {
+      "path": "validation/main/candidate-attempt1/candidate-suite.json",
+      "bytes": 1454,
+      "sha256": "2722a1149dfa21d3fddfd5f09a6cc1440d3847001e741d77a124df6c8c8a15f4",
+      "git_blob_sha": "e9ba97400e38776a0c0c9ff3cf85c900e2eacc0c"
+    },
+    {
+      "path": "validation/main/candidate-attempt1/candidate-test_cli_binding.py.stderr.txt",
+      "bytes": 2984,
+      "sha256": "8e8b7491425784cea6c0c19d1f67513e8e874edf291e45d609940785cdc4204e",
+      "git_blob_sha": "f91cc5f31284e6b19fe9f7904c753c9b3a12f989"
+    },
+    {
+      "path": "validation/main/candidate-attempt1/test_cli_binding.py",
+      "bytes": 7689,
+      "sha256": "e599396bfa0f781693c989c070a5b2d66a1b794234dbee06fb9be718f3bb9392",
+      "git_blob_sha": "76c945e026b1dc50ae4654b9f609248486974184"
+    },
+    {
+      "path": "validation/main/candidate-offline_capacity_race_checks.py.stdout.txt",
+      "bytes": 1641,
+      "sha256": "2d034257837ab2d66ebd74c173d02f399b622e3e89aa922465b081315508e8ff",
+      "git_blob_sha": "272f8fcefc1cb5def227f9952d83232427673486"
+    },
+    {
+      "path": "validation/main/candidate-offline_phone_tools_checks.py.stdout.txt",
+      "bytes": 2106,
+      "sha256": "2bfc01fc25438ce5cc8cd7e5fe2debf29a071907f5492f912e0f455d871a062b",
+      "git_blob_sha": "01b15b8028390a65d5adab786e686ac5087b072d"
+    },
+    {
+      "path": "validation/main/candidate-offline_v149_checks.py.stdout.txt",
+      "bytes": 5521,
+      "sha256": "ea8057af015b511a60a6390c2a620fab68db7f5246de4232634dc9a9cc10feb7",
+      "git_blob_sha": "ba2b52f88c85d9ff155c375b5c20c9c2bda012ec"
+    },
+    {
+      "path": "validation/main/candidate-suite.json",
+      "bytes": 1558,
+      "sha256": "a8a7b6ba9efb72caf4b14d05f8f758f8705489072ec269aa02621e9aef6a91ea",
+      "git_blob_sha": "585f3e1db77b80aa75af03e11c0aad010da704c6"
+    },
+    {
+      "path": "validation/main/candidate-test_cli_binding.py.stderr.txt",
+      "bytes": 1338,
+      "sha256": "e8590627e6d1c17e8ecc377dc035d2f9fcf88bde3b874e85625d799fe9c58d1c",
+      "git_blob_sha": "1e9c8ee5cf6246c5168ecd4184a2ef702ac4c94f"
+    },
+    {
+      "path": "validation/main/final-test-baseline-red.json",
+      "bytes": 231,
+      "sha256": "c6310e7f61d958afd02957da6231765c93d9b41a1190b689820d6e33fab7190a",
+      "git_blob_sha": "0c2b89c934751f1f02cb43f6651785696e57f769"
+    },
+    {
+      "path": "validation/main/final-test-baseline-red.stderr.txt",
+      "bytes": 914,
+      "sha256": "99d452c824d5928156349d115ac75cb15bfc368431dd3c2f36ace6df72a64574",
+      "git_blob_sha": "806490cb7d50d14f5a3bb20b32a6443822a88913"
+    },
+    {
+      "path": "validation/main/installed-program-check.json",
+      "bytes": 1473,
+      "sha256": "8127eaaeab92e5ac71771dc9f3e8a39bca19f6cac1b714438ffb48c48215f09f",
+      "git_blob_sha": "0ffe3277dc3908c786d8c74a7c6e5a3486d04a22"
+    },
+    {
+      "path": "validation/pocket4/independent-host-suite.json",
+      "bytes": 3999,
+      "sha256": "a583044a460ff1c10da189e258a5e034aded882109445427b5b957603d08ee78",
+      "git_blob_sha": "81876c799363fcbb44c2df7c46363f77cc068c2a"
+    },
+    {
+      "path": "validation/pocket4/test_cli_binding.py.stderr.txt",
+      "bytes": 1338,
+      "sha256": "15046ffb5f22debe91886c0f3cad9d7ead371e6d1a288a5a01e169c58573e5aa",
+      "git_blob_sha": "8526e63e1779d8e7af0d23f4a6e28071695a2918"
+    }
+  ],
+  "qualifications": {
+    "main": {
+      "original_offline_checks": 156,
+      "new_tests": 9
+    },
+    "pocket4": {
+      "original_offline_checks": 156,
+      "new_tests": 9
+    },
+    "final_regression_red_on_base": true,
+    "installed_launcher_and_program_version_match": true
+  },
+  "deployment": {
+    "deployed": false,
+    "phone_calls": 0,
+    "real_model_calls": 0,
+    "live_services_modified": false
+  },
+  "retained_nonpasses": [
+    "final regression against original source is RED",
+    "candidate first attempt has fixture errors; original results retained",
+    "main Git fetch timed out after 600 seconds; verified blob materialization used"
+  ],
+  "remaining_gates": [
+    "approved model availability",
+    "single-mainline provider/bridge version switch with preserved state",
+    "fixed 19-case real-device acceptance"
+  ]
+}

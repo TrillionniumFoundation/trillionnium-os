@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.cli-binding.deployment-result.v1",
+  "status": "HOST_PROVIDER_AND_BRIDGE_SWITCHED",
+  "captured_utc": "2026-11-03T13:25:53.009989+00:00",
+  "source_commit": "038f33f85e6b2e4796c369d310ed4e256e23ca78",
+  "source_tree": "57c557f3dd5e05478f64293378a1db8d2dae904a",
+  "provider_source_sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb",
+  "runtime_manifest_sha256": "fe7d49e07385d6754cf9a714cbb11f480ff39d64fb8282c73f121772332fe1b1",
+  "version": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r2",
+  "ready": {
+    "accepting": true,
+    "cli_binding": {
+      "executable": {
+        "file_identity": [
+          16777233,
+          586549291,
+          267754128,
+          1793368231726101167,
+          1793711547153622065
+        ],
+        "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r2/runtime/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+        "sha256": "58a91f6ea19bea477ae3a2ec48d619f0039afe75d3476260747e11d201fa7cea"
+      },
+      "launcher": {
+        "file_identity": [
+          16777233,
+          586549297,
+          328,
+          1791492613000000000,
+          1793711547153751318
+        ],
+        "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r2/runtime/codex-cli/bin/codex",
+        "sha256": "50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8"
+      },
+      "schema": "hepta.cli-executable-binding.v1"
+    },
+    "cli_executable_sha256": "58a91f6ea19bea477ae3a2ec48d619f0039afe75d3476260747e11d201fa7cea",
+    "cli_sha256": "50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8",
+    "instance": "62410d46636041299543a259e7eeb613",
+    "model": "gpt-6.1-sol",
+    "model_health_path": "/Users/qianqi/Library/Application Support/HEPTA/provider/state/provider/model-health.json",
+    "pid": 81988,
+    "port": 18082,
+    "readiness_scope": "transport_only",
+    "schema": "hepta.daily-provider.ready.v1",
+    "source_sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb",
+    "workers": 2
+  },
+  "plists": [
+    {
+      "label": "org.trillionnium.hepta.daily-provider",
+      "path": "/Users/qianqi/Library/LaunchAgents/org.trillionnium.hepta.daily-provider.plist",
+      "sha256": "10ae11d86d7fbbb751a2fb5463abd02b4b22698c6809a7adf81047c09c7d18b4"
+    },
+    {
+      "label": "org.trillionnium.hepta.daily-bridge",
+      "path": "/Users/qianqi/Library/LaunchAgents/org.trillionnium.hepta.daily-bridge.plist",
+      "sha256": "211d527063d26fd45eb86c475e391c6e922b693db5a88b57484367f5d0c32602"
+    }
+  ],
+  "retained_original_claims": 17,
+  "all_original_claim_hashes_unchanged": true,
+  "claims_count_after": 17,
+  "model_health": {
+    "automatic_probe_or_retry": false,
+    "availability": "observed_unavailable",
+    "failure_fence": 1,
+    "issued": 2,
+    "last_failure": {
+      "account_or_model_changed": false,
+      "automatic_retry": false,
+      "business_verified": false,
+      "category": "usage_limit_exceeded",
+      "event_sha256": "fceb74d9e6aecf8dd56e14c0c18a21270565b14e8dbb1fc5e0fa4ae2e0e698a0",
+      "id": 1,
+      "observed_utc": "2026-11-03T10:27:05.674569+00:00",
+      "public_error": "[usage_limit_exceeded] \u6a21\u578b\u989d\u5ea6\u5df2\u7528\u5c3d\uff1b\u672c\u6b21\u4efb\u52a1\u672a\u5b8c\u6210\u3002\u8bf7\u5728\u989d\u5ea6\u6062\u590d\u540e\u660e\u786e\u53d1\u8d77\u65b0\u4efb\u52a1\uff0c\u5df2\u6267\u884c\u52a8\u4f5c\u4e0d\u4f1a\u81ea\u52a8\u91cd\u653e\u3002",
+      "started_utc": "2026-11-03T10:26:56.557082+00:00"
+    },
+    "last_success": null,
+    "model": "gpt-6.1-sol",
+    "readiness_is_model_health": false,
+    "reason": "usage_limit_exceeded",
+    "schema": "hepta.model-health.v149.1"
+  },
+  "model_health_unchanged": true,
+  "phone_calls": 0,
+  "model_calls": 0,
+  "transport_restart_only": true,
+  "real_task_acceptance": false,
+  "rollback_used": false,
+  "prior_attempt_failed_before_configuration_change": true,
+  "prior_attempt_job": "1a1a192639b-fc05-502"
+}

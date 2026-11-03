@@ -1,0 +1,243 @@
+{
+  "schema": "hepta.cli-binding.deployment-preflight.v1",
+  "captured_utc": "2026-11-03T13:07:34.347519+00:00",
+  "ready": {
+    "accepting": true,
+    "cli_sha256": "50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8",
+    "instance": "a49f1c552bf747608c1f08283fb2944a",
+    "model": "gpt-6.1-sol",
+    "model_health_path": "/Users/qianqi/Library/Application Support/HEPTA/provider/state/provider/model-health.json",
+    "pid": 7436,
+    "port": 18082,
+    "readiness_scope": "transport_only",
+    "schema": "hepta.daily-provider.ready.v1",
+    "source_sha256": "44b2f708846447b57cee3a8da0c9c0aee1d250d7e123337fb08d0156b9a31ccc",
+    "workers": 2
+  },
+  "model_health": {
+    "automatic_probe_or_retry": false,
+    "availability": "observed_unavailable",
+    "failure_fence": 1,
+    "issued": 2,
+    "last_failure": {
+      "account_or_model_changed": false,
+      "automatic_retry": false,
+      "business_verified": false,
+      "category": "usage_limit_exceeded",
+      "event_sha256": "fceb74d9e6aecf8dd56e14c0c18a21270565b14e8dbb1fc5e0fa4ae2e0e698a0",
+      "id": 1,
+      "observed_utc": "2026-11-03T10:27:05.674569+00:00",
+      "public_error": "[usage_limit_exceeded] \u6a21\u578b\u989d\u5ea6\u5df2\u7528\u5c3d\uff1b\u672c\u6b21\u4efb\u52a1\u672a\u5b8c\u6210\u3002\u8bf7\u5728\u989d\u5ea6\u6062\u590d\u540e\u660e\u786e\u53d1\u8d77\u65b0\u4efb\u52a1\uff0c\u5df2\u6267\u884c\u52a8\u4f5c\u4e0d\u4f1a\u81ea\u52a8\u91cd\u653e\u3002",
+      "started_utc": "2026-11-03T10:26:56.557082+00:00"
+    },
+    "last_success": null,
+    "model": "gpt-6.1-sol",
+    "readiness_is_model_health": false,
+    "reason": "usage_limit_exceeded",
+    "schema": "hepta.model-health.v149.1"
+  },
+  "claims": [
+    {
+      "name": "029a59bb0c78d943972c483e6becb7b115a92a5ebe2854a094f8b9a30023c6ce",
+      "sha256": "83ea04262ed89e905870f45374f301a7f0c98448e8066e4f5af1a5cf84d4a503",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "0412ae87f6c83815c006820e1bf1ea50294a360e95a9ff2482e128e95cee160a",
+      "sha256": "3e4b82078772a5c13ee3aca2afc7dee50feea56ab5bb96afdb98a52b185982a1",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "0a90f0565019ca1591f0d56bedffea3c1a3b9922558032f8d9b160a15a08604c",
+      "sha256": "dd05bb041113014c43b02062094be4d12ad0a9b941f89f027ca764993c4da215",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "16f8833d7ba01970f698512f27be0f42439019a73d31169caccb39d3dd2214cd",
+      "sha256": "50bbd41fcef7db8c48a3ec1d43447578fc085ebe8a74ddaea81c1f5923949d38",
+      "state": "retained_pre_daily_accepted_no_redispatch"
+    },
+    {
+      "name": "1764753b8fce2c0ec6f1cf99a62a00d7982cb0293dd1c192417692bd1f294f14",
+      "sha256": "2514db09e9bf6c363426e8d7dd91b70c3345f7bc18bf1d0010bbac7f25050001",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "21208b28ad5d649684a58308a0fab573c218e644a1faa9ee985d4472b91ca214",
+      "sha256": "381ba819489419e58b7b7c0499917877618316253a419d14bfb209e964e10856",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "22fb738498457446f4574cf8aad86eb2cba318fedd6364729f72d62bbc27b744",
+      "sha256": "c4932c395399928062ad336dfbfa1ade7473f95d79b92f62a0fb41df9e8980fb",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "5dcacf7171db2232564462b27dab6962fc393d1bc1ebca73552a8f1c52c70747",
+      "sha256": "65dd85ba529a704f117354fbdc548f1b12b4b1bc80f244ce75c02df0530627e1",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "64d81faf4c0e0eb2e8acfa91f0661f028e29c686d0c5d99a220f2b3831e44089",
+      "sha256": "f8f476720376b5c75fc96f6fb3d4cdd6ddbedc9c0a371869a7a5c84adf241840",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "872a7160ba530889cbfb8d5cec00f09dcbd114e6d59c45011ca637b8b0d22ede",
+      "sha256": "a7aaab22071ac855390ac6744cb64da07d2e5cd35d5f455777beac36e23508d5",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "8de6ba3486f0de694576181ec7179b0ef5bf1b625696523cdb334dd201f73fff",
+      "sha256": "0f89e487142583c7845dce06999dd369ffcf90aa44f4f65a5bcec9d5ff0a186a",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "90daafd02394c38fd79ee3e5a1dcb0dd257513717ad110be59c7966a0cc8d09d",
+      "sha256": "3902b01d7af1321606971158a6465f60e3337ee92e3d070fe42ddf60627ea30c",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "9c48c801c069fb037b3cc11220d7831efb6b88aef60683a490f6950cbd3bec4e",
+      "sha256": "94847c2f0388a01d01e29c0b27d4082167e4d7b3e2a45425f259d21bce2f7b5f",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "be2ce9e196361c4fb67681781e5ce3f3c48c6f8432981688dbd02f30f3942044",
+      "sha256": "15c3a92d3c1f3bedff7b39b65f8f2da27d85ba4ecb79f8b7cd39171110d6d589",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "cabd4f7f8b72f83eb7e5f382ec07f7e1b5432b8168c2fe3c683b8f651c60d6e3",
+      "sha256": "48e132cb6fde59915777a2ececdc7a78ec52a6f8b677d1c70594fce6a95d3de9",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "d36b75f49377b0b72916eeaf9a0b0199342a8a63f5b0783bb53bfd88ea06e877",
+      "sha256": "f3e8200e4f8f8dad15a1cbd13efbdea60b5e3658e6561ed320fa757e20b4b694",
+      "state": "accepted_no_redispatch"
+    },
+    {
+      "name": "fa1ae0eeb280f0badf9bdd2bba26526e40ea8b7a10d8daa344f413c7ecc2c1ac",
+      "sha256": "4ada89d8e1fa86e95a83d325afa0afea5db9856263aaac51660bb35b5b925850",
+      "state": "accepted_no_redispatch"
+    }
+  ],
+  "claims_count": 17,
+  "unfinished_accepted_runs": [],
+  "spawn_intents_count": 60,
+  "unjoined_rounds": [],
+  "plists": [
+    {
+      "label": "org.trillionnium.hepta.daily-provider",
+      "path": "/Users/qianqi/Library/LaunchAgents/org.trillionnium.hepta.daily-provider.plist",
+      "sha256": "46d948918ddadb7dcab4560de5684a6c19b683c658e488c20da8c7ce0a2a9880",
+      "mode": "0o600",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-u",
+        "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/daily_provider.py",
+        "--state",
+        "/Users/qianqi/Library/Application Support/HEPTA/provider/state/provider",
+        "--codex",
+        "/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex",
+        "--workers",
+        "2",
+        "--model",
+        "gpt-6.1-sol",
+        "--retained-claims",
+        "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/retained-claims.json",
+        "--retained-claims-sha256",
+        "929815622aa8ec0f278b9b3cca2fd3f99361cbb6e71f627871d3da16a85b856b"
+      ],
+      "launchctl_returncode": 0,
+      "observed_state": [
+        "state = running",
+        "pid = 7436",
+        "last exit code = (never exited)",
+        "state = active",
+        "state = active"
+      ]
+    },
+    {
+      "label": "org.trillionnium.hepta.daily-bridge",
+      "path": "/Users/qianqi/Library/LaunchAgents/org.trillionnium.hepta.daily-bridge.plist",
+      "sha256": "43b0b43b91a1311322517632fdf94a042cb7d6027409ec6224721ceef1c87682",
+      "mode": "0o600",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-B",
+        "-u",
+        "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/ssh_exec_persistent_bridge.py",
+        "--state",
+        "/Users/qianqi/Library/Application Support/HEPTA/provider/state/bridge",
+        "--provider-state",
+        "/Users/qianqi/Library/Application Support/HEPTA/provider/state/provider",
+        "--provider-source",
+        "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/daily_provider.py",
+        "--provider-sha256",
+        "44b2f708846447b57cee3a8da0c9c0aee1d250d7e123337fb08d0156b9a31ccc",
+        "--remote-source",
+        "/home/alex/codex-hepta-daily-provider-c-v145-r2/ssh_exec_persistent_bridge.py",
+        "--remote-sha256",
+        "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec"
+      ],
+      "launchctl_returncode": 0,
+      "observed_state": [
+        "state = running",
+        "pid = 7439",
+        "last exit code = (never exited)",
+        "state = active",
+        "state = active"
+      ]
+    }
+  ],
+  "source_files": [
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/daily_provider.py",
+      "sha256": "44b2f708846447b57cee3a8da0c9c0aee1d250d7e123337fb08d0156b9a31ccc",
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/model_health.py",
+      "sha256": "778104cc0c5f4d8f8b23d3b8af049b7efaebb9721ae460e5768fd1933bc09a82",
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/phone_observation_tools.py",
+      "sha256": "8b350c35d1b349649f11000c629ff59ff581c89e255729b45ac3cc9ccd58b975",
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/phone_task_guards.py",
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59",
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/provider_openai_compatible.py",
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/ssh_exec_persistent_bridge.py",
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec",
+      "mode": "0o600"
+    },
+    {
+      "path": "/Users/qianqi/Library/Application Support/HEPTA/provider/v149-r1/source/task_postconditions.py",
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4",
+      "mode": "0o600"
+    }
+  ],
+  "retained_claims_sha256": "929815622aa8ec0f278b9b3cca2fd3f99361cbb6e71f627871d3da16a85b856b",
+  "new_version_exists": false,
+  "live_services_modified": false,
+  "phone_calls": 0,
+  "model_calls": 0
+}
