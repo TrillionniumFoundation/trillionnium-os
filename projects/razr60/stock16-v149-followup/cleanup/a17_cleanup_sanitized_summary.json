@@ -1,0 +1,814 @@
+{
+  "schema": "razr60-a17-six-host-cleanup-sanitized-accounting-v2",
+  "utc": "2026-11-03T12:16:47.126203+00:00",
+  "status": "PASS_FIXED_SCOPE_CLOSED",
+  "hosts": [
+    {
+      "host": "main",
+      "deleted_unique_targets": 4590,
+      "deleted_files": 3610284,
+      "deleted_logical_bytes": 30611630892,
+      "deleted_allocated_bytes": 40485056512,
+      "observed_free_delta_sum_bytes": 41397940224,
+      "unmeasured_df_batch_count": 1,
+      "residual_review_pending": 0,
+      "current_available_bytes": 376724529152,
+      "available_utc": "2026-11-03T12:13:38.045314+00:00",
+      "cleanup_audit_allocated_bytes": 833847296,
+      "cleanup_audit_logical_bytes": 831920077,
+      "source_preservation_and_provenance_allocated_bytes": 351928320,
+      "source_preservation_and_provenance_logical_bytes": 351032790,
+      "source_preservation_is_subset_of_audit_bytes": true,
+      "audit_storage_components": [
+        {
+          "name": "history_evidence",
+          "files": 121,
+          "logical_bytes": 750021743,
+          "allocated_bytes": 750284800
+        },
+        {
+          "name": "initial_ui_audit",
+          "files": 370,
+          "logical_bytes": 66093204,
+          "allocated_bytes": 66981888
+        },
+        {
+          "name": "container_review111",
+          "files": 312,
+          "logical_bytes": 15805130,
+          "allocated_bytes": 16580608
+        }
+      ]
+    },
+    {
+      "host": "pocket4",
+      "deleted_unique_targets": 159,
+      "deleted_files": 159,
+      "deleted_logical_bytes": 129852354407,
+      "deleted_allocated_bytes": 129180299264,
+      "observed_free_delta_sum_bytes": 129180217344,
+      "unmeasured_df_batch_count": 0,
+      "residual_review_pending": 0,
+      "current_available_bytes": 509259071488,
+      "available_utc": "2026-11-03T12:09:28.860384+00:00",
+      "cleanup_audit_allocated_bytes": 11517952,
+      "cleanup_audit_logical_bytes": 11481327,
+      "source_preservation_and_provenance_allocated_bytes": 0,
+      "source_preservation_and_provenance_logical_bytes": 0,
+      "source_preservation_is_subset_of_audit_bytes": false
+    },
+    {
+      "host": "rog",
+      "deleted_unique_targets": 12,
+      "deleted_files": 1290,
+      "deleted_logical_bytes": 3759091466,
+      "deleted_allocated_bytes": 3762520064,
+      "observed_free_delta_sum_bytes": 3762614272,
+      "unmeasured_df_batch_count": 0,
+      "residual_review_pending": 0,
+      "current_available_bytes": 205646467072,
+      "available_utc": "2026-11-03T12:09:33.521095+00:00",
+      "cleanup_audit_allocated_bytes": 271982592,
+      "cleanup_audit_logical_bytes": 271961472,
+      "source_preservation_and_provenance_allocated_bytes": 0,
+      "source_preservation_and_provenance_logical_bytes": 0,
+      "source_preservation_is_subset_of_audit_bytes": false
+    },
+    {
+      "host": "desktop",
+      "deleted_unique_targets": 2,
+      "deleted_files": 2,
+      "deleted_logical_bytes": 90109697,
+      "deleted_allocated_bytes": 90124288,
+      "observed_free_delta_sum_bytes": 90124288,
+      "unmeasured_df_batch_count": 0,
+      "residual_review_pending": 0,
+      "current_available_bytes": 111885537280,
+      "available_utc": "2026-11-03T12:09:22.968462+00:00",
+      "cleanup_audit_allocated_bytes": 880640,
+      "cleanup_audit_logical_bytes": 843631,
+      "source_preservation_and_provenance_allocated_bytes": 21364736,
+      "source_preservation_and_provenance_logical_bytes": 21360219,
+      "source_preservation_is_subset_of_audit_bytes": false
+    },
+    {
+      "host": "ai395",
+      "deleted_unique_targets": 0,
+      "deleted_files": 0,
+      "deleted_logical_bytes": 0,
+      "deleted_allocated_bytes": 0,
+      "observed_free_delta_sum_bytes": 0,
+      "unmeasured_df_batch_count": 0,
+      "residual_review_pending": 0,
+      "current_available_bytes": 1243032379392,
+      "available_utc": "2026-11-03T12:08:46.977395+00:00",
+      "cleanup_audit_allocated_bytes": 8192,
+      "cleanup_audit_logical_bytes": 1716,
+      "source_preservation_and_provenance_allocated_bytes": 0,
+      "source_preservation_and_provenance_logical_bytes": 0,
+      "source_preservation_is_subset_of_audit_bytes": false,
+      "no_delete_receipt_sha256": "a6baaefdf12dcfa93925f529886037b2aa8589639e78742dca05452b49da97c1",
+      "inventory_depth_limit": 3,
+      "inventory_entries_seen": 7149
+    },
+    {
+      "host": "x230",
+      "deleted_unique_targets": 0,
+      "deleted_files": 0,
+      "deleted_logical_bytes": 0,
+      "deleted_allocated_bytes": 0,
+      "observed_free_delta_sum_bytes": 0,
+      "unmeasured_df_batch_count": 0,
+      "residual_review_pending": 0,
+      "current_available_bytes": 36168916992,
+      "available_utc": "2026-11-03T12:09:36.564898+00:00",
+      "cleanup_audit_allocated_bytes": 8192,
+      "cleanup_audit_logical_bytes": 1443,
+      "source_preservation_and_provenance_allocated_bytes": 0,
+      "source_preservation_and_provenance_logical_bytes": 0,
+      "source_preservation_is_subset_of_audit_bytes": false,
+      "no_delete_receipt_sha256": "729e83ba1e4a7fcd73293baf5b8c670f4d6d57e2620386e49a9bf08844825c98",
+      "inventory_depth_limit": 3,
+      "inventory_entries_seen": 233171
+    }
+  ],
+  "batches": [
+    {
+      "batch": "mac_initial_55",
+      "file_count": 55,
+      "unique_target_count": 55,
+      "logical_bytes": 794813812,
+      "allocated_bytes": 794931200,
+      "observed_free_delta_bytes": null,
+      "status": "PINNED_ABSENCE_RECONCILED",
+      "host": "main",
+      "receipt_name": "MAC-PURE-DELETE-PARTIAL-RECONCILIATION.json",
+      "source_and_current_checks_passed": true,
+      "df_note": "Partial unlink stopped on permission error before a final df measurement was saved; 55 missing targets reconciled against pinned intent"
+    },
+    {
+      "batch": "mac_root_remaining_63",
+      "file_count": 63,
+      "unique_target_count": 63,
+      "logical_bytes": 410278141,
+      "allocated_bytes": 410382336,
+      "observed_free_delta_bytes": 402616320,
+      "status": "PASS",
+      "host": "main",
+      "receipt_name": "MAC-ROOT-PENDING-DELETE-RECEIPT.json",
+      "source_and_current_checks_passed": true
+    },
+    {
+      "batch": "captured24",
+      "file_count": 24,
+      "unique_target_count": 24,
+      "logical_bytes": 167914796,
+      "allocated_bytes": 167976960,
+      "observed_free_delta_bytes": 167915520,
+      "status": "PASS",
+      "host": "main",
+      "receipt_name": "main-captured24-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "56cfda1603a55a7359eabb573e57648073f06562cc7776ed406770370892cd89",
+      "retained_tree_sha256_before_and_after": "ee6f5237ba82bddc5906b07890e6e7ecd130a265d133df682c3e810a81730249"
+    },
+    {
+      "batch": "class331",
+      "file_count": 3568498,
+      "unique_target_count": 331,
+      "logical_bytes": 7337361120,
+      "allocated_bytes": 17098063872,
+      "observed_free_delta_bytes": 18796666880,
+      "status": "PASS_ALL_DELETED_SOURCE_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-class-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "4ca142887c03c289f2469a9abee3b0a99ae39d69f63ef69ed5a1e4d81dd7fad2",
+      "retained_tree_sha256_before_and_after": "a45cdb5f4aa32dea761f50b54e1721d15a332f7a53790d32eac6652b280e712c"
+    },
+    {
+      "batch": "nonclass2141",
+      "file_count": 2141,
+      "unique_target_count": 2141,
+      "logical_bytes": 17773122382,
+      "allocated_bytes": 17777573888,
+      "observed_free_delta_bytes": 17775640576,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-nonclass-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "3ca50e7939b0cd25e7ee13de2aa0d06fe3b8ad0cbad64211d331cf317c086c2d",
+      "retained_tree_sha256_before_and_after": "ad864c1fcb439eec46724dc61325328a71893b57353a443de600e90cac2c506b"
+    },
+    {
+      "batch": "media1_localclass861",
+      "file_count": 861,
+      "unique_target_count": 861,
+      "logical_bytes": 176660213,
+      "allocated_bytes": 178843648,
+      "observed_free_delta_bytes": 177455104,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-media1-localclass-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "ee661062fbb1489dcb1f17cf8da2e7b9417f3f61b712a91a8437a7a73efe8b45",
+      "retained_tree_sha256_before_and_after": "8b12ca61a036b139941af929de9d6f7c5caaef99c8d68a07d19f0421a5dc0a13"
+    },
+    {
+      "batch": "archives215",
+      "file_count": 215,
+      "unique_target_count": 215,
+      "logical_bytes": 1285457992,
+      "allocated_bytes": 1286565888,
+      "observed_free_delta_bytes": 1286447104,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-residual-archives-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "98fe9d286039c84981809b364048908e5726a0cb25751294308ccc8d572c028c",
+      "retained_tree_sha256_before_and_after": "b2c65ec1f883239c0c99f132d9315e15e920105332e944eee5691293a1373359"
+    },
+    {
+      "batch": "residual_class38076",
+      "file_count": 38076,
+      "unique_target_count": 549,
+      "logical_bytes": 79895685,
+      "allocated_bytes": 183881728,
+      "observed_free_delta_bytes": 204914688,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-residual-class-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "1dc9a5740b3200dcf96f21c301667c737208b1c1dd33987a26873fad23536c9a",
+      "retained_tree_sha256_before_and_after": "923e20f1eb6cea1f8bb86884466e71ad3b4a449ea31d3835a331e77f970df498"
+    },
+    {
+      "batch": "historical3",
+      "file_count": 3,
+      "unique_target_count": 3,
+      "logical_bytes": 108080562,
+      "allocated_bytes": 108085248,
+      "observed_free_delta_bytes": 108048384,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-historical-three-apks-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "5696ccdab3a127abc66372510ccf061033c97242c000ff5c85261375dfb8e424",
+      "retained_tree_sha256_before_and_after": "0ce0ddf1804cbe576e4c2a2a52ca1ddf6753183bc06f8ef6a0de991cc6fae3bb"
+    },
+    {
+      "batch": "falsehold11",
+      "file_count": 11,
+      "unique_target_count": 11,
+      "logical_bytes": 490720676,
+      "allocated_bytes": 490741760,
+      "observed_free_delta_bytes": 490610688,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-original-name-falsehold-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "158b589a114acc85049ce29a2f13deb3359e6dc549c5cd7d37ef7c6b400a5b1c",
+      "retained_tree_sha256_before_and_after": "62ec93f331ccd1a317e688c3a76e6bd9a6518be7681dad7468832fdc6e8dd0de"
+    },
+    {
+      "batch": "final5",
+      "file_count": 5,
+      "unique_target_count": 5,
+      "logical_bytes": 39963562,
+      "allocated_bytes": 39976960,
+      "observed_free_delta_bytes": 39989248,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "receipt_name": "main-final-five-deletion-receipt.json",
+      "source_and_current_checks_passed": true,
+      "receipt_sha256": "d588d0799abf1d2bcc3abb58d1e8ee52b9df1b04f0dc77b526e70ea6da6e7bc8",
+      "retained_tree_sha256_before_and_after": "285a89a4f44b6daa3a90ac20f9d4b23a9aae11d2c676a7ca2960151477980834"
+    },
+    {
+      "batch": "extensionless81",
+      "receipt_name": "main-extensionless81-deletion-receipt.json",
+      "receipt_sha256": "027b0bc54d28829f0bf54c55524997f47a808136c4af8523fe450436d200c184",
+      "file_count": 81,
+      "unique_target_count": 81,
+      "logical_bytes": 4258610,
+      "allocated_bytes": 4427776,
+      "observed_free_delta_bytes": 4136960,
+      "retained_tree_sha256_before_and_after": "fa2157e97998d817a845876242971abee90d66a1a051899b81f309d33f40e2b5",
+      "retained_entries": 780,
+      "retained_regular_bytes": 124431380,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "source_and_current_checks_passed": true
+    },
+    {
+      "batch": "unusual33",
+      "receipt_name": "main-unusual33-deletion-receipt.json",
+      "receipt_sha256": "644071d4e653bf32fd5122c37f709f8c43d13d809dd708879ed9e1a4a6e01890",
+      "file_count": 33,
+      "unique_target_count": 33,
+      "logical_bytes": 40529204,
+      "allocated_bytes": 40587264,
+      "observed_free_delta_bytes": 40509440,
+      "retained_tree_sha256_before_and_after": "0dbfc68c8d6ae399ed671a60c1ac97e4ea7ddc9e04759ea2f64a1209ecf12fd9",
+      "retained_entries": 32,
+      "retained_regular_bytes": 101441,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "source_and_current_checks_passed": true
+    },
+    {
+      "batch": "three-duplicate-dex",
+      "receipt_name": "main-three-duplicate-dex-deletion-receipt.json",
+      "receipt_sha256": "8c355443b1a0a8460281d8cca314778cf1a8b98b702e3103d87813e39047602a",
+      "file_count": 3,
+      "unique_target_count": 3,
+      "logical_bytes": 27664712,
+      "allocated_bytes": 27672576,
+      "observed_free_delta_bytes": 27639808,
+      "retained_tree_sha256_before_and_after": "143af58ac32680e6bd7c973d69a33912f36e8d2af56ae7ada8c34b9652ce07e0",
+      "retained_entries": 28,
+      "retained_regular_bytes": 174476,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "source_and_current_checks_passed": true
+    },
+    {
+      "batch": "outputs157",
+      "receipt_name": "main-outputs157-deletion-receipt.json",
+      "receipt_sha256": "2caca7b3f00bc13f0f3e5f889d0f0c98b651ea3daca9b9748bfefdc458f28add",
+      "file_count": 157,
+      "unique_target_count": 157,
+      "logical_bytes": 667024052,
+      "allocated_bytes": 667344896,
+      "observed_free_delta_bytes": 666943488,
+      "retained_tree_sha256_before_and_after": "26f6aa35dee53b44dfbde3237d10280f40b3b5995d81a3118318c47bf2b1df35",
+      "retained_entries": 525,
+      "retained_regular_bytes": 55392124,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "source_and_current_checks_passed": true
+    },
+    {
+      "batch": "fixed111-final58",
+      "receipt_name": "main-fixed111-final58-deletion-receipt.json",
+      "receipt_sha256": "e3a18819f217c7b75db6560e045b362244bb7f6a43c477eda884d588500de935",
+      "file_count": 58,
+      "unique_target_count": 58,
+      "logical_bytes": 1207885373,
+      "allocated_bytes": 1208000512,
+      "observed_free_delta_bytes": 1208406016,
+      "retained_tree_sha256_before_and_after": "d798e35f4cf7541c385f8a207bf0a78dbc0d7f9eb9c6794d9a7a1aa9420f8832",
+      "retained_entries": 1060585,
+      "retained_regular_bytes": 19028358474,
+      "status": "PASS_ALL_DELETED_RETAINED_AND_SENTINELS_UNCHANGED",
+      "host": "main",
+      "source_and_current_checks_passed": true
+    },
+    {
+      "host": "rog",
+      "batch": "rog_old_ui",
+      "status": "PASS_DELETED_AND_ALL_PROTECTED_BYTES_UNCHANGED",
+      "file_count": 1290,
+      "unique_target_count": 12,
+      "logical_bytes": 3759091466,
+      "allocated_bytes": 3762520064,
+      "observed_free_delta_bytes": 3762614272,
+      "source_and_current_checks_passed": true,
+      "retained_tree_sha256_before_and_after": "5d411dd84722b9c0fbf844d58a0b399f9e42b17deda8de313c2d3d56c37cb864",
+      "evidence_bundle_sha256": "9cd2c2991de19d74cf321e57727f75d8cee8124e31c9fe54d1c6749115a0e12e"
+    },
+    {
+      "host": "desktop",
+      "batch": "desktop_old_ui",
+      "status": "PASS_DELETED_AND_ALL_PROTECTED_BYTES_UNCHANGED",
+      "file_count": 2,
+      "unique_target_count": 2,
+      "logical_bytes": 90109697,
+      "allocated_bytes": 90124288,
+      "observed_free_delta_bytes": 90124288,
+      "source_and_current_checks_passed": true,
+      "retained_tree_sha256_before_and_after": "75deb07526f72820e6a2ba923ae7db80237607a3bdbaa4210748519fee4dcfc5",
+      "evidence_bundle_sha256": "9cd2c2991de19d74cf321e57727f75d8cee8124e31c9fe54d1c6749115a0e12e"
+    },
+    {
+      "host": "pocket4",
+      "batch": "signing54",
+      "status": "PASS",
+      "file_count": 54,
+      "unique_target_count": 54,
+      "logical_bytes": 2443099839,
+      "allocated_bytes": 2443317248,
+      "observed_free_delta_bytes": 2443309056,
+      "source_and_current_checks_passed": true,
+      "retained_source_files_before_and_after": 486,
+      "receipt_name": "A17-signing-delete-receipt.json",
+      "receipt_sha256": "fe70b3b9443524671cb13c3da929aa5d5f748a11a76347bbdfbb290fc153a1f5"
+    },
+    {
+      "host": "pocket4",
+      "batch": "images98",
+      "status": "PASS",
+      "file_count": 98,
+      "unique_target_count": 98,
+      "logical_bytes": 125748056232,
+      "allocated_bytes": 125095723008,
+      "observed_free_delta_bytes": 125095665664,
+      "source_and_current_checks_passed": true,
+      "retained_source_files_before_and_after": 9384,
+      "receipt_name": "A17-image-delete-receipt.json",
+      "receipt_sha256": "19c9ebed8f37053f19e033d9ac6ed7fbfe9597de1b16f976e1983b902d25a7b3"
+    },
+    {
+      "host": "pocket4",
+      "batch": "held_images7",
+      "status": "PASS",
+      "file_count": 7,
+      "unique_target_count": 7,
+      "logical_bytes": 1661198336,
+      "allocated_bytes": 1641259008,
+      "observed_free_delta_bytes": 1641242624,
+      "source_and_current_checks_passed": true,
+      "retained_source_files_before_and_after": 2364,
+      "receipt_name": "A17-held-image-delete-receipt.json",
+      "receipt_sha256": "8d364ee9237dbcc1188cbf74a0dc68b2b36d764bb865a3bcda8f6d71f6d3f439"
+    }
+  ],
+  "totals": {
+    "unique_hosts": 6,
+    "deleted_unique_targets": 4763,
+    "deleted_files": 3611735,
+    "deleted_logical_bytes": 164313186462,
+    "deleted_allocated_bytes": 173518000128,
+    "observed_free_delta_sum_bytes": 174430896128,
+    "df_unmeasured_batches": 1,
+    "new_audit_and_preservation_allocated_bytes_snapshot": 1139609600,
+    "allocated_accounting_balance_bytes": 172378390528,
+    "compiled_residual_review_pending_count": 0,
+    "compiled_residual_review_pending_allocated_bytes": 0,
+    "redundant_source_transfer_fragment_count": 9,
+    "redundant_source_transfer_fragment_allocated_bytes": 3235840
+  },
+  "verification": {
+    "approved_main_targets_absent": true,
+    "main_exact_unique_targets": 4590,
+    "main_duplicate_or_nested_deletion_targets": 0,
+    "source_only_archives_retained_and_hash_verified": 265,
+    "source_only_archive_changes": 0,
+    "retained_unique_content_pins_freshly_verified": 1677,
+    "retained_pin_path_sha256_digest": "732da615c5f4de7c44f0b7a982d91f37321fb2b5e7cdfd340c2ae71d15e04dcd",
+    "retained_pin_groups": {
+      "source_only_archives265": 265,
+      "resource_binary_xml1105": 1105,
+      "original_tools191": 191,
+      "original_tool_debug29": 29,
+      "fixed111_retained59": 59,
+      "current_A16_sentinels": 15,
+      "all_new_source_preservation_packages": 15
+    },
+    "retained_pin_changes": 0,
+    "current_input_sentinel_changes": 0,
+    "source_and_resource_hash_checks": "All deletion batches verified their protected source sets before and after. The final Mac source/resource/original/current pins were independently reread. Overlapping retained trees are not summed.",
+    "final58_container_count": 49,
+    "final58_redundant_source_fragment_count": 9,
+    "final58_source_tree_entries": 1060585,
+    "final58_source_tree_logical_bytes": 19028358474,
+    "final58_source_tree_sha256_before_and_after": "d798e35f4cf7541c385f8a207bf0a78dbc0d7f9eb9c6794d9a7a1aa9420f8832",
+    "final58_all_16_source_and_proof_pins_unchanged": true,
+    "independent_resource_attribution": {
+      "RRO_original_source_members": 28,
+      "serialized_telephone_assets": 1171,
+      "SQLite_assets_per_distinct_delivery_origin": [
+        9,
+        9
+      ],
+      "unique_preserved_blobs_reread": 1208,
+      "status": "PASS"
+    },
+    "apex_payload_source_closure": {
+      "status": "PASS",
+      "payload_regular_files_matched_original_build_receipt": 20,
+      "noncode_config_or_manifest_members_preserved": 7,
+      "obsolete_ELF_members_excluded": 13
+    }
+  },
+  "source_preservation": [
+    {
+      "host": "main",
+      "name": "old-a17-embedded-source-resource-preservation.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 80949710,
+      "allocated_bytes_at_final_snapshot": 80953344,
+      "sha256": "5be39971f62cd060c5902d015c0423ded9e5d9eda1696ba0b8311b04e2e275f8",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-embedded-source-resource-map.jsonl.gz",
+      "role": "member_provenance",
+      "logical_bytes": 29635961,
+      "allocated_bytes_at_final_snapshot": 29638656,
+      "sha256": "23e4196f927b5e4eb76bb698287087c9fd4c4218917f49756cbb65e542f0e67f",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-residual-source-resource-preservation.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 72322270,
+      "allocated_bytes_at_final_snapshot": 72323072,
+      "sha256": "1cd5310ce81027fbdd796d809ff9e7f3859ed080d2a38869a3e3167ae34944e7",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-residual-source-resource-map.jsonl.gz",
+      "role": "member_provenance",
+      "logical_bytes": 2746300,
+      "allocated_bytes_at_final_snapshot": 2748416,
+      "sha256": "bb1928d45fb5ca032c3f1ab16fafdee762b8fb9a5d3d1552235617532429feee",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-original-name-falsehold-source-resource-preservation.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 3456082,
+      "allocated_bytes_at_final_snapshot": 3457024,
+      "sha256": "2128d917fa2d2b43e287e1630230b2af44c6e0786a18f7e09f05289ee8c4703c",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-original-name-falsehold-source-resource-map.jsonl.gz",
+      "role": "member_provenance",
+      "logical_bytes": 871403,
+      "allocated_bytes_at_final_snapshot": 872448,
+      "sha256": "54883d17186cc2f7f92f9d9a7fa8f36e847444d7668d584fc704c1d251d1295f",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-provider19-generated-source-resource-preservation.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 5960,
+      "allocated_bytes_at_final_snapshot": 8192,
+      "sha256": "153dbd519c922db26daf48dab3b6a4467486865fb20727153f4fe658c187298a",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-provider19-generated-source-resource-map.jsonl.gz",
+      "role": "member_provenance",
+      "logical_bytes": 601,
+      "allocated_bytes_at_final_snapshot": 4096,
+      "sha256": "2ff88d76d5cce114a9888e2c0c0331b7aa9f8e7392a8c7e13124bc4132d7ff80",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-outputs157-source-resource-preservation.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 13809488,
+      "allocated_bytes_at_final_snapshot": 13811712,
+      "sha256": "7d29e4783627f4ec764c5e9c6d9ba84d02d6600e73ea4472980e6635db8aa1e3",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-outputs157-source-resource-map.jsonl.gz",
+      "role": "member_provenance",
+      "logical_bytes": 672192,
+      "allocated_bytes_at_final_snapshot": 675840,
+      "sha256": "aa8593b10018683a4a52a91f0b9bae711ea67e9d2f1eaf99da4fa3260f3ee266",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-fixed111-source-resource-preservation.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 90377573,
+      "allocated_bytes_at_final_snapshot": 90378240,
+      "sha256": "972a520da025ac3175a51b1845ad197da289ecdb474150772fd5194e074dd6fe",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-fixed111-source-resource-map.jsonl.gz",
+      "role": "member_provenance",
+      "logical_bytes": 4689080,
+      "allocated_bytes_at_final_snapshot": 4689920,
+      "sha256": "0396de9e0304c78ffc08639266b8b7114a529c30d913feef61581732959c0dc9",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-fixed111-additional-source-resource-preservation.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 12495857,
+      "allocated_bytes_at_final_snapshot": 12496896,
+      "sha256": "46cb4916ba21df64d4832aee28b8e2d8d00a0ed116b921e05b40b25b4d56383d",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-fixed111-additional-source-resource-map.jsonl.gz",
+      "role": "member_provenance",
+      "logical_bytes": 576289,
+      "allocated_bytes_at_final_snapshot": 577536,
+      "sha256": "b1852917ac61f85aa42994844b0b8770f64015cc410fb6155cedc25b02dd411c",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "main",
+      "name": "old-a17-apex-payload-source-configs-preservation.zip",
+      "role": "source_config_archive",
+      "logical_bytes": 3194,
+      "allocated_bytes_at_final_snapshot": 4096,
+      "sha256": "5e485e3033518700824574d888cea4ba7d0415131b40d81d31e50ebd171300c8",
+      "all_members_or_provenance_readback_verified": true
+    },
+    {
+      "host": "desktop",
+      "name": "failed-candidate-preserved-sources-20261103.zip",
+      "role": "source_resource_archive",
+      "logical_bytes": 21360219,
+      "allocated_bytes_at_final_snapshot": 21364736,
+      "sha256": "6f4063d59599feedd079fb38c65f3cdcad45f7880759e06032153ecf4c1d47f4",
+      "member_count": 13482,
+      "member_original_bytes": 79692097,
+      "all_members_or_provenance_readback_verified": true
+    }
+  ],
+  "source_preservation_member_counts_note": "The final two ZIP/map pairs cover 51 outer identities: 49 removed delivery containers and two original resource inputs retained in place. Their real storage cost is counted once. Embedded members are not deleted filesystem file counts.",
+  "initial_extracted_source": {
+    "files": 359,
+    "logical_bytes": 38420830,
+    "allocated_bytes": 39288832,
+    "oct19_335_member_tree_sha256": "8ce6d36ca37318dadf915a09ea8b705909cf923d64c35eb4b5a7173b8b9303cc",
+    "oct19_preservation_receipt_sha256": "1f879dd6d718c1008b22ea081f9c69ddf44165bb8fe1973a36d0b66d73547846"
+  },
+  "residuals": {
+    "status": "FIXED_SCAN_FULLY_CLASSIFIED_AND_REMOVALS_VERIFIED",
+    "fixed_regular_file_scan_count": 1254267,
+    "fixed_regular_file_scan_utc": "2026-11-03T11:30:27.913154Z",
+    "fixed_regular_file_scan_sha256": "06474fdce19062fa3b94c91e286a5b0173c59269e10cfa11c6c1fa52e00fdfda",
+    "original_unknown_magic_count": 1436,
+    "original_unknown_mutually_exclusive_final_groups": {
+      "retained_android_binary_xml_resources": 1105,
+      "deleted_unusual33": 33,
+      "deleted_three_dex": 3,
+      "deleted_outputs157_intersection": 155,
+      "deleted_extensionless81_intersection": 0,
+      "fixed111_remove_after_preservation": 52,
+      "fixed111_retained": 59,
+      "retained_original_tool_or_debug_inputs": 29
+    },
+    "unclassified_count": 0,
+    "multiply_classified_count": 0,
+    "all_1436_have_content_sha256": true,
+    "retained_in_original_unknown_set": 1193,
+    "deleted_in_original_unknown_set": 243,
+    "other_postscan_deletions": {
+      "previously_classified_generated_native_files": 81,
+      "old_HEPTA46_47_outputs_previously_grouped_with_current": 2,
+      "sibling_duplicate_source_chunks": 6
+    },
+    "retained_categories": [
+      "source/config/build/patch/git evidence",
+      "assets and resource origin data",
+      "original factory/compiler inputs and tools",
+      "current A16/HEPTA49/API36 dependencies and payloads",
+      "source-only transport and evidence archives"
+    ],
+    "pending_count": 0
+  },
+  "proofs": [
+    {
+      "name": "main_complete_cleanup_private_verification.json",
+      "sha256": "4f40d3b29774672c1a28f1a905e7a35a6c5cd7d47aecb39f681bdda95fc2d9a8"
+    },
+    {
+      "name": "main_root_initial_output_cleanup_receipts.json",
+      "sha256": "2746c8a9dae8bb0f8b120fa824f6fb82f1dc1f47e1233060aee809a1fc1e03b6"
+    },
+    {
+      "name": "a17_desktop_rog_verified_cleanup_receipts.json",
+      "sha256": "9cd2c2991de19d74cf321e57727f75d8cee8124e31c9fe54d1c6749115a0e12e"
+    },
+    {
+      "name": "main_final_fixed_scope_cleanup_closure.json",
+      "sha256": "9165b820bb39ac9bb5d68e4bfa256194cb3da6cf1c95faf5a1ea79eab0654756"
+    },
+    {
+      "name": "main_extensionless81_verified_cleanup_receipt.json",
+      "sha256": "027b0bc54d28829f0bf54c55524997f47a808136c4af8523fe450436d200c184"
+    },
+    {
+      "name": "main_unusual33_verified_cleanup_receipt.json",
+      "sha256": "644071d4e653bf32fd5122c37f709f8c43d13d809dd708879ed9e1a4a6e01890"
+    },
+    {
+      "name": "main_three_duplicate_dex_verified_cleanup_receipt.json",
+      "sha256": "8c355443b1a0a8460281d8cca314778cf1a8b98b702e3103d87813e39047602a"
+    },
+    {
+      "name": "main_outputs157_verified_cleanup_receipt.json",
+      "sha256": "2caca7b3f00bc13f0f3e5f889d0f0c98b651ea3daca9b9748bfefdc458f28add"
+    },
+    {
+      "name": "main_fixed111_final58_verified_cleanup_receipt.json",
+      "sha256": "e3a18819f217c7b75db6560e045b362244bb7f6a43c477eda884d588500de935"
+    },
+    {
+      "name": "main_outputs157_preservation_conditions.json",
+      "sha256": "526037012b4c2083bee8f9362878eab17a52caffd5d2fb5bedefaaef4104b9f2"
+    },
+    {
+      "name": "main_apex_payload_source_preservation_receipt.json",
+      "sha256": "d952418c032c86a17748e8655cf4f4cfb59e0afe35eb1e8775afffb7117945e7"
+    },
+    {
+      "name": "main_fixed111_first41_source_preservation_receipt.json",
+      "sha256": "03a44d3e9474c1e3b907127f12bee2139fc083e77e13b10aabbb89bb796c8199"
+    },
+    {
+      "name": "main_fixed111_additional10_source_preservation_receipt.json",
+      "sha256": "ae17e16d2802330e5262717081c2516444e697c55333ab3955436e348a688164"
+    },
+    {
+      "name": "fixed111_final_classification.json",
+      "sha256": "bca6d2c04c32385ec211c39d16a7039df812ff08e2eee2d3e594fdc52e6b4de7"
+    },
+    {
+      "name": "fixed111_part_family_verification.json",
+      "sha256": "1c68dce54ff82bbcc8a3da4fe78e89f28c218bf78c70c99c9746104796338136"
+    },
+    {
+      "name": "fixed111-index98-producer-review.json",
+      "sha256": "0dfc0a92f51cb8414a75c13effa8a808a469cd1e2c5149bebe140c7c9e5642df"
+    },
+    {
+      "name": "fixed111-independent-source-attribution-review.json",
+      "sha256": "413537ad956963520e82c7172fb7075eb871a37cdab32337f97d363adb6a998d"
+    },
+    {
+      "name": "fixed1436_closed_classification_map.json",
+      "sha256": "18fd5a01668685eb788db41da5311f0f0cb6557df5bed3e8247e687b6b2989eb"
+    },
+    {
+      "name": "main_binary_xml_resource_protection.json",
+      "sha256": "9e97ce81e8856a1dbc082190faef096ecae32ffc0dcbf6f0c264aa4cd305a900"
+    },
+    {
+      "name": "final_peer_storage_accounting.json",
+      "sha256": "2fa6ddde0cec8f37f940b87ffbc6cf2789163e92600c82b578fd995cb8d220b7"
+    }
+  ],
+  "scope": [
+    {
+      "host": "main",
+      "scope": "Known razr60 UI work, artifacts and outputs; separately bounded actual mounted T5 development/archive roots",
+      "regular_files_examined_in_fixed_magic_scan": 1254267,
+      "recognized_compiled_magic_read_from_all_regular_files": true,
+      "external_drive_deleted_bytes": 0
+    },
+    {
+      "host": "pocket4",
+      "scope": "Known razr flash-validation canonical evidence/image tree and takeover signing workspaces",
+      "remaining_unclassified_images": 0
+    },
+    {
+      "host": "rog",
+      "scope": "Known native19 UI workspace and bounded src/work/mounted development roots",
+      "original_aosp_source_and_toolchain_preserved": true
+    },
+    {
+      "host": "desktop",
+      "scope": "Known failed A17 SystemUI candidates and bounded development/archive roots",
+      "prior_missing_or_migrated_archives_counted": false
+    },
+    {
+      "host": "ai395",
+      "scope": "Bounded depth-3 configured home and mounted development roots; no eligible confirmed old UI output"
+    },
+    {
+      "host": "x230",
+      "scope": "Bounded depth-3 configured home and mounted development roots; no matching UI project root"
+    }
+  ],
+  "phone_operations": 0,
+  "measurement_notes": [
+    "Deleted allocated bytes sum st_blocks * 512 for the exact old files actually removed; they are neither candidate sizes nor a physical net-free claim.",
+    "Independent per-batch df observations can differ from file allocation because of concurrent activity, metadata, compression, copy-on-write and delayed accounting. Their sum is not one end-to-end filesystem measurement.",
+    "The first 55 Mac files were reconciled absent against pinned intent after a permission stop; that batch has no final df observation and remains null.",
+    "New source preservation and audit storage is reported separately at the final snapshots. Main source ZIPs, maps and extracted source trees are subsets of main audit storage. Desktop source ZIP is outside its audit directory and counted once.",
+    "The main audit cost includes the separate temporary container-review proof directory. Snapshot self-writes, later small summary copies, runtime job logs and new A16 builds are excluded. Current available space is a per-host timestamped observation, not aggregate cleanup reclaim.",
+    "Source-archive allocation uses the final stat snapshot; it may differ from the allocation immediately after writing. SHA-256 content pins remain identical.",
+    "Main and Mac are one host. Previously absent cold archives and earlier migrations are excluded. Overlapping protected source trees and embedded member counts are not added to deleted file counts.",
+    "Nine byte-identical redundant source-transfer chunks are accounted separately from old compiled outputs. All three equivalent whole source archives and the five source-only chunks without a whole duplicate remain.",
+    "Raw Android binary XML, ARSC, SQLite and serialized assets retain source/resource provenance. This does not assert that every upstream source file has been reconstructed or that an old binary is independently rebuildable.",
+    "Some removed historical deliveries contained captured upstream runtime or factory ELF copies. They are obsolete copies, not claimed as binaries compiled by this project. Actual original toolchains and current inputs remain protected.",
+    "Bounded lsof -b no-hit checks carried warnings and are not complete all-system open-descriptor proofs; exact process argv and current dependency scans also showed no target references.",
+    "Scope is the known project and explicitly bounded development roots, with a fixed complete regular-file magic scan on the Mac project. Unrelated projects and every file on every host are outside this conclusion."
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "razr60.gnu.current-rootfs-manifest-binding.v1",
+  "frozen_source_commit": "029ec7e095865805d6e7e491c4ebabc17c3dee73",
+  "manifest_path_in_archive": "integration/magisk-v145/module-root/system/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+  "manifest_sha256": "e54a2adf831c6cbf4d8f482e5ef574c39fbb6dcd598554ba29d8a36c6d91cf3b",
+  "rootfs_image_sha256": "5b17d4e356525e02ebd9354e74b4a5334678837ccc5a1895b3507eaa01264cda",
+  "rootfs_image_bytes": 40198144,
+  "rootfs_entry_count": 931,
+  "runtime_libraries": [
+    {
+      "path": "/lib/ld-linux-aarch64.so.1",
+      "runtime_sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    },
+    {
+      "path": "/usr/lib/aarch64-linux-gnu/libc.so.6",
+      "runtime_sha256": "9afdc5d81e698fae93da3d7f244c248ea9850c88002c4041314d46d6f42eba33",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    },
+    {
+      "path": "/usr/lib/aarch64-linux-gnu/librt.so.1",
+      "runtime_sha256": "6752bca20eee6f83cbebe90f13998be3231c096a44fffb186c44f96f4dafef3b",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    },
+    {
+      "path": "/usr/lib/aarch64-linux-gnu/libpthread.so.0",
+      "runtime_sha256": "288b8279c29e63f70e51d8322b0d76dd3b638db85dc83eeddac419b3dbdf7148",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    },
+    {
+      "path": "/usr/lib/aarch64-linux-gnu/libdl.so.2",
+      "runtime_sha256": "34c231665c5008a479ce46d094134cec21c3ea14040927c1b7af1ab25dd5986e",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    },
+    {
+      "path": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+      "runtime_sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    },
+    {
+      "path": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+      "runtime_sha256": "2a417ca4e1da148b874d510c5356c2652eb934dd761a138454aefbeb61539fa2",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    },
+    {
+      "path": "/usr/lib/aarch64-linux-gnu/libm.so.6",
+      "runtime_sha256": "73339d71a889a70ac3f2b882b1fdd463ecf7896226bf12d1319edc63948c47fd",
+      "manifest_entry_found": true,
+      "size_and_sha256_match": true
+    }
+  ],
+  "core_entries_with_fresh_r5_hash": [
+    {
+      "destination": "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
+      "bytes": 2757408,
+      "sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031"
+    }
+  ],
+  "all_eight_runtime_files_match": true,
+  "fresh_image_rebuild": false,
+  "image_blob_read_again_in_this_comparison": false,
+  "scope": "Static manifest binding to the already hash-pinned integration image. This comparison does not assert a full rootfs source rebuild."
+}

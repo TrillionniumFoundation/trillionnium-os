@@ -1,0 +1,18 @@
+{
+  "schema": "razr60.gnu.r5.identity-fresh-readback.v1",
+  "physical_binary_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/target/aarch64-unknown-linux-gnu/release/trillionnium-owner-open-r5-core",
+  "binary_bytes": 2757408,
+  "binary_sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+  "expected_retained_installed_core_sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+  "binary_matches_installed": true,
+  "fresh_tool_input_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/tool-inputs.json",
+  "fresh_tool_input_bytes": 277851,
+  "fresh_tool_inputs_sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b",
+  "entire_historical_tool_input_file_equal": true,
+  "physical_receipt_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/FRESH-GNU-REBUILD-RECEIPT.json",
+  "physical_receipt_sha256": "60acfdc5d7f514a099ccaab7e319ebdc22ba1117e46f014a16056adcf84a97aa",
+  "historical_host_directory_still_absent": true,
+  "deployed": false,
+  "full_rootfs_rebuild": false,
+  "r5_host_rebuilt": false
+}

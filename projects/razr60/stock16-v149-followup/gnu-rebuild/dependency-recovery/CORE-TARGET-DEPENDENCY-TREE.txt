@@ -1,0 +1,103 @@
+trillionnium-owner-open-host v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/apps/trillionnium-owner-open-host)
+base64 v0.22.1
+libc v0.2.189
+serde v1.0.229
+serde_core v1.0.229
+serde_derive v1.0.229 (proc-macro)
+proc-macro2 v1.0.107
+unicode-ident v1.0.24
+quote v1.0.47
+proc-macro2 v1.0.107 (*)
+syn v3.0.5
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+unicode-ident v1.0.24
+serde_json v1.0.151
+itoa v1.0.18
+memchr v2.8.3
+serde_core v1.0.229
+zmij v1.0.23
+sha2 v0.10.9
+cfg-if v1.0.4
+cpufeatures v0.2.17
+libc v0.2.189
+digest v0.10.7
+block-buffer v0.10.4
+generic-array v0.14.7
+typenum v1.20.1
+version_check v0.9.5
+crypto-common v0.1.7
+generic-array v0.14.7 (*)
+typenum v1.20.1
+thiserror v2.0.20
+thiserror-impl v2.0.20 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.5 (*)
+trillionnium-owner-open-call-registry v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-call-registry)
+trillionnium-owner-open-event-store v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-event-store)
+libc v0.2.189
+serde v1.0.229 (*)
+serde_json v1.0.151 (*)
+sha2 v0.10.9 (*)
+thiserror v2.0.20 (*)
+trillionnium-owner-open-job-registry v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-job-registry)
+serde v1.0.229 (*)
+thiserror v2.0.20 (*)
+trillionnium-owner-open-job-runtime v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-job-runtime)
+libc v0.2.189
+serde v1.0.229 (*)
+serde_json v1.0.151 (*)
+sha2 v0.10.9 (*)
+thiserror v2.0.20 (*)
+trillionnium-owner-open-event-store v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-event-store) (*)
+trillionnium-owner-open-job-registry v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-job-registry) (*)
+trillionnium-owner-open-provider-jsonl v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-provider-jsonl)
+base64 v0.22.1
+libc v0.2.189
+serde v1.0.229 (*)
+serde_jcs v0.2.0
+ryu-js v0.2.2
+serde v1.0.229 (*)
+serde_json v1.0.151 (*)
+serde_json v1.0.151 (*)
+sha2 v0.10.9 (*)
+thiserror v2.0.20 (*)
+trillionnium-owner-open-call-registry v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-call-registry)
+trillionnium-owner-open-runtime v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-runtime)
+libc v0.2.189
+thiserror v2.0.20 (*)
+trillionnium-owner-open-tool-bridge v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-tool-bridge)
+serde_json v1.0.151 (*)
+sha2 v0.10.9 (*)
+trillionnium-owner-open-call-registry v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-call-registry)
+trillionnium-owner-open-runtime v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-runtime) (*)
+trillionnium-owner-open-turn-loop v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-turn-loop)
+thiserror v2.0.20 (*)
+trillionnium-owner-open-call-registry v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-call-registry)
+trillionnium-owner-open-runtime v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-runtime) (*)
+trillionnium-owner-open-tool-bridge v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-tool-bridge) (*)
+trillionnium-owner-open-types v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-types)
+schemars v0.8.22
+dyn-clone v1.0.20
+schemars_derive v0.8.22 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+serde_derive_internals v0.29.1
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v2.0.119
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+unicode-ident v1.0.24
+syn v2.0.119 (*)
+serde v1.0.229 (*)
+serde_json v1.0.151 (*)
+serde v1.0.229 (*)
+serde_json v1.0.151 (*)
+thiserror v2.0.20 (*)
+trillionnium-owner-open-runtime v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-runtime) (*)
+trillionnium-owner-open-stream-window v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-stream-window)
+thiserror v2.0.20 (*)
+trillionnium-owner-open-turn-loop v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-turn-loop) (*)
+trillionnium-owner-open-types v0.1.0 (/home/qian-qi/razr60-backend-source-closure-v149-20261103/prepared/workspace/crates/trillionnium-owner-open-types) (*)

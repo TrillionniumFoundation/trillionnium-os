@@ -1,0 +1,29 @@
+{
+  "schema": "razr60.gnu.r4-path-difference-r5-reproduction.v1",
+  "original_rodata_sha256": "77db4903fa6f29b75c89c26c7e28264884a81b11b318e0071a8f319e31b9f7fe",
+  "r4_rodata_sha256": "840839c2a4783b5ab5479897c6980fdee94902c93be7b3225014ea4f5180afef",
+  "original_rodata_bytes": 146060,
+  "r4_rodata_bytes": 145036,
+  "exact_old_prefix": "/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/gnu-actual239-r1/cargo-home/",
+  "exact_r4_prefix": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/cargo-home/",
+  "occurrences_each": 22,
+  "bytes_shorter_per_prefix": 46,
+  "path_total_byte_delta": 1012,
+  "remaining_byte_delta": 12,
+  "non_NUL_byte_sequence_equal_after_only_exact_path_replacement": true,
+  "remaining_zero_byte_count_delta": 12,
+  "r4_binary_modified": false,
+  "r5_method": "Read-only complete source and fresh owned output mapped to exact historical BASE in a private bwrap namespace; unchanged driver, recipe, source, tools and compiler/link flags. No stripping or patching of output.",
+  "r5_binary_sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+  "r5_binary_equals_original": true,
+  "r5_complete_tool_input_manifest_equals_original": true,
+  "r4_r5_source_inventory_identical": true,
+  "r4_r5_source_file_count": 1455,
+  "conclusion": "Restoring recorded path identity was sufficient to reproduce the entire retained core ELF byte for byte. R4 non-identical result is retained unchanged.",
+  "scope_excludes": [
+    "r5-host rebuild",
+    "931-entry rootfs rebuild",
+    "deployment",
+    "real phone/model acceptance"
+  ]
+}

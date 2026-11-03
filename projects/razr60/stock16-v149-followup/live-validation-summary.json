@@ -1,0 +1,293 @@
+{
+  "schema": "razr60-stock16-v149-live-validation-summary.v1",
+  "status": "ROOT_VERIFIED_MEASUREMENTS_COMPLETE",
+  "source_commit": "029ec7e095865805d6e7e491c4ebabc17c3dee73",
+  "source_manifest_sha256": "fe7f23464f535393c3ecead82e33c8a02b458fe43110ae96797b6c8bdc2af8f8",
+  "source_provider": "v149-r1",
+  "evidence_scope": "Root-reported, verified native task records and separately qualified direct operator phone component checks. Raw private evidence is retained outside this public summary.",
+  "privacy": {
+    "prompt_text_included": false,
+    "draft_content_or_hash_included": false,
+    "claim_values_included": false,
+    "session_task_turn_stream_identifiers_included": false,
+    "credentials_or_device_serial_included": false
+  },
+  "native_model_health_failure": {
+    "native_frames": [
+      "accepted",
+      "end"
+    ],
+    "frame_count": 2,
+    "terminal_status": "provider_failed",
+    "error_code": "usage_limit_exceeded",
+    "native_task_phone_tool_dispatches": 0,
+    "started_utc": "2026-11-03T10:26:56.557082Z",
+    "elapsed_seconds": 9.117487,
+    "native_proof_sha256": "be0a4d10f31019dc76c71681187a65bb1da6219955f3216a7739164491d383d7",
+    "qualification": "Actual native failure classification and terminal delivery; no successful model-guided phone task.",
+    "model_error_observed_utc": "2026-11-03T10:27:05.674569Z",
+    "measurement_scope": "Provider model-attempt started_utc to structured model-failure model_error_observed_utc; not UI-click-to-native-terminal end-to-end latency."
+  },
+  "native_ui_cancellation": {
+    "interaction": "A fresh task was sent through the actual HEPTA phone UI and then cancelled through that UI.",
+    "native_frames": [
+      "accepted",
+      "cancel.accepted",
+      "end"
+    ],
+    "frame_count": 3,
+    "terminal_status": "cancelled",
+    "cancelled": true,
+    "native_task_phone_tool_dispatches": 0,
+    "child_wait_returned": true,
+    "dedicated_process_group_absent": true,
+    "cancellation_latency_seconds": null,
+    "cancellation_latency_note": "No independently measured cancellation latency is available.",
+    "native_proof_sha256": "f1fc7184d185c80b03f3824a7ddbdd18d9b40368bf298eb27d3296306f1af5e3",
+    "qualification": "Actual UI/native cancellation and owned process cleanup before any task phone tool dispatch; not a cancellation-after-action result."
+  },
+  "unicode_public_receipt_and_return_component": {
+    "qualification": "Direct operator phone component verification",
+    "model_calls": 0,
+    "fresh_input": true,
+    "input_codepoints": 33,
+    "input_utf8_bytes": 51,
+    "input_utf8_sha256": "8b81e4c4bf98d0ff91c0d88cedd99f4c91291c9c5e0b62064d9847fb34dea748",
+    "input_operations": 1,
+    "confirmation_operations": 1,
+    "public_text_views_read": 2,
+    "both_public_text_values_matched_exactly": true,
+    "explicit_typed_return_observed": true,
+    "returned_activity": "org.trillionnium.owneropen/.OwnerOpenShellActivity",
+    "returned_display_id": 0,
+    "aggregate_evidence_sha256": "fdbcd3782846bc1bd5cc3cff649fedf75aa5e25a0c5b75849884334020f7fe75",
+    "limits": [
+      "The exact input bytes and confirmation receipts were read from public UI views.",
+      "The input text and raw phone captures are excluded from this public summary.",
+      "This establishes components under operator control; it does not qualify a model-guided complete task."
+    ]
+  },
+  "stale_tap_guards": {
+    "checks": [
+      {
+        "guard": "focus_changed",
+        "actual_exit_code": 70,
+        "receipt_sha256": "d0605827fb24c3d45052edfc98c78da92cce68bd3b323a8e197beca745390a74",
+        "pre_input_source_branch_confirmed": true,
+        "subsequent_typed_return_passed": true
+      },
+      {
+        "guard": "same_app_pixels_changed",
+        "actual_exit_code": 71,
+        "receipt_sha256": "08bacc5073527b0cdef6bc2db79029c7bcc857f887b83eb50c9bf6a889d061bc",
+        "pre_input_source_branch_confirmed": true,
+        "subsequent_typed_return_passed": true
+      },
+      {
+        "guard": "rotation_viewport_changed",
+        "changed_display_id": 0,
+        "changed_orientation": 1,
+        "changed_viewport_px": [
+          2992,
+          1224
+        ],
+        "actual_exit_code": 68,
+        "receipt_sha256": "ceed90e1c10eaa8056eb8645db8dc2b4e43760527d98a5bcfe555495353de24c",
+        "pre_input_source_branch_confirmed": true,
+        "subsequent_typed_return_passed": true
+      }
+    ],
+    "evidence_basis": "Actual command exit receipts plus inspection of the frozen source branch that exits before its input command.",
+    "independent_input_hardware_counter_used": false,
+    "independent_input_hardware_event_count": null,
+    "limits": [
+      "No independent hardware input event counter was used; the observation is a pre-input branch result, not a hardware-wide zero-event measurement.",
+      "Exact image and focus guards are conservative and can reject harmless animation, clock, or caret changes.",
+      "A residual time-of-check/time-of-use interval exists between the final guard check and input execution."
+    ]
+  },
+  "host_snapshot": {
+    "observed_utc": "2026-11-03T11:00:33.281957Z",
+    "processes": {
+      "provider": {
+        "pid": 7436,
+        "running": true
+      },
+      "bridge": {
+        "pid": 7439,
+        "running": true
+      },
+      "watcher": {
+        "pid": 15612,
+        "running": true
+      }
+    },
+    "provider_source_files_matching_seal": 8,
+    "cli_hashes_checked": 2,
+    "cli_hashes_unchanged": true,
+    "claim_count": 17,
+    "original_claim_count": 15,
+    "original_claim_values_unchanged": true,
+    "all_accepted_tasks_have_terminal_result": true,
+    "spawn_rounds_examined": 60,
+    "all_examined_spawn_rounds_joined": true,
+    "spawn_round_scope": "Cumulative historical and current rounds; not 60 new tests.",
+    "model_health": {
+      "status": "observed_unavailable",
+      "reason": "usage_limit_exceeded",
+      "issued": 2,
+      "last_success": null
+    },
+    "proof_sha256": "ee76062b1fd143de9acc482010b2141621c242f6c9ff4f440319307594128f13"
+  },
+  "original_unsent_draft": {
+    "preserved": true,
+    "restoration_receipt_sha256": "c05bac751c315f8a1d013792aba6132890b7ca4bac7a7698733ad3dd99338982"
+  },
+  "final_phone_protection": {
+    "status": "PASS_READ_ONLY_FINAL_CHECK",
+    "observed_utc": "2026-11-03T11:06:58.861149Z",
+    "proof_sha256": "7e5369e397827c8aa6825d2540fa114c28be3f5e518ccc86097b0ee1d8e6ace0",
+    "android_release": "16",
+    "api_level": 36,
+    "original_boot_unchanged": true,
+    "usb_config": "adb",
+    "usb_state": "adb",
+    "adbd_pid": 3021,
+    "systemui_pid": 4436,
+    "adbd_and_systemui_pids_unchanged": true,
+    "selinux": "Enforcing",
+    "native_gate_read_mode": "root read-only",
+    "native_gate_values": {
+      "ready": 1,
+      "payload": 1,
+      "verified": 1
+    },
+    "mounted_components_matching_existing_pins": 13,
+    "helper_jars_matching_existing_pins": 2,
+    "entry_apk_matching_existing_pin": true,
+    "hepta49_installed_apk_sha256": "56c4e302cbe7448dffc9a0d8cfa8db2c2cb019fcb055fab36b815105dd55592f",
+    "foreground_activity": "org.trillionnium.owneropen/.OwnerOpenShellActivity",
+    "top_resumed_activity": "org.trillionnium.owneropen/.OwnerOpenShellActivity",
+    "display_id": 0,
+    "viewport_px": [
+      1224,
+      2992
+    ],
+    "rotation": 0,
+    "user_rotation_mode": "lock",
+    "user_rotation": 0,
+    "fixed_to_user_rotation": "default",
+    "stay_on_while_plugged_in": 2,
+    "gsi_tool_state": {
+      "installed": true,
+      "enabled": false
+    },
+    "default_home": "Motorola HOME",
+    "original_qs_items_preserved": 19,
+    "hepta_qs_item_present": true,
+    "launcher_layout_boundary": {
+      "historical_structure_verification_version": "v145",
+      "historically_verified_item_count": 56,
+      "fresh_56_item_comparison_performed": false,
+      "launcher_database_writes_this_round": 0
+    }
+  },
+  "fixed_acceptance_set": {
+    "defined_cases": 19,
+    "executed_under_that_protocol": 0,
+    "these_checks_retroactively_counted_as_fixed_cases": false,
+    "automatic_scheduling": false
+  },
+  "preserved_limits": [
+    "Successful process startup and component checks do not remove the observed model quota blocker.",
+    "The fresh native cancellation is a distinct task outcome, not a successful business task.",
+    "Raw native records, phone captures and restoration evidence remain in the private deployment evidence; this summary binds them by approved proof hashes."
+  ],
+  "auditor_harness_corrections": {
+    "items": [
+      {
+        "case": "rotation_guard_first_harness_attempt",
+        "stage": "before tap dispatch",
+        "reason": "The temporary test harness used an incorrectly escaped regular expression.",
+        "tap_dispatched": false,
+        "baseline_restored_by_finally": true,
+        "production_source_changed": false
+      },
+      {
+        "case": "cancel_preflight_draft_mismatch",
+        "stage": "before Send",
+        "reason": "The current edit field and preserved draft differed during test preparation.",
+        "send_dispatched": false,
+        "production_source_changed": false
+      },
+      {
+        "case": "cancel_preflight_empty_envelope_argument",
+        "stage": "before Send",
+        "reason": "The temporary test harness supplied the wrong empty-value representation to the unchanged input helper.",
+        "send_dispatched": false,
+        "effect_state": "not_started",
+        "action_attempted": false,
+        "production_helper_or_mapper_changed": false
+      },
+      {
+        "case": "final_checker_activity_field",
+        "stage": "read-only auditor check",
+        "reason": "The checker initially looked for the old mResumedActivity field; it was corrected to the observed topResumedActivity format.",
+        "production_source_changed": false,
+        "product_operation_failure": false
+      },
+      {
+        "case": "final_checker_protected_native_property_read",
+        "stage": "read-only auditor check",
+        "reason": "An unprivileged shell read returned empty protected native properties; the checker used an authorized root read-only query and confirmed the values.",
+        "production_source_changed": false,
+        "product_operation_failure": false
+      }
+    ],
+    "count": 5,
+    "included_in_product_test_success_rate": false,
+    "boundary": "Retained auditor preparation and read-format/privilege corrections; these are not product runtime failures or successful fixed-set cases."
+  },
+  "independent_approved_cli_health_probe": {
+    "reported_utc": "2026-11-03T09:50:27.924011Z",
+    "qualification": "One independent approved CLI model-health probe, outside the native phone task path.",
+    "process_dispatches": 1,
+    "phone_operations": 0,
+    "error_code": "usage_limit_exceeded",
+    "cli_terminal_event": "turn.failed",
+    "cli_exit_code": 1,
+    "elapsed_seconds": 12.301,
+    "measurement_scope": "Single direct CLI health-probe elapsed time as reported by its result; not UI-click-to-native-terminal latency.",
+    "dedicated_process_group_absent": true,
+    "live_claims_unchanged": true,
+    "proof_sha256": "9f91e61a1e498f06e145a6d00c11c855af12758dc2923782a9506b641ffb677d",
+    "account_prompts_or_reset_times_included": false
+  },
+  "metrics": {
+    "tokens": null,
+    "cost": null,
+    "battery_change": null,
+    "per_task_peak_resources": null,
+    "benchmark_qualification": "Not a qualified fixed-set benchmark; the 19 defined acceptance cases remain unrun under that protocol.",
+    "selected_process_rss_snapshot": {
+      "observed_utc": "2026-11-03T11:00:33.281957Z",
+      "unit": "KiB",
+      "processes": {
+        "provider": {
+          "pid": 7436,
+          "rss_kib": 17552
+        },
+        "bridge": {
+          "pid": 7439,
+          "rss_kib": 16640
+        },
+        "watcher": {
+          "pid": 15612,
+          "rss_kib": 4832
+        }
+      },
+      "measurement_scope": "A single-time RSS sample of these three selected processes only. It is not total system physical memory, a per-task peak, or daily energy use; shared pages are not deduplicated."
+    }
+  }
+}

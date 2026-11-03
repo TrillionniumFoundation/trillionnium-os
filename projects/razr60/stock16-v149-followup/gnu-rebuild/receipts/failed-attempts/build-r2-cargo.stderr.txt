@@ -1,0 +1,4 @@
+error: failed to download `serde_jcs v0.2.0`
+
+Caused by:
+  attempting to make an HTTP request, but --frozen was specified

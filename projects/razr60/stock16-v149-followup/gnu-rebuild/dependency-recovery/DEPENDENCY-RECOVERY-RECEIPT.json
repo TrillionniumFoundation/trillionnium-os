@@ -1,0 +1,11 @@
+{
+  "url": "https://static.crates.io/crates/ryu-js/ryu-js-0.2.2.crate",
+  "expected_sha256_from_frozen_Cargo_lock": "6518fc26bced4d53678a22d6e423e9d8716377def84545fe328236e3af070e7f",
+  "rc": 0,
+  "utc": "2026-11-03T10:56:08.140992+00:00",
+  "global_registry_modified": false,
+  "bytes": 47497,
+  "observed_sha256": "6518fc26bced4d53678a22d6e423e9d8716377def84545fe328236e3af070e7f",
+  "verified": true,
+  "private_registry_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/registry-overlay/registry/cache/index.crates.io-1949cf8c6b5b557f/ryu-js-0.2.2.crate"
+}

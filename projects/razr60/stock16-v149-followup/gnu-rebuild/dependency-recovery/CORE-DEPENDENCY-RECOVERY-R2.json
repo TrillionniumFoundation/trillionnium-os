@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "name": "serde_jcs",
+      "version": "0.2.0",
+      "url": "https://static.crates.io/crates/serde_jcs/serde_jcs-0.2.0.crate",
+      "expected_sha256_from_frozen_Cargo_lock": "d3a60f3fda61525e439ef6d67422118f11e986566997d9021c56867ad814a0aa",
+      "rc": 0,
+      "utc": "2026-11-03T11:01:56.760816+00:00",
+      "global_registry_modified": false,
+      "bytes": 12614,
+      "observed_sha256": "d3a60f3fda61525e439ef6d67422118f11e986566997d9021c56867ad814a0aa",
+      "verified": true,
+      "private_registry_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/registry-overlay/registry/cache/index.crates.io-1949cf8c6b5b557f/serde_jcs-0.2.0.crate"
+    },
+    {
+      "name": "syn",
+      "version": "3.0.5",
+      "url": "https://static.crates.io/crates/syn/syn-3.0.5.crate",
+      "expected_sha256_from_frozen_Cargo_lock": "12df2e0110f65b775f769bb17ef989067a1d931b2eb822bd4346631eeada89f9",
+      "rc": 0,
+      "utc": "2026-11-03T11:02:03.400206+00:00",
+      "global_registry_modified": false,
+      "bytes": 313222,
+      "observed_sha256": "12df2e0110f65b775f769bb17ef989067a1d931b2eb822bd4346631eeada89f9",
+      "verified": true,
+      "private_registry_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/registry-overlay/registry/cache/index.crates.io-1949cf8c6b5b557f/syn-3.0.5.crate"
+    }
+  ],
+  "all_verified": true
+}

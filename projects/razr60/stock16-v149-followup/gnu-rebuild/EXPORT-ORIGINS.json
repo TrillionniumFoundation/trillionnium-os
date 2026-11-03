@@ -1,0 +1,158 @@
+{
+  "schema": "razr60.gnu.text-evidence-export.v1",
+  "copied_files": [
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/FRESH-GNU-REBUILD-RECEIPT.json",
+      "published_path": "receipts/r4/FRESH-GNU-REBUILD-RECEIPT.json",
+      "bytes": 273156,
+      "sha256": "a53f851ba41c7628cfff6c2e1bf1d4c074a918dddb809666a9f9f64e634fdcb9"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/tool-inputs.json",
+      "published_path": "inputs/fresh-tool-inputs.json",
+      "bytes": 277805,
+      "sha256": "48c5a07e2d1a0694019cd4d820b821ab7814c8983526695aa3cd55591a824247"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/inputs/historical/tool-inputs.json",
+      "published_path": "inputs/historical-tool-inputs.json",
+      "bytes": 277851,
+      "sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/inputs/actual-public-libs/manifest.json",
+      "published_path": "inputs/runtime-libraries-manifest.json",
+      "bytes": 1600,
+      "sha256": "0bb197a636625d6edf2a82f8cf27fdc76ccea8a0c8a04b5fb254be446b7b06c7"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/dependency-downloads/DEPENDENCY-RECOVERY-RECEIPT.json",
+      "published_path": "dependency-recovery/DEPENDENCY-RECOVERY-RECEIPT.json",
+      "bytes": 578,
+      "sha256": "d71c1b53998b40d25badc0bb22dae27edc444b470eeb6aa08342a43c7407573c"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/dependency-downloads/CORE-DEPENDENCY-RECOVERY-R2.json",
+      "published_path": "dependency-recovery/CORE-DEPENDENCY-RECOVERY-R2.json",
+      "bytes": 1393,
+      "sha256": "6311e0af79a9565d256eb5c40c798aae767b8c1095b3c805dc7638b7359d59ae"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/dependency-downloads/CORE-DEPENDENCY-RECOVERY-R3.json",
+      "published_path": "dependency-recovery/CORE-DEPENDENCY-RECOVERY-R3.json",
+      "bytes": 2136,
+      "sha256": "0ab16097502baa8c5d75e52ee664ba400964a9291ed32f1fc975d87688837138"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/CORE-TARGET-DEPENDENCY-TREE-CHECK.json",
+      "published_path": "dependency-recovery/CORE-TARGET-DEPENDENCY-TREE-CHECK.json",
+      "bytes": 1314,
+      "sha256": "0b8e615da53051d39fbe81fc54794692cbd1f343543eea8945d4ae76f31e46c9"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/CORE-TARGET-DEPENDENCY-TREE.txt",
+      "published_path": "dependency-recovery/CORE-TARGET-DEPENDENCY-TREE.txt",
+      "bytes": 5211,
+      "sha256": "88030a6333c91f1b72bd10e7f2554f412ac95e83a6f33dbd8edf116640295d81"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/BUILD-LAUNCH-R4-INTENT.json",
+      "published_path": "receipts/r4/BUILD-LAUNCH-R4-INTENT.json",
+      "bytes": 5803,
+      "sha256": "c403282b5132314d19dd21d641345fdc1d7a11db33ce559d88fac972181b8697"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/BUILD-LAUNCH-R4-RESULT.json",
+      "published_path": "receipts/r4/BUILD-LAUNCH-R4-RESULT.json",
+      "bytes": 76,
+      "sha256": "152808ace3620a15fe560b0f464385ae6c53c2ab970203e6bfa1b97aa9ef8f3f"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-GNU-core-build.stdout",
+      "published_path": "receipts/r4/actual-GNU-core-build.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-GNU-core-build.stderr",
+      "published_path": "receipts/r4/actual-GNU-core-build.stderr",
+      "bytes": 2952,
+      "sha256": "53c992becffebcf39eaefa670e5d869bcf3a085ab0c33899c71b574a007b1a6d"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-core-ELF.stdout",
+      "published_path": "receipts/r4/actual-core-ELF.stdout",
+      "bytes": 8463,
+      "sha256": "82c835e854e2b348c51eec1c1e33ea808f5ad999c5677ae9e07f2a609051c0ba"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/fresh-QEMU-help.stdout",
+      "published_path": "receipts/r4/fresh-QEMU-help.stdout",
+      "bytes": 968,
+      "sha256": "53c33cdf88aff3a1d16f9498db3867987ed38e716dc59776fab046255340a687"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/fresh-QEMU-help.stderr",
+      "published_path": "receipts/r4/fresh-QEMU-help.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/fresh-QEMU-inactive-turn.cancel.stdout",
+      "published_path": "receipts/r4/fresh-QEMU-inactive-turn.cancel.stdout",
+      "bytes": 1078,
+      "sha256": "cae7840a70f1160c91df0e3e41156879af32b77f6da1cb6b67b7b1fcadc8e282"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/fresh-QEMU-inactive-turn.cancel.stderr",
+      "published_path": "receipts/r4/fresh-QEMU-inactive-turn.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/fresh-QEMU-inactive-tool.cancel.stdout",
+      "published_path": "receipts/r4/fresh-QEMU-inactive-tool.cancel.stdout",
+      "bytes": 1128,
+      "sha256": "ca8db2c456b891d40c5c245dc1bdea93d4f7e7cbd16c1a8b6e5ad7d9eedff9ec"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/fresh-QEMU-inactive-tool.cancel.stderr",
+      "published_path": "receipts/r4/fresh-QEMU-inactive-tool.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-backend-source-closure-v149-20261103/SOURCE-CLOSURE-RESULT.json",
+      "published_path": "inputs/SOURCE-CLOSURE-RESULT.json",
+      "bytes": 3900,
+      "sha256": "69b9405ff3e95e5687068ab7fcb9ce5fa5c1743308a7edb70d13277b01e3862d"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r1/actual-GNU-core-build.stderr",
+      "published_path": "receipts/failed-attempts/build-r1-cargo.stderr.txt",
+      "bytes": 119,
+      "sha256": "7e610d41bdd27c3ca87d21a5015af33a3161dda4774058e458979b2469da9f4a"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r2/actual-GNU-core-build.stderr",
+      "published_path": "receipts/failed-attempts/build-r2-cargo.stderr.txt",
+      "bytes": 122,
+      "sha256": "a1876233cee01eb172f062bfda05ec01013aaa4c5d7d060caccffd49fc49c53e"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r3/actual-GNU-core-build.stderr",
+      "published_path": "receipts/failed-attempts/build-r3-cargo.stderr.txt",
+      "bytes": 123,
+      "sha256": "44a308f6d5ebc3678e683ea29c9dadf9c5a09ce56075ca0a43e73f8c4541915b"
+    }
+  ],
+  "excluded": [
+    "ELF binaries",
+    "runtime libraries",
+    "crate archives",
+    "input tar",
+    "live state",
+    "credentials"
+  ],
+  "outputs_owned": true
+}

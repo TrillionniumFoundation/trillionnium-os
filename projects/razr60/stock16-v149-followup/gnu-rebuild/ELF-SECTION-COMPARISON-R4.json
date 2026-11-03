@@ -1,0 +1,603 @@
+{
+  "schema": "razr60.gnu.r4.elf-section-comparison.v1",
+  "original": {
+    "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-gnu-core-crossbuild-r1-704684640487/bin/trillionnium-owner-open-r5-core",
+    "bytes": 2757408,
+    "sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+    "sections": [
+      {
+        "name": ".interp",
+        "type": 1,
+        "offset": 624,
+        "size": 27,
+        "sha256": "be23adc91ec8582e52305c0a524ca336d671113934722eb2d35eecfcda22ec8f"
+      },
+      {
+        "name": ".note.gnu.build-id",
+        "type": 7,
+        "offset": 652,
+        "size": 36,
+        "sha256": "4718e6052f44bcb712323e490ac2d00f266db37ed5ed74b150f49173cc2cfc63"
+      },
+      {
+        "name": ".note.ABI-tag",
+        "type": 7,
+        "offset": 688,
+        "size": 32,
+        "sha256": "247e0b50371ed3e46c7fec01f820b663267fd74f6fbb72222f09b1a5e34bb24b"
+      },
+      {
+        "name": ".gnu.hash",
+        "type": 1879048182,
+        "offset": 720,
+        "size": 28,
+        "sha256": "48cfe1ab1829f57db09a70309886d1c9ea74792325f08c76c116fbd31f78343a"
+      },
+      {
+        "name": ".dynsym",
+        "type": 11,
+        "offset": 752,
+        "size": 3312,
+        "sha256": "b88dfa44d6a7e946ae72d2a55fb64a9b5896764787b153f55e53c97569530195"
+      },
+      {
+        "name": ".dynstr",
+        "type": 3,
+        "offset": 4064,
+        "size": 1820,
+        "sha256": "3eff3c197f836649dd4810333fd37b704636621cf5615383536975247e0b8d8d"
+      },
+      {
+        "name": ".gnu.version",
+        "type": 1879048191,
+        "offset": 5884,
+        "size": 276,
+        "sha256": "d900563de355d20f28ac4420beecdc1686c0876b244e7f001f8d076612708e92"
+      },
+      {
+        "name": ".gnu.version_r",
+        "type": 1879048190,
+        "offset": 6160,
+        "size": 240,
+        "sha256": "4274f66b80a5d601a4c14f11bb12c181a7f62bb11a2a40f10a1231d297d3a7d7"
+      },
+      {
+        "name": ".rela.dyn",
+        "type": 4,
+        "offset": 6400,
+        "size": 46512,
+        "sha256": "1924e6e94a974330b4e195a6768b4421f6549fcfaff5871919f97c16f4ff2c68"
+      },
+      {
+        "name": ".rela.plt",
+        "type": 4,
+        "offset": 52912,
+        "size": 3096,
+        "sha256": "9eeb1b68ac489233249244563a4c8b8b731608778b3e631b8be346920b8833ef"
+      },
+      {
+        "name": ".init",
+        "type": 1,
+        "offset": 56008,
+        "size": 24,
+        "sha256": "c81b6000423296dfc4f773babacafb4e85eaf58ff483881c4ac4f06d1d1a85c0"
+      },
+      {
+        "name": ".plt",
+        "type": 1,
+        "offset": 56032,
+        "size": 2096,
+        "sha256": "b6b51a0430175d030a0ee123e4132de1bb71746580966a5682d6e4a344b8491c"
+      },
+      {
+        "name": ".text",
+        "type": 1,
+        "offset": 58176,
+        "size": 2080852,
+        "sha256": "82ff2964ef50d38d81a2944cac8e9e040692243f973e94dbb8c63ee142fc234e"
+      },
+      {
+        "name": ".fini",
+        "type": 1,
+        "offset": 2139028,
+        "size": 20,
+        "sha256": "7d39706b791b17f4e655c8b38aef56b5aede4b5bb0623dcb65a38d2f90ad64cf"
+      },
+      {
+        "name": ".rodata",
+        "type": 1,
+        "offset": 2139072,
+        "size": 146060,
+        "sha256": "77db4903fa6f29b75c89c26c7e28264884a81b11b318e0071a8f319e31b9f7fe"
+      },
+      {
+        "name": ".eh_frame_hdr",
+        "type": 1,
+        "offset": 2285132,
+        "size": 32996,
+        "sha256": "fabba2ad163b3a952524c960e493ce88859a3886135c77d2c97cdcb42e87806b"
+      },
+      {
+        "name": ".eh_frame",
+        "type": 1,
+        "offset": 2318128,
+        "size": 262120,
+        "sha256": "6972e08869d08b8b6179ab6a097750b8b6f9faa5319ae79407b69e6f195d225f"
+      },
+      {
+        "name": ".gcc_except_table",
+        "type": 1,
+        "offset": 2580248,
+        "size": 119904,
+        "sha256": "30375ed1e426c78982b093063e5aa929ef01fc1207c15012d27b9aa2762d0146"
+      },
+      {
+        "name": ".tdata",
+        "type": 1,
+        "offset": 2712992,
+        "size": 40,
+        "sha256": "945d170db7208a827867a2ae0e54b5acb250cc51c779c9eff117d1d9474bde87"
+      },
+      {
+        "name": ".tbss",
+        "type": 8,
+        "offset": 2713032,
+        "size": 104,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": ".init_array",
+        "type": 14,
+        "offset": 2713032,
+        "size": 32,
+        "sha256": "a4ddd5b160ff8d700aa24d9aef571964a7375c6293a7b7db1a99380039ed632a"
+      },
+      {
+        "name": ".fini_array",
+        "type": 15,
+        "offset": 2713064,
+        "size": 8,
+        "sha256": "3103c8e1127c01d5761ca03f398f878629b4dae3453157889c05831f51357404"
+      },
+      {
+        "name": ".data.rel.ro",
+        "type": 1,
+        "offset": 2713072,
+        "size": 37336,
+        "sha256": "85556f32ac8a096cf6a97f42ff3a60ef764a58552f9a79f0f2e85ec042fe7e6a"
+      },
+      {
+        "name": ".dynamic",
+        "type": 6,
+        "offset": 2750408,
+        "size": 512,
+        "sha256": "782994d267ab1d373f4f7cd23898c3bdf63d2168fc002cf933e2d9f86978d9d8"
+      },
+      {
+        "name": ".got",
+        "type": 1,
+        "offset": 2750920,
+        "size": 1592,
+        "sha256": "332c9049a2431aa8d0d4774fb3a0992049a8286901d59c417f7096e4579b7fd4"
+      },
+      {
+        "name": ".data",
+        "type": 1,
+        "offset": 2752512,
+        "size": 2584,
+        "sha256": "ca019b9a453034bb6f792b8cc2381a40e1204bfae3764373987811d04818d6ba"
+      },
+      {
+        "name": ".bss",
+        "type": 8,
+        "offset": 2755096,
+        "size": 264,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": ".comment",
+        "type": 1,
+        "offset": 2755096,
+        "size": 114,
+        "sha256": "ae8c86c73a11bcece50dc5d309d61568b5939697a2d3d22c56e2477003ab17fd"
+      },
+      {
+        "name": ".shstrtab",
+        "type": 3,
+        "offset": 2755210,
+        "size": 278,
+        "sha256": "cad46292531047bbdbdeca228df237f90c37b811b3e8055cc4112f2903635ad6"
+      }
+    ]
+  },
+  "rebuild_r4": {
+    "path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target/aarch64-unknown-linux-gnu/release/trillionnium-owner-open-r5-core",
+    "bytes": 2757408,
+    "sha256": "f77048cd4bf383b540b45cee500ff7b9a81f1d6f48b152f8fadfb833faaba3b6",
+    "sections": [
+      {
+        "name": ".interp",
+        "type": 1,
+        "offset": 624,
+        "size": 27,
+        "sha256": "be23adc91ec8582e52305c0a524ca336d671113934722eb2d35eecfcda22ec8f"
+      },
+      {
+        "name": ".note.gnu.build-id",
+        "type": 7,
+        "offset": 652,
+        "size": 36,
+        "sha256": "c46c0ce6d62122317e6469f06f35c1fe2fdb01b0d4cf9e0c703afbaf4494bf10"
+      },
+      {
+        "name": ".note.ABI-tag",
+        "type": 7,
+        "offset": 688,
+        "size": 32,
+        "sha256": "247e0b50371ed3e46c7fec01f820b663267fd74f6fbb72222f09b1a5e34bb24b"
+      },
+      {
+        "name": ".gnu.hash",
+        "type": 1879048182,
+        "offset": 720,
+        "size": 28,
+        "sha256": "48cfe1ab1829f57db09a70309886d1c9ea74792325f08c76c116fbd31f78343a"
+      },
+      {
+        "name": ".dynsym",
+        "type": 11,
+        "offset": 752,
+        "size": 3312,
+        "sha256": "b88dfa44d6a7e946ae72d2a55fb64a9b5896764787b153f55e53c97569530195"
+      },
+      {
+        "name": ".dynstr",
+        "type": 3,
+        "offset": 4064,
+        "size": 1820,
+        "sha256": "3eff3c197f836649dd4810333fd37b704636621cf5615383536975247e0b8d8d"
+      },
+      {
+        "name": ".gnu.version",
+        "type": 1879048191,
+        "offset": 5884,
+        "size": 276,
+        "sha256": "d900563de355d20f28ac4420beecdc1686c0876b244e7f001f8d076612708e92"
+      },
+      {
+        "name": ".gnu.version_r",
+        "type": 1879048190,
+        "offset": 6160,
+        "size": 240,
+        "sha256": "4274f66b80a5d601a4c14f11bb12c181a7f62bb11a2a40f10a1231d297d3a7d7"
+      },
+      {
+        "name": ".rela.dyn",
+        "type": 4,
+        "offset": 6400,
+        "size": 46512,
+        "sha256": "099c5bd5bded0ec4f6575be977c074d742198c7d77d0a3ede0aa424ea2bd0192"
+      },
+      {
+        "name": ".rela.plt",
+        "type": 4,
+        "offset": 52912,
+        "size": 3096,
+        "sha256": "9eeb1b68ac489233249244563a4c8b8b731608778b3e631b8be346920b8833ef"
+      },
+      {
+        "name": ".init",
+        "type": 1,
+        "offset": 56008,
+        "size": 24,
+        "sha256": "c81b6000423296dfc4f773babacafb4e85eaf58ff483881c4ac4f06d1d1a85c0"
+      },
+      {
+        "name": ".plt",
+        "type": 1,
+        "offset": 56032,
+        "size": 2096,
+        "sha256": "b6b51a0430175d030a0ee123e4132de1bb71746580966a5682d6e4a344b8491c"
+      },
+      {
+        "name": ".text",
+        "type": 1,
+        "offset": 58176,
+        "size": 2080852,
+        "sha256": "2615ee7d985f298288bd4e38a760a7275498a5c82ac8aaaf12cd1550041c7ce4"
+      },
+      {
+        "name": ".fini",
+        "type": 1,
+        "offset": 2139028,
+        "size": 20,
+        "sha256": "7d39706b791b17f4e655c8b38aef56b5aede4b5bb0623dcb65a38d2f90ad64cf"
+      },
+      {
+        "name": ".rodata",
+        "type": 1,
+        "offset": 2139072,
+        "size": 145036,
+        "sha256": "840839c2a4783b5ab5479897c6980fdee94902c93be7b3225014ea4f5180afef"
+      },
+      {
+        "name": ".eh_frame_hdr",
+        "type": 1,
+        "offset": 2284108,
+        "size": 32996,
+        "sha256": "ed8d9bf8489ebb24b1128de0fc6e002b2382fc4a8d520eb46a8582f668a7632d"
+      },
+      {
+        "name": ".eh_frame",
+        "type": 1,
+        "offset": 2317104,
+        "size": 262120,
+        "sha256": "34fef14571356dea8e44c5bdb30a8ba0c5b22c563582fd050ada60b33951090c"
+      },
+      {
+        "name": ".gcc_except_table",
+        "type": 1,
+        "offset": 2579224,
+        "size": 119904,
+        "sha256": "30375ed1e426c78982b093063e5aa929ef01fc1207c15012d27b9aa2762d0146"
+      },
+      {
+        "name": ".tdata",
+        "type": 1,
+        "offset": 2712992,
+        "size": 40,
+        "sha256": "945d170db7208a827867a2ae0e54b5acb250cc51c779c9eff117d1d9474bde87"
+      },
+      {
+        "name": ".tbss",
+        "type": 8,
+        "offset": 2713032,
+        "size": 104,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": ".init_array",
+        "type": 14,
+        "offset": 2713032,
+        "size": 32,
+        "sha256": "a4ddd5b160ff8d700aa24d9aef571964a7375c6293a7b7db1a99380039ed632a"
+      },
+      {
+        "name": ".fini_array",
+        "type": 15,
+        "offset": 2713064,
+        "size": 8,
+        "sha256": "3103c8e1127c01d5761ca03f398f878629b4dae3453157889c05831f51357404"
+      },
+      {
+        "name": ".data.rel.ro",
+        "type": 1,
+        "offset": 2713072,
+        "size": 37336,
+        "sha256": "c9006548daed54d806752df1269d1290de49beafa64f8bfeb0c9ae8aa098ba61"
+      },
+      {
+        "name": ".dynamic",
+        "type": 6,
+        "offset": 2750408,
+        "size": 512,
+        "sha256": "782994d267ab1d373f4f7cd23898c3bdf63d2168fc002cf933e2d9f86978d9d8"
+      },
+      {
+        "name": ".got",
+        "type": 1,
+        "offset": 2750920,
+        "size": 1592,
+        "sha256": "83bc320d911b97ef770debd5dea9e8fe3518622be22a1bbaad6e425b1c663981"
+      },
+      {
+        "name": ".data",
+        "type": 1,
+        "offset": 2752512,
+        "size": 2584,
+        "sha256": "ca019b9a453034bb6f792b8cc2381a40e1204bfae3764373987811d04818d6ba"
+      },
+      {
+        "name": ".bss",
+        "type": 8,
+        "offset": 2755096,
+        "size": 264,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": ".comment",
+        "type": 1,
+        "offset": 2755096,
+        "size": 114,
+        "sha256": "ae8c86c73a11bcece50dc5d309d61568b5939697a2d3d22c56e2477003ab17fd"
+      },
+      {
+        "name": ".shstrtab",
+        "type": 3,
+        "offset": 2755210,
+        "size": 278,
+        "sha256": "cad46292531047bbdbdeca228df237f90c37b811b3e8055cc4112f2903635ad6"
+      }
+    ]
+  },
+  "section_results": [
+    {
+      "name": ".interp",
+      "old_size": 27,
+      "new_size": 27,
+      "sha256_equal": true
+    },
+    {
+      "name": ".note.gnu.build-id",
+      "old_size": 36,
+      "new_size": 36,
+      "sha256_equal": false
+    },
+    {
+      "name": ".note.ABI-tag",
+      "old_size": 32,
+      "new_size": 32,
+      "sha256_equal": true
+    },
+    {
+      "name": ".gnu.hash",
+      "old_size": 28,
+      "new_size": 28,
+      "sha256_equal": true
+    },
+    {
+      "name": ".dynsym",
+      "old_size": 3312,
+      "new_size": 3312,
+      "sha256_equal": true
+    },
+    {
+      "name": ".dynstr",
+      "old_size": 1820,
+      "new_size": 1820,
+      "sha256_equal": true
+    },
+    {
+      "name": ".gnu.version",
+      "old_size": 276,
+      "new_size": 276,
+      "sha256_equal": true
+    },
+    {
+      "name": ".gnu.version_r",
+      "old_size": 240,
+      "new_size": 240,
+      "sha256_equal": true
+    },
+    {
+      "name": ".rela.dyn",
+      "old_size": 46512,
+      "new_size": 46512,
+      "sha256_equal": false
+    },
+    {
+      "name": ".rela.plt",
+      "old_size": 3096,
+      "new_size": 3096,
+      "sha256_equal": true
+    },
+    {
+      "name": ".init",
+      "old_size": 24,
+      "new_size": 24,
+      "sha256_equal": true
+    },
+    {
+      "name": ".plt",
+      "old_size": 2096,
+      "new_size": 2096,
+      "sha256_equal": true
+    },
+    {
+      "name": ".text",
+      "old_size": 2080852,
+      "new_size": 2080852,
+      "sha256_equal": false
+    },
+    {
+      "name": ".fini",
+      "old_size": 20,
+      "new_size": 20,
+      "sha256_equal": true
+    },
+    {
+      "name": ".rodata",
+      "old_size": 146060,
+      "new_size": 145036,
+      "sha256_equal": false
+    },
+    {
+      "name": ".eh_frame_hdr",
+      "old_size": 32996,
+      "new_size": 32996,
+      "sha256_equal": false
+    },
+    {
+      "name": ".eh_frame",
+      "old_size": 262120,
+      "new_size": 262120,
+      "sha256_equal": false
+    },
+    {
+      "name": ".gcc_except_table",
+      "old_size": 119904,
+      "new_size": 119904,
+      "sha256_equal": true
+    },
+    {
+      "name": ".tdata",
+      "old_size": 40,
+      "new_size": 40,
+      "sha256_equal": true
+    },
+    {
+      "name": ".tbss",
+      "old_size": 104,
+      "new_size": 104,
+      "sha256_equal": true
+    },
+    {
+      "name": ".init_array",
+      "old_size": 32,
+      "new_size": 32,
+      "sha256_equal": true
+    },
+    {
+      "name": ".fini_array",
+      "old_size": 8,
+      "new_size": 8,
+      "sha256_equal": true
+    },
+    {
+      "name": ".data.rel.ro",
+      "old_size": 37336,
+      "new_size": 37336,
+      "sha256_equal": false
+    },
+    {
+      "name": ".dynamic",
+      "old_size": 512,
+      "new_size": 512,
+      "sha256_equal": true
+    },
+    {
+      "name": ".got",
+      "old_size": 1592,
+      "new_size": 1592,
+      "sha256_equal": false
+    },
+    {
+      "name": ".data",
+      "old_size": 2584,
+      "new_size": 2584,
+      "sha256_equal": true
+    },
+    {
+      "name": ".bss",
+      "old_size": 264,
+      "new_size": 264,
+      "sha256_equal": true
+    },
+    {
+      "name": ".comment",
+      "old_size": 114,
+      "new_size": 114,
+      "sha256_equal": true
+    },
+    {
+      "name": ".shstrtab",
+      "old_size": 278,
+      "new_size": 278,
+      "sha256_equal": true
+    }
+  ],
+  "method": "Fresh bounded readonly ELF64 little-endian section parsing on each host. No output was modified.",
+  "whole_binary_equal": false,
+  "conclusion": "R4 differs in eight sections, including .text and .rodata; this is not merely a build-id difference. Separate exact rodata path analysis motivates one original-path namespace rebuild.",
+  "deployment": false
+}

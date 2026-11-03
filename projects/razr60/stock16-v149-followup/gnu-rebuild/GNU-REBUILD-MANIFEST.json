@@ -1,0 +1,285 @@
+{
+  "schema": "razr60.gnu-rebuild-addendum.manifest.v1",
+  "created_utc": "2026-11-03T11:33:15.051046+00:00",
+  "parent_commit": "029ec7e095865805d6e7e491c4ebabc17c3dee73",
+  "parent_source_manifest_sha256": "fe7f23464f535393c3ecead82e33c8a02b458fe43110ae96797b6c8bdc2af8f8",
+  "backend_baseline_commit": "4b687742fca939bc32122857f21067ec28d30a23",
+  "file_count": 52,
+  "content_bytes": 1285817,
+  "files": [
+    {
+      "path": "CORE-REGISTRY-PINS.json",
+      "bytes": 9516,
+      "sha256": "2319c818a6085e401d9a2efad8ef0629559e0f6d6397b3d3ddb35dc4fc35e739"
+    },
+    {
+      "path": "CURRENT-ROOTFS-BINDING.json",
+      "bytes": 2939,
+      "sha256": "7a46f227d22b9b3aa60836d407bc472799869a661bc36dc412739e7c0b1e351e"
+    },
+    {
+      "path": "ELF-SECTION-COMPARISON-R4.json",
+      "bytes": 15847,
+      "sha256": "4c4c67b3f669fcd7e80a8664e826aad8efbf2578df60d3e47a42a4a8c396e420"
+    },
+    {
+      "path": "EXPORT-ORIGINS-R5.json",
+      "bytes": 4189,
+      "sha256": "04ce204e5d6d667167c342ec441ba99b4b10b8f67ba65878b75ef6ffbd6d7961"
+    },
+    {
+      "path": "EXPORT-ORIGINS.json",
+      "bytes": 7687,
+      "sha256": "d82bd0febca1da5a0adeaafb172f00e05f07eb96166ef8df49d143574bb0fced"
+    },
+    {
+      "path": "INPUT-DISCOVERY.json",
+      "bytes": 13784,
+      "sha256": "fe8908fce30abccb573b39fec5e3b77aa5149d3adad653ae391f839162e51695"
+    },
+    {
+      "path": "PATH-IDENTITY-ANALYSIS.json",
+      "bytes": 1640,
+      "sha256": "40ac53df86836996e1d1bc799171286e8cefbea57df4fc6da134b1cd2351e488"
+    },
+    {
+      "path": "README.md",
+      "bytes": 11703,
+      "sha256": "ae5edcef76ba62662cf492fd0268c27d614dbd0bd6c82a678a844ff7588a8b9a"
+    },
+    {
+      "path": "dependency-recovery/CORE-DEPENDENCY-RECOVERY-R2.json",
+      "bytes": 1393,
+      "sha256": "6311e0af79a9565d256eb5c40c798aae767b8c1095b3c805dc7638b7359d59ae"
+    },
+    {
+      "path": "dependency-recovery/CORE-DEPENDENCY-RECOVERY-R3.json",
+      "bytes": 2136,
+      "sha256": "0ab16097502baa8c5d75e52ee664ba400964a9291ed32f1fc975d87688837138"
+    },
+    {
+      "path": "dependency-recovery/CORE-TARGET-DEPENDENCY-TREE-CHECK.json",
+      "bytes": 1314,
+      "sha256": "0b8e615da53051d39fbe81fc54794692cbd1f343543eea8945d4ae76f31e46c9"
+    },
+    {
+      "path": "dependency-recovery/CORE-TARGET-DEPENDENCY-TREE.txt",
+      "bytes": 5211,
+      "sha256": "88030a6333c91f1b72bd10e7f2554f412ac95e83a6f33dbd8edf116640295d81"
+    },
+    {
+      "path": "dependency-recovery/DEPENDENCY-RECOVERY-RECEIPT.json",
+      "bytes": 578,
+      "sha256": "d71c1b53998b40d25badc0bb22dae27edc444b470eeb6aa08342a43c7407573c"
+    },
+    {
+      "path": "executed-launch-r5.py",
+      "bytes": 2688,
+      "sha256": "dc234f4b93d668193edf4f28b366f8da3781619a2c1aa7c43ca84cb695d1936f"
+    },
+    {
+      "path": "historical-build-script.py",
+      "bytes": 10196,
+      "sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff"
+    },
+    {
+      "path": "inputs/SOURCE-CLOSURE-RESULT.json",
+      "bytes": 3900,
+      "sha256": "69b9405ff3e95e5687068ab7fcb9ce5fa5c1743308a7edb70d13277b01e3862d"
+    },
+    {
+      "path": "inputs/fresh-tool-inputs.json",
+      "bytes": 277805,
+      "sha256": "48c5a07e2d1a0694019cd4d820b821ab7814c8983526695aa3cd55591a824247"
+    },
+    {
+      "path": "inputs/historical-tool-inputs.json",
+      "bytes": 277851,
+      "sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b"
+    },
+    {
+      "path": "inputs/runtime-libraries-manifest.json",
+      "bytes": 1600,
+      "sha256": "0bb197a636625d6edf2a82f8cf27fdc76ccea8a0c8a04b5fb254be446b7b06c7"
+    },
+    {
+      "path": "rebuild_gnu_core.py",
+      "bytes": 12138,
+      "sha256": "8a16faf42d3d63c2365bfe85e2916b0eabbccfebf8a92073b932a771a39df1a0"
+    },
+    {
+      "path": "receipts/failed-attempts/ATTEMPTS-R1-R3.json",
+      "bytes": 15888,
+      "sha256": "fc675d10f62b182d325ff85178a1bed7bace004faf3cc15cbcdc1f8c83d8b226"
+    },
+    {
+      "path": "receipts/failed-attempts/build-r1-cargo.stderr.txt",
+      "bytes": 119,
+      "sha256": "7e610d41bdd27c3ca87d21a5015af33a3161dda4774058e458979b2469da9f4a"
+    },
+    {
+      "path": "receipts/failed-attempts/build-r2-cargo.stderr.txt",
+      "bytes": 122,
+      "sha256": "a1876233cee01eb172f062bfda05ec01013aaa4c5d7d060caccffd49fc49c53e"
+    },
+    {
+      "path": "receipts/failed-attempts/build-r3-cargo.stderr.txt",
+      "bytes": 123,
+      "sha256": "44a308f6d5ebc3678e683ea29c9dadf9c5a09ce56075ca0a43e73f8c4541915b"
+    },
+    {
+      "path": "receipts/r4/BUILD-LAUNCH-R4-INTENT.json",
+      "bytes": 5803,
+      "sha256": "c403282b5132314d19dd21d641345fdc1d7a11db33ce559d88fac972181b8697"
+    },
+    {
+      "path": "receipts/r4/BUILD-LAUNCH-R4-RESULT.json",
+      "bytes": 76,
+      "sha256": "152808ace3620a15fe560b0f464385ae6c53c2ab970203e6bfa1b97aa9ef8f3f"
+    },
+    {
+      "path": "receipts/r4/FRESH-GNU-REBUILD-RECEIPT.json",
+      "bytes": 273156,
+      "sha256": "a53f851ba41c7628cfff6c2e1bf1d4c074a918dddb809666a9f9f64e634fdcb9"
+    },
+    {
+      "path": "receipts/r4/SUMMARY.json",
+      "bytes": 8253,
+      "sha256": "0c39c527a14fde781486315594e99bb4c69011a3dd10e50329022bc6b089d302"
+    },
+    {
+      "path": "receipts/r4/actual-GNU-core-build.stderr",
+      "bytes": 2952,
+      "sha256": "53c992becffebcf39eaefa670e5d869bcf3a085ab0c33899c71b574a007b1a6d"
+    },
+    {
+      "path": "receipts/r4/actual-GNU-core-build.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r4/actual-core-ELF.stdout",
+      "bytes": 8463,
+      "sha256": "82c835e854e2b348c51eec1c1e33ea808f5ad999c5677ae9e07f2a609051c0ba"
+    },
+    {
+      "path": "receipts/r4/fresh-QEMU-help.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r4/fresh-QEMU-help.stdout",
+      "bytes": 968,
+      "sha256": "53c33cdf88aff3a1d16f9498db3867987ed38e716dc59776fab046255340a687"
+    },
+    {
+      "path": "receipts/r4/fresh-QEMU-inactive-tool.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r4/fresh-QEMU-inactive-tool.cancel.stdout",
+      "bytes": 1128,
+      "sha256": "ca8db2c456b891d40c5c245dc1bdea93d4f7e7cbd16c1a8b6e5ad7d9eedff9ec"
+    },
+    {
+      "path": "receipts/r4/fresh-QEMU-inactive-turn.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r4/fresh-QEMU-inactive-turn.cancel.stdout",
+      "bytes": 1078,
+      "sha256": "cae7840a70f1160c91df0e3e41156879af32b77f6da1cb6b67b7b1fcadc8e282"
+    },
+    {
+      "path": "receipts/r5/BUILD-JOB-STATUS.json",
+      "bytes": 564,
+      "sha256": "fd32c59f5bd84157838886698417ae8c2bc5268f070f395032038c749001b26c"
+    },
+    {
+      "path": "receipts/r5/BUILD-LAUNCH-R5-INTENT.json",
+      "bytes": 3592,
+      "sha256": "438178cd4a6fb3ab21c32617a369bf3b9782031c90cc8863d1096b398e0981c0"
+    },
+    {
+      "path": "receipts/r5/BUILD-LAUNCH-R5-RESULT.json",
+      "bytes": 484,
+      "sha256": "18bf05d08ca15d3c73100985d9a4b0c3f30aaf52504d79c3b8d8328741114ce8"
+    },
+    {
+      "path": "receipts/r5/FRESH-GNU-REBUILD-RECEIPT.json",
+      "bytes": 273801,
+      "sha256": "60acfdc5d7f514a099ccaab7e319ebdc22ba1117e46f014a16056adcf84a97aa"
+    },
+    {
+      "path": "receipts/r5/IDENTITY-READBACK.json",
+      "bytes": 1227,
+      "sha256": "ae2b9ab6ce260d9e304373a2e0834af5a2b7530983aa8c6f78609af4c083f59c"
+    },
+    {
+      "path": "receipts/r5/SUMMARY.json",
+      "bytes": 8898,
+      "sha256": "dc8a3ef7a2c79df9a29511873ab06fe689d2d8496ed055262059c767a319026d"
+    },
+    {
+      "path": "receipts/r5/actual-GNU-core-build.stderr",
+      "bytes": 3370,
+      "sha256": "38ef6407e5d4faccd4a857009a10d2b19eec0c4f0acc1fd5f87814f51644a8a4"
+    },
+    {
+      "path": "receipts/r5/actual-GNU-core-build.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r5/actual-core-ELF.stdout",
+      "bytes": 8463,
+      "sha256": "56172920d57fe45e91d77fc1130fdaedaa4899a8a0eea27fe00563b4cf2460de"
+    },
+    {
+      "path": "receipts/r5/fresh-QEMU-help.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r5/fresh-QEMU-help.stdout",
+      "bytes": 968,
+      "sha256": "53c33cdf88aff3a1d16f9498db3867987ed38e716dc59776fab046255340a687"
+    },
+    {
+      "path": "receipts/r5/fresh-QEMU-inactive-tool.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r5/fresh-QEMU-inactive-tool.cancel.stdout",
+      "bytes": 1128,
+      "sha256": "c26e11153cd8477140a0583dfaa64401e7c94bd77b0be906784da8eea8b5d986"
+    },
+    {
+      "path": "receipts/r5/fresh-QEMU-inactive-turn.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "receipts/r5/fresh-QEMU-inactive-turn.cancel.stdout",
+      "bytes": 1078,
+      "sha256": "82c924e5a8e5dfca06c75ae39c57b46d8ea19bcba59abc1c8b69bcff84587c88"
+    }
+  ],
+  "source1455_unchanged": true,
+  "r4_fresh_build_pass": true,
+  "r4_bit_identity": false,
+  "r5_fresh_build_pass": true,
+  "r5_qemu_fixtures_pass": 3,
+  "r5_bit_identity": true,
+  "r5_binary_sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+  "r5_receipt_sha256": "60acfdc5d7f514a099ccaab7e319ebdc22ba1117e46f014a16056adcf84a97aa",
+  "no_binaries_runtime_libraries_crates_or_secrets_in_artifact": true,
+  "secret_scan": "common literal token/private-key/URL-userinfo patterns; not a proof against every possible secret",
+  "deployed": false,
+  "r5_host_rebuilt": false,
+  "full_rootfs_rebuilt": false,
+  "real_model_or_phone_acceptance_claimed": false
+}

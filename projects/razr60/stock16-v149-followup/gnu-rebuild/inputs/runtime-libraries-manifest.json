@@ -1,0 +1,39 @@
+{
+  "origin_actual_rootfs": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root",
+  "original_931_entry_receipt_sha256": "6da89aefb62486991e30638f503ce3c8c592455f11eca4e1fa183da37959e73d",
+  "files": {
+    "lib/ld-linux-aarch64.so.1": {
+      "bytes": 203968,
+      "sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180"
+    },
+    "usr/lib/aarch64-linux-gnu/libc.so.6": {
+      "bytes": 1722920,
+      "sha256": "9afdc5d81e698fae93da3d7f244c248ea9850c88002c4041314d46d6f42eba33"
+    },
+    "usr/lib/aarch64-linux-gnu/librt.so.1": {
+      "bytes": 67512,
+      "sha256": "6752bca20eee6f83cbebe90f13998be3231c096a44fffb186c44f96f4dafef3b"
+    },
+    "usr/lib/aarch64-linux-gnu/libpthread.so.0": {
+      "bytes": 67440,
+      "sha256": "288b8279c29e63f70e51d8322b0d76dd3b638db85dc83eeddac419b3dbdf7148"
+    },
+    "usr/lib/aarch64-linux-gnu/libdl.so.2": {
+      "bytes": 67440,
+      "sha256": "34c231665c5008a479ce46d094134cec21c3ea14040927c1b7af1ab25dd5986e"
+    },
+    "usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1": {
+      "bytes": 203968,
+      "sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180"
+    },
+    "usr/lib/aarch64-linux-gnu/libgcc_s.so.1": {
+      "bytes": 133616,
+      "sha256": "2a417ca4e1da148b874d510c5356c2652eb934dd761a138454aefbeb61539fa2"
+    },
+    "usr/lib/aarch64-linux-gnu/libm.so.6": {
+      "bytes": 591800,
+      "sha256": "73339d71a889a70ac3f2b882b1fdd463ecf7896226bf12d1319edc63948c47fd"
+    }
+  },
+  "only_public_ELFs": true
+}

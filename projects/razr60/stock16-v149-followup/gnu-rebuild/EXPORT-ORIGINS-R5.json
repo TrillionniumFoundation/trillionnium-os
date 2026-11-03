@@ -1,0 +1,86 @@
+{
+  "schema": "razr60.gnu.text-evidence-export.v1",
+  "copied_files": [
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/FRESH-GNU-REBUILD-RECEIPT.json",
+      "published_path": "receipts/r5/FRESH-GNU-REBUILD-RECEIPT.json",
+      "bytes": 273801,
+      "sha256": "60acfdc5d7f514a099ccaab7e319ebdc22ba1117e46f014a16056adcf84a97aa"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/actual-GNU-core-build.stdout",
+      "published_path": "receipts/r5/actual-GNU-core-build.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/actual-GNU-core-build.stderr",
+      "published_path": "receipts/r5/actual-GNU-core-build.stderr",
+      "bytes": 3370,
+      "sha256": "38ef6407e5d4faccd4a857009a10d2b19eec0c4f0acc1fd5f87814f51644a8a4"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/actual-core-ELF.stdout",
+      "published_path": "receipts/r5/actual-core-ELF.stdout",
+      "bytes": 8463,
+      "sha256": "56172920d57fe45e91d77fc1130fdaedaa4899a8a0eea27fe00563b4cf2460de"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/fresh-QEMU-help.stdout",
+      "published_path": "receipts/r5/fresh-QEMU-help.stdout",
+      "bytes": 968,
+      "sha256": "53c33cdf88aff3a1d16f9498db3867987ed38e716dc59776fab046255340a687"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/fresh-QEMU-help.stderr",
+      "published_path": "receipts/r5/fresh-QEMU-help.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/fresh-QEMU-inactive-turn.cancel.stdout",
+      "published_path": "receipts/r5/fresh-QEMU-inactive-turn.cancel.stdout",
+      "bytes": 1078,
+      "sha256": "82c924e5a8e5dfca06c75ae39c57b46d8ea19bcba59abc1c8b69bcff84587c88"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/fresh-QEMU-inactive-turn.cancel.stderr",
+      "published_path": "receipts/r5/fresh-QEMU-inactive-turn.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/fresh-QEMU-inactive-tool.cancel.stdout",
+      "published_path": "receipts/r5/fresh-QEMU-inactive-tool.cancel.stdout",
+      "bytes": 1128,
+      "sha256": "c26e11153cd8477140a0583dfaa64401e7c94bd77b0be906784da8eea8b5d986"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/fresh-QEMU-inactive-tool.cancel.stderr",
+      "published_path": "receipts/r5/fresh-QEMU-inactive-tool.cancel.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/BUILD-LAUNCH-R5-INTENT.json",
+      "published_path": "receipts/r5/BUILD-LAUNCH-R5-INTENT.json",
+      "bytes": 3592,
+      "sha256": "438178cd4a6fb3ab21c32617a369bf3b9782031c90cc8863d1096b398e0981c0"
+    },
+    {
+      "source_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/BUILD-LAUNCH-R5-RESULT.json",
+      "published_path": "receipts/r5/BUILD-LAUNCH-R5-RESULT.json",
+      "bytes": 484,
+      "sha256": "18bf05d08ca15d3c73100985d9a4b0c3f30aaf52504d79c3b8d8328741114ce8"
+    }
+  ],
+  "excluded": [
+    "ELF binaries",
+    "runtime libraries",
+    "crate archives",
+    "input tar",
+    "live state",
+    "credentials"
+  ],
+  "outputs_owned": true
+}

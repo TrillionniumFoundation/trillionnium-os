@@ -1,0 +1,206 @@
+{
+  "schema": "razr60-gnu-core-independent-rebuild-v149.1",
+  "started_utc": "2026-11-03T11:09:43.510099+00:00",
+  "driver_sha256": "8a16faf42d3d63c2365bfe85e2916b0eabbccfebf8a92073b932a771a39df1a0",
+  "historical_recipe_sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff",
+  "historical_tool_inputs_sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b",
+  "source_baseline_commit": "4b687742fca939bc32122857f21067ec28d30a23",
+  "source_file_count": 1455,
+  "phone_operations": 0,
+  "service_changes": 0,
+  "global_installs": 0,
+  "dependency_downloads": 0,
+  "full_rootfs_rebuild": false,
+  "compile_pass": true,
+  "qemu_fixture_pass": true,
+  "pass": true,
+  "network_namespace": "isolated by caller",
+  "QEMU_checks": [
+    {
+      "label": "fresh-QEMU-help",
+      "argv": [
+        "/usr/bin/qemu-aarch64-static",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-public-libs/lib/ld-linux-aarch64.so.1",
+        "--library-path",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-public-libs/usr/lib/aarch64-linux-gnu",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target/aarch64-unknown-linux-gnu/release/trillionnium-owner-open-r5-core",
+        "--help"
+      ],
+      "rc": 0,
+      "stdout_sha256": "53c33cdf88aff3a1d16f9498db3867987ed38e716dc59776fab046255340a687",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fresh-QEMU-inactive-turn.cancel",
+      "argv": [
+        "/usr/bin/qemu-aarch64-static",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-public-libs/lib/ld-linux-aarch64.so.1",
+        "--library-path",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-public-libs/usr/lib/aarch64-linux-gnu",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target/aarch64-unknown-linux-gnu/release/trillionnium-owner-open-r5-core",
+        "--provider",
+        "/bin/true"
+      ],
+      "rc": 0,
+      "stdout_sha256": "cae7840a70f1160c91df0e3e41156879af32b77f6da1cb6b67b7b1fcadc8e282",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fresh-QEMU-inactive-tool.cancel",
+      "argv": [
+        "/usr/bin/qemu-aarch64-static",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-public-libs/lib/ld-linux-aarch64.so.1",
+        "--library-path",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/actual-public-libs/usr/lib/aarch64-linux-gnu",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target/aarch64-unknown-linux-gnu/release/trillionnium-owner-open-r5-core",
+        "--provider",
+        "/bin/true"
+      ],
+      "rc": 0,
+      "stdout_sha256": "ca8db2c456b891d40c5c245dc1bdea93d4f7e7cbd16c1a8b6e5ad7d9eedff9ec",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pass_gate": "Compile, exact historical input identities, runtime ABI, three QEMU fixtures, source unchanged; installed binary identity reported separately",
+  "limits": {
+    "virtual_memory_bytes": 8589934592,
+    "cargo_jobs": 4,
+    "cargo_timeout_seconds": 180,
+    "qemu_probe_timeout_seconds": 15,
+    "cpu_affinity_count": 4
+  },
+  "historical_gnu_inputs_match": true,
+  "historical_target_std_match": true,
+  "historical_host_tools_match": true,
+  "fresh_tool_inputs_sha256": "48c5a07e2d1a0694019cd4d820b821ab7814c8983526695aa3cd55591a824247",
+  "binary": {
+    "path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target/aarch64-unknown-linux-gnu/release/trillionnium-owner-open-r5-core",
+    "bytes": 2757408,
+    "sha256": "f77048cd4bf383b540b45cee500ff7b9a81f1d6f48b152f8fadfb833faaba3b6"
+  },
+  "expected_installed_core_sha256": "7046846404871ceffe1cc3241fc6aa2da6c281eb8832595dc26b283e307b4031",
+  "binary_matches_installed": false,
+  "build_steps": [
+    {
+      "label": "rust-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "-Vv"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.017837789957411587,
+      "stdout_sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "-V"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.00681088597048074,
+      "stdout_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "target-gcc-version",
+      "argv": [
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target-linker.sh",
+        "--version"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.0026444809045642614,
+      "stdout_sha256": "943f091be5694da0fd3c83fcd3b0eb62c60a623f113867e5194c16fa3f32bf64",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "target-gcc-search",
+      "argv": [
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target-linker.sh",
+        "-print-search-dirs"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.002406182000413537,
+      "stdout_sha256": "8429ff79fe2020b287285b59284d36fb4195d294ed2af1340930e2c0a264ff0c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "target-gcc-ld",
+      "argv": [
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target-linker.sh",
+        "-print-prog-name=ld"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.0024049209896475077,
+      "stdout_sha256": "7e22cbfa0828efec89fceeb0d1316992e9c9696fca808c392d953d670add89c0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "actual-GNU-core-build",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--release",
+        "--frozen",
+        "--locked",
+        "--offline",
+        "--target",
+        "aarch64-unknown-linux-gnu",
+        "-p",
+        "trillionnium-owner-open-host",
+        "--bin",
+        "trillionnium-owner-open-r5-core"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 40.569411559030414,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "53c992becffebcf39eaefa670e5d869bcf3a085ab0c33899c71b574a007b1a6d"
+    },
+    {
+      "label": "actual-core-ELF",
+      "argv": [
+        "/usr/bin/aarch64-linux-gnu-readelf",
+        "-h",
+        "-l",
+        "-d",
+        "-V",
+        "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r4/target/aarch64-unknown-linux-gnu/release/trillionnium-owner-open-r5-core"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.09164141805376858,
+      "stdout_sha256": "82c835e854e2b348c51eec1c1e33ea808f5ad999c5677ae9e07f2a609051c0ba",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "runtime_manifest_sha256": "0bb197a636625d6edf2a82f8cf27fdc76ccea8a0c8a04b5fb254be446b7b06c7",
+  "runtime_files_verified": 8,
+  "runtime_unique_sonames": 7,
+  "needed": [
+    "libgcc_s.so.1",
+    "libc.so.6"
+  ],
+  "version_needs": {
+    "libgcc_s.so.1": [
+      "GCC_3.0",
+      "GCC_3.3",
+      "GCC_4.2.0"
+    ],
+    "libc.so.6": [
+      "GLIBC_2.17",
+      "GLIBC_2.18",
+      "GLIBC_2.25",
+      "GLIBC_2.28",
+      "GLIBC_2.29",
+      "GLIBC_2.30",
+      "GLIBC_2.32",
+      "GLIBC_2.33",
+      "GLIBC_2.34",
+      "GLIBC_2.39"
+    ]
+  },
+  "maximum_needed_GLIBC": "2.39",
+  "all_runtime_version_needs_satisfied": true,
+  "source_unchanged": true,
+  "finished_utc": "2026-11-03T11:12:02.221851+00:00"
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "razr60.gnu.canonical-path-r5-launch-result.v1",
+  "utc": "2026-11-03T11:26:31.638002+00:00",
+  "launch_rc": 0,
+  "error": null,
+  "host_historical_directory_still_absent": true,
+  "intent_sha256": "438178cd4a6fb3ab21c32617a369bf3b9782031c90cc8863d1096b398e0981c0",
+  "physical_result_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/r5-canonical-base/gnu-actual239-r1/FRESH-GNU-REBUILD-RECEIPT.json",
+  "phone_operations": 0,
+  "service_changes": 0
+}

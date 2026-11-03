@@ -1,0 +1,349 @@
+{
+  "schema": "razr60.gnu.failed-attempts.sanitized.v1",
+  "attempts": [
+    {
+      "original_receipt_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r1/FRESH-GNU-REBUILD-RECEIPT.json",
+      "original_receipt_sha256": "be7a54913f6d02038ed6bdc538a5e9b9ecda29ab19c1405a6b4553fafe6850cd",
+      "original_receipt_bytes": 269144,
+      "omitted_repeated_source_pin_count": 1455,
+      "summary": {
+        "schema": "razr60-gnu-core-independent-rebuild-v149.1",
+        "started_utc": "2026-11-03T10:52:08.141918+00:00",
+        "driver_sha256": "8a16faf42d3d63c2365bfe85e2916b0eabbccfebf8a92073b932a771a39df1a0",
+        "historical_recipe_sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff",
+        "historical_tool_inputs_sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b",
+        "source_baseline_commit": "4b687742fca939bc32122857f21067ec28d30a23",
+        "source_file_count": 1455,
+        "phone_operations": 0,
+        "service_changes": 0,
+        "global_installs": 0,
+        "dependency_downloads": 0,
+        "full_rootfs_rebuild": false,
+        "compile_pass": false,
+        "qemu_fixture_pass": false,
+        "pass": false,
+        "network_namespace": "isolated by caller",
+        "QEMU_checks": [],
+        "pass_gate": "Compile, exact historical input identities, runtime ABI, three QEMU fixtures, source unchanged; installed binary identity reported separately",
+        "limits": {
+          "virtual_memory_bytes": 8589934592,
+          "cargo_jobs": 4,
+          "cargo_timeout_seconds": 180,
+          "qemu_probe_timeout_seconds": 15,
+          "cpu_affinity_count": 4
+        },
+        "error": "AssertionError: b'error: failed to download `ryu-js v0.2.2`\\n\\nCaused by:\\n  attempting to make an HTTP request, but --frozen was specified\\n'",
+        "build_steps": [
+          {
+            "label": "rust-version",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+              "-Vv"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.01627021504100412,
+            "stdout_sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "cargo-version",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "-V"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.00723653007298708,
+            "stdout_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-version",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r1/target-linker.sh",
+              "--version"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.10202356392983347,
+            "stdout_sha256": "943f091be5694da0fd3c83fcd3b0eb62c60a623f113867e5194c16fa3f32bf64",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-search",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r1/target-linker.sh",
+              "-print-search-dirs"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.002831317950040102,
+            "stdout_sha256": "efa5306dc784ad257c89ef569e864a28b903415c6718cc3272463b68ba395211",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-ld",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r1/target-linker.sh",
+              "-print-prog-name=ld"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.003030266030691564,
+            "stdout_sha256": "609b51417451c1e9de98a6e46b3b8c4e199bbc6c38d725f44766e9bab7044acc",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "actual-GNU-core-build",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "build",
+              "--release",
+              "--frozen",
+              "--locked",
+              "--offline",
+              "--target",
+              "aarch64-unknown-linux-gnu",
+              "-p",
+              "trillionnium-owner-open-host",
+              "--bin",
+              "trillionnium-owner-open-r5-core"
+            ],
+            "returncode": 101,
+            "elapsed_seconds": 4.8724047020077705,
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "7e610d41bdd27c3ca87d21a5015af33a3161dda4774058e458979b2469da9f4a"
+          }
+        ],
+        "source_unchanged": true,
+        "finished_utc": "2026-11-03T10:52:36.927410+00:00"
+      }
+    },
+    {
+      "original_receipt_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r2/FRESH-GNU-REBUILD-RECEIPT.json",
+      "original_receipt_sha256": "485853db16bb4d61e125463cdcb2be409bb67b120ba110f298805887090ba9cb",
+      "original_receipt_bytes": 269150,
+      "omitted_repeated_source_pin_count": 1455,
+      "summary": {
+        "schema": "razr60-gnu-core-independent-rebuild-v149.1",
+        "started_utc": "2026-11-03T10:58:09.565947+00:00",
+        "driver_sha256": "8a16faf42d3d63c2365bfe85e2916b0eabbccfebf8a92073b932a771a39df1a0",
+        "historical_recipe_sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff",
+        "historical_tool_inputs_sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b",
+        "source_baseline_commit": "4b687742fca939bc32122857f21067ec28d30a23",
+        "source_file_count": 1455,
+        "phone_operations": 0,
+        "service_changes": 0,
+        "global_installs": 0,
+        "dependency_downloads": 0,
+        "full_rootfs_rebuild": false,
+        "compile_pass": false,
+        "qemu_fixture_pass": false,
+        "pass": false,
+        "network_namespace": "isolated by caller",
+        "QEMU_checks": [],
+        "pass_gate": "Compile, exact historical input identities, runtime ABI, three QEMU fixtures, source unchanged; installed binary identity reported separately",
+        "limits": {
+          "virtual_memory_bytes": 8589934592,
+          "cargo_jobs": 4,
+          "cargo_timeout_seconds": 180,
+          "qemu_probe_timeout_seconds": 15,
+          "cpu_affinity_count": 4
+        },
+        "error": "AssertionError: b'error: failed to download `serde_jcs v0.2.0`\\n\\nCaused by:\\n  attempting to make an HTTP request, but --frozen was specified\\n'",
+        "build_steps": [
+          {
+            "label": "rust-version",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+              "-Vv"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.017643274972215295,
+            "stdout_sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "cargo-version",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "-V"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.00772706198040396,
+            "stdout_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-version",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r2/target-linker.sh",
+              "--version"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.003141261055134237,
+            "stdout_sha256": "943f091be5694da0fd3c83fcd3b0eb62c60a623f113867e5194c16fa3f32bf64",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-search",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r2/target-linker.sh",
+              "-print-search-dirs"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.0027855869848281145,
+            "stdout_sha256": "7f66da0a2d50a8bb317084e5155221365fc04b776dca63b39f12b629ef798e9e",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-ld",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r2/target-linker.sh",
+              "-print-prog-name=ld"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.002608656999655068,
+            "stdout_sha256": "bf184ea00db91e7c2356dbfdf533377867aa136b441ba28868e80994029f598b",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "actual-GNU-core-build",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "build",
+              "--release",
+              "--frozen",
+              "--locked",
+              "--offline",
+              "--target",
+              "aarch64-unknown-linux-gnu",
+              "-p",
+              "trillionnium-owner-open-host",
+              "--bin",
+              "trillionnium-owner-open-r5-core"
+            ],
+            "returncode": 101,
+            "elapsed_seconds": 2.7333380490308627,
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "a1876233cee01eb172f062bfda05ec01013aaa4c5d7d060caccffd49fc49c53e"
+          }
+        ],
+        "source_unchanged": true,
+        "finished_utc": "2026-11-03T10:59:14.254446+00:00"
+      }
+    },
+    {
+      "original_receipt_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r3/FRESH-GNU-REBUILD-RECEIPT.json",
+      "original_receipt_sha256": "c1f024b6a04bdf0e85dd1fdf1c768e48b39177f660501b63d992089c11e2a134",
+      "original_receipt_bytes": 269152,
+      "omitted_repeated_source_pin_count": 1455,
+      "summary": {
+        "schema": "razr60-gnu-core-independent-rebuild-v149.1",
+        "started_utc": "2026-11-03T11:03:03.153523+00:00",
+        "driver_sha256": "8a16faf42d3d63c2365bfe85e2916b0eabbccfebf8a92073b932a771a39df1a0",
+        "historical_recipe_sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff",
+        "historical_tool_inputs_sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b",
+        "source_baseline_commit": "4b687742fca939bc32122857f21067ec28d30a23",
+        "source_file_count": 1455,
+        "phone_operations": 0,
+        "service_changes": 0,
+        "global_installs": 0,
+        "dependency_downloads": 0,
+        "full_rootfs_rebuild": false,
+        "compile_pass": false,
+        "qemu_fixture_pass": false,
+        "pass": false,
+        "network_namespace": "isolated by caller",
+        "QEMU_checks": [],
+        "pass_gate": "Compile, exact historical input identities, runtime ABI, three QEMU fixtures, source unchanged; installed binary identity reported separately",
+        "limits": {
+          "virtual_memory_bytes": 8589934592,
+          "cargo_jobs": 4,
+          "cargo_timeout_seconds": 180,
+          "qemu_probe_timeout_seconds": 15,
+          "cpu_affinity_count": 4
+        },
+        "error": "AssertionError: b'error: failed to download `thiserror v2.0.20`\\n\\nCaused by:\\n  attempting to make an HTTP request, but --frozen was specified\\n'",
+        "build_steps": [
+          {
+            "label": "rust-version",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+              "-Vv"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.019072407041676342,
+            "stdout_sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "cargo-version",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "-V"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.008778188959695399,
+            "stdout_sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-version",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r3/target-linker.sh",
+              "--version"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.003691479912959039,
+            "stdout_sha256": "943f091be5694da0fd3c83fcd3b0eb62c60a623f113867e5194c16fa3f32bf64",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-search",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r3/target-linker.sh",
+              "-print-search-dirs"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.0030068779597058892,
+            "stdout_sha256": "265ddef78f61175491c86730a55bc0b3900d91acff31ff8634a2bfbd72444ae2",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "target-gcc-ld",
+            "argv": [
+              "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/build-r3/target-linker.sh",
+              "-print-prog-name=ld"
+            ],
+            "returncode": 0,
+            "elapsed_seconds": 0.0033275639871135354,
+            "stdout_sha256": "82d8cbbfa052871098ffcfb1174a4e551fd1672a58c7cda5f67f1052640d84dd",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          {
+            "label": "actual-GNU-core-build",
+            "argv": [
+              "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo",
+              "build",
+              "--release",
+              "--frozen",
+              "--locked",
+              "--offline",
+              "--target",
+              "aarch64-unknown-linux-gnu",
+              "-p",
+              "trillionnium-owner-open-host",
+              "--bin",
+              "trillionnium-owner-open-r5-core"
+            ],
+            "returncode": 101,
+            "elapsed_seconds": 2.688117646961473,
+            "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr_sha256": "44a308f6d5ebc3678e683ea29c9dadf9c5a09ce56075ca0a43e73f8c4541915b"
+          }
+        ],
+        "source_unchanged": true,
+        "finished_utc": "2026-11-03T11:03:09.560723+00:00"
+      }
+    }
+  ],
+  "retained_original_receipts": true,
+  "wrapper_success_is_not_compile_success": true
+}

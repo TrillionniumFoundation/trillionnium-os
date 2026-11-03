@@ -1,0 +1,12 @@
+usage: trillionnium-owner-open-r5-host --provider PATH [--provider-arg ARG]... [--shell PATH] [--adb PATH] [--provider-cwd DIR] [--provider-timeout-ms MS] [--event-store /absolute/path/events.jsonl]
+
+The R5 Host has a bounded input/control reader and an independent turn worker. It persists and attempts delivery for events while the turn is active, accepts correlated turn.cancel and tool.cancel frames, and never treats client EOF as cancellation.
+
+Long-running job options:
+  --job-store /absolute/path/jobs.jsonl
+  --require-job-journal
+  --allow-unjournaled-effects-for-development
+
+Durable journaling is required by default. The development-only override permits unreplayable effects and must not appear in an installed product profile.
+
+The job-aware v7 core multiplexes job.start/inspect/wait/attach/detach/write/resize/close_stdin/kill with the existing v4 turn core. The selected v5 transport remains responsible for bounded persisted delivery flow control.

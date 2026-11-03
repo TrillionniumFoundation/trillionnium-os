@@ -1,0 +1,232 @@
+{
+  "schema": "razr60-v149-gnu-existing-input-discovery.v1",
+  "status": "EXISTING_INPUTS_LOCATED_NOT_A_COMPILE_RESULT",
+  "build_host": "desktop",
+  "host_os": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo\n",
+  "versions": {
+    "rustc": {
+      "rc": 0,
+      "stdout": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+      "stderr": ""
+    },
+    "cargo": {
+      "rc": 0,
+      "stdout": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n",
+      "stderr": ""
+    },
+    "gcc": {
+      "rc": 0,
+      "stdout": "aarch64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "stderr": ""
+    },
+    "linker": {
+      "rc": 0,
+      "stdout": "GNU ld (GNU Binutils for Ubuntu) 2.42\nCopyright (C) 2024 Free Software Foundation, Inc.\n这个程序是自由软件；您可以遵循GNU 通用公共授权版本 3 或\n(您自行选择的) 稍后版本以再次散布它。\n这个程序完全没有任何担保。\n",
+      "stderr": ""
+    },
+    "qemu": {
+      "rc": 0,
+      "stdout": "qemu-aarch64 version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)\nCopyright (c) 2003-2023 Fabrice Bellard and the QEMU Project developers\n",
+      "stderr": ""
+    },
+    "target": {
+      "rc": 0,
+      "stdout": "/\n",
+      "stderr": ""
+    },
+    "packages": {
+      "rc": 0,
+      "stdout": "gcc-13-aarch64-linux-gnu\t13.3.0-6ubuntu2~24.04.1cross1\tamd64\ngcc-13-aarch64-linux-gnu-base\t13.3.0-6ubuntu2~24.04.1cross1\tamd64\nlibc6-arm64-cross\t2.39-0ubuntu8cross1\tall\nlibc6-dev-arm64-cross\t2.39-0ubuntu8cross1\tall\nlibgcc-13-dev-arm64-cross\t13.3.0-6ubuntu2~24.04.1cross1\tall\nqemu-user-static\t1:8.2.2+ds-0ubuntu1.18\tamd64\n",
+      "stderr": ""
+    }
+  },
+  "measured_tool_sha256": {
+    "/usr/bin/aarch64-linux-gnu-gcc-13": {
+      "resolved": "/usr/bin/aarch64-linux-gnu-gcc-13",
+      "bytes": 1723848,
+      "sha256": "cd90adc7801f4595267f61a5d25bd3a0c6beb2f9f1f107ab919a97a12972dc9a"
+    },
+    "/usr/bin/aarch64-linux-gnu-readelf": {
+      "resolved": "/usr/bin/aarch64-linux-gnu-readelf",
+      "bytes": 838400,
+      "sha256": "708bf3b87fcafaa198169fc160c24c80926249c50ff58cd5978facefebf28af7"
+    },
+    "/usr/bin/qemu-aarch64-static": {
+      "resolved": "/usr/bin/qemu-aarch64-static",
+      "bytes": 6245816,
+      "sha256": "e4f8d99e9ff69c3cefffab71cee358ce2af1ecba1282d04c3eeb44ef76f5a71e"
+    },
+    "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc": {
+      "resolved": "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "bytes": 644784,
+      "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6"
+    }
+  },
+  "free_bytes_at_probe": 186355924992,
+  "existing_required_paths": [
+    "/usr/aarch64-linux-gnu",
+    "/usr/lib/gcc-cross/aarch64-linux-gnu/13",
+    "/usr/bin/aarch64-linux-gnu-gcc-13",
+    "/usr/bin/x86_64-linux-gnu-gcc-13",
+    "/usr/bin/qemu-aarch64-static",
+    "/usr/bin/aarch64-linux-gnu-readelf",
+    "/home/qian-qi/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/lib/rustlib/aarch64-unknown-linux-gnu",
+    "/home/qian-qi/.cargo/registry"
+  ],
+  "historical_provenance_host": "pocket4",
+  "historical_provenance_root": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-gnu-core-crossbuild-r1-704684640487",
+  "historical_tool_inputs_manifest_sha256": "f18f5c440de9dd33348a9fde2bd2699fbcbaf5d0707e1b11715598262ad28c2b",
+  "historical_build_script_sha256": "54846b00dd7452b1b9da30fa56bf55cad1ec647075fc6e2342e3a50beed021ff",
+  "historical_post_build_audit_sha256": "82d1bbbde7a6237163eb5e30e2b264c2540c0f2ad1237299f29bd38fdb1ebe8b",
+  "runtime_libraries": {
+    "manifest_path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-gnu-core-crossbuild-r1-704684640487/runtime/actual-public-libs-manifest.json",
+    "manifest_sha256": "0bb197a636625d6edf2a82f8cf27fdc76ccea8a0c8a04b5fb254be446b7b06c7",
+    "manifest": {
+      "origin_actual_rootfs": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root",
+      "original_931_entry_receipt_sha256": "6da89aefb62486991e30638f503ce3c8c592455f11eca4e1fa183da37959e73d",
+      "files": {
+        "lib/ld-linux-aarch64.so.1": {
+          "bytes": 203968,
+          "sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180"
+        },
+        "usr/lib/aarch64-linux-gnu/libc.so.6": {
+          "bytes": 1722920,
+          "sha256": "9afdc5d81e698fae93da3d7f244c248ea9850c88002c4041314d46d6f42eba33"
+        },
+        "usr/lib/aarch64-linux-gnu/librt.so.1": {
+          "bytes": 67512,
+          "sha256": "6752bca20eee6f83cbebe90f13998be3231c096a44fffb186c44f96f4dafef3b"
+        },
+        "usr/lib/aarch64-linux-gnu/libpthread.so.0": {
+          "bytes": 67440,
+          "sha256": "288b8279c29e63f70e51d8322b0d76dd3b638db85dc83eeddac419b3dbdf7148"
+        },
+        "usr/lib/aarch64-linux-gnu/libdl.so.2": {
+          "bytes": 67440,
+          "sha256": "34c231665c5008a479ce46d094134cec21c3ea14040927c1b7af1ab25dd5986e"
+        },
+        "usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1": {
+          "bytes": 203968,
+          "sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180"
+        },
+        "usr/lib/aarch64-linux-gnu/libgcc_s.so.1": {
+          "bytes": 133616,
+          "sha256": "2a417ca4e1da148b874d510c5356c2652eb934dd761a138454aefbeb61539fa2"
+        },
+        "usr/lib/aarch64-linux-gnu/libm.so.6": {
+          "bytes": 591800,
+          "sha256": "73339d71a889a70ac3f2b882b1fdd463ecf7896226bf12d1319edc63948c47fd"
+        }
+      },
+      "only_public_ELFs": true
+    },
+    "fresh_original_elf_readback": {
+      "root": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root",
+      "exists": true,
+      "files": [
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/lib/ld-linux-aarch64.so.1",
+          "expected_sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180",
+          "exists": true,
+          "bytes": 203968,
+          "sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/lib/ld-linux-aarch64.so.1"
+        },
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libc.so.6",
+          "expected_sha256": "9afdc5d81e698fae93da3d7f244c248ea9850c88002c4041314d46d6f42eba33",
+          "exists": true,
+          "bytes": 1722920,
+          "sha256": "9afdc5d81e698fae93da3d7f244c248ea9850c88002c4041314d46d6f42eba33",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libc.so.6"
+        },
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/librt.so.1",
+          "expected_sha256": "6752bca20eee6f83cbebe90f13998be3231c096a44fffb186c44f96f4dafef3b",
+          "exists": true,
+          "bytes": 67512,
+          "sha256": "6752bca20eee6f83cbebe90f13998be3231c096a44fffb186c44f96f4dafef3b",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/librt.so.1"
+        },
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libpthread.so.0",
+          "expected_sha256": "288b8279c29e63f70e51d8322b0d76dd3b638db85dc83eeddac419b3dbdf7148",
+          "exists": true,
+          "bytes": 67440,
+          "sha256": "288b8279c29e63f70e51d8322b0d76dd3b638db85dc83eeddac419b3dbdf7148",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libpthread.so.0"
+        },
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libdl.so.2",
+          "expected_sha256": "34c231665c5008a479ce46d094134cec21c3ea14040927c1b7af1ab25dd5986e",
+          "exists": true,
+          "bytes": 67440,
+          "sha256": "34c231665c5008a479ce46d094134cec21c3ea14040927c1b7af1ab25dd5986e",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libdl.so.2"
+        },
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+          "expected_sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180",
+          "exists": true,
+          "bytes": 203968,
+          "sha256": "bd29514c1b45cc29b152011dd7c504e00dce240c19e4dd120196053873af9180",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"
+        },
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+          "expected_sha256": "2a417ca4e1da148b874d510c5356c2652eb934dd761a138454aefbeb61539fa2",
+          "exists": true,
+          "bytes": 133616,
+          "sha256": "2a417ca4e1da148b874d510c5356c2652eb934dd761a138454aefbeb61539fa2",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libgcc_s.so.1"
+        },
+        {
+          "path": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libm.so.6",
+          "expected_sha256": "73339d71a889a70ac3f2b882b1fdd463ecf7896226bf12d1319edc63948c47fd",
+          "exists": true,
+          "bytes": 591800,
+          "sha256": "73339d71a889a70ac3f2b882b1fdd463ecf7896226bf12d1319edc63948c47fd",
+          "match": true,
+          "symlink": false,
+          "resolved": "/home/alex/razr-flash-validation-canonical-20261014/evidence/r11r4-baseline-public-rootfs-extract-9ef442f6-2877-4c08-b5e9-875b1228b918/root/usr/lib/aarch64-linux-gnu/libm.so.6"
+        }
+      ]
+    }
+  },
+  "historical_work_directory": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review",
+    "current_desktop_exists": false,
+    "current_rog_exists": false
+  },
+  "guidance": [
+    "Use a new owned desktop output; do not restore into old work dirs or modify global toolchains.",
+    "Compare copied GNU sysroot and target Rust std inventory against the historical tool-inputs manifest before compilation.",
+    "Use the exact full frozen source workspace plus four SHA-pinned overlays, offline locked Cargo, measured host tools and private target directory.",
+    "Copy only the eight manifest-pinned public runtime ELFs into new owned output from the retained Pocket4 extraction; do not modify the retained original modes.",
+    "The first historical QEMU help failure was caused by an owned loader copy missing execute permission; the corrected r3 grants mode0700 only to its new fixture copy.",
+    "Separate compile/ELF-version compatibility from bounded QEMU help and inactive cancel fixtures. Neither establishes phone/provider/model qualification.",
+    "Do not blindly execute preserved historical build or post-build scripts; they contain historical paths, one-shot output assumptions and fixed final binary hashes."
+  ],
+  "performed": {
+    "source_or_global_toolchain_modifications": 0,
+    "phone_operations": 0,
+    "service_operations": 0,
+    "downloads": 0,
+    "fresh_gnu_build": 0
+  }
+}
+

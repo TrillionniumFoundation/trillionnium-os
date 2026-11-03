@@ -1,0 +1,43 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling serde_core v1.0.229
+   Compiling version_check v0.9.5
+   Compiling zmij v1.0.23
+   Compiling thiserror v2.0.20
+   Compiling generic-array v0.14.7
+   Compiling typenum v1.20.1
+   Compiling libc v0.2.189
+   Compiling syn v3.0.5
+   Compiling serde_json v1.0.151
+   Compiling itoa v1.0.18
+   Compiling serde v1.0.229
+   Compiling memchr v2.8.3
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling cpufeatures v0.2.17
+   Compiling cfg-if v1.0.4
+   Compiling syn v2.0.119
+   Compiling sha2 v0.10.9
+   Compiling thiserror-impl v2.0.20
+   Compiling serde_derive v1.0.229
+   Compiling schemars v0.8.22
+   Compiling trillionnium-owner-open-runtime v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-runtime)
+   Compiling serde_derive_internals v0.29.1
+   Compiling trillionnium-owner-open-call-registry v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-call-registry)
+   Compiling schemars_derive v0.8.22
+   Compiling dyn-clone v1.0.20
+   Compiling trillionnium-owner-open-tool-bridge v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-tool-bridge)
+   Compiling ryu-js v0.2.2
+   Compiling serde_jcs v0.2.0
+   Compiling trillionnium-owner-open-event-store v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-event-store)
+   Compiling trillionnium-owner-open-job-registry v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-job-registry)
+   Compiling trillionnium-owner-open-types v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-types)
+   Compiling trillionnium-owner-open-turn-loop v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-turn-loop)
+   Compiling base64 v0.22.1
+   Compiling trillionnium-owner-open-provider-jsonl v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-provider-jsonl)
+   Compiling trillionnium-owner-open-job-runtime v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-job-runtime)
+   Compiling trillionnium-owner-open-stream-window v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/crates/trillionnium-owner-open-stream-window)
+   Compiling trillionnium-owner-open-host v0.1.0 (/home/qian-qi/Documents/Codex/2026-10-15/rog-moto-razr-60-ultra-p0/work/latecancel-source-review/proposed-4b687742/apps/trillionnium-owner-open-host)
+    Finished `release` profile [optimized] target(s) in 33.75s

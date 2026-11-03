@@ -1,0 +1,39 @@
+{
+  "results": [
+    {
+      "name": "thiserror",
+      "version": "2.0.20",
+      "url": "https://static.crates.io/crates/thiserror/thiserror-2.0.20.crate",
+      "expected_sha256_from_frozen_Cargo_lock": "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f",
+      "rc": 0,
+      "utc": "2026-11-03T11:05:58.843505+00:00",
+      "global_registry_modified": false,
+      "bytes": 28969,
+      "observed_sha256": "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f",
+      "verified": true,
+      "private_registry_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/registry-overlay/registry/cache/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20.crate",
+      "removed_owned_src_alias_for_fresh_unpack": {
+        "path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/registry-overlay/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20",
+        "original_target_unchanged": "/home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20"
+      }
+    },
+    {
+      "name": "thiserror-impl",
+      "version": "2.0.20",
+      "url": "https://static.crates.io/crates/thiserror-impl/thiserror-impl-2.0.20.crate",
+      "expected_sha256_from_frozen_Cargo_lock": "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af",
+      "rc": 0,
+      "utc": "2026-11-03T11:05:59.433461+00:00",
+      "global_registry_modified": false,
+      "bytes": 21436,
+      "observed_sha256": "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af",
+      "verified": true,
+      "private_registry_path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/registry-overlay/registry/cache/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.20.crate",
+      "removed_owned_src_alias_for_fresh_unpack": {
+        "path": "/home/qian-qi/razr60-independent-gnu-session-v149-20261103/registry-overlay/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.20",
+        "original_target_unchanged": "/home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-impl-2.0.20"
+      }
+    }
+  ],
+  "all_verified": true
+}
