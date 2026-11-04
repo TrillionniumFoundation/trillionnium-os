@@ -1,0 +1,65 @@
+{
+  "checks": [
+    {
+      "changed": true,
+      "explicit_reverse_exact": true,
+      "name": "frozen_fixture_support.py",
+      "original_sha256": "b3962737e4e89a137244989502b8b85e9a3c362859e803398c98cdc7b66f04ce",
+      "python312_parse": true,
+      "sha256": "2a02578bc0793cb8f883a964f04c80573315c8967e89c022c709678de4277e12"
+    },
+    {
+      "changed": true,
+      "explicit_reverse_exact": true,
+      "name": "fixture_server.py",
+      "original_sha256": "bf26c6d3feb0e30a559f11352dd36ee5c0efb7e1ce492e9471a2fc15cee83501",
+      "python312_parse": true,
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "changed": false,
+      "explicit_reverse_exact": true,
+      "name": "counter_effect.py",
+      "original_sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b",
+      "python312_parse": true,
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "changed": true,
+      "explicit_reverse_exact": true,
+      "name": "run_fault_cases.py",
+      "original_sha256": "0e0d353149a08603d4d5cd2ffb08e3ff3d67dcb75a7f8fe531a6cd54254d424c",
+      "python312_parse": true,
+      "sha256": "a2d651d32b01861c1399aabc0ec2a56392b82c880342c2b3b0258d846c138b7a"
+    },
+    {
+      "changed": true,
+      "explicit_reverse_exact": true,
+      "name": "execute_namespace_once.py",
+      "original_sha256": "d4d69600dc83a4190e9bf28e891cd1ba318ed97d4f4142839f847ad178dfaea8",
+      "python312_parse": true,
+      "sha256": "de66010ec2d8953c9daa4afb4d0a8f71802c0e79238b2e8974aa9722cdbaaabb"
+    },
+    {
+      "changed": true,
+      "explicit_reverse_exact": true,
+      "name": "run_fixed_faults_once.py",
+      "original_sha256": "ee44e431e4eafeb18ded6e2805fa7e9ea64c72394a63814e925e6496b640b245",
+      "python312_parse": true,
+      "sha256": "07e1efc5f062769941442d8d11296c0a9944d90149cebbf4a23f7fd311300410"
+    }
+  ],
+  "combination_canonical_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "fixture_executed": false,
+  "narrow_changes": [
+    "r7 source and full combination bindings",
+    "deterministic fixture open response changes from flat decision to mobile_use named JSON",
+    "read original r7 model-action/mapping artifacts to verify actual projection",
+    "stop starting further cases if the one-shot absolute deadline was observed; outer process bound unchanged"
+  ],
+  "phone_calls": 0,
+  "production_source_modified": false,
+  "real_model_requests": 0,
+  "schema": "hepta.r7-host-fault-source-check.v1",
+  "shared_input_manifest_sha256": "f42f62e3d778c551eaf8ceb9d2a73bd367b0c8ed9e09d9f4c2d025bcb403bb58"
+}

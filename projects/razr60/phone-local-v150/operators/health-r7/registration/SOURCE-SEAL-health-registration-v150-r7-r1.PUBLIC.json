@@ -1,0 +1,41 @@
+{
+  "data": {
+    "files": [
+      {
+        "bytes": 733,
+        "path": "METADATA-CHECK.json",
+        "sha256": "af3be044ebadea4e4fb738cc270db437ed884ba5ac5b358c2084529e4f30f8d0"
+      },
+      {
+        "bytes": 1030,
+        "path": "README.md",
+        "sha256": "1cb5c8d939bc8ea793e4be14e0e15d0c2df11e02172577ca89849ef73d27d667"
+      },
+      {
+        "bytes": 5610,
+        "path": "prepare_register_health_r7.py",
+        "sha256": "e357152dab91a4ecc38f0ae5335ec5be7fdc37e5287f77c9f21241406207c476"
+      },
+      {
+        "bytes": 6833,
+        "path": "prepare_register_health_r7.py.ADAPTATION.diff",
+        "sha256": "d9a67236f2f5fa1607faddb5adf07e07cbdaaa08dd56f27e42aa91db83594812"
+      }
+    ],
+    "materializer_sha256": "23d3993c989783a89d48a1955109ae7cec163171e68801e9f19a74adc5d81efc",
+    "model_requests": 0,
+    "phone_operations": 0,
+    "previous_terminal": "cancelled",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "schema": "hepta.health-registration-source-seal.v150.r7.1",
+    "sender_sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281",
+    "state": "FROZEN_HOST_METADATA_NOT_EXECUTED",
+    "task_nonces_generated": false
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 1274,
+  "original_artifact_reference": "health-r7-root-operator-r1/SOURCE-SEAL-health-registration-v150-r7-r1.json",
+  "original_artifact_sha256": "54d78d0b228f28afaf51a1ab5efaf83801574c7f31d30e9667dc0b3ac81f25db",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

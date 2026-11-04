@@ -1,0 +1,72 @@
+{
+  "data": {
+    "files": [
+      {
+        "bytes": 662,
+        "path": "COMBINATION-PENDING.json",
+        "sha256": "dc88ad11acd82dd777783d473f0f8ce4a007c38829852bd830d485e0ff49b303"
+      },
+      {
+        "bytes": 2030,
+        "path": "METADATA-CHECK-01.json",
+        "sha256": "8d8e9146c5ae6bbc447dc9236647b52df727e843584b26c0db2c52279f26a063"
+      },
+      {
+        "bytes": 855,
+        "path": "README.md",
+        "sha256": "448282834d7316772e388d9e624c219cfd3d3263a67ac0e07af5ddea9518802d"
+      },
+      {
+        "bytes": 12603,
+        "path": "aggregate_protocol_r7.py",
+        "sha256": "c3b91281a1076ac6fd782fe722eeedae7384817dcbd89060e94b095be48ce083"
+      },
+      {
+        "bytes": 38333,
+        "path": "fixed-acceptance-set-r7.json",
+        "sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43"
+      },
+      {
+        "bytes": 3109,
+        "path": "materialize_case_r7.py",
+        "sha256": "23d3993c989783a89d48a1955109ae7cec163171e68801e9f19a74adc5d81efc"
+      },
+      {
+        "bytes": 13217,
+        "path": "references/aggregate_protocol_r4.py",
+        "sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772"
+      },
+      {
+        "bytes": 37318,
+        "path": "references/fixed-acceptance-set-r4.original.json",
+        "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+      },
+      {
+        "bytes": 38286,
+        "path": "references/fixed-acceptance-set-r6-r2.original.json",
+        "sha256": "4cecd310c93c99db1d71d5c93afafb514d54c1cb5d51bdec22730102d4a4cc57"
+      },
+      {
+        "bytes": 9783,
+        "path": "references/materialize_case_r4.py",
+        "sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81"
+      }
+    ],
+    "fixed19_objects_changed": false,
+    "full_combination_and_new_health_required": true,
+    "model_requests": 0,
+    "parent_current_protocol_sha256": "4cecd310c93c99db1d71d5c93afafb514d54c1cb5d51bdec22730102d4a4cc57",
+    "phone_operations": 0,
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r1",
+    "runtime_changed": false,
+    "schema": "hepta.acceptance-metadata-source-seal.v150.r7.1",
+    "task_nonces_generated": false
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 2162,
+  "original_artifact_reference": "acceptance-r7/METADATA-SOURCE-SEAL-v150-r7-r1.json",
+  "original_artifact_sha256": "43c4c37270f94b3b5e048c77b373b8c3763423afa2141429117bafebd3cc4e0e",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

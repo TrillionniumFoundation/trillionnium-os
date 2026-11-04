@@ -1,0 +1,1144 @@
+{
+  "actual_aggregate_process_exit_code": 0,
+  "aggregate_report_sha256": "bef4a8e52afa10f0ed918337d934f824356e1b62e96cd76ca19ce7f1d654dac8",
+  "aggregator_source_sha256": "bb57668a3145ec206dbfd5df660e485fc9106ea6b00df98a61286f71659b08e9",
+  "business": {
+    "cancelled": 0,
+    "complete_success": 0,
+    "complete_success_fraction": 0.0,
+    "failed": 2,
+    "partial_verified": 0,
+    "recovery_events_for_these_tasks": 0,
+    "samples": 2,
+    "unconfirmed": 0
+  },
+  "business_cases": [
+    {
+      "business_status": "failed",
+      "case_id": "E2E-01",
+      "completion_tokens": 87,
+      "failure_closure_sha256": "d5789b161336494f3185e4361aaf07741543ee92b3b5e07ee4286ba03c7d53c2",
+      "generation_tokens_per_second": 22.378152261988834,
+      "http_seconds": 13.195217027008766,
+      "model_image_count": 0,
+      "native_observation_upper_seconds": 14.136282819,
+      "native_persistence_interval_seconds": [
+        12.913371835,
+        14.136282819
+      ],
+      "native_status": "provider_failed",
+      "old_action_replayed": false,
+      "original_draft_restored": true,
+      "original_report_sha256": "ea536333787fafea23ad258cf650d20920e92f4246797af0049c20196f4254cb",
+      "phone_task_tools": 0,
+      "process_and_slot_cleanup_observed": true,
+      "prompt_tokens": 814,
+      "raw_business_proof_complete": false,
+      "raw_model_reported_status": "completed",
+      "real_model_requests": 1,
+      "resources": {
+        "after_sample_sha256": "50ca4f5dbd1d1771812fff2c379ba746c56b4dd94d600803f9c14be5dce576e2",
+        "battery_after_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -6000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4400000
+          }
+        },
+        "battery_before_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4402000
+          }
+        },
+        "battery_units_and_energy_uninferred": true,
+        "before_sample_sha256": "8b59990c4d52d56da120c9161b5b8ac1201a45d5cbef2252609b10fea18214c2",
+        "cpu_interval_includes_idle_and_observation": true,
+        "energy_joules": null,
+        "latency_clock": "single Pocket4 actor monotonic clock; no cross-host subtraction",
+        "mem_available_after_kib": 7582156,
+        "model_cpu_seconds_across_sampling_interval": 51.64,
+        "model_hwm_is_not_per_task_peak": true,
+        "model_hwm_lifetime_after_kib": 3170044,
+        "model_rss_after_kib": 3153488,
+        "model_rss_before_kib": 3122796,
+        "monetary_cost": null,
+        "native_terminal_observed_latency_upper_seconds": 14.136282819,
+        "native_terminal_persistence_interval_seconds": [
+          12.913371835,
+          14.136282819
+        ],
+        "same_process_identity_verified": true
+      },
+      "total_tokens": 901
+    },
+    {
+      "business_status": "failed",
+      "case_id": "E2E-02",
+      "completion_tokens": 126,
+      "failure_closure_sha256": "f7eb0943b469686dc0e3fcf3edb74a6f1e45901bd5055ab18d2888fd4e308616",
+      "generation_tokens_per_second": 25.847711898508237,
+      "http_seconds": 15.176746713012108,
+      "model_image_count": 0,
+      "native_observation_upper_seconds": 15.999882847,
+      "native_persistence_interval_seconds": [
+        14.802663716,
+        15.999882847
+      ],
+      "native_status": "provider_failed",
+      "old_action_replayed": false,
+      "original_draft_restored": true,
+      "original_report_sha256": "044450f8dfc1dff6e8108af1a44498a1403bda2f44847335c025cb42d25db38c",
+      "phone_task_tools": 0,
+      "process_and_slot_cleanup_observed": true,
+      "prompt_tokens": 1226,
+      "raw_business_proof_complete": false,
+      "raw_model_reported_status": "partial",
+      "real_model_requests": 1,
+      "resources": {
+        "after_sample_sha256": "4b8db56ec6d04db36e0c9aae58b4b23030d2dc71d5f23b9fde75661daf492849",
+        "battery_after_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 270
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4399000
+          }
+        },
+        "battery_before_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -7000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4400000
+          }
+        },
+        "battery_units_and_energy_uninferred": true,
+        "before_sample_sha256": "47ac0fb13ee30cee6a397dd9147445d3b0f1b4678339117e0e6e871b837bd233",
+        "cpu_interval_includes_idle_and_observation": true,
+        "energy_joules": null,
+        "latency_clock": "single Pocket4 actor monotonic clock; no cross-host subtraction",
+        "mem_available_after_kib": 7482724,
+        "model_cpu_seconds_across_sampling_interval": 59.67,
+        "model_hwm_is_not_per_task_peak": true,
+        "model_hwm_lifetime_after_kib": 3271808,
+        "model_rss_after_kib": 3254960,
+        "model_rss_before_kib": 3153488,
+        "monetary_cost": null,
+        "native_terminal_observed_latency_upper_seconds": 15.999882847,
+        "native_terminal_persistence_interval_seconds": [
+          14.802663716,
+          15.999882847
+        ],
+        "same_process_identity_verified": true
+      },
+      "total_tokens": 1352
+    }
+  ],
+  "by_execution_layer": {
+    "component_direct": {
+      "attempts": 1,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 1,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "host_isolated": {
+      "attempts": 11,
+      "outcomes": {
+        "cancelled": 2,
+        "complete_success": 0,
+        "failed": 7,
+        "partial": 0,
+        "unconfirmed": 2
+      },
+      "recovery_attempts": 0
+    },
+    "model_e2e": {
+      "attempts": 2,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 2,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "physical_native_task": {
+      "attempts": 1,
+      "outcomes": {
+        "cancelled": 1,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    }
+  },
+  "combination_canonical_sha256": "5c04f6d4b27be786387e83998c2f8e350c263835bb12d629278d0d252c36e418",
+  "combination_manifest_sha256": "1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802",
+  "component_fixture_cases": [
+    {
+      "case_id": "NEG-03",
+      "layer": "component_direct",
+      "physical_display_support_granted": false,
+      "protocol_result": "PASS",
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 27904,
+          "maxrss_raw_unit": "KiB",
+          "monotonic": 775357.836688795,
+          "open_fd_count": 4,
+          "self_cpu_system_seconds": 0.017643,
+          "self_cpu_user_seconds": 0.064346,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 27412,
+          "maxrss_raw_unit": "KiB",
+          "monotonic": 775357.789720524,
+          "open_fd_count": 4,
+          "self_cpu_system_seconds": 0.012227,
+          "self_cpu_user_seconds": 0.050948,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.046968271024525166
+      },
+      "task_outcome": "failed"
+    }
+  ],
+  "cost": {
+    "hardware_energy_joules": null,
+    "monetary_cost": null,
+    "note": "Phone CPU inference; original usage available. No measured currency/electricity/battery-scaling cost is asserted."
+  },
+  "daily_use_qualification_established": false,
+  "daily_use_reason": "Both new business tasks failed before calling phone tools; a working health route is not adequate qualification.",
+  "declared_attempt_record_count": 33,
+  "declared_record_count_includes_preserved_not_run_placeholders": true,
+  "executed_sample_count": 15,
+  "fixed19": {
+    "case_count": 19,
+    "cases": [
+      {
+        "attempt_count": 1,
+        "id": "E2E-01",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": null,
+            "status": "FAIL"
+          }
+        ],
+        "status": "FAIL",
+        "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA"
+      },
+      {
+        "attempt_count": 1,
+        "id": "E2E-02",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": null,
+            "status": "FAIL"
+          }
+        ],
+        "status": "FAIL",
+        "title": "全新中文/emoji/换行输入、确认、公开回执与返回"
+      },
+      {
+        "attempt_count": 1,
+        "id": "E2E-03",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": "Current installed calculator editable expression and unique public result view are not yet qualified; original 7-tool path is not established.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "计算器完成全新随机简单表达式并核验结果"
+      },
+      {
+        "attempt_count": 1,
+        "id": "E2E-04",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": "Current Settings detail field, unique public view and bounded navigation path are not yet qualified.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "只读查看设置中的公开系统版本字段"
+      },
+      {
+        "attempt_count": 1,
+        "id": "COMP-01",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "component_direct",
+            "reason": "Independent approved native component return run has not been executed on this combination.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "显式返回：launch状态和实际焦点双核验"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-01",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "component_direct",
+            "reason": "Fresh physical focus-change guard run has not been executed; no phone input evidence is inferred from fixtures.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "截图后焦点切换：必须在input之前拒绝"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-02",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "component_direct",
+            "reason": "Fresh same-viewport visible-content-change guard run has not been executed.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "同viewport内容变化：精确像素guard必须拒绝"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-03",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "component_direct",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "外屏或旋转：拒绝未资格显示配置"
+      },
+      {
+        "attempt_count": 3,
+        "id": "NEG-04",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "Fresh owned-transport pre-dispatch disconnection sample is pending for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "断连发生于dispatch之前"
+      },
+      {
+        "attempt_count": 3,
+        "id": "NEG-05",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "Fresh effect-start/post-disconnect original counter and receipt sample is pending for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "作用已开始后断连：保持未知且不重放"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-06",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "模型超时：有界结束且清理原进程组"
+      },
+      {
+        "attempt_count": 3,
+        "id": "NEG-07",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "Fresh delayed executor result and original-effect receipt sample is pending for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "执行器结果超时：不能用迟到结果认定成功或再执行"
+      },
+      {
+        "attempt_count": 4,
+        "id": "NEG-08",
+        "original_task_outcomes": {
+          "cancelled": 2
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "attempts": 2,
+            "layer": "physical_native_task",
+            "reason": null,
+            "status": "FAIL"
+          }
+        ],
+        "status": "FAIL",
+        "title": "dispatch前取消"
+      },
+      {
+        "attempt_count": 3,
+        "id": "NEG-09",
+        "original_task_outcomes": {
+          "cancelled": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "After-effect cancellation requires a qualified cancellation entry and confirmed original effect counter; no forced navigation is substituted.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "首次作用后取消"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-10",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "图片字节预算/过期图像/旧round绑定"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-11",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "native输出损坏/截断/错误身份"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-12",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "部分任务被模型说成完成：必须失败终态"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-13",
+        "original_task_outcomes": {
+          "unconfirmed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "一次性模板并发/旧nonce重用"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-14",
+        "original_task_outcomes": {
+          "unconfirmed": 1
+        },
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 2,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "容量/原子rename竞态与资源收尾"
+      }
+    ],
+    "closed": false,
+    "status_counts": {
+      "BLOCKED": 9,
+      "FAIL": 3,
+      "PASS": 7
+    }
+  },
+  "health": {
+    "counts_as_business": false,
+    "passed": 1,
+    "samples": 1
+  },
+  "host_isolated_cases": [
+    {
+      "assertions_passed": 17,
+      "case_id": "NEG-10",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.137252625,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.018786999999999998,
+          "self_cpu_user_seconds": 0.155727,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.136079458,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.018216,
+          "self_cpu_user_seconds": 0.155267,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.0011731670000000027
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 109,
+      "case_id": "NEG-11",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.148812625,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.022015999999999997,
+          "self_cpu_user_seconds": 0.163635,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.137500916,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.018916,
+          "self_cpu_user_seconds": 0.155833,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.011311709000000003
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 29,
+      "case_id": "NEG-12",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29179904,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.160594791,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.029122,
+          "self_cpu_user_seconds": 0.16758399999999998,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.149359375,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.022175,
+          "self_cpu_user_seconds": 0.163988,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.011235415999999998
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 18,
+      "case_id": "NEG-13",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29245440,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.163296291,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.030732,
+          "self_cpu_user_seconds": 0.168782,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29179904,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.160848041,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.029255,
+          "self_cpu_user_seconds": 0.16769299999999998,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.002448250000000013
+      },
+      "synthetic_task_outcome": "unconfirmed"
+    },
+    {
+      "assertions_passed": 24,
+      "case_id": "NEG-06",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "available_bytes": 530110177280,
+          "children_cpu_system": 0.044885,
+          "children_cpu_user": 0.18115699999999998,
+          "cpu_system": 0.016118,
+          "cpu_user": 0.084185,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 30832,
+          "monotonic": 774904.674855014,
+          "thread_count": 1
+        },
+        "before": {
+          "available_bytes": 530110427136,
+          "children_cpu_system": 0.0,
+          "children_cpu_user": 0.0,
+          "cpu_system": 0.012941,
+          "cpu_user": 0.076654,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 30832,
+          "monotonic": 774902.849871083,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 1.8249839309137315
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 27,
+      "case_id": "NEG-14",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "available_bytes": 530109976576,
+          "children_cpu_system": 0.064831,
+          "children_cpu_user": 0.34682599999999997,
+          "cpu_system": 0.018302,
+          "cpu_user": 0.089478,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 30832,
+          "monotonic": 774904.920044147,
+          "thread_count": 1
+        },
+        "before": {
+          "available_bytes": 530110164992,
+          "children_cpu_system": 0.044885,
+          "children_cpu_user": 0.18115699999999998,
+          "cpu_system": 0.016118,
+          "cpu_user": 0.084535,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 30832,
+          "monotonic": 774904.675641893,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.24440225400030613
+      },
+      "synthetic_task_outcome": "unconfirmed"
+    },
+    {
+      "assertions_passed": 29,
+      "case_id": "NEG-04",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "available_bytes": 530041823232,
+          "children_cpu_system": 0.044726999999999996,
+          "children_cpu_user": 0.22344899999999998,
+          "cpu_system": 0.015955999999999998,
+          "cpu_user": 0.13164199999999998,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777168.768501166,
+          "thread_count": 1
+        },
+        "before": {
+          "available_bytes": 530042208256,
+          "children_cpu_system": 0.0,
+          "children_cpu_user": 0.0,
+          "cpu_system": 0.009996999999999999,
+          "cpu_user": 0.12496399999999999,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 30992,
+          "monotonic": 777167.87328074,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.895220426027663
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 36,
+      "case_id": "NEG-05",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "available_bytes": 530041438208,
+          "children_cpu_system": 0.08445,
+          "children_cpu_user": 0.46337,
+          "cpu_system": 0.022122,
+          "cpu_user": 0.145805,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777170.240452018,
+          "thread_count": 1
+        },
+        "before": {
+          "available_bytes": 530041810944,
+          "children_cpu_system": 0.044726999999999996,
+          "children_cpu_user": 0.22344899999999998,
+          "cpu_system": 0.016000999999999998,
+          "cpu_user": 0.132011,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777168.769374471,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 1.471077546942979
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 37,
+      "case_id": "NEG-07",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "available_bytes": 530041036800,
+          "children_cpu_system": 0.132457,
+          "children_cpu_user": 0.674967,
+          "cpu_system": 0.028436999999999997,
+          "cpu_user": 0.15437199999999998,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777172.492099687,
+          "thread_count": 1
+        },
+        "before": {
+          "available_bytes": 530041425920,
+          "children_cpu_system": 0.08445,
+          "children_cpu_user": 0.46337,
+          "cpu_system": 0.022167,
+          "cpu_user": 0.14610199999999998,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777170.241246484,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 2.250853203004226
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 29,
+      "case_id": "NEG-08",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "available_bytes": 530040729600,
+          "children_cpu_system": 0.164929,
+          "children_cpu_user": 0.839349,
+          "cpu_system": 0.031344,
+          "cpu_user": 0.16075399999999998,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777173.354583528,
+          "thread_count": 1
+        },
+        "before": {
+          "available_bytes": 530041024512,
+          "children_cpu_system": 0.132457,
+          "children_cpu_user": 0.674967,
+          "cpu_system": 0.028478999999999997,
+          "cpu_user": 0.1546,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777172.492789813,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.8617937150411308
+      },
+      "synthetic_task_outcome": "cancelled"
+    },
+    {
+      "assertions_passed": 35,
+      "case_id": "NEG-09",
+      "phone_actions": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0,
+      "resources": {
+        "after": {
+          "available_bytes": 530040344576,
+          "children_cpu_system": 0.202557,
+          "children_cpu_user": 1.061572,
+          "cpu_system": 0.036055,
+          "cpu_user": 0.16791699999999998,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777174.413256142,
+          "thread_count": 1
+        },
+        "before": {
+          "available_bytes": 530040717312,
+          "children_cpu_system": 0.164929,
+          "children_cpu_user": 0.839349,
+          "cpu_system": 0.031849999999999996,
+          "cpu_user": 0.16075399999999998,
+          "fd_count": 4,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_KiB": 31420,
+          "monotonic": 777173.355656303,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 1.0575998390559107
+      },
+      "synthetic_task_outcome": "cancelled"
+    }
+  ],
+  "http_timing_descriptive": {
+    "max": 15.176746713012108,
+    "mean": 14.185981870010437,
+    "min": 13.195217027008766,
+    "missing_samples": 0,
+    "p50": 14.185981870010437,
+    "p95": 15.077670228711941,
+    "quantile_method": "linear interpolation; descriptive only",
+    "samples": 2
+  },
+  "lifecycle": {
+    "business_recovery_success_claimed": false,
+    "draft_restoration": "EXACT_ORIGINAL_RESTORED",
+    "monitor_duration_is_cancel_latency": false,
+    "new_service_startup_gates_required": true,
+    "next_send_allowed": false,
+    "original_HTTP_client_joined": true,
+    "original_HTTP_group_absent": true,
+    "original_NEG08_native_status": "cancelled",
+    "original_NEG08_provider_status": "turn.cancelled",
+    "original_monitor_read_count": 334,
+    "original_monitor_seconds": 327.147463424,
+    "original_tool_dispatch_count": 0,
+    "physical_NEG08_qualification": "FAIL",
+    "root_closure_sha256": "54145149034d442995d2dc8e72923ae7061506bf6953c83e8e25edfee6819590",
+    "root_review_sha256": "5aea02f1c527d1689bf381e5ff55530feb410d6cee4734f23ff2fb1523b40c6a",
+    "safe_closure": "DRAFT_RESTORED_AND_OLD_SERVICE_GROUPS_ABSENT",
+    "slot_after_idle": false,
+    "slot_after_observed": true
+  },
+  "model_usage": {
+    "completion_tokens": {
+      "complete_total": 213,
+      "known_samples": 2,
+      "known_sum": 213,
+      "missing_samples": 0
+    },
+    "prompt_tokens": {
+      "complete_total": 2040,
+      "known_samples": 2,
+      "known_sum": 2040,
+      "missing_samples": 0
+    },
+    "total_tokens": {
+      "complete_total": 2253,
+      "known_samples": 2,
+      "known_sum": 2253,
+      "missing_samples": 0
+    }
+  },
+  "native_observation_measurements": [
+    {
+      "case_id": "E2E-01",
+      "native_observation_upper_seconds": 14.136282819,
+      "native_persistence_interval_seconds": [
+        12.913371835,
+        14.136282819
+      ]
+    },
+    {
+      "case_id": "E2E-02",
+      "native_observation_upper_seconds": 15.999882847,
+      "native_persistence_interval_seconds": [
+        14.802663716,
+        15.999882847
+      ]
+    }
+  ],
+  "new_model_calls": 0,
+  "new_phone_calls": 0,
+  "old_failures_preserved": true,
+  "original_business_outcomes_and_health_preserved": true,
+  "previous_checkpoint_public_sha256": "1cb7b571148832e285c19eeda17f7b2641ea8a9115695caf0e3ee5a855e31512",
+  "private_requests_drafts_keys_screenshots_native_records_published": false,
+  "safe_closure_events": [
+    {
+      "original_physical_NEG08_status": "FAIL",
+      "original_task_status": "cancelled",
+      "replayed_task_or_actions": false,
+      "root_closure_sha256": "54145149034d442995d2dc8e72923ae7061506bf6953c83e8e25edfee6819590",
+      "scope": "Original draft restoration and old-service quiescence only",
+      "status": "complete"
+    }
+  ],
+  "schema": "hepta.public-quality-checkpoint.v150.r6-r2.2",
+  "snapshot_scope": "New immutable aggregation of checkpoint01 plus host/component NEG03/04/05/06/07/08/09/14, original physical NEG08 failure, and independently reviewed safe draft/service closure.",
+  "source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+  "utc": "2026-11-04T00:31:09.706417+00:00"
+}

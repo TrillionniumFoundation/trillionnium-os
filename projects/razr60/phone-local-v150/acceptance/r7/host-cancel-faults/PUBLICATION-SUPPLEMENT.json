@@ -1,0 +1,16 @@
+{
+  "actual_finalizer_exit_code": 0,
+  "actual_finalizer_output_complete": true,
+  "aggregation_rerun": false,
+  "cases_rerun": false,
+  "independent_review": {
+    "bytes": 1606,
+    "name": "host-faults-r7-review-r1/REVIEW.json",
+    "sha256": "3ef118bfa24562970596226ae98f7fb8b4870b0591571a5290e10bac0c513a18"
+  },
+  "model_calls": 0,
+  "original_source_seal_sha256": "28b901adc22a33de829c9cf8dadb563214d467a13dc35a72ce5438da6024ec71",
+  "original_supplement_sha256": "85ecc15a277a2a64f39460445d388e2c77f53f704dc948773da65324ee1d5b47",
+  "phone_calls": 0,
+  "schema": "hepta.publication-supplement.v1"
+}

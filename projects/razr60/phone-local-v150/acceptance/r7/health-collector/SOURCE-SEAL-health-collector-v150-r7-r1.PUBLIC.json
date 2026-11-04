@@ -1,0 +1,50 @@
+{
+  "data": {
+    "files": [
+      {
+        "bytes": 47357,
+        "path": "collect_health_evidence.py",
+        "sha256": "887d28ae2cc09fe857ab01fac19bbb32d14e35c5d78b230bb82950a6d956dbf2"
+      },
+      {
+        "bytes": 6701,
+        "path": "native_journal_audit.py",
+        "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+      },
+      {
+        "bytes": 5096,
+        "path": "business_fact_recheck.py",
+        "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+      },
+      {
+        "bytes": 2809,
+        "path": "collect_health_evidence.py.ADAPTATION.diff",
+        "sha256": "4a474a15910eaa4f1759a000c2e30c7f7479473ca115939dbf149b32a6fede8a"
+      },
+      {
+        "bytes": 331,
+        "path": "METADATA-CHECK.json",
+        "sha256": "cb996349bbcec503f7d42af8842f5c32ee416a8982ec6e0bd3d3fdfc7f1d9656"
+      }
+    ],
+    "generated_task_nonce": false,
+    "health_policy_and_owner_layout_unchanged": true,
+    "model_requests": 0,
+    "parent_collector_sha256": "50c901e87563a8bb04260b2e5e86a2d765cf3a83d9dc01330267e998caa05865",
+    "phone_operations": 0,
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "runtime_stage_allowlist": [
+      "collect_health_evidence.py",
+      "native_journal_audit.py",
+      "business_fact_recheck.py"
+    ],
+    "schema": "hepta.health-evidence-collector-source-seal.v150.r7.1",
+    "state": "FROZEN_HOST_METADATA_ONLY_NOT_PHYSICALLY_QUALIFIED"
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 1426,
+  "original_artifact_reference": "acceptance-r7/collector-r7/SOURCE-SEAL-health-collector-v150-r7-r1.json",
+  "original_artifact_sha256": "014595a0d477d2fb7694c693ad72e0d9b0762eecefec233775e7af077f666fb7",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

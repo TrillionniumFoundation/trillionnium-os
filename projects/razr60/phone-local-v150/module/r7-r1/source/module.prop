@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150_r7_r1
+name=HEPTA Phone Local v150 r7 attempt 1
+version=v150-r7-attempt1
+versionCode=150071
+author=Trillionnium
+description=Frozen GUI-Owl named JSON action mapping and preserved cleanup signal shielding; current boot only; no automatic tasks or replay.

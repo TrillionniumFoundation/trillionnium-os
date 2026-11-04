@@ -1,0 +1,98 @@
+{
+  "data": {
+    "acceptance_aggregator": {
+      "bytes": 12603,
+      "path": "/operator-workspace/phone-local-v150/acceptance-r7/aggregate_protocol_r7.py",
+      "sha256": "c3b91281a1076ac6fd782fe722eeedae7384817dcbd89060e94b095be48ce083"
+    },
+    "acceptance_pending": {
+      "bytes": 662,
+      "path": "/operator-workspace/phone-local-v150/acceptance-r7/COMBINATION-PENDING.json",
+      "sha256": "dc88ad11acd82dd777783d473f0f8ce4a007c38829852bd830d485e0ff49b303"
+    },
+    "archive_tar_metadata_normalized_for_rebuild": false,
+    "fixed19_protocol_sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43",
+    "freeze_invocation": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-B",
+      "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/freeze_combination_r7_r1.py",
+      "--aggregator-sha256",
+      "c3b91281a1076ac6fd782fe722eeedae7384817dcbd89060e94b095be48ce083",
+      "--pending-sha256",
+      "dc88ad11acd82dd777783d473f0f8ce4a007c38829852bd830d485e0ff49b303"
+    ],
+    "model_requests": 0,
+    "module_minimal_diff": {
+      "bytes": 10169,
+      "path": "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/MODULE-R7-R1-MINIMAL.diff",
+      "sha256": "9b375983d92a370ef6aa6dd713f51e97fbf88dd9c3e8f3d3f0a90664d44e1264"
+    },
+    "parent_module_archive": {
+      "bytes": 234698,
+      "path": "/operator-workspace/phone-local-v150/module-r6-r2-finalization-r1/sealed-module-v150-r6-r2.tar.gz",
+      "sha256": "9142783ef569c136d6fee89dd3b4f8fe5cfca0c0353cbe4bdbf4d69aaa79bb17"
+    },
+    "parent_module_manifest": {
+      "bytes": 27396,
+      "path": "/operator-workspace/phone-local-v150/module-r6-r2-finalization-r1/sealed-module-v150-r6-r2/module/MODULE-MANIFEST-v150-r6-r2.json",
+      "sha256": "9e5a8c3f9a5a7f4426d109beba1073edcfa2dfe4712760e446054b04906afb4a"
+    },
+    "phone_operations_by_this_builder": 0,
+    "provider_payload_archive": {
+      "bytes": 92352,
+      "path": "/operator-workspace/phone-local-v150/provider-r7-phone-payload.tar.gz",
+      "sha256": "b2c676b4599928183e52f98061ff7df3cf508882be6111dfa10331526b0326b2"
+    },
+    "provider_payload_manifest": {
+      "bytes": 9620,
+      "path": "/operator-workspace/phone-local-v150/provider-r7/PHONE-PAYLOAD-MANIFEST-v150-r7.json",
+      "sha256": "09eac79336b7ea7b2f81252cafa4dd621bf58e898bc58eef9cd9519624510986"
+    },
+    "provider_source_seal": {
+      "bytes": 13783,
+      "path": "/operator-workspace/phone-local-v150/provider-r7/SOURCE-SEAL-v150-r7.json",
+      "sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+    },
+    "schema": "hepta.module-r7-r1.reproduction-inputs.v1",
+    "scope": "Exact source/input/output traceability; one host build and exact Pocket4 readback. No independent bitwise rebuild claim.",
+    "source_builder_files": [
+      {
+        "bytes": 4763,
+        "path": "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/prepare_module_r7_r1.py",
+        "sha256": "b21273717154f5a03931b62896d1561eb84d9a60f4f5b88ba9bf52d5ffa50639"
+      },
+      {
+        "bytes": 19528,
+        "path": "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/seal_module_r7_r1_r2.py",
+        "sha256": "2e873572c4a21d7094f5e69b5f1cdda3aead828fd4e6823cc8bf895ab14066fa"
+      },
+      {
+        "bytes": 2961,
+        "path": "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/freeze_combination_r7_r1.py",
+        "sha256": "5c1769f6c7e5da7e4a405e42cc923d7974a8f9857d63afed0d4b09525c642d9b"
+      },
+      {
+        "bytes": 6571,
+        "path": "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/make_install_operator_r7_r1.py",
+        "sha256": "8e834032a28e0cbc13a569b26ef932a954a46147d2dcc7b3dd5a5dd9b2289f13"
+      },
+      {
+        "bytes": 4154,
+        "path": "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/mirror_sealed_module_r7_r1.py",
+        "sha256": "879f926fa836ff5259a8f62f5ba841b2cb9a28a7a3544896988df8f8dd0e837f"
+      }
+    ],
+    "source_payload_manifest_fullcombo_linked": true,
+    "source_preparation": {
+      "bytes": 3031,
+      "path": "/operator-workspace/phone-local-v150/module-r7-r1-finalization-r1/SOURCE-PREPARATION.json",
+      "sha256": "96806241dc0a36f347ea11eb7aaa519be8736050546f06315a4cc49ba55acac0"
+    }
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 7530,
+  "original_artifact_reference": "module-r7-r1-finalization-r1/REPRODUCTION-INPUTS-r7-r1.json",
+  "original_artifact_sha256": "cb3f86571d2ed732b5042c72170f157cbebcbba59c47c4a8991be01cba8a8fac",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

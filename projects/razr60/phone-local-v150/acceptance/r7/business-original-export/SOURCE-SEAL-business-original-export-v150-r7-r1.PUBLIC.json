@@ -1,0 +1,81 @@
+{
+  "data": {
+    "capture_operator_requires_actual_root_one_use": true,
+    "files": [
+      {
+        "bytes": 19538,
+        "path": "capture_business_originals.py",
+        "sha256": "39d07a043aeed52c45874ba8812b2636e6de70ddf6d17ab5f571dbf7083e3d78"
+      },
+      {
+        "bytes": 2562,
+        "path": "read_archive_chunk.py",
+        "sha256": "dbb116ba8bdaf51f0df1d12a77618a5e0959aeb0ce98c94356013263dc77024a"
+      },
+      {
+        "bytes": 27792,
+        "path": "export_business_once.py",
+        "sha256": "ae14894ce52be620da7672269e765f28687f101465c31c01dccab28af43e6a01"
+      },
+      {
+        "bytes": 4875,
+        "path": "capture_business_originals.py.ADAPTATION.diff",
+        "sha256": "1f7257518f36a5b347c94140ef24bd5258dcc0a922716572d540206b8ec243be"
+      },
+      {
+        "bytes": 1092,
+        "path": "read_archive_chunk.py.ADAPTATION.diff",
+        "sha256": "8ea22c9e29f60a361a14fc599c11e72a1629a6024817dab405949ee9772baa63"
+      },
+      {
+        "bytes": 11566,
+        "path": "export_business_once.py.ADAPTATION.diff",
+        "sha256": "0f1f7c183aa7f0bac43ea67150c49a279eb17370d54d6012cb76e1b0bed95818"
+      },
+      {
+        "bytes": 749,
+        "path": "ADAPTATION-CHECK.json",
+        "sha256": "4d23adb997d5f8aa31aba8c3c7eafc1dffbf97fc47bb27cc866a64c34ff162ae"
+      },
+      {
+        "bytes": 519,
+        "path": "METADATA-CHECK.json",
+        "sha256": "feba1dd67265c89760efe0b89d0e4094d52e7f5f869d4cf34899bee85c4730b6"
+      },
+      {
+        "bytes": 2435,
+        "path": "README.md",
+        "sha256": "997317f0e8d7bc6add12e1b6dac597255197a49fdc323eb6fd9c3519765650a8"
+      }
+    ],
+    "mapping_collector_seal_sha256": "c998fd770e65b1d0acf7ee2136f6fdca03e8fd5c5976dc64eb2a83090aab5409",
+    "model_requests": 0,
+    "phone_operations": 0,
+    "public_source_allowlist": [
+      "capture_business_originals.py",
+      "read_archive_chunk.py",
+      "export_business_once.py",
+      "capture_business_originals.py.ADAPTATION.diff",
+      "read_archive_chunk.py.ADAPTATION.diff",
+      "export_business_once.py.ADAPTATION.diff",
+      "ADAPTATION-CHECK.json",
+      "METADATA-CHECK.json",
+      "README.md"
+    ],
+    "runtime_source_allowlist": [
+      "capture_business_originals.py",
+      "read_archive_chunk.py",
+      "export_business_once.py"
+    ],
+    "schema": "hepta.business-original-export-source-seal.v150.r7.1",
+    "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "state": "FROZEN_HOST_METADATA_NOT_EXECUTED",
+    "task_nonces_generated": false
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 2412,
+  "original_artifact_reference": "business-r7-original-export-r1/SOURCE-SEAL-business-original-export-v150-r7-r1.json",
+  "original_artifact_sha256": "39780446dea65a87baaa3531ed37d5a147e6a37b35152729a6726b0f146ccade",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

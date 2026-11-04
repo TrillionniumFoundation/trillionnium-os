@@ -1,0 +1,83 @@
+{
+  "actual_aggregate_child_exit_code": 0,
+  "actual_aggregate_main_job_exit_code": 0,
+  "actual_aggregate_main_job_output_complete": true,
+  "business_health_and_usage_unchanged_from_checkpoint01": true,
+  "declared_records": 33,
+  "draft_restored_slot_failure_retained": true,
+  "executed_samples": 15,
+  "files": [
+    {
+      "bytes": 35305,
+      "name": "quality/QUALITY-PUBLIC.json",
+      "sha256": "55c7177602aada6cbccfde215fe2fb49bc08402ce17ca6993462e8c934b3a3a6"
+    },
+    {
+      "bytes": 2042,
+      "name": "quality/README.md",
+      "sha256": "89182028b6547b16fe110dfdb662d232e74b996664009f57e28f7329733401ac"
+    },
+    {
+      "bytes": 7019,
+      "name": "host-faults/REPORT-PUBLIC.json",
+      "sha256": "dc8a94462c49d5844acfded43f6279f534ddf9f9602bb36db9c350416288f820"
+    },
+    {
+      "bytes": 5406,
+      "name": "host-faults/source/fixture_server.py",
+      "sha256": "bf26c6d3feb0e30a559f11352dd36ee5c0efb7e1ce492e9471a2fc15cee83501"
+    },
+    {
+      "bytes": 2299,
+      "name": "host-faults/source/counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 22963,
+      "name": "host-faults/source/frozen_fixture_support.py",
+      "sha256": "b3962737e4e89a137244989502b8b85e9a3c362859e803398c98cdc7b66f04ce"
+    },
+    {
+      "bytes": 24907,
+      "name": "host-faults/source/run_fault_cases.py",
+      "sha256": "0e0d353149a08603d4d5cd2ffb08e3ff3d67dcb75a7f8fe531a6cd54254d424c"
+    },
+    {
+      "bytes": 7583,
+      "name": "host-faults/source/execute_namespace_once.py",
+      "sha256": "d4d69600dc83a4190e9bf28e891cd1ba318ed97d4f4142839f847ad178dfaea8"
+    },
+    {
+      "bytes": 3023,
+      "name": "host-faults/source/run_fixed_faults_once.py",
+      "sha256": "ee44e431e4eafeb18ded6e2805fa7e9ea64c72394a63814e925e6496b640b245"
+    },
+    {
+      "bytes": 2539,
+      "name": "host-faults/SOURCE-SEAL-PUBLIC.json",
+      "sha256": "12d83f9a6885c01d40a2eb6aed78ff74cb8ea4b8ec96fc025cdf4ec10466bd2c"
+    },
+    {
+      "bytes": 1788,
+      "name": "host-faults/README-PUBLIC.md",
+      "sha256": "087d10e880eb3edc87dd9d9bc9b423f0b30640ee8e81180e35838a47ce7f0b4a"
+    }
+  ],
+  "fixed19_status_counts": {
+    "BLOCKED": 9,
+    "FAIL": 3,
+    "PASS": 7
+  },
+  "model_calls": 0,
+  "new_aggregation_run": false,
+  "original_host_report_sha256": "e17d750b0c3c5371ff62fbe4c8dc5c2ad964f55cd9beb873950625704084a7e9",
+  "original_host_seal_sha256": "85fcc798b834dd778ef26ee435ba7c8d01b1a5d953c5acf478366593004ba3a3",
+  "original_manifest_sha256": "4226b13ed24d31e1da1801508300b913a726886cd37838cb233cc6e71748162d",
+  "original_public_sha256": "55c7177602aada6cbccfde215fe2fb49bc08402ce17ca6993462e8c934b3a3a6",
+  "phone_calls": 0,
+  "privacy_check": "Explicit artifact selection; bounded field/value scan rejects absolute private paths and execution identity/request markers in public reports. Generic configured source paths are retained in exact original source bytes. No private draft or key file was read.",
+  "projection_rules": "Only reference paths become basename in the host public report; no result, status, timing, assertion count, or source byte changes.",
+  "public_report_field_value_scan_passed": true,
+  "result": "PASS",
+  "schema": "hepta.quality-publication-readback.v1"
+}

@@ -1,0 +1,35 @@
+{
+  "allowlist": [
+    {
+      "bytes": 11321,
+      "path": "README.md",
+      "sha256": "6912fa4ccc07bbb3d0675c7a1f66c928826c69ecc441dc44125071f9825a9265"
+    },
+    {
+      "bytes": 32405,
+      "path": "build_checkpoint.py",
+      "sha256": "f9f7c4058bf175f9d591b1d738c496693adfe1e97b64fdf628484801e02e85fa"
+    },
+    {
+      "bytes": 38591,
+      "path": "actual-01/QUALITY-PUBLIC.json",
+      "sha256": "f273aa67dfc4b255eed40f4f8f4a754d458f5f0b71a94967c579e43f03b18331"
+    },
+    {
+      "bytes": 2494,
+      "path": "PUBLIC-CHECKPOINT-MANIFEST.json",
+      "sha256": "243b010602049a13e936047b64fade53a464a58096d1fba26a42416f7d4c8186"
+    }
+  ],
+  "case_status_counts": {
+    "BLOCKED": 10,
+    "FAIL": 2,
+    "PASS": 7
+  },
+  "frozen_private_source_evidence_seal_sha256": "1b8044e7e873bfeea8da5e0786ca29db3986dcdc2044c5c6bf456a16d5aa9668",
+  "privacy": "Only the four listed files and this allowlist are approved for public projection. Original requests, private evidence and raw results remain excluded.",
+  "recursive_directory_publication": false,
+  "schema": "hepta.exact-publication-allowlist.v150.r7.quality.1",
+  "source_inputs_unchanged": true,
+  "this_allowlist_may_be_published": true
+}

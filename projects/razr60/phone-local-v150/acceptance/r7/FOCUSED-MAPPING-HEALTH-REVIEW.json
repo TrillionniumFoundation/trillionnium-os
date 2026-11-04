@@ -1,0 +1,51 @@
+{
+  "additional_fixture_executions": 0,
+  "findings": [
+    "The helper extracts only pinned pure functions/constants, recomputes raw mobile_use to legacy decision, and verifies recorded request schema, prompt, mapping receipt and native semantics.",
+    "The named-action projection gate participates in final proof_complete; failure or missing projection does not upgrade business success.",
+    "Original native stream, r6 receipt, action ledger and postcondition boundaries remain authoritative; health is rejected by the business collector.",
+    "Health metadata differences bind the new r7 source and the independently closed cancelled previous disposition; actor/phone/collector exit zero, complete capture, one-use and exact nonce gates remain."
+  ],
+  "inputs": [
+    {
+      "bytes": 10283,
+      "name": "mobile_use_evidence.py",
+      "sha256": "24d79c3d802661e73dc697e68891f7d4c158180ecc85c0ad20567562813bd228"
+    },
+    {
+      "bytes": 51793,
+      "name": "collect_business_evidence.py",
+      "sha256": "e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7"
+    },
+    {
+      "bytes": 4997,
+      "name": "MOBILE-MAPPING.diff",
+      "sha256": "80db49f992d52dba6e97ae196e7b5d52ff0497bb30c2e1c4d4351e3079777e96"
+    },
+    {
+      "bytes": 7300,
+      "name": "export_health_r7_once.py.ADAPTATION.diff",
+      "sha256": "74dd07a1e7509c111d1fda1b9c6389b55bff755622f0086b5b4ede1a92f73c5f"
+    },
+    {
+      "bytes": 3277,
+      "name": "capture_health_originals.py.ADAPTATION.diff",
+      "sha256": "a43ea3c5ec802203b0e2c309b31d006cd632b2ffa4721425c20738bf08b84bc1"
+    },
+    {
+      "bytes": 6833,
+      "name": "prepare_register_health_r7.py.ADAPTATION.diff",
+      "sha256": "d9a67236f2f5fa1607faddb5adf07e07cbdaaa08dd56f27e42aa91db83594812"
+    }
+  ],
+  "limits": [
+    "Static review does not establish real phone or business qualification.",
+    "The review relies on the exact pinned source and metadata diffs, not an inference from filenames."
+  ],
+  "model_calls": 0,
+  "phone_calls": 0,
+  "result": "PASS_NO_BLOCKING_FINDING",
+  "reviewer": "local_provider_integration",
+  "schema": "hepta.focused-static-review.r7-mapping-health.v1",
+  "scope": "Read-only source and exact metadata diff review; no execution or phone qualification."
+}

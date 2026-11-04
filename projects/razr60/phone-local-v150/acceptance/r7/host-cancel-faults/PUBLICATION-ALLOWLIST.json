@@ -1,0 +1,65 @@
+{
+  "files": [
+    {
+      "bytes": 22963,
+      "name": "frozen_fixture_support.py",
+      "sha256": "2a02578bc0793cb8f883a964f04c80573315c8967e89c022c709678de4277e12"
+    },
+    {
+      "bytes": 5371,
+      "name": "fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 2299,
+      "name": "counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 26214,
+      "name": "run_fault_cases.py",
+      "sha256": "a2d651d32b01861c1399aabc0ec2a56392b82c880342c2b3b0258d846c138b7a"
+    },
+    {
+      "bytes": 7574,
+      "name": "execute_namespace_once.py",
+      "sha256": "de66010ec2d8953c9daa4afb4d0a8f71802c0e79238b2e8974aa9722cdbaaabb"
+    },
+    {
+      "bytes": 3017,
+      "name": "run_fixed_faults_once.py",
+      "sha256": "07e1efc5f062769941442d8d11296c0a9944d90149cebbf4a23f7fd311300410"
+    },
+    {
+      "bytes": 16187,
+      "name": "R7-HARNESS-ADAPTATION.diff",
+      "sha256": "ff0fb114ea2c30621d20e2dd118c4751702305acad9d85a57909a019dbd72f81"
+    },
+    {
+      "bytes": 2677,
+      "name": "HOST-SOURCE-CHECK.json",
+      "sha256": "38a15665b791cfbcdee55e5a4696e8a2bb391a94542a7c1947f420e87d5fc429"
+    },
+    {
+      "bytes": 2313,
+      "name": "README.md",
+      "sha256": "953af44441286630dcf1485ad3ed2a778a579e7dedaebc8da9efc18638ea4fd7"
+    },
+    {
+      "bytes": 8048,
+      "name": "REPORT-PUBLIC.json",
+      "sha256": "ffc42c234248d9125c72ae842c31163461c77147c0b0ca10aa8481e316f67006"
+    },
+    {
+      "bytes": 2481,
+      "name": "SOURCE-SEAL-PUBLIC.json",
+      "sha256": "8ad3f948d92c46625ed98e74be00030789fa644cd030005b152224286bd918be"
+    }
+  ],
+  "model_calls": 0,
+  "no_private_originals": true,
+  "no_recursive_upload": true,
+  "original_host_source_seal_sha256": "28b901adc22a33de829c9cf8dadb563214d467a13dc35a72ce5438da6024ec71",
+  "phone_calls": 0,
+  "schema": "hepta.explicit-publication-allowlist.v1"
+}

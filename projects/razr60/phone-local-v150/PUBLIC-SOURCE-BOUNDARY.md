@@ -1,22 +1,13 @@
 # Public source and evidence boundary
 
-This tree preserves exact frozen production source where the publication index says
-exact_original_bytes: true. A .PUBLIC.json file is an explicit projection of
-a private sealed artifact. Its original SHA identifies the reviewed private input;
-the projection has a different SHA and cannot replace that sealed runtime input.
+This tree contains the pinned phone-local source revisions, reproducibility references, explicit public projections and versioned measured checkpoints. The r7-r1 current checkpoint records one real health pass, two failed real business tasks and fixed-19 status 7 PASS / 2 FAIL / 10 BLOCKED. It does not claim daily-use, cold-boot, external-display, rotation or folding qualification.
 
-Some operator scripts and module launch sources use /operator-workspace/... or
-<INSTANCE_BINDING_SHA256_REQUIRED> placeholders. Their original and projected
-hashes are both listed. They are reviewable source, not ready-to-install launchers.
-Other approved module and parent-supervisor sources retain instance-specific
-inode, boot or process constants; they also are not general installers.
+Twelve r7 production Python source files are exact original bytes. The thirteenth, retirement_recovery.py, is an explicit public projection that replaces the retained private action, proof, boot and process bindings with required placeholders; the exact original source SHA remains recorded. Review-only operators, module builders and activation census sources may substitute private workspace, process, boot and retained-claim bindings. The PUBLIC-PROJECTION-INDEX records each original and published SHA256 and the transformation; a projected seal is not the private original manifest. Placeholder-bearing projections are not installable packages.
 
-Actual owner text, draft text or hashes, screenshot bytes, raw native histories,
-claims, private keys or their content digests, model weights, executable binaries
-and full SELinux policy binaries are excluded. The original private records and
-sealed artifacts are retained by the operator; publication does not modify them.
+Only explicitly allowlisted report/source files are included. Private requests, fresh nonces, draft contents and their digests, actual claims, raw native histories, keys and key-content digests, original private runtime bindings, model weights, executables, full binary SELinux policies and deployment archives remain excluded. The newly published images are synthetic host fixtures, not phone screenshots.
 
-Historical stages remain historical. A host check, runtime READY, component
-cleanup or health PASS gives no business or daily-use qualification. The current
-health checkpoint records one bounded native health task; the fixed 19 business
-and fault cases remain a separate denominator at that cutoff.
+The quality report preserves original failures and separates expected negative-task outcomes from guard-test passes. Host-isolated passes do not satisfy the five required physical-native fault layers. Successful original process cleanup is not business success, successful app launch or a claim that no Android effect happened.
+
+Historical source revisions, source and module startup failures, previous combinations and earlier cutoff reports remain retained. No current physical credit is transferred to a future policy/module revision. Root performed actual phone operations; public compilation, source review, host fixtures and file publication are separate scopes.
+
+The sealed business-export README's historical workflow error is corrected by acceptance/r7/business-original-export/WORKFLOW-ERRATA.md: normal use is preview, capture (already including export), then collect. Original sealed bytes are not rewritten to hide the mistake.

@@ -1,0 +1,63 @@
+{
+  "actual_host_case_count": 5,
+  "all_actual_host_processes_exit_zero": true,
+  "assertions": 154,
+  "combination_canonical_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "combination_manifest_sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8",
+  "excludes": [
+    "raw execution instances",
+    "actual claims",
+    "raw requests and nonces",
+    "private evidence directory",
+    "credentials and credential digests",
+    "native and physical originals"
+  ],
+  "host_protocol_pass": 5,
+  "limits": [
+    "Local counter and deterministic HTTP fixture do not exercise Android execution, real model performance, native Host journal, SELinux, or real model server cancellation/drain.",
+    "No deadline fired in this 6.748s sample. The revised harness stops starting further cases after an observed 90s alarm. Cleanup remains separately bounded by owned waits and the outer105s process deadline; this sample does not exercise the timeout branch."
+  ],
+  "original_seal_sha256": "28b901adc22a33de829c9cf8dadb563214d467a13dc35a72ce5438da6024ec71",
+  "phone_calls": 0,
+  "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "publication_does_not_grant_daily_use": true,
+  "real_model_requests": 0,
+  "report": {
+    "bytes": 8048,
+    "sha256": "ffc42c234248d9125c72ae842c31163461c77147c0b0ca10aa8481e316f67006"
+  },
+  "report_name": "REPORT-PUBLIC.json",
+  "schema": "hepta.host-fault-source-public-projection.v1",
+  "source_files": [
+    {
+      "bytes": 22963,
+      "name": "frozen_fixture_support.py",
+      "sha256": "2a02578bc0793cb8f883a964f04c80573315c8967e89c022c709678de4277e12"
+    },
+    {
+      "bytes": 5371,
+      "name": "fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 2299,
+      "name": "counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 26214,
+      "name": "run_fault_cases.py",
+      "sha256": "a2d651d32b01861c1399aabc0ec2a56392b82c880342c2b3b0258d846c138b7a"
+    },
+    {
+      "bytes": 7574,
+      "name": "execute_namespace_once.py",
+      "sha256": "de66010ec2d8953c9daa4afb4d0a8f71802c0e79238b2e8974aa9722cdbaaabb"
+    },
+    {
+      "bytes": 3017,
+      "name": "run_fixed_faults_once.py",
+      "sha256": "07e1efc5f062769941442d8d11296c0a9944d90149cebbf4a23f7fd311300410"
+    }
+  ]
+}

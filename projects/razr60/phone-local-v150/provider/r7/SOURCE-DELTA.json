@@ -1,0 +1,155 @@
+{
+  "changed_files": [
+    "source/daily_phone_local.py",
+    "source/provider_phone_local.py"
+  ],
+  "files": [
+    {
+      "bytes": 15363,
+      "changed": false,
+      "original_sha256": "727c684fc9e1a0fde410396b1aa85b6ca212aa83bb2d601577fef2b0c7601c4e",
+      "path": "source/action_ledger.py",
+      "sha256": "727c684fc9e1a0fde410396b1aa85b6ca212aa83bb2d601577fef2b0c7601c4e"
+    },
+    {
+      "bytes": 19981,
+      "changed": true,
+      "original_sha256": "0999a3609a89520ed8e1f550fa28c86959137d1edb98994f7ad78fe35db42a57",
+      "path": "source/daily_phone_local.py",
+      "sha256": "92122fcc8bf01511971075fce2ad94b628dadf2c0c342f0fb940e8b00c636ec3"
+    },
+    {
+      "bytes": 11439,
+      "changed": false,
+      "original_sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+      "path": "source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 8251,
+      "changed": false,
+      "original_sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+      "path": "source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 10453,
+      "changed": false,
+      "original_sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+      "path": "source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 11792,
+      "changed": false,
+      "original_sha256": "dd0fb20af8f3de229d4ce8d8dee47db335eb551e6f5db136fa8f5881c0ca6871",
+      "path": "source/phone_local_tools.py",
+      "sha256": "dd0fb20af8f3de229d4ce8d8dee47db335eb551e6f5db136fa8f5881c0ca6871"
+    },
+    {
+      "bytes": 34040,
+      "changed": false,
+      "original_sha256": "bcea6fbc5d5efa39a0164623ac61bafb27577e4812b5de0384d2155e3f2c6243",
+      "path": "source/phone_observation_tools.py",
+      "sha256": "bcea6fbc5d5efa39a0164623ac61bafb27577e4812b5de0384d2155e3f2c6243"
+    },
+    {
+      "bytes": 11368,
+      "changed": false,
+      "original_sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59",
+      "path": "source/phone_task_guards.py",
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "bytes": 41510,
+      "changed": false,
+      "original_sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+      "path": "source/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "changed": false,
+      "original_sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+      "path": "source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 55325,
+      "changed": true,
+      "original_sha256": "7e89eeb4c6c972ab253922d99f061764ffa2a1d4a8c442b6aa049e69685e90c8",
+      "path": "source/provider_phone_local.py",
+      "sha256": "8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6"
+    },
+    {
+      "bytes": 9802,
+      "changed": false,
+      "original_sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+      "path": "source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 14744,
+      "changed": false,
+      "original_sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4",
+      "path": "source/task_postconditions.py",
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+    },
+    {
+      "bytes": 2730,
+      "changed": false,
+      "original_sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230",
+      "path": "register_task_contract.py",
+      "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+    },
+    {
+      "bytes": 2263,
+      "changed": false,
+      "original_sha256": "a025c38890242381f64c8afbaea0c9b0f3049da0723958b6bb876956b8d94b9b",
+      "path": "inspect_original_action.py",
+      "sha256": "a025c38890242381f64c8afbaea0c9b0f3049da0723958b6bb876956b8d94b9b"
+    },
+    {
+      "bytes": 1001,
+      "changed": false,
+      "original_sha256": "deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b",
+      "path": "register_health_contract.py",
+      "sha256": "deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b"
+    },
+    {
+      "bytes": 4206,
+      "changed": false,
+      "original_sha256": "b1cf105b871279bbd4c117526d8eaeba7ac2ee0dedff4b08386d3a305487d70f",
+      "path": "resolve_retired_action.py",
+      "sha256": "b1cf105b871279bbd4c117526d8eaeba7ac2ee0dedff4b08386d3a305487d70f"
+    }
+  ],
+  "generated_task_nonce": false,
+  "health_data_source_file_sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+  "helper_file_count": 4,
+  "model_requests": 0,
+  "phone_operations": 0,
+  "pin_closure": "daily PARENTS now binds candidate provider and the same other eleven modules",
+  "production_file_count": 13,
+  "schema": "hepta.mobile-use-source-delta.v150.1",
+  "state": "candidate_source_only_not_deployed",
+  "unchanged_original_constants": [
+    "POLICY",
+    "HEALTH_POLICY",
+    "TOOL_HINTS",
+    "SCHEMA"
+  ],
+  "unchanged_original_functions_ast": [
+    "business_decision_schema",
+    "business_policy",
+    "compact_transcript",
+    "receive",
+    "emit",
+    "_inspect_pending",
+    "_decision",
+    "_record_health_terminal",
+    "read_private_json",
+    "load_local_config",
+    "inspect_single_slot"
+  ]
+}

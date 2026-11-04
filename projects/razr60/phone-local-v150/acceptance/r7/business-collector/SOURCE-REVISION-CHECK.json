@@ -1,0 +1,21 @@
+{
+  "data": {
+    "collector_sha256": "e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7",
+    "existing_evidence_writes": 0,
+    "model_requests": 0,
+    "original_collector_sha256": "5719479507cd6f2366bb8848cb28a6f4a8d175a2ebc91332c77da2239b4fe899",
+    "original_function_gates_changed": [
+      "inspect_rounds raw model/legacy comparison replaced by exact mapping proof",
+      "main adds projection proof and rejects HEALTH; original business/native/raw/ledger gates unchanged"
+    ],
+    "phone_operations": 0,
+    "reverse_substitution_exact_original_sha256": "5719479507cd6f2366bb8848cb28a6f4a8d175a2ebc91332c77da2239b4fe899",
+    "runtime_source_changes": 0
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 651,
+  "original_artifact_reference": "acceptance-r7/business-collector-r7-r1/SOURCE-REVISION-CHECK.json",
+  "original_artifact_sha256": "b0fa151986531866b99340412924ae31c9b3f8d1b62355c560a21e8b968461dd",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

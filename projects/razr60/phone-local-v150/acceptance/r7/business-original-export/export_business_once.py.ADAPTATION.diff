@@ -1,0 +1,159 @@
+--- r6-r2/export_business_once.py
++++ r7/export_business_once.py
+@@ -1,22 +1,23 @@
+ #!/usr/bin/env python3
+-"""Root-only r6 business original capture/export and frozen host collector.
++"""Root-only r7 business original capture/export and frozen host collector.
+ No new nonce, registration, Send, UI, model/slot request, sidecar IPC or replay.
+ preview is local-only. capture/export require --execute-read-once.
+ """
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,shlex,signal,stat,subprocess,sys,tarfile,time
+ B=Path('/operator-workspace/phone-local-v150')
+-D=B/'business-r6-r2-original-export-r1'
++D=B/'business-r7-original-export-r1'
+ S=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+-SEAL_SHA='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
++SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ CONFIG_SHA='0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'
+ SERVICE_SHA='ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2'
+-CAPTURE_SHA='d9f4e037ca45ac6d236137639fdb4c9525c8693c4dc4e68f404f79726efeff36'
+-CHUNK_SHA='a5f5659a3c8f44baf0277f2c44a0b06c73d042854aac88b47807002186103e44'
+-COLLECTOR_SHA='5719479507cd6f2366bb8848cb28a6f4a8d175a2ebc91332c77da2239b4fe899'
++CAPTURE_SHA='39d07a043aeed52c45874ba8812b2636e6de70ddf6d17ab5f571dbf7083e3d78'
++CHUNK_SHA='dbb116ba8bdaf51f0df1d12a77618a5e0959aeb0ce98c94356013263dc77024a'
++COLLECTOR_SHA='e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7'
+ AUDITOR_SHA='da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf'
+ RECHECK_SHA='0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6'
++MAPPING_SHA='24d79c3d802661e73dc697e68891f7d4c158180ecc85c0ad20567562813bd228'
+ HARNESS_SHA='630c4cb2b9ec5363c7dc464af59455ea252abb1f4f56b3920002f73de177efb6'
+ MAX_ARCHIVE=64*1024*1024
+ CHUNK=1024*1024
+@@ -64,11 +65,11 @@
+  material_raw=read(h/'material.json',131072);m=strict(material_raw)
+  request=read(h/'request.txt',24576);combo_raw=read(h/'combination.json',65536);combo=strict(combo_raw)
+  need(m.get('case') in ('E2E-01','E2E-02'),'only actual visual/Unicode material')
+- need(m['candidate_source_seal_sha256']==SEAL_SHA and combo['provider_source_seal_sha256']==SEAL_SHA,'r6 source binding')
++ need(m['candidate_source_seal_sha256']==SEAL_SHA and combo['provider_source_seal_sha256']==SEAL_SHA,'r7 source binding')
+  need(m['request_sha256']==sha(request),'owner bytes differ from material')
+  need(m['combination_manifest_sha256']==sha(combo_raw),'combination raw pin differs')
+  need(combo['provider_config_sha256']==CONFIG_SHA and combo['service_inputs_sha256']==SERVICE_SHA
+-  and combo['state']=='frozen' and combo['cloud_fallback'] is False,'frozen r6 combination binding')
++  and combo['state']=='frozen' and combo['cloud_fallback'] is False,'frozen r7 combination binding')
+  nonce=m['nonce'];need(isinstance(nonce,str) and re.fullmatch('[0-9a-f]{32}',nonce)
+   and request.decode().count(nonce)==1,'exact existing material nonce')
+  return h,e,m,material_raw,request,combo_raw
+@@ -159,19 +160,19 @@
+   'request_b64':base64.b64encode(request).decode(),'combination_sha256':sha(combo_raw),
+   'sender_scope':scope,'sender_run':run,'sender_label':a.sender_label}
+  writej(e/'CAPTURE-BINDING.json',bound)
+- label='business-r6-r2-'+m['nonce']+'-capture'
++ label='business-r7-'+m['nonce']+'-capture'
+  ph,raw=original_operation(harness(e),e,label,phone_request(source,bound,75),131072)
+  put(e/'CAPTURE-RESULT.json',raw);result=strict(raw)
+  original_raw=read(e/(label+'.original-operation.json'),2*1024*1024)
+  original=strict(original_raw);original_phone=original['wrapper'].get('phone',{})
+  need(original_phone.get('rc')==ph.get('rc') and original_phone.get('stdout')==ph.get('stdout'),
+   'capture process terminal differs from retained original')
+- writej(e/'CAPTURE-TERMINAL.json',{'schema':'hepta.business-capture-process-terminal.v150.r6.2',
++ writej(e/'CAPTURE-TERMINAL.json',{'schema':'hepta.business-capture-process-terminal.v150.r7.2',
+   'nonce':m['nonce'],'owner_request_sha256':sha(request),'operation_label':label,
+   'original_operation_sha256':sha(original_raw),'capture_result_sha256':sha(raw),
+   'phone_process_rc':original_phone.get('rc'),'actor_rc':original.get('actor_rc'),
+   'capture_process_completed_zero':type(original_phone.get('rc')) is int and original_phone['rc']==0})
+- need(result.get('schema')=='hepta.business-original-capture-result.v150.r6.1'
++ need(result.get('schema')=='hepta.business-original-capture-result.v150.r7.1'
+   and result.get('nonce')==m['nonce'] and result.get('owner_request_sha256')==sha(request)
+   and result.get('combination_sha256')==sha(combo_raw) and result.get('selected_scope')==scope,'capture result binding')
+  need(result.get('archive') is not None,'capture produced no archive; original result retained; do not recapture')
+@@ -184,12 +185,12 @@
+   'CAPTURE.json','host-bound-request.txt','selected-scope.json','selected-native-raw.jsonl'),'archive root not allowed')
+  return p
+ def capture_terminal_zero(e,bound):
+- label='business-r6-r2-'+bound['nonce']+'-capture'
++ label='business-r7-'+bound['nonce']+'-capture'
+  terminal=strict(read(e/'CAPTURE-TERMINAL.json',65536))
+  original_raw=read(e/(label+'.original-operation.json'),2*1024*1024)
+  original=strict(original_raw);phone=original['wrapper'].get('phone',{})
+  result_raw=read(e/'CAPTURE-RESULT.json',131072)
+- need(terminal.get('schema')=='hepta.business-capture-process-terminal.v150.r6.2'
++ need(terminal.get('schema')=='hepta.business-capture-process-terminal.v150.r7.2'
+   and terminal.get('nonce')==bound['nonce'] and terminal.get('owner_request_sha256')==bound['owner_request_sha256']
+   and terminal.get('operation_label')==label and terminal.get('original_operation_sha256')==sha(original_raw)
+   and terminal.get('capture_result_sha256')==sha(result_raw)
+@@ -227,7 +228,7 @@
+    p=root/rel;p.parent.mkdir(mode=0o700,parents=True,exist_ok=True);put(p,raw)
+    seen[str(rel)]={'bytes':len(raw),'sha256':sha(raw)}
+  capture_raw=read(root/'CAPTURE.json',2*1024*1024,result['capture_sha256']);capture=strict(capture_raw)
+- need(capture.get('schema')=='hepta.business-original-capture.v150.r6.1'
++ need(capture.get('schema')=='hepta.business-original-capture.v150.r7.1'
+   and capture.get('owner_request_sha256')==bound['owner_request_sha256']
+   and capture.get('nonce')==bound['nonce'] and capture.get('selected_scope')==bound['sender_scope']
+   and capture.get('combination_sha256')==bound['combination_sha256'],'archived capture binding')
+@@ -248,7 +249,7 @@
+   need(line.endswith(b'\n') and len(line)==row['bytes'] and sha(line)==row['sha256'],'original native raw bytes differ')
+   need(strict(line).get('scope')==bound['sender_scope'],'original native selected scope differs')
+  complete=(capture_process_completed_zero is True and capture_complete(result,capture) and generated<=set(seen))
+- manifest={'schema':'hepta.business-original-unpack.v150.r6.1','complete_original_capture':complete,
++ manifest={'schema':'hepta.business-original-unpack.v150.r7.1','complete_original_capture':complete,
+   'capture_sha256':sha(capture_raw),'archive_sha256':result['archive']['sha256'],
+   'capture_process_completed_zero':capture_process_completed_zero is True,
+   'files':[{'path':k,**v} for k,v in sorted(seen.items())],'native_raw_record_count':len(native),
+@@ -267,7 +268,7 @@
+   and bound['combination_sha256']==sha(combo_raw) and bound['sender_label']==a.sender_label,'stored export identity differs')
+  archive=result.get('archive');need(isinstance(archive,dict),'no original archive metadata')
+  size=archive.get('bytes');need(type(size) is int and 0<size<=MAX_ARCHIVE,'original archive size')
+- need(archive['path']==str(S/'business-original-captures-r6-r2'/m['nonce']/'originals.tar.gz'),'original archive path')
++ need(archive['path']==str(S/'business-original-captures-r7'/m['nonce']/'originals.tar.gz'),'original archive path')
+  source=read(D/'read_archive_chunk.py',8192,CHUNK_SHA).decode();transport=harness(e)
+  start=time.monotonic();rows=[]
+  for offset in range(0,size,CHUNK):
+@@ -281,10 +282,10 @@
+    rows.append(saved);continue
+   b={'nonce':m['nonce'],'archive_sha256':archive['sha256'],'archive_bytes':size,
+      'archive_stat':archive['stat'],'offset':offset}
+-  label='business-r6-r2-'+m['nonce']+'-chunk-%03d'%index
++  label='business-r7-'+m['nonce']+'-chunk-%03d'%index
+   ph,raw=original_operation(transport,e,label,phone_request(source,b,10),2*1024*1024)
+   need(ph.get('rc')==0,'original archive chunk read failed; inspect retained original')
+-  v=strict(raw);need(v.get('schema')=='hepta.business-archive-chunk.v150.r6.1'
++  v=strict(raw);need(v.get('schema')=='hepta.business-archive-chunk.v150.r7.1'
+    and v.get('nonce')==m['nonce'] and v.get('archive_sha256')==archive['sha256']
+    and v.get('archive_stat')==archive['stat'] and v.get('archive_bytes')==size and v.get('offset')==offset,
+    'original chunk binding differs')
+@@ -318,9 +319,10 @@
+  # Recheck every exported snapshot file before using a collection result.
+  for row in manifest['files']:
+   read(root/safe_member(row['path']),MAX_ARCHIVE,row['sha256'])
+- collector=B/'acceptance-r5/business-collector-r5-r1'
++ collector=B/'acceptance-r7/business-collector-r7-r1'
+  for name,pin in (('collect_business_evidence.py',COLLECTOR_SHA),
+-  ('native_journal_audit.py',AUDITOR_SHA),('business_fact_recheck.py',RECHECK_SHA)):
++  ('native_journal_audit.py',AUDITOR_SHA),('business_fact_recheck.py',RECHECK_SHA),
++  ('mobile_use_evidence.py',MAPPING_SHA)):
+   read(collector/name,65536,pin)
+  args=[sys.executable,'-B',str(collector/'collect_business_evidence.py'),
+   '--provider-state',str(root/'provider-state'),
+@@ -328,9 +330,9 @@
+   '--request-file',str(root/'host-bound-request.txt'),'--selected-scope-file',str(root/'selected-scope.json'),
+   '--native-journal',str(root/'selected-native-raw.jsonl'),'--sidecar-journal',str(root/'executor-r6'),
+   '--client-receipts',str(root/'client-receipts'),
+-  '--source-seal',str(root/'sources/provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json'),
+-  '--source-seal-sha256',SEAL_SHA,'--provider-source',str(root/'sources/provider-r6-r2/source'),
+-  '--config-file',str(root/'sources/local-config-r6-r2.json'),
++  '--source-seal',str(root/'sources/provider-r7/SOURCE-SEAL-v150-r7.json'),
++  '--source-seal-sha256',SEAL_SHA,'--provider-source',str(root/'sources/provider-r7/source'),
++  '--config-file',str(root/'sources/local-config-r7.json'),
+   '--service-manifest',str(root/'sources/PHONE-SERVICE-INPUTS-v150-r3.json'),
+   '--nonce',m['nonce'],'--case-id',m['case'],'--out',str(e/'business-audit-01'),'--max-total-mib','128']
+  writej(e/'COLLECTOR-INTENT.json',{'argv':args,'source_sha256':COLLECTOR_SHA,'phone_calls':0,'model_requests':0})
+@@ -382,7 +384,7 @@
+   print(json.dumps({'state':'HOST_ONLY_PREVIEW','case_id':m['case'],'material':str(h),'output':str(e),
+    'source_seal_sha256':SEAL_SHA,'collector_sha256':COLLECTOR_SHA,'phone_calls':0,
+    'nonce_generated':False,'originals_only_after_actual_sender':True,
+-   'capture_root':str(S/'business-original-captures-r6-r2'),
++   'capture_root':str(S/'business-original-captures-r7'),
+    'capture_seconds':50,'finalize_seconds':15,'export_phase_seconds':300,'collector_seconds':90,
+    'automatic_capture_retry':False,'qualification':False},sort_keys=True));return 0
+  if a.phase in ('capture','export'):

@@ -1,0 +1,24 @@
+{
+  "data": {
+    "capture_and_collector_actual_rc_fences_unchanged": true,
+    "mapping_dependency_sha256": "24d79c3d802661e73dc697e68891f7d4c158180ecc85c0ad20567562813bd228",
+    "model_requests": 0,
+    "new_dependency": "mobile_use_evidence.py",
+    "new_exporter_sha256": "ae14894ce52be620da7672269e765f28687f101465c31c01dccab28af43e6a01",
+    "nonce_generation": false,
+    "original_capture_tree_includes_all_new_model_action_mapping_files": true,
+    "original_exporter_sha256": "6f0e91b24f53e01c4ce7f925f0b024172e3feae45b4e4d4e7939bf0fd808d296",
+    "phone_operations": 0,
+    "raw_partial_evidence_preserved": true,
+    "reverse_substitution_exact_parent": true,
+    "runtime_changes": 0,
+    "schema": "hepta.r7-support-binding-proof.v150.1",
+    "state": "HOST_SOURCE_READY"
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 749,
+  "original_artifact_reference": "business-r7-original-export-r1/ADAPTATION-CHECK.json",
+  "original_artifact_sha256": "4d23adb997d5f8aa31aba8c3c7eafc1dffbf97fc47bb27cc866a64c34ff162ae",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

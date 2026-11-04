@@ -1,0 +1,113 @@
+{
+  "actual_phone_or_physical_display_qualification": false,
+  "actual_runtime_assertion_count": 308,
+  "case_count": 7,
+  "cases": [
+    {
+      "actual_runtime_assertions": 88,
+      "case_id": "NEG-03",
+      "closure_assertions_added": 2,
+      "elapsed_seconds": 0.04459429008420557,
+      "fixture_http_requests": 0,
+      "layer": "component_direct",
+      "phone_calls": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0
+    },
+    {
+      "actual_runtime_assertions": 22,
+      "case_id": "NEG-06",
+      "closure_assertions_added": 2,
+      "elapsed_seconds": 1.8264779960736632,
+      "fixture_http_requests": 1,
+      "layer": "host_isolated",
+      "phone_calls": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0
+    },
+    {
+      "actual_runtime_assertions": 17,
+      "case_id": "NEG-10",
+      "closure_assertions_added": 2,
+      "elapsed_seconds": 0.004565343027934432,
+      "fixture_http_requests": 0,
+      "layer": "host_isolated",
+      "phone_calls": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0
+    },
+    {
+      "actual_runtime_assertions": 109,
+      "case_id": "NEG-11",
+      "closure_assertions_added": 2,
+      "elapsed_seconds": 0.021291392971761525,
+      "fixture_http_requests": 0,
+      "layer": "host_isolated",
+      "phone_calls": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0
+    },
+    {
+      "actual_runtime_assertions": 29,
+      "case_id": "NEG-12",
+      "closure_assertions_added": 2,
+      "elapsed_seconds": 0.038888977956958115,
+      "fixture_http_requests": 0,
+      "layer": "host_isolated",
+      "phone_calls": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0
+    },
+    {
+      "actual_runtime_assertions": 18,
+      "case_id": "NEG-13",
+      "closure_assertions_added": 2,
+      "elapsed_seconds": 0.006788411061279476,
+      "fixture_http_requests": 0,
+      "layer": "host_isolated",
+      "phone_calls": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0
+    },
+    {
+      "actual_runtime_assertions": 25,
+      "case_id": "NEG-14",
+      "closure_assertions_added": 2,
+      "elapsed_seconds": 0.34570520697161555,
+      "fixture_http_requests": 0,
+      "layer": "host_isolated",
+      "phone_calls": 0,
+      "protocol_result": "PASS",
+      "real_model_requests": 0
+    }
+  ],
+  "closure_assertion_count": 14,
+  "combination_manifest_sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8",
+  "combination_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "fixture_http_request_count": 1,
+  "host_coverage_boundary": "NEG-03 is component_direct; the other six are host_isolated. The one HTTP request was a synthetic host fixture for NEG-06. These were not real model requests.",
+  "model_business_sample_count_in_this_subset": 0,
+  "old_r6_r2_evidence_relabelled": false,
+  "original_host_source_seal_sha256": "5c7e547fd189490b5fe1230838795f5686aeb2c27954d9575145eff4266d43e8",
+  "pass_count": 7,
+  "phone_calls": 0,
+  "private_originals_retained": {
+    "bytes": 1280585,
+    "files": 277,
+    "published": false
+  },
+  "production_source_modified": false,
+  "protocol_sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43",
+  "real_model_requests": 0,
+  "resource_boundary": "Only elapsed durations are projected. Process identity, absolute monotonic times, private machine resource snapshots and result paths are omitted.",
+  "schema": "hepta.public-seven-host-summary.v150.r7.1",
+  "scope": "Only seven new host/component protocol cases; not global fixed19 or physical phone/model qualification.",
+  "source_original_closure_sha256": "56459d8c0d53f06244a876528f7eaba39ccd3324515e16d15429fe2aaec15c61",
+  "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "source_summary_original_sha256": "1810a82b2ed59ccb1c157eb0d78976602c7de2d955388bf185c6eb77d268c511",
+  "subset_fixed19_counts": {
+    "BLOCKED": 12,
+    "FAIL": 0,
+    "PASS": 7
+  }
+}

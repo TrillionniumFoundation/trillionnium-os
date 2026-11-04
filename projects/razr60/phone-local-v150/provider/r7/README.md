@@ -1,0 +1,17 @@
+# Phone-local provider r7: named mobile action JSON projection
+
+This separately frozen host candidate keeps the same 13 production Python files and four operator helpers. Only provider_phone_local.py and its daily_phone_local.py embedded pin change from r6-r2. No phone deployment, model request, task registration, task nonce or business action is performed by this seal.
+
+The model-facing interface is one JSON object named mobile_use, with named arguments. It is a JSON transport projection inspired by the pinned official GUI-Owl mobile recipe, not a claim that its Action/XML wire format is reproduced. Available actions are projected from the existing exact per-round grammar. Raw HTTP content, the original model object, the deterministic projection record, and the legacy semantic decision remain separate evidence. The original native mapper, ledger, identity, coordinate, cancellation and business postcondition guards remain authoritative.
+
+The model receives explicit distinctions between owner instructions, requested nonces, app catalogues, actual images, attempted actions and verified receipts. Missing observations are not action results. Honest terminate success/partial/failure/unknown remain available; only original independently verified whole-task postconditions can qualify success. No scripted first action, answer, tap, retry, external resolver or extra tool is added.
+
+The health path is unchanged and bypasses this projection. Exact new owner text is passed unchanged; the nonce answer is not forced by grammar. Limits remain one inference worker, seven tools, eight rounds, 300 seconds per task, 120 seconds per HTTP request, 256 completion tokens, 24,576 prompt bytes and the existing 4,096 context configuration.
+
+Validation consists of the inherited 39 targeted named-action checks and three official pinned C++ schema-to-grammar conversions, plus the r2 compact prompt check and actual r7 daily entry executions. Both real entry paths import all 13 production modules and exercise embedded pins. The config path stops before the first external phone client filesystem lookup; it does not claim phone client/key/socket readiness. Actual initial visual and Unicode request bodies were read privately only to verify original owner bytes and prompt sizes; their text, nonce and private evidence are not published here. Compact messages measured 5,306 and 6,354 UTF-8 bytes respectively; tokens were not measured and context fit is not inferred from byte count.
+
+The prior r6-r2 health PASS and two zero-tool business failures remain historical facts of that older combination. This r7 combination has no physical qualification. A new module, exact configuration/source binding, fresh bounded health terminal, and fresh business requests are required before claiming capabilities. Old tasks, texts and uncertain effects are never replayed.
+
+The mapping-aware business collector is a separate support artifact and must verify original model-action and mapping evidence. The old collector must not be used to qualify this new interface. Source seal and phone payload are private operator artifacts; public JSON projections must exclude instance claims digests and private paths while retaining original source seal hashes.
+
+Official source basis: X-PLUG/MobileAgent commit c4cd0a8f9ddedad24dd8a3daf3a56ca69343849f, Mobile-Agent-v3.5/cookbook/end2end_usage_mobile.ipynb and mobile_use/run_gui_owl_1_5_for_mobile.py. Model card: mPLUG/GUI-Owl-1.5-2B-Instruct revision 528ceaec795bbfbe6103bd79e03db849feadfb24.

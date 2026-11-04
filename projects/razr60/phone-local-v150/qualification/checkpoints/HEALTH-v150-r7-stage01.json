@@ -1,0 +1,119 @@
+{
+  "actual_phone_local_inference": true,
+  "actual_process_terminals": {
+    "http_worker_joined": true,
+    "root_verified_actor_phone_collector_exit_zero": true,
+    "root_verified_main_sender_capture_collector_draft_read_and_closure_zero": true,
+    "slot_after_idle": true
+  },
+  "business_samples_at_this_cutoff": 0,
+  "checks": {
+    "health_exact_new_nonce_summary": true,
+    "health_has_one_model_round_and_no_tools": true,
+    "health_nonce_not_forced_by_schema": true,
+    "health_one_use_binding_verified": true,
+    "health_provider_checks_passed": true,
+    "native_record_and_turn_integrity": true,
+    "provider_native_terminal_agree": true,
+    "provider_terminal_persisted_and_last": true
+  },
+  "combination_manifest_sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8",
+  "combination_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "complete_business_success": false,
+  "cutoff": "After the first actual r7 health closure, before any r7 business result is admitted.",
+  "hardware_energy_joules": null,
+  "health_fail": 0,
+  "health_pass": 1,
+  "health_samples": 1,
+  "latency": {
+    "model_http_elapsed_seconds": 3.6072011959913652,
+    "native_persistence_interval_seconds": [
+      3.037658847,
+      4.236559475
+    ],
+    "native_terminal_observed_upper_seconds": 4.236559475,
+    "observation_uncertainty_seconds": 1.198900628
+  },
+  "model_requests": 1,
+  "model_timings": {
+    "cache_n": 0,
+    "predicted_ms": 2225.676,
+    "predicted_n": 76,
+    "predicted_per_second": 33.697627147886756,
+    "predicted_per_token_ms": 29.67568,
+    "prompt_ms": 1366.557,
+    "prompt_n": 169,
+    "prompt_per_second": 123.66846022522296,
+    "prompt_per_token_ms": 8.086136094674556
+  },
+  "model_usage": {
+    "completion_tokens": 76,
+    "prompt_tokens": 169,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "total_tokens": 245
+  },
+  "monetary_cost": null,
+  "native_audit": {
+    "adjacent_global_links_verified": 2,
+    "global_chain_complete": false,
+    "record_hashes_verified": 3,
+    "scope": "Selected task originals and visible adjacent links; no claim of a complete global journal."
+  },
+  "native_status": "completed",
+  "no_automatic_replay": true,
+  "original_draft": {
+    "content_and_content_digest_not_published": true,
+    "restore_attempts": 1,
+    "restored_exact": true,
+    "submitted": false
+  },
+  "phone_tool_dispatches": 0,
+  "public_projection": {
+    "derived_from_pinned_originals": true,
+    "private_originals_unchanged": true,
+    "raw_request_nonce_draft_keys_claims_native_history_omitted": true
+  },
+  "qualification_limits": [
+    "One new zero-tool health sample only.",
+    "No visual/Unicode/business, daily-use, fold-state or cold-boot qualification follows from this health sample.",
+    "Model output tokens and process resident memory are measured; energy and monetary cost are not measured.",
+    "Health is auxiliary and does not close a fixed-19 business case.",
+    "Historical r6-r2 outcomes remain under that combination and are not counted as r7 samples."
+  ],
+  "resources": {
+    "after-health": {
+      "model_hwm": {
+        "error": null,
+        "unit": "kB",
+        "value": 3142964
+      },
+      "model_rss": {
+        "error": null,
+        "unit": "kB",
+        "value": 3123156
+      }
+    },
+    "before-health": {
+      "model_hwm": {
+        "error": null,
+        "unit": "kB",
+        "value": 3121604
+      },
+      "model_rss": {
+        "error": null,
+        "unit": "kB",
+        "value": 3100676
+      }
+    }
+  },
+  "schema": "hepta.public-health-checkpoint.v150.r7.1",
+  "source_evidence_hashes": {
+    "original_capture_sha256": "40c073e3e9fc2f82d7950f7641f9f44f5b3515c6791643a499901ce8d2845b60",
+    "original_collector_report_sha256": "5885d85bfc458caab654910591a7c3f746c6af4c4fe3d378f37a0d47f7714e82",
+    "original_latency_sha256": "5872b8ad1d502775cfead2cbda06b34d4ad9880b5025148879f6fe95e7083be5",
+    "root_closure_sha256": "1c1dd50bdc710dc90dad6b95054120ef6a7cf3a566be4a32ce46f73a6f3105f0"
+  },
+  "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+}

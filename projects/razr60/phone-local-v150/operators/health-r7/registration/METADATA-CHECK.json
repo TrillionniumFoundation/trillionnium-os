@@ -1,0 +1,23 @@
+{
+  "data": {
+    "capture_actor_phone_original_zero_gate_unchanged": true,
+    "collector_actual_process_zero_gate_unchanged": true,
+    "embedded_phone_template_compiles": true,
+    "known_all_dispatched_tools_confirmed_terminal": false,
+    "known_no_phone_tool_execution": true,
+    "model_requests": 0,
+    "phone_operations": 0,
+    "previous_terminal": "cancelled",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "schema": "hepta.r7-health-support-metadata-check.v1",
+    "state": "HOST_SOURCE_BINDING_CHECKED_NOT_EXECUTED",
+    "task_nonces_generated": false,
+    "whole_source_reverse_metadata_exact": true
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 733,
+  "original_artifact_reference": "health-r7-root-operator-r1/METADATA-CHECK.json",
+  "original_artifact_sha256": "af3be044ebadea4e4fb738cc270db437ed884ba5ac5b358c2084529e4f30f8d0",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

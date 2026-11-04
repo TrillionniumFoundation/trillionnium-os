@@ -1,0 +1,73 @@
+--- business-r6-r2-original-export-r1/capture_business_originals.py
++++ business-r7-original-export-r1/capture_business_originals.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+ """Root-only bounded business original snapshot. No model, IPC, UI or tool request.
+-Reads the already accepted r6 turn and writes only a new private capture directory.
++Reads the already accepted r7 turn and writes only a new private capture directory.
+ One bound original identity is supplied as base64 JSON. Never generates a nonce.
+ """
+ import base64,hashlib,io,json,os,re,signal,stat,sys,tarfile,time
+@@ -10,7 +10,7 @@
+ EVIDENCE=STATE/'evidence'
+ NATIVE=Path('/var/lib/trillionnium/owner-open/turn-events.jsonl.segments')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+-SEAL_SHA='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
++SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ CONFIG_SHA='0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'
+ SERVICE_SHA='ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2'
+ CLIENT_SHA='500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f'
+@@ -19,7 +19,7 @@
+ MAX_FILE=16*1024*1024
+ MAX_FILES=768
+ MAX_LINE=4*1024*1024
+-R={'schema':'hepta.business-original-capture.v150.r6.1','state':'PARTIAL_ORIGINAL_CAPTURE',
++R={'schema':'hepta.business-original-capture.v150.r7.1','state':'PARTIAL_ORIGINAL_CAPTURE',
+    'phone_ui_actions':0,'model_requests':0,'socket_calls':0,'tool_calls':0,
+    'original_file_writes':0,'task_submissions':0,'qualification':False,
+    'files':[],'directories':[],'native_sources':[],'native_raw_records':[],
+@@ -229,12 +229,12 @@
+  need(re.fullmatch('[a-z0-9][a-z0-9-]{5,80}',bound['sender_label']),'sender_label_format')
+  owner=base64.b64decode(bound['request_b64'],validate=True)
+  need(0<len(owner)<=24576 and sha(owner)==wanted and owner.decode().count(nonce)==1,'exact_owner_bytes')
+- root=BASE/'business-original-captures-r6-r2'
++ root=BASE/'business-original-captures-r7'
+  if not root.exists():mkdir_new(root)
+  need(root.resolve(strict=True)==root and stat.S_IMODE(root.stat().st_mode)==0o700
+   and root.stat().st_uid==0,'private_capture_parent')
+  OUT=root/nonce;mkdir_new(OUT);SNAP=OUT/'snapshot';mkdir_new(SNAP)
+- for rel in ('provider-state','client-receipts','executor-r6/actions','sources/provider-r6-r2/source'):
++ for rel in ('provider-state','client-receipts','executor-r6/actions','sources/provider-r7/source'):
+   (SNAP/rel).mkdir(mode=0o700,parents=True,exist_ok=True)
+  R.update(nonce=nonce,case_id=bound['case_id'],owner_request_sha256=wanted,
+   combination_sha256=bound['combination_sha256'],selected_scope=scope,
+@@ -242,17 +242,17 @@
+   snapshot_scope='Stable individual files and final metadata/name checks; not an atomic filesystem snapshot.')
+  save('host-bound-request.txt',owner)
+  save('selected-scope.json',encoded({'scope':scope,'source':'actual original sender and provider acceptance'}))
+- seal_raw=capture(BASE/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json','sources/provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json',True,65536)
++ seal_raw=capture(BASE/'provider-r7/SOURCE-SEAL-v150-r7.json','sources/provider-r7/SOURCE-SEAL-v150-r7.json',True,65536)
+  need(seal_raw is not None and sha(seal_raw)==SEAL_SHA,'actual_source_seal_pin')
+  seal=strict(seal_raw);rows=seal['production_files']
+  need(len(rows)==13,'sealed_production_source_count')
+  for row in rows:
+   rel=safe_relative(row['path'])
+   need(len(rel.parts)==2 and rel.parts[0]=='source' and rel.suffix=='.py','sealed_source_relative_path')
+-  raw=capture(BASE/'provider-r6-r2'/rel,'sources/provider-r6-r2/'+str(rel),True,65536)
++  raw=capture(BASE/'provider-r7'/rel,'sources/provider-r7/'+str(rel),True,65536)
+   need(raw is not None and len(raw)==row['bytes'] and sha(raw)==row['sha256'],'actual_production_source_pin')
+  for rel,p,pin in (
+-  ('sources/local-config-r6-r2.json',BASE/'local-config-r6-r2.json',CONFIG_SHA),
++  ('sources/local-config-r7.json',BASE/'local-config-r7.json',CONFIG_SHA),
+   ('sources/PHONE-SERVICE-INPUTS-v150-r3.json',BASE/'PHONE-SERVICE-INPUTS-v150-r3.json',SERVICE_SHA),
+   ('sources/tool_client_r6.py',BASE/'tool_client_r6.py',CLIENT_SHA)):
+   raw=capture(p,rel,True,65536);need(raw is not None and sha(raw)==pin,'actual_fixed_input_pin')
+@@ -329,7 +329,7 @@
+    archive=archive_snapshot()
+  except Exception as e:issue('finalize',e)
+  finally:signal.setitimer(signal.ITIMER_REAL,0)
+- result={'schema':'hepta.business-original-capture-result.v150.r6.1',
++ result={'schema':'hepta.business-original-capture-result.v150.r7.1',
+   'state':R['state'],'export_complete':R.get('export_complete') is True and archive is not None and not R['issues'],
+   'capture_sha256':capture_sha,'archive':archive,'case_id':R.get('case_id'),
+   'nonce':R.get('nonce'),'owner_request_sha256':R.get('owner_request_sha256'),

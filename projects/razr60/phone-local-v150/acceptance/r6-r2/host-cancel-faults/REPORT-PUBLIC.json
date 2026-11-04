@@ -1,0 +1,203 @@
+{
+  "actual_inner_elapsed_seconds": 6.541684293071739,
+  "actual_main_ssh_elapsed_seconds": 7.260725250001997,
+  "actual_outer_elapsed_seconds": 6.766165437991731,
+  "attempts": {
+    "bytes": 37674,
+    "name": "ATTEMPTS.json",
+    "original_not_published": true,
+    "sha256": "d92b51e67858e7e9cf3163b99d33261aed65c33cd822c0cd5bd09a1f7ba5f816"
+  },
+  "checks_observed": 151,
+  "combination_manifest_sha256": "1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802",
+  "counter_subprocess_count": 3,
+  "daily_use_qualification_granted": false,
+  "deadline_limit": "The actual suite took 6.542s. The inner one-shot90s SIGALRM may be caught by the per-case BaseException handler; it is not a universal suite hard stop. The outer owned bwrap wait105s plus bounded TERM/KILL cleanup is the independent execution fence. No deadline fired in this sample.",
+  "energy_joules": null,
+  "fixture_HTTP_POST_count": 5,
+  "host_case_count": 5,
+  "host_fail_count": 0,
+  "host_pass_count": 5,
+  "host_sample_count": 5,
+  "model_cost": null,
+  "model_usage": null,
+  "observed_physical_NEG08": {
+    "case_id": "NEG-08",
+    "evidence": {
+      "bytes": 59904,
+      "name": "ORIGINAL-OBSERVATION.private.json",
+      "original_not_published": true,
+      "sha256": "da492d541bc0e9129689535cec4c99e9ab03b38b7562557d1ec3c301d6712a8a"
+    },
+    "fixed19_physical_qualification": "FAIL_CLEANUP_NOT_CONFIRMED",
+    "host_sample_does_not_replace_this_result": true,
+    "layer": "physical_native_task",
+    "original_http_client_joined_and_group_absent": true,
+    "slot_idle": false,
+    "slot_is_processing": true,
+    "slot_observed": true,
+    "task_status": "cancelled",
+    "tools_dispatched": 0
+  },
+  "original_readback": {
+    "bytes": 6594,
+    "name": "ORIGINAL-READBACK-VERIFICATION.json",
+    "original_not_published": true,
+    "sha256": "cac151b750b63ddd5fab7582d49296db1ca34f079665ed7788fc43240131988c"
+  },
+  "original_report_sha256": "e17d750b0c3c5371ff62fbe4c8dc5c2ad964f55cd9beb873950625704084a7e9",
+  "per_case": [
+    {
+      "case_id": "NEG-04",
+      "checks": 26,
+      "children_cpu_system_seconds": 0.044726999999999996,
+      "children_cpu_user_seconds": 0.22344899999999998,
+      "counter_effect_count": 0,
+      "elapsed_seconds": 0.895220426027663,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "host_protocol_result": "PASS",
+      "lifetime_runner_peak_rss_kib": 31420,
+      "observed_provider_outcome": "failed",
+      "raw_original_result": {
+        "bytes": 5695,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "c55f0754a78bcbb2a91e831e08feffe3ac212ed06365b079adfaea75539d198b"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.005958999999999999,
+      "runner_cpu_user_seconds": 0.0066779999999999895,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-05",
+      "checks": 33,
+      "children_cpu_system_seconds": 0.039723,
+      "children_cpu_user_seconds": 0.23992100000000002,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 1.471077546942979,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "host_protocol_result": "PASS",
+      "lifetime_runner_peak_rss_kib": 31420,
+      "observed_provider_outcome": "failed",
+      "raw_original_result": {
+        "bytes": 6846,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "3af873b115008b4eff4f3eff5a38504abc3dd19e200236b789cd7398ee9a3f95"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.0061210000000000014,
+      "runner_cpu_user_seconds": 0.013794,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-07",
+      "checks": 34,
+      "children_cpu_system_seconds": 0.048006999999999994,
+      "children_cpu_user_seconds": 0.21159699999999998,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 2.250853203004226,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "host_protocol_result": "PASS",
+      "lifetime_runner_peak_rss_kib": 31420,
+      "observed_provider_outcome": "failed",
+      "raw_original_result": {
+        "bytes": 6999,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "838a6f42ece8bcb426528a1c09b054ad20421b1f8b49bfdbe67edbb6afa8ade0"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.006269999999999998,
+      "runner_cpu_user_seconds": 0.00827,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-08",
+      "checks": 26,
+      "children_cpu_system_seconds": 0.032472,
+      "children_cpu_user_seconds": 0.16438200000000003,
+      "counter_effect_count": 0,
+      "elapsed_seconds": 0.8617937150411308,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "host_protocol_result": "PASS",
+      "lifetime_runner_peak_rss_kib": 31420,
+      "observed_provider_outcome": "cancelled",
+      "raw_original_result": {
+        "bytes": 5669,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "e391a67a21264cb571b23542d4247f615dab0d62b7de8eaaff2ba896de0b119d"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.0028649999999999995,
+      "runner_cpu_user_seconds": 0.006153999999999993,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-09",
+      "checks": 32,
+      "children_cpu_system_seconds": 0.037627999999999995,
+      "children_cpu_user_seconds": 0.22222299999999995,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 1.0575998390559107,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "host_protocol_result": "PASS",
+      "lifetime_runner_peak_rss_kib": 31420,
+      "observed_provider_outcome": "cancelled",
+      "raw_original_result": {
+        "bytes": 6724,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "685b5c19d24207fc097ad4a0fe17883694ceb1acfe399ffe99d1eb144bc1233d"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.004205,
+      "runner_cpu_user_seconds": 0.007163000000000003,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    }
+  ],
+  "phone_calls": 0,
+  "physical_followups_remain_required": true,
+  "projection": "Metadata only: private absolute reference paths replaced by basename; source digests and measured results retained.",
+  "real_model_requests": 0,
+  "schema": "hepta.host-five-fault-public-report.v150.r6-r2.1",
+  "scope_limit": "Local counter and deterministic HTTP fixture do not exercise Android execution, real model performance, native Host journal, SELinux, or real model server cancellation/drain.",
+  "source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1"
+}

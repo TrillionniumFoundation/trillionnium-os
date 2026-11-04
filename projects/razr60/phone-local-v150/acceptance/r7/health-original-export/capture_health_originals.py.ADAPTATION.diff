@@ -1,0 +1,43 @@
+--- r6-r2/capture_health_originals.py
++++ r7/capture_health_originals.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Fixed r6 health original capture for Root. Read-only: no sockets/processes/UI.
++"""Fixed r7 health original capture for Root. Read-only: no sockets/processes/UI.
+ The sole runtime argument is a bound identity object supplied by the host exporter.
+ No API key or preserved user draft path is read or hashed.
+ """
+@@ -8,7 +8,7 @@
+ BASE=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ STATE=BASE/'provider-state'
+ EVIDENCE=STATE/'evidence'
+-STAGED=BASE/'root-health-r6-r2-01'
++STAGED=BASE/'root-health-r7-01'
+ JOURNAL=Path('/var/lib/trillionnium/owner-open/turn-events.jsonl.segments')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ MAX_OUTPUT=4*1024*1024
+@@ -17,11 +17,11 @@
+ MAX_FILES=160
+ MAX_LINE=1024*1024
+ PINNED_SOURCES={
+- 'sources/SOURCE-SEAL-v150-r6-r2.json':(BASE/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json','a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'),
+- 'sources/local-config-r6-r2.json':(BASE/'local-config-r6-r2.json','0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'),
++ 'sources/SOURCE-SEAL-v150-r7.json':(BASE/'provider-r7/SOURCE-SEAL-v150-r7.json','7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'),
++ 'sources/local-config-r7.json':(BASE/'local-config-r7.json','0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'),
+  'sources/PHONE-SERVICE-INPUTS-v150-r3.json':(BASE/'PHONE-SERVICE-INPUTS-v150-r3.json','ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2'),
+- 'sources/provider_phone_local.py':(BASE/'provider-r6-r2/source/provider_phone_local.py','7e89eeb4c6c972ab253922d99f061764ffa2a1d4a8c442b6aa049e69685e90c8')}
+-R={'schema':'hepta.production-health-original-capture.v150.r6.1','state':'PARTIAL_ORIGINAL_CAPTURE',
++ 'sources/provider_phone_local.py':(BASE/'provider-r7/source/provider_phone_local.py','8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6')}
++R={'schema':'hepta.production-health-original-capture.v150.r7.1','state':'PARTIAL_ORIGINAL_CAPTURE',
+  'phone_actions':0,'model_calls':0,'socket_calls':0,'service_changes':0,'task_submissions':0,
+  'qualification':False,'read_only':True,'files':[],'directories':[],'native_sources':[],
+  'native_raw_records':[],'issues':[],'bindings':{},
+@@ -172,7 +172,7 @@
+   nonce=bound['nonce'];wanted=bound['owner_request_sha256'];hint=bound['sender_scope']
+   need(re.fullmatch('[0-9a-f]{32}',nonce) and re.fullmatch('[0-9a-f]{64}',wanted),'new_identity_format')
+   need(re.fullmatch('[0-9a-f]{64}',bound['combination_sha256']),'combination_pin_format')
+-  need(bound['previous_input_sha256']=='<HISTORICAL_PREVIOUS_SHA256_NOT_PUBLISHED>','current_previous_binding')
++  need(bound['previous_input_sha256']=='<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>','current_previous_binding')
+   need(hint is None or isinstance(hint,dict) and set(hint)==set(KEYS),'sender_scope_shape')
+   R.update(nonce=nonce,owner_request_sha256=wanted,combination_sha256=bound['combination_sha256'],sender_scope_hint=hint)
+   for name in ('request.txt','combination.json','register.stdout','register.stderr','REGISTRATION-RESULT.json'):

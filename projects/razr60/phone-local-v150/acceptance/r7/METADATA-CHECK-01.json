@@ -1,0 +1,52 @@
+{
+  "data": {
+    "actual_new_combination_samples": 0,
+    "all_19_case_objects_exact": true,
+    "case_count": 19,
+    "current_normative_protocol_sha256": "4cecd310c93c99db1d71d5c93afafb514d54c1cb5d51bdec22730102d4a4cc57",
+    "fault_host_and_physical_layers_preserved": true,
+    "limits_geometry_preconditions_release_gate_exact": true,
+    "materializer_executed": false,
+    "model_requests": 0,
+    "pending": {
+      "combination_sha256": "c6ff96f03b203bd44085cae52ecf3cefdc377cf347c251c954c1ee1e6706f915",
+      "frozen": false,
+      "manifest_path": "/operator-workspace/phone-local-v150/acceptance-r7/COMBINATION-PENDING.json",
+      "manifest_sha256": "dc88ad11acd82dd777783d473f0f8ce4a007c38829852bd830d485e0ff49b303",
+      "missing_inputs": [
+        "module_manifest_sha256",
+        "policy_rules_manifest_sha256",
+        "live_policy_snapshot_sha256",
+        "live_policy_semantic_audit_sha256",
+        "native_and_apps_manifest_sha256"
+      ],
+      "state": "pending",
+      "value": {
+        "cloud_fallback": false,
+        "live_policy_semantic_audit_sha256": null,
+        "live_policy_snapshot_sha256": null,
+        "model_route": "phone_local_cpu",
+        "module_manifest_sha256": null,
+        "native_and_apps_manifest_sha256": null,
+        "policy_rules_manifest_sha256": null,
+        "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+        "release": "v150-r7-r1",
+        "schema": "hepta.acceptance-combination.v150.r7.1",
+        "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+        "state": "pending"
+      }
+    },
+    "pending_five_dynamic_inputs_not_materializable": true,
+    "phone_operations": 0,
+    "protocol_sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43",
+    "schema": "hepta.acceptance-r7-host-metadata-check.v150.1",
+    "state": "PASS",
+    "task_nonces_generated": false
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 2030,
+  "original_artifact_reference": "acceptance-r7/METADATA-CHECK-01.json",
+  "original_artifact_sha256": "8d8e9146c5ae6bbc447dc9236647b52df727e843584b26c0db2c52279f26a063",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

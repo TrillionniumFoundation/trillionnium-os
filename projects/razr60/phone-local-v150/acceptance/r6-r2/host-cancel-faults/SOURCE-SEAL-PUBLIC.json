@@ -1,0 +1,59 @@
+{
+  "actual_host_case_count": 5,
+  "all_actual_host_processes_exit_zero": true,
+  "assertions": 151,
+  "combination_manifest_sha256": "1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802",
+  "excludes": [
+    "raw execution instances",
+    "actual claims",
+    "raw requests and nonces",
+    "private evidence directory",
+    "credentials and credential digests",
+    "physical native originals"
+  ],
+  "host_protocol_pass": 5,
+  "limits": [
+    "Local counter and deterministic HTTP fixture do not exercise Android execution, real model performance, native Host journal, SELinux, or real model server cancellation/drain.",
+    "The actual suite took 6.542s. The inner one-shot90s SIGALRM may be caught by the per-case BaseException handler; it is not a universal suite hard stop. The outer owned bwrap wait105s plus bounded TERM/KILL cleanup is the independent execution fence. No deadline fired in this sample."
+  ],
+  "original_native_NEG08": "cancelled; cleanup slot busy; physical protocol FAIL",
+  "original_report_sha256": "e17d750b0c3c5371ff62fbe4c8dc5c2ad964f55cd9beb873950625704084a7e9",
+  "original_seal_sha256": "85fcc798b834dd778ef26ee435ba7c8d01b1a5d953c5acf478366593004ba3a3",
+  "phone_calls": 0,
+  "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+  "publication_does_not_grant_daily_use": true,
+  "real_model_requests": 0,
+  "schema": "hepta.host-fault-source-public-projection.v1",
+  "source_files": [
+    {
+      "bytes": 5406,
+      "name": "host-faults/source/fixture_server.py",
+      "sha256": "bf26c6d3feb0e30a559f11352dd36ee5c0efb7e1ce492e9471a2fc15cee83501"
+    },
+    {
+      "bytes": 2299,
+      "name": "host-faults/source/counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 22963,
+      "name": "host-faults/source/frozen_fixture_support.py",
+      "sha256": "b3962737e4e89a137244989502b8b85e9a3c362859e803398c98cdc7b66f04ce"
+    },
+    {
+      "bytes": 24907,
+      "name": "host-faults/source/run_fault_cases.py",
+      "sha256": "0e0d353149a08603d4d5cd2ffb08e3ff3d67dcb75a7f8fe531a6cd54254d424c"
+    },
+    {
+      "bytes": 7583,
+      "name": "host-faults/source/execute_namespace_once.py",
+      "sha256": "d4d69600dc83a4190e9bf28e891cd1ba318ed97d4f4142839f847ad178dfaea8"
+    },
+    {
+      "bytes": 3023,
+      "name": "host-faults/source/run_fixed_faults_once.py",
+      "sha256": "ee44e431e4eafeb18ded6e2805fa7e9ea64c72394a63814e925e6496b640b245"
+    }
+  ]
+}

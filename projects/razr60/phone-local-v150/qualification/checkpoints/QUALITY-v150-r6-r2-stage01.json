@@ -1,0 +1,739 @@
+{
+  "actual_aggregate_process_exit_code": 0,
+  "aggregate_report_sha256": "6fc37f9bdebfaaeed576bbff703ae6bbce02498f74586ffe6496ae81edee57b9",
+  "aggregator_source_sha256": "bb57668a3145ec206dbfd5df660e485fc9106ea6b00df98a61286f71659b08e9",
+  "business": {
+    "cancelled": 0,
+    "complete_success": 0,
+    "complete_success_fraction": 0.0,
+    "failed": 2,
+    "partial_verified": 0,
+    "recovery_events_for_these_tasks": 0,
+    "samples": 2,
+    "unconfirmed": 0
+  },
+  "business_cases": [
+    {
+      "business_status": "failed",
+      "case_id": "E2E-01",
+      "completion_tokens": 87,
+      "failure_closure_sha256": "d5789b161336494f3185e4361aaf07741543ee92b3b5e07ee4286ba03c7d53c2",
+      "generation_tokens_per_second": 22.378152261988834,
+      "http_seconds": 13.195217027008766,
+      "model_image_count": 0,
+      "native_observation_upper_seconds": 14.136282819,
+      "native_persistence_interval_seconds": [
+        12.913371835,
+        14.136282819
+      ],
+      "native_status": "provider_failed",
+      "old_action_replayed": false,
+      "original_draft_restored": true,
+      "original_report_sha256": "ea536333787fafea23ad258cf650d20920e92f4246797af0049c20196f4254cb",
+      "phone_task_tools": 0,
+      "process_and_slot_cleanup_observed": true,
+      "prompt_tokens": 814,
+      "raw_business_proof_complete": false,
+      "raw_model_reported_status": "completed",
+      "real_model_requests": 1,
+      "resources": {
+        "after_sample_sha256": "50ca4f5dbd1d1771812fff2c379ba746c56b4dd94d600803f9c14be5dce576e2",
+        "battery_after_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -6000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4400000
+          }
+        },
+        "battery_before_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4402000
+          }
+        },
+        "battery_units_and_energy_uninferred": true,
+        "before_sample_sha256": "8b59990c4d52d56da120c9161b5b8ac1201a45d5cbef2252609b10fea18214c2",
+        "cpu_interval_includes_idle_and_observation": true,
+        "energy_joules": null,
+        "latency_clock": "single Pocket4 actor monotonic clock; no cross-host subtraction",
+        "mem_available_after_kib": 7582156,
+        "model_cpu_seconds_across_sampling_interval": 51.64,
+        "model_hwm_is_not_per_task_peak": true,
+        "model_hwm_lifetime_after_kib": 3170044,
+        "model_rss_after_kib": 3153488,
+        "model_rss_before_kib": 3122796,
+        "monetary_cost": null,
+        "native_terminal_observed_latency_upper_seconds": 14.136282819,
+        "native_terminal_persistence_interval_seconds": [
+          12.913371835,
+          14.136282819
+        ],
+        "same_process_identity_verified": true
+      },
+      "total_tokens": 901
+    },
+    {
+      "business_status": "failed",
+      "case_id": "E2E-02",
+      "completion_tokens": 126,
+      "failure_closure_sha256": "f7eb0943b469686dc0e3fcf3edb74a6f1e45901bd5055ab18d2888fd4e308616",
+      "generation_tokens_per_second": 25.847711898508237,
+      "http_seconds": 15.176746713012108,
+      "model_image_count": 0,
+      "native_observation_upper_seconds": 15.999882847,
+      "native_persistence_interval_seconds": [
+        14.802663716,
+        15.999882847
+      ],
+      "native_status": "provider_failed",
+      "old_action_replayed": false,
+      "original_draft_restored": true,
+      "original_report_sha256": "044450f8dfc1dff6e8108af1a44498a1403bda2f44847335c025cb42d25db38c",
+      "phone_task_tools": 0,
+      "process_and_slot_cleanup_observed": true,
+      "prompt_tokens": 1226,
+      "raw_business_proof_complete": false,
+      "raw_model_reported_status": "partial",
+      "real_model_requests": 1,
+      "resources": {
+        "after_sample_sha256": "4b8db56ec6d04db36e0c9aae58b4b23030d2dc71d5f23b9fde75661daf492849",
+        "battery_after_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 270
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4399000
+          }
+        },
+        "battery_before_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 99
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -7000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4400000
+          }
+        },
+        "battery_units_and_energy_uninferred": true,
+        "before_sample_sha256": "47ac0fb13ee30cee6a397dd9147445d3b0f1b4678339117e0e6e871b837bd233",
+        "cpu_interval_includes_idle_and_observation": true,
+        "energy_joules": null,
+        "latency_clock": "single Pocket4 actor monotonic clock; no cross-host subtraction",
+        "mem_available_after_kib": 7482724,
+        "model_cpu_seconds_across_sampling_interval": 59.67,
+        "model_hwm_is_not_per_task_peak": true,
+        "model_hwm_lifetime_after_kib": 3271808,
+        "model_rss_after_kib": 3254960,
+        "model_rss_before_kib": 3153488,
+        "monetary_cost": null,
+        "native_terminal_observed_latency_upper_seconds": 15.999882847,
+        "native_terminal_persistence_interval_seconds": [
+          14.802663716,
+          15.999882847
+        ],
+        "same_process_identity_verified": true
+      },
+      "total_tokens": 1352
+    }
+  ],
+  "combination_canonical_sha256": "5c04f6d4b27be786387e83998c2f8e350c263835bb12d629278d0d252c36e418",
+  "combination_manifest_sha256": "1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802",
+  "cost": {
+    "hardware_energy_joules": null,
+    "monetary_cost": null,
+    "note": "Phone CPU inference; original usage available. No measured currency/electricity/battery-scaling cost is asserted."
+  },
+  "daily_use_qualification_established": false,
+  "daily_use_reason": "Both new business tasks failed before calling phone tools; a working health route is not adequate qualification.",
+  "fixed19": {
+    "case_count": 19,
+    "cases": [
+      {
+        "attempt_count": 1,
+        "id": "E2E-01",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": null,
+            "status": "FAIL"
+          }
+        ],
+        "status": "FAIL",
+        "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA"
+      },
+      {
+        "attempt_count": 1,
+        "id": "E2E-02",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": null,
+            "status": "FAIL"
+          }
+        ],
+        "status": "FAIL",
+        "title": "全新中文/emoji/换行输入、确认、公开回执与返回"
+      },
+      {
+        "attempt_count": 1,
+        "id": "E2E-03",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": "Current installed calculator editable expression and unique public result view are not yet qualified; original 7-tool path is not established.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "计算器完成全新随机简单表达式并核验结果"
+      },
+      {
+        "attempt_count": 1,
+        "id": "E2E-04",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "model_e2e",
+            "reason": "Current Settings detail field, unique public view and bounded navigation path are not yet qualified.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "只读查看设置中的公开系统版本字段"
+      },
+      {
+        "attempt_count": 1,
+        "id": "COMP-01",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "component_direct",
+            "reason": "Independent approved native component return run has not been executed on this combination.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "显式返回：launch状态和实际焦点双核验"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-01",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "component_direct",
+            "reason": "Fresh physical focus-change guard run has not been executed; no phone input evidence is inferred from fixtures.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "截图后焦点切换：必须在input之前拒绝"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-02",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "component_direct",
+            "reason": "Fresh same-viewport visible-content-change guard run has not been executed.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "同viewport内容变化：精确像素guard必须拒绝"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-03",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "component_direct",
+            "reason": "Current combination has no separately recorded display/rotation fixture or physical result at this checkpoint.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "外屏或旋转：拒绝未资格显示配置"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-04",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": "Fresh owned-transport pre-dispatch disconnection sample is pending for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "Fresh owned-transport pre-dispatch disconnection sample is pending for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "断连发生于dispatch之前"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-05",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": "Fresh effect-start/post-disconnect original counter and receipt sample is pending for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "Fresh effect-start/post-disconnect original counter and receipt sample is pending for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "作用已开始后断连：保持未知且不重放"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-06",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": "Current-source isolated HTTP timeout case is being prepared; no original result is supplied at this checkpoint.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "模型超时：有界结束且清理原进程组"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-07",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": "Fresh delayed executor result and original-effect receipt sample is pending for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "Fresh delayed executor result and original-effect receipt sample is pending for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "执行器结果超时：不能用迟到结果认定成功或再执行"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-08",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": "Current native cancel adapter is under review; no new cancellation sample has been sent at this checkpoint.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "Current native cancel adapter is under review; no new cancellation sample has been sent at this checkpoint.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "dispatch前取消"
+      },
+      {
+        "attempt_count": 2,
+        "id": "NEG-09",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": "After-effect cancellation requires a qualified cancellation entry and confirmed original effect counter; no forced navigation is substituted.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 1,
+            "layer": "physical_native_task",
+            "reason": "After-effect cancellation requires a qualified cancellation entry and confirmed original effect counter; no forced navigation is substituted.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "首次作用后取消"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-10",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "图片字节预算/过期图像/旧round绑定"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-11",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "native输出损坏/截断/错误身份"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-12",
+        "original_task_outcomes": {
+          "failed": 1
+        },
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "部分任务被模型说成完成：必须失败终态"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-13",
+        "original_task_outcomes": {
+          "unconfirmed": 1
+        },
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": null,
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "title": "一次性模板并发/旧nonce重用"
+      },
+      {
+        "attempt_count": 1,
+        "id": "NEG-14",
+        "original_task_outcomes": {},
+        "required_layers": [
+          {
+            "attempts": 1,
+            "layer": "host_isolated",
+            "reason": "Current-source isolated service capacity/rename/cleanup case is being prepared; no original result is supplied at this checkpoint.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "容量/原子rename竞态与资源收尾"
+      }
+    ],
+    "closed": false,
+    "status_counts": {
+      "BLOCKED": 13,
+      "FAIL": 2,
+      "PASS": 4
+    }
+  },
+  "health": {
+    "counts_as_business": false,
+    "passed": 1,
+    "samples": 1
+  },
+  "host_isolated_cases": [
+    {
+      "assertions_passed": 17,
+      "case_id": "NEG-10",
+      "protocol_result": "PASS",
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.137252625,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.018786999999999998,
+          "self_cpu_user_seconds": 0.155727,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.136079458,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.018216,
+          "self_cpu_user_seconds": 0.155267,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.0011731670000000027
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 109,
+      "case_id": "NEG-11",
+      "protocol_result": "PASS",
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.148812625,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.022015999999999997,
+          "self_cpu_user_seconds": 0.163635,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.137500916,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.018916,
+          "self_cpu_user_seconds": 0.155833,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.011311709000000003
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 29,
+      "case_id": "NEG-12",
+      "protocol_result": "PASS",
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29179904,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.160594791,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.029122,
+          "self_cpu_user_seconds": 0.16758399999999998,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29016064,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.149359375,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.022175,
+          "self_cpu_user_seconds": 0.163988,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.011235415999999998
+      },
+      "synthetic_task_outcome": "failed"
+    },
+    {
+      "assertions_passed": 18,
+      "case_id": "NEG-13",
+      "protocol_result": "PASS",
+      "resources": {
+        "after": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29245440,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.163296291,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.030732,
+          "self_cpu_user_seconds": 0.168782,
+          "thread_count": 1
+        },
+        "before": {
+          "children_cpu_system_seconds": 0.0,
+          "children_cpu_user_seconds": 0.0,
+          "maxrss_is_case_peak": false,
+          "maxrss_lifetime_raw": 29179904,
+          "maxrss_raw_unit": "bytes",
+          "monotonic": 0.160848041,
+          "open_fd_count": 5,
+          "self_cpu_system_seconds": 0.029255,
+          "self_cpu_user_seconds": 0.16769299999999998,
+          "thread_count": 1
+        },
+        "elapsed_seconds": 0.002448250000000013
+      },
+      "synthetic_task_outcome": "unconfirmed"
+    }
+  ],
+  "http_timing_descriptive": {
+    "max": 15.176746713012108,
+    "mean": 14.185981870010437,
+    "min": 13.195217027008766,
+    "missing_samples": 0,
+    "p50": 14.185981870010437,
+    "p95": 15.077670228711941,
+    "quantile_method": "linear interpolation; descriptive only",
+    "samples": 2
+  },
+  "model_usage": {
+    "completion_tokens": {
+      "complete_total": 213,
+      "known_samples": 2,
+      "known_sum": 213,
+      "missing_samples": 0
+    },
+    "prompt_tokens": {
+      "complete_total": 2040,
+      "known_samples": 2,
+      "known_sum": 2040,
+      "missing_samples": 0
+    },
+    "total_tokens": {
+      "complete_total": 2253,
+      "known_samples": 2,
+      "known_sum": 2253,
+      "missing_samples": 0
+    }
+  },
+  "native_observation_measurements": [
+    {
+      "case_id": "E2E-01",
+      "native_observation_upper_seconds": 14.136282819,
+      "native_persistence_interval_seconds": [
+        12.913371835,
+        14.136282819
+      ]
+    },
+    {
+      "case_id": "E2E-02",
+      "native_observation_upper_seconds": 15.999882847,
+      "native_persistence_interval_seconds": [
+        14.802663716,
+        15.999882847
+      ]
+    }
+  ],
+  "new_model_calls": 0,
+  "new_phone_calls": 0,
+  "old_failures_preserved": true,
+  "private_requests_drafts_keys_screenshots_native_records_published": false,
+  "schema": "hepta.public-quality-checkpoint.v150.r6-r2.1",
+  "snapshot_scope": "Immutable checkpoint after two original business failures and four isolated negative cases; later results require a new checkpoint.",
+  "source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+  "utc": "2026-11-03T23:27:34.806649+00:00"
+}

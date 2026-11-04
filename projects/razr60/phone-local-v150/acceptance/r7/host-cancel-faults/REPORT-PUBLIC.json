@@ -1,0 +1,218 @@
+{
+  "actual_inner_elapsed_seconds": 6.748291563941166,
+  "actual_main_ssh_elapsed_seconds": 7.362203459255397,
+  "actual_outer_elapsed_seconds": 6.902007166994736,
+  "aggregate_process": {
+    "bytes": 368,
+    "name": "AGGREGATION-PROCESS.json",
+    "original_not_published": true,
+    "sha256": "226fe0087213e7f6bec2e7b1d58f53d3721b8e6be76f4c2eaef585eb9cb1e47e"
+  },
+  "attempts": {
+    "bytes": 35205,
+    "name": "ATTEMPTS.json",
+    "original_not_published": true,
+    "sha256": "d6c05da9630093cafa24cceda88b09659ad308ecfc3849f47c785d035afbcc26"
+  },
+  "checks_observed": 154,
+  "combination_canonical_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "combination_manifest_sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8",
+  "counter_subprocess_count": 3,
+  "daily_use_qualification_granted": false,
+  "deadline_limit": "No deadline fired in this 6.748s sample. The revised harness stops starting further cases after an observed 90s alarm. Cleanup remains separately bounded by owned waits and the outer105s process deadline; this sample does not exercise the timeout branch.",
+  "energy_joules": null,
+  "fixed19_subset": {
+    "bytes": 29411,
+    "name": "FIXED19-SUBSET.private.json",
+    "original_not_published": true,
+    "sha256": "cac5348b29d6ab88071873d2c1c3cb0bce576e70e58e6fa76998317cdd9b1bbf"
+  },
+  "fixed19_subset_case_counts": {
+    "BLOCKED": 19
+  },
+  "fixture_HTTP_POST_count": 5,
+  "harness_changes": "Only r7 input/source pins, named mobile_use fixture open response, original mapping readback, and no subsequent case start after an observed absolute deadline. No frozen provider source or production policy changes.",
+  "host_fail_count": 0,
+  "host_pass_count": 5,
+  "host_sample_count": 5,
+  "model_cost": null,
+  "model_usage": null,
+  "native_host_calls": 0,
+  "original_readback": {
+    "bytes": 1744,
+    "name": "ORIGINAL-READBACK-VERIFICATION.json",
+    "original_not_published": true,
+    "sha256": "93c796725e3933b0a9967e73243813d07242977582b241f093da3c673c2358b5"
+  },
+  "original_report_sha256": "cad4f6ec1883a7d229a37e6f55b7ea14c4d0990ab968d57ae143eff9fee30401",
+  "per_case": [
+    {
+      "case_id": "NEG-04",
+      "checks": 26,
+      "children_cpu_system_seconds": 0.043594,
+      "children_cpu_user_seconds": 0.218574,
+      "counter_effect_count": 0,
+      "elapsed_seconds": 0.8948150629876181,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": -15,
+      "lifetime_runner_peak_rss_kib": 31148,
+      "observed_provider_outcome": "failed",
+      "raw_original_result": {
+        "bytes": 5648,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "bf2961fbb8a64b0eeab90ebfc1dc23665dcdc69b9afb6cb02694e3d1bdaf199b"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.005629999999999998,
+      "runner_cpu_user_seconds": 0.006280999999999995,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-05",
+      "checks": 34,
+      "children_cpu_system_seconds": 0.042609,
+      "children_cpu_user_seconds": 0.257812,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 1.595321107073687,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": 0,
+      "lifetime_runner_peak_rss_kib": 31148,
+      "observed_provider_outcome": "failed",
+      "raw_original_result": {
+        "bytes": 6950,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "887d24850f2c209aedcd2cd66fde1988f8069016d8d2bb61ee0924d4a904e5a5"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.006929000000000001,
+      "runner_cpu_user_seconds": 0.009261999999999992,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-07",
+      "checks": 35,
+      "children_cpu_system_seconds": 0.04533699999999999,
+      "children_cpu_user_seconds": 0.24933399999999994,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 2.2969611240550876,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": 0,
+      "lifetime_runner_peak_rss_kib": 31148,
+      "observed_provider_outcome": "failed",
+      "raw_original_result": {
+        "bytes": 7138,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "04a2417303eeef2f11aa70354eeaef3dbf4504fcdde5caa1a61b41b4b8c641cd"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.008552,
+      "runner_cpu_user_seconds": 0.012102000000000002,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-08",
+      "checks": 26,
+      "children_cpu_system_seconds": 0.03395899999999999,
+      "children_cpu_user_seconds": 0.18152500000000005,
+      "counter_effect_count": 0,
+      "elapsed_seconds": 0.8863865409512073,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": -15,
+      "lifetime_runner_peak_rss_kib": 31148,
+      "observed_provider_outcome": "cancelled",
+      "raw_original_result": {
+        "bytes": 5662,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "59b8eef8db50a0d61d05a5d7005cf692e6706b198068a0b1430d55cb3deb8ba3"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.003054000000000001,
+      "runner_cpu_user_seconds": 0.005652000000000004,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-09",
+      "checks": 33,
+      "children_cpu_system_seconds": 0.04452700000000001,
+      "children_cpu_user_seconds": 0.21395599999999992,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 1.0685957639943808,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": 0,
+      "lifetime_runner_peak_rss_kib": 31148,
+      "observed_provider_outcome": "cancelled",
+      "raw_original_result": {
+        "bytes": 6828,
+        "name": "RESULT.json",
+        "original_not_published": true,
+        "sha256": "59b58f5b27b6584d97c924c949ac3544690be226c3ed644c561c6c2b95d10e5a"
+      },
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.0034089999999999954,
+      "runner_cpu_user_seconds": 0.009012000000000006,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    }
+  ],
+  "phone_calls": 0,
+  "physical_followups_remain_required": true,
+  "postprocessing_history": "First report derivation exited1 only after actual evidence verification and aggregator exit0, due to a wrong output key required_layer_results. This separate finalizer reads actual required_layers. No case, model, phone action, or aggregation is rerun.",
+  "r6_r2_physical_NEG08_failure_is_retained_under_its_original_combination": true,
+  "real_model_requests": 0,
+  "schema": "hepta.host-five-fault-public-report.v150.r7.1",
+  "scope_limit": "Local counter and deterministic HTTP fixture do not exercise Android execution, real model performance, native Host journal, SELinux, or real model server cancellation/drain.",
+  "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+}

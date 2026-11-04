@@ -1,0 +1,99 @@
+{
+  "data": {
+    "files": [
+      {
+        "bytes": 51793,
+        "path": "collect_business_evidence.py",
+        "sha256": "e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7"
+      },
+      {
+        "bytes": 10283,
+        "path": "mobile_use_evidence.py",
+        "sha256": "24d79c3d802661e73dc697e68891f7d4c158180ecc85c0ad20567562813bd228"
+      },
+      {
+        "bytes": 6701,
+        "path": "native_journal_audit.py",
+        "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+      },
+      {
+        "bytes": 5096,
+        "path": "business_fact_recheck.py",
+        "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+      },
+      {
+        "bytes": 4997,
+        "path": "MOBILE-MAPPING.diff",
+        "sha256": "80db49f992d52dba6e97ae196e7b5d52ff0497bb30c2e1c4d4351e3079777e96"
+      },
+      {
+        "bytes": 651,
+        "path": "SOURCE-REVISION-CHECK.json",
+        "sha256": "b0fa151986531866b99340412924ae31c9b3f8d1b62355c560a21e8b968461dd"
+      },
+      {
+        "bytes": 8313,
+        "path": "test_mobile_mapping_evidence.py",
+        "sha256": "4d419e4fbb25a65abe87992b65aaf494c66eef6ac5f4812eed1635881a3a0e41"
+      },
+      {
+        "bytes": 1634,
+        "path": "validation/HOST-CHECKS-01.json",
+        "sha256": "c149a6b26ad2dc3ddf86195ae584a42898f4f08c9cfd93fc3a0f410c10b83b72"
+      },
+      {
+        "bytes": 729,
+        "path": "HOST-JOB-TERMINAL.json",
+        "sha256": "9fc8bfe490301e6fcfb094f77aabd73f39b724ec0b45f847cba4d5fcd4b64dc8"
+      },
+      {
+        "bytes": 3181,
+        "path": "README.md",
+        "sha256": "fa07aa4e9ecc83b87fcd57695eb6c428805f0463c61785d85e507c00d3594381"
+      }
+    ],
+    "generated_task_nonce": false,
+    "health_requires_separate_collector": true,
+    "host_checks": {
+      "durable": true,
+      "exit_code": 0,
+      "passed": 12,
+      "stderr_bytes": 0,
+      "total": 12
+    },
+    "independent_review": "separately appended when received; no physical qualification implied",
+    "mapping_is_not_execution_evidence": true,
+    "model_requests": 0,
+    "original_http_not_rewritten_to_legacy_shape": true,
+    "original_native_executor_ledger_rawstream_postcondition_gates_preserved": true,
+    "parent_collector_sha256": "5719479507cd6f2366bb8848cb28a6f4a8d175a2ebc91332c77da2239b4fe899",
+    "phone_operations": 0,
+    "projection_provider_sha256": "8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "public_source_allowlist": [
+      "collect_business_evidence.py",
+      "mobile_use_evidence.py",
+      "native_journal_audit.py",
+      "business_fact_recheck.py",
+      "MOBILE-MAPPING.diff",
+      "SOURCE-REVISION-CHECK.json",
+      "test_mobile_mapping_evidence.py",
+      "validation/HOST-CHECKS-01.json",
+      "README.md"
+    ],
+    "runtime_stage_allowlist": [
+      "collect_business_evidence.py",
+      "mobile_use_evidence.py",
+      "native_journal_audit.py",
+      "business_fact_recheck.py"
+    ],
+    "schema": "hepta.business-evidence-collector-source-seal.v150.r7.1",
+    "state": "FROZEN_HOST_VALIDATED_NOT_PHONE_QUALIFIED"
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 3078,
+  "original_artifact_reference": "acceptance-r7/business-collector-r7-r1/SOURCE-SEAL-business-collector-v150-r7-r1.json",
+  "original_artifact_sha256": "c998fd770e65b1d0acf7ee2136f6fdca03e8fd5c5976dc64eb2a83090aab5409",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

@@ -1,0 +1,20 @@
+--- business-r6-r2-original-export-r1/read_archive_chunk.py
++++ business-r7-original-export-r1/read_archive_chunk.py
+@@ -2,7 +2,7 @@
+ """Root-only bounded read of one already-created business archive chunk."""
+ import base64,hashlib,json,os,re,signal,stat,sys
+ from pathlib import Path
+-ROOT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/business-original-captures-r6-r2')
++ROOT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/business-original-captures-r7')
+ CHUNK=1024*1024
+ MAX_ARCHIVE=64*1024*1024
+ def need(ok,why):
+@@ -34,7 +34,7 @@
+   raw=b''.join(parts)
+   need(meta(a)==meta(os.fstat(fd))==meta(p.lstat()),'archive_changed_during_chunk')
+  finally:os.close(fd)
+- result={'schema':'hepta.business-archive-chunk.v150.r6.1','nonce':nonce,
++ result={'schema':'hepta.business-archive-chunk.v150.r7.1','nonce':nonce,
+   'archive_sha256':bound['archive_sha256'],'archive_bytes':size,'archive_stat':bound['archive_stat'],
+   'offset':offset,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),
+   'raw_b64':base64.b64encode(raw).decode(),'eof':offset+len(raw)==size,

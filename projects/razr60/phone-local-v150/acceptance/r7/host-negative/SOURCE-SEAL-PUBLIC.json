@@ -1,0 +1,120 @@
+{
+  "case_contracts_unchanged": true,
+  "cases": [
+    "NEG-03",
+    "NEG-06",
+    "NEG-10",
+    "NEG-11",
+    "NEG-12",
+    "NEG-13",
+    "NEG-14"
+  ],
+  "combination_manifest_sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8",
+  "combination_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "original_source_files": [
+    {
+      "bytes": 30125,
+      "path": "namespace-component-r1/host_negative_runner.py",
+      "sha256": "17791d4172d08fdd9dcccc7fac324aa2550fae717491a427b237524471f5cf13"
+    },
+    {
+      "bytes": 30125,
+      "path": "namespace-geometry-r1/reference_host_helpers.py",
+      "sha256": "17791d4172d08fdd9dcccc7fac324aa2550fae717491a427b237524471f5cf13"
+    },
+    {
+      "bytes": 13670,
+      "path": "namespace-geometry-r1/geometry_negative_runner.py",
+      "sha256": "9d4f0ff8745b85210098a7bf37736da9e2ec143abbdb8e39930ab2178e780cfa"
+    },
+    {
+      "bytes": 22963,
+      "path": "namespace-service-r1/service_negative_runner.py",
+      "sha256": "b34da2b30312ca5e9a547a80abf1ba39adc740ed3de219fb7d6005c2d8ebf380"
+    },
+    {
+      "bytes": 4338,
+      "path": "namespace-service-r1/fixture_server.py",
+      "sha256": "6b6d2486786d27f916e3268f3e189d836fc6ed1164933cd6cf5509574beb6f12"
+    },
+    {
+      "bytes": 7149,
+      "path": "namespace-service-r1/execute_namespace_once.py",
+      "sha256": "51cbd8891cda20a66a649020da5ae44bd7778578e4b737c243e8913e088c3de9"
+    },
+    {
+      "bytes": 7194,
+      "path": "namespace-geometry-r1/execute_namespace_once.py",
+      "sha256": "36541b3c01071e9ee119ce427b2889860bcbd41d70598f028ad488c8b99bf82d"
+    },
+    {
+      "bytes": 6939,
+      "path": "namespace-component-r1/execute_namespace_once.py",
+      "sha256": "52d49db0b9de4872092423300aa945db777a5197b4a7a48425128f814957f539"
+    },
+    {
+      "bytes": 19356,
+      "path": "namespace-component-r1/assets/synthetic.jpg",
+      "sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521"
+    },
+    {
+      "bytes": 1191,
+      "path": "namespace-component-r1/assets/synthetic.png",
+      "sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13"
+    },
+    {
+      "bytes": 19356,
+      "path": "namespace-geometry-r1/assets/synthetic.jpg",
+      "sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521"
+    },
+    {
+      "bytes": 1191,
+      "path": "namespace-geometry-r1/assets/synthetic.png",
+      "sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13"
+    }
+  ],
+  "original_source_seal_bytes": 4800,
+  "original_source_seal_sha256": "5c7e547fd189490b5fe1230838795f5686aeb2c27954d9575145eff4266d43e8",
+  "parent_source_files": [
+    {
+      "output": "namespace-component-r1/host_negative_runner.py",
+      "parent_sha256": "cd081d2a27ca8680062bf4a141ca1f5acec54715159fb527a829facd6cf10232"
+    },
+    {
+      "output": "namespace-geometry-r1/reference_host_helpers.py",
+      "parent_sha256": "cd081d2a27ca8680062bf4a141ca1f5acec54715159fb527a829facd6cf10232"
+    },
+    {
+      "output": "namespace-geometry-r1/geometry_negative_runner.py",
+      "parent_sha256": "2a5659c3161f4f53a3988f6c04ccaab4392c6e30d17f4cbbc0d144a9f0b42604"
+    },
+    {
+      "output": "namespace-service-r1/service_negative_runner.py",
+      "parent_sha256": "b3962737e4e89a137244989502b8b85e9a3c362859e803398c98cdc7b66f04ce"
+    },
+    {
+      "output": "namespace-service-r1/fixture_server.py",
+      "parent_sha256": "6b6d2486786d27f916e3268f3e189d836fc6ed1164933cd6cf5509574beb6f12"
+    },
+    {
+      "output": "namespace-service-r1/execute_namespace_once.py",
+      "parent_sha256": "998575d30826d24772c3e83e5e9fa5f5bd07dfb6aa9bead8286690ee16453fac"
+    },
+    {
+      "output": "namespace-geometry-r1/execute_namespace_once.py",
+      "parent_sha256": "da731cbccee3793e09e4cf9d458c87e81ecf6c92eecf11536962f01e7b0aac4c"
+    },
+    {
+      "output": "namespace-component-r1/execute_namespace_once.py",
+      "parent_sha256": "da731cbccee3793e09e4cf9d458c87e81ecf6c92eecf11536962f01e7b0aac4c"
+    }
+  ],
+  "protocol_sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43",
+  "public_byte_identity": "See the root PUBLIC-PROJECTION-INDEX for each original SHA256 and published SHA256. Workstation-bound sources may be projected.",
+  "public_projection": true,
+  "raw_attempts_runtime_manifests_actual_records_excluded": true,
+  "runtime_sources_modified": false,
+  "schema": "hepta.public-seven-host-source-seal.v150.r7.1",
+  "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "syntax_compile": "PASS"
+}

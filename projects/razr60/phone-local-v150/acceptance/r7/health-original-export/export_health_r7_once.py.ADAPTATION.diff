@@ -1,0 +1,99 @@
+--- r6-r2/export_health_r7_once.py
++++ r7/export_health_r7_once.py
+@@ -1,21 +1,21 @@
+ #!/usr/bin/env python3
+-"""Root-only fixed health-r6-r2-01 export and host collection. No nonce generation.
++"""Root-only fixed health-r7-01 export and host collection. No nonce generation.
+ capture invokes one reviewed read-only phone operation; collect is host-only.
+ No Send, tool execute, model/slot query, service action, key or draft read exists.
+ """
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,shlex,stat,subprocess,sys
+ B=Path('/operator-workspace/phone-local-v150')
+-D=B/'health-r6-r2-original-export-r1'
+-H=B/'health-r6-r2-01'
+-E=B/'health-r6-r2-originals-01'
+-LABEL='phone-local-r6-r2-health-01'
+-OP='capture-original-native-r6-r2-health-01'
++D=B/'health-r7-original-export-r1'
++H=B/'health-r7-01'
++E=B/'health-r7-originals-01'
++LABEL='phone-local-r7-health-01'
++OP='capture-original-native-r7-health-01'
+ P4=Path('/operator-home/codex-hepta-natural-'+LABEL+'-root-v150')
+-PHONE_SOURCE_SHA='5d01832872160e815eb470180f7bcb9efc75fa602f8a1a80cc9d9ac8d679f32b'
+-PREVIOUS_SHA='<HISTORICAL_PREVIOUS_SHA256_NOT_PUBLISHED>'
+-COLLECTOR_SHA='50c901e87563a8bb04260b2e5e86a2d765cf3a83d9dc01330267e998caa05865'
+-SEAL_SHA='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
++PHONE_SOURCE_SHA='97b66eec16f6ef7e6cb7fad615f107e0a1a26bbff928bc279adc90f75bbc81de'
++PREVIOUS_SHA='<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>'
++COLLECTOR_SHA='887d28ae2cc09fe857ab01fac19bbb32d14e35c5d78b230bb82950a6d956dbf2'
++SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ SSH=['ssh','-J','ai395-usb4','-o','HostName=10.77.0.4','-p','22','-o','BatchMode=yes',
+      '-o','StrictHostKeyChecking=yes','-o','ConnectTimeout=5','pocket4-usb4-fast']
+@@ -58,9 +58,9 @@
+  need(material['request_sha256']==sha(request),'material owner SHA differs')
+  nonce=material['nonce'];need(isinstance(nonce,str) and re.fullmatch('[0-9a-f]{32}',nonce),'nonce format')
+  need(request.decode('utf-8').count(nonce)==1,'one exact material nonce required')
+- previous_raw=local_read(B/'private/historical-closed-task/previous.json',65536,PREVIOUS_SHA)
++ previous_raw=local_read(B/'private/current-closed-task/previous.json',65536,PREVIOUS_SHA)
+  previous=strict(previous_raw)
+- need(previous['terminal']['status']=='provider_failed' and previous['known_no_phone_tool_execution'] is True and previous['known_all_dispatched_tools_confirmed_terminal'] is False,'current previous disposition')
++ need(previous['terminal']['status']=='cancelled' and previous['known_no_phone_tool_execution'] is True and previous['known_all_dispatched_tools_confirmed_terminal'] is False,'current previous disposition')
+  return material,request,combo,previous,material_raw
+ def p4_sender_originals():
+  # This remote program reads exactly two existing actor receipts. No phone import/call.
+@@ -139,7 +139,7 @@
+  original_raw=local_read(E/(OP+'.original-operation.json'),8*1024*1024)
+  original=strict(original_raw);phone=original.get('wrapper',{}).get('phone',{})
+  terminal=strict(local_read(E/'CAPTURE-TERMINAL.json',65536))
+- need(terminal.get('schema')=='hepta.health-capture-process-terminal.v150.r6.2'
++ need(terminal.get('schema')=='hepta.health-capture-process-terminal.v150.r7.1'
+   and terminal.get('operation_label')==OP
+   and terminal.get('original_operation_sha256')==sha(original_raw)
+   and terminal.get('capture_sha256')==sha(raw)
+@@ -166,7 +166,7 @@
+  local_read(B/'send_new_native_task_r5.py',65536,'5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281')
+  intent_raw=local_read(B/(LABEL+'.local-once.json'),65536);intent=strict(intent_raw)
+  need(intent['task']==LABEL and intent['prompt'].encode('utf-8')==request and intent['prompt_sha256']==sha(request),'actual sender intent differs')
+- need(intent['previous_identity']==previous['identity'] and intent['previous_digest']==previous['request_sha256'],'sender must use current 749126 failed-health previous')
++ need(intent['previous_identity']==previous['identity'] and intent['previous_digest']==previous['request_sha256'],'sender must use current Root-closed zero-tool cancelled previous')
+  need(intent['evidence_root_mode']=='production' and intent['automatic_replay'] is False,'sender production/no replay binding')
+  sender_raw=local_read(B/(LABEL+'.send-result.json'),1024*1024);sender=strict(sender_raw)
+  summary=None
+@@ -216,13 +216,13 @@
+   'capture original process binding differs')
+  capture_zero=(type(original_phone.get('rc')) is int and original_phone['rc']==0
+   and type(original.get('actor_rc')) is int and original['actor_rc']==0)
+- writej(E/'CAPTURE-TERMINAL.json',{'schema':'hepta.health-capture-process-terminal.v150.r6.2',
++ writej(E/'CAPTURE-TERMINAL.json',{'schema':'hepta.health-capture-process-terminal.v150.r7.1',
+   'operation_label':OP,'original_operation_sha256':sha(original_raw),
+   'capture_sha256':sha(raw),'phone_process_rc':original_phone.get('rc'),
+   'actor_rc':original.get('actor_rc'),'capture_process_completed_zero':capture_zero})
+ 
+  capture=strict(raw)
+- need(capture.get('schema')=='hepta.production-health-original-capture.v150.r6.1','capture schema differs')
++ need(capture.get('schema')=='hepta.production-health-original-capture.v150.r7.1','capture schema differs')
+  need(capture.get('owner_request_sha256')==sha(request) and capture.get('nonce')==material['nonce'],'capture identity differs')
+  need(capture.get('combination_sha256')==sha(combo),'capture combination differs')
+  manifest=unpack(capture)
+@@ -246,14 +246,14 @@
+    and all(value is True for value in capture['bindings'].values())
+    and capture_terminal_zero())
+  need(capture.get('owner_request_sha256')==sha(request) and capture.get('nonce')==material['nonce'],'export differs from original health')
+- collector=B/'acceptance-r6-r2/collector-r6-r2/collect_health_evidence.py'
++ collector=B/'acceptance-r7/collector-r7/collect_health_evidence.py'
+  local_read(collector,65536,COLLECTOR_SHA)
+  args=[sys.executable,'-B',str(collector),'--provider-state',str(E/'provider-state'),
+  '--request-file',str(H/'request.txt'),'--selected-scope-file',str(E/'selected-scope.json'),
+  '--native-journal',str(E/'selected-native-raw.jsonl'),'--sidecar-journal',str(E/'executor-r6'),
+- '--client-receipts',str(E/'client-receipts'),'--source-seal',str(B/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json'),
+- '--source-seal-sha256',SEAL_SHA,'--provider-source',str(B/'provider-r6-r2/source'),
+- '--config-file',str(B/'provider-r6-r2/local-config.phone.production.json'),
++ '--client-receipts',str(E/'client-receipts'),'--source-seal',str(B/'provider-r7/SOURCE-SEAL-v150-r7.json'),
++ '--source-seal-sha256',SEAL_SHA,'--provider-source',str(B/'provider-r7/source'),
++ '--config-file',str(B/'provider-r7/local-config.phone.production.json'),
+  '--service-manifest',str(B/'PHONE-SERVICE-INPUTS-v150-r3.json'),
+  '--nonce',material['nonce'],'--case-id','HEALTH','--out',str(E/'health-audit-01')]
+  writej(E/'COLLECTOR-INTENT.json',{'argv':args,'phone_calls':0,'model_requests':0})

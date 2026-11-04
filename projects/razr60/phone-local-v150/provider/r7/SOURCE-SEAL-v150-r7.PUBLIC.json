@@ -1,0 +1,284 @@
+{
+  "data": {
+    "actual_model_requests_by_revision_builder": 0,
+    "actual_phone_operations_by_revision_builder": 0,
+    "all_live_claims_and_consumed_bindings_must_be_preserved": true,
+    "compact_prompt_check": {
+      "bytes": 1669,
+      "path": "validation/COMPACT-PROMPT-CHECK-01.json",
+      "sha256": "d9073a474e445c110374d5e842bc1aeb54905044c9f57b12fdfed62e7bb595bd"
+    },
+    "created_utc": "2026-11-03T23:49:16.033028+00:00",
+    "documentation": {
+      "bytes": 3534,
+      "path": "README.md",
+      "sha256": "002ed641d0bfa936d710938c1620710fce4390ac7d7d6a5c244bbc122b9dcce4"
+    },
+    "executor_inputs": {
+      "automatic_retry": false,
+      "binary": {
+        "bytes": 965824,
+        "path": "/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-sidecar-r6",
+        "sha256": "8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976"
+      },
+      "client": {
+        "bytes": 17390,
+        "gnu_path": "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py",
+        "host_state_path": "/data/trillionnium/owner-open/state/phone-local-v150/tool_client_r6.py",
+        "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+        "source_seal_sha256": "c4b06581319f8fef8319c7ee46cba8898fe9c81096c113addc45c3abfc621866"
+      },
+      "credential_and_domain_handshake_after_worker_exec_transition": true,
+      "effect_gid": 2000,
+      "effect_supplementary_groups": [],
+      "effect_uid": 2000,
+      "execute_caller_context": "u:r:trillionnium_owner_open_bootstrap:s0",
+      "global_selinux_required": "Enforcing",
+      "legacy_client_and_journal_preserved": true,
+      "legacy_endpoint_fallback": false,
+      "no_new_privs_required": 0,
+      "parent_context": "u:r:trillionnium_owner_open_phone_executor:s0",
+      "policy_source_and_file_label_application": "separately reviewed and sealed; pending actual domain/worker qualification",
+      "production_parent_uid": 0,
+      "revision": 6,
+      "same_child_session_and_process_group": true,
+      "socket_name": "hepta_phone_executor_v150_r6",
+      "source_manifest_sha256": "a8618aba4d974e1fa6363f41e763ac64e17bb494c87d75c1a1a6075b447aade6",
+      "source_sha256": "baafc644a3a7da62c68b4ccc369e17d162bd11d411e7d151db1a4c611ea02475",
+      "state_directory": "/data/trillionnium/owner-open/state/phone-local-v150/executor-r6",
+      "version": "v150-r6-rc1",
+      "worker": {
+        "bytes": 296096,
+        "path": "/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-worker-r6",
+        "sha256": "49fb74f8798194c63d5e510c0ed81604d64a55e1df84822d9457ae4110cab6da",
+        "source_sha256": "8c5a4cb4479c384776776448fa2907044667f99b310a05adaf88866bf6892d7d"
+      },
+      "worker_context": "u:r:trillionnium_owner_open_phone_worker:s0"
+    },
+    "fixed19_protocol": {
+      "bytes": 37318,
+      "path": "qa/fixed-acceptance-set.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    "full_phone_physical_qualification": "PENDING_NEW_COMBINATION_HEALTH_AND_BUSINESS",
+    "health_owner_input_fix": {
+      "accepted_encodings": [
+        "plain string",
+        "exactly one typed text part"
+      ],
+      "changed_file": "source/health_contracts.py",
+      "http_cleanup_guards_changed": false,
+      "nonce_schema_forcing_added": false,
+      "original_line": 167,
+      "owner_bytes_checked_by": "unchanged exact request_sha256"
+    },
+    "helper_inputs": [
+      {
+        "byte_identical_copy_required": true,
+        "bytes": 16076,
+        "original_path": "/data/local/tmp/hepta-unicode-v148-r2/input.jar",
+        "path": "/data/local/tmp/hepta-phone-executor-v150-r6/helpers/unicode-input-v148r2.jar",
+        "sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2"
+      },
+      {
+        "byte_identical_copy_required": true,
+        "bytes": 16064,
+        "original_path": "/data/local/tmp/hepta-screen-v148-r1/codec.jar",
+        "path": "/data/local/tmp/hepta-phone-executor-v150-r6/helpers/screen-codec-v148r1.jar",
+        "sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639"
+      }
+    ],
+    "host_preflight_boundary": {
+      "actual_13_module_imports": true,
+      "actual_phone_ready_claim": false,
+      "real_main_config_validation": true,
+      "runtime_functions_replaced": false,
+      "socket_operations": 0,
+      "state_created": false,
+      "stop_before": "first external phone-client filesystem lookup; private-key and serve not entered"
+    },
+    "host_validation": {
+      "bytes": 7438,
+      "path": "validation/REAL-ENTRY-PREFLIGHT.json",
+      "sha256": "24a1bb229668b65f8b073def057602aa628e35808e7dba1987c5b44d51538fce"
+    },
+    "host_validation_script": {
+      "bytes": 5562,
+      "path": "validation/real_entry_preflight.py",
+      "sha256": "0556cdb2f040f3e25cfdc4f8c172dcaea3208571b4aa9a414399d658d23a0a81"
+    },
+    "image_tokens_service_min_max": [
+      1024,
+      1024
+    ],
+    "inference_location": "phone",
+    "inference_workers": 1,
+    "inherited_named_action_checks": {
+      "bytes": 3321,
+      "path": "validation/INHERITED-NAMED-ACTION-CHECKS.json",
+      "sha256": "71bac3c00f910b52c5ead9beb80e6904ecdd19d6e0ce16623f29e6dba21c6c60"
+    },
+    "inherited_runtime_pin_fix_from_r6_r2": {
+      "PARENTS_health_contracts_new": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+      "PARENTS_health_contracts_old": "9f2d87bc567c7b169d0d4d07635ab233ccef6da45ba8f547c8af7751f3686c44",
+      "all_17_runtime_and_helper_python_inventoried": true,
+      "changed_production_files": [
+        "source/daily_phone_local.py"
+      ],
+      "health_parser_logic_changed": false,
+      "runtime_source_edges_verified": 13,
+      "source_and_import_gate_weakened": false,
+      "source_reverse_substitution_byte_exact": true
+    },
+    "max_completion_tokens": 256,
+    "max_model_round_seconds": 120,
+    "max_model_rounds": 8,
+    "max_prompt_bytes": 24576,
+    "max_tool_calls": 7,
+    "max_turn_seconds": 300,
+    "model": "gui-owl-1.5-2b-phone-q4km",
+    "model_endpoint": "http://127.0.0.1:18087/v1/chat/completions",
+    "model_interface": {
+      "additional_model_requests": 0,
+      "automatic_retry": false,
+      "business_summary_is_not_execution_evidence": true,
+      "deterministic_mapping_receipt": true,
+      "health_path_bypasses_projection": true,
+      "legacy_semantic_mapper_authoritative": true,
+      "literal_official_Action_XML_format": false,
+      "name": "mobile_use_named_arguments_json_projection",
+      "raw_model_object_preserved": true,
+      "terminal_branch_not_suppressed": true
+    },
+    "new_per_task_authorization_scope_C_included": false,
+    "operator_helpers": [
+      {
+        "bytes": 2730,
+        "path": "register_task_contract.py",
+        "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+      },
+      {
+        "bytes": 2263,
+        "path": "inspect_original_action.py",
+        "sha256": "a025c38890242381f64c8afbaea0c9b0f3049da0723958b6bb876956b8d94b9b"
+      },
+      {
+        "bytes": 1001,
+        "path": "register_health_contract.py",
+        "sha256": "deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b"
+      },
+      {
+        "bytes": 4206,
+        "path": "resolve_retired_action.py",
+        "sha256": "b1cf105b871279bbd4c117526d8eaeba7ac2ee0dedff4b08386d3a305487d70f"
+      }
+    ],
+    "original_health01_status_preserved": "provider_failed",
+    "original_health_contract_and_business_schema_unchanged": true,
+    "original_mapper_cancel_postcondition_guards_unchanged": true,
+    "original_r5_prompt_unchanged": false,
+    "parent_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "phone_service_inputs_bytes": 6273,
+    "phone_service_inputs_schema": "hepta.phone-local.service-inputs.v150.3",
+    "phone_service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "policy_source_config_module_inputs_independently_sealed": true,
+    "production_files": [
+      {
+        "bytes": 15363,
+        "path": "source/action_ledger.py",
+        "sha256": "727c684fc9e1a0fde410396b1aa85b6ca212aa83bb2d601577fef2b0c7601c4e"
+      },
+      {
+        "bytes": 19981,
+        "path": "source/daily_phone_local.py",
+        "sha256": "92122fcc8bf01511971075fce2ad94b628dadf2c0c342f0fb940e8b00c636ec3"
+      },
+      {
+        "bytes": 11439,
+        "path": "source/health_contracts.py",
+        "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+      },
+      {
+        "bytes": 8251,
+        "path": "source/model_health.py",
+        "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+      },
+      {
+        "bytes": 10453,
+        "path": "source/phone_local_http_worker.py",
+        "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+      },
+      {
+        "bytes": 11792,
+        "path": "source/phone_local_tools.py",
+        "sha256": "dd0fb20af8f3de229d4ce8d8dee47db335eb551e6f5db136fa8f5881c0ca6871"
+      },
+      {
+        "bytes": 34040,
+        "path": "source/phone_observation_tools.py",
+        "sha256": "bcea6fbc5d5efa39a0164623ac61bafb27577e4812b5de0384d2155e3f2c6243"
+      },
+      {
+        "bytes": 11368,
+        "path": "source/phone_task_guards.py",
+        "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+      },
+      {
+        "bytes": 41510,
+        "path": "source/provider_codex_host.py",
+        "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+      },
+      {
+        "bytes": 17730,
+        "path": "source/provider_openai_compatible.py",
+        "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+      },
+      {
+        "bytes": 55325,
+        "path": "source/provider_phone_local.py",
+        "sha256": "8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6"
+      },
+      {
+        "bytes": 9802,
+        "path": "source/retirement_recovery.py",
+        "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+      },
+      {
+        "bytes": 14744,
+        "path": "source/task_postconditions.py",
+        "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+      }
+    ],
+    "production_python_files": 13,
+    "python_syntax_feature_version": "3.12",
+    "runtime_pin_fix": "daily PARENTS changes only the provider_phone_local.py pin; existing fixed health pin retained",
+    "runtime_source_pin_closure": {
+      "actual_import_and_main_entry_checks_passed": true,
+      "all_other_production_sources_byte_equal_parent": true,
+      "changed_files": [
+        "source/provider_phone_local.py",
+        "source/daily_phone_local.py"
+      ],
+      "production_file_count": 13
+    },
+    "schema": "hepta.phone-local-source-seal.v150.r7.1",
+    "source_delta": {
+      "bytes": 5733,
+      "path": "SOURCE-DELTA.json",
+      "sha256": "b6b3a0a535bb9ac2f879c4a219ab9e24ead47f4b09bd1ab4f03a2c620f5d2da0"
+    },
+    "source_diff": {
+      "bytes": 21371,
+      "path": "MOBILE-USE.diff",
+      "sha256": "d3970893426fe949bd7057f8bd80839cdfdf387cd9afa9d3f7801d595b285cd7"
+    },
+    "tool_client_sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+    "version": "v150-r7"
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 13783,
+  "original_artifact_reference": "provider-r7/SOURCE-SEAL-v150-r7.json",
+  "original_artifact_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

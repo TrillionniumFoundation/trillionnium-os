@@ -1,0 +1,74 @@
+--- r5/collect_business_evidence.py
++++ r7/collect_business_evidence.py
+@@ -18,8 +18,9 @@
+ import sys
+ 
+ from native_journal_audit import SCOPE_FIELDS, strict_loads, verify_records
+-
+-SEAL = "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f"
++from mobile_use_evidence import load_projection_api, verify_projection
++
++SEAL = "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+ CONFIG = "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755"
+ SERVICE = "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2"
+ MODEL = "gui-owl-1.5-2b-phone-q4km"
+@@ -374,7 +375,7 @@
+         row["unresolved_effect"]=False
+     return row
+ 
+-def inspect_rounds(snapshot,run,original_run,exact_request):
++def inspect_rounds(snapshot,run,original_run,exact_request,projection_api,calls):
+     output = []
+     for path in sorted(run.glob("local-*.request.json")):
+         match = re.fullmatch(r"local-([0-9]{2})\.request\.json",path.name)
+@@ -407,6 +408,8 @@
+         before = snapshot.json(run/(prefix+".slot-before.json"),required=False)
+         after = snapshot.json(run/(prefix+".slot-after.json"),required=False)
+         decision = snapshot.json(run/(prefix+".decision.json"),required=False)
++        original_action = snapshot.json(run/(prefix+".model-action.json"),required=False)
++        projection_receipt = snapshot.json(run/(prefix+".mapping.json"),required=False)
+         require(body.get("model")==MODEL and body.get("stream") is False
+                 and body.get("temperature")==0 and body.get("max_tokens")==256,
+                 "selected model/bounds differ")
+@@ -438,6 +441,9 @@
+                "model_image_sha256":image_hashes,"max_tokens":body["max_tokens"],
+                "exact_user_input_sha256":sha(exact_request),"exact_user_input_retained":True,
+                "prompt_layout":layout,
++               "named_action_projection_verified":False,
++               "original_model_action_present":original_action is not None,
++               "original_mapping_receipt_present":projection_receipt is not None,
+                "http_receipt_present":receipt is not None,"http_response_complete":False,
+                "worker_joined":bool(joined and joined.get("child_wait_returned") is True
+                                     and joined.get("dedicated_process_group_absent") is True),
+@@ -474,8 +480,11 @@
+                     require(len(choices)==1,"HTTP response choices differ")
+                     row["raw_finish_reason"]=choices[0].get("finish_reason")
+                     if decision is not None:
+-                        require(strict_loads(choices[0]["message"]["content"])==decision,
+-                                "saved model decision differs from raw response")
++                        message=choices[0]["message"]
++                        require(message.get("role")=="assistant" and not message.get("tool_calls"),
++                                "named-action raw assistant message differs")
++                        row.update(verify_projection(snapshot,run,prefix,body,images,projected,
++                            message["content"],decision,number,calls,image_hashes,projection_api))
+                     row["http_response_complete"] = bool(
+                         receipt.get("transport_terminal")=="complete_http_response"
+                         and choices[0].get("finish_reason")=="stop"
+@@ -635,7 +644,16 @@
+             not row.get("unresolved_effect",True) for row in tool_rows)
+         fingerprints=[row["effect_fingerprint"] for row in tool_rows if row.get("effect_fingerprint")]
+         require(len(fingerprints)==len(set(fingerprints)),"same bound effect dispatched twice in one turn")
+-        report["model_rounds"]=inspect_rounds(snapshot,run,original_run,request)
++        require(args.case_id!="HEALTH","Use the separately sealed health collector for the unchanged health path")
++        projection_api=load_projection_api(snapshot,args.provider_source,selected_seal)
++        report["model_rounds"]=inspect_rounds(snapshot,run,original_run,request,projection_api,calls)
++        report["checks"]["all_named_action_projections_verified"]=bool(report["model_rounds"]) and all(
++            row["named_action_projection_verified"] for row in report["model_rounds"])
++        projected_calls=[row["decision_fields"]["call_id"] for row in report["model_rounds"]
++            if row.get("decision_fields") and row["decision_fields"]["kind"]=="tool.call"]
++        require(len(projected_calls)==len(set(projected_calls))
++                and set(call["call_id"] for call in calls)<=set(projected_calls),
++                "native dispatch lacks one original model-selected projected action")
+         report["checks"]["all_model_rounds_real_terminal_and_cleanup"]=bool(report["model_rounds"]) and all(
+             row["real_terminal_and_cleanup"] for row in report["model_rounds"])
+         model_images={value for row in report["model_rounds"] for value in row["model_image_sha256"]}

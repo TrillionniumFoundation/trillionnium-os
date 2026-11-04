@@ -1,0 +1,75 @@
+{
+  "actual_frozen_aggregator_sha256": "c3b91281a1076ac6fd782fe722eeedae7384817dcbd89060e94b095be48ce083",
+  "aggregation_process_exit_code": 0,
+  "case_status_counts": {
+    "BLOCKED": 10,
+    "FAIL": 2,
+    "PASS": 7
+  },
+  "combination_manifest_sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8",
+  "files": [
+    {
+      "bytes": 11321,
+      "path": "README.md",
+      "sha256": "6912fa4ccc07bbb3d0675c7a1f66c928826c69ecc441dc44125071f9825a9265"
+    },
+    {
+      "bytes": 32405,
+      "path": "build_checkpoint.py",
+      "sha256": "f9f7c4058bf175f9d591b1d738c496693adfe1e97b64fdf628484801e02e85fa"
+    },
+    {
+      "bytes": 38591,
+      "path": "actual-01/QUALITY-PUBLIC.json",
+      "sha256": "f273aa67dfc4b255eed40f4f8f4a754d458f5f0b71a94967c579e43f03b18331"
+    }
+  ],
+  "full_combination_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "git_operations": 0,
+  "host_workflow_exit_code": 0,
+  "named_original_inputs_verified": 208,
+  "new_test_cases_executed": 0,
+  "original_private_source_evidence_seal_sha256": "1b8044e7e873bfeea8da5e0786ca29db3986dcdc2044c5c6bf456a16d5aa9668",
+  "phone_calls": 0,
+  "production_changes": 0,
+  "protocol_sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43",
+  "publication_excludes": [
+    "full requests",
+    "nonces",
+    "user drafts and draft digests",
+    "keys and key digests",
+    "raw claims",
+    "raw native records",
+    "actual scope/action/process identifiers",
+    "private manifests and host process records"
+  ],
+  "real_business_outcomes": {
+    "cancelled": 0,
+    "complete_fraction": 0,
+    "complete_success": 0,
+    "failed": 2,
+    "sample_count": 2,
+    "unconfirmed": 0,
+    "verified_partial": 0
+  },
+  "real_model_requests": 0,
+  "requires_private_originals_for_full_reproduction": true,
+  "sample_counts": {
+    "additional_original_export_and_process_closure_assertions": 14,
+    "assertions_are_not_sample_count": true,
+    "component_direct_geometry_fixture_samples": 1,
+    "fixed19_executed_samples": 14,
+    "host_isolated_samples": 11,
+    "physical_negative_samples": 0,
+    "real_model_business_tasks": 2,
+    "runtime_assertions": 462,
+    "separate_real_health_tasks": 1
+  },
+  "schema": "hepta.quality-public-manifest.v150.r7.1",
+  "separate_health": {
+    "PASS": 1,
+    "fixed19_or_business_credit": false,
+    "samples": 1
+  },
+  "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+}

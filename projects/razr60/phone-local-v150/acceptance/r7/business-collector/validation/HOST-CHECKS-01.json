@@ -1,0 +1,73 @@
+{
+  "data": {
+    "checks": [
+      {
+        "check": "real_selected_source_pin_and_pure_function_extraction",
+        "passed": true
+      },
+      {
+        "check": "all_original_collector_gates_reverse_byte_exact",
+        "passed": true
+      },
+      {
+        "check": "valid_open_and_original_semantic_binding",
+        "passed": true
+      },
+      {
+        "check": "exact_unicode_named_fields",
+        "passed": true
+      },
+      {
+        "check": "honest_unknown_terminal_no_success_promotion",
+        "passed": true
+      },
+      {
+        "check": "changed_original_model_object_rejected",
+        "passed": true
+      },
+      {
+        "check": "changed_legacy_decision_rejected",
+        "passed": true
+      },
+      {
+        "check": "changed_mapping_hash_rejected",
+        "passed": true
+      },
+      {
+        "check": "changed_admission_identity_rejected",
+        "passed": true
+      },
+      {
+        "check": "changed_system_prompt_rejected",
+        "passed": true
+      },
+      {
+        "check": "changed_decoder_rejected",
+        "passed": true
+      },
+      {
+        "check": "mismatched_original_native_alias_rejected",
+        "passed": true
+      }
+    ],
+    "forbidden_operation_attempts": [],
+    "model_requests": 0,
+    "original_collector_gates_preserved": true,
+    "passed": 12,
+    "phone_operations": 0,
+    "projection_is_business_success": false,
+    "provider_sha256": "8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6",
+    "raw_originals_unchanged": true,
+    "schema": "hepta.mobile-projection-collector-host-check.v150.1",
+    "scope": "Synthetic mapping evidence only; no native task or business qualification",
+    "state": "PASS",
+    "task_nonces_generated": false,
+    "total": 12
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 1634,
+  "original_artifact_reference": "acceptance-r7/business-collector-r7-r1/validation/HOST-CHECKS-01.json",
+  "original_artifact_sha256": "c149a6b26ad2dc3ddf86195ae584a42898f4f08c9cfd93fc3a0f410c10b83b72",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

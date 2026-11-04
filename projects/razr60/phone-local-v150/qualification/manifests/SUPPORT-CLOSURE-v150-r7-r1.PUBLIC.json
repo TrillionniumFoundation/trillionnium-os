@@ -1,0 +1,313 @@
+{
+  "data": {
+    "actual_r7_phone_qualification": "NOT_ESTABLISHED_BY_SUPPORT_BUILD",
+    "all_existing_originals_unchanged": true,
+    "combination_manifest": {
+      "bytes": 971,
+      "path": "module-r7-r1-finalization-r1/COMBINATION-FROZEN-v150-r7-module-r1.json",
+      "sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8"
+    },
+    "combination_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+    "fault_host_and_physical_layers_unchanged": true,
+    "independent_mapping_review": "append exact review separately when available; do not rewrite this seal",
+    "model_requests": 0,
+    "new_r7_health_required_before_business": true,
+    "normative_fixed19_sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43",
+    "normative_parent_protocol_sha256": "4cecd310c93c99db1d71d5c93afafb514d54c1cb5d51bdec22730102d4a4cc57",
+    "phone_operations": 0,
+    "production_source_package_qa_is_historical_not_normative": true,
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "publication": "Source allowlists/projections only after Root authorization; never private requests, previous inputs, captures, keys or drafts.",
+    "root_previous_physical_case_remains_failed": true,
+    "schema": "hepta.r7-support-closure.v1",
+    "state": "FROZEN_HOST_SUPPORT_INPUTS_CHECKED",
+    "support_files": [
+      {
+        "bytes": 662,
+        "path": "acceptance-r7/COMBINATION-PENDING.json",
+        "sha256": "dc88ad11acd82dd777783d473f0f8ce4a007c38829852bd830d485e0ff49b303"
+      },
+      {
+        "bytes": 2030,
+        "path": "acceptance-r7/METADATA-CHECK-01.json",
+        "sha256": "8d8e9146c5ae6bbc447dc9236647b52df727e843584b26c0db2c52279f26a063"
+      },
+      {
+        "bytes": 855,
+        "path": "acceptance-r7/README.md",
+        "sha256": "448282834d7316772e388d9e624c219cfd3d3263a67ac0e07af5ddea9518802d"
+      },
+      {
+        "bytes": 12603,
+        "path": "acceptance-r7/aggregate_protocol_r7.py",
+        "sha256": "c3b91281a1076ac6fd782fe722eeedae7384817dcbd89060e94b095be48ce083"
+      },
+      {
+        "bytes": 38333,
+        "path": "acceptance-r7/fixed-acceptance-set-r7.json",
+        "sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43"
+      },
+      {
+        "bytes": 3109,
+        "path": "acceptance-r7/materialize_case_r7.py",
+        "sha256": "23d3993c989783a89d48a1955109ae7cec163171e68801e9f19a74adc5d81efc"
+      },
+      {
+        "bytes": 13217,
+        "path": "acceptance-r7/references/aggregate_protocol_r4.py",
+        "sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772"
+      },
+      {
+        "bytes": 37318,
+        "path": "acceptance-r7/references/fixed-acceptance-set-r4.original.json",
+        "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+      },
+      {
+        "bytes": 38286,
+        "path": "acceptance-r7/references/fixed-acceptance-set-r6-r2.original.json",
+        "sha256": "4cecd310c93c99db1d71d5c93afafb514d54c1cb5d51bdec22730102d4a4cc57"
+      },
+      {
+        "bytes": 9783,
+        "path": "acceptance-r7/references/materialize_case_r4.py",
+        "sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81"
+      },
+      {
+        "bytes": 47357,
+        "path": "acceptance-r7/collector-r7/collect_health_evidence.py",
+        "sha256": "887d28ae2cc09fe857ab01fac19bbb32d14e35c5d78b230bb82950a6d956dbf2"
+      },
+      {
+        "bytes": 6701,
+        "path": "acceptance-r7/collector-r7/native_journal_audit.py",
+        "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+      },
+      {
+        "bytes": 5096,
+        "path": "acceptance-r7/collector-r7/business_fact_recheck.py",
+        "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+      },
+      {
+        "bytes": 2809,
+        "path": "acceptance-r7/collector-r7/collect_health_evidence.py.ADAPTATION.diff",
+        "sha256": "4a474a15910eaa4f1759a000c2e30c7f7479473ca115939dbf149b32a6fede8a"
+      },
+      {
+        "bytes": 331,
+        "path": "acceptance-r7/collector-r7/METADATA-CHECK.json",
+        "sha256": "cb996349bbcec503f7d42af8842f5c32ee416a8982ec6e0bd3d3fdfc7f1d9656"
+      },
+      {
+        "bytes": 733,
+        "path": "health-r7-original-export-r1/METADATA-CHECK.json",
+        "sha256": "af3be044ebadea4e4fb738cc270db437ed884ba5ac5b358c2084529e4f30f8d0"
+      },
+      {
+        "bytes": 1262,
+        "path": "health-r7-original-export-r1/README.md",
+        "sha256": "16dc8eb0b0744e603b3b4314aa0c080b39d3d6c84ad031d248896897f6066ed0"
+      },
+      {
+        "bytes": 14088,
+        "path": "health-r7-original-export-r1/capture_health_originals.py",
+        "sha256": "97b66eec16f6ef7e6cb7fad615f107e0a1a26bbff928bc279adc90f75bbc81de"
+      },
+      {
+        "bytes": 3277,
+        "path": "health-r7-original-export-r1/capture_health_originals.py.ADAPTATION.diff",
+        "sha256": "a43ea3c5ec802203b0e2c309b31d006cd632b2ffa4721425c20738bf08b84bc1"
+      },
+      {
+        "bytes": 18945,
+        "path": "health-r7-original-export-r1/export_health_r7_once.py",
+        "sha256": "6507f96eadb2ca04eb7978282ad9c2c6e9364b823df43117980591492f856993"
+      },
+      {
+        "bytes": 7300,
+        "path": "health-r7-original-export-r1/export_health_r7_once.py.ADAPTATION.diff",
+        "sha256": "74dd07a1e7509c111d1fda1b9c6389b55bff755622f0086b5b4ede1a92f73c5f"
+      },
+      {
+        "bytes": 733,
+        "path": "health-r7-root-operator-r1/METADATA-CHECK.json",
+        "sha256": "af3be044ebadea4e4fb738cc270db437ed884ba5ac5b358c2084529e4f30f8d0"
+      },
+      {
+        "bytes": 1030,
+        "path": "health-r7-root-operator-r1/README.md",
+        "sha256": "1cb5c8d939bc8ea793e4be14e0e15d0c2df11e02172577ca89849ef73d27d667"
+      },
+      {
+        "bytes": 5610,
+        "path": "health-r7-root-operator-r1/prepare_register_health_r7.py",
+        "sha256": "e357152dab91a4ecc38f0ae5335ec5be7fdc37e5287f77c9f21241406207c476"
+      },
+      {
+        "bytes": 6833,
+        "path": "health-r7-root-operator-r1/prepare_register_health_r7.py.ADAPTATION.diff",
+        "sha256": "d9a67236f2f5fa1607faddb5adf07e07cbdaaa08dd56f27e42aa91db83594812"
+      },
+      {
+        "bytes": 51793,
+        "path": "acceptance-r7/business-collector-r7-r1/collect_business_evidence.py",
+        "sha256": "e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7"
+      },
+      {
+        "bytes": 10283,
+        "path": "acceptance-r7/business-collector-r7-r1/mobile_use_evidence.py",
+        "sha256": "24d79c3d802661e73dc697e68891f7d4c158180ecc85c0ad20567562813bd228"
+      },
+      {
+        "bytes": 6701,
+        "path": "acceptance-r7/business-collector-r7-r1/native_journal_audit.py",
+        "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+      },
+      {
+        "bytes": 5096,
+        "path": "acceptance-r7/business-collector-r7-r1/business_fact_recheck.py",
+        "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+      },
+      {
+        "bytes": 4997,
+        "path": "acceptance-r7/business-collector-r7-r1/MOBILE-MAPPING.diff",
+        "sha256": "80db49f992d52dba6e97ae196e7b5d52ff0497bb30c2e1c4d4351e3079777e96"
+      },
+      {
+        "bytes": 651,
+        "path": "acceptance-r7/business-collector-r7-r1/SOURCE-REVISION-CHECK.json",
+        "sha256": "b0fa151986531866b99340412924ae31c9b3f8d1b62355c560a21e8b968461dd"
+      },
+      {
+        "bytes": 8313,
+        "path": "acceptance-r7/business-collector-r7-r1/test_mobile_mapping_evidence.py",
+        "sha256": "4d419e4fbb25a65abe87992b65aaf494c66eef6ac5f4812eed1635881a3a0e41"
+      },
+      {
+        "bytes": 1634,
+        "path": "acceptance-r7/business-collector-r7-r1/validation/HOST-CHECKS-01.json",
+        "sha256": "c149a6b26ad2dc3ddf86195ae584a42898f4f08c9cfd93fc3a0f410c10b83b72"
+      },
+      {
+        "bytes": 729,
+        "path": "acceptance-r7/business-collector-r7-r1/HOST-JOB-TERMINAL.json",
+        "sha256": "9fc8bfe490301e6fcfb094f77aabd73f39b724ec0b45f847cba4d5fcd4b64dc8"
+      },
+      {
+        "bytes": 3181,
+        "path": "acceptance-r7/business-collector-r7-r1/README.md",
+        "sha256": "fa07aa4e9ecc83b87fcd57695eb6c428805f0463c61785d85e507c00d3594381"
+      },
+      {
+        "bytes": 19538,
+        "path": "business-r7-original-export-r1/capture_business_originals.py",
+        "sha256": "39d07a043aeed52c45874ba8812b2636e6de70ddf6d17ab5f571dbf7083e3d78"
+      },
+      {
+        "bytes": 2562,
+        "path": "business-r7-original-export-r1/read_archive_chunk.py",
+        "sha256": "dbb116ba8bdaf51f0df1d12a77618a5e0959aeb0ce98c94356013263dc77024a"
+      },
+      {
+        "bytes": 27792,
+        "path": "business-r7-original-export-r1/export_business_once.py",
+        "sha256": "ae14894ce52be620da7672269e765f28687f101465c31c01dccab28af43e6a01"
+      },
+      {
+        "bytes": 4875,
+        "path": "business-r7-original-export-r1/capture_business_originals.py.ADAPTATION.diff",
+        "sha256": "1f7257518f36a5b347c94140ef24bd5258dcc0a922716572d540206b8ec243be"
+      },
+      {
+        "bytes": 1092,
+        "path": "business-r7-original-export-r1/read_archive_chunk.py.ADAPTATION.diff",
+        "sha256": "8ea22c9e29f60a361a14fc599c11e72a1629a6024817dab405949ee9772baa63"
+      },
+      {
+        "bytes": 11566,
+        "path": "business-r7-original-export-r1/export_business_once.py.ADAPTATION.diff",
+        "sha256": "0f1f7c183aa7f0bac43ea67150c49a279eb17370d54d6012cb76e1b0bed95818"
+      },
+      {
+        "bytes": 749,
+        "path": "business-r7-original-export-r1/ADAPTATION-CHECK.json",
+        "sha256": "4d23adb997d5f8aa31aba8c3c7eafc1dffbf97fc47bb27cc866a64c34ff162ae"
+      },
+      {
+        "bytes": 519,
+        "path": "business-r7-original-export-r1/METADATA-CHECK.json",
+        "sha256": "feba1dd67265c89760efe0b89d0e4094d52e7f5f869d4cf34899bee85c4730b6"
+      },
+      {
+        "bytes": 2435,
+        "path": "business-r7-original-export-r1/README.md",
+        "sha256": "997317f0e8d7bc6add12e1b6dac597255197a49fdc323eb6fd9c3519765650a8"
+      },
+      {
+        "bytes": 13549,
+        "path": "business-r7-root-operator-r1/prepare_register_business_r7.py",
+        "sha256": "ea36fc23676e23f75a5aeb2b483de79e9571bacca1c400f670f54a7f03d22018"
+      },
+      {
+        "bytes": 8156,
+        "path": "business-r7-root-operator-r1/prepare_register_business_r7.py.ADAPTATION.diff",
+        "sha256": "e69120dfe9d528a08237a52a8e99d13fc2d4bb5bcbd3fd516e8cd27ceff72e7d"
+      },
+      {
+        "bytes": 519,
+        "path": "business-r7-root-operator-r1/METADATA-CHECK.json",
+        "sha256": "feba1dd67265c89760efe0b89d0e4094d52e7f5f869d4cf34899bee85c4730b6"
+      },
+      {
+        "bytes": 1303,
+        "path": "business-r7-root-operator-r1/README.md",
+        "sha256": "3101612c5c881f48afdda13308db35feff6eaa91e42863718e597db78e89bdab"
+      }
+    ],
+    "support_seals": [
+      {
+        "bytes": 2162,
+        "path": "acceptance-r7/METADATA-SOURCE-SEAL-v150-r7-r1.json",
+        "sha256": "43c4c37270f94b3b5e048c77b373b8c3763423afa2141429117bafebd3cc4e0e"
+      },
+      {
+        "bytes": 1426,
+        "path": "acceptance-r7/collector-r7/SOURCE-SEAL-health-collector-v150-r7-r1.json",
+        "sha256": "014595a0d477d2fb7694c693ad72e0d9b0762eecefec233775e7af077f666fb7"
+      },
+      {
+        "bytes": 1569,
+        "path": "health-r7-original-export-r1/SOURCE-SEAL-health-original-export-v150-r7-r1.json",
+        "sha256": "8a42d87f09aaea3e6de13aeb120c8239685e6b25830e2c8b3d9027e078647cd9"
+      },
+      {
+        "bytes": 1274,
+        "path": "health-r7-root-operator-r1/SOURCE-SEAL-health-registration-v150-r7-r1.json",
+        "sha256": "54d78d0b228f28afaf51a1ab5efaf83801574c7f31d30e9667dc0b3ac81f25db"
+      },
+      {
+        "bytes": 3078,
+        "path": "acceptance-r7/business-collector-r7-r1/SOURCE-SEAL-business-collector-v150-r7-r1.json",
+        "sha256": "c998fd770e65b1d0acf7ee2136f6fdca03e8fd5c5976dc64eb2a83090aab5409"
+      },
+      {
+        "bytes": 2412,
+        "path": "business-r7-original-export-r1/SOURCE-SEAL-business-original-export-v150-r7-r1.json",
+        "sha256": "39780446dea65a87baaa3531ed37d5a147e6a37b35152729a6726b0f146ccade"
+      },
+      {
+        "bytes": 1206,
+        "path": "business-r7-root-operator-r1/SOURCE-SEAL-business-registration-v150-r7-r1.json",
+        "sha256": "faa9a05bc90bb2baa082b1d93faf9246222c96b53a5573403ceda0547bc9739f"
+      }
+    ],
+    "task_nonces_generated": false,
+    "verified_support_file_count": 48,
+    "verified_support_seal_count": 7
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 12457,
+  "original_artifact_reference": "acceptance-r7/SUPPORT-CLOSURE-v150-r7-r1.json",
+  "original_artifact_sha256": "6cace4c639c22e2fb0ff0fede7168364ad9653ea9d9c5f4f99b37929803ea74a",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

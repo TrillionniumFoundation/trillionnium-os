@@ -1,0 +1,172 @@
+{
+  "data": {
+    "archive": {
+      "bytes": 92352,
+      "path": "/operator-workspace/phone-local-v150/provider-r7-phone-payload.tar.gz",
+      "sha256": "b2c676b4599928183e52f98061ff7df3cf508882be6111dfa10331526b0326b2"
+    },
+    "files": [
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/action_ledger.py",
+        "archive_path": "provider-r7/source/action_ledger.py",
+        "bytes": 15363,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/action_ledger.py",
+        "sha256": "727c684fc9e1a0fde410396b1aa85b6ca212aa83bb2d601577fef2b0c7601c4e"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/daily_phone_local.py",
+        "archive_path": "provider-r7/source/daily_phone_local.py",
+        "bytes": 19981,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/daily_phone_local.py",
+        "sha256": "92122fcc8bf01511971075fce2ad94b628dadf2c0c342f0fb940e8b00c636ec3"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/health_contracts.py",
+        "archive_path": "provider-r7/source/health_contracts.py",
+        "bytes": 11439,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/health_contracts.py",
+        "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/model_health.py",
+        "archive_path": "provider-r7/source/model_health.py",
+        "bytes": 8251,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/model_health.py",
+        "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/phone_local_http_worker.py",
+        "archive_path": "provider-r7/source/phone_local_http_worker.py",
+        "bytes": 10453,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/phone_local_http_worker.py",
+        "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/phone_local_tools.py",
+        "archive_path": "provider-r7/source/phone_local_tools.py",
+        "bytes": 11792,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/phone_local_tools.py",
+        "sha256": "dd0fb20af8f3de229d4ce8d8dee47db335eb551e6f5db136fa8f5881c0ca6871"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/phone_observation_tools.py",
+        "archive_path": "provider-r7/source/phone_observation_tools.py",
+        "bytes": 34040,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/phone_observation_tools.py",
+        "sha256": "bcea6fbc5d5efa39a0164623ac61bafb27577e4812b5de0384d2155e3f2c6243"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/phone_task_guards.py",
+        "archive_path": "provider-r7/source/phone_task_guards.py",
+        "bytes": 11368,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/phone_task_guards.py",
+        "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/provider_codex_host.py",
+        "archive_path": "provider-r7/source/provider_codex_host.py",
+        "bytes": 41510,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/provider_codex_host.py",
+        "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/provider_openai_compatible.py",
+        "archive_path": "provider-r7/source/provider_openai_compatible.py",
+        "bytes": 17730,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/provider_openai_compatible.py",
+        "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/provider_phone_local.py",
+        "archive_path": "provider-r7/source/provider_phone_local.py",
+        "bytes": 55325,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/provider_phone_local.py",
+        "sha256": "8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/retirement_recovery.py",
+        "archive_path": "provider-r7/source/retirement_recovery.py",
+        "bytes": 9802,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/retirement_recovery.py",
+        "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/source/task_postconditions.py",
+        "archive_path": "provider-r7/source/task_postconditions.py",
+        "bytes": 14744,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/source/task_postconditions.py",
+        "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/register_task_contract.py",
+        "archive_path": "provider-r7/register_task_contract.py",
+        "bytes": 2730,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/register_task_contract.py",
+        "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/inspect_original_action.py",
+        "archive_path": "provider-r7/inspect_original_action.py",
+        "bytes": 2263,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/inspect_original_action.py",
+        "sha256": "a025c38890242381f64c8afbaea0c9b0f3049da0723958b6bb876956b8d94b9b"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/register_health_contract.py",
+        "archive_path": "provider-r7/register_health_contract.py",
+        "bytes": 1001,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/register_health_contract.py",
+        "sha256": "deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/resolve_retired_action.py",
+        "archive_path": "provider-r7/resolve_retired_action.py",
+        "bytes": 4206,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/resolve_retired_action.py",
+        "sha256": "b1cf105b871279bbd4c117526d8eaeba7ac2ee0dedff4b08386d3a305487d70f"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/qa/fixed-acceptance-set.json",
+        "archive_path": "provider-r7/qa/fixed-acceptance-set.json",
+        "bytes": 37318,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/qa/fixed-acceptance-set.json",
+        "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/README.md",
+        "archive_path": "provider-r7/README.md",
+        "bytes": 3534,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/README.md",
+        "sha256": "002ed641d0bfa936d710938c1620710fce4390ac7d7d6a5c244bbc122b9dcce4"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/MOBILE-USE.diff",
+        "archive_path": "provider-r7/MOBILE-USE.diff",
+        "bytes": 21371,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/MOBILE-USE.diff",
+        "sha256": "d3970893426fe949bd7057f8bd80839cdfdf387cd9afa9d3f7801d595b285cd7"
+      },
+      {
+        "android_target": "/data/trillionnium/owner-open/state/phone-local-v150/provider-r7/SOURCE-SEAL-v150-r7.json",
+        "archive_path": "provider-r7/SOURCE-SEAL-v150-r7.json",
+        "bytes": 13783,
+        "gnu_target": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r7/SOURCE-SEAL-v150-r7.json",
+        "sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+      }
+    ],
+    "model_requests": 0,
+    "new_nonce": false,
+    "old_provider_r6_r2_unchanged": true,
+    "phone_installed": false,
+    "schema": "hepta.provider-phone-payload.v150.r7.1",
+    "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "tar_readback_verified": true
+  },
+  "instance_configuration_file_omitted": true,
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 9620,
+  "original_artifact_reference": "provider-r7/PHONE-PAYLOAD-MANIFEST-v150-r7.json",
+  "original_artifact_sha256": "09eac79336b7ea7b2f81252cafa4dd621bf58e898bc58eef9cd9519624510986",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}

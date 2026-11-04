@@ -1,0 +1,1267 @@
+{
+  "all_19_cases_preserved": true,
+  "business_http_timings": {
+    "max": 15.327037441995344,
+    "mean": 13.754323041503085,
+    "min": 12.181608641010826,
+    "missing_samples": 0,
+    "p50": 13.754323041503085,
+    "p95": 15.169766001946119,
+    "quantile_method": "linear interpolation; descriptive only",
+    "samples": 2
+  },
+  "business_outcomes": {
+    "cancelled": 0,
+    "complete_fraction": 0,
+    "complete_success": 0,
+    "failed": 2,
+    "sample_count": 2,
+    "unconfirmed": 0,
+    "verified_partial": 0
+  },
+  "by_layer": {
+    "component_direct": {
+      "attempts": 1,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 1,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "host_isolated": {
+      "attempts": 11,
+      "outcomes": {
+        "cancelled": 2,
+        "complete_success": 0,
+        "failed": 8,
+        "partial": 0,
+        "unconfirmed": 1
+      },
+      "recovery_attempts": 0
+    },
+    "model_e2e": {
+      "attempts": 2,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 2,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "physical_native_task": {
+      "attempts": 0,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    }
+  },
+  "case_status_counts": {
+    "BLOCKED": 10,
+    "FAIL": 2,
+    "PASS": 7
+  },
+  "cases": [
+    {
+      "attempt_count": 1,
+      "id": "E2E-01",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "model_e2e",
+          "reason": null,
+          "status": "FAIL"
+        }
+      ],
+      "status": "FAIL",
+      "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA"
+    },
+    {
+      "attempt_count": 1,
+      "id": "E2E-02",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "model_e2e",
+          "reason": null,
+          "status": "FAIL"
+        }
+      ],
+      "status": "FAIL",
+      "title": "全新中文/emoji/换行输入、确认、公开回执与返回"
+    },
+    {
+      "attempt_count": 0,
+      "id": "E2E-03",
+      "original_task_outcomes": {},
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "计算器完成全新随机简单表达式并核验结果"
+    },
+    {
+      "attempt_count": 0,
+      "id": "E2E-04",
+      "original_task_outcomes": {},
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "只读查看设置中的公开系统版本字段"
+    },
+    {
+      "attempt_count": 0,
+      "id": "COMP-01",
+      "original_task_outcomes": {},
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "显式返回：launch状态和实际焦点双核验"
+    },
+    {
+      "attempt_count": 0,
+      "id": "NEG-01",
+      "original_task_outcomes": {},
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "截图后焦点切换：必须在input之前拒绝"
+    },
+    {
+      "attempt_count": 0,
+      "id": "NEG-02",
+      "original_task_outcomes": {},
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "同viewport内容变化：精确像素guard必须拒绝"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-03",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "component_direct",
+          "reason": null,
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS",
+      "title": "外屏或旋转：拒绝未资格显示配置"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-04",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "断连发生于dispatch之前"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-05",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "作用已开始后断连：保持未知且不重放"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-06",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS",
+      "title": "模型超时：有界结束且清理原进程组"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-07",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "执行器结果超时：不能用迟到结果认定成功或再执行"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-08",
+      "original_task_outcomes": {
+        "cancelled": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "dispatch前取消"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-09",
+      "original_task_outcomes": {
+        "cancelled": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED",
+      "title": "首次作用后取消"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-10",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS",
+      "title": "图片字节预算/过期图像/旧round绑定"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-11",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS",
+      "title": "native输出损坏/截断/错误身份"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-12",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS",
+      "title": "部分任务被模型说成完成：必须失败终态"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-13",
+      "original_task_outcomes": {
+        "unconfirmed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS",
+      "title": "一次性模板并发/旧nonce重用"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-14",
+      "original_task_outcomes": {
+        "failed": 1
+      },
+      "recovery_attempts": 0,
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS",
+      "title": "容量/原子rename竞态与资源收尾"
+    }
+  ],
+  "combination": {
+    "cloud_fallback": false,
+    "live_policy_semantic_audit_sha256": "8f5425f59c30635445cbfafbdc9fddbf8c3645dbef83e36c413f5931a21acd80",
+    "live_policy_snapshot_sha256": "05756784090a574be850a068576fbded2842f3fa8c1af0aa5b430f875c78a31f",
+    "model_route": "phone_local_cpu",
+    "module_manifest_sha256": "c0e31ecac9168218e7b6a622e4a3df138859743bd83911add42c32906d173a06",
+    "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8",
+    "policy_rules_manifest_sha256": "01eb1a6e50948bfa6f0dff0ebd40357d0f4858c6787f9ea25a68fc8cc2c48fd8",
+    "provider_config_sha256": "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r1",
+    "schema": "hepta.acceptance-combination.v150.r7.1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "frozen"
+  },
+  "combination_canonical_sha256": "87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8",
+  "combination_manifest_sha256": "ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8",
+  "created_utc": "2026-11-04T01:13:54.923878+00:00",
+  "daily_use_qualification_established": false,
+  "failure_analysis": {
+    "both_original_proof_complete_remain_false": true,
+    "inference": "A worker-domain Android service/property access problem is supported by the raw stderr. The precise policy/type defect and blocked subprocess require separate evidence; this report does not infer them.",
+    "not_demonstrated": [
+      "No successful app launch postcondition",
+      "No visual screenshot/grounding/click qualification",
+      "No Unicode exact input or public original-text readback",
+      "No business return to HEPTA"
+    ],
+    "observed": "Both named model actions selected the correct registered app. Each first executor call timed out after repeated denial of servicemanager.installed/servicemanager.ready property reads.",
+    "provider_native_error_text_difference_preserved": true
+  },
+  "fixed_case_count": 19,
+  "hardware_energy_joules": null,
+  "health": {
+    "counts_as_business_or_fixed19": false,
+    "exact_new_nonce_verified": true,
+    "failed": 0,
+    "http_elapsed_seconds": 3.6072011959913652,
+    "http_worker_joined": true,
+    "model_usage": {
+      "completion_tokens": 76,
+      "prompt_tokens": 169,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 245
+    },
+    "native_persistence_interval_seconds": [
+      3.037658847,
+      4.236559475
+    ],
+    "native_status": "completed",
+    "native_terminal_observed_upper_seconds": 4.236559475,
+    "nonce_forced_by_output_grammar": false,
+    "owner_draft_restored_exact": true,
+    "owner_draft_submitted": false,
+    "passed": 1,
+    "phone_tools": 0,
+    "proof_complete": true,
+    "samples": 1,
+    "slot_after_idle": true
+  },
+  "history_boundary": {
+    "future_r7_r2_policy_or_module_not_in_this_combination": true,
+    "original_failures_and_claims_preserved": true,
+    "r6_r2_physical_cancel_slot_busy_failure_not_a_r7_sample": true,
+    "r6_r2_results_not_relabelled": true
+  },
+  "instrumentation_notes": [
+    "Visual capture/export originals were complete; a later duplicate host export attempt was rejected by O_EXCL before another phone read. The original host collector completed separately with process exit0.",
+    "Business collector child process exit0 means the evidence program completed; its workflow exit2 and failed/proof_complete=false remain unchanged.",
+    "Failed and cancelled synthetic negative tasks may satisfy their guard protocol, but they are not successful real model business tasks."
+  ],
+  "model_business": [
+    {
+      "capture_actor_exit_code": 0,
+      "capture_phone_exit_code": 0,
+      "case_id": "E2E-01",
+      "collector_process_exit_code": 0,
+      "collector_workflow_exit_code": 2,
+      "complete_business_success": false,
+      "draft_restore_counts_as_business_return": false,
+      "effect_started": true,
+      "failure_reason": "The first mapped phone.open_app exceeded the original 60-second executor bound; raw stderr repeatedly denied servicemanager properties.",
+      "http_elapsed_seconds": 12.181608641010826,
+      "image_input_count": 0,
+      "missing_postconditions": [
+        "visual_receipt",
+        "return"
+      ],
+      "model_action": {
+        "action": "open",
+        "exact_registered_alias": "视觉挑战",
+        "projection_verified": true
+      },
+      "model_cleanup": {
+        "http_worker_joined": true,
+        "slot_after_idle": true
+      },
+      "model_requests": 1,
+      "model_usage": {
+        "completion_tokens": 27,
+        "prompt_tokens": 1124,
+        "prompt_tokens_details": {
+          "cached_tokens": 3
+        },
+        "total_tokens": 1151
+      },
+      "native_persistence_interval_seconds": [
+        72.302727947,
+        73.550863731
+      ],
+      "native_status": "provider_failed",
+      "native_terminal_observed_upper_seconds": 73.550863731,
+      "native_tool_elapsed_ms": 60222,
+      "no_effect_claim": false,
+      "observation_interval_width_seconds": 1.248135784000013,
+      "original_action_cleanup": {
+        "automatic_replay": false,
+        "business_effect_success": false,
+        "ledger_inspection_closed": true,
+        "process_group_absent": true,
+        "unresolved_effect": false,
+        "waitpid_joined": true
+      },
+      "original_provider_native_text_mismatch_preserved": true,
+      "owner_draft_restored_exact": true,
+      "owner_draft_submitted": false,
+      "phone_tool_dispatches": 1,
+      "proof_complete": false,
+      "protocol_result": "FAIL",
+      "screenshot_or_input_or_tap_reached": false,
+      "sidecar_elapsed_ms": 60011,
+      "sidecar_state": "timed_out",
+      "stderr_property_access_denial_counts": {
+        "servicemanager.installed": 1,
+        "servicemanager.ready": 161
+      },
+      "successful_open_verified": false,
+      "task_outcome": "failed",
+      "uncertainty": "No per-command stage receipt: the exact blocked subprocess and whether any app launch effect occurred are not proven. Worker entry and safe cleanup are proven, never zero effect.",
+      "verified_partial_completion": false
+    },
+    {
+      "capture_actor_exit_code": 0,
+      "capture_phone_exit_code": 0,
+      "case_id": "E2E-02",
+      "collector_process_exit_code": 0,
+      "collector_workflow_exit_code": 2,
+      "complete_business_success": false,
+      "draft_restore_counts_as_business_return": false,
+      "effect_started": true,
+      "failure_reason": "The first mapped phone.open_app exceeded the original 60-second executor bound; raw stderr repeatedly denied servicemanager properties.",
+      "http_elapsed_seconds": 15.327037441995344,
+      "image_input_count": 0,
+      "missing_postconditions": [
+        "editor",
+        "public_readback",
+        "public_receipt",
+        "return"
+      ],
+      "model_action": {
+        "action": "open",
+        "exact_registered_alias": "Unicode验证",
+        "projection_verified": true
+      },
+      "model_cleanup": {
+        "http_worker_joined": true,
+        "slot_after_idle": true
+      },
+      "model_requests": 1,
+      "model_usage": {
+        "completion_tokens": 46,
+        "prompt_tokens": 1562,
+        "prompt_tokens_details": {
+          "cached_tokens": 407
+        },
+        "total_tokens": 1608
+      },
+      "native_persistence_interval_seconds": [
+        75.443962963,
+        76.676148624
+      ],
+      "native_status": "provider_failed",
+      "native_terminal_observed_upper_seconds": 76.676148624,
+      "native_tool_elapsed_ms": 60233,
+      "no_effect_claim": false,
+      "observation_interval_width_seconds": 1.2321856610000026,
+      "original_action_cleanup": {
+        "automatic_replay": false,
+        "business_effect_success": false,
+        "ledger_inspection_closed": true,
+        "process_group_absent": true,
+        "unresolved_effect": false,
+        "waitpid_joined": true
+      },
+      "original_provider_native_text_mismatch_preserved": true,
+      "owner_draft_restored_exact": true,
+      "owner_draft_submitted": false,
+      "phone_tool_dispatches": 1,
+      "proof_complete": false,
+      "protocol_result": "FAIL",
+      "screenshot_or_input_or_tap_reached": false,
+      "sidecar_elapsed_ms": 60024,
+      "sidecar_state": "timed_out",
+      "stderr_property_access_denial_counts": {
+        "servicemanager.installed": 1,
+        "servicemanager.ready": 335
+      },
+      "successful_open_verified": false,
+      "task_outcome": "failed",
+      "uncertainty": "No per-command stage receipt: the exact blocked subprocess and whether any app launch effect occurred are not proven. Worker entry and safe cleanup are proven, never zero effect.",
+      "verified_partial_completion": false
+    }
+  ],
+  "model_usage": {
+    "all_three_real_requests": {
+      "completion_tokens": 149,
+      "prompt_tokens": 2855,
+      "total_tokens": 3004
+    },
+    "all_three_real_requests_count": 3,
+    "business": {
+      "completion_tokens": {
+        "complete_total": 73,
+        "known_samples": 2,
+        "known_sum": 73,
+        "missing_samples": 0
+      },
+      "prompt_tokens": {
+        "complete_total": 2686,
+        "known_samples": 2,
+        "known_sum": 2686,
+        "missing_samples": 0
+      },
+      "total_tokens": {
+        "complete_total": 2759,
+        "known_samples": 2,
+        "known_sum": 2759,
+        "missing_samples": 0
+      }
+    },
+    "health": {
+      "completion_tokens": 76,
+      "prompt_tokens": 169,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 245
+    },
+    "host_fixtures_are_not_model_usage": true,
+    "source": "Original phone-local HTTP receipts only. Health is outside the business denominator."
+  },
+  "monetary_cost": null,
+  "native_integrity": {
+    "health": {
+      "adjacent_global_predecessor_links_verified": 2,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 3,
+      "record_hashes_verified": 3,
+      "selected_scope_record_count": 3,
+      "status": "PASS",
+      "unsupported": []
+    },
+    "unicode": {
+      "adjacent_global_predecessor_links_verified": 8,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 9,
+      "record_hashes_verified": 9,
+      "selected_scope_record_count": 9,
+      "status": "PASS",
+      "unsupported": []
+    },
+    "visual": {
+      "adjacent_global_predecessor_links_verified": 6,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 7,
+      "record_hashes_verified": 7,
+      "selected_scope_record_count": 7,
+      "status": "PASS",
+      "unsupported": []
+    }
+  },
+  "native_latency_note": "Original collector native_end_to_end scalar is unavailable and remains null. Separate observer intervals and upper bounds are reported per task; they are not exact persisted event-time latency.",
+  "negative_layers": {
+    "host_pass_cases": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09",
+      "NEG-03",
+      "NEG-06",
+      "NEG-10",
+      "NEG-11",
+      "NEG-12",
+      "NEG-13",
+      "NEG-14"
+    ],
+    "physical_followup_still_required": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09"
+    ],
+    "synthetic_geometry_rejection_is_not_outer_screen_or_rotation_support": true
+  },
+  "protocol_sha256": "d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43",
+  "provenance": {
+    "aggregation_process_exit_code": 0,
+    "frozen_aggregator_sha256": "c3b91281a1076ac6fd782fe722eeedae7384817dcbd89060e94b095be48ce083",
+    "health_report_sha256": "5885d85bfc458caab654910591a7c3f746c6af4c4fe3d378f37a0d47f7714e82",
+    "native_auditor_sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+    "original_host_five_attempts_sha256": "d6c05da9630093cafa24cceda88b09659ad308ecfc3849f47c785d035afbcc26",
+    "original_host_seven_attempts_sha256": "65a88627e5565cd36c47fdef555151dde05233e6712c6e3827cccd8edc710a11",
+    "root_closure_sha256": {
+      "health": "1c1dd50bdc710dc90dad6b95054120ef6a7cf3a566be4a32ce46f73a6f3105f0",
+      "unicode": "80aaab5347fb405f72696e36349fe7ea5c40b318a62cc72fc67ec97fb53b9225",
+      "visual": "7eb5ad2669f9d91c886fb121c2ead51b0f80d43ef60b09a8bc10a87912052ca4"
+    },
+    "unicode_report_sha256": "566ac78bfab6e871809aa40516dcc65abb816b73bcca0da6b904a2645715f2eb",
+    "visual_report_sha256": "c3b79bc4ba2cc73e2404ab00264cef0fbe1f0abc4f066470a9c66a546531a35e"
+  },
+  "publication_privacy": {
+    "actual_scope_action_or_process_identifiers": false,
+    "claims_or_native_records": false,
+    "draft_text_or_digest": false,
+    "full_requests": false,
+    "keys_or_key_digests": false,
+    "nonces": false
+  },
+  "qualification": "The fixed protocol forbids a general daily reliability claim from one suite; repeated representative samples and measured limits are still required.",
+  "recovery": {
+    "business_recovery_attempts": 0,
+    "business_recovery_successes": 0,
+    "cleanup_is_not_business_return_or_business_recovery_success": true,
+    "draft_cleanup_attempts": 3,
+    "exact_original_drafts_restored": 3,
+    "original_action_replay": false,
+    "original_draft_submissions": 0,
+    "timed_out_original_actions_independently_closed": 2
+  },
+  "remaining_work": [
+    "Qualify a separately versioned minimal Android property-access correction using exact compiled policy evidence, then a new bounded health request.",
+    "Run fresh visual and Unicode tasks only after the new combination is ready; never replay these original requests, text or effects.",
+    "E2E-03/E2E-04 and independent COMP-01/NEG-01/NEG-02 lack current-combination evidence; preserve their original protocol and tool budgets.",
+    "Obtain separate physical samples for NEG-04/05/07/08/09 through the authorized native chain; host passes cannot close those gates.",
+    "Use repeated representative business samples and measured resource/latency limits before daily-use qualification. Outer display, rotation and folding remain unqualified."
+  ],
+  "report_operation": {
+    "git_operations": 0,
+    "host_only": true,
+    "phone_calls": 0,
+    "production_changes": 0,
+    "real_model_requests": 0,
+    "task_execution": false
+  },
+  "required_19_protocol_closed": false,
+  "resources": {
+    "limits": "Non-atomic file reads. RSS/HWM are snapshots and lifetime high-water marks. CPU deltas span wider observation windows and omit exited worker descendants. Battery values are vendor raw values; current_now=0 does not prove zero power.",
+    "model_hwm_max_kB": 3301680,
+    "model_rss_max_kB": 3286676,
+    "model_rss_min_kB": 3100676,
+    "phases": [
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 98
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4397000
+          }
+        },
+        "full_combination_verified": true,
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-health",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 76,
+            "cpu_user_ticks": 230,
+            "hwm_error": null,
+            "hwm_kB": 3121604,
+            "rss_error": null,
+            "rss_kB": 3100676
+          },
+          "provider": {
+            "cpu_system_ticks": 120,
+            "cpu_user_ticks": 434,
+            "hwm_error": null,
+            "hwm_kB": 26976,
+            "rss_error": null,
+            "rss_kB": 26976
+          },
+          "sidecar": {
+            "cpu_system_ticks": 6,
+            "cpu_user_ticks": 0,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_kB": 7617392,
+        "uptime_observation_interval_seconds": [
+          94849.61,
+          94850.44
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 98
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 260
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4396000
+          }
+        },
+        "full_combination_verified": true,
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-health",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 81,
+            "cpu_user_ticks": 1635,
+            "hwm_error": null,
+            "hwm_kB": 3142964,
+            "rss_error": null,
+            "rss_kB": 3123156
+          },
+          "provider": {
+            "cpu_system_ticks": 182,
+            "cpu_user_ticks": 650,
+            "hwm_error": null,
+            "hwm_kB": 28640,
+            "rss_error": null,
+            "rss_kB": 28640
+          },
+          "sidecar": {
+            "cpu_system_ticks": 7,
+            "cpu_user_ticks": 1,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_kB": 7625676,
+        "uptime_observation_interval_seconds": [
+          94972.08,
+          94973.04
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 98
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 270
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4396000
+          }
+        },
+        "full_combination_verified": true,
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-visual",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 82,
+            "cpu_user_ticks": 1636,
+            "hwm_error": null,
+            "hwm_kB": 3142964,
+            "rss_error": null,
+            "rss_kB": 3123156
+          },
+          "provider": {
+            "cpu_system_ticks": 413,
+            "cpu_user_ticks": 1446,
+            "hwm_error": null,
+            "hwm_kB": 28640,
+            "rss_error": null,
+            "rss_kB": 28640
+          },
+          "sidecar": {
+            "cpu_system_ticks": 17,
+            "cpu_user_ticks": 2,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_kB": 7698816,
+        "uptime_observation_interval_seconds": [
+          95407.07,
+          95407.93
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 98
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 270
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4395000
+          }
+        },
+        "full_combination_verified": true,
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-visual",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 87,
+            "cpu_user_ticks": 6432,
+            "hwm_error": null,
+            "hwm_kB": 3171516,
+            "rss_error": null,
+            "rss_kB": 3156700
+          },
+          "provider": {
+            "cpu_system_ticks": 478,
+            "cpu_user_ticks": 1697,
+            "hwm_error": null,
+            "hwm_kB": 28640,
+            "rss_error": null,
+            "rss_kB": 28640
+          },
+          "sidecar": {
+            "cpu_system_ticks": 32,
+            "cpu_user_ticks": 7,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_kB": 7583628,
+        "uptime_observation_interval_seconds": [
+          95595.66,
+          95596.52
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 98
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -32000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 270
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4391000
+          }
+        },
+        "full_combination_verified": true,
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-unicode",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 88,
+            "cpu_user_ticks": 6434,
+            "hwm_error": null,
+            "hwm_kB": 3171516,
+            "rss_error": null,
+            "rss_kB": 3156700
+          },
+          "provider": {
+            "cpu_system_ticks": 882,
+            "cpu_user_ticks": 3099,
+            "hwm_error": null,
+            "hwm_kB": 28640,
+            "rss_error": null,
+            "rss_kB": 28640
+          },
+          "sidecar": {
+            "cpu_system_ticks": 48,
+            "cpu_user_ticks": 10,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_kB": 7495780,
+        "uptime_observation_interval_seconds": [
+          96346.58,
+          96347.39
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 98
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -221000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4390000
+          }
+        },
+        "full_combination_verified": true,
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-unicode",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 98,
+            "cpu_user_ticks": 12445,
+            "hwm_error": null,
+            "hwm_kB": 3301680,
+            "rss_error": null,
+            "rss_kB": 3286676
+          },
+          "provider": {
+            "cpu_system_ticks": 955,
+            "cpu_user_ticks": 3356,
+            "hwm_error": null,
+            "hwm_kB": 28640,
+            "rss_error": null,
+            "rss_kB": 28640
+          },
+          "sidecar": {
+            "cpu_system_ticks": 66,
+            "cpu_user_ticks": 12,
+            "hwm_error": null,
+            "hwm_kB": 4120,
+            "rss_error": null,
+            "rss_kB": 4120
+          }
+        },
+        "system_mem_available_kB": 7355408,
+        "uptime_observation_interval_seconds": [
+          96533.92,
+          96534.77
+        ]
+      }
+    ],
+    "system_mem_available_min_kB": 7355408,
+    "windows": [
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.05,
+            "total_seconds": 14.1,
+            "user_seconds": 14.05
+          },
+          "provider": {
+            "system_seconds": 0.62,
+            "total_seconds": 2.78,
+            "user_seconds": 2.16
+          },
+          "sidecar": {
+            "system_seconds": 0.01,
+            "total_seconds": 0.02,
+            "user_seconds": 0.01
+          }
+        },
+        "label": "health",
+        "observation_window_seconds": [
+          121.63999999999942,
+          123.42999999999302
+        ],
+        "scope": "Whole interval between two non-atomic observations; includes idle/control/collection overhead, not per-request CPU attribution. Sidecar parent only, not its exited workers."
+      },
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.05,
+            "total_seconds": 48.01,
+            "user_seconds": 47.96
+          },
+          "provider": {
+            "system_seconds": 0.65,
+            "total_seconds": 3.16,
+            "user_seconds": 2.51
+          },
+          "sidecar": {
+            "system_seconds": 0.15,
+            "total_seconds": 0.2,
+            "user_seconds": 0.05
+          }
+        },
+        "label": "visual",
+        "observation_window_seconds": [
+          187.73000000001048,
+          189.4499999999971
+        ],
+        "scope": "Whole interval between two non-atomic observations; includes idle/control/collection overhead, not per-request CPU attribution. Sidecar parent only, not its exited workers."
+      },
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.1,
+            "total_seconds": 60.21,
+            "user_seconds": 60.11
+          },
+          "provider": {
+            "system_seconds": 0.73,
+            "total_seconds": 3.3,
+            "user_seconds": 2.57
+          },
+          "sidecar": {
+            "system_seconds": 0.18,
+            "total_seconds": 0.2,
+            "user_seconds": 0.02
+          }
+        },
+        "label": "unicode",
+        "observation_window_seconds": [
+          186.52999999999884,
+          188.19000000000233
+        ],
+        "scope": "Whole interval between two non-atomic observations; includes idle/control/collection overhead, not per-request CPU attribution. Sidecar parent only, not its exited workers."
+      }
+    ]
+  },
+  "sample_counts": {
+    "additional_original_export_and_process_closure_assertions": 14,
+    "assertions_are_not_sample_count": true,
+    "component_direct_geometry_fixture_samples": 1,
+    "fixed19_executed_samples": 14,
+    "host_isolated_samples": 11,
+    "physical_negative_samples": 0,
+    "real_model_business_tasks": 2,
+    "runtime_assertions": 462,
+    "separate_real_health_tasks": 1
+  },
+  "schema": "hepta.quality-checkpoint-public.v150.r7.1",
+  "state": "R7_R1_FROZEN_COMBINATION_MEASURED_NOT_DAILY_QUALIFIED"
+}

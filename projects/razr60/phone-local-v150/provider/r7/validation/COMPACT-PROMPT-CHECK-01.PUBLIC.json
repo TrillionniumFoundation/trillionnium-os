@@ -1,0 +1,51 @@
+{
+  "data": {
+    "actual_daily_pin_import_gate_pass": true,
+    "actual_owner_text_published": false,
+    "candidate_qualified": false,
+    "context_limit_tokens_unchanged": 4096,
+    "decoder_mapper_and_receipt_functions_AST_equal": true,
+    "health_messages_byte_equal": true,
+    "max_prompt_bytes_unchanged": 24576,
+    "model_requests": 0,
+    "old_39_checks_not_rerun_or_recounted": true,
+    "old_three_pinned_cpp_grammars_unchanged": true,
+    "only_provider_AST_change_from_r1": "mobile_use_policy",
+    "parent_candidate_provider_sha256": "b8046b0aa0137019f168f296a46c876f5f16bd64399d501c194be868b3164e67",
+    "phone_operations": 0,
+    "prompt_measurements": [
+      {
+        "baseline_messages_bytes": 3639,
+        "case": "visual",
+        "decoder_branches": 5,
+        "decoder_schema_byte_equal_r1": true,
+        "owner_utf8_exact": true,
+        "prompt_action_names_equal_decoder": true,
+        "r1_messages_bytes": 6241,
+        "r2_messages_bytes": 5306,
+        "r2_system_bytes": 3255
+      },
+      {
+        "baseline_messages_bytes": 4590,
+        "case": "unicode",
+        "decoder_branches": 11,
+        "decoder_schema_byte_equal_r1": true,
+        "owner_utf8_exact": true,
+        "prompt_action_names_equal_decoder": true,
+        "r1_messages_bytes": 10729,
+        "r2_messages_bytes": 6354,
+        "r2_system_bytes": 3629
+      }
+    ],
+    "schema": "hepta.mobile-use-compact-prompt-review.v150.2",
+    "state": "PASS",
+    "task_nonces_generated": false,
+    "token_count_not_measured_no_claim_of_token_fit": true
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 1669,
+  "original_artifact_reference": "provider-r7/validation/COMPACT-PROMPT-CHECK-01.json",
+  "original_artifact_sha256": "d9073a474e445c110374d5e842bc1aeb54905044c9f57b12fdfed62e7bb595bd",
+  "projection_scope": "Review/reference only; private instance inputs and deployment evidence omitted.",
+  "public_projection": true
+}
