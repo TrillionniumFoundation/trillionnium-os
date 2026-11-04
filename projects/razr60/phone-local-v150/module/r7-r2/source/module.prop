@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150_r7_r2
+name=HEPTA Phone Local v150 r7 attempt 2
+version=v150-r7-attempt2
+versionCode=150072
+author=Trillionnium
+description=Four read-only servicemanager property permissions; same frozen GUI-Owl action mapping and cleanup shielding; current boot only; no automatic tasks or replay.

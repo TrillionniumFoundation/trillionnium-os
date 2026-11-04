@@ -1,0 +1,63 @@
+{
+  "files": [
+    {
+      "bytes": 22963,
+      "path": "frozen_fixture_support.py",
+      "sha256": "617ff6102a792eb8e0867a8fd392d8317f32f34efb93dc3e46cb8a2110a76e10"
+    },
+    {
+      "bytes": 5371,
+      "path": "fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 2299,
+      "path": "counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 26214,
+      "path": "run_fault_cases.py",
+      "sha256": "1404aea51291d073aeab34df783d0449ab384b840ba766ac6e1452e79cec43a1"
+    },
+    {
+      "bytes": 7580,
+      "path": "execute_namespace_once.py",
+      "sha256": "f210f0cd97f756e2c7b5ba1803e11dd8ea47c5f1116220044e22e6df30b47fc7"
+    },
+    {
+      "bytes": 3023,
+      "path": "run_fixed_faults_once.py",
+      "sha256": "93949ea69391a456a7ed6b2a9a2d2db7d2616bc589344e056a8e1e37ef319be5"
+    },
+    {
+      "bytes": 1540,
+      "path": "SOURCE-BINDING-ONLY.diff",
+      "sha256": "44cbcee724601d9e8d7c146d4ce68bc5ae8827a544369a3b85a894f7c96aa9b9"
+    },
+    {
+      "bytes": 3143,
+      "path": "OUTER-BINDING-ONLY.diff",
+      "sha256": "737d8f649b932d7f362f1f98db2028e5816177fe31512412e79932077227dffe"
+    },
+    {
+      "bytes": 3130,
+      "path": "README.md",
+      "sha256": "150615f7733e1847c39d284e791c7c938fee7adecd4a2548c986091acb8c548b"
+    },
+    {
+      "bytes": 6579,
+      "path": "REPORT-PUBLIC.json",
+      "sha256": "179b2d725c77098bcd3128e7a584c34f364186675fe083aec4cb2131e4dda0db"
+    },
+    {
+      "bytes": 2462,
+      "path": "SOURCE-PUBLIC.json",
+      "sha256": "e125232d2a8f905a557c0b1895b9efd0d0f3216b3476adeaba644058657286eb"
+    }
+  ],
+  "private_inputs_excluded": true,
+  "publisher": "Root-designated Git owner only",
+  "recursive_upload_forbidden": true,
+  "schema": "hepta.exact-publication-allowlist.v1"
+}

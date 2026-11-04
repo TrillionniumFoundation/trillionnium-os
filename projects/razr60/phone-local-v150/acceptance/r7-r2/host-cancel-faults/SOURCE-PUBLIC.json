@@ -1,0 +1,71 @@
+{
+  "actual_samples": 5,
+  "combination_manifest_sha256": "ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4",
+  "combination_sha256": "1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5",
+  "excluded": [
+    "private original packet and copied originals",
+    "actual identities, requests, claims and receipts",
+    "synthetic API keys including digests",
+    "private ATTEMPTS evidence paths and process records"
+  ],
+  "files": [
+    {
+      "bytes": 22963,
+      "path": "frozen_fixture_support.py",
+      "sha256": "617ff6102a792eb8e0867a8fd392d8317f32f34efb93dc3e46cb8a2110a76e10"
+    },
+    {
+      "bytes": 5371,
+      "path": "fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 2299,
+      "path": "counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 26214,
+      "path": "run_fault_cases.py",
+      "sha256": "1404aea51291d073aeab34df783d0449ab384b840ba766ac6e1452e79cec43a1"
+    },
+    {
+      "bytes": 7580,
+      "path": "execute_namespace_once.py",
+      "sha256": "f210f0cd97f756e2c7b5ba1803e11dd8ea47c5f1116220044e22e6df30b47fc7"
+    },
+    {
+      "bytes": 3023,
+      "path": "run_fixed_faults_once.py",
+      "sha256": "93949ea69391a456a7ed6b2a9a2d2db7d2616bc589344e056a8e1e37ef319be5"
+    },
+    {
+      "bytes": 1540,
+      "path": "SOURCE-BINDING-ONLY.diff",
+      "sha256": "44cbcee724601d9e8d7c146d4ce68bc5ae8827a544369a3b85a894f7c96aa9b9"
+    },
+    {
+      "bytes": 3143,
+      "path": "OUTER-BINDING-ONLY.diff",
+      "sha256": "737d8f649b932d7f362f1f98db2028e5816177fe31512412e79932077227dffe"
+    },
+    {
+      "bytes": 3130,
+      "path": "README.md",
+      "sha256": "150615f7733e1847c39d284e791c7c938fee7adecd4a2548c986091acb8c548b"
+    },
+    {
+      "bytes": 6579,
+      "path": "REPORT-PUBLIC.json",
+      "sha256": "179b2d725c77098bcd3128e7a584c34f364186675fe083aec4cb2131e4dda0db"
+    }
+  ],
+  "original_private_source_and_evidence_seal_sha256": "a92d632455b25119d6ec357665db48bbbec3fc1125b063b4a57f5770d5f15283",
+  "phone_calls": 0,
+  "physical_followups_remaining": 5,
+  "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "real_model_requests": 0,
+  "runtime_assertions": 154,
+  "schema": "hepta.host-fault-public-source-index.v150.r7.r2.1",
+  "source_control_flow_preserved": true
+}

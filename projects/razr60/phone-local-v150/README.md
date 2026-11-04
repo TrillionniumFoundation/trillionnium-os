@@ -1,117 +1,107 @@
-# RAZR60 phone-local model — r7-r1 measured checkpoint
+# RAZR60 phone-local model — r7-r2 measured checkpoint
 
-**Phone-local model health passed. Both new real phone business tasks failed. The formal nineteen-case result is 7 PASS / 2 FAIL / 10 BLOCKED; daily-use qualification has not been established.**
+**The model runs locally on the phone. The new health request passed. Both new phone business tasks failed. The formal nineteen-case result is 7 PASS / 2 FAIL / 10 BLOCKED; daily-use qualification remains unestablished.**
 
-The model and inference runtime are installed on the phone. The current failure is in the first Android application operation: both original workers reached execution and timed out while their stderr reported denied servicemanager property reads. Original actions and drafts have been independently closed without replay. A future property-permission correction is a separate combination, not a retroactive pass for this one.
+This checkpoint records the installed v150-r7-r2 combination. Both real business requests reached one authorized Android application operation, whose original worker exited with code 68 and reported “Can't find service: display”. The original tasks, effects and drafts have been independently closed without replay. The actual policy change in this combination is limited to four servicemanager-property file-read permissions. It does not establish that service discovery or the full business flows now work.
 
-Read the [complete quality and cost report](qualification/r7-r1-checkpoint/README.md) and [machine-readable result](qualification/r7-r1-checkpoint/actual-01/QUALITY-PUBLIC.json).
+Read the [complete quality and resource report](qualification/r7-r2-checkpoint/README.md), [machine-readable result](qualification/r7-r2-checkpoint/QUALITY-SUMMARY.json) and [report provenance](qualification/r7-r2-checkpoint/PROVENANCE.json). The former [r7-r1 checkpoint](qualification/r7-r1-checkpoint/README.md) remains unchanged. Subsequent policy candidates are outside this measured combination.
 
-## Current source and execution boundary
+## What is running on the phone
 
-The phone runs GUI-Owl-1.5-2B-Instruct Q4_K_M with its Q8 vision projector, a pinned Android ARM64 llama.cpp runtime, the existing HEPTA native turn/tool ledger, and the dedicated r6 executor/worker SELinux domains. Model inference is local to the phone. The fresh r7 health request has passed; this alone does not establish ordinary phone-operation reliability.
+The phone uses GUI-Owl-1.5-2B-Instruct Q4_K_M with its Q8 vision projector, a pinned Android ARM64 llama.cpp runtime, the existing HEPTA native turn/tool ledger, and the dedicated r6 executor/worker SELinux domains. Inference uses the phone CPU. No cloud model fallback or automatic retry is enabled.
 
-r7 changes two of the thirteen production Python files: the provider accepts a constrained named mobile_use JSON projection and daily_phone_local pins that exact provider. It keeps the original typed phone tools, native admission, executor, model weights, SELinux policy and resource limits. The health path remains separate and does not force the expected nonce as a decoder constant or enum.
+The thirteen r7 production Python sources, model, executor, native runtime and budgets are unchanged in r7-r2. The provider accepts a constrained named mobile_use JSON projection and retains the original typed tools and postconditions. This is a deterministic transport projection informed by the official mobile action vocabulary; it is not a claim of literal cookbook XML/action output. Original model responses, model objects, mapping records and mapped decisions remain separate evidence. The collector recomputes each mapping from the pinned source and checks the original native and executor records. Model prose never proves an action occurred.
 
-This named JSON shape is a deterministic transport projection informed by the model's official mobile action vocabulary. It is not a claim that the model emits the cookbook's literal XML/action transport. The original model object and HTTP response, the mapping record, and the mapped legacy decision are retained separately. The business collector independently recomputes the projection from the pinned source and requires the original native and executor evidence. A model summary never proves that an action occurred.
+The separate health path leaves the expected answer unconstrained by nonce-specific grammar. Its exact fresh response, one local HTTP request, zero tools, native terminal and cleanup were checked independently.
 
-## Version and evidence map
+## Current actual results
 
-| Item | Frozen identifier | Public entry |
+| Real request | Result | Prompt / output / total tokens | Model HTTP time | Native persistence observation interval | Phone effect |
+| --- | --- | ---: | ---: | --- | --- |
+| Health, auxiliary | PASS | 172 / 58 / 230 | 3.226108 s | 3.011533–4.206784 s | No phone tools |
+| Visual, E2E-01 | FAIL | 1123 / 28 / 1151 | 12.103802 s | 12.765552–13.952773 s | One open_app; worker exit 68 after 65 ms |
+| Unicode, E2E-02 | FAIL | 1569 / 32 / 1601 | 15.310555 s | 15.720707–16.872234 s | One open_app; worker exit 68 after 52 ms |
+
+Each real request used one model HTTP round and one Send. The two business requests consumed **2,752 tokens**; health adds 230, for 2,982 across the three requests. Cached tokens are part of prompt usage and are not added again. Synthetic host responses do not count as model usage.
+
+HTTP times come from original local-model receipts. The native intervals use one sender's monotonic clock and bound the observation of persistence; they are not exact event times, remote host job durations or the time to complete a successful business flow.
+
+Both model business actions were legal named open operations. Both workers reached the effect entry, then ended with nonzero exit 68. The executor's state “completed” means its child process ended; it does not mean the command or business task succeeded. Each original child was joined, its process group was absent, and its original receipt and ledger disposition were closed without redispatch.
+
+Neither task reached a usable screenshot, visual grounding/tap, Unicode text entry, public text readback, submission or required return. Both original native tasks remain provider_failed, both business proofs remain false, and the independently verified business fact count is zero. The result is **0/2 complete, 0/2 verified partial, 2/2 failed**. Exact restoration of the original drafts without submission is cleanup, not business return.
+
+The visible error is that the original worker could not find the Android display service. This checkpoint does not infer a particular missing Binder permission from that text or claim zero effects merely because the operation failed. Further diagnosis and any later correction require their own version and measurements.
+
+## Fixed nineteen-case qualification
+
+| Evidence group | Current samples | Meaning |
+| --- | ---: | --- |
+| Real model business | 2 | Both failed: E2E-01 and E2E-02 |
+| Host-isolated negative cases | 11 | Their expected rejection, timeout, cancellation or uncertainty conditions passed |
+| Direct geometry component | 1 | NEG-03 rejection conditions passed; no real display/fold qualification |
+| Total fixed-set samples | 14 | 2 + 11 + 1; not fourteen passing cases |
+| Auxiliary health | 1 | Passed; excluded from business success rate and the fixed nineteen |
+| Physical negative-task layer | 0 | Still missing for five dual-layer cases |
+
+The frozen aggregator returns **7 PASS / 2 FAIL / 10 BLOCKED**. NEG-03, NEG-06 and NEG-10 through NEG-14 are PASS. E2E-01 and E2E-02 are FAIL. NEG-04/05/07/08/09 passed their host layers but remain BLOCKED because their required physical-native layers have no current sample. E2E-03/E2E-04, COMP-01 and NEG-01/NEG-02 are also BLOCKED.
+
+All twelve host/component samples were actually executed for this full combination. They comprise 462 runtime assertions and fourteen original-export/process-closure assertions. Assertions are not sample counts, and expected failure in a negative fixture is not model business success. See the [five host-fault report](acceptance/r7-r2/host-cancel-faults/REPORT-PUBLIC.json), [seven host/component summary](acceptance/r7-r2/host-negative/PUBLIC-SAFE-SUMMARY.json) and the full [case-by-layer table](qualification/r7-r2-checkpoint/README.md).
+
+The formal protocol retains all nineteen cases, original limits, geometry and dual-layer gates. Its published review copy and source relationship are under [acceptance/r7-r2](acceptance/r7-r2/README-PUBLIC.md). The older provider/r7/qa historical copy is not the current normative acceptance protocol. Projected files with private bindings removed are not executable qualification manifests.
+
+## Policy, installation and preserved history
+
+The r7-r2 policy adds only worker-to-servicemanager_prop file getattr, open, read and map. The actual installed live policy passed a 26-check semantic audit: exactly these four permission atoms were added, with no deletion, new type, or other checked table expansion. The offline candidate and actual kernel serialization differ in bytes but have the audited equivalent policy content. Enforcing remained enabled. See the [policy summary](policy/r7-r2-property/POLICY-PUBLIC-SUMMARY.json) and [rule projection](policy/r7-r2-property/README.md).
+
+The prior r7-r1 module was retired before policy application. Its four original groups were independently absent twice, the original supervisor exit was retained, and both historical timed-out actions stayed in their original journal. The new module verified the existing production payload rather than replacing model/provider/executor bytes. Current business actions add two separately closed exit-68 records; none of the old actions was removed or replayed.
+
+The first r7-r2 installer stopped before unpacking or starting a role because its GNU chroot could not read the Android SELinux path. A new operator preserved that failure and checked the exact failed output and absence of installed state. It used the existing host view through /proc/1/root/sys/fs/selinux, without mounting or relaxing permissions, and wrote a separate output directory. The sealed module and combination did not change.
+
+The second installation and readiness observation had actual host, actor and phone exit statuses of zero. Readiness checked 89 startup originals, every one of the 67 module files, 65 sums, 44 payloads and the 22 retained provider/config/service files. Large previous evidence was hashed instead of repeatedly copied into readiness stdout. The following health and two business tasks were new requests under this installed combination.
+
+The historical [r7-r1 measurements](qualification/r7-r1-checkpoint/README.md) remain 1 health PASS and 2 business FAIL with property-read errors and roughly 60-second original tool timeouts. The older [r6-r2 stage02](qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json) remains 7 PASS / 3 FAIL / 9 BLOCKED, including its physical cancellation/slot-busy failure. Their original requests, actions and results were not assigned to r7-r2. The [previous main README](qualification/history/README-as-published-4f7f0886.md) is preserved exactly.
+
+## Resources and evidence limits
+
+Six bounded observations of the same live roles found model RSS of **3,100,508–3,282,128 kB**, or approximately **2.9569–3.1301 GiB**, and a lifetime high-water mark of **3,299,764 kB**, or **3.1469 GiB**. The lowest observed system MemAvailable was 7,359,732 kB. Linux-reported kB is interpreted as KiB for those conversions.
+
+The samples are snapshots, not continuous per-request peaks. CPU differences span wider intervals that include UI, waiting, control and collection work; they are not exact inference cost. Battery vendor values, including current_now=0 and an unchanged percentage, do not establish zero power. Hardware energy and monetary cost remain **unmeasured/null**.
+
+Health and the two business tasks independently verified 3, 7 and 7 selected native records, with 2, 6 and 6 observed adjacent predecessor links. These checks do not attest an unseen global journal chain. Original capture actor/phone exits, actual collector exits, source/mapping/receipt hashes, HTTP joins, idle slots and original draft restoration were independently checked. A collector process returning zero means the evidence program ran; the failed business classification and proof=false remain failures.
+
+The final reporting process reread 373 inputs and executed the frozen aggregate once. An earlier report-preparation attempt failed on the wording of a clock-description label before creating aggregate output. Its original failure is retained; the revised report accepted the two exact labels used by the frozen sender while preserving the same timing and identity checks. No phone request, fixture or aggregate sample was replayed for reporting.
+
+## Frozen identifiers
+
+| Item | Original SHA-256 | Public reference |
 | --- | --- | --- |
-| Production source | source seal 7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab | provider/r7 |
+| Production source seal | 7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab | provider/r7 |
 | Provider | 8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6 | provider/r7/source/provider_phone_local.py |
 | Daily entry | 92122fcc8bf01511971075fce2ad94b628dadf2c0c342f0fb940e8b00c636ec3 | provider/r7/source/daily_phone_local.py |
-| Private module manifest | c0e31ecac9168218e7b6a622e4a3df138859743bd83911add42c32906d173a06 | module/r7-r1 review-source projection |
-| Whole-combination original | ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8 | qualification/combinations/COMBINATION-v150-r7-r1.PUBLIC.json |
-| Combination canonical hash | 87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8 | Same combination projection |
-| Formal fixed-19 protocol | d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43 | acceptance/r7/fixed-acceptance-set-r7.json |
-| Mapping-aware collector | e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7 | acceptance/r7/business-collector |
-| Original client | 500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f | client/r6 history and source seals |
-| Live policy observation | 05756784090a574be850a068576fbded2842f3fa8c1af0aa5b430f875c78a31f | policies and module/r7-r1/source/sepolicy.rule |
+| Module manifest | 1e32540cc2c60ae22bd64a024d0d9545bde50c682aab96c1dba29a3e0731aefd | module/r7-r2 review sources |
+| Whole combination | ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4 | qualification/combinations/COMBINATION-v150-r7-r2.PUBLIC.json |
+| Canonical combination | 1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5 | Same combination projection |
+| Formal protocol | a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4 | acceptance/r7-r2 review copy |
+| Full policy source | e9ffb955ba3872d7b3c453729ef8b6e52b8679f86f05496d25a1b735f9bed7a2 | module/r7-r2/source/sepolicy.rule |
+| Actual live policy | 439ebd30f0e003cc4b0f5c08cade8c59b922eedcd3a3302169323a7f0397f089 | policy/r7-r2-property summary; binary private |
+| Actual semantic audit | 38761d1076ed1dca8bf01e245bf17d184b445af401f686b4c77421cd6db5f0a5 | policy/r7-r2-property summary |
+| Mapping-aware collector | e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7 | acceptance/r7-r2/business-collector review sources |
+| Current public quality | 3e926af3685fdf0a8a4f8e813456be8da483cd112c566f8c9d45ee207e6ef64d | qualification/r7-r2-checkpoint/QUALITY-SUMMARY.json |
 
-The public combination and seals are projections and have their own byte hashes. Their original_artifact_sha256 identifies the retained private manifest; it does not imply that projected bytes equal the private original. The module archive, actual sealed bindings and configuration are not distributed here.
+These original identifiers bind privately retained frozen artifacts. Public projections have their own hashes and are explicitly distinguished from those originals. The complete public file map is in [PUBLISH-MANIFEST.json](PUBLISH-MANIFEST.json); [PUBLIC-PROJECTION-INDEX.json](PUBLIC-PROJECTION-INDEX.json) and the [r7-r2 increment index](qualification/publication/PROJECTION-INDEX-v150-r7-r2-checkpoint.json) record the source relationships.
 
-The formal acceptance protocol is the r7 metadata adaptation of the current r6-r2 protocol: all nineteen case objects, limits and geometry are retained, including the host-plus-physical requirements for NEG-04/05/07/08/09. The source package's provider/r7/qa/fixed-acceptance-set.HISTORICAL.json is retained historical material, not the current acceptance authority.
+## Capture and execution rules
 
-## Actual health cutoff
+The normal evidence workflow is **preview → capture (includes export) → collect**. The separate [workflow erratum](acceptance/r7/business-original-export/WORKFLOW-ERRATA.md) corrects the older four-phase README. A duplicate export refuses an existing archive. It does not justify a new task or another effect.
 
-[HEALTH-v150-r7-stage01.json](qualification/checkpoints/HEALTH-v150-r7-stage01.json) is an immutable cutoff after the first r7 health request and before admission of any r7 business result. It records one health pass and zero business samples at that cutoff.
+Every new task requires a fresh one-use contract and original native identity. The unresolved-action gate persists across tasks. A failed effect can be resolved only from its original receipt and supported disposition. Durable intent precedes dispatch; the fixed client and executor verify the peer, dedicated domains, UID/GID 2000 and no supplemental groups. Original exit, joined child and absent group are required terminal facts. Cleanup does not undo an Android action.
 
-The native task completed after one local HTTP/model round and zero phone tools. The original worker joined, the slot was idle, and the exact original draft was restored without submission. Root checked the actual host/actor/phone/collector exit statuses and the original task evidence. Three selected native records and two visible predecessor links passed hash verification; this is not a complete-global-journal claim.
+The unchanged limits are seven tools, eight rounds, 300 seconds per task, a 120-second model HTTP bound, 256 generated tokens per response and 24,576 prompt bytes. The model runtime retains 4,096 context tokens, four CPU threads and one slot. No extra retry, resolver, tool or budget was added.
 
-| Measurement | Observed value |
-| --- | --- |
-| Model HTTP round | 3.607201196 s |
-| Native completion observed by | 4.236559475 s |
-| Native persistence interval | 3.037658847–4.236559475 s |
-| Prompt / output / total tokens | 169 / 76 / 245 |
-| Model-reported output rate | 33.697627 tokens/s |
-| Model RSS before / after | 3,100,676 / 3,123,156 kB |
-| Model after-sample high-water value | 3,142,964 kB |
-| Hardware energy and monetary cost | Not measured |
+## Public reproduction boundary and remaining work
 
-A single health sample does not characterize model success rate, tail latency, daily-use suitability, fold states or cold boot. Model HTTP time and native task observation time are separate measurements.
+The public tree contains exact generic sources and explicit review projections. Private workspace paths, retained-claim/configuration digests, boot/process bindings and prior operation references are removed or replaced with required placeholders. The index records each original SHA-256 and public byte hash. The projected modules and operators are **not installable packages**, and successful tests are attributed to the original pinned sources.
 
-## Business and protocol results
+Model weights, runtime binaries, full compiled policies, deployment archives, private manifests, credentials and their hashes, raw requests/nonces/drafts or draft digests, claims and native/action histories are excluded. Included images are pinned synthetic host fixtures. Existing core reproduction records remain completed historical foundations; this increment does not claim an independent bitwise rebuild of HEPTA, the root filesystem or the complete phone image.
 
-The final r7-r1 checkpoint contains two real business samples, both failed: complete 0, verified partial 0, failed 2, cancelled 0, unconfirmed 0. Health remains a separate one-sample pass. The full fixed protocol is 7 PASS / 2 FAIL / 10 BLOCKED.
-
-| Real request | Model HTTP | Prompt / output / total tokens | Native terminal observation | Original phone tool |
-| --- | ---: | ---: | --- | --- |
-| Health | 3.607 s | 169 / 76 / 245 | completed by 4.237 s | 0 |
-| Visual E2E-01 | 12.182 s | 1124 / 27 / 1151 | provider_failed, observed in 72.303–73.551 s | one open_app; original worker timed out at 60.011 s |
-| Unicode E2E-02 | 15.327 s | 1562 / 46 / 1608 | provider_failed, observed in 75.444–76.676 s | one open_app; original worker timed out at 60.024 s |
-
-Both named model actions selected the correct registered application and passed deterministic mapping verification. Neither task reached image input, visual tapping or Unicode text entry. The original stderr records servicemanager property read denials. There is no per-command stage receipt, so the precise blocked subprocess and whether an application launch effect occurred are not asserted. The effect_started flag is true; these are not zero-effect failures.
-
-Each original action has a terminal timed_out receipt with a joined child and absent process group. The model HTTP workers joined, their slots were idle, and original-action inspection closed the outstanding ledger entries. Original native failures, provider/native error-text differences and proof_complete=false are preserved. All original drafts were restored exactly without submission. Process cleanup and draft restoration are not business return, partial completion or recovery success.
-
-The two business samples consumed 2759 model tokens; health adds 245 for 3004 across three real requests. Six independent resource observations found model RSS from 3100676 to 3286676 kB and a lifetime high-water value of 3301680 kB. These are sampled process values, not per-task peaks or energy measurements. Hardware energy and monetary cost remain unmeasured.
-
-The official 19-case table and the per-layer requirements are in the final report. Its fourteen fixed-set samples comprise two real model tasks, eleven host-isolated negative cases and one geometry component case. The 462 runtime assertions and fourteen evidence-closure assertions are checks within those samples, not independent task counts.
-
-The r7 host results are new samples on this exact source and combination:
-
-- NEG-03, NEG-06 and NEG-10 through NEG-14 each passed once: 308 runtime assertions plus 14 original-evidence closure assertions. NEG-03 is component_direct; the other six are host_isolated. Their subset is 7 PASS / 0 FAIL / 12 BLOCKED and contains zero real phone/model requests.
-- NEG-04/05/07/08/09 passed their host-isolated layers once: 154 checks. These five cases retain separate physical lifecycle requirements. Host success does not close their full protocol cases.
-- Synthetic host HTTP responses and disposable subprocess counters are identified as fixtures. They are not phone actions or actual GUI-Owl predictions.
-
-The previous r6-r2 [stage02 quality report](qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json) stays under its own frozen combination: 7 PASS / 3 FAIL / 9 BLOCKED. Its two model business tasks failed with no phone tools. Its physical cancellation task ended cancelled but the model slot was still busy; the physical lifecycle case failed and the service stopped. The independent original-task/draft/retirement closure is not a retroactive success. None of these old samples is relabelled as an r7 result.
-
-## Preserved execution rules
-
-Every accepted task and effect is tied to a fresh request, one-use contract and original native scope. Old requests, text and actions are not replayed. The provider preserves an unresolved mutation gate across tasks. Recovery reads the original action's receipt and requires a supported disposition before any new action.
-
-An effect reaches the Android namespace through the original native shell.exec path and the fixed r6 client. The executor records a durable intent before dispatch, checks peer identity and the dedicated execution domain, and runs the worker with UID/GID 2000 and no supplemental groups. Terminal evidence includes the original exit, joined child and process-group absence. These cleanup facts do not undo an Android action already received by a system service.
-
-A complete business result requires the original actions, text readback, application postconditions, HEPTA return and task terminal to agree. A timed-out or partially executed task cannot become a complete success because a model says it finished.
-
-The unchanged model/tool budgets are seven tools, eight rounds, a 300-second task budget, a 120-second HTTP bound, 256 generated tokens per response and a 24,576-byte prompt limit. The runtime context remains 4,096 tokens with four CPU threads and one slot. No automatic retry or extra resolver was added by r7.
-
-## Capture workflow correction
-
-The sealed business-export README contains a historical four-phase instruction error. The normal workflow is:
-
-1. preview
-2. capture, which already performs export before returning
-3. collect
-
-Read [WORKFLOW-ERRATA.md](acceptance/r7/business-original-export/WORKFLOW-ERRATA.md). A separate export command is not a fourth normal step. It is only an independently reviewed incomplete-transfer recovery. A duplicate export refuses an existing archive with O_EXCL and preserves that original; do not recapture or replay the task to work around the refusal.
-
-Successful transfer is not business success. The original capture actor and phone exits, complete evidence, actual collector exit and business postconditions all remain necessary.
-
-## Public source and reproduction boundary
-
-PUBLIC-PROJECTION-INDEX.json records every original/public SHA256 and the exact transformation for newly published sources. Twelve production Python modules are byte-identical to the frozen r7 source. The thirteenth, retirement_recovery.py, replaces private retained-action, proof, boot and process bindings with required placeholders and records the original source SHA256. Review-only operators may also contain explicit private-binding and workspace substitutions. These projections are not installable module packages.
-
-PUBLISH-MANIFEST.json maps the full public project tree to SHA256 and Git blob hashes and preserves the previous publication head. Older source revisions and failed checkpoints stay present. The previous main README and publication boundary are preserved under qualification/history.
-
-The host build, source pin closure and Pocket4 byte readback are recorded. They are not an independent bitwise rebuild of the whole phone/rootfs. HEPTA49 and complete historical rootfs reconstruction remain separate work with their original compiler/system-image inputs.
-
-Private task requests, fresh nonces, draft contents and content digests, actual claims, native histories, keys and key hashes, model weights, runtime executables, full policy binaries and sealed deployment archives are excluded. The only newly included image files are pinned synthetic host-test fixtures.
-
-## Next qualification steps
-
-Qualify the separately versioned minimal servicemanager property correction using the actual compiled policy and real transition/permission evidence. The frozen r7-r1 sources and both failed requests remain unchanged. The revised combination first needs a new bounded health request and then entirely new visual and Unicode materials. No original request, text or effect is replayed.
-
-Then complete the physical fault-recovery layers and the remaining fixed protocol cases. Real outer-screen, landscape and fold transitions require their own display identity, coordinates, focus and recovery evidence. Daily-use qualification remains withheld until the fixed task quality, latency, recovery and resource evidence support it.
+The next independently versioned repair must first be supported by actual policy/interface evidence, then qualified with a new health request and entirely fresh business materials. This checkpoint contains no later Binder-policy change. Complete the remaining physical fault layers and fixed cases before claiming daily use. Outer-display, rotation/fold transitions, representative repeated business reliability, cold boot and energy consumption remain unqualified.

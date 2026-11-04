@@ -1,0 +1,87 @@
+--- preserved/attempt1-installer
++++ new/attempt2-installer
+@@ -10,7 +10,7 @@
+ ARCHIVE=/data/local/tmp/hepta-phone-local-v150-r1/sealed-module-v150-r7-r2.tar.gz
+ MOD=/data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r2
+ HISTORY=/data/adb/trillionnium-hepta-phone-local-v150-r7-r2
+-OUT=$BASE/module-install-start-v150-r7-r2-01
++OUT=$BASE/module-install-start-v150-r7-r2-02
+ EXECUTOR=/data/local/tmp/hepta-phone-executor-v150-r6
+ DATA=$BASE/executor-r6
+ GATE=$BASE/module-r5-activation
+@@ -32,6 +32,43 @@
+ archive_digest=$("$SYS/sha256sum" "$ARCHIVE")
+ [ "${archive_digest%% *}" = f0c7abb46bc0b119e9296390ad845f6ff53992e669f747fb9a558206eb2003cf ]
+ [ ! -e "$OUT" ] && [ ! -L "$OUT" ]
++# Attempt 01 stopped in its readonly preflight before unpack/install/start.
++# Verify its exact immutable 20-file output; no previous mutation or task is repeated.
++FAILED_OUT=$BASE/module-install-start-v150-r7-r2-01
++[ -d "$FAILED_OUT" ] && [ ! -L "$FAILED_OUT" ]
++[ "$("$SYS/readlink" -f "$FAILED_OUT")" = "$FAILED_OUT" ]
++[ "$("$SYS/stat" -c '%u:%g:%a' "$FAILED_OUT")" = 0:0:700 ]
++[ "$("$SYS/ls" -A "$FAILED_OUT" | "$BB" wc -l)" -eq 20 ]
++[ ! -e "$FAILED_OUT/unpacked" ] && [ ! -L "$FAILED_OUT/unpacked" ]
++while IFS=' ' read -r expected_sha expected_bytes original_name; do
++    [ -f "$FAILED_OUT/$original_name" ] && [ ! -L "$FAILED_OUT/$original_name" ]
++    [ "$("$SYS/stat" -c '%u:%g:%a:%h:%s' "$FAILED_OUT/$original_name")" = "0:0:600:1:$expected_bytes" ]
++    actual_sha=$("$SYS/sha256sum" "$FAILED_OUT/$original_name")
++    [ "${actual_sha%% *}" = "$expected_sha" ]
++done <<'R7R2_ATTEMPT01_EXACT_FILES'
++<PRIVATE_BOUND_SHA256_001_REQUIRED> 2 OPERATOR-EXIT
++<PRIVATE_BOUND_SHA256_002_REQUIRED> 65 archive-sha256
++<PRIVATE_BOUND_SHA256_003_REQUIRED> 37 boot-id
++<PRIVATE_BOUND_SHA256_004_REQUIRED> 44 current-r7-retirement-status
++<PRIVATE_BOUND_SHA256_005_REQUIRED> 65 four-permission-live-policy-sha256
++<PRIVATE_BOUND_SHA256_006_REQUIRED> 50 historical-r5-retirement-status
++<PRIVATE_BOUND_SHA256_007_REQUIRED> 146 intent
++<PRIVATE_BOUND_SHA256_008_REQUIRED> 16 original-health01-status
++e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 preserved-state-preflight.json
++<PRIVATE_BOUND_SHA256_009_REQUIRED> 486 preserved-state-preflight.stderr
++<PRIVATE_BOUND_SHA256_010_REQUIRED> 65 provider-source-seal-sha256
++<PRIVATE_BOUND_SHA256_011_REQUIRED> 65 r6-r1-failed-start-quiescence-sha256
++<PRIVATE_BOUND_SHA256_012_REQUIRED> 104 r6-r1-original-start-status
++<PRIVATE_BOUND_SHA256_013_REQUIRED> 65 r6-r2-original-service-quiescence-sha256
++<PRIVATE_BOUND_SHA256_014_REQUIRED> 30 r6-r2-original-supervisor-exit-record-status
++<PRIVATE_BOUND_SHA256_015_REQUIRED> 96 r6-r2-original-task-closure-scope
++<PRIVATE_BOUND_SHA256_016_REQUIRED> 65 r7-r1-actual-retirement-sha256
++<PRIVATE_BOUND_SHA256_017_REQUIRED> 4 r7-r1-original-supervisor-exit
++<PRIVATE_BOUND_SHA256_018_REQUIRED> 65 recovery-result-sha256
++<PRIVATE_BOUND_SHA256_019_REQUIRED> 21 started-utc
++R7R2_ATTEMPT01_EXACT_FILES
++[ "$("$SYS/cat" "$FAILED_OUT/OPERATOR-EXIT")" = 1 ]
++# Existing script gates below still require new module, activation, claim and OUT -02 absent.
+ [ ! -e "$MOD" ] && [ ! -L "$MOD" ]
+ [ ! -e "$CLAIM" ] && [ ! -L "$CLAIM" ]
+ [ -f /data/adb/modules/trillionnium_hepta_phone_local_v150_r4/disable ]
+@@ -484,9 +521,9 @@
+ try:
+  assert os.getuid()==os.geteuid()==0
+  assert Path('/proc/sys/kernel/random/boot_id').read_text().strip()==BOOT
+- assert Path('/sys/fs/selinux/enforce').read_bytes().strip()==b'1'
++ assert Path('/proc/1/root/sys/fs/selinux/enforce').read_bytes().strip()==b'1'
+  assert Path('/proc/self/attr/current').read_bytes().rstrip(b'\0\n')==b'u:r:magisk:s0'
+- assert sha(Path('/sys/fs/selinux/policy').read_bytes())==LIVE_SHA
++ assert sha(Path('/proc/1/root/sys/fs/selinux/policy').read_bytes())==LIVE_SHA
+  raw=stable(CODE/'retirement_probe.py',PROBE_SHA,65536)
+  m=types.ModuleType('frozen_retirement_readonly');m.__file__=str(CODE/'retirement_probe.py')
+  exec(compile(raw,m.__file__,'exec'),m.__dict__)
+@@ -527,7 +564,7 @@
+   no_listeners()
+  finally:
+   for fd in locks:os.close(fd)
+- assert Path('/sys/fs/selinux/enforce').read_bytes().strip()==b'1' and sha(Path('/sys/fs/selinux/policy').read_bytes())==LIVE_SHA
++ assert Path('/proc/1/root/sys/fs/selinux/enforce').read_bytes().strip()==b'1' and sha(Path('/proc/1/root/sys/fs/selinux/policy').read_bytes())==LIVE_SHA
+  print(json.dumps({'schema':'hepta.r7-r2.installer-fresh-readonly-state.v1','state':'ORIGINAL_TWO_TERMINAL_ACTIONS_AND_STATE_PRESERVED',
+   'retirement_sha256':RETIREMENT_SHA,'operator_sha256':OPERATOR_SHA,'preflight_sha256':PREFLIGHT_SHA,'live_policy_sha256':LIVE_SHA,
+   'four_groups_two_censuses_and_kernel_esrch':True,'original_action_count':2,'all_original_run_terminals_unchanged':True,
+--- preserved/attempt1-readiness
++++ new/attempt2-readiness
+@@ -4,7 +4,7 @@
+ exec /data/adb/magisk/busybox timeout -s TERM -k 2 20 /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -B -c 'from pathlib import Path
+ import base64,hashlib,json,os,stat
+ B=Path('"'"'/var/lib/trillionnium/owner-open/phone-local-v150'"'"')
+-O=B/'"'"'module-install-start-v150-r7-r2-01'"'"'
++O=B/'"'"'module-install-start-v150-r7-r2-02'"'"'
+ C=Path('"'"'/proc/1/root/data/adb/trillionnium-hepta-phone-local-v150-r7-r2/<INSTANCE_UUID_REQUIRED>'"'"')
+ files=[];total=0;groups=set();expected={}
+ 

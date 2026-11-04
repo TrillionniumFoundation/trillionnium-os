@@ -1,0 +1,23 @@
+{
+  "data": {
+    "cloud_fallback": false,
+    "live_policy_semantic_audit_sha256": "38761d1076ed1dca8bf01e245bf17d184b445af401f686b4c77421cd6db5f0a5",
+    "live_policy_snapshot_sha256": "439ebd30f0e003cc4b0f5c08cade8c59b922eedcd3a3302169323a7f0397f089",
+    "model_route": "phone_local_cpu",
+    "module_manifest_sha256": "1e32540cc2c60ae22bd64a024d0d9545bde50c682aab96c1dba29a3e0731aefd",
+    "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8",
+    "policy_rules_manifest_sha256": "f009c0bc6ad040f315d325217f4407bdc6ca7db240f033a89625954c905c61a8",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r2",
+    "schema": "hepta.acceptance-combination.v150.r7.1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "frozen"
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 971,
+  "original_artifact_reference": "module-r7-r2-finalization-r1/COMBINATION-FROZEN-v150-r7-module-r2.json",
+  "original_artifact_sha256": "ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4",
+  "original_canonical_sha256": "1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5",
+  "projection_scope": "Review/reference only; private configuration and deployment inputs omitted. This source binding does not assert business success.",
+  "public_projection": true
+}

@@ -1,0 +1,38 @@
+{
+  "excluded": [
+    "actual-02",
+    "INPUTS-PENDING.json",
+    "INPUTS-FINAL.json",
+    "private evidence manifests",
+    "all raw request/nonce/draft/claim/native records",
+    "original QUALITY-PUBLIC.json containing instance configuration digest",
+    "build_checkpoint.py",
+    "build_checkpoint_r2.py",
+    "execution metadata and logs"
+  ],
+  "files": [
+    {
+      "bytes": 34920,
+      "public_relative_path": "QUALITY-SUMMARY.json",
+      "sha256": "3e926af3685fdf0a8a4f8e813456be8da483cd112c566f8c9d45ee207e6ef64d",
+      "source_relative_path": "public-01/QUALITY-SUMMARY.json"
+    },
+    {
+      "bytes": 10254,
+      "public_relative_path": "README.md",
+      "sha256": "55f13fda6837b7def2c673178d90364220ed51ac4742780495fee9b36053a70c",
+      "source_relative_path": "public-01/README.md"
+    },
+    {
+      "bytes": 3296,
+      "public_relative_path": "PROVENANCE.json",
+      "sha256": "c7b1129072f580df2e44d13d082af6eb22f009e3c637c7873f3964cdef98b98b",
+      "source_relative_path": "public-01/PROVENANCE.json"
+    }
+  ],
+  "new_sample_execution": false,
+  "private_full_combination_retained": true,
+  "production_source_changed": false,
+  "publication_mode": "Exact three-file allowlist; no recursive directory upload.",
+  "schema": "hepta.publication-allowlist.v150.r7.r2.quality.1"
+}

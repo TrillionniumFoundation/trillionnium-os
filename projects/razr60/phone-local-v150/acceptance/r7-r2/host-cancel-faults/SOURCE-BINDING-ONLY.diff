@@ -1,0 +1,26 @@
+--- r7-r1/frozen_fixture_support.py
++++ r7-r2/frozen_fixture_support.py
+@@ -5,9 +5,9 @@
+ sys.dont_write_bytecode=True
+ SUITE=Path('/suite');SOURCE=SUITE/'provider/source';WORK=Path('/work');HARNESS=Path('/harness')
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+-COMBO_SHA='ab038c5533a7459c8bb4d94cca008ca0f61ade0d90ad6db0e8ece3ab1af99ae8'
+-COMBO_CANONICAL='87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8'
+-PROTOCOL_SHA='d68dd5c17d0ec061f52b60656918867453d67217ac2dc8f5eb43be7dd3ffdf43'
++COMBO_SHA='ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4'
++COMBO_CANONICAL='1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5'
++PROTOCOL_SHA='a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4'
+ CLIENT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py')
+ CLIENT_SHA='500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f'
+ OWNED=[];DAILY=OPENAI=None;SERVER_SHA=None
+--- r7-r1/run_fault_cases.py
++++ r7-r2/run_fault_cases.py
+@@ -10,7 +10,7 @@
+ IDS=('NEG-04','NEG-05','NEG-07','NEG-08','NEG-09')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ HOST_MODEL_TIMEOUT=10
+-SUPPORT_SHA='2a02578bc0793cb8f883a964f04c80573315c8967e89c022c709678de4277e12'
++SUPPORT_SHA='617ff6102a792eb8e0867a8fd392d8317f32f34efb93dc3e46cb8a2110a76e10'
+ def raw_write(path,raw):
+  fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+  with os.fdopen(fd,'wb') as f:f.write(raw);f.flush();os.fsync(f.fileno())

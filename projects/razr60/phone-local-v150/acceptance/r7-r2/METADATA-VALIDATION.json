@@ -1,0 +1,11 @@
+{
+  "actual_new_protocol_validator_passed": true,
+  "actual_pending_combo_validator_passed": true,
+  "aggregate_inverse_bytes_equal": true,
+  "all_19_case_objects_identical": true,
+  "limits_geometry_release_gate_identical": true,
+  "materializer_bytes_identical": true,
+  "missing_dynamic_pins_are_null": true,
+  "nonce_or_request_generated": false,
+  "phone_or_model_calls": 0
+}

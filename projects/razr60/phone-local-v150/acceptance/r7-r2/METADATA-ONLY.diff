@@ -1,0 +1,41 @@
+--- acceptance-r7/aggregate_protocol_r7.py
++++ acceptance-r7-r2/aggregate_protocol_r7.py
+@@ -12,7 +12,7 @@
+ DYNAMIC_PINS=("module_manifest_sha256","policy_rules_manifest_sha256",
+  "live_policy_snapshot_sha256","live_policy_semantic_audit_sha256",
+  "native_and_apps_manifest_sha256")
+-FIXED={"schema":"hepta.acceptance-combination.v150.r7.1","release":"v150-r7-r1",
++FIXED={"schema":"hepta.acceptance-combination.v150.r7.1","release":"v150-r7-r2",
+  "provider_source_seal_sha256":SOURCE_SHA,"service_inputs_sha256":SERVICE_SHA,
+  "provider_config_sha256":CONFIG_SHA,"model_route":"phone_local_cpu","cloud_fallback":False}
+ IDS=["E2E-"+str(i).zfill(2) for i in range(1,5)]+["COMP-01"]+["NEG-"+str(i).zfill(2) for i in range(1,15)]
+@@ -69,7 +69,7 @@
+   if key not in allowed:require(new[key]==old[key],"protocol_semantics_changed:"+key)
+  require(new["cases"]==old["cases"] and new["limits"]==old["limits"]
+   and new["qualified_geometry"]==old["qualified_geometry"],"fixed19_cases_limits_geometry_changed")
+- require(new["candidate_manifest_sha256"]==SOURCE_SHA and new["set_id"]=="stock16-phone-local-fixed-set-r7-r1","r7_source_metadata")
++ require(new["candidate_manifest_sha256"]==SOURCE_SHA and new["set_id"]=="stock16-phone-local-fixed-set-r7-r2","r7_source_metadata")
+  b=new["r7_binding"]
+  require(b["original_protocol_sha256"]==ORIGINAL_PROTOCOL_SHA and
+   b["provider_source_seal_sha256"]==SOURCE_SHA and b["service_inputs_sha256"]==SERVICE_SHA and
+
+--- acceptance-r7/fixed-acceptance-set-r7.json
++++ acceptance-r7-r2/fixed-acceptance-set-r7.json
+@@ -830,7 +830,7 @@
+     }
+   ],
+   "created_utc": "2026-11-03T16:02:35.579008+00:00",
+-  "current_global_blocker": "r7 is a new named-action JSON projection combination. Its module, fresh bounded health and physical business qualification are pending. r6-r2 health and its failed business/cancellation evidence remain separate history; no old task or effect is replayed.",
++  "current_global_blocker": "New r7-r2 full combination: only separately pinned module/policy inputs change, while all 13 production source files, model, executor, config and service inputs remain unchanged. Actual module/live-policy/audit pins and fresh health/business evidence are pending; r7-r1 failures remain their original combination.",
+   "executed_cases": 0,
+   "freshness_policy": {
+     "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+@@ -914,7 +914,7 @@
+     ]
+   },
+   "schema": "hepta.fixed-acceptance-set.v150.1",
+-  "set_id": "stock16-phone-local-fixed-set-r7-r1",
++  "set_id": "stock16-phone-local-fixed-set-r7-r2",
+   "unicode_receipt_formula": {
+     "escape_meaning": "\\n in recipe denotes one literal LF in the expected value; never normalize to space",
+     "public_readback_view": "org.trillionnium.hepta.controlprobe:id/unicode_readback",

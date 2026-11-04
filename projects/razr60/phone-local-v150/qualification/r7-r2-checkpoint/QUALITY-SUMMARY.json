@@ -1,0 +1,1198 @@
+{
+  "all_19_cases_preserved": true,
+  "business_http_timings": {
+    "max": 15.310554837997188,
+    "mean": 13.707178457996633,
+    "min": 12.103802077996079,
+    "missing_samples": 0,
+    "p50": 13.707178457996633,
+    "p95": 15.150217199997133,
+    "quantile_method": "linear interpolation; descriptive only",
+    "samples": 2
+  },
+  "business_outcomes": {
+    "cancelled": 0,
+    "complete_fraction": 0.0,
+    "complete_success": 0,
+    "failed": 2,
+    "sample_count": 2,
+    "unconfirmed": 0,
+    "verified_partial": 0
+  },
+  "by_layer": {
+    "component_direct": {
+      "attempts": 1,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 1,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "host_isolated": {
+      "attempts": 11,
+      "outcomes": {
+        "cancelled": 2,
+        "complete_success": 0,
+        "failed": 8,
+        "partial": 0,
+        "unconfirmed": 1
+      },
+      "recovery_attempts": 0
+    },
+    "model_e2e": {
+      "attempts": 2,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 2,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "physical_native_task": {
+      "attempts": 0,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    }
+  },
+  "case_status_counts": {
+    "BLOCKED": 10,
+    "FAIL": 2,
+    "PASS": 7
+  },
+  "cases": [
+    {
+      "attempt_count": 1,
+      "id": "E2E-01",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "model_e2e",
+          "status": "FAIL"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "attempt_count": 1,
+      "id": "E2E-02",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "model_e2e",
+          "status": "FAIL"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "attempt_count": 0,
+      "id": "E2E-03",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "E2E-04",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "COMP-01",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "NEG-01",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "NEG-02",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-03",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "component_direct",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-04",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-05",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-06",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-07",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-08",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-09",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-10",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-11",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-12",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-13",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-14",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "combination": {
+    "cloud_fallback": false,
+    "live_policy_semantic_audit_sha256": "38761d1076ed1dca8bf01e245bf17d184b445af401f686b4c77421cd6db5f0a5",
+    "live_policy_snapshot_sha256": "439ebd30f0e003cc4b0f5c08cade8c59b922eedcd3a3302169323a7f0397f089",
+    "model_route": "phone_local_cpu",
+    "module_manifest_sha256": "1e32540cc2c60ae22bd64a024d0d9545bde50c682aab96c1dba29a3e0731aefd",
+    "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8",
+    "policy_rules_manifest_sha256": "f009c0bc6ad040f315d325217f4407bdc6ca7db240f033a89625954c905c61a8",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r2",
+    "schema": "hepta.acceptance-combination.v150.r7.1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "frozen"
+  },
+  "combination_canonical_sha256": "1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5",
+  "combination_manifest_sha256": "ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4",
+  "created_utc": "2026-11-04T02:51:01.033116+00:00",
+  "daily_use_qualification_established": false,
+  "failure_analysis": {
+    "cleanup_and_error_text_differences_do_not_upgrade_business_outcomes": true,
+    "display_service_unavailable_interpretation": "When present, the original worker could not find the Android display service. The exact SELinux/service stage needs separate evidence; this report does not infer a specific rule or zero effects.",
+    "no_grounding_or_text_qualification_inferred_from_an_open_attempt": true,
+    "observed_signals_by_task": {
+      "unicode": [
+        "display_service_unavailable"
+      ],
+      "visual": [
+        "display_service_unavailable"
+      ]
+    }
+  },
+  "fixed_case_count": 19,
+  "hardware_energy_joules": null,
+  "health": {
+    "business_verified_fact_count": 0,
+    "cached_tokens_added_to_total": false,
+    "capture_actor_exit_code": 0,
+    "capture_phone_exit_code": 0,
+    "case_id": "HEALTH",
+    "collector_process_exit_code": 0,
+    "complete_business_success": false,
+    "counts_as_business_or_fixed19": false,
+    "draft_cleanup_counts_as_business_return": false,
+    "exact_native_end_to_end_seconds": null,
+    "exact_native_latency_claimed": false,
+    "exact_new_nonce_verified": true,
+    "failure_signals": [],
+    "http_elapsed_seconds": 3.2261078120063758,
+    "http_workers_joined": true,
+    "missing_postconditions": [],
+    "model_rounds_with_image": 0,
+    "model_usage": {
+      "completion_tokens": 58,
+      "prompt_tokens": 172,
+      "total_tokens": 230
+    },
+    "native_persistence_interval_seconds": [
+      3.011533385,
+      4.206784195
+    ],
+    "native_status": "completed",
+    "native_terminal_observed_upper_seconds": 4.206784195,
+    "nonce_forced_by_grammar": false,
+    "observation_interval_width_seconds": 1.19525081,
+    "observed_model_requests": 1,
+    "owner_draft_restored_exact": true,
+    "owner_draft_submitted": false,
+    "passed": 1,
+    "phone_tool_dispatches": 0,
+    "prompt_cached_tokens": 0,
+    "proof_complete": true,
+    "provider_native_text_agreement": true,
+    "samples": 1,
+    "scope": "Observer-bounded persistence interval on one monotonic clock; not an exact event-time or host job duration.",
+    "send_attempt_count": 1,
+    "slots_observed_idle_after": true,
+    "task_classification": "health_pass",
+    "tools": [],
+    "verified_partial_completion": false
+  },
+  "history_boundary": {
+    "historical_native_failures_and_action_records_preserved": true,
+    "r6_r2_cancel_slot_busy_failure_is_not_current_sample": true,
+    "r7_r1_results_not_relabelled": true
+  },
+  "instrumentation_notes": [
+    "Collector process exit0 means its evidence program completed; failed task/proof=false and workflow exit2 remain unchanged.",
+    "All twelve host/component samples were actually rerun for this full combination. No old sample was assigned a new combination.",
+    "Public original-draft restoration means private exact comparison passed; neither draft content nor digest is present here."
+  ],
+  "model_business": [
+    {
+      "business_verified_fact_count": 0,
+      "cached_tokens_added_to_total": false,
+      "capture_actor_exit_code": 0,
+      "capture_phone_exit_code": 0,
+      "case_id": "E2E-01",
+      "collector_process_exit_code": 0,
+      "complete_business_success": false,
+      "draft_cleanup_counts_as_business_return": false,
+      "exact_native_end_to_end_seconds": null,
+      "exact_native_latency_claimed": false,
+      "failure_signals": [
+        "display_service_unavailable"
+      ],
+      "http_elapsed_seconds": 12.103802077996079,
+      "http_workers_joined": true,
+      "missing_postconditions": [
+        "visual_receipt",
+        "return"
+      ],
+      "model_rounds_with_image": 0,
+      "model_usage": {
+        "completion_tokens": 28,
+        "prompt_tokens": 1123,
+        "total_tokens": 1151
+      },
+      "native_persistence_interval_seconds": [
+        12.765551684,
+        13.952773204
+      ],
+      "native_status": "provider_failed",
+      "native_terminal_observed_upper_seconds": 13.952773204,
+      "observation_interval_width_seconds": 1.18722152,
+      "observed_model_requests": 1,
+      "owner_draft_restored_exact": true,
+      "owner_draft_submitted": false,
+      "phone_tool_dispatches": 1,
+      "prompt_cached_tokens": 3,
+      "proof_complete": false,
+      "provider_native_text_agreement": false,
+      "scope": "Observer-bounded persistence interval on one monotonic clock; not an exact event-time or host job duration.",
+      "send_attempt_count": 1,
+      "slots_observed_idle_after": true,
+      "task_classification": "failed",
+      "tools": [
+        {
+          "automatic_replay": false,
+          "business_effect_success_inferred": false,
+          "dispatch_count": 1,
+          "effect_started": true,
+          "native_elapsed_ms": 272,
+          "native_exit_code": 68,
+          "original_receipt_and_ledger_closed": true,
+          "process_group_absent": true,
+          "semantic_tool": "phone.open_app",
+          "sidecar_elapsed_ms": 65,
+          "sidecar_exit_code": 68,
+          "sidecar_state": "completed",
+          "stderr_bytes": 28,
+          "stderr_observation": "display_service_unavailable",
+          "successful_original_execution": false,
+          "waitpid_joined": true,
+          "wire_tool": "shell.exec"
+        }
+      ],
+      "verified_partial_completion": false
+    },
+    {
+      "business_verified_fact_count": 0,
+      "cached_tokens_added_to_total": false,
+      "capture_actor_exit_code": 0,
+      "capture_phone_exit_code": 0,
+      "case_id": "E2E-02",
+      "collector_process_exit_code": 0,
+      "complete_business_success": false,
+      "draft_cleanup_counts_as_business_return": false,
+      "exact_native_end_to_end_seconds": null,
+      "exact_native_latency_claimed": false,
+      "failure_signals": [
+        "display_service_unavailable"
+      ],
+      "http_elapsed_seconds": 15.310554837997188,
+      "http_workers_joined": true,
+      "missing_postconditions": [
+        "editor",
+        "public_readback",
+        "public_receipt",
+        "return"
+      ],
+      "model_rounds_with_image": 0,
+      "model_usage": {
+        "completion_tokens": 32,
+        "prompt_tokens": 1569,
+        "total_tokens": 1601
+      },
+      "native_persistence_interval_seconds": [
+        15.720706919,
+        16.872233991
+      ],
+      "native_status": "provider_failed",
+      "native_terminal_observed_upper_seconds": 16.872233991,
+      "observation_interval_width_seconds": 1.151527072,
+      "observed_model_requests": 1,
+      "owner_draft_restored_exact": true,
+      "owner_draft_submitted": false,
+      "phone_tool_dispatches": 1,
+      "prompt_cached_tokens": 407,
+      "proof_complete": false,
+      "provider_native_text_agreement": false,
+      "scope": "Observer-bounded persistence interval on one monotonic clock; not an exact event-time or host job duration.",
+      "send_attempt_count": 1,
+      "slots_observed_idle_after": true,
+      "task_classification": "failed",
+      "tools": [
+        {
+          "automatic_replay": false,
+          "business_effect_success_inferred": false,
+          "dispatch_count": 1,
+          "effect_started": true,
+          "native_elapsed_ms": 239,
+          "native_exit_code": 68,
+          "original_receipt_and_ledger_closed": true,
+          "process_group_absent": true,
+          "semantic_tool": "phone.open_app",
+          "sidecar_elapsed_ms": 52,
+          "sidecar_exit_code": 68,
+          "sidecar_state": "completed",
+          "stderr_bytes": 28,
+          "stderr_observation": "display_service_unavailable",
+          "successful_original_execution": false,
+          "waitpid_joined": true,
+          "wire_tool": "shell.exec"
+        }
+      ],
+      "verified_partial_completion": false
+    }
+  ],
+  "model_usage": {
+    "actual_model_http_request_count": 3,
+    "all_real_tasks": {
+      "completion_tokens": 118,
+      "prompt_tokens": 2864,
+      "total_tokens": 2982
+    },
+    "business": {
+      "completion_tokens": {
+        "complete_total": 60,
+        "known_samples": 2,
+        "known_sum": 60,
+        "missing_samples": 0
+      },
+      "prompt_tokens": {
+        "complete_total": 2692,
+        "known_samples": 2,
+        "known_sum": 2692,
+        "missing_samples": 0
+      },
+      "total_tokens": {
+        "complete_total": 2752,
+        "known_samples": 2,
+        "known_sum": 2752,
+        "missing_samples": 0
+      }
+    },
+    "cache_not_added_to_prompt_or_total": true,
+    "health": {
+      "completion_tokens": 58,
+      "prompt_tokens": 172,
+      "total_tokens": 230
+    },
+    "host_fixtures_are_not_model_usage": true,
+    "real_task_count": 3,
+    "source": "Original phone-local HTTP receipts only; health is outside the business denominator."
+  },
+  "monetary_cost": null,
+  "native_integrity": {
+    "health": {
+      "adjacent_global_predecessor_links_verified": 2,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 3,
+      "record_hashes_verified": 3,
+      "selected_scope_record_count": 3,
+      "status": "PASS",
+      "unsupported": []
+    },
+    "unicode": {
+      "adjacent_global_predecessor_links_verified": 6,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 7,
+      "record_hashes_verified": 7,
+      "selected_scope_record_count": 7,
+      "status": "PASS",
+      "unsupported": []
+    },
+    "visual": {
+      "adjacent_global_predecessor_links_verified": 6,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 7,
+      "record_hashes_verified": 7,
+      "selected_scope_record_count": 7,
+      "status": "PASS",
+      "unsupported": []
+    }
+  },
+  "native_latency_note": "Only observer intervals and upper bounds are reported; host job durations are not exact native or inference latency.",
+  "negative_layers": {
+    "geometry_fixture_is_not_outer_screen_or_rotation_qualification": true,
+    "host_pass_cases": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09",
+      "NEG-03",
+      "NEG-06",
+      "NEG-10",
+      "NEG-11",
+      "NEG-12",
+      "NEG-13",
+      "NEG-14"
+    ],
+    "physical_followup_still_required": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09"
+    ]
+  },
+  "protocol_sha256": "a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4",
+  "provenance": {
+    "aggregation_process_exit_code": 0,
+    "five_original_attempts_sha256": "9f6ed71ef033f793963e4e84051133ae49682d8fec3f23edb1ac243175f2db37",
+    "frozen_aggregator_sha256": "14a283c4262627e6c5a6d175bf28b966e5ae170e5f6ba7ca0cc9c2b8905e1be0",
+    "native_auditor_sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+    "report_sha256": {
+      "health": "458b7a0532d2969fee87523d207aa2cafcbc3e503e2ff2fdf72de669a8996810",
+      "unicode": "7e5b9be6aa5bb65fe7464c451fe9901dba8df7854088dc4bb7c932942c8dfe77",
+      "visual": "017d63f0f1c2f3a3e66f810d88a0331176fb9d1066174c68c0f45153523b0e70"
+    },
+    "root_closure_sha256": {
+      "health": "ce138a86b6fcbac81615ef47898675c70537b2082bec6eee6c01da35f303a692",
+      "unicode": "381f9830c0e91ce055d72cbcadf6366902dd28f0c9e9969d37678b818b715d00",
+      "visual": "a3cf663628f0ff9a16be7ac7597a84bf7039fb96151a00fafbc77c1d394ac643"
+    },
+    "seven_original_attempts_sha256": "2840cb27de65400ae001d7ae70e52aefa92d43fb388e508b244c7d78a0e5e4c7"
+  },
+  "publication_privacy": {
+    "absolute_host_paths": false,
+    "actual_scope_action_or_process_identifiers": false,
+    "draft_text_or_digest": false,
+    "keys_or_key_digests": false,
+    "nonces": false,
+    "raw_claims_or_native_records": false,
+    "requests": false
+  },
+  "publication_projection": {
+    "combination_is_public_projection": true,
+    "full_combination_hash_refers_to_preserved_original_manifest": true,
+    "not_an_executable_combination_manifest": true,
+    "original_report_sha256": "79bf69bbd21197f49fe30bb948e4e550814e0dd233ffd7c084f66e9c5ad0a41c",
+    "projection_does_not_change_samples_results_or_measurements": true,
+    "removed_fields": [
+      "combination.provider_config_sha256"
+    ]
+  },
+  "recovery": {
+    "business_recovery_success_inferred": false,
+    "cleanup_counts_as_business_return": false,
+    "original_action_replay": false,
+    "original_actions_terminal_verified": 2,
+    "original_actions_with_effect_started": 2,
+    "original_draft_submissions": 0,
+    "original_drafts_restored_exact": 3
+  },
+  "remaining_work": [
+    "Independent physical samples for the five required fault layers.",
+    "Current E2E-03/E2E-04 and COMP-01/NEG-01/NEG-02 evidence under unchanged protocol and budgets.",
+    "Fresh complete visual and Unicode task qualifications if their current results fail; old requests/effects must not be replayed.",
+    "Repeated representative business and measured resource/latency evidence before daily-use qualification."
+  ],
+  "report_generation_history": {
+    "actual_frozen_aggregate_process_exit_code": 0,
+    "aggregate_executions_for_this_total_report": 1,
+    "cause": "The frozen sender uses two different exact descriptions for the same monotonic actor clock.",
+    "correction": "Accept only those pinned sender descriptions and retain identical timestamp, scope and one-Send checks.",
+    "final_host_exit_code": 0,
+    "first_failure_preceded_any_aggregation": true,
+    "first_host_attempt_exit_code": 1,
+    "new_test_samples_executed": 0,
+    "original_failure_preserved": true
+  },
+  "report_operation": {
+    "git_operations": 0,
+    "host_only": true,
+    "new_test_samples_executed": 0,
+    "phone_calls": 0,
+    "production_changes": 0,
+    "real_model_requests": 0,
+    "task_execution": false
+  },
+  "required_19_protocol_closed": false,
+  "resources": {
+    "hardware_energy_joules": null,
+    "limits": "RSS/HWM are snapshots/lifetime high-water marks; wider CPU windows do not measure per-request cost. Battery vendor raw values, including current_now=0, do not establish zero power or energy.",
+    "missing_phases": [],
+    "model_hwm_max_kB": 3299764,
+    "model_rss_max_kB": 3282128,
+    "model_rss_min_kB": 3100508,
+    "monetary_cost": null,
+    "phases": [
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4390000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-health",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 78,
+            "cpu_user_ticks": 224,
+            "hwm_error": null,
+            "hwm_kB": 3121572,
+            "rss_error": null,
+            "rss_kB": 3100508
+          },
+          "provider": {
+            "cpu_system_ticks": 192,
+            "cpu_user_ticks": 684,
+            "hwm_error": null,
+            "hwm_kB": 26964,
+            "rss_error": null,
+            "rss_kB": 26964
+          },
+          "sidecar": {
+            "cpu_system_ticks": 8,
+            "cpu_user_ticks": 1,
+            "hwm_error": null,
+            "hwm_kB": 4044,
+            "rss_error": null,
+            "rss_kB": 4044
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7564828,
+        "uptime_observation_interval_seconds": [
+          101182.04,
+          101182.88
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4389000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-health",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 84,
+            "cpu_user_ticks": 1473,
+            "hwm_error": null,
+            "hwm_kB": 3142808,
+            "rss_error": null,
+            "rss_kB": 3126752
+          },
+          "provider": {
+            "cpu_system_ticks": 254,
+            "cpu_user_ticks": 935,
+            "hwm_error": null,
+            "hwm_kB": 28756,
+            "rss_error": null,
+            "rss_kB": 28756
+          },
+          "sidecar": {
+            "cpu_system_ticks": 10,
+            "cpu_user_ticks": 1,
+            "hwm_error": null,
+            "hwm_kB": 4044,
+            "rss_error": null,
+            "rss_kB": 4044
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7528096,
+        "uptime_observation_interval_seconds": [
+          101290.38,
+          101291.2
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4390000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-visual",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 84,
+            "cpu_user_ticks": 1475,
+            "hwm_error": null,
+            "hwm_kB": 3142808,
+            "rss_error": null,
+            "rss_kB": 3126752
+          },
+          "provider": {
+            "cpu_system_ticks": 577,
+            "cpu_user_ticks": 2041,
+            "hwm_error": null,
+            "hwm_kB": 28756,
+            "rss_error": null,
+            "rss_kB": 28756
+          },
+          "sidecar": {
+            "cpu_system_ticks": 20,
+            "cpu_user_ticks": 5,
+            "hwm_error": null,
+            "hwm_kB": 4044,
+            "rss_error": null,
+            "rss_kB": 4044
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7558900,
+        "uptime_observation_interval_seconds": [
+          101833.63,
+          101834.47
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4387000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-visual",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 88,
+            "cpu_user_ticks": 6241,
+            "hwm_error": null,
+            "hwm_kB": 3169724,
+            "rss_error": null,
+            "rss_kB": 3154908
+          },
+          "provider": {
+            "cpu_system_ticks": 659,
+            "cpu_user_ticks": 2326,
+            "hwm_error": null,
+            "hwm_kB": 28756,
+            "rss_error": null,
+            "rss_kB": 28756
+          },
+          "sidecar": {
+            "cpu_system_ticks": 23,
+            "cpu_user_ticks": 5,
+            "hwm_error": null,
+            "hwm_kB": 4044,
+            "rss_error": null,
+            "rss_kB": 4044
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7471128,
+        "uptime_observation_interval_seconds": [
+          101967.83,
+          101968.67
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4388000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-unicode",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 88,
+            "cpu_user_ticks": 6242,
+            "hwm_error": null,
+            "hwm_kB": 3169724,
+            "rss_error": null,
+            "rss_kB": 3154908
+          },
+          "provider": {
+            "cpu_system_ticks": 907,
+            "cpu_user_ticks": 3196,
+            "hwm_error": null,
+            "hwm_kB": 28756,
+            "rss_error": null,
+            "rss_kB": 28756
+          },
+          "sidecar": {
+            "cpu_system_ticks": 31,
+            "cpu_user_ticks": 7,
+            "hwm_error": null,
+            "hwm_kB": 4044,
+            "rss_error": null,
+            "rss_kB": 4044
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7490496,
+        "uptime_observation_interval_seconds": [
+          102370.99,
+          102371.82
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 290
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4384000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-unicode",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 94,
+            "cpu_user_ticks": 12254,
+            "hwm_error": null,
+            "hwm_kB": 3299764,
+            "rss_error": null,
+            "rss_kB": 3282128
+          },
+          "provider": {
+            "cpu_system_ticks": 953,
+            "cpu_user_ticks": 3322,
+            "hwm_error": null,
+            "hwm_kB": 28756,
+            "rss_error": null,
+            "rss_kB": 28756
+          },
+          "sidecar": {
+            "cpu_system_ticks": 32,
+            "cpu_user_ticks": 7,
+            "hwm_error": null,
+            "hwm_kB": 4044,
+            "rss_error": null,
+            "rss_kB": 4044
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7359732,
+        "uptime_observation_interval_seconds": [
+          102446.32,
+          102447.25
+        ]
+      }
+    ],
+    "system_mem_available_min_kB": 7359732,
+    "windows": [
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.06,
+            "total_seconds": 12.55,
+            "user_seconds": 12.49
+          },
+          "provider": {
+            "system_seconds": 0.62,
+            "total_seconds": 3.13,
+            "user_seconds": 2.51
+          },
+          "sidecar": {
+            "system_seconds": 0.02,
+            "total_seconds": 0.02,
+            "user_seconds": 0.0
+          }
+        },
+        "label": "health",
+        "observation_window_seconds": [
+          107.5,
+          109.16000000000349
+        ],
+        "scope": "Whole interval between non-atomic snapshots; includes idle, UI, control and collection overhead. Not per-inference attribution; exited workers are omitted.",
+        "state": "OBSERVED"
+      },
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.04,
+            "total_seconds": 47.7,
+            "user_seconds": 47.66
+          },
+          "provider": {
+            "system_seconds": 0.81,
+            "total_seconds": 3.66,
+            "user_seconds": 2.85
+          },
+          "sidecar": {
+            "system_seconds": 0.03,
+            "total_seconds": 0.03,
+            "user_seconds": 0.0
+          }
+        },
+        "label": "visual",
+        "observation_window_seconds": [
+          133.36000000000058,
+          135.0399999999936
+        ],
+        "scope": "Whole interval between non-atomic snapshots; includes idle, UI, control and collection overhead. Not per-inference attribution; exited workers are omitted.",
+        "state": "OBSERVED"
+      },
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.06,
+            "total_seconds": 60.18,
+            "user_seconds": 60.12
+          },
+          "provider": {
+            "system_seconds": 0.46,
+            "total_seconds": 1.72,
+            "user_seconds": 1.26
+          },
+          "sidecar": {
+            "system_seconds": 0.01,
+            "total_seconds": 0.01,
+            "user_seconds": 0.0
+          }
+        },
+        "label": "unicode",
+        "observation_window_seconds": [
+          74.5,
+          76.25999999999476
+        ],
+        "scope": "Whole interval between non-atomic snapshots; includes idle, UI, control and collection overhead. Not per-inference attribution; exited workers are omitted.",
+        "state": "OBSERVED"
+      }
+    ]
+  },
+  "sample_counts": {
+    "additional_original_export_and_process_closure_assertions": 14,
+    "assertions_are_not_sample_count": true,
+    "component_direct_geometry_fixture_samples": 1,
+    "fixed19_executed_samples": 14,
+    "host_isolated_samples": 11,
+    "physical_negative_samples": 0,
+    "real_model_business_tasks": 2,
+    "runtime_assertions": 462,
+    "separate_real_health_tasks": 1
+  },
+  "schema": "hepta.quality-checkpoint-public.v150.r7.r2.1",
+  "state": "CURRENT_COMBINATION_MEASURED_NOT_DAILY_QUALIFIED"
+}

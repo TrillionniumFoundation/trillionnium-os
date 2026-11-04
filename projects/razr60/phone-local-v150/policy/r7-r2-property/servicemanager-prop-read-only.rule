@@ -1,0 +1,3 @@
+# Public semantic delta for v150-r7-r2.
+# The frozen source hash and the actual semantic audit are recorded in POLICY-PUBLIC-SUMMARY.json.
+allow trillionnium_owner_open_phone_worker servicemanager_prop file { getattr open read map }

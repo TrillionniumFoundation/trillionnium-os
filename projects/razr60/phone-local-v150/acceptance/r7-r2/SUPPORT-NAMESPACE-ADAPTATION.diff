@@ -1,0 +1,334 @@
+--- health-r7-original-export-r1/capture_health_originals.py
++++ health-r7-r2-original-export-r1/capture_health_originals.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Fixed r7 health original capture for Root. Read-only: no sockets/processes/UI.
++"""Fixed r7-r2 health original capture for Root. Read-only: no sockets/processes/UI.
+ The sole runtime argument is a bound identity object supplied by the host exporter.
+ No API key or preserved user draft path is read or hashed.
+ """
+@@ -8,7 +8,7 @@
+ BASE=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ STATE=BASE/'provider-state'
+ EVIDENCE=STATE/'evidence'
+-STAGED=BASE/'root-health-r7-01'
++STAGED=BASE/'root-health-r7-r2-01'
+ JOURNAL=Path('/var/lib/trillionnium/owner-open/turn-events.jsonl.segments')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ MAX_OUTPUT=4*1024*1024
+@@ -172,7 +172,7 @@
+   nonce=bound['nonce'];wanted=bound['owner_request_sha256'];hint=bound['sender_scope']
+   need(re.fullmatch('[0-9a-f]{32}',nonce) and re.fullmatch('[0-9a-f]{64}',wanted),'new_identity_format')
+   need(re.fullmatch('[0-9a-f]{64}',bound['combination_sha256']),'combination_pin_format')
+-  need(bound['previous_input_sha256']=='<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>','current_previous_binding')
++  need(bound['previous_input_sha256']=='<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>','current_previous_binding')
+   need(hint is None or isinstance(hint,dict) and set(hint)==set(KEYS),'sender_scope_shape')
+   R.update(nonce=nonce,owner_request_sha256=wanted,combination_sha256=bound['combination_sha256'],sender_scope_hint=hint)
+   for name in ('request.txt','combination.json','register.stdout','register.stderr','REGISTRATION-RESULT.json'):
+
+--- health-r7-root-operator-r1/prepare_register_health_r7.py
++++ health-r7-r2-root-operator-r1/prepare_register_health_r7.py
+@@ -2,8 +2,8 @@
+ from pathlib import Path
+ import argparse,hashlib,importlib.util,json,os,shlex,subprocess,sys
+ B=Path("/operator-workspace/phone-local-v150")
+-D=B/'health-r7-root-operator-r1'
+-H=B/'health-r7-01'
++D=B/'health-r7-r2-root-operator-r1'
++H=B/'health-r7-r2-01'
+ ROOT_GNU='/var/lib/trillionnium/owner-open/phone-local-v150'
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def put(p,b):
+@@ -15,11 +15,11 @@
+  p=argparse.ArgumentParser();p.add_argument('--combination',type=Path,required=True);p.add_argument('--combination-sha256',required=True);p.add_argument('--materializer-sha256',required=True);a=p.parse_args()
+  assert not H.exists()
+  pin('provider-r7/SOURCE-SEAL-v150-r7.json','7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab')
+- pin('acceptance-r7/materialize_case_r7.py',a.materializer_sha256)
++ pin('acceptance-r7-r2/materialize_case_r7.py',a.materializer_sha256)
+  pin('provider-r7/register_health_contract.py','deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b')
+- pin('private/current-closed-task/previous.json','<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>')
++ pin('private/current-closed-task/previous.json','<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>')
+  assert sha(a.combination.read_bytes())==a.combination_sha256
+- argv=[sys.executable,'-B',str(B/'acceptance-r7/materialize_case_r7.py'),'health','--combination',str(a.combination),'--combination-sha256',a.combination_sha256,'--out',str(H)]
++ argv=[sys.executable,'-B',str(B/'acceptance-r7-r2/materialize_case_r7.py'),'health','--combination',str(a.combination),'--combination-sha256',a.combination_sha256,'--out',str(H)]
+  r=subprocess.run(argv,capture_output=True,timeout=15)
+  put(D/'materialize.stdout',r.stdout);put(D/'materialize.stderr',r.stderr)
+  assert r.returncode==0,'materialization failed; originals retained'
+@@ -30,7 +30,7 @@
+  code="""from pathlib import Path
+ import hashlib,json,os,stat,subprocess
+ B=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+-D=B/'root-health-r7-01'
++D=B/'root-health-r7-r2-01'
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def put(p,b):
+  fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+@@ -61,12 +61,12 @@
+  helper=B/'root-operators-r6-cycle03/run_cycle03.py';assert sha(helper.read_bytes())=='630c4cb2b9ec5363c7dc464af59455ea252abb1f4f56b3920002f73de177efb6'
+  spec=importlib.util.spec_from_file_location('root_phone_once',helper);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);m.D=D
+  req={'kind':'shell','root':True,'timeout_seconds':45,'command':'/data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -B -c '+shlex.quote(code)}
+- put(D/'register-health-r7-01.request.json',(json.dumps(req,sort_keys=True,indent=2)+'\n').encode())
+- try:ph=m.call_phone('register-fresh-native-r7-health-01',req)
++ put(D/'register-health-r7-r2-01.request.json',(json.dumps(req,sort_keys=True,indent=2)+'\n').encode())
++ try:ph=m.call_phone('register-fresh-native-r7-r2-health-01',req)
+  except AssertionError:
+   print(json.dumps({'state':'ORIGINAL_REGISTRATION_FAILED_NO_SEND','originals_retained':True,'automatic_retry':False}));raise SystemExit(2)
+  result=json.loads(ph['stdout']);assert result['rc']==0 and result['send_attempts']==0
+  assert result['request_sha256']==sha(raw) and result['combination_sha256']==a.combination_sha256
+  put(D/'REGISTRATION-RESULT.json',(json.dumps(result,sort_keys=True,indent=2)+'\n').encode())
+- print(json.dumps({'state':'FRESH_HEALTH_REGISTERED_NO_SEND','nonce':nonce,'request_sha256':sha(raw),'combination_manifest_sha256':a.combination_sha256,'phone_directory':ROOT_GNU+'/root-health-r7-01','send_attempts':0,'model_requests':0,'automatic_replay':False},sort_keys=True))
++ print(json.dumps({'state':'FRESH_HEALTH_REGISTERED_NO_SEND','nonce':nonce,'request_sha256':sha(raw),'combination_manifest_sha256':a.combination_sha256,'phone_directory':ROOT_GNU+'/root-health-r7-r2-01','send_attempts':0,'model_requests':0,'automatic_replay':False},sort_keys=True))
+ if __name__=='__main__':main()
+
+--- health-r7-original-export-r1/export_health_r7_once.py
++++ health-r7-r2-original-export-r1/export_health_r7_once.py
+@@ -1,19 +1,19 @@
+ #!/usr/bin/env python3
+-"""Root-only fixed health-r7-01 export and host collection. No nonce generation.
++"""Root-only fixed health-r7-r2-01 export and host collection. No nonce generation.
+ capture invokes one reviewed read-only phone operation; collect is host-only.
+ No Send, tool execute, model/slot query, service action, key or draft read exists.
+ """
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,shlex,stat,subprocess,sys
+ B=Path('/operator-workspace/phone-local-v150')
+-D=B/'health-r7-original-export-r1'
+-H=B/'health-r7-01'
+-E=B/'health-r7-originals-01'
+-LABEL='phone-local-r7-health-01'
+-OP='capture-original-native-r7-health-01'
++D=B/'health-r7-r2-original-export-r1'
++H=B/'health-r7-r2-01'
++E=B/'health-r7-r2-originals-01'
++LABEL='phone-local-r7-r2-health-01'
++OP='capture-original-native-r7-r2-health-01'
+ P4=Path('/operator-home/codex-hepta-natural-'+LABEL+'-root-v150')
+-PHONE_SOURCE_SHA='97b66eec16f6ef7e6cb7fad615f107e0a1a26bbff928bc279adc90f75bbc81de'
+-PREVIOUS_SHA='<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>'
++PHONE_SOURCE_SHA='7abd8c487204ca3d0d0c6ddcaab09cb766046aae8cda58dfc9e0dfb3db7d5d59'
++PREVIOUS_SHA='<ROOT_REVIEWED_CURRENT_PREVIOUS_SHA256_REQUIRED>'
+ COLLECTOR_SHA='887d28ae2cc09fe857ab01fac19bbb32d14e35c5d78b230bb82950a6d956dbf2'
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+@@ -58,9 +58,9 @@
+  need(material['request_sha256']==sha(request),'material owner SHA differs')
+  nonce=material['nonce'];need(isinstance(nonce,str) and re.fullmatch('[0-9a-f]{32}',nonce),'nonce format')
+  need(request.decode('utf-8').count(nonce)==1,'one exact material nonce required')
+- previous_raw=local_read(B/'private/current-closed-task/previous.json',65536,PREVIOUS_SHA)
++ previous_raw=local_read(B/'private/current-closed-task/previous.json',65536,PREVIOUS_SHA)
+  previous=strict(previous_raw)
+- need(previous['terminal']['status']=='cancelled' and previous['known_no_phone_tool_execution'] is True and previous['known_all_dispatched_tools_confirmed_terminal'] is False,'current previous disposition')
++ need(previous['terminal']['status']=='provider_failed' and previous['known_no_phone_tool_execution'] is False and previous['known_all_dispatched_tools_confirmed_terminal'] is True,'current previous disposition')
+  return material,request,combo,previous,material_raw
+ def p4_sender_originals():
+  # This remote program reads exactly two existing actor receipts. No phone import/call.
+@@ -166,7 +166,7 @@
+  local_read(B/'send_new_native_task_r5.py',65536,'5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281')
+  intent_raw=local_read(B/(LABEL+'.local-once.json'),65536);intent=strict(intent_raw)
+  need(intent['task']==LABEL and intent['prompt'].encode('utf-8')==request and intent['prompt_sha256']==sha(request),'actual sender intent differs')
+- need(intent['previous_identity']==previous['identity'] and intent['previous_digest']==previous['request_sha256'],'sender must use current Root-closed zero-tool cancelled previous')
++ need(intent['previous_identity']==previous['identity'] and intent['previous_digest']==previous['request_sha256'],'sender must use current Root-closed failed previous with all original tools confirmed terminal')
+  need(intent['evidence_root_mode']=='production' and intent['automatic_replay'] is False,'sender production/no replay binding')
+  sender_raw=local_read(B/(LABEL+'.send-result.json'),1024*1024);sender=strict(sender_raw)
+  summary=None
+@@ -246,7 +246,7 @@
+    and all(value is True for value in capture['bindings'].values())
+    and capture_terminal_zero())
+  need(capture.get('owner_request_sha256')==sha(request) and capture.get('nonce')==material['nonce'],'export differs from original health')
+- collector=B/'acceptance-r7/collector-r7/collect_health_evidence.py'
++ collector=B/'acceptance-r7-r2/collector-r7/collect_health_evidence.py'
+  local_read(collector,65536,COLLECTOR_SHA)
+  args=[sys.executable,'-B',str(collector),'--provider-state',str(E/'provider-state'),
+  '--request-file',str(H/'request.txt'),'--selected-scope-file',str(E/'selected-scope.json'),
+
+--- business-r7-original-export-r1/capture_business_originals.py
++++ business-r7-r2-original-export-r1/capture_business_originals.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+ """Root-only bounded business original snapshot. No model, IPC, UI or tool request.
+-Reads the already accepted r7 turn and writes only a new private capture directory.
++Reads the already accepted r7-r2 turn and writes only a new private capture directory.
+ One bound original identity is supplied as base64 JSON. Never generates a nonce.
+ """
+ import base64,hashlib,io,json,os,re,signal,stat,sys,tarfile,time
+@@ -229,7 +229,7 @@
+  need(re.fullmatch('[a-z0-9][a-z0-9-]{5,80}',bound['sender_label']),'sender_label_format')
+  owner=base64.b64decode(bound['request_b64'],validate=True)
+  need(0<len(owner)<=24576 and sha(owner)==wanted and owner.decode().count(nonce)==1,'exact_owner_bytes')
+- root=BASE/'business-original-captures-r7'
++ root=BASE/'business-original-captures-r7-r2'
+  if not root.exists():mkdir_new(root)
+  need(root.resolve(strict=True)==root and stat.S_IMODE(root.stat().st_mode)==0o700
+   and root.stat().st_uid==0,'private_capture_parent')
+
+--- business-r7-original-export-r1/read_archive_chunk.py
++++ business-r7-r2-original-export-r1/read_archive_chunk.py
+@@ -2,7 +2,7 @@
+ """Root-only bounded read of one already-created business archive chunk."""
+ import base64,hashlib,json,os,re,signal,stat,sys
+ from pathlib import Path
+-ROOT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/business-original-captures-r7')
++ROOT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/business-original-captures-r7-r2')
+ CHUNK=1024*1024
+ MAX_ARCHIVE=64*1024*1024
+ def need(ok,why):
+
+--- business-r7-root-operator-r1/prepare_register_business_r7.py
++++ business-r7-r2-root-operator-r1/prepare_register_business_r7.py
+@@ -1,14 +1,14 @@
+ #!/usr/bin/env python3
+-"""Root only: fresh r7 visual/Unicode material + one registration; never Send."""
++"""Root only: fresh r7-r2 visual/Unicode material + one registration; never Send."""
+ from pathlib import Path
+ import argparse,hashlib,importlib.util,json,os,re,shlex,subprocess,sys,types
+ B=Path('/operator-workspace/phone-local-v150')
+-D=B/'business-r7-root-operator-r1'
++D=B/'business-r7-r2-root-operator-r1'
+ GNU='/var/lib/trillionnium/owner-open/phone-local-v150'
+ SOURCE_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ CONFIG_SHA='<INSTANCE_CONFIGURATION_SHA256_REQUIRED>'
+ MATERIALIZER_SHA='23d3993c989783a89d48a1955109ae7cec163171e68801e9f19a74adc5d81efc'
+-AGGREGATE_SHA='c3b91281a1076ac6fd782fe722eeedae7384817dcbd89060e94b095be48ce083'
++AGGREGATE_SHA='14a283c4262627e6c5a6d175bf28b966e5ae170e5f6ba7ca0cc9c2b8905e1be0'
+ REGISTRAR_SHA='3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230'
+ SENDER_SHA='5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281'
+ HARNESS_SHA='630c4cb2b9ec5363c7dc464af59455ea252abb1f4f56b3920002f73de177efb6'
+@@ -26,7 +26,7 @@
+ def pin(path,expected):
+  raw=path.read_bytes();require(sha(raw)==expected,'source_pin:'+path.name);return raw
+ def binding_module():
+- path=B/'acceptance-r7/aggregate_protocol_r7.py';raw=pin(path,AGGREGATE_SHA)
++ path=B/'acceptance-r7-r2/aggregate_protocol_r7.py';raw=pin(path,AGGREGATE_SHA)
+  module=types.ModuleType('fixed_r7_binding');module.__file__=str(path)
+  exec(compile(raw,str(path),'exec'),module.__dict__)
+  return module
+@@ -36,7 +36,7 @@
+ import hashlib,json,os,stat,subprocess
+ B=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ kind=PAYLOAD['kind'];assert kind in ('visual','unicode')
+-D=B/('root-'+kind+'-r7-01')
++D=B/('root-'+kind+'-r7-r2-01')
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+ def put(p,raw):
+  fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+@@ -139,10 +139,10 @@
+  status=previous.get('terminal',{}).get('status')
+  known_failed=previous.get('known_no_phone_tool_execution') is True or previous.get('known_all_dispatched_tools_confirmed_terminal') is True
+  require(status in ('completed','provider_failed','cancelled') and (status=='completed' or known_failed),'previous actual terminal/receipts must already be closed')
+- H=B/(a.kind+'-r7-01');run=D/(a.kind+'-01')
++ H=B/(a.kind+'-r7-r2-01');run=D/(a.kind+'-01')
+  require(not H.exists() and not H.is_symlink() and not run.exists() and not run.is_symlink(),'one-time output already exists; inspect original attempt')
+  pin(B/'provider-r7/SOURCE-SEAL-v150-r7.json',SOURCE_SHA)
+- pin(B/'acceptance-r7/materialize_case_r7.py',MATERIALIZER_SHA)
++ pin(B/'acceptance-r7-r2/materialize_case_r7.py',MATERIALIZER_SHA)
+  pin(B/'provider-r7/register_task_contract.py',REGISTRAR_SHA)
+  pin(B/'send_new_native_task_r5.py',SENDER_SHA)
+  helper=B/'root-operators-r6-cycle03/run_cycle03.py';pin(helper,HARNESS_SHA)
+@@ -152,7 +152,7 @@
+   'previous_identity':identity,'previous_request_sha256':digest,'previous_status':status,
+   'combination_manifest_sha256':a.combination_sha256,'registration_only':True,
+   'automatic_retry':False,'send_attempts':0,'nonce_generated_before_this_invocation':False}))
+- argv=[sys.executable,'-B',str(B/'acceptance-r7/materialize_case_r7.py'),a.kind,
++ argv=[sys.executable,'-B',str(B/'acceptance-r7-r2/materialize_case_r7.py'),a.kind,
+   '--combination',str(a.combination),'--combination-sha256',a.combination_sha256,'--out',str(H)]
+  r=subprocess.run(argv,capture_output=True,timeout=15)
+  put(run/'materialize.stdout',r.stdout);put(run/'materialize.stderr',r.stderr)
+@@ -189,7 +189,7 @@
+  req={'kind':'shell','root':True,'timeout_seconds':45,
+   'command':'/data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -B -c '+shlex.quote(code)}
+  put(run/'register-business.request.json',jbytes(req))
+- try:ph=m.call_phone('register-fresh-native-r7-'+a.kind+'-01',req)
++ try:ph=m.call_phone('register-fresh-native-r7-r2-'+a.kind+'-01',req)
+  except BaseException:
+   print(json.dumps({'state':'ORIGINAL_REGISTRATION_UNCONFIRMED_NO_SEND','kind':a.kind,'originals_retained':True,'automatic_retry':False}))
+   raise
+@@ -203,7 +203,7 @@
+  print(json.dumps({'state':'FRESH_BUSINESS_REGISTERED_NO_SEND','kind':a.kind,'case':meta['case'],
+   'nonce':nonce,'request_sha256':sha(request),'template_sha256':result['template_original_sha256'],
+   'combination_manifest_sha256':a.combination_sha256,'combination_sha256':selected['combination_sha256'],
+-  'phone_directory':GNU+'/root-'+a.kind+'-r7-01','send_attempts':0,'model_requests':0,
++  'phone_directory':GNU+'/root-'+a.kind+'-r7-r2-01','send_attempts':0,'model_requests':0,
+   'live_selected_identity_checked_here':False,'frozen_sender_checks_required':True,
+   'automatic_replay':False},sort_keys=True))
+ if __name__=='__main__':main()
+
+--- business-r7-original-export-r1/export_business_once.py
++++ business-r7-r2-original-export-r1/export_business_once.py
+@@ -1,19 +1,19 @@
+ #!/usr/bin/env python3
+-"""Root-only r7 business original capture/export and frozen host collector.
++"""Root-only r7-r2 business original capture/export and frozen host collector.
+ No new nonce, registration, Send, UI, model/slot request, sidecar IPC or replay.
+ preview is local-only. capture/export require --execute-read-once.
+ """
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,shlex,signal,stat,subprocess,sys,tarfile,time
+ B=Path('/operator-workspace/phone-local-v150')
+-D=B/'business-r7-original-export-r1'
++D=B/'business-r7-r2-original-export-r1'
+ S=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ CONFIG_SHA='<INSTANCE_CONFIGURATION_SHA256_REQUIRED>'
+ SERVICE_SHA='ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2'
+-CAPTURE_SHA='39d07a043aeed52c45874ba8812b2636e6de70ddf6d17ab5f571dbf7083e3d78'
+-CHUNK_SHA='dbb116ba8bdaf51f0df1d12a77618a5e0959aeb0ce98c94356013263dc77024a'
++CAPTURE_SHA='4ef8282e8478ab5abcb04f4ceb67ccc0cedd25cb2fab59ffbf7e894c653978e4'
++CHUNK_SHA='a804c8d2815ec620e52f626809a4f0fd4e316931b460c3f33d882efcc38323a3'
+ COLLECTOR_SHA='e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7'
+ AUDITOR_SHA='da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf'
+ RECHECK_SHA='0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6'
+@@ -160,7 +160,7 @@
+   'request_b64':base64.b64encode(request).decode(),'combination_sha256':sha(combo_raw),
+   'sender_scope':scope,'sender_run':run,'sender_label':a.sender_label}
+  writej(e/'CAPTURE-BINDING.json',bound)
+- label='business-r7-'+m['nonce']+'-capture'
++ label='business-r7-r2-'+m['nonce']+'-capture'
+  ph,raw=original_operation(harness(e),e,label,phone_request(source,bound,75),131072)
+  put(e/'CAPTURE-RESULT.json',raw);result=strict(raw)
+  original_raw=read(e/(label+'.original-operation.json'),2*1024*1024)
+@@ -185,7 +185,7 @@
+   'CAPTURE.json','host-bound-request.txt','selected-scope.json','selected-native-raw.jsonl'),'archive root not allowed')
+  return p
+ def capture_terminal_zero(e,bound):
+- label='business-r7-'+bound['nonce']+'-capture'
++ label='business-r7-r2-'+bound['nonce']+'-capture'
+  terminal=strict(read(e/'CAPTURE-TERMINAL.json',65536))
+  original_raw=read(e/(label+'.original-operation.json'),2*1024*1024)
+  original=strict(original_raw);phone=original['wrapper'].get('phone',{})
+@@ -268,7 +268,7 @@
+   and bound['combination_sha256']==sha(combo_raw) and bound['sender_label']==a.sender_label,'stored export identity differs')
+  archive=result.get('archive');need(isinstance(archive,dict),'no original archive metadata')
+  size=archive.get('bytes');need(type(size) is int and 0<size<=MAX_ARCHIVE,'original archive size')
+- need(archive['path']==str(S/'business-original-captures-r7'/m['nonce']/'originals.tar.gz'),'original archive path')
++ need(archive['path']==str(S/'business-original-captures-r7-r2'/m['nonce']/'originals.tar.gz'),'original archive path')
+  source=read(D/'read_archive_chunk.py',8192,CHUNK_SHA).decode();transport=harness(e)
+  start=time.monotonic();rows=[]
+  for offset in range(0,size,CHUNK):
+@@ -282,7 +282,7 @@
+    rows.append(saved);continue
+   b={'nonce':m['nonce'],'archive_sha256':archive['sha256'],'archive_bytes':size,
+      'archive_stat':archive['stat'],'offset':offset}
+-  label='business-r7-'+m['nonce']+'-chunk-%03d'%index
++  label='business-r7-r2-'+m['nonce']+'-chunk-%03d'%index
+   ph,raw=original_operation(transport,e,label,phone_request(source,b,10),2*1024*1024)
+   need(ph.get('rc')==0,'original archive chunk read failed; inspect retained original')
+   v=strict(raw);need(v.get('schema')=='hepta.business-archive-chunk.v150.r7.1'
+@@ -319,7 +319,7 @@
+  # Recheck every exported snapshot file before using a collection result.
+  for row in manifest['files']:
+   read(root/safe_member(row['path']),MAX_ARCHIVE,row['sha256'])
+- collector=B/'acceptance-r7/business-collector-r7-r1'
++ collector=B/'acceptance-r7-r2/business-collector-r7-r1'
+  for name,pin in (('collect_business_evidence.py',COLLECTOR_SHA),
+   ('native_journal_audit.py',AUDITOR_SHA),('business_fact_recheck.py',RECHECK_SHA),
+   ('mobile_use_evidence.py',MAPPING_SHA)):
+@@ -384,7 +384,7 @@
+   print(json.dumps({'state':'HOST_ONLY_PREVIEW','case_id':m['case'],'material':str(h),'output':str(e),
+    'source_seal_sha256':SEAL_SHA,'collector_sha256':COLLECTOR_SHA,'phone_calls':0,
+    'nonce_generated':False,'originals_only_after_actual_sender':True,
+-   'capture_root':str(S/'business-original-captures-r7'),
++   'capture_root':str(S/'business-original-captures-r7-r2'),
+    'capture_seconds':50,'finalize_seconds':15,'export_phase_seconds':300,'collector_seconds':90,
+    'automatic_capture_retry':False,'qualification':False},sort_keys=True));return 0
+  if a.phase in ('capture','export'):

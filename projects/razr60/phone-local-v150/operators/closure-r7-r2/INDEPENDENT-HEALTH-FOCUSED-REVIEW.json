@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.focused-static-review.v150.r7.r2.1",
+  "reviewed_source": {
+    "path": "closure-r7-r2-helper-r1/close_original_once.py",
+    "bytes": 30373,
+    "sha256": "6b97196ac739b842ad313b5572d78d8e9ceba24a13b24aac1eae090a53757b5f"
+  },
+  "result": "PASS_WITHIN_REVIEW_SCOPE",
+  "scope": "Static review of the health lifecycle closure and original draft-readback path. No candidate execution, fixture, phone, model or task call.",
+  "findings": [
+    "Original capture requires strict integer zero actor and phone terminal, and original stdout bytes bound to the captured packet.",
+    "Captured bytes, unpack manifest, collector inputs/copies and report digest are independently checked; collector child return code must be zero.",
+    "Selected native records are re-audited with the pinned auditor, exact five-field scope and native request hash; health cannot contain dispatched or native tool lifecycle events.",
+    "Health requires one actual HTTP attempt, raw exact nonce response, joined worker, absent original process group and observed idle slot.",
+    "Only two previously created draft restore receipts are read from the fixed host directory; their original wire status, operation binding and private exact readback must match before writing a new previous input.",
+    "All selected Main originals are rechecked unchanged before closure; output files are exclusive and a bounded failure does not fabricate successful closure.",
+    "Business analysis continues to use the frozen inspect_tool and named-action round verifier; this static review is not a new business qualification."
+  ],
+  "limits": [
+    "Root still verifies the actual enclosing host process terminal and original operations.",
+    "This review does not execute the helper or assert a new health or business sample result."
+  ],
+  "phone_calls": 0,
+  "model_calls": 0,
+  "task_submissions": 0,
+  "fixtures_run": 0
+}

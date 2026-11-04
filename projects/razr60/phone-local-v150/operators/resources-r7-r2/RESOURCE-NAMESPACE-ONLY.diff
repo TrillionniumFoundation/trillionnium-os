@@ -1,0 +1,60 @@
+--- r7-r1/sample_resources.sh
++++ r7-r2/sample_resources.sh
+@@ -3,7 +3,7 @@
+ set -u
+ SYS=/system/bin
+ BB=/data/adb/magisk/busybox
+-CLAIM=/data/adb/trillionnium-hepta-phone-local-v150-r7-r1/<INSTANCE_UUID_REQUIRED>
++CLAIM=/data/adb/trillionnium-hepta-phone-local-v150-r7-r2/<INSTANCE_UUID_REQUIRED>
+ emit_file() {
+     label=$1
+     path=$2
+@@ -29,7 +29,7 @@
+ emit_command binding.source_seal.sha256 "$SYS/sha256sum" "$BASE/provider-r7/SOURCE-SEAL-v150-r7.json"
+ emit_command binding.config.sha256 "$SYS/sha256sum" "$BASE/local-config-r7.json"
+ emit_command binding.daily.sha256 "$SYS/sha256sum" "$BASE/provider-r7/source/daily_phone_local.py"
+-emit_command binding.module.sha256 "$SYS/sha256sum" /data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r1/MODULE-MANIFEST-v150-r7-r1.json
++emit_command binding.module.sha256 "$SYS/sha256sum" /data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r2/MODULE-MANIFEST-v150-r7-r2.json
+ emit_file binding.ready "$BASE/provider-state/ready.json"
+ emit_command clk_tck "$BB" chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -c 'import os; print(os.sysconf("SC_CLK_TCK"))'
+ for role in model sidecar provider; do
+--- r7-r1/sample_resources_once.py
++++ r7-r2/sample_resources_once.py
+@@ -3,8 +3,8 @@
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,sys
+ B=Path('/operator-workspace/phone-local-v150')
+-D=B/'resource-sampler-r7-r1'
+-SHELL_SHA='eeec6df43b7b3c75c9d8157e568f66daa6acefc21026613f6fc7825f9e0ca3c1'
++D=B/'resource-sampler-r7-r2-r1'
++SHELL_SHA='2546cefc88f447fcb62c6f7b31b5970cecd2aa20a62259669aaac1d248ded44d'
+ BOOT='<INSTANCE_UUID_REQUIRED>'
+ CONTEXT={'model':'u:r:magisk:s0','sidecar':'u:r:trillionnium_owner_open_phone_executor:s0','provider':'u:r:magisk:s0'}
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+@@ -50,7 +50,7 @@
+  if len(fields)!=1 or len(fields[0])!=2 or not fields[0][0].isdigit():return {'value':None,'unit':None,'error':'field_missing_or_invalid'}
+  return {'value':int(fields[0][0]),'unit':fields[0][1],'error':None}
+ def summarize(rows,phase,expected):
+- report={'schema':'hepta.readonly-resource-sample.v150.r7.r1.1','phase':phase,'identity_verified':False,
++ report={'schema':'hepta.readonly-resource-sample.v150.r7.r2.1','phase':phase,'identity_verified':False,
+  'roles':{},'system':{},'battery':{},'model_requests':0,'task_submissions':0,'service_changes':0,
+  'key_files_read':0,'model_usage_source':'original HTTP receipts; not sampled here',
+  'hardware_energy_joules':None,'monetary_cost':None,
+@@ -119,7 +119,7 @@
+  expected_raw=a.expected_roles.read_bytes()
+  if sha(expected_raw)!=a.expected_roles_sha256:raise ValueError('expected role source pin differs')
+  expected=json.loads(expected_raw)
+- if expected['schema']!='hepta.resource-expected-roles.v150.r7.r1' or expected['boot_id']!=BOOT or expected['combination_sha256']!='87609ca2d6b6701071a1f175acd417e1f3036617884dc09666b9154de25e93f8' or expected['provider_source_seal_sha256']!='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab':raise ValueError('expected role input combination differs')
++ if expected['schema']!='hepta.resource-expected-roles.v150.r7.r2' or expected['boot_id']!=BOOT or expected['combination_sha256']!='1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5' or expected['provider_source_seal_sha256']!='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab':raise ValueError('expected role input combination differs')
+  if set(expected['role_identities'])!={'model','sidecar','provider','supervisor'} or any(type(v) is not list or len(v)!=4 or any(type(n) is not int or n<=1 for n in v) for v in expected['role_identities'].values()):raise ValueError('expected identities shape')
+  os.umask(0o077);source=(D/'sample_resources.sh').read_bytes()
+  if sha(source)!=SHELL_SHA:raise ValueError('fixed read-only source pin differs')
+@@ -130,7 +130,7 @@
+  spec=importlib.util.spec_from_file_location('root_resources_read_once',harness)
+  m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);m.D=out
+  req={'kind':'shell','root':True,'timeout_seconds':20,'command':source.decode()}
+- label='sample-r7-r1-resources-'+a.phase+'-01';writej(out/'REQUEST.json',req)
++ label='sample-r7-r2-resources-'+a.phase+'-01';writej(out/'REQUEST.json',req)
+  ph=m.call_phone(label,req)
+  raw=ph['stdout'].encode();put(out/'ORIGINAL-RESOURCE-CAPTURE.tsv',raw)
+  rows=decode(raw);report=summarize(rows,a.phase,expected);report['capture_sha256']=sha(raw);report['captured_records']=len(rows)

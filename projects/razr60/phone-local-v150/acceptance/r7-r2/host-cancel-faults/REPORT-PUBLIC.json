@@ -1,0 +1,176 @@
+{
+  "actual_inner_elapsed_seconds": 6.554076918982901,
+  "actual_main_ssh_elapsed_seconds": 7.072137707844377,
+  "actual_outer_elapsed_seconds": 6.696569365914911,
+  "aggregate_process_exit_code": 0,
+  "all_actual_main_ssh_bwrap_inner_processes_exit_zero": true,
+  "case_source": "Actual fresh current-combination host executions; no inheritance from an older combination.",
+  "combination_canonical_sha256": "1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5",
+  "combination_manifest_sha256": "ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4",
+  "counter_subprocess_count": 3,
+  "daily_use_qualification_granted": false,
+  "deadline_limit": "No deadline fired in this sample. The source stops starting later cases after an observed 90-second alarm; owned cleanup and the outer 105-second deadline remain separate. This normal sample does not qualify the timeout branch.",
+  "energy_joules": null,
+  "fixed19_subset_case_counts": {
+    "BLOCKED": 19
+  },
+  "fixture_HTTP_POST_count": 5,
+  "harness_changes": "Frozen r7 case control flow, HTTP fixture and counter retained. Only the exact new combination/protocol literals, owned output namespace, shared input manifest and transitive source pins changed.",
+  "historical_samples_relabelled": false,
+  "host_fail_count": 0,
+  "host_pass_count": 5,
+  "host_sample_count": 5,
+  "model_cost": null,
+  "model_usage": null,
+  "native_host_calls": 0,
+  "original_export": {
+    "all_raw_bytes_independently_verified": true,
+    "bytes": 617590,
+    "copied_files_including_manifest": 333,
+    "regular_original_files": 332,
+    "synthetic_credentials_excluded_including_digests": 5
+  },
+  "original_r7_r1_samples_retained": true,
+  "per_case": [
+    {
+      "case_id": "NEG-04",
+      "checks": 26,
+      "children_cpu_system_seconds": 0.034322,
+      "children_cpu_user_seconds": 0.181776,
+      "counter_effect_count": 0,
+      "elapsed_seconds": 0.8745604309951887,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": -15,
+      "lifetime_runner_peak_rss_kib": 30884,
+      "observed_provider_outcome": "failed",
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.001226999999999999,
+      "runner_cpu_user_seconds": 0.010008000000000003,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-05",
+      "checks": 34,
+      "children_cpu_system_seconds": 0.046618,
+      "children_cpu_user_seconds": 0.20353299999999996,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 1.5498258610023186,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": 0,
+      "lifetime_runner_peak_rss_kib": 30884,
+      "observed_provider_outcome": "failed",
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.005797999999999999,
+      "runner_cpu_user_seconds": 0.010937000000000002,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-07",
+      "checks": 35,
+      "children_cpu_system_seconds": 0.04789600000000001,
+      "children_cpu_user_seconds": 0.281869,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 2.2718314019730315,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": 0,
+      "lifetime_runner_peak_rss_kib": 30884,
+      "observed_provider_outcome": "failed",
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.008037,
+      "runner_cpu_user_seconds": 0.017763,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-08",
+      "checks": 26,
+      "children_cpu_system_seconds": 0.04272899999999999,
+      "children_cpu_user_seconds": 0.181643,
+      "counter_effect_count": 0,
+      "elapsed_seconds": 0.8885843870230019,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": -15,
+      "lifetime_runner_peak_rss_kib": 30884,
+      "observed_provider_outcome": "cancelled",
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.0038070000000000014,
+      "runner_cpu_user_seconds": 0.0034379999999999966,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "NEG-09",
+      "checks": 33,
+      "children_cpu_system_seconds": 0.045270000000000005,
+      "children_cpu_user_seconds": 0.20408700000000002,
+      "counter_effect_count": 1,
+      "elapsed_seconds": 0.9646191810024902,
+      "fd_before_after": [
+        4,
+        4
+      ],
+      "fixture_server_idle_observed": true,
+      "host_protocol_result": "PASS",
+      "http_worker_joined_and_group_absent": true,
+      "http_worker_returncode": 0,
+      "lifetime_runner_peak_rss_kib": 30884,
+      "observed_provider_outcome": "cancelled",
+      "rss_is_per_case_peak": false,
+      "runner_cpu_system_seconds": 0.0038210000000000015,
+      "runner_cpu_user_seconds": 0.008744000000000002,
+      "sample_count": 1,
+      "threads_before_after": [
+        1,
+        1
+      ]
+    }
+  ],
+  "phone_calls": 0,
+  "physical_followups_remain_required": true,
+  "postprocessing_history": "The first report derivation completed original-file verification and the frozen aggregation with exit0, then exited1 on an obsolete output-key name. This separate finalizer reads the actual required_layers field. No case, model, phone operation or aggregation was rerun.",
+  "private_originals_published": false,
+  "protocol_sha256": "a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4",
+  "real_model_requests": 0,
+  "runtime_assertions_observed": 154,
+  "schema": "hepta.host-five-fault-public.v150.r7.r2.1",
+  "scope_limit": "Local counter and deterministic HTTP fixture do not exercise Android execution, real model performance, native Host journal, SELinux, or real model server cancellation/drain.",
+  "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+}

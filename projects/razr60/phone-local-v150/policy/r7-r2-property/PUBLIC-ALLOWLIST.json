@@ -1,0 +1,46 @@
+{
+  "candidate_files": [
+    {
+      "bytes": 6287,
+      "path": "POLICY-PUBLIC-SUMMARY.json",
+      "sha256": "447344c47721ced5cd6fc4a8909b8d61c9c05ff008b143a4e954cea72469b23a"
+    },
+    {
+      "bytes": 1802,
+      "path": "README.md",
+      "sha256": "b3ee7046e3f448431075e1f5c59bcb2e6ce9b23d34c1dbb7437544f7c2ef7bb7"
+    },
+    {
+      "bytes": 233,
+      "path": "servicemanager-prop-read-only.rule",
+      "sha256": "07c97666958e81a2ab8b5e0fd86a70d50a75160332649595258d687ce4ce44e3"
+    }
+  ],
+  "directory_recursion_allowed": false,
+  "excluded_categories": [
+    "raw policy binaries",
+    "raw operation and retirement evidence",
+    "device process identities",
+    "absolute private paths",
+    "tokens and keys",
+    "raw audit details"
+  ],
+  "permitted_file_count": 3,
+  "projection_source_pins": {
+    "actual_audit_terminal_sha256": "c6ddd96d7e4361be2c0cc6a3d049f5057ad4549186fc2b11c4f8bf84304c53a8",
+    "actual_live_audit_sha256": "38761d1076ed1dca8bf01e245bf17d184b445af401f686b4c77421cd6db5f0a5",
+    "actual_live_policy_sha256": "439ebd30f0e003cc4b0f5c08cade8c59b922eedcd3a3302169323a7f0397f089",
+    "combination_manifest_sha256": "ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4",
+    "delta_original_source_sha256": "607aba933beb89ca763815bb212fb3d129c3dfda9d7337e0b40fc9e7198cc0d6",
+    "final_rules_manifest_sha256": "f009c0bc6ad040f315d325217f4407bdc6ca7db240f033a89625954c905c61a8",
+    "full_rule_sha256": "e9ffb955ba3872d7b3c453729ef8b6e52b8679f86f05496d25a1b735f9bed7a2",
+    "offline_candidate_sha256": "cbf013f22a8cf94d32cd1188f5893bbbd2729c813556e649033ede2da60435ef",
+    "previous_full_rule_sha256": "116a96094dfec4c222e7a0a90598b3674ec2858b409be0dcecd72ea02ef993bb",
+    "previous_live_policy_sha256": "05756784090a574be850a068576fbded2842f3fa8c1af0aa5b430f875c78a31f",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab"
+  },
+  "publisher": "designated-project-publisher",
+  "release": "v150-r7-r2",
+  "schema": "hepta.strict-public-candidate-allowlist.v1",
+  "state": "REVIEW_CANDIDATE_NOT_PUBLISHED"
+}

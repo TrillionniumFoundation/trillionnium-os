@@ -1,0 +1,91 @@
+{
+  "business_quality_or_daily_use_qualified": false,
+  "cases": [
+    {
+      "attempt_count": 1,
+      "case_id": "NEG-03",
+      "closure_assertions": 2,
+      "elapsed_seconds": 0.04294102906715125,
+      "layer": "component_direct",
+      "runtime_assertions": 88,
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "case_id": "NEG-06",
+      "closure_assertions": 2,
+      "elapsed_seconds": 1.8321759320097044,
+      "layer": "host_isolated",
+      "runtime_assertions": 22,
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "case_id": "NEG-10",
+      "closure_assertions": 2,
+      "elapsed_seconds": 0.004508338985033333,
+      "layer": "host_isolated",
+      "runtime_assertions": 17,
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "case_id": "NEG-11",
+      "closure_assertions": 2,
+      "elapsed_seconds": 0.02253666694741696,
+      "layer": "host_isolated",
+      "runtime_assertions": 109,
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "case_id": "NEG-12",
+      "closure_assertions": 2,
+      "elapsed_seconds": 0.03976935800164938,
+      "layer": "host_isolated",
+      "runtime_assertions": 29,
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "case_id": "NEG-13",
+      "closure_assertions": 2,
+      "elapsed_seconds": 0.007824052008800209,
+      "layer": "host_isolated",
+      "runtime_assertions": 18,
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "case_id": "NEG-14",
+      "closure_assertions": 2,
+      "elapsed_seconds": 0.24045782699249685,
+      "layer": "host_isolated",
+      "runtime_assertions": 25,
+      "status": "PASS"
+    }
+  ],
+  "closure_assertions": 14,
+  "combination_manifest_sha256": "ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4",
+  "combination_sha256": "1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5",
+  "cost_and_resource_scope": "Elapsed times are one sample per host fixture. Original CPU/fd/thread/lifetime-rss observations are retained privately; no phone latency, model usage, energy or money is inferred.",
+  "full_19_protocol_closed_by_this_subset": false,
+  "old_samples_relabelled": false,
+  "phone_calls": 0,
+  "physical_outer_screen_landscape_fold_verified": false,
+  "private_closure_sha256": "cf42e5f5542438a76596a83036e4f2537ee3eb2bad9bcc8fc703ed9f28f7220d",
+  "production_source_bytes_changed": false,
+  "protocol_sha256": "a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4",
+  "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "real_model_requests": 0,
+  "release": "v150-r7-r2",
+  "runtime_assertions": 308,
+  "sample_count": 7,
+  "schema": "hepta.seven-host-scoped-public-summary.v150.r7.r2.1",
+  "status": "PASS_WITHIN_DECLARED_HOST_COMPONENT_SCOPE",
+  "subset_protocol_counts": {
+    "BLOCKED": 12,
+    "PASS": 7
+  },
+  "synthetic_fixture_http_requests": 1
+}
