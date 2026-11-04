@@ -1,3 +1,9 @@
+> Rendering note (2026-11-04): The [acquired upstream bytes](official-model-card.raw.txt)
+> remain unchanged, including the original open BibTeX fence. This display
+> copy adds this note and the missing closing fence after the original text.
+> The model and benchmark statements below are upstream claims; they do not
+> establish measured RAZR60 capability.
+
 ---
 license: mit
 language:
@@ -73,3 +79,5 @@ If you find this model useful, please cite our paper:
   journal={arXiv preprint arXiv:2602.16855},
   year={2026}
 }
+
+```
