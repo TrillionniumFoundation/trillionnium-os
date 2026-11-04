@@ -1,0 +1,28 @@
+{
+  "actual_requests_nonces_draft_keys_scope_ids_allowed": false,
+  "allowlist_may_itself_be_published": true,
+  "files": [
+    {
+      "bytes": 36467,
+      "name": "QUALITY-PUBLIC.json",
+      "sha256": "27781648eb66e7cb6b9a36d9a5f37ef936dadd41ea7e23d86ed189cec5017d3f"
+    },
+    {
+      "bytes": 10532,
+      "name": "README.md",
+      "sha256": "9d927d16de2828b02c42f435c2fe263574ce75874a6cd66901c945a648ff63af"
+    },
+    {
+      "bytes": 2901,
+      "name": "PROVENANCE.json",
+      "sha256": "7b1dceddcbcd452dbf5b2627171f874cb3f5f9a115a7e16bbe38808ce824b3db"
+    }
+  ],
+  "future_continuation_or_cancel_candidates_included": false,
+  "original_private_report_inputs_allowed": false,
+  "recursive_directory_upload": false,
+  "sample_results_rewritten": false,
+  "schema": "hepta.public-allowlist.v150.r7.r3.quality.1",
+  "source_combination_manifest_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1",
+  "state": "FINAL_CURRENT_COMBINATION_REPORT_ONLY"
+}

@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Generated installer readonly guard. No old-state write, signal, socket connect or model request."""
+import fcntl,hashlib,json,os,re,signal,stat,sys,time,types
+from pathlib import Path
+BASE=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+CODE=BASE/'module-r7-r3-retirement-code-r1'
+D=BASE/'module-retire-r7-r2-for-r7-r3-01'
+PROBE_SHA='<PRIVATE_BOUND_SHA256_001_REQUIRED>'
+RETIREMENT_SHA='__RETIREMENT_SHA256__'
+OPERATOR_SHA='__OPERATOR_SHA256__'
+PREFLIGHT_SHA='__PREFLIGHT_SHA256__'
+LIVE_SHA='__LIVE_POLICY_SHA256__'
+BOOT='<INSTANCE_UUID_REQUIRED>'
+GROUPS=['<RETIRED_GROUP_IDS_REQUIRED>']
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def stable(path,pin=None,limit=8*1024*1024):
+ path=Path(path);assert path.resolve(strict=True)==path
+ fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:
+  st=os.fstat(fd)
+  assert stat.S_ISREG(st.st_mode) and st.st_uid==st.st_gid==0 and st.st_nlink==1 and stat.S_IMODE(st.st_mode)==0o600
+  raw=b''
+  while len(raw)<=limit:
+   chunk=os.read(fd,min(65536,limit+1-len(raw)))
+   if not chunk:break
+   raw+=chunk
+  end=os.fstat(fd)
+  assert len(raw)<=limit and (st.st_dev,st.st_ino,st.st_size,st.st_mtime_ns,st.st_ctime_ns)==(end.st_dev,end.st_ino,end.st_size,end.st_mtime_ns,end.st_ctime_ns)
+ finally:os.close(fd)
+ if pin is not None:assert re.fullmatch('[0-9a-f]{64}',pin) and sha(raw)==pin
+ return raw
+def expired(_s,_f):raise TimeoutError('fresh_preserved_state_read_bound')
+signal.signal(signal.SIGALRM,expired);signal.alarm(20)
+try:
+ assert os.getuid()==os.geteuid()==0
+ assert Path('/proc/sys/kernel/random/boot_id').read_text().strip()==BOOT
+ assert Path('/proc/1/root/sys/fs/selinux/enforce').read_bytes().strip()==b'1'
+ assert Path('/proc/self/attr/current').read_bytes().rstrip(b'\0\n')==b'u:r:magisk:s0'
+ assert sha(Path('/proc/1/root/sys/fs/selinux/policy').read_bytes())==LIVE_SHA
+ raw=stable(CODE/'retirement_probe.py',PROBE_SHA,65536)
+ m=types.ModuleType('frozen_retirement_readonly');m.__file__=str(CODE/'retirement_probe.py')
+ exec(compile(raw,m.__file__,'exec'),m.__dict__)
+ qraw=stable(D/'RETIREMENT.json',RETIREMENT_SHA);q=json.loads(qraw)
+ opraw=stable(D/'OPERATOR-RESULT.json',OPERATOR_SHA);op=json.loads(opraw)
+ before=json.loads(stable(D/'PREFLIGHT.json',PREFLIGHT_SHA))
+ assert q['state']=='ORIGINAL_FOUR_GROUPS_ABSENT_STATE_PRESERVED' and q['boot_id']==BOOT
+ assert op['state']=='R7_R2_RETIRED_ORIGINALS_PRESERVED' and op['retirement_sha256']==sha(qraw)
+ assert op['supervisor_original_exit_code']==143 and op['operator_waitpid_join_claim'] is False
+ assert q['global_pending_clear'] is True and q['server_lock_now_unheld'] is True
+ assert q['preserved_state']['executor_actions_empty'] is False and len(q['preserved_state']['executor_original_actions'])==4
+ preserved=m.retained_state();assert preserved==q['preserved_state']
+ assert m.business_originals()==before['original_business']
+ assert m.check_all_runs_terminal()==before['all_original_run_terminals']
+ def no_listeners():
+  for name in ('tcp','tcp6'):
+   raw=Path('/proc/net/'+name).read_text()
+   assert len(raw)<=4*1024*1024
+   for line in raw.splitlines()[1:]:
+    fields=line.split();assert len(fields)>=4
+    assert not (fields[3]=='0A' and int(fields[1].rsplit(':',1)[1],16) in (18080,18087))
+  raw=Path('/proc/net/unix').read_text();assert len(raw)<=4*1024*1024
+  assert not any(line.split()[-1:] in (['@hepta_phone_executor_v150_r6'],['hepta_phone_executor_v150_r6']) for line in raw.splitlines()[1:])
+ no_listeners()
+ scans=[]
+ for n in range(2):
+  observation=m.census(GROUPS);assert observation['members']==[]
+  observation['kernel_group_absence']=m.kernel_absence(GROUPS);scans.append(observation)
+  if n==0:time.sleep(.1)
+ locks=[]
+ try:
+  for path in (BASE/'executor-r6/server.lock',BASE/'provider-state/daemon.lock'):
+   assert path.resolve(strict=True)==path
+   fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC);locks.append(fd)
+   st=os.fstat(fd);assert stat.S_ISREG(st.st_mode) and st.st_uid==st.st_gid==0 and st.st_nlink==1 and stat.S_IMODE(st.st_mode)==0o600
+   fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+  assert m.retained_state()==preserved
+  no_listeners()
+ finally:
+  for fd in locks:os.close(fd)
+ assert Path('/proc/1/root/sys/fs/selinux/enforce').read_bytes().strip()==b'1' and sha(Path('/proc/1/root/sys/fs/selinux/policy').read_bytes())==LIVE_SHA
+ print(json.dumps({'schema':'hepta.r7-r3.installer-fresh-readonly-state.v1','state':'ORIGINAL_FOUR_TERMINAL_ACTIONS_AND_STATE_PRESERVED',
+  'retirement_sha256':RETIREMENT_SHA,'operator_sha256':OPERATOR_SHA,'preflight_sha256':PREFLIGHT_SHA,'live_policy_sha256':LIVE_SHA,
+  'four_groups_two_censuses_and_kernel_esrch':True,'original_action_count':4,'all_original_run_terminals_unchanged':True,
+  'locks_unheld_at_observation':True,'endpoints_absent_at_observation':True,'old_files_written':0,'signals_sent':0,
+  'model_requests':0,'socket_connections':0,'business_success_claim':False},sort_keys=True))
+finally:signal.alarm(0)

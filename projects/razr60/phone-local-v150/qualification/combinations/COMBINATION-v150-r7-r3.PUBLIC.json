@@ -1,0 +1,22 @@
+{
+  "data": {
+    "cloud_fallback": false,
+    "live_policy_semantic_audit_sha256": "e506ed914e40d48992e49e31ec1df874ae3eeb8815710bec261805f348aa20ae",
+    "live_policy_snapshot_sha256": "bfe7acc92ba8c5b7a3a1c2360d6faf53f804a19c3e25e20aad336e3220fa0e38",
+    "model_route": "phone_local_cpu",
+    "module_manifest_sha256": "7a3546dc4ff001920f1522d7fe194d5a5608c6e734544c944ca6357d7ad09570",
+    "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8",
+    "policy_rules_manifest_sha256": "bc6742c5652b6a705bcd4bcb40efc8b5e7a0eb256c4915bd5c2fa09a1611c418",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r3",
+    "schema": "hepta.acceptance-combination.v150.r7.1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "frozen"
+  },
+  "not_a_private_runtime_manifest": true,
+  "original_artifact_bytes": 971,
+  "original_artifact_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1",
+  "original_canonical_sha256": "1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188",
+  "projection_scope": "Review/reference only. Private configuration digest omitted; the binding does not assert task success.",
+  "public_projection": true
+}

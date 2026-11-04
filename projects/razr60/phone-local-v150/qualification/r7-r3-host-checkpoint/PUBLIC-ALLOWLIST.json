@@ -1,0 +1,31 @@
+{
+  "excluded": [
+    "all private raw originals",
+    "ATTEMPTS and original aggregate",
+    "actual process status files",
+    "resource EXPECTED and phase originals",
+    "original source with host or instance paths"
+  ],
+  "files": [
+    {
+      "bytes": 13346,
+      "path": "HOST-CHECKPOINT-PUBLIC.json",
+      "sha256": "f3fdb154847ec089732e30a565e30df27fc37d7440f9a3f3028c9d481fd5b172"
+    },
+    {
+      "bytes": 1841,
+      "path": "README.md",
+      "sha256": "4e77d8be4ef281a8e923b8bee2be77037718d78b83541dd250ea9322373b2f1c"
+    },
+    {
+      "bytes": 1244,
+      "path": "PROVENANCE.json",
+      "sha256": "d9c8d0d4a87ef4b5b0835f315145a510018968e4b484f82412fdcf39b07c519d"
+    }
+  ],
+  "no_publication_by_this_operation": true,
+  "not_a_final_business_quality_report": true,
+  "projection_required_for_operational_sources_with_host_paths": true,
+  "schema": "hepta.explicit-public-allowlist.v1",
+  "scope": "Only these three derived public checkpoint files; original sources/evidence are not implicitly public."
+}

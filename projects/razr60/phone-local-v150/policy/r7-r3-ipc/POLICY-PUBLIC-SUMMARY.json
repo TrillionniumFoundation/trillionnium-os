@@ -1,0 +1,169 @@
+{
+  "actual_live_policy": {
+    "binary_published": false,
+    "bytes": 2667536,
+    "enforcing": true,
+    "sha256": "bfe7acc92ba8c5b7a3a1c2360d6faf53f804a19c3e25e20aad336e3220fa0e38"
+  },
+  "actual_live_semantic_audit": {
+    "check_results": [
+      {
+        "name": "independent-actual-delta-and-full-parser-provenance-bound",
+        "passed": true
+      },
+      {
+        "name": "source-full-preserves-old-body-and-only-three-delta-statements",
+        "passed": true
+      },
+      {
+        "name": "actual-root-live-transport-terminal-retirement-and-offline-pair-bound",
+        "passed": true
+      },
+      {
+        "name": "all-types-aliases-attributes-and-permissive-flags-exactly-unchanged",
+        "passed": true
+      },
+      {
+        "name": "all-type-attribute-expanded-memberships-unchanged",
+        "passed": true
+      },
+      {
+        "name": "exactly-three-requested-IPC-permission-atoms-added",
+        "passed": true
+      },
+      {
+        "name": "zero-existing-permission-or-transition-atoms-removed",
+        "passed": true
+      },
+      {
+        "name": "policy-version-MLS-unknown-handling-and-platform-unchanged",
+        "passed": true
+      },
+      {
+        "name": "all-supported-non-TE-symbolic-tables-unchanged",
+        "passed": true
+      },
+      {
+        "name": "baseline-role_user-reader-actual-exit-zero-empty-stderr",
+        "passed": true
+      },
+      {
+        "name": "baseline-genfs-reader-actual-exit-zero-empty-stderr",
+        "passed": true
+      },
+      {
+        "name": "candidate-role_user-reader-actual-exit-zero-empty-stderr",
+        "passed": true
+      },
+      {
+        "name": "candidate-genfs-reader-actual-exit-zero-empty-stderr",
+        "passed": true
+      },
+      {
+        "name": "libsepol-roles-full-symbolic-table-unchanged",
+        "passed": true
+      },
+      {
+        "name": "libsepol-users-full-symbolic-table-unchanged",
+        "passed": true
+      },
+      {
+        "name": "libsepol-initialsids-full-symbolic-table-unchanged",
+        "passed": true
+      },
+      {
+        "name": "libsepol-fs_uses-full-symbolic-table-unchanged",
+        "passed": true
+      },
+      {
+        "name": "libsepol-unlabeled_filesystems-full-symbolic-table-unchanged",
+        "passed": true
+      },
+      {
+        "name": "libsepol-genfs-path-class-user-role-type-MLS-contexts-unchanged",
+        "passed": true
+      },
+      {
+        "name": "three-static-required-effective-edges-before-empty-after-exactly-requested",
+        "passed": true
+      },
+      {
+        "name": "existing-property-find-binder-fd-and-dontaudit-grants-preserved",
+        "passed": true
+      },
+      {
+        "name": "reverse-servicemanager-call-and-worker-pipe-getattr-not-added",
+        "passed": true
+      },
+      {
+        "name": "all-input-policy-bytes-unchanged-by-auditor",
+        "passed": true
+      },
+      {
+        "name": "actual-live-equivalent-to-audited-offline-by-exact-three-atoms-and-all-other-tables-unchanged",
+        "passed": true
+      }
+    ],
+    "checks": 24,
+    "original_report_sha256": "e506ed914e40d48992e49e31ec1df874ae3eeb8815710bec261805f348aa20ae",
+    "passed": 24
+  },
+  "added_permission_atoms": [
+    {
+      "class": "binder",
+      "permission": "transfer",
+      "source": "servicemanager",
+      "target": "trillionnium_owner_open_phone_worker"
+    },
+    {
+      "class": "fd",
+      "permission": "use",
+      "source": "system_server",
+      "target": "trillionnium_owner_open_phone_worker"
+    },
+    {
+      "class": "fifo_file",
+      "permission": "write",
+      "source": "system_server",
+      "target": "trillionnium_owner_open_phone_worker"
+    }
+  ],
+  "all_other_audited_te_and_non_te_tables_unchanged": true,
+  "delta_rule_original_sha256": "a844e622896f84e3fb535ccb1315e21b48a5bcbf2d78a8ae05be9c4b3f174662",
+  "final_rules_manifest_original_sha256": "bc6742c5652b6a705bcd4bcb40efc8b5e7a0eb256c4915bd5c2fa09a1611c418",
+  "full_rule_sha256": "30f3963d10aa4c4eea70c31c8f80278490be3c16986fb029853b5bc217a4b6f8",
+  "limitations": [
+    "Effective-policy queries and static interface dependencies support these missing edges; they do not prove a sole cause for every previous failure.",
+    "Permissions apply to the named SELinux types, not one package, request, process or Binder object.",
+    "Enforcing remained enabled. No broad domain attribute or permissive rule was added.",
+    "Parser and policy audit do not qualify model, App, cancellation, cold boot or daily use. New-version task outcomes are reported separately."
+  ],
+  "live_and_offline_byte_identical": false,
+  "live_and_offline_semantically_equivalent": true,
+  "new_types": 0,
+  "offline_candidate": {
+    "binary_published": false,
+    "bytes": 2667536,
+    "full_and_delta_bytes_identical": true,
+    "full_and_delta_parsers_actual_exit_zero": true,
+    "parser_stderr_empty": true,
+    "parser_stdout_empty": true,
+    "sha256": "47cbc252a6db847f7a37dd124e8732acea48e38368da2a6ff3b1916a142918c6"
+  },
+  "offline_semantic_audit": {
+    "checks": 44,
+    "original_report_sha256": "b2be862708d3e36b8431e0eedffc9de3b0be67f602ae5087e24d30b5e951ac02",
+    "passed": 44,
+    "per_candidate": 22
+  },
+  "policy_applied_after_old_module_retirement": true,
+  "previous_actual_live_policy_sha256": "439ebd30f0e003cc4b0f5c08cade8c59b922eedcd3a3302169323a7f0397f089",
+  "previous_four_property_read_permissions_preserved": true,
+  "previous_full_rule_sha256": "e9ffb955ba3872d7b3c453729ef8b6e52b8679f86f05496d25a1b735f9bed7a2",
+  "prior_action_journal_preserved": true,
+  "private_originals_or_compiled_policy_published": false,
+  "removed_permission_atoms": 0,
+  "reverse_servicemanager_call_and_fifo_getattr_added": false,
+  "schema": "hepta.policy-public-summary.v150.r7.r3.1",
+  "scope": "Actual policy semantics; new application outcomes require separate version-bound tasks."
+}

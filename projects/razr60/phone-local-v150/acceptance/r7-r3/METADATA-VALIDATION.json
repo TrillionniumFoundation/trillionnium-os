@@ -1,0 +1,14 @@
+{
+  "actual_new_protocol_validator_passed": true,
+  "actual_pending_combo_validator_passed": true,
+  "aggregate_inverse_bytes_equal": true,
+  "all_19_case_objects_identical": true,
+  "all_five_dynamic_pins_null": true,
+  "limits_geometry_release_gate_identical": true,
+  "materializer_bytes_identical": true,
+  "model_calls": 0,
+  "new_samples_created": 0,
+  "nonce_or_request_generated": false,
+  "phone_calls": 0,
+  "production_source_changed": false
+}

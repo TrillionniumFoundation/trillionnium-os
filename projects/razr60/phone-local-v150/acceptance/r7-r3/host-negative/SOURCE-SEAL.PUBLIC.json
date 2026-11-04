@@ -1,0 +1,213 @@
+{
+  "cases": [
+    "NEG-03",
+    "NEG-06",
+    "NEG-10",
+    "NEG-11",
+    "NEG-12",
+    "NEG-13",
+    "NEG-14"
+  ],
+  "files": [
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "3934392492e1d9f454dde71f93a8fa3ba357f12e",
+      "mode": "100644",
+      "original_bytes": 30125,
+      "original_sha256": "1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-component-r1/host_negative_runner.py",
+      "projection_rules": [],
+      "published_bytes": 30125,
+      "published_sha256": "1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-component-r1/host_negative_runner.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "3934392492e1d9f454dde71f93a8fa3ba357f12e",
+      "mode": "100644",
+      "original_bytes": 30125,
+      "original_sha256": "1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-geometry-r1/reference_host_helpers.py",
+      "projection_rules": [],
+      "published_bytes": 30125,
+      "published_sha256": "1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/reference_host_helpers.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "6228c4f2335733ab69b48561390a982ea6cf1542",
+      "mode": "100644",
+      "original_bytes": 13670,
+      "original_sha256": "72ee53eb35557b8c6735751823dc5a9f2eee40e05ffe088bbdbb0b9cf665b848",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-geometry-r1/geometry_negative_runner.py",
+      "projection_rules": [],
+      "published_bytes": 13670,
+      "published_sha256": "72ee53eb35557b8c6735751823dc5a9f2eee40e05ffe088bbdbb0b9cf665b848",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/geometry_negative_runner.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "bb3a6b543460613ba0fbe93a8131517a3306309b",
+      "mode": "100644",
+      "original_bytes": 22963,
+      "original_sha256": "5d296fb8a2541d5494cd3aa86e5ce64a1f2288991369f5848276c72a70d6e2bc",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-service-r1/service_negative_runner.py",
+      "projection_rules": [],
+      "published_bytes": 22963,
+      "published_sha256": "5d296fb8a2541d5494cd3aa86e5ce64a1f2288991369f5848276c72a70d6e2bc",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-service-r1/service_negative_runner.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "1f04f877b73b252f37e03ea8092dfba1050857e2",
+      "mode": "100644",
+      "original_bytes": 4338,
+      "original_sha256": "6b6d2486786d27f916e3268f3e189d836fc6ed1164933cd6cf5509574beb6f12",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-service-r1/fixture_server.py",
+      "projection_rules": [],
+      "published_bytes": 4338,
+      "published_sha256": "6b6d2486786d27f916e3268f3e189d836fc6ed1164933cd6cf5509574beb6f12",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-service-r1/fixture_server.py"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "f8ff3d0baaf9ccd8d7c003c9144aa1f483fa2a89",
+      "mode": "100644",
+      "original_bytes": 7152,
+      "original_sha256": "bfc49dd90c9048934508a36c7df89a96ebe1a70a2c85d41571467503d15746e7",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-service-r1/execute_namespace_once.py",
+      "projection_rules": [
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "distinct_values": 1,
+          "rule": "non-public-instance-bound-digest-placeholder"
+        }
+      ],
+      "published_bytes": 7127,
+      "published_sha256": "593f2f28948726bda8e8f428dc0f7af92acf7f2fa722c04f004992ac87fd9809",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-service-r1/execute_namespace_once.py"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "afbda4f55da137fda310c3ea7c08c3d2e2fc3d10",
+      "mode": "100644",
+      "original_bytes": 7197,
+      "original_sha256": "765d6f57404147332e2df79f995ac4fb5045a157ad0fce722b52182abc2726e4",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-geometry-r1/execute_namespace_once.py",
+      "projection_rules": [
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "distinct_values": 1,
+          "rule": "non-public-instance-bound-digest-placeholder"
+        }
+      ],
+      "published_bytes": 7172,
+      "published_sha256": "6475ea17251614bf0d34639e4f4faa6875bfd283cedff75e2caa85460efff724",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/execute_namespace_once.py"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "628c568b961de17632127382c84d1b616abe92dc",
+      "mode": "100644",
+      "original_bytes": 6942,
+      "original_sha256": "e2f08a3ff274d4e2c94f48559396dc36f94b4c19f700bc62b4c3a3ec3d1d9657",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-component-r1/execute_namespace_once.py",
+      "projection_rules": [
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "distinct_values": 1,
+          "rule": "non-public-instance-bound-digest-placeholder"
+        }
+      ],
+      "published_bytes": 6917,
+      "published_sha256": "5eb9b0ef8ca8e7c3e39b21208ac79be617261c9e3287e5a0de9f181a29929308",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-component-r1/execute_namespace_once.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "896c8b65580dca60ae2d2eecfe5a3c2f530ec23a",
+      "mode": "100644",
+      "original_bytes": 19356,
+      "original_sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-component-r1/assets/synthetic.jpg",
+      "projection_rules": [],
+      "published_bytes": 19356,
+      "published_sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-component-r1/assets/synthetic.jpg"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "dad9329e0f5b90e6315872e8eeeef20b9827444c",
+      "mode": "100644",
+      "original_bytes": 1191,
+      "original_sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-component-r1/assets/synthetic.png",
+      "projection_rules": [],
+      "published_bytes": 1191,
+      "published_sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-component-r1/assets/synthetic.png"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "896c8b65580dca60ae2d2eecfe5a3c2f530ec23a",
+      "mode": "100644",
+      "original_bytes": 19356,
+      "original_sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-geometry-r1/assets/synthetic.jpg",
+      "projection_rules": [],
+      "published_bytes": 19356,
+      "published_sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/assets/synthetic.jpg"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "dad9329e0f5b90e6315872e8eeeef20b9827444c",
+      "mode": "100644",
+      "original_bytes": 1191,
+      "original_sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-geometry-r1/assets/synthetic.png",
+      "projection_rules": [],
+      "published_bytes": 1191,
+      "published_sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/assets/synthetic.png"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "52188a21f915ce5eca6f1f47293c40d7aa4bb766",
+      "mode": "100644",
+      "original_bytes": 29493,
+      "original_sha256": "5700ade82be3395f70c3ffb412ff809523fa2b7680db0ec73d59edea3d6427ac",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/BOUND-METADATA-ONLY.diff",
+      "projection_rules": [
+        {
+          "occurrences": 6,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "distinct_values": 2,
+          "rule": "non-public-instance-bound-digest-placeholder"
+        }
+      ],
+      "published_bytes": 29343,
+      "published_sha256": "f67696dec2a5b64d251436d8b618f16d3a33360b2bf41d09ae8f8163abb2e931",
+      "source_reference": "acceptance-r7-r3-host-negative-r1/BOUND-METADATA-ONLY.diff"
+    }
+  ],
+  "not_an_executable_test_package": true,
+  "original_source_seal_bytes": 3302,
+  "original_source_seal_sha256": "ff817747cd55fb4343c10c5ebf2761e45f55cdfcdd7ee21e85afd5ef27e54fba",
+  "physical_layer_still_required": [],
+  "private_instance_bindings_omitted": true,
+  "schema": "hepta.public-host-source-projection.v1",
+  "source_creation_was_not_sample_execution": true,
+  "test_execution_uses_original_sources": true
+}

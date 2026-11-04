@@ -1,0 +1,152 @@
+{
+  "cases": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09"
+  ],
+  "files": [
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "a70314895cf7608346b6d7fc90d4a64eab4511d1",
+      "mode": "100644",
+      "original_bytes": 22963,
+      "original_sha256": "f43ca2a3009405cb1a7b58e7fa43808f8d1fba4632da525468972c6e1f4b5cdb",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-cancel-faults/frozen_fixture_support.py",
+      "projection_rules": [],
+      "published_bytes": 22963,
+      "published_sha256": "f43ca2a3009405cb1a7b58e7fa43808f8d1fba4632da525468972c6e1f4b5cdb",
+      "source_reference": "acceptance-r7-r3-host-cancel-faults-r1/frozen_fixture_support.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "93206c807e4998ead849f813ae92ddd0b56cadad",
+      "mode": "100644",
+      "original_bytes": 26214,
+      "original_sha256": "6163449a9c92fd370fb5e27b190461ae46f2bfe11c180ea7ca1987bdb190b178",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-cancel-faults/run_fault_cases.py",
+      "projection_rules": [],
+      "published_bytes": 26214,
+      "published_sha256": "6163449a9c92fd370fb5e27b190461ae46f2bfe11c180ea7ca1987bdb190b178",
+      "source_reference": "acceptance-r7-r3-host-cancel-faults-r1/run_fault_cases.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "291a538dc082da112db976df5b984c05df6b31ad",
+      "mode": "100644",
+      "original_bytes": 5371,
+      "original_sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-cancel-faults/fixture_server.py",
+      "projection_rules": [],
+      "published_bytes": 5371,
+      "published_sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049",
+      "source_reference": "acceptance-r7-r3-host-cancel-faults-r1/fixture_server.py"
+    },
+    {
+      "content_relation": "exact_original_bytes",
+      "git_blob_sha1": "079aa89864421bd3a84c064d054db4fc62215d4b",
+      "mode": "100644",
+      "original_bytes": 2299,
+      "original_sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-cancel-faults/counter_effect.py",
+      "projection_rules": [],
+      "published_bytes": 2299,
+      "published_sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b",
+      "source_reference": "acceptance-r7-r3-host-cancel-faults-r1/counter_effect.py"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "4fa919507a5a9bec5e21da5427d7017d13e134bc",
+      "mode": "100644",
+      "original_bytes": 7580,
+      "original_sha256": "15aba67496d46bcfe87a3a2235439512b1f4f8b77325c274e9ba3267e9e3cb3f",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-cancel-faults/execute_namespace_once.py",
+      "projection_rules": [
+        {
+          "occurrences": 2,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "distinct_values": 1,
+          "rule": "non-public-instance-bound-digest-placeholder"
+        }
+      ],
+      "published_bytes": 7559,
+      "published_sha256": "d9dce9dd6c6612fc5a85ff07a1b321bc0d08c7ff9dc4c24e077771ee3bf0de5f",
+      "source_reference": "acceptance-r7-r3-host-cancel-faults-r1/execute_namespace_once.py"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "aaa94b17c531e700cb9f6311fe8c365f3e6a1a74",
+      "mode": "100644",
+      "original_bytes": 3023,
+      "original_sha256": "7f59f41e78d066d048382f023e0e9a4d753f9063f10698065dce9a8c665d4d87",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-cancel-faults/run_fixed_faults_once.py",
+      "projection_rules": [
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        }
+      ],
+      "published_bytes": 2975,
+      "published_sha256": "b8f68ae2f9d41d7a5509cd8bbcb8987bceb4277accd66cc92d545b1204a45ea3",
+      "source_reference": "acceptance-r7-r3-host-cancel-faults-r1/run_fixed_faults_once.py"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "d9ba12c062a41f0d83d3f57b41fb4e6fc0d965a7",
+      "mode": "100644",
+      "original_bytes": 4959,
+      "original_sha256": "0e9508732b672bc70e7bc9b586e58d3d8f7dc3039947acf30b9c6bb01bb5eb52",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-cancel-faults/BOUND-METADATA-ONLY.diff",
+      "projection_rules": [
+        {
+          "occurrences": 2,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "occurrences": 6,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "distinct_values": 2,
+          "rule": "non-public-instance-bound-digest-placeholder"
+        }
+      ],
+      "published_bytes": 4793,
+      "published_sha256": "ecfb97348c1abefb3b89dc90a6bd12572b2ad71de5cd909bf098a94d3f7d8911",
+      "source_reference": "acceptance-r7-r3-host-cancel-faults-r1/BOUND-METADATA-ONLY.diff"
+    }
+  ],
+  "not_an_executable_test_package": true,
+  "original_source_seal_bytes": 2119,
+  "original_source_seal_sha256": "33e9d4f7a21a2704d14021a1b3753917aa49ad058677dd0a7120f00a716202a4",
+  "physical_layer_still_required": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09"
+  ],
+  "private_instance_bindings_omitted": true,
+  "schema": "hepta.public-host-source-projection.v1",
+  "source_creation_was_not_sample_execution": true,
+  "test_execution_uses_original_sources": true
+}

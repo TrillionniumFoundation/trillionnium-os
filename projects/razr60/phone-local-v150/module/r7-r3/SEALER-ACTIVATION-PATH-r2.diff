@@ -1,0 +1,23 @@
+--- unexecuted-r1-candidate
++++ corrected-r2-candidate
+@@ -170,9 +170,17 @@
+  'original_role_identities':IDS,'original_supervisor_exit_code':operator['supervisor_original_exit_code'],
+  'all_four_groups_absent_two_censuses_and_kernel_esrch':True,'operator_waitpid_join_claim':False,
+  'original_timed_out_actions_preserved':2,'original_completed_exit68_actions_preserved':2,'original_effect_count':4,'old_tasks_not_replayed':True}
+-binding['census_fix'].update(path=H+'/module-r7-activation-r2/proc_and_original_gate.py',bytes=len(census),sha256=sha(census),retired_groups=binding['census_fix']['retired_groups']+[x[0] for x in IDS.values()])
+-for row in binding['payloads']:
+- if row['path']==H+'/module-r7-activation-r1/proc_and_original_gate.py':row.update(path=binding['census_fix']['path'],bytes=len(census),sha256=sha(census))
++parent_census_path=binding['census_fix']['path']
++assert parent_census_path==H+'/module-r7-activation-r2/proc_and_original_gate.py'
++assert binding['census_fix']['bytes']==4905 and binding['census_fix']['sha256']=='12a74aa99d56d780f6e3a6e420d5480db35ab7399b58f9b3b840839741be46e8'
++parent_census_rows=[row for row in binding['payloads'] if row['path']==parent_census_path]
++assert len(parent_census_rows)==1
++new_census_path=H+'/module-r7-activation-r3/proc_and_original_gate.py'
++assert not any(row['path']==new_census_path for row in binding['payloads'])
++binding['census_fix'].update(path=new_census_path,bytes=len(census),sha256=sha(census),retired_groups=binding['census_fix']['retired_groups']+[x[0] for x in IDS.values()])
++parent_census_rows[0].update(path=new_census_path,bytes=len(census),sha256=sha(census))
++assert sum(row['path']==new_census_path for row in binding['payloads'])==1
++assert not any(row['path']==parent_census_path for row in binding['payloads'])
+ binding['payloads'].sort(key=lambda x:x['path']);assert len(binding['payloads'])==44 and len({x['path'] for x in binding['payloads']})==44
+ binding['reviewed_for_installation']=False;binding['host_source_and_input_review_complete']=True;binding['phone_installation_authorized_by_host_seal']=False
+ binding['existing_provider_source_config_not_overwritten']=True

@@ -1,0 +1,20 @@
+--- unexecuted-r1-candidate
++++ corrected-r2-candidate
+@@ -23,7 +23,7 @@
+ A=B/'acceptance-r7-r3';ar=read(A/'aggregate_protocol_r7.py',a.aggregator_sha256)
+ m=types.ModuleType('frozen_r7_r3_aggregator');m.__file__=str(A/'aggregate_protocol_r7.py')
+ exec(compile(ar,m.__file__,'exec'),m.__dict__)
+-combo=json.loads(read(A/'COMBINATION-PENDING-v150-r7-module-r2.json',a.pending_sha256))
++combo=json.loads(read(A/'COMBINATION-PENDING-v150-r7-module-r3.json',a.pending_sha256))
+ assert combo['release']=='v150-r7-r3' and combo['schema']=='hepta.acceptance-combination.v150.r7.1'
+ bundle=json.loads(read(D/'sealed-module-v150-r7-r3/BUNDLE.json'))
+ M=D/'sealed-module-v150-r7-r3/module'
+@@ -42,7 +42,7 @@
+ combo.update(state='frozen',module_manifest_sha256=sha(mr),policy_rules_manifest_sha256=sha(rulesraw),
+  live_policy_snapshot_sha256=v['live_policy_sha256'],live_policy_semantic_audit_sha256=sha(auditraw),
+  native_and_apps_manifest_sha256=v['native_apps_manifest_sha256'])
+-path=D/'COMBINATION-FROZEN-v150-r7-module-r2.json';pin=new(path,enc(combo))
++path=D/'COMBINATION-FROZEN-v150-r7-module-r3.json';pin=new(path,enc(combo))
+ selected=m.load_combination(path,pin['sha256']);assert selected['frozen'] is True
+ protocol,protocol_sha,_=m.validate_protocol();assert len(protocol['cases'])==19
+ assert protocol_sha=='74e8f8e6c22ba6240ba85cb610cb46ff8a0f158a39375118385f5012a47efdfb'

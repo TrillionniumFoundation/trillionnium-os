@@ -1,0 +1,1221 @@
+{
+  "all_19_cases_preserved": true,
+  "business_http_timings": {
+    "max": 34.236208685004385,
+    "mean": 29.295419858499372,
+    "min": 24.35463103199436,
+    "missing_samples": 0,
+    "p50": 29.295419858499372,
+    "p95": 33.74212980235389,
+    "quantile_method": "linear interpolation; descriptive only",
+    "samples": 2
+  },
+  "business_outcomes": {
+    "cancelled": 0,
+    "complete_fraction": 0.0,
+    "complete_success": 0,
+    "failed": 2,
+    "sample_count": 2,
+    "unconfirmed": 0,
+    "verified_partial": 0
+  },
+  "by_layer": {
+    "component_direct": {
+      "attempts": 1,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 1,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "host_isolated": {
+      "attempts": 11,
+      "outcomes": {
+        "cancelled": 2,
+        "complete_success": 0,
+        "failed": 8,
+        "partial": 0,
+        "unconfirmed": 1
+      },
+      "recovery_attempts": 0
+    },
+    "model_e2e": {
+      "attempts": 2,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 2,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "physical_native_task": {
+      "attempts": 0,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    }
+  },
+  "case_status_counts": {
+    "BLOCKED": 10,
+    "FAIL": 2,
+    "PASS": 7
+  },
+  "cases": [
+    {
+      "attempt_count": 1,
+      "id": "E2E-01",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "model_e2e",
+          "status": "FAIL"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "attempt_count": 1,
+      "id": "E2E-02",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "model_e2e",
+          "status": "FAIL"
+        }
+      ],
+      "status": "FAIL"
+    },
+    {
+      "attempt_count": 0,
+      "id": "E2E-03",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "E2E-04",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "COMP-01",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "NEG-01",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 0,
+      "id": "NEG-02",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-03",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "component_direct",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-04",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-05",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-06",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-07",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-08",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-09",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "status": "BLOCKED"
+        }
+      ],
+      "status": "BLOCKED"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-10",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-11",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-12",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-13",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "attempt_count": 1,
+      "id": "NEG-14",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    }
+  ],
+  "combination": {
+    "cloud_fallback": false,
+    "live_policy_semantic_audit_sha256": "e506ed914e40d48992e49e31ec1df874ae3eeb8815710bec261805f348aa20ae",
+    "live_policy_snapshot_sha256": "bfe7acc92ba8c5b7a3a1c2360d6faf53f804a19c3e25e20aad336e3220fa0e38",
+    "model_route": "phone_local_cpu",
+    "module_manifest_sha256": "7a3546dc4ff001920f1522d7fe194d5a5608c6e734544c944ca6357d7ad09570",
+    "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8",
+    "policy_rules_manifest_sha256": "bc6742c5652b6a705bcd4bcb40efc8b5e7a0eb256c4915bd5c2fa09a1611c418",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r3",
+    "schema": "hepta.acceptance-combination.v150.r7.1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "frozen"
+  },
+  "combination_canonical_sha256": "1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188",
+  "combination_manifest_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1",
+  "combination_public_projection": {
+    "executable_manifest": false,
+    "omitted_fields": [
+      "provider_config_sha256"
+    ],
+    "original_canonical_sha256": "1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188",
+    "original_manifest_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1"
+  },
+  "created_utc": "2026-11-04T04:46:55.629604+00:00",
+  "daily_use_qualification_established": false,
+  "failure_analysis": {
+    "cleanup_and_error_text_differences_do_not_upgrade_business_outcomes": true,
+    "current_observed_failure": "Both first app opens returned success with target foreground and display verified. Both second model rounds proposed the same open again and were rejected before a second dispatch.",
+    "future_candidate_not_measured_or_deployed_in_this_report": true,
+    "no_grounding_or_text_qualification_inferred_from_an_open_attempt": true,
+    "observed_signals_by_task": {
+      "unicode": [
+        "empty_original_stderr",
+        "repeated_open_proposal_rejected_before_dispatch"
+      ],
+      "visual": [
+        "empty_original_stderr",
+        "repeated_open_proposal_rejected_before_dispatch"
+      ]
+    },
+    "original_history_present": "The actual second requests already contained the successful open observation and unchanged owner message. This is not evidence of lost history.",
+    "schema_observation": "The original second-round schema still offered the same open alias and screenshot. Prompt salience or model causation is not established by these two observations."
+  },
+  "fixed_case_count": 19,
+  "hardware_energy_joules": null,
+  "health": {
+    "business_verified_fact_count": 0,
+    "cached_tokens_added_to_total": false,
+    "capture_actor_exit_code": 0,
+    "capture_phone_exit_code": 0,
+    "case_id": "HEALTH",
+    "collector_process_exit_code": 0,
+    "complete_business_success": false,
+    "counts_as_business_or_fixed19": false,
+    "draft_cleanup_counts_as_business_return": false,
+    "exact_native_end_to_end_seconds": null,
+    "exact_native_latency_claimed": false,
+    "exact_new_nonce_verified": true,
+    "failure_signals": [],
+    "http_elapsed_seconds": 3.147296509996522,
+    "http_workers_joined": true,
+    "missing_postconditions": [],
+    "model_rounds_with_image": 0,
+    "model_usage": {
+      "completion_tokens": 57,
+      "prompt_tokens": 167,
+      "total_tokens": 224
+    },
+    "native_persistence_interval_seconds": [
+      3.024656889,
+      4.224542973
+    ],
+    "native_status": "completed",
+    "native_terminal_observed_upper_seconds": 4.224542973,
+    "nonce_forced_by_grammar": false,
+    "observation_interval_width_seconds": 1.199886084,
+    "observed_model_requests": 1,
+    "owner_draft_restored_exact": true,
+    "owner_draft_submitted": false,
+    "passed": 1,
+    "phone_tool_dispatches": 0,
+    "prompt_cached_tokens": 0,
+    "proof_complete": true,
+    "provider_native_text_agreement": true,
+    "samples": 1,
+    "scope": "Observer-bounded persistence interval on one monotonic clock; not an exact event-time or host job duration.",
+    "send_attempt_count": 1,
+    "slots_observed_idle_after": true,
+    "task_classification": "health_pass",
+    "tools": [],
+    "verified_partial_completion": false
+  },
+  "history_boundary": {
+    "historical_native_failures_and_action_records_preserved": true,
+    "r6_r2_cancel_slot_busy_failure_is_not_current_sample": true,
+    "r7_r1_results_not_relabelled": true,
+    "r7_r2_results_not_relabelled": true
+  },
+  "instrumentation_notes": [
+    "Collector process exit0 means its evidence program completed; failed task/proof=false and workflow exit2 remain unchanged.",
+    "All twelve host/component samples were actually rerun for this full combination. No old sample was assigned a new combination.",
+    "Public original-draft restoration means private exact comparison passed; neither draft content nor digest is present here."
+  ],
+  "model_business": [
+    {
+      "business_verified_fact_count": 0,
+      "cached_tokens_added_to_total": false,
+      "capture_actor_exit_code": 0,
+      "capture_phone_exit_code": 0,
+      "case_id": "E2E-01",
+      "collector_process_exit_code": 0,
+      "complete_business_success": false,
+      "draft_cleanup_counts_as_business_return": false,
+      "exact_native_end_to_end_seconds": null,
+      "exact_native_latency_claimed": false,
+      "failure_signals": [
+        "empty_original_stderr",
+        "repeated_open_proposal_rejected_before_dispatch"
+      ],
+      "http_elapsed_seconds": 24.35463103199436,
+      "http_workers_joined": true,
+      "missing_postconditions": [
+        "visual_receipt",
+        "return"
+      ],
+      "model_rounds_with_image": 0,
+      "model_usage": {
+        "completion_tokens": 59,
+        "prompt_tokens": 2499,
+        "total_tokens": 2558
+      },
+      "native_persistence_interval_seconds": [
+        25.544564554,
+        26.735960534
+      ],
+      "native_status": "provider_failed",
+      "native_terminal_observed_upper_seconds": 26.735960534,
+      "observation_interval_width_seconds": 1.19139598,
+      "observed_model_requests": 2,
+      "original_sequence": {
+        "first_original_foreground_and_display_verified": true,
+        "first_original_open_exit_code": 0,
+        "prompt_or_model_causal_explanation_established": false,
+        "repeated_open_proposal_dispatched": false,
+        "round2_already_included_verified_successful_open_history": true,
+        "round2_current_image_present": false,
+        "round2_original_owner_message_unchanged": true,
+        "round2_schema_offered_screenshot": true,
+        "round2_schema_still_offered_same_open_alias": true,
+        "scope": "Two original rounds; no screenshot, typing, public readback or business return was reached.",
+        "terminal_rejection": "action_no_replay",
+        "verified_partial_business_success": false
+      },
+      "owner_draft_restored_exact": true,
+      "owner_draft_submitted": false,
+      "phone_tool_dispatches": 1,
+      "prompt_cached_tokens": 638,
+      "proof_complete": false,
+      "provider_native_text_agreement": false,
+      "scope": "Observer-bounded persistence interval on one monotonic clock; not an exact event-time or host job duration.",
+      "send_attempt_count": 1,
+      "slots_observed_idle_after": true,
+      "task_classification": "failed",
+      "tools": [
+        {
+          "automatic_replay": false,
+          "business_effect_success_inferred": false,
+          "dispatch_count": 1,
+          "effect_started": true,
+          "native_elapsed_ms": 702,
+          "native_exit_code": 0,
+          "original_receipt_and_ledger_closed": true,
+          "process_group_absent": true,
+          "semantic_tool": "phone.open_app",
+          "sidecar_elapsed_ms": 530,
+          "sidecar_exit_code": 0,
+          "sidecar_state": "completed",
+          "stderr_bytes": 0,
+          "stderr_observation": "empty_original_stderr",
+          "successful_original_execution": true,
+          "waitpid_joined": true,
+          "wire_tool": "shell.exec"
+        }
+      ],
+      "verified_partial_completion": false
+    },
+    {
+      "business_verified_fact_count": 0,
+      "cached_tokens_added_to_total": false,
+      "capture_actor_exit_code": 0,
+      "capture_phone_exit_code": 0,
+      "case_id": "E2E-02",
+      "collector_process_exit_code": 0,
+      "complete_business_success": false,
+      "draft_cleanup_counts_as_business_return": false,
+      "exact_native_end_to_end_seconds": null,
+      "exact_native_latency_claimed": false,
+      "failure_signals": [
+        "empty_original_stderr",
+        "repeated_open_proposal_rejected_before_dispatch"
+      ],
+      "http_elapsed_seconds": 34.236208685004385,
+      "http_workers_joined": true,
+      "missing_postconditions": [
+        "editor",
+        "public_readback",
+        "public_receipt",
+        "return"
+      ],
+      "model_rounds_with_image": 0,
+      "model_usage": {
+        "completion_tokens": 105,
+        "prompt_tokens": 3411,
+        "total_tokens": 3516
+      },
+      "native_persistence_interval_seconds": [
+        35.574164522,
+        36.811717895
+      ],
+      "native_status": "provider_failed",
+      "native_terminal_observed_upper_seconds": 36.811717895,
+      "observation_interval_width_seconds": 1.237553373,
+      "observed_model_requests": 2,
+      "original_sequence": {
+        "first_original_foreground_and_display_verified": true,
+        "first_original_open_exit_code": 0,
+        "prompt_or_model_causal_explanation_established": false,
+        "repeated_open_proposal_dispatched": false,
+        "round2_already_included_verified_successful_open_history": true,
+        "round2_current_image_present": false,
+        "round2_original_owner_message_unchanged": true,
+        "round2_schema_offered_screenshot": true,
+        "round2_schema_still_offered_same_open_alias": true,
+        "scope": "Two original rounds; no screenshot, typing, public readback or business return was reached.",
+        "terminal_rejection": "action_no_replay",
+        "verified_partial_business_success": false
+      },
+      "owner_draft_restored_exact": true,
+      "owner_draft_submitted": false,
+      "phone_tool_dispatches": 1,
+      "prompt_cached_tokens": 1119,
+      "proof_complete": false,
+      "provider_native_text_agreement": false,
+      "scope": "Observer-bounded persistence interval on one monotonic clock; not an exact event-time or host job duration.",
+      "send_attempt_count": 1,
+      "slots_observed_idle_after": true,
+      "task_classification": "failed",
+      "tools": [
+        {
+          "automatic_replay": false,
+          "business_effect_success_inferred": false,
+          "dispatch_count": 1,
+          "effect_started": true,
+          "native_elapsed_ms": 765,
+          "native_exit_code": 0,
+          "original_receipt_and_ledger_closed": true,
+          "process_group_absent": true,
+          "semantic_tool": "phone.open_app",
+          "sidecar_elapsed_ms": 562,
+          "sidecar_exit_code": 0,
+          "sidecar_state": "completed",
+          "stderr_bytes": 0,
+          "stderr_observation": "empty_original_stderr",
+          "successful_original_execution": true,
+          "waitpid_joined": true,
+          "wire_tool": "shell.exec"
+        }
+      ],
+      "verified_partial_completion": false
+    }
+  ],
+  "model_usage": {
+    "actual_model_http_request_count": 5,
+    "all_real_tasks": {
+      "completion_tokens": 221,
+      "prompt_tokens": 6077,
+      "total_tokens": 6298
+    },
+    "business": {
+      "completion_tokens": {
+        "complete_total": 164,
+        "known_samples": 2,
+        "known_sum": 164,
+        "missing_samples": 0
+      },
+      "prompt_tokens": {
+        "complete_total": 5910,
+        "known_samples": 2,
+        "known_sum": 5910,
+        "missing_samples": 0
+      },
+      "total_tokens": {
+        "complete_total": 6074,
+        "known_samples": 2,
+        "known_sum": 6074,
+        "missing_samples": 0
+      }
+    },
+    "cache_not_added_to_prompt_or_total": true,
+    "health": {
+      "completion_tokens": 57,
+      "prompt_tokens": 167,
+      "total_tokens": 224
+    },
+    "host_fixtures_are_not_model_usage": true,
+    "real_task_count": 3,
+    "source": "Original phone-local HTTP receipts only; health is outside the business denominator."
+  },
+  "monetary_cost": null,
+  "native_integrity": {
+    "health": {
+      "adjacent_global_predecessor_links_verified": 2,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 3,
+      "record_hashes_verified": 3,
+      "selected_scope_record_count": 3,
+      "status": "PASS",
+      "unsupported": []
+    },
+    "unicode": {
+      "adjacent_global_predecessor_links_verified": 7,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 8,
+      "record_hashes_verified": 8,
+      "selected_scope_record_count": 8,
+      "status": "PASS",
+      "unsupported": []
+    },
+    "visual": {
+      "adjacent_global_predecessor_links_verified": 7,
+      "errors": [],
+      "global_chain_complete": false,
+      "global_chain_limit": "Only supplied adjacent records checked; no unseen predecessor/genesis attested.",
+      "record_count": 8,
+      "record_hashes_verified": 8,
+      "selected_scope_record_count": 8,
+      "status": "PASS",
+      "unsupported": []
+    }
+  },
+  "native_latency_note": "Only observer intervals and upper bounds are reported; host job durations are not exact native or inference latency.",
+  "negative_layers": {
+    "geometry_fixture_is_not_outer_screen_or_rotation_qualification": true,
+    "host_pass_cases": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09",
+      "NEG-03",
+      "NEG-06",
+      "NEG-10",
+      "NEG-11",
+      "NEG-12",
+      "NEG-13",
+      "NEG-14"
+    ],
+    "physical_followup_still_required": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09"
+    ]
+  },
+  "protocol_sha256": "74e8f8e6c22ba6240ba85cb610cb46ff8a0f158a39375118385f5012a47efdfb",
+  "provenance": {
+    "aggregation_process_exit_code": 0,
+    "five_original_attempts_sha256": "db3516b2cc61b55d9b06f55df2f8f1751a454b287157bb11638942b8296b2854",
+    "frozen_aggregator_sha256": "599e36448370f0ff79632e3468429db94deb6eb552b32f595f7bd85735da3db9",
+    "native_auditor_sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+    "report_sha256": {
+      "health": "0bef7ec07ea083bb2af6f3c2a56be4e6bb7379bb123ca72cc76e18139a826fe3",
+      "unicode": "7f64aa6319ac5d125ff0494a4e175f7bdb0970775972358302d93e65d67b875b",
+      "visual": "56c46bd688c4f95e773d28d5e458b2d3deda20d2c2abf1a98a5cd05b0009cf1b"
+    },
+    "root_closure_sha256": {
+      "health": "51b467900a7aed7d6d8684439e616925646f35a7ce4196604dcb468f3c711b42",
+      "unicode": "df3e544ca9124d2ed1b9a86d2e14ce91e1d9bfb178ce5f22e142d9aa42e1c3c9",
+      "visual": "940e17421eec04e11b1c6e4977b8ba437c83d7b2bfdc0e6178bbe10a4c8de049"
+    },
+    "seven_original_attempts_sha256": "c90d35d2cd0f526d52111ae515aa841446ead0cf88d8e7c19e9f4a736d1602bf"
+  },
+  "publication_privacy": {
+    "absolute_host_paths": false,
+    "actual_scope_action_or_process_identifiers": false,
+    "draft_text_or_digest": false,
+    "keys_or_key_digests": false,
+    "nonces": false,
+    "raw_claims_or_native_records": false,
+    "requests": false
+  },
+  "recovery": {
+    "business_recovery_success_inferred": false,
+    "cleanup_counts_as_business_return": false,
+    "original_action_replay": false,
+    "original_actions_terminal_verified": 2,
+    "original_actions_with_effect_started": 2,
+    "original_draft_submissions": 0,
+    "original_drafts_restored_exact": 3
+  },
+  "remaining_work": [
+    "Independent physical samples for the five required fault layers.",
+    "Current E2E-03/E2E-04 and COMP-01/NEG-01/NEG-02 evidence under unchanged protocol and budgets.",
+    "Fresh complete visual and Unicode task qualifications if their current results fail; old requests/effects must not be replayed.",
+    "Repeated representative business and measured resource/latency evidence before daily-use qualification."
+  ],
+  "report_operation": {
+    "git_operations": 0,
+    "host_only": true,
+    "new_test_samples_executed": 0,
+    "phone_calls": 0,
+    "production_changes": 0,
+    "real_model_requests": 0,
+    "task_execution": false
+  },
+  "required_19_protocol_closed": false,
+  "resources": {
+    "hardware_energy_joules": null,
+    "limits": "RSS/HWM are snapshots/lifetime high-water marks; wider CPU windows do not measure per-request cost. Battery vendor raw values, including current_now=0, do not establish zero power or energy.",
+    "missing_phases": [],
+    "model_hwm_max_kB": 3510240,
+    "model_rss_max_kB": 3492760,
+    "model_rss_min_kB": 3101076,
+    "monetary_cost": null,
+    "phases": [
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4385000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-health",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 75,
+            "cpu_user_ticks": 232,
+            "hwm_error": null,
+            "hwm_kB": 3121760,
+            "rss_error": null,
+            "rss_kB": 3101076
+          },
+          "provider": {
+            "cpu_system_ticks": 186,
+            "cpu_user_ticks": 657,
+            "hwm_error": null,
+            "hwm_kB": 27032,
+            "rss_error": null,
+            "rss_kB": 27032
+          },
+          "sidecar": {
+            "cpu_system_ticks": 7,
+            "cpu_user_ticks": 0,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7553488,
+        "uptime_observation_interval_seconds": [
+          107198.17,
+          107199.05
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -119000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4383000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-health",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 79,
+            "cpu_user_ticks": 1451,
+            "hwm_error": null,
+            "hwm_kB": 3143824,
+            "rss_error": null,
+            "rss_kB": 3123852
+          },
+          "provider": {
+            "cpu_system_ticks": 314,
+            "cpu_user_ticks": 1048,
+            "hwm_error": null,
+            "hwm_kB": 28824,
+            "rss_error": null,
+            "rss_kB": 28824
+          },
+          "sidecar": {
+            "cpu_system_ticks": 11,
+            "cpu_user_ticks": 1,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7572308,
+        "uptime_observation_interval_seconds": [
+          107363.95,
+          107364.77
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 97
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": -121000
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 280
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4375000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-visual",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 80,
+            "cpu_user_ticks": 1452,
+            "hwm_error": null,
+            "hwm_kB": 3143824,
+            "rss_error": null,
+            "rss_kB": 3123852
+          },
+          "provider": {
+            "cpu_system_ticks": 584,
+            "cpu_user_ticks": 1946,
+            "hwm_error": null,
+            "hwm_kB": 28824,
+            "rss_error": null,
+            "rss_kB": 28824
+          },
+          "sidecar": {
+            "cpu_system_ticks": 18,
+            "cpu_user_ticks": 2,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7489924,
+        "uptime_observation_interval_seconds": [
+          107760.93,
+          107761.75
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 96
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 290
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4379000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-visual",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 86,
+            "cpu_user_ticks": 11039,
+            "hwm_error": null,
+            "hwm_kB": 3170024,
+            "rss_error": null,
+            "rss_kB": 3155204
+          },
+          "provider": {
+            "cpu_system_ticks": 690,
+            "cpu_user_ticks": 2296,
+            "hwm_error": null,
+            "hwm_kB": 28824,
+            "rss_error": null,
+            "rss_kB": 28824
+          },
+          "sidecar": {
+            "cpu_system_ticks": 21,
+            "cpu_user_ticks": 4,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7532276,
+        "uptime_observation_interval_seconds": [
+          107941.43,
+          107942.42
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 96
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 290
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4381000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "before-unicode",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 88,
+            "cpu_user_ticks": 11041,
+            "hwm_error": null,
+            "hwm_kB": 3170024,
+            "rss_error": null,
+            "rss_kB": 3155204
+          },
+          "provider": {
+            "cpu_system_ticks": 1309,
+            "cpu_user_ticks": 4333,
+            "hwm_error": null,
+            "hwm_kB": 28824,
+            "rss_error": null,
+            "rss_kB": 28824
+          },
+          "sidecar": {
+            "cpu_system_ticks": 36,
+            "cpu_user_ticks": 9,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7470432,
+        "uptime_observation_interval_seconds": [
+          108781.71,
+          108782.55
+        ]
+      },
+      {
+        "battery_vendor_raw": {
+          "capacity": {
+            "errno": null,
+            "error": null,
+            "value": 96
+          },
+          "current_now": {
+            "errno": null,
+            "error": null,
+            "value": 0
+          },
+          "temp": {
+            "errno": null,
+            "error": null,
+            "value": 300
+          },
+          "voltage_now": {
+            "errno": null,
+            "error": null,
+            "value": 4375000
+          }
+        },
+        "hardware_energy_joules": null,
+        "identity_verified": true,
+        "monetary_cost": null,
+        "observed_clock_ticks_per_second": 100,
+        "phase": "after-unicode",
+        "roles": {
+          "model": {
+            "cpu_system_ticks": 109,
+            "cpu_user_ticks": 24460,
+            "hwm_error": null,
+            "hwm_kB": 3510240,
+            "rss_error": null,
+            "rss_kB": 3492760
+          },
+          "provider": {
+            "cpu_system_ticks": 1391,
+            "cpu_user_ticks": 4580,
+            "hwm_error": null,
+            "hwm_kB": 28824,
+            "rss_error": null,
+            "rss_kB": 28824
+          },
+          "sidecar": {
+            "cpu_system_ticks": 39,
+            "cpu_user_ticks": 10,
+            "hwm_error": null,
+            "hwm_kB": 3992,
+            "rss_error": null,
+            "rss_kB": 3992
+          }
+        },
+        "system_mem_available_error": null,
+        "system_mem_available_kB": 7189888,
+        "uptime_observation_interval_seconds": [
+          108914.85,
+          108915.85
+        ]
+      }
+    ],
+    "system_mem_available_min_kB": 7189888,
+    "windows": [
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.04,
+            "total_seconds": 12.23,
+            "user_seconds": 12.19
+          },
+          "provider": {
+            "system_seconds": 1.28,
+            "total_seconds": 5.19,
+            "user_seconds": 3.91
+          },
+          "sidecar": {
+            "system_seconds": 0.04,
+            "total_seconds": 0.05,
+            "user_seconds": 0.01
+          }
+        },
+        "label": "health",
+        "observation_window_seconds": [
+          164.89999999999418,
+          166.60000000000582
+        ],
+        "scope": "Whole interval between non-atomic snapshots; includes idle, UI, control and collection overhead. Not per-inference attribution; exited workers are omitted.",
+        "state": "OBSERVED"
+      },
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.06,
+            "total_seconds": 95.93,
+            "user_seconds": 95.87
+          },
+          "provider": {
+            "system_seconds": 1.06,
+            "total_seconds": 4.56,
+            "user_seconds": 3.5
+          },
+          "sidecar": {
+            "system_seconds": 0.03,
+            "total_seconds": 0.05,
+            "user_seconds": 0.02
+          }
+        },
+        "label": "visual",
+        "observation_window_seconds": [
+          179.67999999999302,
+          181.49000000000524
+        ],
+        "scope": "Whole interval between non-atomic snapshots; includes idle, UI, control and collection overhead. Not per-inference attribution; exited workers are omitted.",
+        "state": "OBSERVED"
+      },
+      {
+        "cpu_deltas_seconds": {
+          "model": {
+            "system_seconds": 0.21,
+            "total_seconds": 134.4,
+            "user_seconds": 134.19
+          },
+          "provider": {
+            "system_seconds": 0.82,
+            "total_seconds": 3.29,
+            "user_seconds": 2.47
+          },
+          "sidecar": {
+            "system_seconds": 0.03,
+            "total_seconds": 0.04,
+            "user_seconds": 0.01
+          }
+        },
+        "label": "unicode",
+        "observation_window_seconds": [
+          132.3000000000029,
+          134.13999999999942
+        ],
+        "scope": "Whole interval between non-atomic snapshots; includes idle, UI, control and collection overhead. Not per-inference attribution; exited workers are omitted.",
+        "state": "OBSERVED"
+      }
+    ]
+  },
+  "sample_counts": {
+    "additional_original_export_and_process_closure_assertions": 14,
+    "assertions_are_not_sample_count": true,
+    "component_direct_geometry_fixture_samples": 1,
+    "fixed19_executed_samples": 14,
+    "host_isolated_samples": 11,
+    "physical_negative_samples": 0,
+    "real_model_business_tasks": 2,
+    "runtime_assertions": 462,
+    "separate_real_health_tasks": 1
+  },
+  "schema": "hepta.quality-checkpoint-public.v150.r7.r3.1",
+  "state": "CURRENT_COMBINATION_MEASURED_NOT_DAILY_QUALIFIED"
+}

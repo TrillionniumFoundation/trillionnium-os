@@ -1,0 +1,17 @@
+--- unexecuted-readiness-r1
++++ corrected-readiness-r2
+@@ -1,12 +1,12 @@
+ from pathlib import Path
+ import base64,hashlib,json,os,stat
+ B=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+-O=B/'module-install-start-v150-r7-r3-02'
++O=B/'module-install-start-v150-r7-r3-01'
+ C=Path('/proc/1/root/data/adb/trillionnium-hepta-phone-local-v150-r7-r3/<INSTANCE_UUID_REQUIRED>')
+ files=[];total=0;groups=set();expected={}
+ 
+ # Module evidence is hashed only; its large host-original copies are never base64-exported.
+-M=Path('/proc/1/root/data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r2')
++M=Path('/proc/1/root/data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r3')
+ module_verification={'schema':'hepta.module-all-files-readonly-hashes.v1','complete':False,'issues':[],'files':[],'raw_evidence_exported':False}
+ EXPECTED_MANIFEST_SHA='7a3546dc4ff001920f1522d7fe194d5a5608c6e734544c944ca6357d7ad09570'
+ EXPECTED_SUMS_SHA='<PRIVATE_BOUND_SHA256_001_REQUIRED>'

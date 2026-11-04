@@ -1,0 +1,67 @@
+--- acceptance-r7-r2-host-cancel-faults-r1/frozen_fixture_support.py
++++ acceptance-r7-r3-host-cancel-faults-r1/frozen_fixture_support.py
+@@ -5,9 +5,9 @@
+ sys.dont_write_bytecode=True
+ SUITE=Path('/suite');SOURCE=SUITE/'provider/source';WORK=Path('/work');HARNESS=Path('/harness')
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+-COMBO_SHA='ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4'
+-COMBO_CANONICAL='1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5'
+-PROTOCOL_SHA='a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4'
++COMBO_SHA='e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1'
++COMBO_CANONICAL='1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188'
++PROTOCOL_SHA='74e8f8e6c22ba6240ba85cb610cb46ff8a0f158a39375118385f5012a47efdfb'
+ CLIENT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py')
+ CLIENT_SHA='500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f'
+ OWNED=[];DAILY=OPENAI=None;SERVER_SHA=None
+--- acceptance-r7-r2-host-cancel-faults-r1/run_fault_cases.py
++++ acceptance-r7-r3-host-cancel-faults-r1/run_fault_cases.py
+@@ -10,7 +10,7 @@
+ IDS=('NEG-04','NEG-05','NEG-07','NEG-08','NEG-09')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ HOST_MODEL_TIMEOUT=10
+-SUPPORT_SHA='617ff6102a792eb8e0867a8fd392d8317f32f34efb93dc3e46cb8a2110a76e10'
++SUPPORT_SHA='f43ca2a3009405cb1a7b58e7fa43808f8d1fba4632da525468972c6e1f4b5cdb'
+ def raw_write(path,raw):
+  fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+  with os.fdopen(fd,'wb') as f:f.write(raw);f.flush();os.fsync(f.fileno())
+--- acceptance-r7-r2-host-cancel-faults-r1/execute_namespace_once.py
++++ acceptance-r7-r3-host-cancel-faults-r1/execute_namespace_once.py
+@@ -2,10 +2,10 @@
+ """One bounded bwrap host fixture. No production or phone mounts, no real model."""
+ import argparse,hashlib,json,os,re,signal,stat,subprocess,sys,time
+ from pathlib import Path
+-BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r2-host-cancel-faults-r1')
++BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r3-host-cancel-faults-r1')
+ HARNESS=BASE/'namespace-harness-r1'
+-INPUTS=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r2-host-negative-r1/inputs-r1')
+-MANIFEST_SHA='<PRIVATE_BOUND_SHA256_001_REQUIRED>'
++INPUTS=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r3-host-negative-r1/inputs-r1')
++MANIFEST_SHA='<PRIVATE_BOUND_SHA256_002_REQUIRED>'
+ CLIENT='/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py'
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def write(p,v):
+@@ -59,7 +59,7 @@
+  assert sha((HARNESS/'run_fault_cases.py').read_bytes())==args.expected_runner_sha256
+  assert sha((HARNESS/'fixture_server.py').read_bytes())==args.expected_server_sha256
+  assert sha((HARNESS/'counter_effect.py').read_bytes())==args.expected_counter_sha256
+- assert sha((HARNESS/'frozen_fixture_support.py').read_bytes())=='617ff6102a792eb8e0867a8fd392d8317f32f34efb93dc3e46cb8a2110a76e10'
++ assert sha((HARNESS/'frozen_fixture_support.py').read_bytes())=='f43ca2a3009405cb1a7b58e7fa43808f8d1fba4632da525468972c6e1f4b5cdb'
+  before=check_inputs();out=BASE/args.attempt;out.mkdir(mode=0o700)
+  env={'host_uid':os.getuid(),'host_gid':os.getgid(),'host_pid':os.getpid(),'host_netns':os.readlink('/proc/self/ns/net'),'host_mntns':os.readlink('/proc/self/ns/mnt'),'host_pidns':os.readlink('/proc/self/ns/pid'),'phone_calls':0,'real_model_requests':0,'host_system_paths_modified':False}
+  write(out/'OUTER-ENV.json',env);write(out/'INPUT-PINS-BEFORE.json',before)
+--- acceptance-r7-r2-host-cancel-faults-r1/run_fixed_faults_once.py
++++ acceptance-r7-r3-host-cancel-faults-r1/run_fixed_faults_once.py
+@@ -1,9 +1,9 @@
+ import argparse,hashlib,json,os,shlex,subprocess,time
+ from pathlib import Path
+-D=Path('/operator-workspace/phone-local-v150/acceptance-r7-r2-host-cancel-faults-r1')
+-P='/operator-home/razr60-local-model-v150/acceptance-r7-r2-host-cancel-faults-r1/namespace-harness-r1/execute_namespace_once.py'
+-WRAPPER='f210f0cd97f756e2c7b5ba1803e11dd8ea47c5f1116220044e22e6df30b47fc7'
+-RUNNER='1404aea51291d073aeab34df783d0449ab384b840ba766ac6e1452e79cec43a1'
++D=Path('/operator-workspace/phone-local-v150/acceptance-r7-r3-host-cancel-faults-r1')
++P='/operator-home/razr60-local-model-v150/acceptance-r7-r3-host-cancel-faults-r1/namespace-harness-r1/execute_namespace_once.py'
++WRAPPER='15aba67496d46bcfe87a3a2235439512b1f4f8b77325c274e9ba3267e9e3cb3f'
++RUNNER='6163449a9c92fd370fb5e27b190461ae46f2bfe11c180ea7ca1987bdb190b178'
+ SERVER='4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049'
+ COUNTER='53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b'
+ def write(name,v):

@@ -1,0 +1,159 @@
+--- r7-r2/activation_gate.sh
++++ r7-r3/activation_gate.sh
+@@ -12,7 +12,7 @@
+     startup) [ "$#" = 1 ] ;;
+     admission)
+         [ "$#" = 3 ]
+-        case "$2" in /data/adb/trillionnium-hepta-phone-local-v150-r7-r2/*) ;; *) exit 78 ;; esac
++        case "$2" in /data/adb/trillionnium-hepta-phone-local-v150-r7-r3/*) ;; *) exit 78 ;; esac
+         case "$3" in model|sidecar|provider) ;; *) exit 78 ;; esac
+         ;;
+     *) exit 78 ;;
+@@ -50,14 +50,14 @@
+ "$SYS/cmp" "$model_key" "$provider_key" >/dev/null 2>&1
+ [ "$("$SYS/stat" -c '%d:%i:%u:%g:%a:%h:%s:%Y:%Z' "$model_key")" = "$model_key_identity" ]
+ [ "$("$SYS/stat" -c '%d:%i:%u:%g:%a:%h:%s:%Y:%Z' "$provider_key")" = "$provider_key_identity" ]
+-# The GNU helper below performs the same twenty-six-group census with explicit kernel errno handling.
++# The GNU helper below performs the same thirty-group census with explicit kernel errno handling.
+ exact_label() {
+     observed=$("$SYS/ls" -Zd "$1")
+     printf '%s\n' "$observed" | "$BB" awk -v p="$1" -v c="$2" 'NF!=2 || $1!=c || $2!=p {exit 1} {n++} END {if(n!=1)exit 1}'
+ }
+ exact_label /data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-sidecar-r6 u:object_r:trillionnium_owner_open_phone_executor_exec:s0
+ exact_label /data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-worker-r6 u:object_r:trillionnium_owner_open_phone_worker_exec:s0
+-for d in "$BASE/executor-r6" "$BASE/executor-r6/module-history-r7-r2"; do
++for d in "$BASE/executor-r6" "$BASE/executor-r6/module-history-r7-r3"; do
+     [ -d "$d" ] && [ ! -L "$d" ]
+     [ "$("$SYS/readlink" -f "$d")" = "$d" ]
+     [ "$("$SYS/stat" -c '%u:%g:%a' "$d")" = 0:0:700 ]
+@@ -74,4 +74,4 @@
+     LANG=C.UTF-8 LC_ALL=C.UTF-8 TMPDIR=/var/lib/trillionnium/owner-open/tmp \
+     NO_COLOR=1 TERM=dumb \
+     "$BB" chroot "$ROOT" /usr/bin/python3 -B \
+-    /var/lib/trillionnium/owner-open/phone-local-v150/module-r7-activation-r2/proc_and_original_gate.py --check-and-chain
++    /var/lib/trillionnium/owner-open/phone-local-v150/module-r7-activation-r3/proc_and_original_gate.py --check-and-chain
+--- r7-r2/module.prop
++++ r7-r3/module.prop
+@@ -1,6 +1,6 @@
+-id=trillionnium_hepta_phone_local_v150_r7_r2
+-name=HEPTA Phone Local v150 r7 attempt 2
+-version=v150-r7-attempt2
+-versionCode=150072
++id=trillionnium_hepta_phone_local_v150_r7_r3
++name=HEPTA Phone Local v150 r7 attempt 3
++version=v150-r7-attempt3
++versionCode=150073
+ author=Trillionnium
+-description=Four read-only servicemanager property permissions; same frozen GUI-Owl action mapping and cleanup shielding; current boot only; no automatic tasks or replay.
++description=Three explicit Binder and dump-pipe permissions; same frozen GUI-Owl action mapping and cleanup shielding; current boot only; no automatic tasks or replay.
+--- r7-r2/retired-groups.tsv
++++ r7-r3/retired-groups.tsv
+@@ -24,3 +24,7 @@
+ <PRIVATE_RETIRED_GROUP_ID_REQUIRED>
+ <PRIVATE_RETIRED_GROUP_ID_REQUIRED>
+ <PRIVATE_RETIRED_GROUP_ID_REQUIRED>
++<PRIVATE_RETIRED_GROUP_ID_REQUIRED>
++<PRIVATE_RETIRED_GROUP_ID_REQUIRED>
++<PRIVATE_RETIRED_GROUP_ID_REQUIRED>
++<PRIVATE_RETIRED_GROUP_ID_REQUIRED>
+--- r7-r2/role_guard.sh
++++ r7-r3/role_guard.sh
+@@ -16,7 +16,10 @@
+ PRIOR_R6_R1=/data/adb/modules/trillionnium_hepta_phone_local_v150_r6_r1
+ PRIOR_R6_R2=/data/adb/modules/trillionnium_hepta_phone_local_v150_r6_r2
+ PRIOR_R7_R1=/data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r1
++PRIOR_R7_R2=/data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r2
+ previous_release_disabled() {
++    [ -d "$PRIOR_R7_R2" ] && [ ! -L "$PRIOR_R7_R2" ] || return 1
++    [ -f "$PRIOR_R7_R2/disable" ] && [ ! -L "$PRIOR_R7_R2/disable" ] || return 1
+     [ -d "$PRIOR_R7_R1" ] && [ ! -L "$PRIOR_R7_R1" ] || return 1
+     [ -f "$PRIOR_R7_R1/disable" ] && [ ! -L "$PRIOR_R7_R1/disable" ] || return 1
+     [ -d "$PRIOR_R6_R2" ] && [ ! -L "$PRIOR_R6_R2" ] || return 1
+@@ -46,7 +49,7 @@
+     return 0
+ }
+ case "$ROLE" in model|sidecar|provider) ;; *) exit 80 ;; esac
+-case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r7-r2/*) ;; *) exit 80 ;; esac
++case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r7-r3/*) ;; *) exit 80 ;; esac
+ [ -d "$CLAIM" ] && [ ! -L "$CLAIM" ]
+ [ "$($SYS/stat -c '%u:%g:%a' "$CLAIM")" = 0:0:700 ]
+ [ "$($SYS/id -u)" = 0 ]
+--- r7-r2/role_identity_probe.sh
++++ r7-r3/role_identity_probe.sh
+@@ -10,7 +10,7 @@
+ MODE=$3
+ case "$ROLE" in model|sidecar|provider) ;; *) exit 78 ;; esac
+ case "$MODE" in startup|monitor) ;; *) exit 78 ;; esac
+-case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r7-r2/*) ;; *) exit 78 ;; esac
++case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r7-r3/*) ;; *) exit 78 ;; esac
+ [ -d "$CLAIM" ] && [ ! -L "$CLAIM" ]
+ [ "$($SYS/stat -c '%u:%g:%a' "$CLAIM")" = 0:0:700 ]
+ [ -f "$MODDIR/role-expectations.tsv" ] && [ ! -L "$MODDIR/role-expectations.tsv" ]
+--- r7-r2/sepolicy.rule
++++ r7-r3/sepolicy.rule
+@@ -146,3 +146,10 @@
+ # INACTIVE HOST CANDIDATE ONLY. Actual device property contexts and offline parser audit remain separate gates.
+ # Read-only servicemanager_prop access. No property set, parent grant, service list, domain attributes or enforcing change.
+ allow trillionnium_owner_open_phone_worker servicemanager_prop file { getattr open read map }
++
++# INACTIVE R7-R3 CANDIDATE. Three exact IPC dependencies, not business qualification.
++# Service-manager reply handle transfer; system_server use/write of worker-created dump pipes.
++# No reverse call, fifo getattr, new type/attribute, permissive change or service-manager find expansion.
++allow servicemanager trillionnium_owner_open_phone_worker binder transfer
++allow system_server trillionnium_owner_open_phone_worker fd use
++allow system_server trillionnium_owner_open_phone_worker fifo_file write
+--- r7-r2/service.sh
++++ r7-r3/service.sh
+@@ -6,7 +6,7 @@
+ BB=/data/adb/magisk/busybox
+ SYS=/system/bin
+ STATE=/data/trillionnium/owner-open/state
+-HISTORY=/data/adb/trillionnium-hepta-phone-local-v150-r7-r2
++HISTORY=/data/adb/trillionnium-hepta-phone-local-v150-r7-r3
+ ROOT=/data/trillionnium/owner-open/root
+ CLAIM=
+ STOPPING=0
+@@ -18,10 +18,13 @@
+ PRIOR_R6_R1=/data/adb/modules/trillionnium_hepta_phone_local_v150_r6_r1
+ PRIOR_R6_R2=/data/adb/modules/trillionnium_hepta_phone_local_v150_r6_r2
+ PRIOR_R7_R1=/data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r1
++PRIOR_R7_R2=/data/adb/modules/trillionnium_hepta_phone_local_v150_r7_r2
+ EXECUTOR_DATA=/data/trillionnium/owner-open/state/phone-local-v150/executor-r6
+-EXECUTOR_LOG_ROOT=$EXECUTOR_DATA/module-history-r7-r2
++EXECUTOR_LOG_ROOT=$EXECUTOR_DATA/module-history-r7-r3
+ EXECUTOR_LOGDIR=
+ previous_release_disabled() {
++    [ -d "$PRIOR_R7_R2" ] && [ ! -L "$PRIOR_R7_R2" ] || return 1
++    [ -f "$PRIOR_R7_R2/disable" ] && [ ! -L "$PRIOR_R7_R2/disable" ] || return 1
+     [ -d "$PRIOR_R7_R1" ] && [ ! -L "$PRIOR_R7_R1" ] || return 1
+     [ -f "$PRIOR_R7_R1/disable" ] && [ ! -L "$PRIOR_R7_R1/disable" ] || return 1
+     [ -d "$PRIOR_R6_R2" ] && [ ! -L "$PRIOR_R6_R2" ] || return 1
+@@ -63,7 +66,7 @@
+ previous_release_disabled || exit 70
+ # Unsealed source candidates MUST fail closed. The seal is produced only after review.
+ [ -f "$MODDIR/SEALED" ] && [ ! -L "$MODDIR/SEALED" ]
+-[ "$($SYS/cat "$MODDIR/SEALED")" = HEPTA_PHONE_LOCAL_V150_R7_R2_REVIEWED_INPUTS_BOUND ]
++[ "$($SYS/cat "$MODDIR/SEALED")" = HEPTA_PHONE_LOCAL_V150_R7_R3_REVIEWED_INPUTS_BOUND ]
+ [ -f "$MODDIR/module-inputs.sha256" ] && [ ! -L "$MODDIR/module-inputs.sha256" ]
+ [ -f "$MODDIR/payload-inputs.sha256" ] && [ ! -L "$MODDIR/payload-inputs.sha256" ]
+ [ -f "$MODDIR/role_guard.sh" ] && [ ! -L "$MODDIR/role_guard.sh" ]
+--- r7-r2/proc_and_original_gate.py
++++ r7-r3/proc_and_original_gate.py
+@@ -2,7 +2,7 @@
+ """Read-only current-boot census with explicit errno handling, then the unchanged original ledger gate."""
+ import errno,hashlib,json,os,stat,sys
+ EXPECTED_BOOT='<INSTANCE_UUID_REQUIRED>'
+-RETIRED_GROUPS=frozenset(('<RETIRED_GROUP_IDS_REQUIRED>',))
++RETIRED_GROUPS=frozenset(('<RETIRED_GROUP_IDS_REQUIRED>',))
+ ANCHORS={'<ANCHOR_PID_REQUIRED>':'<ANCHOR_START_REQUIRED>'}
+ ORIGINAL='/var/lib/trillionnium/owner-open/phone-local-v150/module-r5-activation/activation_original_gate.py'
+ ORIGINAL_SHA='23ec1ee206635c0ce0b2dc28ca8281d4e5523d6245eac453b58531c708e1d68e'
+@@ -67,7 +67,7 @@
+             present.append(row)
+     if present:
+         raise ValueError('retired_process_group_or_session_present')
+-    return {'schema':'hepta.module-r7-r2.read-only-census.v1','state':'RETIRED_GROUPS_ABSENT',
++    return {'schema':'hepta.module-r7-r3.read-only-census.v1','state':'RETIRED_GROUPS_ABSENT',
+             'retired_group_count':len(RETIRED_GROUPS),'native_view_anchors':len(ANCHORS),
+             'inspected_processes':inspected,'confirmed_enoent_or_esrch':gone,'members':[],
+             'signals_sent':0,'model_requests':0,'task_submissions':0}

@@ -1,0 +1,396 @@
+{
+  "additional_original_closure_assertions": 14,
+  "automatic_task_replay": false,
+  "case_status_counts": {
+    "BLOCKED": 12,
+    "FAIL": 0,
+    "PASS": 7
+  },
+  "cases": [
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 2,
+      "case_id": "NEG-03",
+      "elapsed_seconds": 0.049015937955118716,
+      "execution_layer": "component_direct",
+      "host_runner_lifetime_peak_RSS_KiB": 28112,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 88,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "PASS"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 0,
+      "case_id": "NEG-04",
+      "elapsed_seconds": 0.8682319719810039,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30896,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 26,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "BLOCKED"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 0,
+      "case_id": "NEG-05",
+      "elapsed_seconds": 1.5603454040829092,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30896,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 34,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "BLOCKED"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 2,
+      "case_id": "NEG-06",
+      "elapsed_seconds": 1.8223777409875765,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30808,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 22,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "PASS"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 0,
+      "case_id": "NEG-07",
+      "elapsed_seconds": 2.287809621891938,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30896,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 35,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "BLOCKED"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 0,
+      "case_id": "NEG-08",
+      "elapsed_seconds": 0.8554596760077402,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30896,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 26,
+      "sample_count": 1,
+      "synthetic_task_outcome": "cancelled",
+      "whole_fixed19_case_status": "BLOCKED"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 0,
+      "case_id": "NEG-09",
+      "elapsed_seconds": 1.071062656934373,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30896,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 33,
+      "sample_count": 1,
+      "synthetic_task_outcome": "cancelled",
+      "whole_fixed19_case_status": "BLOCKED"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 2,
+      "case_id": "NEG-10",
+      "elapsed_seconds": 0.004658731981180608,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30748,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 17,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "PASS"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 2,
+      "case_id": "NEG-11",
+      "elapsed_seconds": 0.02730647602584213,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30940,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 109,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "PASS"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 2,
+      "case_id": "NEG-12",
+      "elapsed_seconds": 0.042530330014415085,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 31148,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 29,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "PASS"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 2,
+      "case_id": "NEG-13",
+      "elapsed_seconds": 0.006989149027504027,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 31148,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 18,
+      "sample_count": 1,
+      "synthetic_task_outcome": "unconfirmed",
+      "whole_fixed19_case_status": "PASS"
+    },
+    {
+      "RSS_is_per_case_peak": false,
+      "additional_original_closure_assertions": 2,
+      "case_id": "NEG-14",
+      "elapsed_seconds": 0.242175676045008,
+      "execution_layer": "host_isolated",
+      "host_runner_lifetime_peak_RSS_KiB": 30808,
+      "layer_result": "PASS",
+      "physical_native_sample_count": 0,
+      "runtime_assertions": 25,
+      "sample_count": 1,
+      "synthetic_task_outcome": "failed",
+      "whole_fixed19_case_status": "PASS"
+    }
+  ],
+  "combination_projection": {
+    "cloud_fallback": false,
+    "live_policy_semantic_audit_sha256": "e506ed914e40d48992e49e31ec1df874ae3eeb8815710bec261805f348aa20ae",
+    "live_policy_snapshot_sha256": "bfe7acc92ba8c5b7a3a1c2360d6faf53f804a19c3e25e20aad336e3220fa0e38",
+    "model_route": "phone_local_cpu",
+    "module_manifest_sha256": "7a3546dc4ff001920f1522d7fe194d5a5608c6e734544c944ca6357d7ad09570",
+    "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8",
+    "policy_rules_manifest_sha256": "bc6742c5652b6a705bcd4bcb40efc8b5e7a0eb256c4915bd5c2fa09a1611c418",
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r3",
+    "schema": "hepta.acceptance-combination.v150.r7.1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "frozen"
+  },
+  "combination_projection_is_not_executable_manifest": true,
+  "cutoff": "Host/component subset only; phone health and business evidence are not included in this interim checkpoint.",
+  "executed_fixed19_samples": 12,
+  "execution_layers": {
+    "component_direct": 1,
+    "host_isolated": 11
+  },
+  "full_combination_canonical_sha256": "1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188",
+  "full_combination_original_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1",
+  "hardware_energy_joules": null,
+  "host_fixture_HTTP_POST_count": 6,
+  "host_synthetic_counter_effect_count": 3,
+  "limits": [
+    "Host HTTP responses and synthetic receipts are fixtures, not model inference or physical phone outcomes.",
+    "Five fault cases still require independent physical_native_task samples on this exact combination.",
+    "Synthetic geometry component testing does not qualify real outer-display or landscape operation.",
+    "Original timeout, failure, cancellation and unconfirmed task outcomes remain unchanged; PASS describes the required negative-control behavior.",
+    "RSS is a host runner lifetime high-water mark, not a per-case peak or phone memory cost.",
+    "Elapsed values are isolated host case wall time, not phone or model latency.",
+    "The original aggregator exited 0. Its wrapper postcheck exited 1 due to omitted zero-valued Counter entries; this was retained and only the existing report was finalized.",
+    "This interim subset excludes auxiliary health and all real business requests. It does not establish daily-use qualification."
+  ],
+  "model_business_samples": 0,
+  "model_complete_success_fraction": null,
+  "model_tokens": null,
+  "monetary_cost": null,
+  "original_bytes_preserved": {
+    "exclusions": "Synthetic credentials were excluded including digests. One deliberate hostile symlink and one sparse capacity file retain metadata, not file content.",
+    "exported_regular_bytes": 1898294,
+    "exported_regular_files": 610
+  },
+  "phone_calls_in_this_subset": 0,
+  "physical_native_samples": 0,
+  "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "real_model_requests_in_this_subset": 0,
+  "remaining_required_cases": [
+    {
+      "case_id": "E2E-01",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "E2E-02",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "E2E-03",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "E2E-04",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "model_e2e",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "COMP-01",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "NEG-01",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "NEG-02",
+      "required_layers": [
+        {
+          "attempts": 0,
+          "layer": "component_direct",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "NEG-04",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "NEG-05",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "NEG-07",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "NEG-08",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "case_id": "NEG-09",
+      "required_layers": [
+        {
+          "attempts": 1,
+          "layer": "host_isolated",
+          "reason": null,
+          "status": "PASS"
+        },
+        {
+          "attempts": 0,
+          "layer": "physical_native_task",
+          "reason": "No current-combination evidence was supplied for this required layer.",
+          "status": "BLOCKED"
+        }
+      ]
+    }
+  ],
+  "required_19_protocol_closed": false,
+  "runtime_assertions": 462,
+  "schema": "hepta.r7-r3.host-subset.public.v1",
+  "state": "INTERIM_HOST_COMPONENT_CHECKPOINT"
+}

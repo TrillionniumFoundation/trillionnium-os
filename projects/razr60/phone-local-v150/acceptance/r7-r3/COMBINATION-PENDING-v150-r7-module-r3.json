@@ -1,0 +1,19 @@
+{
+  "data": {
+    "cloud_fallback": false,
+    "live_policy_semantic_audit_sha256": null,
+    "live_policy_snapshot_sha256": null,
+    "model_route": "phone_local_cpu",
+    "module_manifest_sha256": null,
+    "native_and_apps_manifest_sha256": null,
+    "policy_rules_manifest_sha256": null,
+    "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+    "release": "v150-r7-r3",
+    "schema": "hepta.acceptance-combination.v150.r7.1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "pending"
+  },
+  "not_an_installable_runtime_binding": true,
+  "original_artifact_sha256": "46033a082a55323fbc6b4001ca32f2af8dc294b278835b1ab25a28834f920bab",
+  "public_projection": true
+}

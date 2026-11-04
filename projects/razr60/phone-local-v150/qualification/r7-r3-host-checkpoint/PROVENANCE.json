@@ -1,0 +1,23 @@
+{
+  "README_sha256": "4e77d8be4ef281a8e923b8bee2be77037718d78b83541dd250ea9322373b2f1c",
+  "actual_aggregator_child_exit_code": 0,
+  "five_attempts_sha256": "db3516b2cc61b55d9b06f55df2f8f1751a454b287157bb11638942b8296b2854",
+  "full_combination_original_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1",
+  "original_aggregate_sha256": "f1c0907a56a2fe38a4916211f1da794929d444ce7de46cf5d26fcf17fcd0ce71",
+  "original_private_subset_closure_sha256": "6fb9623a004961a9210897ef007211e4c3482be7b8b272b8650a1bf5cd69505f",
+  "original_wrapper_postcheck_exit_code": 1,
+  "postcheck_failure_retained": true,
+  "projection": true,
+  "public_report_sha256": "f3fdb154847ec089732e30a565e30df27fc37d7440f9a3f3028c9d481fd5b172",
+  "removed": [
+    "host absolute paths",
+    "actual scope/action/process identities",
+    "request/nonce/draft and their digests",
+    "keys/claims/raw native records",
+    "instance provider_config_sha256"
+  ],
+  "schema": "hepta.public-host-checkpoint-provenance.v1",
+  "seven_attempts_sha256": "c90d35d2cd0f526d52111ae515aa841446ead0cf88d8e7c19e9f4a736d1602bf",
+  "source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "test_or_aggregation_reexecuted": false
+}

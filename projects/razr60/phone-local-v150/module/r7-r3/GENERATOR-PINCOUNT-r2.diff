@@ -1,0 +1,12 @@
+--- original-generator-before-output-failure
++++ generator-r2-exact-two-occurrences
+@@ -53,7 +53,8 @@
+  s=s.replace(old,new)
+ s=s.replace('New r7-r2 attempt','New r7-r3 attempt').replace('Install exact r7-r2 module','Install exact r7-r3 module')
+ s=once(s,'[ "$("$SYS/stat" -c \'%s\' "$ARCHIVE")" = 2138009 ]','[ "$("$SYS/stat" -c \'%s\' "$ARCHIVE")" = '+str(archive['bytes'])+' ]')
+-s=once(s,'f0c7abb46bc0b119e9296390ad845f6ff53992e669f747fb9a558206eb2003cf',archive['sha256'])
++assert s.count('f0c7abb46bc0b119e9296390ad845f6ff53992e669f747fb9a558206eb2003cf')==2
++s=s.replace('f0c7abb46bc0b119e9296390ad845f6ff53992e669f747fb9a558206eb2003cf',archive['sha256'])
+ s=once(s,'1e32540cc2c60ae22bd64a024d0d9545bde50c682aab96c1dba29a3e0731aefd',mp['sha256'])
+ s=s.replace('439ebd30f0e003cc4b0f5c08cade8c59b922eedcd3a3302169323a7f0397f089',live)
+ s=once(s,'12a74aa99d56d780f6e3a6e420d5480db35ab7399b58f9b3b840839741be46e8',binding['census_fix']['sha256'])

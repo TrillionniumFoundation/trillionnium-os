@@ -1,0 +1,6 @@
+# INACTIVE R7-R3 CANDIDATE. Three exact IPC dependencies, not business qualification.
+# Service-manager reply handle transfer; system_server use/write of worker-created dump pipes.
+# No reverse call, fifo getattr, new type/attribute, permissive change or service-manager find expansion.
+allow servicemanager trillionnium_owner_open_phone_worker binder transfer
+allow system_server trillionnium_owner_open_phone_worker fd use
+allow system_server trillionnium_owner_open_phone_worker fifo_file write

@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150_r7_r3
+name=HEPTA Phone Local v150 r7 attempt 3
+version=v150-r7-attempt3
+versionCode=150073
+author=Trillionnium
+description=Three explicit Binder and dump-pipe permissions; same frozen GUI-Owl action mapping and cleanup shielding; current boot only; no automatic tasks or replay.

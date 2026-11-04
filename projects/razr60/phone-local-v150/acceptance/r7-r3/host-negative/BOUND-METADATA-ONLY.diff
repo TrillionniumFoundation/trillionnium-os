@@ -1,0 +1,201 @@
+--- acceptance-r7-r2-host-negative-r1/namespace-component-r1/host_negative_runner.py
++++ acceptance-r7-r3-host-negative-r1/namespace-component-r1/host_negative_runner.py
+@@ -9,10 +9,10 @@
+ SEAL=BASE/'provider/SOURCE-SEAL.json'
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ COMBO=BASE/'combination.json'
+-COMBO_SHA='ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4'
+-COMBO_CANONICAL='1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5'
++COMBO_SHA='e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1'
++COMBO_CANONICAL='1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188'
+ PROTOCOL=BASE/'protocol.json'
+-PROTOCOL_SHA='a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4'
++PROTOCOL_SHA='74e8f8e6c22ba6240ba85cb610cb46ff8a0f158a39375118385f5012a47efdfb'
+ ORIGINAL_PROTOCOL=BASE/'original-protocol.json'
+ ORIGINAL_SHA='c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0'
+ ASSETS={'synthetic.png':(1191,'4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13'),'synthetic.jpg':(19356,'e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521')}
+@@ -367,13 +367,13 @@
+    for label,ok in [('file descriptor baseline restored',after['open_fd_count']==before['open_fd_count']),('thread baseline restored',after['thread_count']==before['thread_count']),('no child CPU activity',after['children_cpu_user_seconds']==before['children_cpu_user_seconds'] and after['children_cpu_system_seconds']==before['children_cpu_system_seconds']),('no attempted socket/process/outside-write operation',not AUDIT)]:
+     e.checks.append({'name':label,'passed':bool(ok)})
+    passed=error is None and all(x['passed'] for x in e.checks)
+-   row={'schema':'hepta.host-negative-original-result.v150.r7-r2.1','case_id':case_id,'layer':'host_isolated','synthetic_inputs':True,'status':'PASS' if passed else 'FAIL','candidate_manifest_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'assertions':e.checks,'observations':e.observations,'error':error,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'task_outcome_scope':'Synthetic negative guard/admission inputs only; no phone business task.','model_tokens':None,'model_token_reason':'No model inference was requested.'}
++   row={'schema':'hepta.host-negative-original-result.v150.r7-r3.1','case_id':case_id,'layer':'host_isolated','synthetic_inputs':True,'status':'PASS' if passed else 'FAIL','candidate_manifest_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'assertions':e.checks,'observations':e.observations,'error':error,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'task_outcome_scope':'Synthetic negative guard/admission inputs only; no phone business task.','model_tokens':None,'model_token_reason':'No model inference was requested.'}
+    rec=new_json(e.path/'RESULT.json',row)
+    cases.append({'case_id':case_id,'attempt_id':case_id+'-'+secrets.token_hex(16),'layer':'host_isolated','candidate_manifest_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'protocol_result':row['status'],'task_outcome':'failed' if case_id!='NEG-13' and passed else 'unconfirmed','task_outcome_scope':row['task_outcome_scope'],'assertions':e.checks,'evidence':[{'path':rec['path'],'sha256':rec['sha256']}],'resources':row['resources'],'model_request_count':0,'phone_actions':0})
+   _,_,after_inputs=verify_inputs();assert inputs==after_inputs
+   signal.alarm(0)
+   new_json(OUT/'ATTEMPTS.json',cases)
+-  final={'schema':'hepta.host-negative-suite.v150.r7-r2.1','status':'PASS' if all(x['protocol_result']=='PASS' for x in cases) else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'cases':[{'id':x['case_id'],'protocol_result':x['protocol_result'],'assertions':len(x['assertions'])} for x in cases],'elapsed_seconds':time.monotonic()-start,'production_sources_unchanged':True,'audit_denied_events':AUDIT,'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'new_case_sample_count':4,'model_business_sample_count':0,'expected_exit_code':0 if all(x['protocol_result']=='PASS' for x in cases) else 1,'declared_scope':'Only the original four host_isolated protocol layers; no phone/model/native qualification.'}
++  final={'schema':'hepta.host-negative-suite.v150.r7-r3.1','status':'PASS' if all(x['protocol_result']=='PASS' for x in cases) else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'cases':[{'id':x['case_id'],'protocol_result':x['protocol_result'],'assertions':len(x['assertions'])} for x in cases],'elapsed_seconds':time.monotonic()-start,'production_sources_unchanged':True,'audit_denied_events':AUDIT,'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'new_case_sample_count':4,'model_business_sample_count':0,'expected_exit_code':0 if all(x['protocol_result']=='PASS' for x in cases) else 1,'declared_scope':'Only the original four host_isolated protocol layers; no phone/model/native qualification.'}
+   rec=new_json(OUT/'RESULT.json',final)
+   print(json.dumps({'result':rec,'status':final['status'],'cases':final['cases'],'expected_exit_code':final['expected_exit_code'],'phone_calls':0,'model_requests':0},ensure_ascii=False))
+   return final['expected_exit_code']
+--- acceptance-r7-r2-host-negative-r1/namespace-geometry-r1/reference_host_helpers.py
++++ acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/reference_host_helpers.py
+@@ -9,10 +9,10 @@
+ SEAL=BASE/'provider/SOURCE-SEAL.json'
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+ COMBO=BASE/'combination.json'
+-COMBO_SHA='ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4'
+-COMBO_CANONICAL='1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5'
++COMBO_SHA='e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1'
++COMBO_CANONICAL='1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188'
+ PROTOCOL=BASE/'protocol.json'
+-PROTOCOL_SHA='a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4'
++PROTOCOL_SHA='74e8f8e6c22ba6240ba85cb610cb46ff8a0f158a39375118385f5012a47efdfb'
+ ORIGINAL_PROTOCOL=BASE/'original-protocol.json'
+ ORIGINAL_SHA='c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0'
+ ASSETS={'synthetic.png':(1191,'4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13'),'synthetic.jpg':(19356,'e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521')}
+@@ -367,13 +367,13 @@
+    for label,ok in [('file descriptor baseline restored',after['open_fd_count']==before['open_fd_count']),('thread baseline restored',after['thread_count']==before['thread_count']),('no child CPU activity',after['children_cpu_user_seconds']==before['children_cpu_user_seconds'] and after['children_cpu_system_seconds']==before['children_cpu_system_seconds']),('no attempted socket/process/outside-write operation',not AUDIT)]:
+     e.checks.append({'name':label,'passed':bool(ok)})
+    passed=error is None and all(x['passed'] for x in e.checks)
+-   row={'schema':'hepta.host-negative-original-result.v150.r7-r2.1','case_id':case_id,'layer':'host_isolated','synthetic_inputs':True,'status':'PASS' if passed else 'FAIL','candidate_manifest_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'assertions':e.checks,'observations':e.observations,'error':error,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'task_outcome_scope':'Synthetic negative guard/admission inputs only; no phone business task.','model_tokens':None,'model_token_reason':'No model inference was requested.'}
++   row={'schema':'hepta.host-negative-original-result.v150.r7-r3.1','case_id':case_id,'layer':'host_isolated','synthetic_inputs':True,'status':'PASS' if passed else 'FAIL','candidate_manifest_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'assertions':e.checks,'observations':e.observations,'error':error,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'task_outcome_scope':'Synthetic negative guard/admission inputs only; no phone business task.','model_tokens':None,'model_token_reason':'No model inference was requested.'}
+    rec=new_json(e.path/'RESULT.json',row)
+    cases.append({'case_id':case_id,'attempt_id':case_id+'-'+secrets.token_hex(16),'layer':'host_isolated','candidate_manifest_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'protocol_result':row['status'],'task_outcome':'failed' if case_id!='NEG-13' and passed else 'unconfirmed','task_outcome_scope':row['task_outcome_scope'],'assertions':e.checks,'evidence':[{'path':rec['path'],'sha256':rec['sha256']}],'resources':row['resources'],'model_request_count':0,'phone_actions':0})
+   _,_,after_inputs=verify_inputs();assert inputs==after_inputs
+   signal.alarm(0)
+   new_json(OUT/'ATTEMPTS.json',cases)
+-  final={'schema':'hepta.host-negative-suite.v150.r7-r2.1','status':'PASS' if all(x['protocol_result']=='PASS' for x in cases) else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'cases':[{'id':x['case_id'],'protocol_result':x['protocol_result'],'assertions':len(x['assertions'])} for x in cases],'elapsed_seconds':time.monotonic()-start,'production_sources_unchanged':True,'audit_denied_events':AUDIT,'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'new_case_sample_count':4,'model_business_sample_count':0,'expected_exit_code':0 if all(x['protocol_result']=='PASS' for x in cases) else 1,'declared_scope':'Only the original four host_isolated protocol layers; no phone/model/native qualification.'}
++  final={'schema':'hepta.host-negative-suite.v150.r7-r3.1','status':'PASS' if all(x['protocol_result']=='PASS' for x in cases) else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'cases':[{'id':x['case_id'],'protocol_result':x['protocol_result'],'assertions':len(x['assertions'])} for x in cases],'elapsed_seconds':time.monotonic()-start,'production_sources_unchanged':True,'audit_denied_events':AUDIT,'phone_calls':0,'real_model_requests':0,'fixture_http_requests':0,'native_dispatches':0,'new_case_sample_count':4,'model_business_sample_count':0,'expected_exit_code':0 if all(x['protocol_result']=='PASS' for x in cases) else 1,'declared_scope':'Only the original four host_isolated protocol layers; no phone/model/native qualification.'}
+   rec=new_json(OUT/'RESULT.json',final)
+   print(json.dumps({'result':rec,'status':final['status'],'cases':final['cases'],'expected_exit_code':final['expected_exit_code'],'phone_calls':0,'model_requests':0},ensure_ascii=False))
+   return final['expected_exit_code']
+--- acceptance-r7-r2-host-negative-r1/namespace-geometry-r1/geometry_negative_runner.py
++++ acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/geometry_negative_runner.py
+@@ -4,10 +4,10 @@
+ from pathlib import Path
+ sys.dont_write_bytecode=True
+ WORK=Path('/work');SUITE=Path('/suite');HARNESS=Path('/harness')
+-REFERENCE_SHA='75a5ea4487dca6beee6a8bf573bf9145a0ffb9e816f910705e254222ccaf9609'
++REFERENCE_SHA='1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871'
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+-COMBO_SHA='ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4'
+-COMBO_CANONICAL='1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5'
++COMBO_SHA='e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1'
++COMBO_CANONICAL='1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188'
+ APP='org.trillionnium.hepta.controlprobe/.VisualChallengeActivity'
+ PACKAGE='org.trillionnium.hepta.controlprobe'
+ PUBLIC=PACKAGE+':id/fixture_receipt'
+@@ -27,7 +27,7 @@
+  assert namespace['uid']==0 and namespace['netns']!=env['host_netns'] and namespace['mntns']!=env['host_mntns']
+  assert os.statvfs(SUITE).f_flag & 1
+  seal,protocol,inputs=H.verify_inputs()
+- H.new_json(WORK/'SUITE-INTENT.json',{'schema':'hepta.geometry-rejection-fixture.v150.r7-r2.1','case_id':'NEG-03','layer':'component_direct','synthetic_only':True,'source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'namespace':namespace,'phone_calls':0,'real_model_requests':0,'note':'Current real source against synthetic shapes; no observed physical outer-screen, landscape or fold transition.'})
++ H.new_json(WORK/'SUITE-INTENT.json',{'schema':'hepta.geometry-rejection-fixture.v150.r7-r3.1','case_id':'NEG-03','layer':'component_direct','synthetic_only':True,'source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'namespace':namespace,'phone_calls':0,'real_model_requests':0,'note':'Current real source against synthetic shapes; no observed physical outer-screen, landscape or fold transition.'})
+  sys.addaudithook(H.audit);sys.path.insert(0,str(H.SOURCE))
+  H.OBS=importlib.import_module('phone_observation_tools');H.GUARDS=importlib.import_module('phone_task_guards');H.OPENAI=importlib.import_module('provider_openai_compatible')
+  LOCAL=importlib.import_module('phone_local_tools')
+@@ -128,9 +128,9 @@
+   e.checks.append({'name':label,'passed':bool(ok)})
+  _,_,after_inputs=H.verify_inputs();assert after_inputs==inputs
+  passed=error is None and all(x['passed'] for x in e.checks)
+- row={'schema':'hepta.geometry-negative-result.v150.r7-r2.1','case_id':'NEG-03','layer':'component_direct','status':'PASS' if passed else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'assertions':e.checks,'observations':e.observations,'error':error,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'fixture_scope':'Original-shaped synthetic screenshot/public/return receipts fed to actual frozen PhoneLocalTools; mapped actions never dispatched','synthetic_only':True,'physical_display_state_verified':False,'supports_outer_or_landscape':False,'phone_calls':0,'native_dispatches':0,'real_model_requests':0,'fixture_http_requests':0,'audit_denied_events':H.AUDIT,'production_source_pins_preserved':True}
++ row={'schema':'hepta.geometry-negative-result.v150.r7-r3.1','case_id':'NEG-03','layer':'component_direct','status':'PASS' if passed else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'assertions':e.checks,'observations':e.observations,'error':error,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'fixture_scope':'Original-shaped synthetic screenshot/public/return receipts fed to actual frozen PhoneLocalTools; mapped actions never dispatched','synthetic_only':True,'physical_display_state_verified':False,'supports_outer_or_landscape':False,'phone_calls':0,'native_dispatches':0,'real_model_requests':0,'fixture_http_requests':0,'audit_denied_events':H.AUDIT,'production_source_pins_preserved':True}
+  rec=H.new_json(e.path/'RESULT.json',row)
+- final={'schema':'hepta.geometry-negative-suite.v150.r7-r2.1','status':row['status'],'case':rec,'assertions':len(e.checks),'source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'namespace':namespace,'phone_calls':0,'native_dispatches':0,'real_model_requests':0,'fixture_http_requests':0,'physical_display_state_verified':False}
++ final={'schema':'hepta.geometry-negative-suite.v150.r7-r3.1','status':row['status'],'case':rec,'assertions':len(e.checks),'source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'namespace':namespace,'phone_calls':0,'native_dispatches':0,'real_model_requests':0,'fixture_http_requests':0,'physical_display_state_verified':False}
+  result=H.new_json(WORK/'RESULT.json',final)
+  print(json.dumps({'result':result,'status':row['status'],'case':rec,'assertions':len(e.checks),'phone_calls':0,'real_model_requests':0}))
+  return 0 if passed else 1
+--- acceptance-r7-r2-host-negative-r1/namespace-service-r1/service_negative_runner.py
++++ acceptance-r7-r3-host-negative-r1/namespace-service-r1/service_negative_runner.py
+@@ -5,9 +5,9 @@
+ sys.dont_write_bytecode=True
+ SUITE=Path('/suite');SOURCE=SUITE/'provider/source';WORK=Path('/work');HARNESS=Path('/harness')
+ SEAL_SHA='7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab'
+-COMBO_SHA='ee2bba801325525f9fa910c2c613352b54c32cb71921f2e7a16d2f25205e94d4'
+-COMBO_CANONICAL='1f4763e8bf56cf25392a944298d08e4284495b0b7f44b3edb77060a250b598c5'
+-PROTOCOL_SHA='a9f314c4f2b6a7f05cbe7cc129ffcecef709f1f00b01b2dc5d08b0b6360b64e4'
++COMBO_SHA='e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1'
++COMBO_CANONICAL='1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188'
++PROTOCOL_SHA='74e8f8e6c22ba6240ba85cb610cb46ff8a0f158a39375118385f5012a47efdfb'
+ CLIENT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py')
+ CLIENT_SHA='500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f'
+ OWNED=[];DAILY=OPENAI=None;SERVER_SHA=None
+@@ -243,10 +243,10 @@
+    for name,ok in [('runner FD baseline restored',after['fd_count']==before['fd_count']),('runner thread baseline restored',after['thread_count']==before['thread_count']),('all owned children actually waited and groups absent',all(x.joined and x.result['group_after']['members']==[] and x.result['group_after']['kernel']=='ESRCH' for x in OWNED[first:]))]:
+     e.checks.append({'name':name,'passed':bool(ok)})
+    passed=error is None and all(x['passed'] for x in e.checks)
+-   row={'schema':'hepta.isolated-service-negative-result.v150.r7-r2.1','case_id':cid,'layer':'host_isolated','status':'PASS' if passed else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'error':error,'assertions':e.checks,'observations':e.observations,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'owned_processes':[x.result for x in OWNED[first:]],'real_model_requests':0,'phone_calls':0,'native_dispatches':0,'synthetic_only':True,'fixture_http_requests_observed':(1 if (e.path/'fixture/REQUEST.json').is_file() else 0)}
++   row={'schema':'hepta.isolated-service-negative-result.v150.r7-r3.1','case_id':cid,'layer':'host_isolated','status':'PASS' if passed else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'error':error,'assertions':e.checks,'observations':e.observations,'resources':{'before':before,'after':after,'elapsed_seconds':after['monotonic']-before['monotonic']},'owned_processes':[x.result for x in OWNED[first:]],'real_model_requests':0,'phone_calls':0,'native_dispatches':0,'synthetic_only':True,'fixture_http_requests_observed':(1 if (e.path/'fixture/REQUEST.json').is_file() else 0)}
+    rec=write(e.path/'RESULT.json',row);rows.append({'case_id':cid,'protocol_result':row['status'],'result':rec,'assertions':len(e.checks)})
+   verify();signal.alarm(0)
+-  result={'schema':'hepta.isolated-service-negative-suite.v150.r7-r2.1','status':'PASS' if all(x['protocol_result']=='PASS' for x in rows) else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'cases':rows,'elapsed_seconds':time.monotonic()-started,'actual_namespace':current,'phone_calls':0,'real_model_requests':0,'native_dispatches':0,'fixture_http_requests_observed':sum(1 for x in rows if (WORK/x['case_id']/'fixture/REQUEST.json').is_file()),'frozen_production_sources_unchanged':True,'scope':'Original NEG06/14 host_isolated requirements only; fixture uses phone literal solely to satisfy unchanged source schema.'}
++  result={'schema':'hepta.isolated-service-negative-suite.v150.r7-r3.1','status':'PASS' if all(x['protocol_result']=='PASS' for x in rows) else 'FAIL','source_seal_sha256':SEAL_SHA,'combination_manifest_sha256':COMBO_SHA,'combination_sha256':COMBO_CANONICAL,'cases':rows,'elapsed_seconds':time.monotonic()-started,'actual_namespace':current,'phone_calls':0,'real_model_requests':0,'native_dispatches':0,'fixture_http_requests_observed':sum(1 for x in rows if (WORK/x['case_id']/'fixture/REQUEST.json').is_file()),'frozen_production_sources_unchanged':True,'scope':'Original NEG06/14 host_isolated requirements only; fixture uses phone literal solely to satisfy unchanged source schema.'}
+   rec=write(WORK/'RESULT.json',result);print(json.dumps({'result':rec,'status':result['status'],'cases':rows,'phone_calls':0,'real_model_requests':0}))
+   return 0 if result['status']=='PASS' else 1
+  finally:
+--- acceptance-r7-r2-host-negative-r1/namespace-service-r1/execute_namespace_once.py
++++ acceptance-r7-r3-host-negative-r1/namespace-service-r1/execute_namespace_once.py
+@@ -2,10 +2,10 @@
+ """One bounded bwrap host fixture. No production or phone mounts, no real model."""
+ import argparse,hashlib,json,os,re,signal,stat,subprocess,sys,time
+ from pathlib import Path
+-BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r2-host-negative-r1')
++BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r3-host-negative-r1')
+ HARNESS=BASE/'namespace-service-r1'
+ INPUTS=BASE/'inputs-r1'
+-MANIFEST_SHA='<PRIVATE_BOUND_SHA256_001_REQUIRED>'
++MANIFEST_SHA='<PRIVATE_BOUND_SHA256_002_REQUIRED>'
+ CLIENT='/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py'
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def write(p,v):
+@@ -88,7 +88,7 @@
+  write(out/'INPUT-PINS-AFTER.json',after)
+  census=group_absent(child.pid)
+  inner=json.loads((out/'RESULT.json').read_bytes()) if (out/'RESULT.json').is_file() else None
+- result={'schema':'hepta.isolated-service-outer.v150.r7-r2.1','original_argv':argv,'original_pid':child.pid,'original_identity':ident,'returncode':rc,'actual_direct_child_wait_returned':True,'timed_out':timed_out,'signals':signals,'group_after':census,'elapsed_seconds':time.monotonic()-started,'source_input_pins_preserved':before==after,'inner_status':inner.get('status') if inner else None,'phone_calls':0,'real_model_requests':0,'host_system_paths_modified':False,'production_changes':0,'scope':'host_isolated; synthetic HTTP, no physical-device evidence'}
++ result={'schema':'hepta.isolated-service-outer.v150.r7-r3.1','original_argv':argv,'original_pid':child.pid,'original_identity':ident,'returncode':rc,'actual_direct_child_wait_returned':True,'timed_out':timed_out,'signals':signals,'group_after':census,'elapsed_seconds':time.monotonic()-started,'source_input_pins_preserved':before==after,'inner_status':inner.get('status') if inner else None,'phone_calls':0,'real_model_requests':0,'host_system_paths_modified':False,'production_changes':0,'scope':'host_isolated; synthetic HTTP, no physical-device evidence'}
+  rec=write(out/'OUTER-RESULT.json',result);rows,excluded=originals(out)
+  manifest=write(out/'ORIGINAL-FILES.json',{'files':rows,'excluded':excluded,'scope':'original host isolated evidence, no phone task','files_count':len(rows),'bytes':sum(x['bytes'] for x in rows)})
+  print(json.dumps({'result':rec,'manifest':manifest,'returncode':rc,'inner_status':result['inner_status'],'timed_out':timed_out,'files':len(rows),'phone_calls':0,'real_model_requests':0}))
+--- acceptance-r7-r2-host-negative-r1/namespace-geometry-r1/execute_namespace_once.py
++++ acceptance-r7-r3-host-negative-r1/namespace-geometry-r1/execute_namespace_once.py
+@@ -2,10 +2,10 @@
+ """One bounded bwrap host fixture. No production or phone mounts, no real model."""
+ import argparse,hashlib,json,os,re,signal,stat,subprocess,sys,time
+ from pathlib import Path
+-BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r2-host-negative-r1')
++BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r3-host-negative-r1')
+ HARNESS=BASE/'namespace-geometry-r1'
+ INPUTS=BASE/'inputs-r1'
+-MANIFEST_SHA='<PRIVATE_BOUND_SHA256_001_REQUIRED>'
++MANIFEST_SHA='<PRIVATE_BOUND_SHA256_002_REQUIRED>'
+ CLIENT='/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py'
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def write(p,v):
+@@ -88,7 +88,7 @@
+  write(out/'INPUT-PINS-AFTER.json',after)
+  census=group_absent(child.pid)
+  inner=json.loads((out/'RESULT.json').read_bytes()) if (out/'RESULT.json').is_file() else None
+- result={'schema':'hepta.geometry-fixture-outer.v150.r7-r2.1','original_argv':argv,'original_pid':child.pid,'original_identity':ident,'returncode':rc,'actual_direct_child_wait_returned':True,'timed_out':timed_out,'signals':signals,'group_after':census,'elapsed_seconds':time.monotonic()-started,'source_input_pins_preserved':before==after,'inner_status':inner.get('status') if inner else None,'phone_calls':0,'real_model_requests':0,'host_system_paths_modified':False,'production_changes':0,'scope':'component_direct; synthetic display receipts, no physical-device evidence'}
++ result={'schema':'hepta.geometry-fixture-outer.v150.r7-r3.1','original_argv':argv,'original_pid':child.pid,'original_identity':ident,'returncode':rc,'actual_direct_child_wait_returned':True,'timed_out':timed_out,'signals':signals,'group_after':census,'elapsed_seconds':time.monotonic()-started,'source_input_pins_preserved':before==after,'inner_status':inner.get('status') if inner else None,'phone_calls':0,'real_model_requests':0,'host_system_paths_modified':False,'production_changes':0,'scope':'component_direct; synthetic display receipts, no physical-device evidence'}
+  rec=write(out/'OUTER-RESULT.json',result);rows,excluded=originals(out)
+  manifest=write(out/'ORIGINAL-FILES.json',{'files':rows,'excluded':excluded,'scope':'original host isolated evidence, no phone task','files_count':len(rows),'bytes':sum(x['bytes'] for x in rows)})
+  print(json.dumps({'result':rec,'manifest':manifest,'returncode':rc,'inner_status':result['inner_status'],'timed_out':timed_out,'files':len(rows),'phone_calls':0,'real_model_requests':0}))
+--- acceptance-r7-r2-host-negative-r1/namespace-component-r1/execute_namespace_once.py
++++ acceptance-r7-r3-host-negative-r1/namespace-component-r1/execute_namespace_once.py
+@@ -2,10 +2,10 @@
+ """One bounded bwrap host fixture. No production or phone mounts, no real model."""
+ import argparse,hashlib,json,os,re,signal,stat,subprocess,sys,time
+ from pathlib import Path
+-BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r2-host-negative-r1')
++BASE=Path('/operator-home/razr60-local-model-v150/acceptance-r7-r3-host-negative-r1')
+ HARNESS=BASE/'namespace-component-r1'
+ INPUTS=BASE/'inputs-r1'
+-MANIFEST_SHA='<PRIVATE_BOUND_SHA256_001_REQUIRED>'
++MANIFEST_SHA='<PRIVATE_BOUND_SHA256_002_REQUIRED>'
+ CLIENT='/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py'
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ def write(p,v):
+@@ -87,7 +87,7 @@
+  write(out/'INPUT-PINS-AFTER.json',after)
+  census=group_absent(child.pid)
+  inner=json.loads((out/'RESULT.json').read_bytes()) if (out/'RESULT.json').is_file() else None
+- result={'schema':'hepta.component-fixture-outer.v150.r7-r2.1','original_argv':argv,'original_pid':child.pid,'original_identity':ident,'returncode':rc,'actual_direct_child_wait_returned':True,'timed_out':timed_out,'signals':signals,'group_after':census,'elapsed_seconds':time.monotonic()-started,'source_input_pins_preserved':before==after,'inner_status':inner.get('status') if inner else None,'phone_calls':0,'real_model_requests':0,'host_system_paths_modified':False,'production_changes':0,'scope':'host_isolated; synthetic guard and contract receipts, no physical-device evidence'}
++ result={'schema':'hepta.component-fixture-outer.v150.r7-r3.1','original_argv':argv,'original_pid':child.pid,'original_identity':ident,'returncode':rc,'actual_direct_child_wait_returned':True,'timed_out':timed_out,'signals':signals,'group_after':census,'elapsed_seconds':time.monotonic()-started,'source_input_pins_preserved':before==after,'inner_status':inner.get('status') if inner else None,'phone_calls':0,'real_model_requests':0,'host_system_paths_modified':False,'production_changes':0,'scope':'host_isolated; synthetic guard and contract receipts, no physical-device evidence'}
+  rec=write(out/'OUTER-RESULT.json',result);rows,excluded=originals(out)
+  manifest=write(out/'ORIGINAL-FILES.json',{'files':rows,'excluded':excluded,'scope':'original host isolated evidence, no phone task','files_count':len(rows),'bytes':sum(x['bytes'] for x in rows)})
+  print(json.dumps({'result':rec,'manifest':manifest,'returncode':rc,'inner_status':result['inner_status'],'timed_out':timed_out,'files':len(rows),'phone_calls':0,'real_model_requests':0}))

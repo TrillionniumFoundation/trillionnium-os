@@ -1,0 +1,69 @@
+{
+  "files": [
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "f6f7864fb096d1237f8857f80dd792b28545f241",
+      "mode": "100644",
+      "original_bytes": 3096,
+      "original_sha256": "4678f5229f74b716622f3c465c1964d2a907a8072970815ac0d93d6db5a88328",
+      "path": "projects/razr60/phone-local-v150/operators/resources-r7-r3/sample_resources.sh",
+      "projection_rules": [
+        {
+          "occurrences": 1,
+          "rule": "instance-uuid-placeholder"
+        }
+      ],
+      "published_bytes": 3084,
+      "published_sha256": "a6d5f08e59f81b49de09a8657a1703ee80ed5400fbc8d3d123cf330d9aadd852",
+      "source_reference": "resource-sampler-r7-r3-r1/sample_resources.sh"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "a423edbd02341561f77e9b7e572c2a2956d41758",
+      "mode": "100644",
+      "original_bytes": 10654,
+      "original_sha256": "3ad9c9ee047e6ff3de33091f368aab2311d22ad023a0e6aaa7adcb79cb70c449",
+      "path": "projects/razr60/phone-local-v150/operators/resources-r7-r3/sample_resources_once.py",
+      "projection_rules": [
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "occurrences": 1,
+          "rule": "instance-uuid-placeholder"
+        }
+      ],
+      "published_bytes": 10576,
+      "published_sha256": "5fde528e7f6caefab663006d95353940124d6178c0758e6177f77536352c4daa",
+      "source_reference": "resource-sampler-r7-r3-r1/sample_resources_once.py"
+    },
+    {
+      "content_relation": "explicit_public_projection",
+      "git_blob_sha1": "258f896fbda96bb3f18b17c07b56184c6b559681",
+      "mode": "100644",
+      "original_bytes": 4654,
+      "original_sha256": "08b3be8b5cefaf28476345f23b0e6a3915276d6968030ca0ba9f1ff20ce32c34",
+      "path": "projects/razr60/phone-local-v150/operators/resources-r7-r3/RESOURCE-NAMESPACE-ONLY.diff",
+      "projection_rules": [
+        {
+          "occurrences": 1,
+          "rule": "private-host-or-original-path-placeholder"
+        },
+        {
+          "occurrences": 3,
+          "rule": "instance-uuid-placeholder"
+        }
+      ],
+      "published_bytes": 4552,
+      "published_sha256": "1357d0dded4fc4519a2096f1a1ebe2c403157754f379bac698f081ec1bc4e812",
+      "source_reference": "resource-sampler-r7-r3-r1/RESOURCE-NAMESPACE-ONLY.diff"
+    }
+  ],
+  "not_installable": true,
+  "original_seal_bytes": 19779,
+  "original_seal_sha256": "7ffca7ef7b1a6f15150e36668ae3ea446f88dcea3162c541e75f1ccff6b35a57",
+  "private_instance_bindings_omitted": true,
+  "schema": "hepta.public-source-seal-projection.v1",
+  "scope": "Source/provenance only. Executed checks refer to original byte hashes, not these public review copies."
+}

@@ -1,0 +1,59 @@
+{
+  "combination_canonical_sha256": "1cfbfcbd919bafed31af23750d448f38303a8ed86680e18b0718df5b0fb3d188",
+  "combination_manifest_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1",
+  "future_candidates_in_current_results": false,
+  "hardware_energy_joules": null,
+  "historical_combinations_relabelled": false,
+  "monetary_cost": null,
+  "original_public_report_sha256": "27781648eb66e7cb6b9a36d9a5f37ef936dadd41ea7e23d86ed189cec5017d3f",
+  "original_report_already_excludes_instance_config_digest": true,
+  "originals": {
+    "aggregation_process_exit_code": 0,
+    "five_original_attempts_sha256": "db3516b2cc61b55d9b06f55df2f8f1751a454b287157bb11638942b8296b2854",
+    "frozen_aggregator_sha256": "599e36448370f0ff79632e3468429db94deb6eb552b32f595f7bd85735da3db9",
+    "native_auditor_sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+    "report_sha256": {
+      "health": "0bef7ec07ea083bb2af6f3c2a56be4e6bb7379bb123ca72cc76e18139a826fe3",
+      "unicode": "7f64aa6319ac5d125ff0494a4e175f7bdb0970775972358302d93e65d67b875b",
+      "visual": "56c46bd688c4f95e773d28d5e458b2d3deda20d2c2abf1a98a5cd05b0009cf1b"
+    },
+    "root_closure_sha256": {
+      "health": "51b467900a7aed7d6d8684439e616925646f35a7ce4196604dcb468f3c711b42",
+      "unicode": "df3e544ca9124d2ed1b9a86d2e14ce91e1d9bfb178ce5f22e142d9aa42e1c3c9",
+      "visual": "940e17421eec04e11b1c6e4977b8ba437c83d7b2bfdc0e6178bbe10a4c8de049"
+    },
+    "seven_original_attempts_sha256": "c90d35d2cd0f526d52111ae515aa841446ead0cf88d8e7c19e9f4a736d1602bf"
+  },
+  "protocol_sha256": "74e8f8e6c22ba6240ba85cb610cb46ff8a0f158a39375118385f5012a47efdfb",
+  "provider_source_seal_sha256": "7c20af425fa88cf6fd90aa7b902bd7c5c0cb0f1d4e808ac26ddbd4445f61c4ab",
+  "public_projection": {
+    "current_sample_fields_rewritten": false,
+    "excluded": [
+      "instance provider_config_sha256",
+      "absolute host paths",
+      "actual scope/action/process identities",
+      "requests/nonces",
+      "draft text or digest",
+      "keys or key digests",
+      "raw claims/native records"
+    ],
+    "executable_manifest": false
+  },
+  "report_generation": {
+    "actual_entry_exit_code": 0,
+    "actual_frozen_aggregator_execution_count": 1,
+    "actual_frozen_aggregator_exit_code": 0,
+    "actual_report_host_exit_code": 0,
+    "builder_parent_sha256": "8b251d6a149231cc36264a08b6280fec429732dde2bbc52a169e0849d01f86e4",
+    "new_model_calls": 0,
+    "new_phone_calls": 0,
+    "new_sample_executions": 0,
+    "original_inputs_rechecked": 414,
+    "original_inputs_stable": true,
+    "preserved_preflight_exit_code": 1,
+    "preserved_preflight_reached_aggregator": false,
+    "successful_builder_sha256": "1ad7e765425df838072a1eb595f0cc5205ac879a6e51510dddefab43c0fc60a5"
+  },
+  "schema": "hepta.quality-public-provenance.v150.r7.r3.1",
+  "state": "ORIGINAL_CLOSED_EVIDENCE_PROJECTED_FOR_PUBLICATION"
+}
