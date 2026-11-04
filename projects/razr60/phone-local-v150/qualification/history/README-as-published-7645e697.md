@@ -1,8 +1,13 @@
+> Rendering note (2026-11-04): The [previously published bytes](README-as-published-7645e697.raw.txt)
+> remain unchanged. This display copy adds this note and rebases navigation
+> links from the former project-root location to this history directory.
+> Historical results and qualification statements are unchanged.
+
 # RAZR60 phone-local v150 — r6-r2 health checkpoint
 
 **The phone-local r6-r2 combination has passed one complete, bounded native health task. Business and daily-use qualification remain pending.** The checkpoint records one actual Send, one local model HTTP request and zero dispatched phone tools. Its original model response matched the new nonce, the provider and native terminal both completed, the model worker joined, the slot returned idle, and all captured originals and actual process exits were checked. This is the health-stage cutoff; later business attempts belong in a new evidence snapshot.
 
-Read the [health checkpoint](qualification/checkpoints/HEALTH-PASS-v150-r6-r2-01.json) for the exact version and evidence hashes. The [public source boundary](PUBLIC-SOURCE-BOUNDARY.md) and [projection index](PUBLIC-PROJECTION-INDEX.json) distinguish byte-identical production source from explicitly redacted operator or metadata copies.
+Read the [health checkpoint](../checkpoints/HEALTH-PASS-v150-r6-r2-01.json) for the exact version and evidence hashes. The [public source boundary](../../PUBLIC-SOURCE-BOUNDARY.md) and [projection index](../../PUBLIC-PROJECTION-INDEX.json) distinguish byte-identical production source from explicitly redacted operator or metadata copies.
 
 ## Current measured result
 
@@ -73,20 +78,20 @@ The policy audit checks expanded permissions and non-rule tables, not just text 
 | Provider-r6-r1 startup | stale embedded source pin rejected before any task | zero health samples |
 | Provider-r6-r2 current health | complete bounded health PASS | one health sample; no business sample at cutoff |
 
-Earlier source, reports and public snapshots remain under their versioned paths. The [previous published README](qualification/history/README-as-published-82dd4497.md) and [previous publication manifest](qualification/manifests/SOURCE-PUBLISH-as-of-82dd4497.json) preserve the exact prior checkpoint. Later recovery records do not rewrite the original failed tasks.
+Earlier source, reports and public snapshots remain under their versioned paths. The [previous published README](README-as-published-82dd4497.md) and [previous publication manifest](../manifests/SOURCE-PUBLISH-as-of-82dd4497.json) preserve the exact prior checkpoint. Later recovery records do not rewrite the original failed tasks.
 
 ## Source map
 
-- [Current provider](provider/r6-r2/source/) — thirteen frozen production Python modules.
-- [Provider r6 history](provider/r6/source/) and [provider r5 history](provider/r5/source/) — independent previous revisions.
-- [Executor r6](executor/r6/) and [client r6](client/r6/) — durable action receipts, credential and domain validation, and cancellation cleanup.
-- [Module source history](module/provider-r6-history/) — instance-specific review sources and explicit public projections.
-- [Current acceptance metadata](acceptance/r6-r2/) — unchanged nineteen case objects, limits and geometry, with the current source binding.
-- [Business evidence collector](acceptance/r5/business-collector-r1/) — the unchanged frozen collector used with the new source-seal override.
-- [Current business original export](acceptance/r6-r2/business-original-export/) — bounded snapshot and original receipt capture.
-- [Current business registration operator](operators/business-r6-r2/registration/) — separate one-use contract registration, no automatic Send.
-- [Sender r5](operators/r5/) — exact-draft compare-and-swap protection and one Send.
-- [Current health checkpoint](qualification/checkpoints/HEALTH-PASS-v150-r6-r2-01.json).
+- [Current provider](../../provider/r6-r2/source/) — thirteen frozen production Python modules.
+- [Provider r6 history](../../provider/r6/source/) and [provider r5 history](../../provider/r5/source/) — independent previous revisions.
+- [Executor r6](../../executor/r6/) and [client r6](../../client/r6/) — durable action receipts, credential and domain validation, and cancellation cleanup.
+- [Module source history](../../module/provider-r6-history/) — instance-specific review sources and explicit public projections.
+- [Current acceptance metadata](../../acceptance/r6-r2/) — unchanged nineteen case objects, limits and geometry, with the current source binding.
+- [Business evidence collector](../../acceptance/r5/business-collector-r1/) — the unchanged frozen collector used with the new source-seal override.
+- [Current business original export](../../acceptance/r6-r2/business-original-export/) — bounded snapshot and original receipt capture.
+- [Current business registration operator](../../operators/business-r6-r2/registration/) — separate one-use contract registration, no automatic Send.
+- [Sender r5](../../operators/r5/) — exact-draft compare-and-swap protection and one Send.
+- [Current health checkpoint](../checkpoints/HEALTH-PASS-v150-r6-r2-01.json).
 
 Some source manifests appear as .PUBLIC.json projections. They preserve the original sealed-input SHA and safe source hashes, but deliberately omit private deployment fields. They cannot replace the private runtime manifest. Operator paths and retained-claim digests may be placeholders. Read PUBLIC-PROJECTION-INDEX.json before comparing a projected file against its original hash or attempting a rebuild.
 

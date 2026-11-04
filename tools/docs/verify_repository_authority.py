@@ -54,6 +54,14 @@ INLINE_LINK_RE = re.compile(
 REFERENCE_LINK_RE = re.compile(r"!?\[([^\[\]]+)\]\[([^\[\]]*)\]", re.MULTILINE)
 BRACKET_RE = re.compile(r"!?\[([^\[\]]+)\]", re.MULTILINE)
 ANGLE_TARGET_RE = re.compile(r"<([^<>\s]+)>")
+# CommonMark 0.31.2, section 6.5: match the literal email autolink before
+# HTML entity decoding. The complete match excludes HTML attributes and
+# malformed addresses; its target is external mailto:, never a local path.
+EMAIL_AUTOLINK_RE = re.compile(
+    r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@"
+    r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
+    r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*"
+)
 HTML_TAG_NAME_RE = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)")
 HTML_BLOCK_BOUNDARY_TAGS = frozenset({
     "address", "article", "aside", "blockquote", "br", "dd", "div", "dl",
@@ -391,6 +399,8 @@ def _is_angle_target(candidate: str) -> bool:
     A self-closing HTML tag such as ``<br/>`` is deliberately not classified
     as a repository-path autolink merely because it contains ``/``.
     """
+    if EMAIL_AUTOLINK_RE.fullmatch(candidate):
+        return True
     candidate = html.unescape(candidate)
     if URL_SCHEME_RE.match(candidate) or candidate.startswith("//"):
         return True
@@ -552,9 +562,11 @@ def markdown_targets(
     consumed.extend(html_ranges)
 
     for match in ANGLE_TARGET_RE.finditer(_mask_ranges(paragraph, consumed)):
-        candidate = html.unescape(match.group(1))
-        if _is_angle_target(candidate):
-            targets.append((candidate, "angle autolink"))
+        candidate = match.group(1)
+        if EMAIL_AUTOLINK_RE.fullmatch(candidate):
+            targets.append(("mailto:" + candidate, "email autolink"))
+        elif _is_angle_target(candidate):
+            targets.append((html.unescape(candidate), "angle autolink"))
 
     # Any remaining explicit inline/reference delimiter is link-shaped syntax
     # outside the closed parser and therefore cannot silently evade validation.
@@ -796,6 +808,11 @@ def _semantic_visible_text(paragraph: str) -> str:
     value = REFERENCE_LINK_RE.sub(lambda match: match.group(1), value)
     value = BRACKET_RE.sub(lambda match: match.group(1), value)
     value = _semantic_without_html(value, "semantic authority text")
+    value = ANGLE_TARGET_RE.sub(
+        lambda match: match.group(1)
+        if EMAIL_AUTOLINK_RE.fullmatch(match.group(1)) else match.group(0),
+        value,
+    )
     value = html.unescape(value)
     value = value.translate(str.maketrans("", "", "*_~"))
     return re.sub(r"\s+", " ", value).strip()

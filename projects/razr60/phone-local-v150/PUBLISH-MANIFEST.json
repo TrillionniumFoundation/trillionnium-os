@@ -1,6 +1,6 @@
 {
-  "base_commit": "86c0424fd4a91dc778b5ac830a3f4f6e3ce1436e",
-  "branch": "codex/razr60-phone-local-v150-20261103",
+  "base_commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+  "branch": "codex/razr60-email-autolinks-20261104",
   "business_checkpoint": {
     "complete_success": 0,
     "failed": 2,
@@ -11,15 +11,15 @@
   "executor_current": "r6",
   "files": [
     {
-      "bytes": 452979,
+      "bytes": 471575,
       "exact_original_bytes": false,
-      "git_blob_sha": "534d06776b52e6502b4e647a853fbcf1c1b2de88",
+      "git_blob_sha": "8d5fb791fca6a2d61dc2295be35e3c6c99832f6d",
       "mode": "100644",
       "origin": "r7_r3_exact_allowlist_or_explicit_public_projection",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "PUBLIC-PROJECTION-INDEX.json",
-      "sha256": "de67d1eda7034ae86be9f68184df4a76430e8c648b596c4844fffb50d2280493",
+      "sha256": "086edfa0641f5c051478734d1b836c17806f51d02e63ae3aa16fbc81ccd874b1",
       "source_reference": "generated-cumulative-public-projection-index",
       "transformations": []
     },
@@ -5538,12 +5538,45 @@
       "sha256": "3494f48ae1bc195f3bd6cc3ca26962797da7cdcc9354a96ba5b09e4029587ae5"
     },
     {
+      "bytes": 3903,
+      "exact_original_bytes": false,
+      "git_blob_sha": "9f16fc476a00b971a0a7ccfb67b2ce55da48c48f",
+      "mode": "100644",
+      "origin": "explicit_formatting_only_public_projection",
+      "original_artifact_sha256": "8520a786d7a9d411e45466c2b7e7786d062ec03f2778acecc4a45991a803d8d8",
+      "original_bytes": 3539,
+      "path": "model/provenance/official-model-card.md",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "model/provenance/official-model-card.md",
+        "retained_raw_path": "model/provenance/official-model-card.raw.txt",
+        "sha256": "8520a786d7a9d411e45466c2b7e7786d062ec03f2778acecc4a45991a803d8d8"
+      },
+      "sha256": "a0771392680cd964f2d41548c16cffcd7e41aa9d14cc91c4a36226d3d05e3fd0",
+      "transformations": [
+        {
+          "rendering_note_added": true,
+          "retained_previous_publication": "model/provenance/official-model-card.raw.txt",
+          "rule": "close_bibtex_fence"
+        }
+      ]
+    },
+    {
       "bytes": 3539,
+      "exact_original_bytes": true,
       "git_blob_sha": "8e236a482f8f5ef38bf9edc8a46a789f9ad3b939",
       "mode": "100644",
-      "origin": "byte_identical",
-      "path": "model/provenance/official-model-card.md",
-      "sha256": "8520a786d7a9d411e45466c2b7e7786d062ec03f2778acecc4a45991a803d8d8"
+      "origin": "byte_identical_previous_publication",
+      "original_artifact_sha256": "8520a786d7a9d411e45466c2b7e7786d062ec03f2778acecc4a45991a803d8d8",
+      "original_bytes": 3539,
+      "path": "model/provenance/official-model-card.raw.txt",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "model/provenance/official-model-card.md",
+        "sha256": "8520a786d7a9d411e45466c2b7e7786d062ec03f2778acecc4a45991a803d8d8"
+      },
+      "sha256": "8520a786d7a9d411e45466c2b7e7786d062ec03f2778acecc4a45991a803d8d8",
+      "transformations": []
     },
     {
       "bytes": 1499,
@@ -10556,14 +10589,44 @@
       "transformations": []
     },
     {
+      "bytes": 3759,
+      "exact_original_bytes": false,
+      "git_blob_sha": "785f7a86be90f43fb6d809dbd3adb14ff54dc398",
+      "mode": "100644",
+      "origin": "explicit_formatting_only_public_projection",
+      "original_artifact_sha256": "d5662732d6262df54917d8faa6feeb3d84fa5c5c1221a87731b756b4ec45fc22",
+      "original_bytes": 3488,
+      "path": "provider/r6/README.md",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "provider/r6/README.md",
+        "retained_raw_path": "provider/r6/README.raw.txt",
+        "sha256": "e82cdafb1c09d3b6b931f61330e277c93340dc017407ea9263f3dc6356277f6f"
+      },
+      "sha256": "e24c61247fe0b172ae5a1ebff086a874b9d5f356d3fb260f5687712a10847fa0",
+      "transformations": [
+        "private_instance_binding_replaced_with_placeholder",
+        {
+          "rendering_note_added": true,
+          "retained_previous_publication": "provider/r6/README.raw.txt",
+          "rule": "mark_required_placeholder_as_code"
+        }
+      ]
+    },
+    {
       "bytes": 3458,
       "exact_original_bytes": false,
       "git_blob_sha": "5e8ff801c30e09603897714508bce7404c8bde43",
       "mode": "100644",
-      "origin": "allowlisted_source_or_explicit_public_projection",
+      "origin": "byte_identical_previous_publication",
       "original_artifact_sha256": "d5662732d6262df54917d8faa6feeb3d84fa5c5c1221a87731b756b4ec45fc22",
       "original_bytes": 3488,
-      "path": "provider/r6/README.md",
+      "path": "provider/r6/README.raw.txt",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "provider/r6/README.md",
+        "sha256": "e82cdafb1c09d3b6b931f61330e277c93340dc017407ea9263f3dc6356277f6f"
+      },
       "sha256": "e82cdafb1c09d3b6b931f61330e277c93340dc017407ea9263f3dc6356277f6f",
       "transformations": [
         "private_instance_binding_replaced_with_placeholder"
@@ -12219,39 +12282,152 @@
       "transformations": []
     },
     {
+      "bytes": 1719,
+      "exact_original_bytes": false,
+      "git_blob_sha": "e79bf15708529ceebc8ec108ecea41c171e3a61e",
+      "mode": "100644",
+      "origin": "explicit_formatting_only_public_projection",
+      "original_artifact_sha256": "3d066fd61117b9939709ac8d4e8ccc1a772dd8d83b27d74f206ff3ea9e114004",
+      "original_bytes": 1380,
+      "path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.md",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.md",
+        "retained_raw_path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.raw.txt",
+        "sha256": "3d066fd61117b9939709ac8d4e8ccc1a772dd8d83b27d74f206ff3ea9e114004"
+      },
+      "sha256": "9ee696c3668191f045fe597b85ac571a8c3a6a91acf14f91410a9d9a758f10d7",
+      "transformations": [
+        {
+          "rendering_note_added": true,
+          "retained_previous_publication": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.raw.txt",
+          "rule": "mark_required_placeholder_as_code"
+        }
+      ]
+    },
+    {
       "bytes": 1380,
       "exact_original_bytes": true,
       "git_blob_sha": "2e26052a929cd58c86c78ecd69cf1874f5b83f36",
       "mode": "100644",
-      "origin": "r7_allowlisted_source_or_explicit_public_projection",
+      "origin": "byte_identical_previous_publication",
       "original_artifact_sha256": "3d066fd61117b9939709ac8d4e8ccc1a772dd8d83b27d74f206ff3ea9e114004",
       "original_bytes": 1380,
-      "path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.md",
+      "path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.raw.txt",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.md",
+        "sha256": "3d066fd61117b9939709ac8d4e8ccc1a772dd8d83b27d74f206ff3ea9e114004"
+      },
       "sha256": "3d066fd61117b9939709ac8d4e8ccc1a772dd8d83b27d74f206ff3ea9e114004",
       "transformations": []
+    },
+    {
+      "bytes": 13959,
+      "exact_original_bytes": false,
+      "git_blob_sha": "80062f73de1272feb81b5f007ac0b6c1d79a3820",
+      "mode": "100644",
+      "origin": "explicit_formatting_only_public_projection",
+      "original_artifact_sha256": "8ad63b09f70c2bced7df19a4768e0e15a5a4be858ca89e494d1a14d480d58cda",
+      "original_bytes": 13680,
+      "path": "qualification/history/README-as-published-4f7f0886.md",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/README-as-published-4f7f0886.md",
+        "retained_raw_path": "qualification/history/README-as-published-4f7f0886.raw.txt",
+        "sha256": "8ad63b09f70c2bced7df19a4768e0e15a5a4be858ca89e494d1a14d480d58cda"
+      },
+      "sha256": "2cfcb3fae292aa2a424ff0c36b41110573b767c46f9748e762e8bd9c22411831",
+      "source_reference": "previous-published-commit:4f7f0886a1912025fd9d79d6cc1cb04eb1d8d463",
+      "transformations": [
+        {
+          "link_rewrites": {
+            "acceptance/r7/business-original-export/WORKFLOW-ERRATA.md": "../../acceptance/r7/business-original-export/WORKFLOW-ERRATA.md",
+            "qualification/checkpoints/HEALTH-v150-r7-stage01.json": "../checkpoints/HEALTH-v150-r7-stage01.json",
+            "qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json": "../checkpoints/QUALITY-v150-r6-r2-stage02.json",
+            "qualification/r7-r1-checkpoint/README.md": "../r7-r1-checkpoint/README.md",
+            "qualification/r7-r1-checkpoint/actual-01/QUALITY-PUBLIC.json": "../r7-r1-checkpoint/actual-01/QUALITY-PUBLIC.json"
+          },
+          "rendering_note_added": true,
+          "retained_previous_publication": "qualification/history/README-as-published-4f7f0886.raw.txt",
+          "rule": "rebase_root_relative_navigation_after_historical_relocation"
+        }
+      ]
     },
     {
       "bytes": 13680,
       "exact_original_bytes": true,
       "git_blob_sha": "72ebbbb2596ac8ada1bdc15b89627c1ceb91f8a7",
       "mode": "100644",
-      "origin": "r7_r2_exact_allowlist_or_explicit_public_projection",
+      "origin": "byte_identical_previous_publication",
       "original_artifact_sha256": "8ad63b09f70c2bced7df19a4768e0e15a5a4be858ca89e494d1a14d480d58cda",
       "original_bytes": 13680,
-      "path": "qualification/history/README-as-published-4f7f0886.md",
+      "path": "qualification/history/README-as-published-4f7f0886.raw.txt",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/README-as-published-4f7f0886.md",
+        "sha256": "8ad63b09f70c2bced7df19a4768e0e15a5a4be858ca89e494d1a14d480d58cda"
+      },
       "sha256": "8ad63b09f70c2bced7df19a4768e0e15a5a4be858ca89e494d1a14d480d58cda",
       "source_reference": "previous-published-commit:4f7f0886a1912025fd9d79d6cc1cb04eb1d8d463",
       "transformations": []
+    },
+    {
+      "bytes": 10998,
+      "exact_original_bytes": false,
+      "git_blob_sha": "32705ff04091c96b6838665b64e60550647b715f",
+      "mode": "100644",
+      "origin": "explicit_formatting_only_public_projection",
+      "original_artifact_sha256": "b9d3a023ce087a480155ffb673679485de235fc1e3388c82204bb6906fd396ae",
+      "original_bytes": 10658,
+      "path": "qualification/history/README-as-published-7645e697.md",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/README-as-published-7645e697.md",
+        "retained_raw_path": "qualification/history/README-as-published-7645e697.raw.txt",
+        "sha256": "b9d3a023ce087a480155ffb673679485de235fc1e3388c82204bb6906fd396ae"
+      },
+      "sha256": "bc4471ff3aafd55b0bb3e90955a14b8393fb56f3c68d88e1253fca0947e77f87",
+      "transformations": [
+        {
+          "link_rewrites": {
+            "PUBLIC-PROJECTION-INDEX.json": "../../PUBLIC-PROJECTION-INDEX.json",
+            "PUBLIC-SOURCE-BOUNDARY.md": "../../PUBLIC-SOURCE-BOUNDARY.md",
+            "acceptance/r5/business-collector-r1/": "../../acceptance/r5/business-collector-r1/",
+            "acceptance/r6-r2/": "../../acceptance/r6-r2/",
+            "acceptance/r6-r2/business-original-export/": "../../acceptance/r6-r2/business-original-export/",
+            "client/r6/": "../../client/r6/",
+            "executor/r6/": "../../executor/r6/",
+            "module/provider-r6-history/": "../../module/provider-r6-history/",
+            "operators/business-r6-r2/registration/": "../../operators/business-r6-r2/registration/",
+            "operators/r5/": "../../operators/r5/",
+            "provider/r5/source/": "../../provider/r5/source/",
+            "provider/r6-r2/source/": "../../provider/r6-r2/source/",
+            "provider/r6/source/": "../../provider/r6/source/",
+            "qualification/checkpoints/HEALTH-PASS-v150-r6-r2-01.json": "../checkpoints/HEALTH-PASS-v150-r6-r2-01.json",
+            "qualification/history/README-as-published-82dd4497.md": "README-as-published-82dd4497.md",
+            "qualification/manifests/SOURCE-PUBLISH-as-of-82dd4497.json": "../manifests/SOURCE-PUBLISH-as-of-82dd4497.json"
+          },
+          "rendering_note_added": true,
+          "retained_previous_publication": "qualification/history/README-as-published-7645e697.raw.txt",
+          "rule": "rebase_root_relative_navigation_after_historical_relocation"
+        }
+      ]
     },
     {
       "bytes": 10658,
       "exact_original_bytes": true,
       "git_blob_sha": "9932a9e0aff2c758915b374c6df7c004926693c7",
       "mode": "100644",
-      "origin": "r7_allowlisted_source_or_explicit_public_projection",
+      "origin": "byte_identical_previous_publication",
       "original_artifact_sha256": "b9d3a023ce087a480155ffb673679485de235fc1e3388c82204bb6906fd396ae",
       "original_bytes": 10658,
-      "path": "qualification/history/README-as-published-7645e697.md",
+      "path": "qualification/history/README-as-published-7645e697.raw.txt",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/README-as-published-7645e697.md",
+        "sha256": "b9d3a023ce087a480155ffb673679485de235fc1e3388c82204bb6906fd396ae"
+      },
       "sha256": "b9d3a023ce087a480155ffb673679485de235fc1e3388c82204bb6906fd396ae",
       "transformations": []
     },
@@ -12268,14 +12444,61 @@
       "transformations": []
     },
     {
+      "bytes": 15643,
+      "exact_original_bytes": false,
+      "git_blob_sha": "c4f1823c05f75eabc411401cd7d6f2becdb2cbb3",
+      "mode": "100644",
+      "origin": "explicit_formatting_only_public_projection",
+      "original_artifact_sha256": "df50da968fc420917986162aeeab099a1651a3a30e6da466f9b30a857fec5ff7",
+      "original_bytes": 15389,
+      "path": "qualification/history/README-as-published-86c0424.md",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/README-as-published-86c0424.md",
+        "retained_raw_path": "qualification/history/README-as-published-86c0424.raw.txt",
+        "sha256": "df50da968fc420917986162aeeab099a1651a3a30e6da466f9b30a857fec5ff7"
+      },
+      "sha256": "c5a1a0a5f35ffe06455e918293afc248c3c2d51ca99d3239392d8fbba86535a7",
+      "source_reference": "previous-published-commit:86c0424fd4a91dc778b5ac830a3f4f6e3ce1436e",
+      "transformations": [
+        {
+          "link_rewrites": {
+            "PUBLIC-PROJECTION-INDEX.json": "../../PUBLIC-PROJECTION-INDEX.json",
+            "PUBLISH-MANIFEST.json": "../../PUBLISH-MANIFEST.json",
+            "acceptance/r7-r2/README-PUBLIC.md": "../../acceptance/r7-r2/README-PUBLIC.md",
+            "acceptance/r7-r2/host-cancel-faults/REPORT-PUBLIC.json": "../../acceptance/r7-r2/host-cancel-faults/REPORT-PUBLIC.json",
+            "acceptance/r7-r2/host-negative/PUBLIC-SAFE-SUMMARY.json": "../../acceptance/r7-r2/host-negative/PUBLIC-SAFE-SUMMARY.json",
+            "acceptance/r7/business-original-export/WORKFLOW-ERRATA.md": "../../acceptance/r7/business-original-export/WORKFLOW-ERRATA.md",
+            "policy/r7-r2-property/POLICY-PUBLIC-SUMMARY.json": "../../policy/r7-r2-property/POLICY-PUBLIC-SUMMARY.json",
+            "policy/r7-r2-property/README.md": "../../policy/r7-r2-property/README.md",
+            "qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json": "../checkpoints/QUALITY-v150-r6-r2-stage02.json",
+            "qualification/history/README-as-published-4f7f0886.md": "README-as-published-4f7f0886.md",
+            "qualification/publication/PROJECTION-INDEX-v150-r7-r2-checkpoint.json": "../publication/PROJECTION-INDEX-v150-r7-r2-checkpoint.json",
+            "qualification/r7-r1-checkpoint/README.md": "../r7-r1-checkpoint/README.md",
+            "qualification/r7-r2-checkpoint/PROVENANCE.json": "../r7-r2-checkpoint/PROVENANCE.json",
+            "qualification/r7-r2-checkpoint/QUALITY-SUMMARY.json": "../r7-r2-checkpoint/QUALITY-SUMMARY.json",
+            "qualification/r7-r2-checkpoint/README.md": "../r7-r2-checkpoint/README.md"
+          },
+          "rendering_note_added": true,
+          "retained_previous_publication": "qualification/history/README-as-published-86c0424.raw.txt",
+          "rule": "rebase_root_relative_navigation_after_historical_relocation"
+        }
+      ]
+    },
+    {
       "bytes": 15389,
       "exact_original_bytes": true,
       "git_blob_sha": "759b62f4958ee298efde9670c86c2990d45c86ab",
       "mode": "100644",
-      "origin": "r7_r3_exact_allowlist_or_explicit_public_projection",
+      "origin": "byte_identical_previous_publication",
       "original_artifact_sha256": "df50da968fc420917986162aeeab099a1651a3a30e6da466f9b30a857fec5ff7",
       "original_bytes": 15389,
-      "path": "qualification/history/README-as-published-86c0424.md",
+      "path": "qualification/history/README-as-published-86c0424.raw.txt",
+      "previous_publication_reference": {
+        "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+        "path": "qualification/history/README-as-published-86c0424.md",
+        "sha256": "df50da968fc420917986162aeeab099a1651a3a30e6da466f9b30a857fec5ff7"
+      },
       "sha256": "df50da968fc420917986162aeeab099a1651a3a30e6da466f9b30a857fec5ff7",
       "source_reference": "previous-published-commit:86c0424fd4a91dc778b5ac830a3f4f6e3ce1436e",
       "transformations": []
@@ -12762,14 +12985,100 @@
   "module_current": "r7-r3",
   "no_secret_keys_weights_executables_or_private_user_text": true,
   "prefix": "projects/razr60/phone-local-v150/",
-  "previous_publication": "86c0424fd4a91dc778b5ac830a3f4f6e3ce1436e",
+  "previous_publication": "11d427995808c05943ecbf90b4fbd2a74af9247d",
   "provider_current": "r7",
   "public_projection_index": {
     "path": "PUBLIC-PROJECTION-INDEX.json",
-    "sha256": "de67d1eda7034ae86be9f68184df4a76430e8c648b596c4844fffb50d2280493"
+    "sha256": "086edfa0641f5c051478734d1b836c17806f51d02e63ae3aa16fbc81ccd874b1"
   },
   "quality_public_sha256": "27781648eb66e7cb6b9a36d9a5f37ef936dadd41ea7e23d86ed189cec5017d3f",
   "repository": "TrillionniumFoundation/trillionnium-os",
   "schema": "hepta.source-publication.v150.r7.r3.checkpoint1",
+  "source_documentation_update": {
+    "changes": [
+      {
+        "display_path": "model/provenance/official-model-card.md",
+        "previous_publication_sha256": "8520a786d7a9d411e45466c2b7e7786d062ec03f2778acecc4a45991a803d8d8",
+        "retained_raw_path": "model/provenance/official-model-card.raw.txt",
+        "rule": "close_bibtex_fence"
+      },
+      {
+        "display_path": "provider/r6/README.md",
+        "previous_publication_sha256": "e82cdafb1c09d3b6b931f61330e277c93340dc017407ea9263f3dc6356277f6f",
+        "retained_raw_path": "provider/r6/README.raw.txt",
+        "rule": "mark_required_placeholder_as_code"
+      },
+      {
+        "display_path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.md",
+        "previous_publication_sha256": "3d066fd61117b9939709ac8d4e8ccc1a772dd8d83b27d74f206ff3ea9e114004",
+        "retained_raw_path": "qualification/history/PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.raw.txt",
+        "rule": "mark_required_placeholder_as_code"
+      },
+      {
+        "display_path": "qualification/history/README-as-published-4f7f0886.md",
+        "link_rewrites": {
+          "acceptance/r7/business-original-export/WORKFLOW-ERRATA.md": "../../acceptance/r7/business-original-export/WORKFLOW-ERRATA.md",
+          "qualification/checkpoints/HEALTH-v150-r7-stage01.json": "../checkpoints/HEALTH-v150-r7-stage01.json",
+          "qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json": "../checkpoints/QUALITY-v150-r6-r2-stage02.json",
+          "qualification/r7-r1-checkpoint/README.md": "../r7-r1-checkpoint/README.md",
+          "qualification/r7-r1-checkpoint/actual-01/QUALITY-PUBLIC.json": "../r7-r1-checkpoint/actual-01/QUALITY-PUBLIC.json"
+        },
+        "previous_publication_sha256": "8ad63b09f70c2bced7df19a4768e0e15a5a4be858ca89e494d1a14d480d58cda",
+        "retained_raw_path": "qualification/history/README-as-published-4f7f0886.raw.txt",
+        "rule": "rebase_root_relative_navigation_after_historical_relocation"
+      },
+      {
+        "display_path": "qualification/history/README-as-published-7645e697.md",
+        "link_rewrites": {
+          "PUBLIC-PROJECTION-INDEX.json": "../../PUBLIC-PROJECTION-INDEX.json",
+          "PUBLIC-SOURCE-BOUNDARY.md": "../../PUBLIC-SOURCE-BOUNDARY.md",
+          "acceptance/r5/business-collector-r1/": "../../acceptance/r5/business-collector-r1/",
+          "acceptance/r6-r2/": "../../acceptance/r6-r2/",
+          "acceptance/r6-r2/business-original-export/": "../../acceptance/r6-r2/business-original-export/",
+          "client/r6/": "../../client/r6/",
+          "executor/r6/": "../../executor/r6/",
+          "module/provider-r6-history/": "../../module/provider-r6-history/",
+          "operators/business-r6-r2/registration/": "../../operators/business-r6-r2/registration/",
+          "operators/r5/": "../../operators/r5/",
+          "provider/r5/source/": "../../provider/r5/source/",
+          "provider/r6-r2/source/": "../../provider/r6-r2/source/",
+          "provider/r6/source/": "../../provider/r6/source/",
+          "qualification/checkpoints/HEALTH-PASS-v150-r6-r2-01.json": "../checkpoints/HEALTH-PASS-v150-r6-r2-01.json",
+          "qualification/history/README-as-published-82dd4497.md": "README-as-published-82dd4497.md",
+          "qualification/manifests/SOURCE-PUBLISH-as-of-82dd4497.json": "../manifests/SOURCE-PUBLISH-as-of-82dd4497.json"
+        },
+        "previous_publication_sha256": "b9d3a023ce087a480155ffb673679485de235fc1e3388c82204bb6906fd396ae",
+        "retained_raw_path": "qualification/history/README-as-published-7645e697.raw.txt",
+        "rule": "rebase_root_relative_navigation_after_historical_relocation"
+      },
+      {
+        "display_path": "qualification/history/README-as-published-86c0424.md",
+        "link_rewrites": {
+          "PUBLIC-PROJECTION-INDEX.json": "../../PUBLIC-PROJECTION-INDEX.json",
+          "PUBLISH-MANIFEST.json": "../../PUBLISH-MANIFEST.json",
+          "acceptance/r7-r2/README-PUBLIC.md": "../../acceptance/r7-r2/README-PUBLIC.md",
+          "acceptance/r7-r2/host-cancel-faults/REPORT-PUBLIC.json": "../../acceptance/r7-r2/host-cancel-faults/REPORT-PUBLIC.json",
+          "acceptance/r7-r2/host-negative/PUBLIC-SAFE-SUMMARY.json": "../../acceptance/r7-r2/host-negative/PUBLIC-SAFE-SUMMARY.json",
+          "acceptance/r7/business-original-export/WORKFLOW-ERRATA.md": "../../acceptance/r7/business-original-export/WORKFLOW-ERRATA.md",
+          "policy/r7-r2-property/POLICY-PUBLIC-SUMMARY.json": "../../policy/r7-r2-property/POLICY-PUBLIC-SUMMARY.json",
+          "policy/r7-r2-property/README.md": "../../policy/r7-r2-property/README.md",
+          "qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json": "../checkpoints/QUALITY-v150-r6-r2-stage02.json",
+          "qualification/history/README-as-published-4f7f0886.md": "README-as-published-4f7f0886.md",
+          "qualification/publication/PROJECTION-INDEX-v150-r7-r2-checkpoint.json": "../publication/PROJECTION-INDEX-v150-r7-r2-checkpoint.json",
+          "qualification/r7-r1-checkpoint/README.md": "../r7-r1-checkpoint/README.md",
+          "qualification/r7-r2-checkpoint/PROVENANCE.json": "../r7-r2-checkpoint/PROVENANCE.json",
+          "qualification/r7-r2-checkpoint/QUALITY-SUMMARY.json": "../r7-r2-checkpoint/QUALITY-SUMMARY.json",
+          "qualification/r7-r2-checkpoint/README.md": "../r7-r2-checkpoint/README.md"
+        },
+        "previous_publication_sha256": "df50da968fc420917986162aeeab099a1651a3a30e6da466f9b30a857fec5ff7",
+        "retained_raw_path": "qualification/history/README-as-published-86c0424.raw.txt",
+        "rule": "rebase_root_relative_navigation_after_historical_relocation"
+      }
+    ],
+    "historical_manifests_unchanged": true,
+    "new_phone_or_model_requests": 0,
+    "runtime_sources_modified": false,
+    "source_commit": "11d427995808c05943ecbf90b4fbd2a74af9247d"
+  },
   "source_publication_does_not_establish_daily_use": true
 }

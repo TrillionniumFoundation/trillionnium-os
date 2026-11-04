@@ -1,3 +1,8 @@
+> Rendering note (2026-11-04): The [previously published bytes](README.raw.txt)
+> remain unchanged. This display copy adds this note and renders the required
+> instance-binding placeholder as inline code. No private binding, runtime
+> source or historical qualification statement has been changed.
+
 # Phone-local provider v150-r6: health owner encoding compatibility
 
 This isolated revision fixes the original health01 terminal-validation crash in provider-r5. Its original model request used the already frozen r5 minimal health layout: the last user message contains a plain string. The old health_contracts.terminal_evidence implementation indexed content[0] as a dictionary, so the first character triggered AttributeError at frozen line167 after the model had produced its correct nonce.
@@ -9,7 +14,7 @@ The other twelve production files, four operator helpers, runtime configuration 
 ## Evidence and limits
 
 - Frozen provider-r5 source seal: f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f.
-- Health01 original request-body SHA: <INSTANCE_BINDING_SHA256_REQUIRED>.
+- Health01 original request-body SHA: `<INSTANCE_BINDING_SHA256_REQUIRED>`.
 - Host-only reproduction retains the old AttributeError stack with line167. It is explicitly a host reproduction of the original input, not a fabricated phone stack.
 - Ten focused host checks use copied originals or clearly named synthetic mutations. They cover correct plain string, single text-part compatibility, changed owner, malformed/extra content, wrong nonce, duplicate HTTP attempt, unjoined worker and busy slot.
 - The first host test wrapper used the wrong Python exception class for negative cases. That failed attempt remains preserved. The corrected run02 catches the actual frozen ProviderError, passes10/10 and leaves production source unchanged.
