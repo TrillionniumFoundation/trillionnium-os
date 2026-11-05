@@ -1,0 +1,362 @@
+{
+  "actual_new_phone_cases_executed_by_packaging": 0,
+  "archive": {
+    "all_selected_body_bytes_retained": true,
+    "archive": {
+      "bytes": 3399128,
+      "sha256": "b8dfb7b6f7c3dc07ea8a7d1d1b4d904c7c9a385c7a287d10cdfbd15313706104"
+    },
+    "archive_members": 1114,
+    "local_source_identity_bookends_equal": true,
+    "no_new_remote_observation_by_packaging": true,
+    "parts": [
+      {
+        "bytes": 524288,
+        "offset": 0,
+        "path": "archive/COMPLETED-WORK.tar.xz.part000",
+        "sha256": "6d824ccb72cb2a765ee2fe16f08b24ffb8adec2973166975e2916d06a27ac483"
+      },
+      {
+        "bytes": 524288,
+        "offset": 524288,
+        "path": "archive/COMPLETED-WORK.tar.xz.part001",
+        "sha256": "4a4fd290a12660c9f3ea301c189960eb745c2f0335ecafd44ca910f77508efd7"
+      },
+      {
+        "bytes": 524288,
+        "offset": 1048576,
+        "path": "archive/COMPLETED-WORK.tar.xz.part002",
+        "sha256": "d52a1b88827a9a67eee162a770027dd4d0c010692497780cba9eb9ff83c0a8cf"
+      },
+      {
+        "bytes": 524288,
+        "offset": 1572864,
+        "path": "archive/COMPLETED-WORK.tar.xz.part003",
+        "sha256": "65f5daf5c08a61d027446458990f3e80f1545ac325a8b58d0c461108430fb560"
+      },
+      {
+        "bytes": 524288,
+        "offset": 2097152,
+        "path": "archive/COMPLETED-WORK.tar.xz.part004",
+        "sha256": "765f90079deba4c162b94e92477d52301b72a6a964a3b691edd89d7f715c9bfa"
+      },
+      {
+        "bytes": 524288,
+        "offset": 2621440,
+        "path": "archive/COMPLETED-WORK.tar.xz.part005",
+        "sha256": "fca58e383647bb5e5edaf2edafdc596fb2c1a7801dcdbf1ad3e2705fcd43c0d6"
+      },
+      {
+        "bytes": 253400,
+        "offset": 3145728,
+        "path": "archive/COMPLETED-WORK.tar.xz.part006",
+        "sha256": "b823e7df99fcae66377733bfd598dda88f52647da3c6c6f78f20509b57e58858"
+      }
+    ],
+    "schema": "hepta.fixed19.checkpoint10.lossless-archive.v1",
+    "source_execution": false,
+    "source_index": {
+      "bytes": 602583,
+      "sha256": "4864ef6d874948a8e4cd213ea712dfb1127f73e7a7967c3198dc2d1304a2e6b4"
+    },
+    "source_index_parts": [
+      {
+        "bytes": 524288,
+        "offset": 0,
+        "path": "archive/SOURCE-INDEX.json.part000",
+        "sha256": "02aca8e0bf83113adf0084b16c605afd32556f2e6e5c9f7886a061dec32bd665"
+      },
+      {
+        "bytes": 78295,
+        "offset": 524288,
+        "path": "archive/SOURCE-INDEX.json.part001",
+        "sha256": "6acec68fb7eccdd042219c5013d5084185b33a3dce11e5f35395e9295f46b701"
+      }
+    ],
+    "source_members": 1113,
+    "tar": {
+      "bytes": 43683840,
+      "sha256": "5126fdeb7cf9616e13690f1da2627df419d137e7670510be129e187c1ce55a69"
+    },
+    "uncompressed_source_bytes": 41444958,
+    "whole_cases_qualified": 0
+  },
+  "base_commit": "a87b2fc4b99880e3820d2fffd285943777ac4057",
+  "base_tree": "1d17fcaae320ce053f54e90de3cee1322f7a4613",
+  "final_runtime_ready": false,
+  "host_layer_passes": 5,
+  "not_in_this_frozen_checkpoint": [
+    "actual_epoch_diag6077_carrier_stage01",
+    "diag6077_history_carrier_stage_candidate01",
+    "current_policy_three_original_native_download",
+    "profile-source-draft04",
+    "epoch_operation_transport_candidate01",
+    "epoch_root_workflow_candidate01",
+    "new_stage_common_bridge_active_sources"
+  ],
+  "phone_native_deployment": false,
+  "policy_comparison_passes": 16,
+  "published_files": [
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "c13498edc2f5f9e01583050638802246b632d928",
+      "local": "git_checkpoint10_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part000",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 0
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/COMPLETED-WORK.tar.xz.part000",
+      "sha256": "6d824ccb72cb2a765ee2fe16f08b24ffb8adec2973166975e2916d06a27ac483"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "94bdfb639ece7f834466eb5228fb69ba0d4de6f3",
+      "local": "git_checkpoint10_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part001",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 524288
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/COMPLETED-WORK.tar.xz.part001",
+      "sha256": "4a4fd290a12660c9f3ea301c189960eb745c2f0335ecafd44ca910f77508efd7"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "885742086603896d7490d5bd73ec7827df407930",
+      "local": "git_checkpoint10_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part002",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 1048576
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/COMPLETED-WORK.tar.xz.part002",
+      "sha256": "d52a1b88827a9a67eee162a770027dd4d0c010692497780cba9eb9ff83c0a8cf"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "a2c728fb17b2675eee517336fa8653b5206ad4aa",
+      "local": "git_checkpoint10_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part003",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 1572864
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/COMPLETED-WORK.tar.xz.part003",
+      "sha256": "65f5daf5c08a61d027446458990f3e80f1545ac325a8b58d0c461108430fb560"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "b56b19eecb708da47e97ed5aa1cf989b5b19c19d",
+      "local": "git_checkpoint10_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part004",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 2097152
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/COMPLETED-WORK.tar.xz.part004",
+      "sha256": "765f90079deba4c162b94e92477d52301b72a6a964a3b691edd89d7f715c9bfa"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "53733285b706ad872e9c09dc2055924ce7dd1733",
+      "local": "git_checkpoint10_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part005",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 2621440
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/COMPLETED-WORK.tar.xz.part005",
+      "sha256": "fca58e383647bb5e5edaf2edafdc596fb2c1a7801dcdbf1ad3e2705fcd43c0d6"
+    },
+    {
+      "bytes": 253400,
+      "encoding": "base64",
+      "git_blob_sha": "131b0fd197d776017e48181200ce90a147d1fca2",
+      "local": "git_checkpoint10_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part006",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 3145728
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/COMPLETED-WORK.tar.xz.part006",
+      "sha256": "b823e7df99fcae66377733bfd598dda88f52647da3c6c6f78f20509b57e58858"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "7d8a6b89438bd159182b367ebbcd535023b6b68a",
+      "local": "git_checkpoint10_delivery/final01/files/archive/SOURCE-INDEX.json.part000",
+      "origin": {
+        "kind": "complete-source-index-part",
+        "offset": 0
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/SOURCE-INDEX.json.part000",
+      "sha256": "02aca8e0bf83113adf0084b16c605afd32556f2e6e5c9f7886a061dec32bd665"
+    },
+    {
+      "bytes": 78295,
+      "encoding": "base64",
+      "git_blob_sha": "a09e0a42526a68c9ba301719431fe9255c9f21ad",
+      "local": "git_checkpoint10_delivery/final01/files/archive/SOURCE-INDEX.json.part001",
+      "origin": {
+        "kind": "complete-source-index-part",
+        "offset": 524288
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/SOURCE-INDEX.json.part001",
+      "sha256": "6acec68fb7eccdd042219c5013d5084185b33a3dce11e5f35395e9295f46b701"
+    },
+    {
+      "bytes": 2545,
+      "encoding": "base64",
+      "git_blob_sha": "04b532e3144c9e818ad215ff28bf80836c79880a",
+      "local": "git_checkpoint10_delivery/final01/files/archive/ARCHIVE-MANIFEST.json",
+      "origin": {
+        "kind": "archive-closed-set-descriptor"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/archive/ARCHIVE-MANIFEST.json",
+      "sha256": "a43d2ab64798efa8dc136274a9c4905f179d5564c76825d62552bce69dfdcec1"
+    },
+    {
+      "bytes": 45360,
+      "encoding": "base64",
+      "git_blob_sha": "128515e4b587db29d5a3b7aa78207df3ff0c9ce2",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/policy/epoch_policy_history.fragment.py",
+      "origin": {
+        "bytes": 45360,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_native_candidate01/history-reconciliation-candidate01/profile-source-draft03/source/epoch_policy_history.fragment.py",
+        "sha256": "2ed89d11ab3fd47f85e6c61cc35f611afb7dec13e82009e9f1eb998b1afc5dc5"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/policy/epoch_policy_history.fragment.py",
+      "sha256": "2ed89d11ab3fd47f85e6c61cc35f611afb7dec13e82009e9f1eb998b1afc5dc5"
+    },
+    {
+      "bytes": 127808,
+      "encoding": "base64",
+      "git_blob_sha": "086e5c2cba137f95a59d81367b5117759b28f04e",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/publication/component_snapshot.py",
+      "origin": {
+        "bytes": 127808,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_publication_producer_candidate01/delivery-final0/package/source/component_snapshot.py",
+        "sha256": "5c95c37b63c52d03dcd24ccc90e429c11d23601a05fd2edcaaa56e03c6f8e182"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/publication/component_snapshot.py",
+      "sha256": "5c95c37b63c52d03dcd24ccc90e429c11d23601a05fd2edcaaa56e03c6f8e182"
+    },
+    {
+      "bytes": 123791,
+      "encoding": "base64",
+      "git_blob_sha": "e5a82f98597f6b600a0ea88f299fbd4bc58243c7",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/publication/late_boundary.py",
+      "origin": {
+        "bytes": 123791,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_publication_producer_candidate01/delivery-final0/package/source/late_boundary.py",
+        "sha256": "352703c0f47ecbd55563e252f8c09b2825a147d2d9a2c42a04ac1c35e8facad0"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/publication/late_boundary.py",
+      "sha256": "352703c0f47ecbd55563e252f8c09b2825a147d2d9a2c42a04ac1c35e8facad0"
+    },
+    {
+      "bytes": 130768,
+      "encoding": "base64",
+      "git_blob_sha": "0e49f4e893e6a81de7357ab2dad4309cef1bbad9",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/publication/prepare_component.py",
+      "origin": {
+        "bytes": 130768,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_publication_producer_candidate01/delivery-final0/package/source/prepare_component.py",
+        "sha256": "b5cfdd8a909ff06a2e8f15d71b33f6e8db5641c9dbb9e763f96528beeeee4fba"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/publication/prepare_component.py",
+      "sha256": "b5cfdd8a909ff06a2e8f15d71b33f6e8db5641c9dbb9e763f96528beeeee4fba"
+    },
+    {
+      "bytes": 125658,
+      "encoding": "base64",
+      "git_blob_sha": "10a91c70b92386b77eb2e17549d52c93a4367e3c",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/publication/run_component_root_once.py",
+      "origin": {
+        "bytes": 125658,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_publication_producer_candidate01/delivery-final0/package/source/run_component_root_once.py",
+        "sha256": "4f1a9e39eda9747b465705929b92cd3bdb83d2c0dc86ee7a36a4e72199b2a15d"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/publication/run_component_root_once.py",
+      "sha256": "4f1a9e39eda9747b465705929b92cd3bdb83d2c0dc86ee7a36a4e72199b2a15d"
+    },
+    {
+      "bytes": 26036,
+      "encoding": "base64",
+      "git_blob_sha": "b066255152220c878c0277eacb646974ff5f0d68",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/retained6077/audit_existing_closure.py",
+      "origin": {
+        "bytes": 26036,
+        "kind": "exact-reviewable-copy",
+        "original": "diag6077_host_recompute_candidate01/delivery-final01/package/source/audit_existing_closure.py",
+        "sha256": "4d584a8325e7fadd64d0a87d369ef51b3573087fce661fa0d95a2c58ddf33577"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/retained6077/audit_existing_closure.py",
+      "sha256": "4d584a8325e7fadd64d0a87d369ef51b3573087fce661fa0d95a2c58ddf33577"
+    },
+    {
+      "bytes": 57862,
+      "encoding": "base64",
+      "git_blob_sha": "9cb93cd5604911e60cb334893e796eeb3ac1a47b",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/retained6077/epoch_retained_native_history.fragment.py",
+      "origin": {
+        "bytes": 57862,
+        "kind": "exact-reviewable-copy",
+        "original": "diag6077_history_authority_candidate01/delivery-final02/package/source/epoch_retained_native_history.fragment.py",
+        "sha256": "c0f894960f6d13182b5f7484f0d9f9f02a7c5c66e6e3538596cc90c918677cab"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/retained6077/epoch_retained_native_history.fragment.py",
+      "sha256": "c0f894960f6d13182b5f7484f0d9f9f02a7c5c66e6e3538596cc90c918677cab"
+    },
+    {
+      "bytes": 63287,
+      "encoding": "base64",
+      "git_blob_sha": "fa4077fb04963be32b7a5431e2ef96f348fe91f8",
+      "local": "git_checkpoint10_delivery/final01/files/reviewable/retained6077/run_retained_failed_native_history_owned_once.py",
+      "origin": {
+        "bytes": 63287,
+        "kind": "exact-reviewable-copy",
+        "original": "diag6077_host_recompute_candidate01/delivery-final01/package/source/run_retained_failed_native_history_owned_once.py",
+        "sha256": "cd2091df02ba3a68d1be676544cf288905fdda313c239ae6375bbd0324582c36"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/reviewable/retained6077/run_retained_failed_native_history_owned_once.py",
+      "sha256": "cd2091df02ba3a68d1be676544cf288905fdda313c239ae6375bbd0324582c36"
+    },
+    {
+      "bytes": 4413,
+      "encoding": "base64",
+      "git_blob_sha": "42eb7c296c3832a72f7277de69bddb329cb26c07",
+      "local": "git_checkpoint10_delivery/final01/files/README.md",
+      "origin": {
+        "kind": "honest-progress-description"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/README.md",
+      "sha256": "35adc6901b4e9c297b0449b2ec00b02ff47313f05d7a2f441f9ccce2ecf05dbc"
+    },
+    {
+      "bytes": 4367,
+      "encoding": "base64",
+      "git_blob_sha": "087934c555fca0b12559bc13121719aeb3cb5fef",
+      "local": "git_checkpoint10_delivery/final01/files/restore_checkpoint.py",
+      "origin": {
+        "kind": "unchanged-reviewed-lossless-archive-verifier"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint10/restore_checkpoint.py",
+      "sha256": "c467f60fa4193ef804f197abba9b36443453334563fa9cae6280edb25458a87d"
+    }
+  ],
+  "schema": "hepta.fixed19.checkpoint10.progress-manifest.v1",
+  "source_selection": {
+    "bytes": 3571,
+    "sha256": "b2e2fada25ef4249753f452074b8a85279845543f888b8131e2728812c783125"
+  },
+  "state": "ACTUAL_POLICY_AND_RETAINED6077_OWNED_AUDITS_COMPLETE_POLICY10_MAC_DATA_VERIFIED_FINAL_EPOCH_PENDING",
+  "whole_cases_qualified": 0,
+  "whole_cases_total": 19
+}

@@ -1,0 +1,81 @@
+{
+  "all_selected_body_bytes_retained": true,
+  "archive": {
+    "bytes": 3399128,
+    "sha256": "b8dfb7b6f7c3dc07ea8a7d1d1b4d904c7c9a385c7a287d10cdfbd15313706104"
+  },
+  "archive_members": 1114,
+  "local_source_identity_bookends_equal": true,
+  "no_new_remote_observation_by_packaging": true,
+  "parts": [
+    {
+      "bytes": 524288,
+      "offset": 0,
+      "path": "archive/COMPLETED-WORK.tar.xz.part000",
+      "sha256": "6d824ccb72cb2a765ee2fe16f08b24ffb8adec2973166975e2916d06a27ac483"
+    },
+    {
+      "bytes": 524288,
+      "offset": 524288,
+      "path": "archive/COMPLETED-WORK.tar.xz.part001",
+      "sha256": "4a4fd290a12660c9f3ea301c189960eb745c2f0335ecafd44ca910f77508efd7"
+    },
+    {
+      "bytes": 524288,
+      "offset": 1048576,
+      "path": "archive/COMPLETED-WORK.tar.xz.part002",
+      "sha256": "d52a1b88827a9a67eee162a770027dd4d0c010692497780cba9eb9ff83c0a8cf"
+    },
+    {
+      "bytes": 524288,
+      "offset": 1572864,
+      "path": "archive/COMPLETED-WORK.tar.xz.part003",
+      "sha256": "65f5daf5c08a61d027446458990f3e80f1545ac325a8b58d0c461108430fb560"
+    },
+    {
+      "bytes": 524288,
+      "offset": 2097152,
+      "path": "archive/COMPLETED-WORK.tar.xz.part004",
+      "sha256": "765f90079deba4c162b94e92477d52301b72a6a964a3b691edd89d7f715c9bfa"
+    },
+    {
+      "bytes": 524288,
+      "offset": 2621440,
+      "path": "archive/COMPLETED-WORK.tar.xz.part005",
+      "sha256": "fca58e383647bb5e5edaf2edafdc596fb2c1a7801dcdbf1ad3e2705fcd43c0d6"
+    },
+    {
+      "bytes": 253400,
+      "offset": 3145728,
+      "path": "archive/COMPLETED-WORK.tar.xz.part006",
+      "sha256": "b823e7df99fcae66377733bfd598dda88f52647da3c6c6f78f20509b57e58858"
+    }
+  ],
+  "schema": "hepta.fixed19.checkpoint10.lossless-archive.v1",
+  "source_execution": false,
+  "source_index": {
+    "bytes": 602583,
+    "sha256": "4864ef6d874948a8e4cd213ea712dfb1127f73e7a7967c3198dc2d1304a2e6b4"
+  },
+  "source_index_parts": [
+    {
+      "bytes": 524288,
+      "offset": 0,
+      "path": "archive/SOURCE-INDEX.json.part000",
+      "sha256": "02aca8e0bf83113adf0084b16c605afd32556f2e6e5c9f7886a061dec32bd665"
+    },
+    {
+      "bytes": 78295,
+      "offset": 524288,
+      "path": "archive/SOURCE-INDEX.json.part001",
+      "sha256": "6acec68fb7eccdd042219c5013d5084185b33a3dce11e5f35395e9295f46b701"
+    }
+  ],
+  "source_members": 1113,
+  "tar": {
+    "bytes": 43683840,
+    "sha256": "5126fdeb7cf9616e13690f1da2627df419d137e7670510be129e187c1ce55a69"
+  },
+  "uncompressed_source_bytes": 41444958,
+  "whole_cases_qualified": 0
+}
