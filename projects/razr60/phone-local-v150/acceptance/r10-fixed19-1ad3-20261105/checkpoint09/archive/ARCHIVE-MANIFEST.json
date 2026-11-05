@@ -1,0 +1,153 @@
+{
+  "all_selected_body_bytes_retained": true,
+  "archive": {
+    "bytes": 9864104,
+    "sha256": "1a8b3698e9a092381b109160d0c5de438a0107479539ed3d62ec95b9d4aa1cc9"
+  },
+  "archive_members": 1142,
+  "local_source_identity_bookends_equal": true,
+  "no_new_remote_observation_by_packaging": true,
+  "parts": [
+    {
+      "bytes": 524288,
+      "offset": 0,
+      "path": "archive/COMPLETED-WORK.tar.xz.part000",
+      "sha256": "3849a7dc848e43770abbcd9e5c43213df4057b56c7ee68dc740db0e742ae880a"
+    },
+    {
+      "bytes": 524288,
+      "offset": 524288,
+      "path": "archive/COMPLETED-WORK.tar.xz.part001",
+      "sha256": "d9d77fdb0b3e02e0922dea730bc8ba4cb2fd7bc61de08c2b27637246109a968b"
+    },
+    {
+      "bytes": 524288,
+      "offset": 1048576,
+      "path": "archive/COMPLETED-WORK.tar.xz.part002",
+      "sha256": "7f562708e07a11aa8779f738dda9c473b10621c1e6c080e3b4479ec7142e979a"
+    },
+    {
+      "bytes": 524288,
+      "offset": 1572864,
+      "path": "archive/COMPLETED-WORK.tar.xz.part003",
+      "sha256": "440a6feb9a391f1c6a5c69aa987ef4666481c6eb15bbd9137270d8327c86d106"
+    },
+    {
+      "bytes": 524288,
+      "offset": 2097152,
+      "path": "archive/COMPLETED-WORK.tar.xz.part004",
+      "sha256": "69af627fab2c86991011f1996b628d9b3b39f889098808e67860d4e27cbbce22"
+    },
+    {
+      "bytes": 524288,
+      "offset": 2621440,
+      "path": "archive/COMPLETED-WORK.tar.xz.part005",
+      "sha256": "6a4c867e8de52090b7841f23268addbfe43eb737ff079ddef8f66f17eb7c5cdd"
+    },
+    {
+      "bytes": 524288,
+      "offset": 3145728,
+      "path": "archive/COMPLETED-WORK.tar.xz.part006",
+      "sha256": "b06b96408dc3ae53db40ed7d5ad8973b4e58b2fda0e3a2a4ed8e7f8b36e539c7"
+    },
+    {
+      "bytes": 524288,
+      "offset": 3670016,
+      "path": "archive/COMPLETED-WORK.tar.xz.part007",
+      "sha256": "ae1493728366d8c141fb4c6618493626370831187364786851c664f2d6828811"
+    },
+    {
+      "bytes": 524288,
+      "offset": 4194304,
+      "path": "archive/COMPLETED-WORK.tar.xz.part008",
+      "sha256": "a4ed48b902ba4dde959411f5388458382f7a3a4fef3c735d61918bf43ca6d406"
+    },
+    {
+      "bytes": 524288,
+      "offset": 4718592,
+      "path": "archive/COMPLETED-WORK.tar.xz.part009",
+      "sha256": "0942073ffc3ace2839db647dd0159285f041ec545ea7e324a119ae7b188bd4d5"
+    },
+    {
+      "bytes": 524288,
+      "offset": 5242880,
+      "path": "archive/COMPLETED-WORK.tar.xz.part010",
+      "sha256": "cbcbe17ae00363e2f746e2d7f47aa0558d1010f567ff1affcaa7dbcaa0bc43bc"
+    },
+    {
+      "bytes": 524288,
+      "offset": 5767168,
+      "path": "archive/COMPLETED-WORK.tar.xz.part011",
+      "sha256": "625585fb322d50323d5159676e6fe87f7f8741782ed59dfc79893cd70d47ca80"
+    },
+    {
+      "bytes": 524288,
+      "offset": 6291456,
+      "path": "archive/COMPLETED-WORK.tar.xz.part012",
+      "sha256": "90e904aa191e0376093c9f73cd541f8f93bb6846c2ded057d7fe45c88103f0ee"
+    },
+    {
+      "bytes": 524288,
+      "offset": 6815744,
+      "path": "archive/COMPLETED-WORK.tar.xz.part013",
+      "sha256": "7a01c7c209e07b2a9e9da76f63d3fb269162f73b22ec5fd8fbacf4e62e1ae128"
+    },
+    {
+      "bytes": 524288,
+      "offset": 7340032,
+      "path": "archive/COMPLETED-WORK.tar.xz.part014",
+      "sha256": "d8993d147f7cdd04510edad64220d7e6999a48ad2e9615747fb24ea6e8aa60c7"
+    },
+    {
+      "bytes": 524288,
+      "offset": 7864320,
+      "path": "archive/COMPLETED-WORK.tar.xz.part015",
+      "sha256": "3eda6bfcbe9f2a457e47e4ed0f3573835573a0e4b5054e707355f625fa94b988"
+    },
+    {
+      "bytes": 524288,
+      "offset": 8388608,
+      "path": "archive/COMPLETED-WORK.tar.xz.part016",
+      "sha256": "fc226b6f5153d025d33c42da9558687cf6acbe9319eddd8117eb6d1e89942ad9"
+    },
+    {
+      "bytes": 524288,
+      "offset": 8912896,
+      "path": "archive/COMPLETED-WORK.tar.xz.part017",
+      "sha256": "dc079bd38229ea868875f86d99370f75b02fe3a1536bcf9d5b77a89451a8825e"
+    },
+    {
+      "bytes": 426920,
+      "offset": 9437184,
+      "path": "archive/COMPLETED-WORK.tar.xz.part018",
+      "sha256": "b6e59de427bdf5cedd31b3d6692b20baf9a831ce4394b5ff369495e53b39748f"
+    }
+  ],
+  "schema": "hepta.fixed19.checkpoint09.lossless-archive.v1",
+  "source_execution": false,
+  "source_index": {
+    "bytes": 615485,
+    "sha256": "804a5bf285d7cff7dcc3f88e43f8b3886d682b7138ffc03ea93233b535ea7924"
+  },
+  "source_index_parts": [
+    {
+      "bytes": 524288,
+      "offset": 0,
+      "path": "archive/SOURCE-INDEX.json.part000",
+      "sha256": "e93a83fe2352462f2db24fd6d90f35f1019113cb1160b25c9a1746d3e266da0f"
+    },
+    {
+      "bytes": 91197,
+      "offset": 524288,
+      "path": "archive/SOURCE-INDEX.json.part001",
+      "sha256": "59ced72d0af14038b3630afeb04e0126fe29c4ebaa10a1917d9361bdc9dfedf5"
+    }
+  ],
+  "source_members": 1141,
+  "tar": {
+    "bytes": 53657600,
+    "sha256": "61b40644ff22a82a456068002b35a55bc1164f9a1eb64fd27a37375de3ef5de7"
+  },
+  "uncompressed_source_bytes": 51613517,
+  "whole_cases_qualified": 0
+}
