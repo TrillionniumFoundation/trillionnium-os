@@ -1,0 +1,1 @@
+{"idempotency_key":"root-1ad3-external902-existing-capture-tail-read01-20261105","operation":{"tool":"binary_read","arguments":{"host":"pocket4","path":"/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-existing-capture-read01/FULL-ORIGINALS.tar.xz","offset":32768,"limit":10904,"expected_version":"66306:43520410:43672:1793884106215197870:1793884106215197870"}}}

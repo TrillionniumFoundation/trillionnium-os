@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py\",\n      \"--plan\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-1ad3-02/ROOT-PLAN.json\",\n      \"--plan-sha256\",\n      \"e3b9d77a317f6c7ac7ea6bae9a3276c9f8a689563084a54d82d7417e2a17a3e7\",\n      \"--execute-root-chain-once\"\n    ],\n    \"created_unix_ms\": 1793879449769,\n    \"cwd\": \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1ab8c20a9-fc05-4e93\",\n    \"idempotency_key\": \"root-1ad3-neg01-native-root-chain02-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1ab8c20a9-fc05-4e93\",\n    \"request_digest\": \"22344a6229b6527d3138c2089e4ba0d6c8564cb0513164233b556006271a26e4\",\n    \"request_fingerprint\": 2464676681545568893,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab8c20a9-fc05-4e93\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 57082,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1ab8c20a9-fc05-4e93\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

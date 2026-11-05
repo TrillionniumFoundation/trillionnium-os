@@ -1,0 +1,5 @@
+{
+  "first_attempt": "AssertionError from assuming one source/delimiter newline plus finalLF; actual caller preserves original extra separator LF and EOF delimiter",
+  "correction": "Confirmed exact enclosing command inverse to originaldb1f after replacing only source and delimiter; neither caller changed",
+  "retained": "REVIEW-SCRIPT-FIRST-ATTEMPT.json"
+}

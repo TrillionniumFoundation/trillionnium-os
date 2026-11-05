@@ -1,0 +1,17 @@
+{
+  "actual_future_output_measured": false,
+  "base64_body_characters": 1305264,
+  "conservative_native_result_wrapper_additional_reserve_bytes": 262144,
+  "conservative_observation_non_body_reserve_bytes": 262144,
+  "conservative_phone_result_original_bytes": 1829552,
+  "conservative_phone_stdout_bytes": 1567408,
+  "conservative_remaining_ten_originals_reserve_bytes": 524288,
+  "conservative_twelve_originals_total_bytes": 3921248,
+  "native_result_original_limit_bytes": 8388608,
+  "no_limits_increased": true,
+  "phone_stdout_limit_bytes": 8388608,
+  "publish_intent_prior_raw_observed": false,
+  "raw_three_files_bytes": 978944,
+  "snapshot_archive_body_included": false,
+  "twelve_originals_total_limit_bytes": 16777216
+}

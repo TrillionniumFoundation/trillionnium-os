@@ -1,0 +1,214 @@
+{
+  "source": {
+    "bytes": 849854,
+    "metadata": [
+      16777233,
+      587993968,
+      33152,
+      501,
+      20,
+      1,
+      849854,
+      1793853714309128639,
+      1793853714309128639
+    ],
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-08/INVENTORY.json",
+    "sha256": "80b8a56ee78055c19caf3b342af5bc5e479180843b0f3bc223751649188b7fc4"
+  },
+  "entries": {
+    "STAGE-COMPLETE.json": {
+      "bytes": 15370,
+      "kind": "file",
+      "metadata": [
+        65086,
+        155869,
+        33152,
+        0,
+        0,
+        1,
+        15370,
+        1793851261183926181,
+        1793851261183926181
+      ],
+      "sha256": "6e13d90fc374910b281063093d975d8acfcc7b882cdc3cf8fff3f8f5f7a9d3ab"
+    },
+    "DETACHED-LAUNCH-INTENT.json": {
+      "bytes": 2080,
+      "kind": "file",
+      "metadata": [
+        65086,
+        157547,
+        33152,
+        0,
+        0,
+        1,
+        2080,
+        1793851328871926155,
+        1793851328871926155
+      ],
+      "sha256": "f13448abe85b7f45e8c97a7825fd39864cc38263b4d4f033807a6e17eb1be127"
+    },
+    "DETACHED-LAUNCH-RESULT.json": {
+      "bytes": 407,
+      "kind": "file",
+      "metadata": [
+        65086,
+        157188,
+        33152,
+        0,
+        0,
+        1,
+        407,
+        1793851328879926155,
+        1793851328879926155
+      ],
+      "sha256": "b2a57a5d2b4c6bb2700b431b235562430271a3ad9723129c7068a38fd31a3067"
+    },
+    "SUPERVISOR.json": {
+      "bytes": 1021,
+      "kind": "file",
+      "metadata": [
+        65086,
+        149552,
+        33152,
+        0,
+        0,
+        1,
+        1021,
+        1793851329191926155,
+        1793851329191926155
+      ],
+      "sha256": "8e12880132ea65b837a40d73ca0c3d6e42013a43327e9de6e341f5e7440befce"
+    },
+    "RETIRED-BASELINE-VERIFIED.json": {
+      "bytes": 7723,
+      "kind": "file",
+      "metadata": [
+        65086,
+        157665,
+        33152,
+        0,
+        0,
+        1,
+        7723,
+        1793851352503926146,
+        1793851352503926146
+      ],
+      "sha256": "62f72c238314645ff9947519c525fce7feb3c6ff16009fc717b4c411cfdd9db7"
+    },
+    "BASELINE-INVENTORY.json": {
+      "bytes": 611915,
+      "kind": "file",
+      "metadata": [
+        65086,
+        150777,
+        33152,
+        0,
+        0,
+        1,
+        611915,
+        1793851352623926146,
+        1793851352623926146
+      ],
+      "sha256": "d863e8cc3f278d7baf7e6bf72afd19b98e12212e3f013f9420d9045c254e494f"
+    },
+    "PORT-RESERVED.json": {
+      "bytes": 111,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154173,
+        33152,
+        0,
+        0,
+        1,
+        111,
+        1793851352635926146,
+        1793851352635926146
+      ],
+      "sha256": "51dc890ff96c782e2caccf57e6d61f9062ef0b8e1c47c5b91831efc2c7386634"
+    },
+    "sidecar.SPAWNED.json": {
+      "bytes": 708,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153909,
+        33152,
+        0,
+        0,
+        1,
+        708,
+        1793851352635926146,
+        1793851352635926146
+      ],
+      "sha256": "3c152304554ff592e36230b7680fdc060d375879b3349be05d77739d3107eaca"
+    },
+    "SIDECAR-HEALTH.original.json": {
+      "bytes": 365,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156982,
+        33152,
+        0,
+        0,
+        1,
+        365,
+        1793851352955926146,
+        1793851352955926146
+      ],
+      "sha256": "5dd4934a87ddc481d8c81fa90a5fd656238fd6cb2d54e4594cf828a5eeb45ce1"
+    },
+    "provider.SPAWNED.json": {
+      "bytes": 729,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153402,
+        33152,
+        0,
+        0,
+        1,
+        729,
+        1793851352967926146,
+        1793851352967926146
+      ],
+      "sha256": "b5bbb51ecfe4bc1def434676196efd005101cbebced38fa4482722c6628404b9"
+    },
+    "PROVIDER-HEALTH.original.json": {
+      "bytes": 365,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153880,
+        33152,
+        0,
+        0,
+        1,
+        365,
+        1793851353591926146,
+        1793851353591926146
+      ],
+      "sha256": "5dd4934a87ddc481d8c81fa90a5fd656238fd6cb2d54e4594cf828a5eeb45ce1"
+    },
+    "READY.json": {
+      "bytes": 1706,
+      "kind": "file",
+      "metadata": [
+        65086,
+        157392,
+        33152,
+        0,
+        0,
+        1,
+        1706,
+        1793851353595926146,
+        1793851353595926146
+      ],
+      "sha256": "4dc225931a68dba579d7516f9202f36318b64d9f9100ce74fd0913fd140bed3d"
+    }
+  },
+  "original_changed": false,
+  "phone_calls": 0
+}

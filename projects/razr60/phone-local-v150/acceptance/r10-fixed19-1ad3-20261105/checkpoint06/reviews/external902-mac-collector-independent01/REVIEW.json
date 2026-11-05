@@ -1,0 +1,108 @@
+{
+  "case_pass": false,
+  "checks": [
+    {
+      "functions": [
+        "need",
+        "sha",
+        "enc",
+        "strict",
+        "metadata",
+        "descriptor",
+        "relative",
+        "check_time",
+        "open_directory",
+        "check_directory",
+        "read_file",
+        "put_new"
+      ],
+      "name": "twelve_read_create_only_helpers_byte_identical_to_reviewed181889",
+      "passed": true
+    },
+    {
+      "declared_files": 17,
+      "name": "manifest_exact_closed_set",
+      "passed": true,
+      "total_including_manifest": 18
+    },
+    {
+      "name": "fixed_four_case_pins_and19_phase_names_equal_actual_raw",
+      "passed": true
+    },
+    {
+      "name": "runtime32_and_root3_closedset_equal_actual31da_f865",
+      "passed": true
+    },
+    {
+      "detail": "case tree, runtime tree, root-source tree; only fixed aux files at B and overlay parent; those parent rows explicitly identity/names-only, no child content follow.",
+      "name": "bounded_three_complete_roots_and_exact_aux_only",
+      "passed": true
+    },
+    {
+      "detail": "Every phase result/intent/child/capture/stdout/stderr, retained stdin where present; rc0 is host-child status only.",
+      "name": "19_joined_phase_full9_EOF_and_original_inode_guards",
+      "passed": true
+    },
+    {
+      "detail": "capture byte-canonical comparison to hash-pinned failure plus false original wait/EOF and empty exact captured prefixes; later sender top not converted to original child join.",
+      "name": "historical_sender_unknown_preserved",
+      "passed": true,
+      "pid": 54589
+    },
+    {
+      "detail": "held FD/path full9/names before new output, after copy, after RESULT; O_EXCL/no-follow/fsync/readback outputs. Existing originals never opened writable.",
+      "name": "three_full_read_bookends_and_create_only_new_OUT",
+      "passed": true
+    },
+    {
+      "bytes": 67108864,
+      "cooperative_seconds": 100,
+      "directories": 512,
+      "files": 2048,
+      "name": "limits_unchanged",
+      "passed": true
+    },
+    {
+      "name": "no_payload_execution_process_phone_or_P4_operations",
+      "passed": true
+    },
+    {
+      "name": "request_exact_source_hash_and_COLLECTOR_SOURCE_binding",
+      "passed": true
+    }
+  ],
+  "limits": [
+    "Static read/AST/pin review only; no collector function/main, original target source, remote or phone executed.",
+    "Filesystem/compression deadline is cooperative, not hard preemptive.",
+    "A successful RESULT alone is insufficient: final bookend follows it, so require final stdout and durable controller rc0.",
+    "Auxiliary parent child names are read in full for bookends; their unpinned child contents are not collected.",
+    "Generated top-level .actor.py and P4 sender/fixture original trees are still separately needed for eventual independent native closure; current collector does not claim complete closure inputs.",
+    "Source package bytes being copied does not validate the external membership adapter semantics or grant runtime/case eligibility."
+  ],
+  "manifest": {
+    "bytes": 3150,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/package/SOURCE-MANIFEST.json",
+    "sha256": "29c0cafbd9a6dc0febec477fab80a83a818496d3eb86c88eeaf539b657ba6bac"
+  },
+  "originals_modified": false,
+  "parent": {
+    "bytes": 20496,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/package/reference/collect_failed_root_originals.181889.original.py",
+    "sha256": "181889ed6477819622909d0bdd016ad5d51d3352e17925c0359fc941d87a7d66"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "request": {
+    "bytes": 38217,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/CONTROLLER-REQUEST.json",
+    "sha256": "3c6c85c43cf61707b05248728ce297fad4113ff7afaf30a108d1403ce084d835"
+  },
+  "reviewed_at_utc": "2026-11-05T12:30:01.650525+00:00",
+  "schema": "hepta.independent.external902-mac-collector-review.v1",
+  "source": {
+    "bytes": 36689,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/package/source/collect_external902_originals.py",
+    "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+  },
+  "state": "SOURCE_ONLY_NO_BLOCKER"
+}

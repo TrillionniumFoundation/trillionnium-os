@@ -1,0 +1,15 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "content": [
+      {
+        "text": "direct SSH admitted capacity exhausted; no child submitted; no automatic retry",
+        "type": "text"
+      }
+    ],
+    "isError": true,
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    }
+  }
+}

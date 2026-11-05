@@ -1,0 +1,75 @@
+{
+  "checks": [
+    {
+      "name": "source package exact 8 members plus manifest, all bytes hashed",
+      "passed": true
+    },
+    {
+      "name": "ten copied read helpers remain byte-identical to executed d36b",
+      "passed": true
+    },
+    {
+      "name": "exact actual 76 additions and two changed parents round-trip through bounded codec",
+      "passed": true
+    },
+    {
+      "name": "compressed body/hash mutation rejected before use",
+      "passed": true
+    },
+    {
+      "name": "extra compressed member and trailing compressed data rejected",
+      "passed": true
+    },
+    {
+      "name": "decompressed descriptor beyond 65536 bytes rejected",
+      "passed": true
+    },
+    {
+      "name": "truncated compressed member rejected",
+      "passed": true
+    },
+    {
+      "name": "duplicate JSON key rejected even with test-only updated descriptor pin",
+      "passed": true
+    },
+    {
+      "name": "duplicate pinned file paths rejected",
+      "passed": true
+    },
+    {
+      "name": "directory names must remain sorted and unique",
+      "passed": true
+    },
+    {
+      "name": "incomplete new-directory child set rejected",
+      "passed": true
+    },
+    {
+      "name": "hard-linked file row rejected",
+      "passed": true
+    },
+    {
+      "name": "static import/call/write scope excludes runtime, process, signal, lock and mutation operations",
+      "passed": true
+    }
+  ],
+  "executed_function_allowlist": [
+    "descriptor_table",
+    "encoded",
+    "need",
+    "sha",
+    "strict"
+  ],
+  "passed": 13,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "runtime_imports": 0,
+  "schema": "hepta.fixed-external-additions.local-source-checks.v1",
+  "source": {
+    "bytes": 28397,
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "target_main_calls": 0,
+  "target_read_helper_calls": 0,
+  "total": 13
+}

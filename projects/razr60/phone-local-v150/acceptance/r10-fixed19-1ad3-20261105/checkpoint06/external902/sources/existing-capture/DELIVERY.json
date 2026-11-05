@@ -1,0 +1,27 @@
+{
+  "archive": {
+    "bytes": 16952,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/SOURCE-PACKAGE.tar.gz",
+    "sha256": "486fd65cd59b297e77570f860ea3cf37c57a669502fe39cb4fb0952b540002aa"
+  },
+  "local_source_checks": {
+    "bytes": 1180,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/LOCAL-SOURCE-CHECKS.json",
+    "sha256": "2cf5bf3897f4ad394728300f03a3154bd3f5f160aec9da446945419f103c318e"
+  },
+  "manifest": {
+    "bytes": 1000,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "8448dc9b6d7a2846e868a65329e09fc982fe73504ef0b6ccb92b2b51315205f3"
+  },
+  "regular_members": 6,
+  "schema": "hepta.existing-capture-observer.delivery.v1",
+  "source": {
+    "bytes": 18736,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/package/source/observe_existing_capture_once.py",
+    "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+  },
+  "state": "SOURCE_ONLY_FROZEN_UNEXECUTED",
+  "target_or_remote_calls": 0,
+  "total_raw_file_bytes": 52720
+}

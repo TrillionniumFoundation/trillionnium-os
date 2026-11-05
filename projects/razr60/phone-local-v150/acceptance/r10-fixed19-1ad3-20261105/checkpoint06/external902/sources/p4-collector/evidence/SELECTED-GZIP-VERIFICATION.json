@@ -1,0 +1,387 @@
+{
+  "all_selected_complete_member_bytes_match_independent_pins": true,
+  "archive_source_executed": false,
+  "case_pass": false,
+  "chunk_receipts": [
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00000000.bin",
+        "sha256": "c9d0b007ae117106246169f7bdb10b004c6ea76402ef803163374b591a962c34"
+      },
+      "offset": 0,
+      "raw_MCP_receipt": {
+        "bytes": 87976,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00000000.MCP.original.json",
+        "sha256": "fd50713a943b7285e21a736c830bd787d5a6ef17763f88f62a9a248333884895"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00065536.bin",
+        "sha256": "1b673b96d7ec23dcade2e4c38a12a7b1d71439650516d6b5f6fd00afce758091"
+      },
+      "offset": 65536,
+      "raw_MCP_receipt": {
+        "bytes": 87981,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00065536.MCP.original.json",
+        "sha256": "b461a363c4af2fb22ae939875c16c8ad59bcaf40590ed3f0aba87b5879ce2191"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00131072.bin",
+        "sha256": "9d4bd048a3d87dbd81a33d0a99560b565cd0dfac9f0a78ce18411f4734caf243"
+      },
+      "offset": 131072,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00131072.MCP.original.json",
+        "sha256": "f45472b2e1ca47647e769fad4f912dfb15b2bfd91f263be1da9d02c99428a6d3"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00196608.bin",
+        "sha256": "2a48c1add552c7b1b95604dca8b9c6bf0aaa29689cc723aaff29496aac962647"
+      },
+      "offset": 196608,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00196608.MCP.original.json",
+        "sha256": "c1e015208201d93daa9e93b54d84628eb8be04592a34a719077a294aa3a21e67"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00262144.bin",
+        "sha256": "c15a7bf307d11c47d53da9d7b3c9c1198aa9b89af721dcc7049efc748910408b"
+      },
+      "offset": 262144,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00262144.MCP.original.json",
+        "sha256": "d9704761d009870b2d36f21bd408172a31aebf83515ddb3b22de280b5ae8ca39"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00327680.bin",
+        "sha256": "9dc502fbb6a543f314fced15720eaad7e3eedb3cc3b431771df56af8ad2278ee"
+      },
+      "offset": 327680,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00327680.MCP.original.json",
+        "sha256": "3bccd17bab01ba6d67a2f9fe09b4d23c4df0093d63791500d166c0ac28994657"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00393216.bin",
+        "sha256": "a4b7d792ecae33618a09a17ce268596dd26daedd29ba947e39913d56dd7f6277"
+      },
+      "offset": 393216,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00393216.MCP.original.json",
+        "sha256": "4092677ac739e2a3bfdc0d35f2f96390036f56f2f182072d6b823b8cc93771c5"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00458752.bin",
+        "sha256": "9f358911b8d49734fbf8f890b25eb194bd7c8190a65d8cf22c691763f1be56fe"
+      },
+      "offset": 458752,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00458752.MCP.original.json",
+        "sha256": "fabf8d1936b3fd11ea332d2debaeb1b712c64d8d79e221689ed942e4ee161f61"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00524288.bin",
+        "sha256": "04ad19c9e9ff52967e7e2a23d019ea1c9d1597091bb8304eeaacaef60073ff0f"
+      },
+      "offset": 524288,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00524288.MCP.original.json",
+        "sha256": "78d3af79caa33b52841d037bbaee47e3a7a555fa6dbe56190a51c1de472db35e"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00589824.bin",
+        "sha256": "fac21dfb0c64a7adc56237e1bc5971d380e217fc6703593ea58d4423b8601c6b"
+      },
+      "offset": 589824,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00589824.MCP.original.json",
+        "sha256": "75f94043a6ab37ea90449aa3ae727e4e692dca2cb725a463b5a6652b8c0f0afd"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00655360.bin",
+        "sha256": "a9752a3437e3ce6b2658a021bb480a33fa811768c7ffc52fc28e706d756df744"
+      },
+      "offset": 655360,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00655360.MCP.original.json",
+        "sha256": "0a4fb3e0f170269d3395e377723ab3d21c7c0c4a2bd589a474f68874426b2a9e"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00720896.bin",
+        "sha256": "21bbef107f08e7505c861d68a472a3b666d6d9618e2bddba7bdb6c87dae2e773"
+      },
+      "offset": 720896,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00720896.MCP.original.json",
+        "sha256": "55fe4705ba90765155386a98a4c6a260b5a1983d456472a964eb4e360a5f2ec6"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00786432.bin",
+        "sha256": "51c847e9a463b8283fa78079b5edc8b9f13e68854bf714b9a38fd775696a20b6"
+      },
+      "offset": 786432,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00786432.MCP.original.json",
+        "sha256": "233aa3033c6f06eb89fdd4f5bf65fd7355383cbf77d2c0c5ba91089e8f623e6c"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00851968.bin",
+        "sha256": "8b3f294f9d79aaedec9738668ec6b1b849dbb663dfa8017baf628bc8a734aea4"
+      },
+      "offset": 851968,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00851968.MCP.original.json",
+        "sha256": "aab68b4557485c7e7996dc204ccc505681f7f5bfeab8ded8bafa4b75526cd357"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00917504.bin",
+        "sha256": "891e9aaab8718b63dd62cf740ecaa8350c87d8997d8a90e788c27be240e028b4"
+      },
+      "offset": 917504,
+      "raw_MCP_receipt": {
+        "bytes": 87982,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00917504.MCP.original.json",
+        "sha256": "c7165c743a4815fb5ffcdd65cf414925f55dc6eaff84cfdca02f18e07f4c91ea"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/00983040.bin",
+        "sha256": "b821e97630309ccfed9e65fcdf9c39ac301fe7f5085f872a3950a64c43daeb41"
+      },
+      "offset": 983040,
+      "raw_MCP_receipt": {
+        "bytes": 87983,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-00983040.MCP.original.json",
+        "sha256": "5cc20c44e760720531aabe6194955f8de182946a98d993ef6141b89a587dd000"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01048576.bin",
+        "sha256": "f5dbf2e717c944500c635f3a6ce7e658593170513f6bfecc93c6fa77e6686c09"
+      },
+      "offset": 1048576,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01048576.MCP.original.json",
+        "sha256": "37e55181bb7dad8bde39e9878e4dc91f63592ed3c505c50f84e002e5c0faa48e"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01114112.bin",
+        "sha256": "9b1aea21095f2b640587563da460cc5236c90be8bfb78dde3e674b55d64f071b"
+      },
+      "offset": 1114112,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01114112.MCP.original.json",
+        "sha256": "f2fd7eca29c3dba80ed8d5afb26c8c9099e3490c991dd87091708fe55142bd11"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01179648.bin",
+        "sha256": "fd34f1f55770c7a20bbb185838d49f1c171f9ba3949ae4184b7824cc8d8dccb6"
+      },
+      "offset": 1179648,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01179648.MCP.original.json",
+        "sha256": "be6be5126ccc911ed1e4c1e27b3653abd763f3a05138753ddc55bc4706db8f99"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01245184.bin",
+        "sha256": "97952047a52a9d26735becf4d8a8f8a280ea9e0d1fcb20bd916a0bcdb050908f"
+      },
+      "offset": 1245184,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01245184.MCP.original.json",
+        "sha256": "e6aa3f165188a9c168b003a61b0276772f387fc71fed4f2a1b0455d0710408b6"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01310720.bin",
+        "sha256": "17183f3d66a9cb39356f1de030ab050322d324ba674a144939cfa01bc6dd57ac"
+      },
+      "offset": 1310720,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01310720.MCP.original.json",
+        "sha256": "cb031de69f29005eed911908dcbe58d25dccbb59c560359746db94e612afc889"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01376256.bin",
+        "sha256": "12794b01edc7bf5e8a6c3e91556e9c9f84e5644076680d5c341865840f1821be"
+      },
+      "offset": 1376256,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01376256.MCP.original.json",
+        "sha256": "7cb691ca12d33909c38daacea37898850a38c192de823a9d7afd6ef4cb64768f"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01441792.bin",
+        "sha256": "9c668e1d0a144efd0d83f77900e46762f4c65f941a5faa8ea639140f7f9619bd"
+      },
+      "offset": 1441792,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01441792.MCP.original.json",
+        "sha256": "f314f1686cef2069a082153308add101c6c89a40894bfb3a6a405aaa7c99cef1"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01507328.bin",
+        "sha256": "5c4f714bdfb408a9480d90bc395fc37d6f430b0e37e44b5025de7141f2ea8816"
+      },
+      "offset": 1507328,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01507328.MCP.original.json",
+        "sha256": "da4a364382333f3d5d521775fdf7a80cb6803bab64a16c02f92e18ccb3d20507"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01572864.bin",
+        "sha256": "5a54a39047f66d2f25db6f536287bf455f763a775ba0a76437d929f5ce267b74"
+      },
+      "offset": 1572864,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01572864.MCP.original.json",
+        "sha256": "cff1d94473f25668cf9bd4b744e37f63071b73e49b4447ee79c10a7ff1835022"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/chunks/EXTERNAL902-ORIGINALS.tar.xz/01638400.bin",
+        "sha256": "eee328ed905edebcca49ba0945b957402f5a961de8ec317db49b77015d1f19fc"
+      },
+      "offset": 1638400,
+      "raw_MCP_receipt": {
+        "bytes": 87984,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01638400.MCP.original.json",
+        "sha256": "5f698ff54d24cccf10ecc383e40e0355e7536d53cc2e53f948d3b29c723333c6"
+      }
+    }
+  ],
+  "decompressed_prefix_bytes": 5856226,
+  "decompressed_prefix_sha256": "1aa9c178d1bd2cdae2417302c270e3d0f5d0d081b714921bdfc50796d334afcd",
+  "first_version": "16777233:588533027:1796220:1793881880637206994:1793881880637206994",
+  "full_239_member_set_verified": false,
+  "independent_fixed_pin_sources": [
+    {
+      "bytes": 20867,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/ROOT-FAILURE.json",
+      "sha256": "25f7bca3dfd2f10308e2d430704db54e393c12bd0add116065ff8666be85320b"
+    },
+    {
+      "bytes": 2873,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/material/PREPARED.json",
+      "sha256": "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+    }
+  ],
+  "original_xz_complete": false,
+  "original_xz_crc_or_whole_sha_verified": false,
+  "phone_calls": 0,
+  "prefix_bytes": 1703936,
+  "prefix_sha256": "d3cb45f02b3606af5fd8f7b624fecbc469259236f12b468f78fd959478260cb8",
+  "remote_calls": 0,
+  "retained_download_result": {
+    "bytes": 17906,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/DOWNLOAD-RESULT.json",
+    "sha256": "c58164701b44eb580891fb64a5b9e17e6d6b49672ac0b34bb244ce50a06ea328"
+  },
+  "schema": "hepta.external902.independently-pinned-selected-prefix-members.v1",
+  "selected_members": [
+    {
+      "archive_member": "root-originals/material/component-inputs.tar.gz",
+      "bytes": 471979,
+      "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/selected-gzip-input/root-originals/material/component-inputs.tar.gz",
+      "sha256": "989a78d8c9a844ea0f06859a9e9e2b66bafeacd4702a9b8388d6a031b7775afb"
+    }
+  ],
+  "source": {
+    "bytes": 5356,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/extract_selected_gzip.py",
+    "sha256": "32e6cfd6a9b4074edb6873812d1ca7c9dc889a6477ee16b94d8d3da28ef2284d"
+  },
+  "state": "ONE_COMPLETE_GZIP_MEMBER_MATCHES_SEPARATE_EXACT_PIN_FULL_ARCHIVE_STILL_INCOMPLETE"
+}

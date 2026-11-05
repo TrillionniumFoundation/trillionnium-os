@@ -1,0 +1,28 @@
+{
+  "collector_rerun": false,
+  "expected_chunks": 11,
+  "expected_version": "66306:33991650:820660:1793883317563311695:1793883317563311695",
+  "host": "pocket4",
+  "limit": 32768,
+  "maximum_parallel_reads": 1,
+  "offsets": [
+    491520,
+    524288,
+    557056,
+    589824,
+    622592,
+    655360,
+    688128,
+    720896,
+    753664,
+    786432,
+    819200
+  ],
+  "parent_required_before_resume": true,
+  "phone_calls": 0,
+  "remote_calls_so_far": 0,
+  "remote_file": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01/EXTERNAL902-P4-ORIGINALS.tar.xz",
+  "source_archive_expected_bytes": 820660,
+  "source_archive_expected_sha256": "ab778aa6c6f45b33f8b1d4af11be68f7d33306af0a40492c1738556af2100a8d",
+  "state": "LOCAL_RESUME_PREPARATION_ONLY_AWAITING_PARENT_AFTER_FIRST_TIMEOUT"
+}

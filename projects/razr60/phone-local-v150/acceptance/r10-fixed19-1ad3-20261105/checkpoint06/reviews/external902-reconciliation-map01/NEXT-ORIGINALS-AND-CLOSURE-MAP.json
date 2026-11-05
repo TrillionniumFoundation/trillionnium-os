@@ -1,0 +1,150 @@
+{
+  "capture_fault_interpretation": {
+    "known": "The only exit72 branch in retained actual command is nonzero ScreenshotCodec encode invocation.",
+    "must_not_replay_capture": true,
+    "not_known": "The codec underlying rejection reason is not retained by the shell command substitution; empty final stdout does not show whether codec emitted JSON into hepta_codec before returning nonzero."
+  },
+  "cleanup_admission_requirements": [
+    "Do not invoke stop_owned in a new process or signal stale PID54589/sidecar identities; only the original owner can claim original join.",
+    "LIFECYCLE-ENDED must bind actual provider/sidecar original JOINED and same spawned generation; then fresh readonly supervisor/provider/sidecar group and endpoint absence is independently required.",
+    "A historical native receipt with waitpid_joined/group_absent proves that action terminal, not supervisor/sidecar/current global cleanup.",
+    "The unchanged original snapshot and closer support provider_failed capture branches after full native hash-chain/stream/receipt validation; no current execution is authorized by this map.",
+    "A distinct reviewed same-nonce recovery continuation may use original snapshot/closure protocol only after source and ownership prerequisites, all actual raw inputs and full later inventory are bound; preserve component_qualified false.",
+    "Only actual successful closed failure plus late-boundary publication and original revalidation can advance the global predecessor. A later readonly inventory or source equivalence does not substitute."
+  ],
+  "explicitly_not_done": [
+    "new lease/nonce/case",
+    "source/runtime repair",
+    "phone/P4/Mac execution",
+    "cleanup signals",
+    "boundary publication",
+    "PASS claim"
+  ],
+  "facts": {
+    "capture_listener_failure": {
+      "automatic_retry": false,
+      "component_qualified": false,
+      "error": "ValueError:capture native failure retained",
+      "kernel_state": "CAPTURE_RESULT_CONSUMED_UNKNOWN",
+      "native_calls_may_have_been_sent": [
+        "guard_902e851c3ca1f90deab3d880ab993774_capture"
+      ],
+      "native_turn_terminal_verified": false,
+      "phase": "capture",
+      "source_reservations_are_not_sent_frames": true
+    },
+    "native_action_exit_code": 72,
+    "native_action_id": "5a952602788122f47ff1370cfa38dffe",
+    "native_can_redispatch": false,
+    "native_receipt_dispatch_count": 1,
+    "native_receipt_process_group_absent": true,
+    "native_receipt_terminal": true,
+    "native_receipt_waitpid_joined": true,
+    "provider_terminal": {
+      "business_qualified": false,
+      "error": "Native component stopped; original state retained, no retry and no qualification.",
+      "kind": "turn.fail",
+      "model_requests": 0,
+      "native_terminal_independently_verified": false,
+      "scope": {
+        "profile_id": "owner-open",
+        "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+        "task_id": "task-d3f61033-5b61-40e4-b8c6-7ea00d6b2d56",
+        "turn_id": "turn-c2247546-2cb4-4c98-b20f-b4ee06c2f14c",
+        "turn_stream_id": "r5-stream-6d465a4b53634e510a9b448f5d53be3ce4115ea2303e9ceeefaccd99bcc04475"
+      }
+    },
+    "sender_actor_summary": {
+      "automatic_replay": false,
+      "business_success_verified": false,
+      "draft_restore": {
+        "original_draft_submitted": false,
+        "restore_attempts": 1,
+        "state": "ORIGINAL_DRAFT_RESTORED"
+      },
+      "independent_collector_required": true,
+      "native_status": "provider_failed",
+      "out": "/home/alex/codex-hepta-natural-root-r10-neg01-7c907661-01-root-v150",
+      "prompt_sha256": "526568aa9d2c95f333caf396f9873deaf8baca2df841e7a94100e04b28bb93eb",
+      "retirement_resolution_sha256": "7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433",
+      "route": [
+        5037,
+        "23"
+      ],
+      "send_attempt_count": 1,
+      "state": "ORIGINAL_NATIVE_TERMINAL_OBSERVED"
+    }
+  },
+  "local_sender_top_extractions": [
+    {
+      "bytes": 699,
+      "original_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.send-result.json",
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/external902-reconciliation-map01/root-r10-neg01-7c907661-01.send-result.json",
+      "sha256": "97f1d13685636c03681120916abc20b357d0e47dfa594f1edfc22d40f68c24f5",
+      "source_version": "16777233:588487661:699:1793879040277467147:1793879040277467147"
+    },
+    {
+      "bytes": 1178,
+      "original_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.local-once.json",
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/external902-reconciliation-map01/root-r10-neg01-7c907661-01.local-once.json",
+      "sha256": "2a1bd1c330837c3dec9e1a880ca628e7e700ed7c1ac3a09d8c5896ddf3f076e9",
+      "source_version": "16777233:588486854:1178:1793878947916234811:1793878947916234811"
+    }
+  ],
+  "private_read_map": {
+    "bytes": 8815,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/external902-reconciliation-map01/PRIVATE-READ-MAP.json",
+    "sha256": "bd0ad443d3abbc6d6691ffe102caeb370681c519c4c3c0074df6ca32993c0c22"
+  },
+  "required_remaining_original_groups": [
+    {
+      "map": "/workspace/scratch/1ad3d6f55439/transport_fix/external902-reconciliation-map01/PRIVATE-READ-MAP.json",
+      "purpose": "original lease/package, lifecycle ended and exact provider/sidecar spawned/joined identities, private executor receipt originals and bound contract",
+      "where": "phone fixed home/executor alias/fixture"
+    },
+    {
+      "full_read_only_archive_preferred_over_many_individual_reads": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-7c907661-01",
+      "purpose": "original failed host phases and setup terminal/provenance; preserve sender-execute unjoined/EOFfalse as its historical observation",
+      "where": "Mac original Root fixed case tree"
+    },
+    {
+      "first_two_already_extracted_exact": true,
+      "paths": [
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.send-result.json",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.local-once.json",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.actor.py"
+      ],
+      "third_generated_actor_still_required_for_independent_closer": true,
+      "where": "Mac top three sender inputs"
+    },
+    {
+      "additional_evidence": "Retain whole fixed sender tree and its original inventory/restore receipts for complete independent native terminal verification; no rerun of sender.",
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-7c907661-01-root-v150",
+      "required_names_from_closer": [
+        "SEND.once.json",
+        "SEND.MONOTONIC-INTENT.json",
+        "SEND.MONOTONIC-WINDOW.json",
+        "SEND.result.json OR SEND.unknown.json (exactly original branch)",
+        "SEND-NATIVE-LATENCY.json"
+      ],
+      "where": "P4 original sender tree"
+    },
+    {
+      "path": "/home/alex/codex-hepta-native-guard-fixtures-r10-r1/902e851c3ca1f90deab3d880ab993774/setup",
+      "purpose": "one consumed setup attempt; before-guard/after-guard must remain absent if never dispatched; do not manufacture phase receipts",
+      "terminal_expected": {
+        "bytes": 24411,
+        "sha256": "82b4faebc69bae4d2e917af81300d82483f0183b7d3f357aa594c57cd6926ff6"
+      },
+      "where": "P4 original setup fixture"
+    },
+    {
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774",
+      "required": "material/tree/package32, original owner/previous/preserved draft, actual root setup plan/bound/accepted bytes; no creation or modification",
+      "where": "P4 original material and plan"
+    }
+  ],
+  "schema": "hepta.external902.next-read-and-closure-map.v1",
+  "state": "ORIGINAL_CAPTURE_FAILURE_RETAINED_CLOSURE_PENDING"
+}

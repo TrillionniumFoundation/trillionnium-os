@@ -1,0 +1,36 @@
+{
+  "ast_change_scope": [
+    "observation"
+  ],
+  "case_pass": false,
+  "findings": [
+    "Canonical base64 is decoded with validation and exact bytes/SHA/full9; only present complete returned bodies enter retained-bodies.",
+    "CAPTURE above one MiB and ORIGINALS.tar.gz remain descriptor-only. The parser forbids data_base64/encoding in such rows and emits fixed readback-needed entries without claiming the body is present.",
+    "When a native RESULT body is retained, both complete observed CAPTURE and archive descriptors must match its exact bytes/SHA and fixed original paths before descriptor-links-checked stays true. A complete observation with either missing row is rejected.",
+    "The v2 single-function delta handles partial observation after RESULT was read but a later leaf was not observed: it preserves RESULT body and leaves links false. It does not waive any complete-observation gate.",
+    "Reported CAPTURE header and existing boundary JSON are parsed as claims only. Snapshot archive content validated/adopted, existing boundary adopted and publication all stay false.",
+    "Fixed source45aff/callerdb1f, original12 archive, request/intent/actor child join and actual phone stdout are checked. Original controller/tool receipts remain a separately declared provenance requirement."
+  ],
+  "patch": {
+    "bytes": 1517,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/PARSER-PARTIAL-INCREMENT.patch",
+    "sha256": "c29b7ab8936372d44c1deb78065228bcb57a3dfff52662fe018855d466821bba"
+  },
+  "phone_calls": 0,
+  "prior_source": {
+    "bytes": 23550,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/parse_existing_capture_locally.py",
+    "sha256": "d4bb70d619230af6257d8ae4bd4ac97edc955ec2489d41d1490d7f21f1ff14e9"
+  },
+  "remote_calls": 0,
+  "reviewed_at_utc": "2026-11-05T13:13:17.918137+00:00",
+  "schema": "hepta.independent.existing-capture-local-parser-review.v1",
+  "scope": "Local source/AST inspection of retained_body, observation, native RESULT cross-links and their fixed wrapper inputs; no parser main or target functions executed, no phone/remote. This is not a review claim for every local filesystem publication detail.",
+  "source": {
+    "bytes": 23683,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/parse_existing_capture_locally_v2.py",
+    "sha256": "b272dbe278d30ed6bf9543882e0ed4d7d25995754055bc45b4652662bb98b92b"
+  },
+  "state": "NO_BLOCKER_IN_REVIEWED_BODY_DESCRIPTOR_AND_PARTIAL_LINK_SCOPE",
+  "target_functions_executed": 0
+}

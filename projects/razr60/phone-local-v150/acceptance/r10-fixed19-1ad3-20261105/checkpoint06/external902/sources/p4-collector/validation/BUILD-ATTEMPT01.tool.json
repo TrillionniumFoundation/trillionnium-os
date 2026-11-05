@@ -1,0 +1,7 @@
+{
+  "chunk_id": "c84dad",
+  "wall_time_seconds": 0.059677879,
+  "exit_code": 1,
+  "original_token_count": 80,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/build_source.py\", line 213, in <module>\n    assert not any(isinstance(node, (ast.Import, ast.ImportFrom)) and any(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+}

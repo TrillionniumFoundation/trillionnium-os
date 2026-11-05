@@ -1,0 +1,18 @@
+{
+  "complete_requested_members_present": [
+    "root-originals/material/component-inputs.tar.gz"
+  ],
+  "detail": "unexpected end of data",
+  "error_type": "tarfile.ReadError",
+  "exit_code": 1,
+  "full_archive_claimed": false,
+  "reason_observed": "1703936 compressed-prefix bytes decode 5856226 plaintext bytes, ending inside material/tree/package/source/component_snapshot.py before phone-plan-setup or sender-preview",
+  "remote_calls": 0,
+  "source": {
+    "bytes": 5769,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/extract_selected_inputs.py",
+    "sha256": "87dbc116cef9b7891f77987ed0fe219b8be74b500f292d731e8fbef6382f7c03"
+  },
+  "state": "LOCAL_SELECTED_EXTRACTION_INCOMPLETE_NO_SELECTED_OUTPUT_WRITTEN",
+  "target_execution": false
+}

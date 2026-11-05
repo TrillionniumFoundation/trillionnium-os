@@ -1,0 +1,32 @@
+{
+  "actual_delivery": {
+    "bytes": 28755,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json",
+    "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+  },
+  "actual_host_preparation_executed": false,
+  "all_functions_and_classes_byte_identical": true,
+  "case_runs": 0,
+  "changed_assignments": [
+    "OUT",
+    "CONSUMER_ROOT",
+    "ACCEPTANCE_ROOT"
+  ],
+  "derived_source": {
+    "bytes": 17186,
+    "sha256": "9ef4c79511e8b3cee5098eb8c9bf292d21b04bfbec7747cbd345efc673ac9df3"
+  },
+  "finalization": null,
+  "future_sealed_release": null,
+  "generator_main_calls": 0,
+  "generator_prepare_calls": 0,
+  "new_native_nonce_or_lease": false,
+  "parent_source": {
+    "bytes": 17114,
+    "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+  },
+  "phone_calls": 0,
+  "schema": "hepta.fixed19.six-host-generator-namespace-increment.v1",
+  "state": "SOURCE_ONLY_EXACT_THREE_NAMESPACE_BINDINGS_NO_FINALIZATION",
+  "whole_source_inverse_to_67eff": true
+}

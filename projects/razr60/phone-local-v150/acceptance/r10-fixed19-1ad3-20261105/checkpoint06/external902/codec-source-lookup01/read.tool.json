@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1abad9794-fc05-4fa8\",\n  \"stderr\": {\n    \"bytes_hex\": \"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e6520352c20696e203c6d6f64756c653e0a52756e74696d654572726f723a20626f756e64656420736f75726365206c6f6f6b7570206578686175737465643b207061727469616c206e6f7420616273656e63650a\",\n    \"eof\": true,\n    \"next_offset\": 141,\n    \"offset\": 0,\n    \"size\": 141,\n    \"text\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 5, in <module>\\nRuntimeError: bounded source lookup exhausted; partial not absence\\n\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

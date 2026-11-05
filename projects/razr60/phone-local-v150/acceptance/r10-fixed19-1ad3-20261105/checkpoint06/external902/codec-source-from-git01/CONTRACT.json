@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.screen-codec.contract.v1",
+  "status": "HOST_BUILT_AND_PURE_CONTRACT_CHECKED_NOT_DEVICE_QUALIFIED",
+  "class": "org.trillionnium.hepta.screen.ScreenshotCodec",
+  "jar": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-screen-codec-D-v148-r1/build-04/hepta-screen-codec-v148.jar",
+    "bytes": 16064,
+    "sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639"
+  },
+  "proposed_phone_path": "/data/local/tmp/hepta-screen-v148-r1/codec.jar",
+  "calling_uid": 2000,
+  "entry": "CLASSPATH=/data/local/tmp/hepta-screen-v148-r1/codec.jar app_process /system/bin org.trillionnium.hepta.screen.ScreenshotCodec encode --capture-id SAFE --input /data/local/tmp/hepta-shot-SAFE.png --serial ZY22LS7WZT --viewport-before-b64 BASE64_UTF8 --viewport-after-b64 BASE64_UTF8 [--max-bytes N]",
+  "arguments": {
+    "capture_id": "ASCII[A-Za-z0-9_-]{1,64}",
+    "input": "Exact/data/local/tmp/hepta-shot-<capture_id>.png; no override or symlink",
+    "serial": "Exactly ZY22LS7WZT",
+    "metadata": "Each<=6144 UTF8 bytes via strictBase64, one raw line without CR/LF/NUL; original leading spaces preserved",
+    "max_bytes": {
+      "default": 196608,
+      "minimum": 65536,
+      "maximum": 196608,
+      "canonical_decimal_only": true
+    }
+  },
+  "caller_provenance": [
+    "Use actual existing authenticated phone Shell capture, not a host-produced image.",
+    "Read full real dumpsys display mViewports line before and after same capture; shell command substitution drops trailing LF only.",
+    "Require fresh unique target path not to exist, setumask077, then ordinary Shell screencap physical display4630947043778501779 to that path.",
+    "Pass exact raw viewport lines base64; codec parses rather than treating fixed allowlist values as observations.",
+    "For model shot do not copy old qualification PNG or forge metadata. A labelled non-model codec qualification may copy an existing real PNG using ordinary Shell cp, without-p orsu.",
+    "Caller/provider enforces per-turn total JPEG budget393216B; encoder enforces the requested single-image cap only."
+  ],
+  "viewport_validation": {
+    "same_raw_before_after": true,
+    "exactly_one_active_valid_internal": true,
+    "logical_display_id": 0,
+    "physical_display_id": "local:4630947043778501779",
+    "rotation": 0,
+    "logical_and_physical_frame": "Rect(0, 0 - 1224, 2992)",
+    "device_size": [
+      1224,
+      2992
+    ],
+    "other_active_screen_or_rotation": "rejected, not silently remapped"
+  },
+  "file_validation": [
+    "UID/eUID2000 only; all/data,/data/local,/data/local/tmp lstat as real directories",
+    "lstat regular Shellowned nlink1,45..16777216 bytes, no group/world write; age-2..60s",
+    "open O_RDONLY|O_NOFOLLOW|O_CLOEXEC, descriptor/stat/path inode/size/mtime/ctime match before/after read",
+    "Full bounded read plus EOF, PNG signature/chunk bound/CRC/IHDR1224x2992/IEND structure; no APNG",
+    "BitmapFactory bounds and decoded original confirm same real dimensions/MIME",
+    "After encoding named source lstat must still match; input file never written/deleted"
+  ],
+  "encoding": {
+    "source_decodes_once": true,
+    "max_edges_in_order": [
+      1600,
+      1280,
+      1024,
+      800
+    ],
+    "encoded_sizes_in_order": [
+      [
+        655,
+        1600
+      ],
+      [
+        524,
+        1280
+      ],
+      [
+        419,
+        1024
+      ],
+      [
+        327,
+        800
+      ]
+    ],
+    "jpeg_quality_at_each_size_in_order": [
+      80,
+      70,
+      60,
+      50
+    ],
+    "selection": "First same-image full-frame JPEG<=requested max bytes; no crop, retake, pixel generation or UI action",
+    "data": "base64 JPEG; sha256 of exact encoded bytes and original full PNG bytes",
+    "bitmap_release": "All scaled bitmaps and original recycled in finally",
+    "mainLooper": "Prepare only if both processmainLooper and threadLooper absent; no loop/thread/UI service"
+  },
+  "success": {
+    "rc": 0,
+    "schema": "hepta.phone-screenshot.v1",
+    "status": "encoded",
+    "media_type": "image/jpeg",
+    "encoding": "base64",
+    "exact_keys": [
+      "schema",
+      "status",
+      "capture_id",
+      "serial",
+      "logical_display_id",
+      "physical_display_id",
+      "rotation",
+      "viewport_before",
+      "viewport_after",
+      "original_width",
+      "original_height",
+      "encoded_width",
+      "encoded_height",
+      "media_type",
+      "encoding",
+      "quality",
+      "data_base64",
+      "image_sha256",
+      "source_png_sha256",
+      "source_png_bytes",
+      "encoded_bytes"
+    ],
+    "no_max_bytes_extra_key": true
+  },
+  "failure": {
+    "rc": [
+      20,
+      22
+    ],
+    "keys": [
+      "schema",
+      "status",
+      "reason"
+    ],
+    "schema": "hepta.phone-screenshot.v1",
+    "status": "rejected",
+    "no_data_or_stack_trace": true
+  },
+  "coordinate_contract": "Model coordinates from encoded image need per-axis original_width/encoded_width and original_height/encoded_height mapping before input. Current viewport must still equal encoded viewport guard; encoder does not inject any touch.",
+  "effects_by_encoder": {
+    "screen_capture": false,
+    "network": false,
+    "filesystem_writes": false,
+    "chmod_or_permissions": false,
+    "IME_or_a11y_connection": false,
+    "UI_actions": false,
+    "additional_processes": false
+  },
+  "limits": [
+    "Host pure contract tests do not execute Android Bitmap/Os runtime. Root must perform actual codec qualification and separate actual model screenshot->image->action tests.",
+    "Old D8/API34 tool emits min-api36 unsupported warning; code calls publicAPI<=34 only.",
+    "Encoder validates supplied viewport observations but does not itself authenticate/capture them; caller Host command/provenance is required."
+  ]
+}

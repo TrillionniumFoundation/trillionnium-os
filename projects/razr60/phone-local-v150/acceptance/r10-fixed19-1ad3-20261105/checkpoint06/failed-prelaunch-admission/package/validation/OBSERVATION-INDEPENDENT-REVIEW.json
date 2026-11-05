@@ -1,0 +1,165 @@
+{
+  "actual_input_manifest": {
+    "bytes": 26529,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/actual-run04/package/INPUTS.json",
+    "sha256": "8228741fb6f27c51c23255beb51c7824305a31d5b43fc1c3907ddea9ed0304cf"
+  },
+  "actual_observation_crosslinks": [
+    {
+      "controller_created_unix_ms": 1793876504221,
+      "controller_published_result": {
+        "bytes": 1374,
+        "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external09-stage-read01/RESULT.json",
+        "sha256": "d31912a812e6db13231f622b37c1f566f9379d1d85d5e71818cb66e6404e49e1"
+      },
+      "controller_terminal_unix_ms": 1793876508954,
+      "job_id": "1a1ab5f2e9d-fc05-4d0f",
+      "launcher_179a_assert_present_and_whole_source_pinned": true,
+      "native_original_rc0_stdout_and_empty_stderr_match": true,
+      "original_controller_stdout_complete_bytes": 784,
+      "retained_launcher_source": {
+        "bytes": 48346,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/root-r10-neg01-20261105-09/stage/launcher_source.original",
+        "sha256": "8c30eda635a93396d5e7ed46cf4a1ef6900d6f19c80a47b6a9c573622e9ea9b7"
+      },
+      "role": "root-r10-neg01-20261105-09",
+      "source": {
+        "bytes": 20275,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/root-r10-neg01-20261105-09/stage/source.original",
+        "sha256": "a460562d2217bcbbd167ac6a4ae2e38d4713da05dee8b57337ff4ce3eceb37be"
+      },
+      "source_request_and_label_match": true
+    },
+    {
+      "controller_created_unix_ms": 1793873598390,
+      "controller_published_result": {
+        "bytes": 1370,
+        "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-neg01-stage-read01/RESULT.json",
+        "sha256": "0dadb7ddec50a1e723823d3633409620e1acf69d85e41d1e629d4044b633eeef"
+      },
+      "controller_terminal_unix_ms": 1793873600121,
+      "job_id": "1a1ab32d7b6-fc05-4b5b",
+      "launcher_179a_assert_present_and_whole_source_pinned": true,
+      "native_original_rc0_stdout_and_empty_stderr_match": true,
+      "original_controller_stdout_complete_bytes": 317,
+      "retained_launcher_source": {
+        "bytes": 51692,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/root-r10-neg01-1ad3-01/stage/launcher_source.original",
+        "sha256": "a6823b2544c19dbf38aaa178298ba61d8271dd4e4fe28775b5c7a5763f370ae7"
+      },
+      "role": "root-r10-neg01-1ad3-01",
+      "source": {
+        "bytes": 20268,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/root-r10-neg01-1ad3-01/stage/source.original",
+        "sha256": "fdfa661921d8f5a80bae3f7ac07812c666188625a9e23b7951df8f4b8b1048ac"
+      },
+      "source_request_and_label_match": true
+    },
+    {
+      "controller_created_unix_ms": 1793875877765,
+      "controller_published_result": {
+        "bytes": 1390,
+        "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-neg01-retired-read02/RESULT.json",
+        "sha256": "08f3788f3e945b080ffcfe2baaafcb92acaaf62e7e17c7982f1d1ac2db4c9784"
+      },
+      "controller_terminal_unix_ms": 1793875927344,
+      "job_id": "1a1ab559f85-fc05-4cb3",
+      "launcher_179a_assert_present_and_whole_source_pinned": true,
+      "native_original_rc0_stdout_and_empty_stderr_match": true,
+      "original_controller_stdout_complete_bytes": 788,
+      "retained_launcher_source": {
+        "bytes": 41213,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/global-retirement/launcher_source.original",
+        "sha256": "046e6ca126c5c5bb204301a9d44f833e3051d5844ec4d118495d30194202ab26"
+      },
+      "role": "global_retirement",
+      "source": {
+        "bytes": 17039,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/global-retirement/source.original",
+        "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba"
+      },
+      "source_request_and_label_match": true
+    },
+    {
+      "controller_created_unix_ms": 1793876360822,
+      "controller_published_result": {
+        "bytes": 1408,
+        "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-failed-prelaunch-current-read01/RESULT.json",
+        "sha256": "6c0e515082f9354987d27c4affd775bf37a5f15dec6f25ef1762990c76d00318"
+      },
+      "controller_terminal_unix_ms": 1793876362669,
+      "job_id": "1a1ab5cfe76-fc05-4d02",
+      "launcher_179a_assert_present_and_whole_source_pinned": true,
+      "native_original_rc0_stdout_and_empty_stderr_match": true,
+      "original_controller_stdout_complete_bytes": 816,
+      "retained_launcher_source": {
+        "bytes": 33230,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/current-observation/launcher_source.original",
+        "sha256": "1593b08bc5bea4b7f0b8d213296376cfe9b7962fb9734a30696dd5beff25f668"
+      },
+      "role": "current_observation",
+      "source": {
+        "bytes": 13192,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/originals/current-observation/source.original",
+        "sha256": "1956c026152ff82a9c3065388139c8782c55c5788afa9cfeacfef054651f18ed"
+      },
+      "source_request_and_label_match": true
+    }
+  ],
+  "findings": [
+    "All four retained actual launcher byte pins were independently read and checked. Their literal PROBE bytes equal the fixed source supplied to the observation, their REQ and LABEL equal the native intent, and original request_sha256 equals the launcher enc(JSON indent2 plus LF) bytes.",
+    "Each whole pinned launcher retains the exact179a phone_once source SHA assertion before its one Popen invocation. Launcher code is parsed as data by the verifier and never imported.",
+    "Known controller job IDs, host/executable/argv, successful durable terminal/full untruncated stream checks, exact published result hash and fixed P4 output namespace bind each retained observation to its own native result chain.",
+    "The verifier explicitly treats the retained controller tool receipts as its execution-origin trust source. It does not claim to reconstruct or independently authenticate the controller stdin request digest from data that the receipt does not contain.",
+    "Phone source transport is limited to exact shell-quoted -c or the actual118d literal quoted heredoc. The extra terminal LF in that heredoc has its own executed payload digest and is not represented as the original17039-byte source digest.",
+    "Stage observations reverse only the six actual binding literals to the full fixed fdfa template. Exact57 files,9 directories,29 explicit absences and original empty journal seed remain required. The four-actual-source whitelist further prevents admitting an arbitrary template binding.",
+    "Original-global clearance requires source118d, its actual schema/state, completed original verify_retired call, true original verification and actual08 full-chain result, plus a released returned readonly lock and no remaining new FD. Explicit65aa diagnostic cannot enter this branch.",
+    "Current publication requires source1956, both failed nonce/owner bindings, original selected bytes and pending absence, complete provider-in closed set, full9 bookends, and creation after original-global completion. Scope remains read-only with no native boundary/component/business PASS.",
+    "The d669 to e78d delta does not change stage_observation, global_verification or current_publication function bytes. Only the two caller/controller functions and necessary constants/schema fields changed."
+  ],
+  "no_target_import_or_execution": true,
+  "no_target_main_or_assembler_run": true,
+  "phone_operations": 0,
+  "physical_or_whole_case_pass_claimed": false,
+  "previous_snapshot": {
+    "bytes": 52560,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/review-snapshot01/source/verify_failed_prelaunch.py",
+    "sha256": "d669d7143968053d7208442436e55df19b4ebbcfdb6b5873532c39cc59f2ec25"
+  },
+  "remote_calls": 0,
+  "review_limit": "This is an independent narrow source and actual-original linkage review, not a claim to reverify every119-byte-original set entry or the entire acceptance suite.",
+  "review_scope": {
+    "additional_delta": [
+      "four exact actual launcher pins/job IDs/output namespaces",
+      "one launcher_source observation descriptor",
+      "explicit trusted controller origin and no recomputed stdin digest claim"
+    ],
+    "delta_functions_only": [
+      "completed_controller",
+      "phone_observation"
+    ],
+    "excluded": [
+      "sender340/raw lifecycle whole-case logic already separately reviewed",
+      "running the target assembler or its main",
+      "full119-member repeated qualification",
+      "runtime plan helper binding (separate review)",
+      "phone or remote operations"
+    ],
+    "read_source_functions": [
+      "completed_controller",
+      "phone_observation",
+      "stage_observation",
+      "global_verification",
+      "current_publication"
+    ]
+  },
+  "reviewer": "transport_review",
+  "schema": "hepta.root.failed-prelaunch-observation-independent-review.v1",
+  "snapshot": {
+    "bytes": 54893,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/review-snapshot02/source/verify_failed_prelaunch.py",
+    "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+  },
+  "source_edits_by_reviewer": 0,
+  "state": "NO_BLOCKER_FOUND_IN_SPECIFIED_OBSERVATION_AND_CALLER_PROVENANCE_SCOPE"
+}

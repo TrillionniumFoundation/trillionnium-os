@@ -1,0 +1,37 @@
+{
+  "actual_policy": {
+    "bytes": 2667740,
+    "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+  },
+  "component_combination": {
+    "bytes": 4702,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/COMBINATION.json",
+    "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+  },
+  "full_rule": {
+    "bytes": 17284,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/full-candidate.rule",
+    "sha256": "424e1c680d37583f039c8cc5e2727200b3f9ad8fd29d35616173a5102b0218d1"
+  },
+  "policy_adoption": {
+    "bytes": 208226,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json",
+    "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+  },
+  "policy_verifier": {
+    "bytes": 126796,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py",
+    "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+  },
+  "runtime_manifest": {
+    "bytes": 19020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json",
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "schema": "hepta.property-policy.final-pin-freeze.v1",
+  "scope_decision": {
+    "bytes": 24830,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/ROOT-SCOPE-DECISION.original.json",
+    "sha256": "5a08041da77eeec9168c869ae76adae0a117a5e34872aa07a1a096bc06a36132"
+  }
+}

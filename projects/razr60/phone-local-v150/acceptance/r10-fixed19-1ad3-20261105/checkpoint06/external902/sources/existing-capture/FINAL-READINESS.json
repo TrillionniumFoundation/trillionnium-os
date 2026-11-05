@@ -1,0 +1,48 @@
+{
+  "actual_execution_owner": "/root",
+  "caller": {
+    "bytes": 44799,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "db1f4a18b37ab6b8c21d338978e28a6993249b7fa987a33ee3d04d0fe5ae996d"
+  },
+  "capture_suffix_changed": false,
+  "controller_request": {
+    "bytes": 47329,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "d2067b6f13ea5adb503830811ab4840c3752ac223b0f9805983ba64d03635f98"
+  },
+  "idempotency_key": "root-1ad3-external902-existing-capture-read01-20261105",
+  "independent_reviews": [
+    {
+      "bytes": 4209,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/INDEPENDENT-SOURCE-REVIEW.original.json",
+      "sha256": "c576546d62fa261dd1ea2878c936407e497bfb6c7801a6439988d0c7a049711e"
+    },
+    {
+      "bytes": 3402,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/INDEPENDENT-CALLER-REVIEW.original.json",
+      "sha256": "56183a76f3a28bfdaf4677770c80e517c5765c3a3c1e155c8f3a76ace7266890"
+    }
+  ],
+  "native_boundary_adopted_or_published": false,
+  "schema": "hepta.fixed-existing-capture-observer.final-source-readiness.v1",
+  "snapshot_entry_replay": false,
+  "source": {
+    "bytes": 18736,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/package/source/observe_existing_capture_once.py",
+    "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+  },
+  "source_archive": {
+    "bytes": 16952,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/SOURCE-PACKAGE.tar.gz",
+    "sha256": "486fd65cd59b297e77570f860ea3cf37c57a669502fe39cb4fb0952b540002aa"
+  },
+  "source_manifest": {
+    "bytes": 1000,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "8448dc9b6d7a2846e868a65329e09fc982fe73504ef0b6ccb92b2b51315205f3"
+  },
+  "state": "FROZEN_SOURCE_AND_CALLER_INDEPENDENTLY_REVIEWED",
+  "this_agent_remote_calls": 0,
+  "this_agent_target_function_calls": 0
+}

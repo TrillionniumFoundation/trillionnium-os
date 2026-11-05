@@ -1,0 +1,38 @@
+{
+  "maximum_parallel_reads": 2,
+  "missing": [
+    {
+      "name": "EXTERNAL902-ORIGINALS.tar.xz",
+      "offset": 1703936
+    },
+    {
+      "name": "EXTERNAL902-ORIGINALS.tar.xz",
+      "offset": 1769472
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 65536
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 131072
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 196608
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 262144
+    }
+  ],
+  "on_first_error": "retain_original_and_stop_scheduling_new_reads",
+  "original_incomplete_result": {
+    "bytes": 17906,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/DOWNLOAD-RESULT.json",
+    "sha256": "c58164701b44eb580891fb64a5b9e17e6d6b49672ac0b34bb244ce50a06ea328"
+  },
+  "phone_calls": 0,
+  "remote_process_start": 0,
+  "state": "AUTHORIZED_READONLY_RESUME_FIXED_FIRST_VERSIONS"
+}

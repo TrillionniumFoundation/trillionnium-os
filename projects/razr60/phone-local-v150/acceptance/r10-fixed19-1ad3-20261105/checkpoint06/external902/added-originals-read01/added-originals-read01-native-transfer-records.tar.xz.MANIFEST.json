@@ -1,0 +1,37 @@
+{
+  "archive": {
+    "bytes": 71636,
+    "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/added-originals-read01-native-transfer-records.tar.xz",
+    "sha256": "565a90549f7bb375ad706b53a9e95360a3c9ed073371648b4bf88e7c2b8c5d8b"
+  },
+  "case_pass": false,
+  "files": [
+    {
+      "member": "chunk0.tool.json",
+      "original": {
+        "bytes": 87873,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/chunk0.tool.json",
+        "sha256": "c7c8743283de966a56afe5913ddd3ba99264f455b03ac28a6b9ef71a6e2c8943"
+      }
+    },
+    {
+      "member": "chunk65536.tool.json",
+      "original": {
+        "bytes": 5608,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/chunk65536.tool.json",
+        "sha256": "813662911b2428b8922bc5e4d736853b213ede7993ea6d2c0a3b5084d8692cff"
+      }
+    }
+  ],
+  "kind": "complete read-only probe transfer receipts",
+  "member_bytes": 93481,
+  "members": 2,
+  "original_metadata_reproduced": false,
+  "remote_collection_performed": false,
+  "schema": "hepta.local-lossless-evidence-carrier.v1",
+  "state": "LOCAL_REPACK_OF_EXISTING_EXACT_BYTES",
+  "tar": {
+    "bytes": 102400,
+    "sha256": "c9c2644c16a920e82778f7c3fba3fcd22a93cb29255fa8cf8d2c93382f546d7f"
+  }
+}

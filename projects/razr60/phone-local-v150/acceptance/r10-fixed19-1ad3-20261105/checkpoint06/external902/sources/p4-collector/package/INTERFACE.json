@@ -1,0 +1,79 @@
+{
+  "case_pass": false,
+  "fixed_trees": {
+    "material-originals": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/material",
+    "sender-originals": "/home/alex/codex-hepta-natural-root-r10-neg01-7c907661-01-root-v150",
+    "setup-fixture-originals": "/home/alex/codex-hepta-native-guard-fixtures-r10-r1/902e851c3ca1f90deab3d880ab993774/setup"
+  },
+  "member_metadata": "full9 held-fd and named bookends",
+  "new_output": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01",
+  "original_mac_sender_join_or_EOF_retrofitted": false,
+  "phone_calls": 0,
+  "pinned_sibling_files": {
+    "setup-plan-originals/ACCEPTED.json": {
+      "bytes": 552,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/ACCEPTED.json",
+      "sha256": "a3e0cdace4d9eb2f875beddd9556b8ee94f38820f086bc15387386660b6bb603"
+    },
+    "setup-plan-originals/BOUND-CONTRACT.json": {
+      "bytes": 1842,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/BOUND-CONTRACT.json",
+      "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+    },
+    "setup-plan-originals/ROOT-SETUP-PLAN.json": {
+      "bytes": 6402,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/ROOT-SETUP-PLAN.json",
+      "sha256": "824880935f6bfe854d4b1f096f7c7c593db7bb85d200153ddca3daea291f1607"
+    },
+    "sibling-input-originals/component-inputs.tar.gz": {
+      "bytes": 471979,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/component-inputs.tar.gz",
+      "sha256": "989a78d8c9a844ea0f06859a9e9e2b66bafeacd4702a9b8388d6a031b7775afb"
+    },
+    "sibling-input-originals/preserved_draft.original": {
+      "bytes": 282,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/preserved_draft.original",
+      "sha256": "9d801d675a461de996206b1bdc911309aeb40df599c49860ddc9699779d4e741"
+    },
+    "sibling-input-originals/previous.original": {
+      "bytes": 1428,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/previous.original",
+      "sha256": "9133e2511a66a809be647cb8bb49e3afb351825db5e465f75b1f2f0b6d9d88f4"
+    },
+    "sibling-input-originals/request.original": {
+      "bytes": 317,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/request.original",
+      "sha256": "526568aa9d2c95f333caf396f9873deaf8baca2df841e7a94100e04b28bb93eb"
+    },
+    "sibling-input-originals/stage_component.py": {
+      "bytes": 19116,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    }
+  },
+  "result_alone_is_not_final_success": true,
+  "schema": "hepta.external902-p4-collector-interface.v1",
+  "separate_mac_actor_read": {
+    "already_downloaded_by_root": true,
+    "bytes": 82909,
+    "included_in_P4_collection": false,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.actor.py",
+    "sha256": "e583b6183479f871bec64808304992f71972e6eed3566f6181ab9c870b245598"
+  },
+  "signals_sent": 0,
+  "source": {
+    "bytes": 40752,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/source/collect_external902_p4_originals.py",
+    "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+  },
+  "source_evaluation_or_subprocesses_inside_collector": 0,
+  "state": "SOURCE_ONLY_NOT_EXECUTED",
+  "success_requires_actual_controller": {
+    "exit_code": 0,
+    "no_truncated_streams": true,
+    "output_complete": true,
+    "output_durable": true,
+    "stdout_last_full_recheck_after_result": true
+  },
+  "target_host": "pocket4"
+}

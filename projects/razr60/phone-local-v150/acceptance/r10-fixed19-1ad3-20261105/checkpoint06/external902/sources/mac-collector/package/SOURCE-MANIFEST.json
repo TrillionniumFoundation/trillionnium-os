@@ -1,0 +1,92 @@
+{
+  "case_passes_added": 0,
+  "files": [
+    {
+      "bytes": 11500,
+      "path": "DERIVATION.json",
+      "sha256": "de7f1c03971dd230c01c5dc9e1b838bc4d51a05080d1de19df3bacd02a40ad8f"
+    },
+    {
+      "bytes": 2209,
+      "path": "INTERFACE.json",
+      "sha256": "10c7160cfdfde92d71c64e038d7de7948169939d8858ae7d17cad33683bd9b22"
+    },
+    {
+      "bytes": 1164,
+      "path": "README.md",
+      "sha256": "ca1739baec23e00c6c6fd56736c0382114b956093b7a78cb5b81d1bf92e221db"
+    },
+    {
+      "bytes": 363,
+      "path": "reference/actual-case/CHAIN-INTENT.json",
+      "sha256": "13cc6b10faee047287e5c0e599de51425e4b8d043cf36dfb96b5517e825aa3ff"
+    },
+    {
+      "bytes": 20867,
+      "path": "reference/actual-case/ROOT-FAILURE.json",
+      "sha256": "25f7bca3dfd2f10308e2d430704db54e393c12bd0add116065ff8666be85320b"
+    },
+    {
+      "bytes": 4783,
+      "path": "reference/actual-case/ROOT-PLAN.original.json",
+      "sha256": "9a94108ffc737133ba879bd9cccd70c7ec3ae2f3da17eb689e5b1d5610789d58"
+    },
+    {
+      "bytes": 2873,
+      "path": "reference/actual-case/material/PREPARED.json",
+      "sha256": "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+    },
+    {
+      "bytes": 20496,
+      "path": "reference/collect_failed_root_originals.181889.original.py",
+      "sha256": "181889ed6477819622909d0bdd016ad5d51d3352e17925c0359fc941d87a7d66"
+    },
+    {
+      "bytes": 74287,
+      "path": "reference/late_boundary.396da.original.py",
+      "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+    },
+    {
+      "bytes": 11894,
+      "path": "reference/root-SOURCE-MANIFEST.f865.original.json",
+      "sha256": "f865ae8b2edaf8c8f3076fc299796b953f66af7f848042b68932d76aaaab67c6"
+    },
+    {
+      "bytes": 72194,
+      "path": "reference/run_component_root_once.f98ca.original.py",
+      "sha256": "f98ca61da43f0d62604701a1e4dc1d58df03cbb6e0cd7566bf293e298f0b15e0"
+    },
+    {
+      "bytes": 16808,
+      "path": "reference/runtime-MANIFEST.31da.original.json",
+      "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+    },
+    {
+      "bytes": 1178,
+      "path": "reference/sender-top/root-r10-neg01-7c907661-01.local-once.json",
+      "sha256": "2a1bd1c330837c3dec9e1a880ca628e7e700ed7c1ac3a09d8c5896ddf3f076e9"
+    },
+    {
+      "bytes": 699,
+      "path": "reference/sender-top/root-r10-neg01-7c907661-01.send-result.json",
+      "sha256": "97f1d13685636c03681120916abc20b357d0e47dfa594f1edfc22d40f68c24f5"
+    },
+    {
+      "bytes": 36689,
+      "path": "source/collect_external902_originals.py",
+      "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+    },
+    {
+      "bytes": 36971,
+      "path": "validation/COLLECTOR-INCREMENT.patch",
+      "sha256": "f9448d614f57fde0532de7da986c97131b6c4e928e8f5e320b4a42a9e869be57"
+    },
+    {
+      "bytes": 840,
+      "path": "validation/LOCAL-SOURCE-CHECKS.json",
+      "sha256": "8c9b2d264718adbffcd7db33c5ebffb8e2a1ab881c612a67830fee1f2879369b"
+    }
+  ],
+  "schema": "hepta.external902-fixed-mac-collector-source-package.v1",
+  "state": "SOURCE_ONLY_NO_REMOTE_EXECUTION"
+}

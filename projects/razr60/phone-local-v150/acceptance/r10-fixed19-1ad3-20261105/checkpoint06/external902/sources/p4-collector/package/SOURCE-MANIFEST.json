@@ -1,0 +1,80 @@
+{
+  "P4_processes_started": 0,
+  "case_pass": false,
+  "files": [
+    {
+      "bytes": 3987,
+      "path": "INTERFACE.json",
+      "sha256": "bcff28695ec00db1771bdc9b7f3769eafea8ecdf78075f3bc13b29df046e63da"
+    },
+    {
+      "bytes": 1435,
+      "path": "README.md",
+      "sha256": "f55427e441d502ff8fe77123f87ffc80389e19fd2413cbed4c04cf5bdebb3979"
+    },
+    {
+      "bytes": 2873,
+      "path": "reference/PREPARED.original.json",
+      "sha256": "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+    },
+    {
+      "bytes": 20867,
+      "path": "reference/ROOT-FAILURE.original.json",
+      "sha256": "25f7bca3dfd2f10308e2d430704db54e393c12bd0add116065ff8666be85320b"
+    },
+    {
+      "bytes": 4783,
+      "path": "reference/ROOT-PLAN.original.json",
+      "sha256": "9a94108ffc737133ba879bd9cccd70c7ec3ae2f3da17eb689e5b1d5610789d58"
+    },
+    {
+      "bytes": 36689,
+      "path": "reference/collect_external902_mac_originals.original.py",
+      "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+    },
+    {
+      "bytes": 552,
+      "path": "reference/later-private-ACCEPTED.json",
+      "sha256": "a3e0cdace4d9eb2f875beddd9556b8ee94f38820f086bc15387386660b6bb603"
+    },
+    {
+      "bytes": 1842,
+      "path": "reference/later-private-BOUND-CONTRACT.json",
+      "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+    },
+    {
+      "bytes": 6402,
+      "path": "reference/later-private-ROOT-SETUP-PLAN.json",
+      "sha256": "824880935f6bfe854d4b1f096f7c7c593db7bb85d200153ddca3daea291f1607"
+    },
+    {
+      "bytes": 16808,
+      "path": "reference/runtime-MANIFEST.original.json",
+      "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+    },
+    {
+      "bytes": 40752,
+      "path": "source/collect_external902_p4_originals.py",
+      "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+    },
+    {
+      "bytes": 9178,
+      "path": "validation/DERIVATION.json",
+      "sha256": "2a4185071195bc2865aff62a9a50c41ab1900203f62c3f3e06aa01d0f37bf2ce"
+    },
+    {
+      "bytes": 56773,
+      "path": "validation/collector-scope.patch",
+      "sha256": "821a93d98a84ab3f404b08d23b34006cc76f21e97b81929e0a564d935f69463e"
+    }
+  ],
+  "original_sender_join_or_EOF_retrofitted": false,
+  "phone_calls": 0,
+  "schema": "hepta.external902-p4-original-collector-source-package.v1",
+  "source": {
+    "bytes": 40752,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/source/collect_external902_p4_originals.py",
+    "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+  },
+  "state": "SOURCE_ONLY_FIXED_ORIGINAL_READ_SCOPE_NOT_EXECUTED"
+}

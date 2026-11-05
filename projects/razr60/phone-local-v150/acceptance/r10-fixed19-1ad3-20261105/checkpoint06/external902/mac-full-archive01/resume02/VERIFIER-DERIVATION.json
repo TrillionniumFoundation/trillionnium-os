@@ -1,0 +1,54 @@
+{
+  "exact_replacements": [
+    {
+      "after": "download = json.loads((R / 'DOWNLOAD-RESULT.json').read_bytes())\nresume1 = json.loads((R / 'resume01/RESUME-RESULT.json').read_bytes())\nresume2 = json.loads((R / 'resume02/RESUME-RESULT.json').read_bytes())\nassert download['state'] == 'DOWNLOAD_INCOMPLETE_ERRORS_PRESERVED' and download['verified_chunks'] == 29 and len(download['failures']) == 4\nassert resume1['state'] == 'RESUME_INCOMPLETE_ERRORS_PRESERVED' and resume1['verified_chunks'] == 1 and len(resume1['failures']) == 2\nassert resume2['state'] == 'NINE_32K_SEGMENTS_VERIFIED_AT_ORIGINAL_VERSIONS' and resume2['verified_chunks'] == 9 and resume2['failures'] == []\nassert resume2['maximum_parallel_reads'] == 1 and resume2['limit'] == 32768\nerror_receipts = []\nall_native_receipts = []\nfor folder in (R, R / 'resume01', R / 'resume02'):\n    for path in sorted((folder / 'receipts').glob('*.MCP.original.json')):\n        all_native_receipts.append(path)\n        if json.loads(path.read_bytes()).get('isError') is True:\n            error_receipts.append(desc(path))\nassert len(all_native_receipts) == 45 and len(error_receipts) == 6\n\ndef segments(name, size):\n    if name == 'EXTERNAL902-ORIGINALS.tar.xz':\n        return [(R, offset, 65536) for offset in range(0, 1703936, 65536)] + [(R / 'resume02', offset, 32768) for offset in (1703936, 1736704)] + [(R / 'resume01', 1769472, 65536)]\n    if name == 'ORIGINALS-MANIFEST.json':\n        return [(R, 0, 65536)] + [(R / 'resume02', offset, 32768) for offset in (65536, 98304, 131072, 163840, 196608, 229376, 262144)]\n    return [(R, 0, 65536)]\n\nassembled, receipts = {}, []",
+      "before": "download = json.loads((R / 'DOWNLOAD-RESULT.json').read_bytes())\nassert download['state'] == 'ALL_NATIVE_BINARY_CHUNKS_VERSION_PINNED_AND_VERIFIED'\nassert download['verified_chunks'] == download['expected_chunks'] == 35 and download['failures'] == []\nassembled, receipts = {}, []"
+    },
+    {
+      "after": "    expected_offset = 0\n    for folder, offset, limit in segments(name, size):\n        assert offset == expected_offset",
+      "before": "    for offset in range(0, size, 65536):"
+    },
+    {
+      "after": "        receipt_path = folder / 'receipts' / (stem + '.MCP.original.json')\n        verification_path = folder / 'receipts' / (stem + '.VERIFIED.json')",
+      "before": "        receipt_path = R / 'receipts' / (stem + '.MCP.original.json')\n        verification_path = R / 'receipts' / (stem + '.VERIFIED.json')"
+    },
+    {
+      "after": "        length = min(limit, size - offset)\n        expected_offset = offset + length\n        assert json.loads((folder / 'versions' / (name + '.json')).read_bytes()) == version",
+      "before": "        length = min(65536, size - offset)"
+    },
+    {
+      "after": "        chunk = folder / 'chunks' / name / (str(offset).zfill(8) + '.bin')",
+      "before": "        chunk = R / 'chunks' / name / (str(offset).zfill(8) + '.bin')"
+    },
+    {
+      "after": "assert len(receipts) == 39",
+      "before": "assert len(receipts) == 35"
+    },
+    {
+      "after": "    'native_binary_read_calls': 45, 'successful_chunks': 39, 'retained_failed_native_calls': 6,\n    'maximum_parallel_reads': 4, 'final_resume_maximum_parallel_reads': 1, 'final_resume_limit': 32768,\n    'all_chunks_first_version_pinned': True, 'download_failures_retained': error_receipts,\n    'tool_output_truncation': False, 'downloader_process_start_calls': 0,",
+      "before": "    'native_binary_read_calls': 35, 'maximum_parallel_reads': 4, 'all_chunks_first_version_pinned': True,\n    'download_failures': [], 'tool_output_truncation': False, 'downloader_process_start_calls': 0,"
+    },
+    {
+      "after": "    'download_result': desc(R / 'DOWNLOAD-RESULT.json'), 'resume1_result': desc(R / 'resume01/RESUME-RESULT.json'),\n    'resume2_result': desc(R / 'resume02/RESUME-RESULT.json'), 'verifier_source': desc(Path(__file__).resolve())}",
+      "before": "    'download_result': desc(R / 'DOWNLOAD-RESULT.json'), 'verifier_source': desc(Path(__file__).resolve())}"
+    },
+    {
+      "after": "    'raw_MCP_receipts': 45, 'verified_chunks': 39, 'failed_MCP_receipts': error_receipts,\n    'files': {name: desc(R / name) for name in FILES},",
+      "before": "    'raw_MCP_receipts': 35, 'verified_chunks': 35, 'files': {name: desc(R / name) for name in FILES},"
+    }
+  ],
+  "parent": {
+    "bytes": 16307,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/verify_complete_download.py",
+    "sha256": "c6150a3e0305ad8dd665e400e020b640fab7bc4567ccca218ccbf783e5979584"
+  },
+  "remote_calls": 0,
+  "semantic_scope": "Accept exact same fixed four files only; account for six retained MCP errors and nine fixed-version split segments",
+  "source": {
+    "bytes": 18160,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/verify_complete_download_with_resumes.py",
+    "sha256": "5db3bb99e979e7f93b16fc35541d019b6bcfe3a59d44f0abda51e7a0f12a5080"
+  },
+  "state": "LOCAL_VERIFIER_PREPARED_NOT_EXECUTED_AWAITING_NINE_SEGMENTS",
+  "target_source_execution": false
+}

@@ -1,0 +1,11 @@
+--- prepare_native_guard_root_plan.0d742.original.py
++++ prepare_native_guard_root_plan.py
+@@ -43,7 +43,7 @@
+ EXECUTION_RUNTIME_INCREMENT_RESULT = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-INCREMENT-RESULT.json', 'bytes': 6132, 'sha256': 'b13be5219320c82c9a440d2adfa83758d0ba06ee6d3e50468f7c28bb5658e171'}
+ RUNTIME_SOURCE_INCREMENT_RECORD = {'bytes': 2087, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-SOURCE-INCREMENT.json', 'sha256': 'e6fbfdee18e95c8bb2d0ece71544669311572c672e90a0e63dc30a8984cf0656'}
+ RUNTIME_INCREMENT_VERIFIER = {'bytes': 7269, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/source/runtime_source_increment.py', 'sha256': '6282d6d5478d3bd65acc368198db3af550c7284f9c8e66d0b101d6d8269628e4'}
+-FAILED_PRELAUNCH_VERIFIER = None
++FAILED_PRELAUNCH_VERIFIER = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/source/verify_failed_prelaunch.py', 'bytes': 54893, 'sha256': 'e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975'}
+ FIRST_PRIOR = {
+     'history08_previous':{'path':str(OLD08/'ACTUAL-PREVIOUS-INPUT.json'),'bytes':1428,
+         'sha256':'9133e2511a66a809be647cb8bb49e3afb351825db5e465f75b1f2f0b6d9d88f4'},

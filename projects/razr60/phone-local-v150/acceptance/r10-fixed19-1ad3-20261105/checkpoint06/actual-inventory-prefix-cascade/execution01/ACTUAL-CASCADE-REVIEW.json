@@ -1,0 +1,74 @@
+{
+  "state": "ACTUAL_SOURCE_CASCADE_COMPLETED_DELIVERY_AND_FOUR_MANIFESTS_PINNED",
+  "delivery": {
+    "bytes": 28755,
+    "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+  },
+  "runtime": {
+    "bytes": 19020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json",
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "consumer": {
+    "bytes": 30832,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/MANIFEST.json",
+    "sha256": "b26a60719eed3b6548d8e2a1b52abac25f5678afdace72d9865de24e17d24a53"
+  },
+  "acceptance": {
+    "bytes": 21485,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01/MANIFEST.json",
+    "sha256": "00ea6a0575b41ecc4cbbe47b93799b6d8ed176a1f02bc9a80d458fba97f45671"
+  },
+  "constructor": {
+    "bytes": 6239,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-component-boundary-input-entry-r8-inventory-prefix-1ad3-01/MANIFEST.json",
+    "sha256": "659a27087f462879d38050990e71ebf84e27ecea088b4044563784297aa6272d"
+  },
+  "operator": {
+    "bytes": 1754,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01/operator-chain/SOURCE-MANIFEST.json",
+    "sha256": "4c145baf8ed276fb61a7bde6fe8912c07737a0071aca0ca6dd2bea51d298f76c"
+  },
+  "controller_terminal": {
+    "at_unix_ms": 1793877807912,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ab72d10e-fc05-4dfc",
+    "launch_nonce": "6310b8277cf80aea16257e6ad962aae4",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 25597,
+        "stored": 25597
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "source_tree_execution": "reviewed7b9 once; source-only results",
+  "all_declared_source_bodies_independently_read_back_by_Root": false,
+  "phone_calls": 0,
+  "case_qualification": false,
+  "final_release_generated": false
+}

@@ -1,0 +1,60 @@
+{
+  "actual_admission": {
+    "bytes": 62069,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/actual-run03/package/FAILED-PRELAUNCH-ADMISSION.json",
+    "sha256": "223bd256c386cf8b116f5484113fc1288d3e9142dfd760102af60263546e5558"
+  },
+  "actual_inputs": {
+    "bytes": 24985,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/actual-run03/package/INPUTS.json",
+    "sha256": "9286d184d2a101a5a2e3ad00732f45fa3ea7b9ef7e4a48ab9974eb73ecf88b44"
+  },
+  "actual_local_read_map": {
+    "bytes": 59998,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/actual-run03/LOCAL-READ-MAP.json",
+    "sha256": "2a17cddb95070a4815a484426a51f10ecf7a660ae1fd624f5512023cd8f16ffa"
+  },
+  "broader_functional_testing_claimed": false,
+  "candidate_functions_executed": 0,
+  "candidate_main_executions": 0,
+  "case_qualified": false,
+  "failed_prelaunch_labels": [
+    "root-r10-neg01-20261105-09",
+    "root-r10-neg01-1ad3-01"
+  ],
+  "failed_prelaunch_nonces": [
+    "7c79195945d64e569a191166ac122a08",
+    "7c74b84aefb177d15f746fa7eae29d54"
+  ],
+  "findings": [
+    "No blocking interface or source issue found in the reviewed scope.",
+    "The current frozen plan helper intentionally retains FAILED_PRELAUNCH_VERIFIER=None; a new explicit immutable one-RHS bound helper is still required before case preparation.",
+    "Later sender absence does not retrofit original parent join/EOF. Both attempts remain failed and unqualified.",
+    "Our earlier process-absence proof is the exact pinned 620-byte original; external09 additionally re-reads the pinned collector and both complete raw ps streams. This report does not upgrade either into original parent wait/join.",
+    "Global/current/stage probe implementation audit is not repeated here; their cross-interface use was read, and their actual original bytes are included in the 115 checked descriptors."
+  ],
+  "phone_operations": 0,
+  "plan_helper": {
+    "bytes": 42223,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+  },
+  "remote_operations": 0,
+  "review_scope": [
+    "material: exact actual runtime67dc and combination54b1, original gzip/56 members, lease/contract/request and all32 byte pins",
+    "root_failure: exact nine completed prelaunch phases; original same-lease failure and no fixture/retry; our original child NOT_JOINED, returncode None, both EOF false and unknown cleanup remain required",
+    "sender_originals: actual actor pins/inverse+READY generated source, original execute argv and CHILD intent, exact170+170 inventories and complete XZ member pins, ordered waiting receipts, zeroSend rc2 original terminal, exact UTF-8 draft restoration/CAS, later two process-absence observations",
+    "ABI: value + read_pinned keyword accepted; verifier recomputes from every actual original, rechecks whole readset and canonical compares full admission; helper-required fields including exact08 frontier and both unique forbidden nonces are returned",
+    "actual local byte-map: 115 unique descriptors, all present and SHA/size matched without executing candidate verification code"
+  ],
+  "reviewed_source": {
+    "bytes": 52560,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/review-snapshot01/source/verify_failed_prelaunch.py",
+    "sha256": "d669d7143968053d7208442436e55df19b4ebbcfdb6b5873532c39cc59f2ec25"
+  },
+  "schema": "hepta.native-guard.failed-prelaunch-source-and-abi-independent-review.v1",
+  "source_imports": 0,
+  "state": "NARROW_STATIC_SOURCE_AND_ACTUAL_BYTE_BINDING_REVIEW_PASSED",
+  "verified_original_descriptors": 115,
+  "verified_unique_original_bytes": 2945263
+}

@@ -1,0 +1,50 @@
+{
+  "after_stage": [
+    "retain original controller start/status/read stdout and stderr; require complete durable terminal",
+    "read back every declared file plus exact root manifest; compare every length and SHA",
+    "only Root separately authorizes binding or generator execution"
+  ],
+  "archive": {
+    "bytes": 34809,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/six_host_inventory_prefix_candidate01/delivery-final01/six-host-inventory-prefix-source-final01.tar.gz",
+    "sha256": "4078126913f5b1aa99ce1917a9a1520b13e486b241b8501c7255f225cc1a74ec"
+  },
+  "archive_plain_tar": {
+    "bytes": 194560,
+    "sha256": "e046c833596c7c73b7ff19aa19c088ed391342ff02acf47dda6b7d968b1c9e77"
+  },
+  "audit_directory": null,
+  "idempotency_key": null,
+  "manifest_members": 16,
+  "phone_calls": 0,
+  "preparation_scope": "Only rebind loader constants, schema literals and exact counts. Preserve full loader function algorithms and whole-source inverse record.",
+  "regular_files": 17,
+  "remote_calls": 0,
+  "required_manifest_schema": "hepta.fixed19.six-host-inventory-prefix-source-package.v1",
+  "retained_strict_loader_template": {
+    "bytes": 13251,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_admitted_helper_candidate01/actual-stage16/stage_mac_source16.template.py",
+    "sha256": "39ea10d048066cebc894ef84d900b1a2cddf98ca18449048501a0d813db77646"
+  },
+  "schema": "hepta.reviewed-source-only-stage-plan.v1",
+  "source_manifest": {
+    "bytes": 3972,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "1c62db17d75a7850942bf680dca46bb764cd3564f5ad9dd024b807e0e763193c"
+  },
+  "staging_performed": false,
+  "state": "FIXED_SOURCE_ARCHIVE_READY_ROOT_AUDIT_AND_KEY_REQUIRED",
+  "strict_stage_properties": [
+    "create-only target and audit",
+    "single-link regular members only",
+    "one bounded gzip member",
+    "exact flat tar plus manifest closed set",
+    "all bytes and full9 metadata bookends",
+    "file and directory fsync",
+    "no imports or execution of staged source",
+    "no automatic retries or overwrites",
+    "same-job reconciliation if controller terminal unknown"
+  ],
+  "target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01",
+  "uncompressed_file_bytes": 176501
+}

@@ -1,0 +1,30 @@
+{
+  "expected_chunks": 34,
+  "files": {
+    "COLLECTOR.original.py": {
+      "bytes": 40752,
+      "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+    },
+    "EXTERNAL902-P4-ORIGINALS.tar.xz": {
+      "bytes": 820660,
+      "sha256": "ab778aa6c6f45b33f8b1d4af11be68f7d33306af0a40492c1738556af2100a8d"
+    },
+    "ORIGINALS-MANIFEST.json": {
+      "bytes": 147912,
+      "sha256": "99b413337849ebe3c2b89dece5c65dacd396d05d2d39abee5cde84d71c1e6e6e"
+    },
+    "RESULT.json": {
+      "bytes": 5213,
+      "sha256": "3b1244bc603f33599fd739e141df5c546deacc4eeadf7be837f9a553c0edf857"
+    }
+  },
+  "first_version_pinned_per_file": true,
+  "host": "pocket4",
+  "limit": 32768,
+  "maximum_parallel": 1,
+  "on_first_timeout": "retain_error_and_stop_no_automatic_retry",
+  "phone_calls": 0,
+  "remote_process_start": 0,
+  "remote_root": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01",
+  "state": "AUTHORIZED_P4_NATIVE_READONLY_FIXED_ORIGINAL_DOWNLOAD"
+}

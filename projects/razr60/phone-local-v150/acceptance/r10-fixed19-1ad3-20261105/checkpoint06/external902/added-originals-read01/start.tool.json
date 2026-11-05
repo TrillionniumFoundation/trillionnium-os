@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-c\",\n      \"import sys,hashlib; body=sys.stdin.buffer.read(1048577); assert len(body)<=1048576; assert hashlib.sha256(body).hexdigest()=='ac8c5ab5f4947315515afc912b2b8973e22d35b1de07a8e46b5a348d87259b59'; exec(compile(body,'/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-additions-read01/P4-LAUNCHER.original.py','exec'),{'__name__':'__main__','__file__':'/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-additions-read01/P4-LAUNCHER.original.py'})\"\n    ],\n    \"created_unix_ms\": 1793881407362,\n    \"cwd\": \"/home/alex/razr60-local-model-v150\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1aba9ff82-fc05-4f81\",\n    \"idempotency_key\": \"root-1ad3-external902-exact-additions-read01-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1aba9ff82-fc05-4f81\",\n    \"request_digest\": \"32ebaaa2b33e314dc7084014679ac548463d151d7549067faf8253ebf531b986\",\n    \"request_fingerprint\": 3669213937192022349,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1aba9ff82-fc05-4f81\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1aba9ff82-fc05-4f81\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

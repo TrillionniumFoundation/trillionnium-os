@@ -1,0 +1,47 @@
+{
+  "caller": {
+    "bytes": 36877,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "35695321f9c62791d9c4889fcdf8bff3e41b2d80465a6a014992fce1c3bd08ee"
+  },
+  "controller_request": {
+    "bytes": 39279,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "12995ec70ec9eba16c7fce116f600415a9a867c5bfed0aff5d98f1fda6841107"
+  },
+  "execution_owner": "/root",
+  "independent_reviews": [
+    {
+      "bytes": 3724,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/delivery-final01/INDEPENDENT-SOURCE-REVIEW.original.json",
+      "sha256": "96691df7c6b977cf74644b8d53c55bd2370af1c33615e1d8a2dad4de5b5aa942"
+    },
+    {
+      "bytes": 3297,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/delivery-final01/INDEPENDENT-CALLER-REVIEW.original.json",
+      "sha256": "eac740abd9c265dccae59b5a2955919be44bb613211c4b0e70606e0976191c95"
+    }
+  ],
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.fixed-three-boundary.final-source-readiness.v1",
+  "snapshot_archive_body_requested": false,
+  "snapshot_close_publish_replay": false,
+  "source": {
+    "bytes": 14900,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/delivery-final01/package/source/read_three_boundary_originals_once.py",
+    "sha256": "41398169b440a156db14eb3d2e701198a3d13ec0834a1c4d60c4d593a8a95fa8"
+  },
+  "source_archive": {
+    "bytes": 110233,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/delivery-final01/SOURCE-PACKAGE.tar.gz",
+    "sha256": "af3e53777d21989c38ddad481a4647eed42a54955372f960ad737d7305652bfc"
+  },
+  "source_four_file_design_remains_unexecuted": true,
+  "source_manifest": {
+    "bytes": 2557,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "1d83d572082a3864d790f0471677793c32e5c80b85ef78d412e6e290d43db3d5"
+  },
+  "state": "FROZEN_REVIEWED_BACKUP_NOT_EXECUTED"
+}

@@ -1,0 +1,204 @@
+{
+  "archive_complete": false,
+  "errors": [
+    {
+      "bytes": 248,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00053248-attempt01.MCP.original.json",
+      "raw_error": {
+        "content": [
+          {
+            "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+            "type": "text"
+          }
+        ],
+        "isError": true
+      },
+      "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+    },
+    {
+      "bytes": 248,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00057344-attempt01.MCP.original.json",
+      "raw_error": {
+        "content": [
+          {
+            "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+            "type": "text"
+          }
+        ],
+        "isError": true
+      },
+      "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+    },
+    {
+      "bytes": 248,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00061440-attempt01.MCP.original.json",
+      "raw_error": {
+        "content": [
+          {
+            "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+            "type": "text"
+          }
+        ],
+        "isError": true
+      },
+      "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+    },
+    {
+      "bytes": 248,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00065536-attempt01.MCP.original.json",
+      "raw_error": {
+        "content": [
+          {
+            "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.operation_result`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+            "type": "text"
+          }
+        ],
+        "isError": true
+      },
+      "sha256": "cddbef2d67b84c98a2ab46bce54a59d2afcbd0e7d00254ba865eded8722ad173"
+    }
+  ],
+  "failed_inflight_page_count": 4,
+  "operation_id": "4f772337691bee6bb5a7b6458a946a6a0f7e3d647f3d63a9f9a6844c12b42ac1",
+  "original_file_whole_sha_verified": false,
+  "pages": [
+    {
+      "bytes": 6320,
+      "next_offset": 4096,
+      "offset": 0,
+      "page_bytes": 4096,
+      "page_sha256": "2fdb47cdeb1a227682498fac949b15733bcce56047168d32c9ae5eb546f69ee6",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00000000-attempt01.MCP.original.json",
+      "sha256": "7a489ac7e6d8bd894bf2a855af935ab4db1a284d7c5a8ab20dee6d397c61c055"
+    },
+    {
+      "bytes": 6323,
+      "next_offset": 8192,
+      "offset": 4096,
+      "page_bytes": 4096,
+      "page_sha256": "f2562291789a0ef615eae4c3a75526b6dabef8c4583d66445e32965c28a08a7c",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00004096-attempt01.MCP.original.json",
+      "sha256": "768ac5162310eec2070c52057466fbeeadc070d35f13def05bd7e74245b5866a"
+    },
+    {
+      "bytes": 6324,
+      "next_offset": 12288,
+      "offset": 8192,
+      "page_bytes": 4096,
+      "page_sha256": "479a1e0c2c4726e0be333f4cc96c7852949e835fd32356025948b87845812e16",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00008192-attempt01.MCP.original.json",
+      "sha256": "892d37e831b1a2b14652346d026efcab2babc38d64c3d0c9d8aea933fa9a79af"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 16384,
+      "offset": 12288,
+      "page_bytes": 4096,
+      "page_sha256": "4c7d0dad73e189e3d785cb3724c8d65e57f3833ac30f961ddf273be7609cc8b2",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00012288-attempt01.MCP.original.json",
+      "sha256": "8e9b1fff6046c544582ef7d55c92ab9376a1c25bbc33d263d95b606a30b94086"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 20480,
+      "offset": 16384,
+      "page_bytes": 4096,
+      "page_sha256": "5a875b72821fb9ad4f6c8870eed63344cf90ceda577f6f888591ab3fc618669d",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00016384-attempt01.MCP.original.json",
+      "sha256": "f52ad2307c233004d1ae95e2f63cd76e554cc16aa6ac827bf05fa3aa85fa0c29"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 24576,
+      "offset": 20480,
+      "page_bytes": 4096,
+      "page_sha256": "eb379ad005ba8a4dfbc3574b0d4ae6c9fff571a84f2965d04752b9da39a0b99a",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00020480-attempt01.MCP.original.json",
+      "sha256": "e13c222ba4a372701fe017368d2fc2c86bff018b5c995b016322aa261333bb6d"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 28672,
+      "offset": 24576,
+      "page_bytes": 4096,
+      "page_sha256": "7ca7deb1a65b142f3744ce23af3666a73b3217953c04f9353bfbff6ec7d878b9",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00024576-attempt01.MCP.original.json",
+      "sha256": "d56d34c48255fb8f78f51742270da100d0bcbd71cca0ebbd91502d8ef499a05e"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 32768,
+      "offset": 28672,
+      "page_bytes": 4096,
+      "page_sha256": "ca409aef760a7149ea1ea7fac66e4c58791461c5fc436ffcaadaee29260fee52",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00028672-attempt01.MCP.original.json",
+      "sha256": "4b96b62ad815e179a2dcdc3e8b4217e99dab53a5329d0dfc84d18080840a6913"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 36864,
+      "offset": 32768,
+      "page_bytes": 4096,
+      "page_sha256": "7a6244ee4b191d35bf4c8d6c8a3ca830fd001a14b0962e3246281c8c382050a6",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00032768-attempt01.MCP.original.json",
+      "sha256": "effad733b3f60824fd6a399fe488aac756fb94501fb46ff7b1d2241c5ef18d9d"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 40960,
+      "offset": 36864,
+      "page_bytes": 4096,
+      "page_sha256": "613c272d78a2aa118a72e1acc7d131f4991ac4cb7bd7cf86f0a663bc0e31ea45",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00036864-attempt01.MCP.original.json",
+      "sha256": "0c21abd024148aed63e687d4e8e5627c3df3c604f3060d2b9c338961f5bb0aae"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 45056,
+      "offset": 40960,
+      "page_bytes": 4096,
+      "page_sha256": "49454bdd390588604a32a31237bb2163a9af3ccdcdf19263319f6768b06a2179",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00040960-attempt01.MCP.original.json",
+      "sha256": "d89451f7453d12961d05993d5c49fb4454b4636389574f660d8fb6d953c599ab"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 49152,
+      "offset": 45056,
+      "page_bytes": 4096,
+      "page_sha256": "a63d578f1dfdca8000a1376f3ce0035ea7626768bbc9d09521629b16615fb678",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00045056-attempt01.MCP.original.json",
+      "sha256": "091b70f02582a6541afe0ff467fdeee90c050212cd48fb5aaf4f03e24f499cd6"
+    },
+    {
+      "bytes": 6325,
+      "next_offset": 53248,
+      "offset": 49152,
+      "page_bytes": 4096,
+      "page_sha256": "05447ea30d35653be935cf241498584254ccbfd2b33b74045d44f482207dd8b4",
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/persistent-read01/segment-00491520/PAGE-00049152-attempt01.MCP.original.json",
+      "sha256": "3a4f63fa63ac3c1fc98388bb827ac7c0c7e84a562034d8298c3b7f728c4424fe"
+    }
+  ],
+  "qualification": false,
+  "remote_requests_after_pause": 0,
+  "request": {
+    "idempotency_key": "root-1ad3-ext902-p4-archive-read-491520-65536-v1",
+    "operation": {
+      "arguments": {
+        "expected_version": "66306:33991650:820660:1793883317563311695:1793883317563311695",
+        "host": "pocket4",
+        "limit": 65536,
+        "offset": 491520,
+        "path": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01/EXTERNAL902-P4-ORIGINALS.tar.xz"
+      },
+      "tool": "binary_read"
+    }
+  },
+  "sdk_payload_expected_bytes": 87827,
+  "sdk_payload_expected_sha256": "a033e2a857e049abfad284982f819b57535a8510d4fc72f49eb40ed71742e772",
+  "second_native_operation_started": false,
+  "state": "PAUSED_AFTER_FOUR_ALREADY_INFLIGHT_RESULT_PAGE_TIMEOUTS",
+  "successful_contiguous_sdk_payload_prefix_bytes": 53248,
+  "successful_page_count": 13
+}

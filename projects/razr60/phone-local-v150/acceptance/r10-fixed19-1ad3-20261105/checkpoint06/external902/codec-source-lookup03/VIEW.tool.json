@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "remote helper on hepta-mac-local failed with 1\nstdout:\n\nstderr:\nTraceback (most recent call last):\n  File \"<string>\", line 72, in <module>\nValueError: directory exceeds 10000 entries"
+    }
+  ],
+  "structuredContent": {
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "isError": true
+}

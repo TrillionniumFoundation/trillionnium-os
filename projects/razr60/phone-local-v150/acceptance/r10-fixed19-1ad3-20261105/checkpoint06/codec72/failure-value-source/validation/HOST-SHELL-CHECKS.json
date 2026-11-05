@@ -1,0 +1,184 @@
+{
+  "actual_subprocesses": 6,
+  "case_pass": false,
+  "checks": [
+    {
+      "case": "success_same_envelope",
+      "codec_stub_exit_code": 0,
+      "diagnostic_metadata": null,
+      "host_only": true,
+      "input_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "input_stdout": {
+        "bytes": 50,
+        "sha256": "274daf17a0f4ce02d1a2d9aa8f631b947b6124779038fd1807c47b26b159d44a"
+      },
+      "outcomes": {
+        "candidate": {
+          "returncode": 0,
+          "script": {
+            "bytes": 730,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/success_same_envelope/candidate.sh",
+            "sha256": "11dc1dc63fe2068a092686cfd89e653f22fe00c42ba1f624546367cb463a3e6d"
+          },
+          "stderr_pin": {
+            "bytes": 0,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/success_same_envelope/candidate.stderr.original",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout_pin": {
+            "bytes": 224,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/success_same_envelope/candidate.stdout.original",
+            "sha256": "c8a674c756083af24a68e4c3d5f2821ca179f7c20c12d7b4001407af776bf947"
+          }
+        },
+        "original": {
+          "returncode": 0,
+          "script": {
+            "bytes": 417,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/success_same_envelope/original.sh",
+            "sha256": "9e6b423cb87dde9a7f54058efe5c907e87f439b15a1e03e83bfe6286a65d7591"
+          },
+          "stderr_pin": {
+            "bytes": 0,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/success_same_envelope/original.stderr.original",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout_pin": {
+            "bytes": 224,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/success_same_envelope/original.stdout.original",
+            "sha256": "c8a674c756083af24a68e4c3d5f2821ca179f7c20c12d7b4001407af776bf947"
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "case": "failure20_trailing_lf_and_literal_metacharacters",
+      "codec_stub_exit_code": 20,
+      "diagnostic_metadata": {
+        "codec_exit_code": 20,
+        "codec_stdout_representation": "posix_shell_command_substitution_value",
+        "java_stdout_exact": false,
+        "schema": "hepta.codec-failure-observation.v1",
+        "stderr_has_appended_diagnostic_record": true
+      },
+      "host_only": true,
+      "input_stderr": {
+        "bytes": 22,
+        "sha256": "6362bfe390204db52fbb7de2cdd983ac872409c7fa1c2b5125ec33507211e3f5"
+      },
+      "input_stdout": {
+        "bytes": 81,
+        "sha256": "93b85d69d1a1f5fa7178a16c8e5a21e16556bb0889e3530502504f9e6d1502ce"
+      },
+      "outcomes": {
+        "candidate": {
+          "returncode": 72,
+          "script": {
+            "bytes": 784,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/candidate.sh",
+            "sha256": "0f23ff476137fe6c9fdaff24ab300ebf37bbe306070a66d552b7b0b6aa914232"
+          },
+          "stderr_pin": {
+            "bytes": 234,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/candidate.stderr.original",
+            "sha256": "13772a670427fa56ef3cadda5109260de3a069d4ebcee3e1ddfa518f36fefa0d"
+          },
+          "stdout_pin": {
+            "bytes": 78,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/candidate.stdout.original",
+            "sha256": "49a86cdece30bd0914a3e975ac01faf4f34a07e03899d60e82b47dff80c94ee4"
+          }
+        },
+        "original": {
+          "returncode": 72,
+          "script": {
+            "bytes": 471,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/original.sh",
+            "sha256": "59b7893fee8043b2bbe85797043ebcacb26b99abdcdedcaed53468a12db61a8c"
+          },
+          "stderr_pin": {
+            "bytes": 22,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/original.stderr.original",
+            "sha256": "6362bfe390204db52fbb7de2cdd983ac872409c7fa1c2b5125ec33507211e3f5"
+          },
+          "stdout_pin": {
+            "bytes": 0,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/original.stdout.original",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "passed": true
+    },
+    {
+      "case": "failure22_empty_stdout_and_unterminated_stderr",
+      "codec_stub_exit_code": 22,
+      "diagnostic_metadata": {
+        "codec_exit_code": 22,
+        "codec_stdout_representation": "posix_shell_command_substitution_value",
+        "java_stdout_exact": false,
+        "schema": "hepta.codec-failure-observation.v1",
+        "stderr_has_appended_diagnostic_record": true
+      },
+      "host_only": true,
+      "input_stderr": {
+        "bytes": 34,
+        "sha256": "dd0602432f14e2cd5c5eeccd5748bd9e89a53b46bfa4cff500c1ae1db62bd327"
+      },
+      "input_stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "outcomes": {
+        "candidate": {
+          "returncode": 72,
+          "script": {
+            "bytes": 715,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/candidate.sh",
+            "sha256": "114e1393a3e64d75d5d488c71fb68ec44f42c55381944805d80cc2912983fc94"
+          },
+          "stderr_pin": {
+            "bytes": 246,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/candidate.stderr.original",
+            "sha256": "0dc124bf0512a0ddf8512e202f93f3b07733ad204359c964e1bbbab12f41fcb9"
+          },
+          "stdout_pin": {
+            "bytes": 0,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/candidate.stdout.original",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "original": {
+          "returncode": 72,
+          "script": {
+            "bytes": 402,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/original.sh",
+            "sha256": "49edbf80eb4b4057bc09a315c82fecad2484880f1ad6222af7305695f7dd6726"
+          },
+          "stderr_pin": {
+            "bytes": 34,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/original.stderr.original",
+            "sha256": "dd0602432f14e2cd5c5eeccd5748bd9e89a53b46bfa4cff500c1ae1db62bd327"
+          },
+          "stdout_pin": {
+            "bytes": 0,
+            "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/original.stdout.original",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        }
+      },
+      "passed": true
+    }
+  ],
+  "native_or_android_processes": 0,
+  "phone_calls": 0,
+  "production_changed": false,
+  "schema": "hepta.codec72.host-shell-semantics-checks.v1",
+  "scope": "Exact changed shell literal plus original success suffix; phone prefix was never executed. This does not test Android mksh, SELinux, codec, fresh capture, native authorization, or stream limits.",
+  "state": "THREE_CONTROLLED_HOST_SHELL_CHECKS_PASSED",
+  "target_module_imports": 0
+}

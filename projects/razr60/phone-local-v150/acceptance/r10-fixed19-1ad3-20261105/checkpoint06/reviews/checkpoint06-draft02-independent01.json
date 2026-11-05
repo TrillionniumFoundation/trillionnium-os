@@ -1,0 +1,220 @@
+{
+  "all_candidate_paths_under_new_checkpoint06": true,
+  "all_selected_sha256_git_blob_and_bytes_match": true,
+  "base": {
+    "commit": "dd299611fc2044fb87d3ee8c76fcaa361108774d",
+    "new_remote_query_performed": false,
+    "retained_subtree_api_sha256": "826d55cd8d75f82b03b32bdff9c0b380f33fa8820bdaede1903283a496ee05d7",
+    "tree": "a1a9b7fd5160c11616fc0b08a90eae2b1315e68f"
+  },
+  "blockers": [],
+  "candidate_index": {
+    "bytes": 839698,
+    "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/CANDIDATE-FILES.draft02.json",
+    "sha256": "561700685e635d6fb5a883a3725fe0f942f1b0e7d42c9aabab7b4a8ba9a1e100"
+  },
+  "counts": {
+    "bytes": 22879208,
+    "new_unique_bytes": 20048941,
+    "new_unique_git_blobs": 609,
+    "paths": 761,
+    "published_reusable_blobs": 28,
+    "unique_git_blobs": 637
+  },
+  "excluded": {
+    "active_p4_published_directory": true,
+    "unfrozen9f4_host_audit": true
+  },
+  "facts_reviewed": [
+    "README and pending states correctly identify later observations, preserved original failure, and unverified boundary/closure status.",
+    "Historical Mac sender54589 NOT_JOINED/EOFfalse is not upgraded by later P4 observations.",
+    "Existing capture CAPTURE body contains272 retained entries; archive would have273 includingCAPTURE. The archive body remains unavailable in this checkpoint.",
+    "Frozen three-boundary/helper source inclusion does not assert an actual phone/helper run.",
+    "codec8f60 remains un-applied source; POSIX shell-captured value is not Java original stream; corrected gate02 retained."
+  ],
+  "four_complete_observation_archives": {
+    "added-originals-read01": {
+      "members": 12,
+      "original_archive_exact": true,
+      "phone_rc": 0,
+      "status": "command_exited"
+    },
+    "existing-capture-read01": {
+      "members": 12,
+      "original_archive_exact": true,
+      "phone_rc": 0,
+      "status": "command_exited"
+    },
+    "private-read01": {
+      "members": 12,
+      "original_archive_exact": true,
+      "phone_rc": 0,
+      "status": "command_exited"
+    },
+    "snapshot01": {
+      "members": 12,
+      "original_archive_exact": true,
+      "phone_rc": 1,
+      "status": "command_exited"
+    }
+  },
+  "local_lookup_note": "One preliminary filename lookup used the nonexisting P4 top-level ORIGINALS-MANIFEST.json; corrected to retained complete-small-originals path. No target ran and no source/checkpoint file changed.",
+  "lossless_archives_independently_rehashed_and_decoded": [
+    {
+      "all_hashes_match": true,
+      "kind": "verified-existing-remote-lossless-archive",
+      "member_bytes": 6126794,
+      "members": 109,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/ROOT-ORIGINALS.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "all original native download receipts and version records",
+      "member_bytes": 2505502,
+      "members": 66,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/root02-native-download-records.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "verified-existing-remote-lossless-archive",
+      "member_bytes": 709009,
+      "members": 12,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/FULL-ORIGINALS.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "complete read-only probe transfer receipts",
+      "member_bytes": 93481,
+      "members": 2,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/added-originals-read01-native-transfer-records.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "verified-existing-remote-lossless-archive",
+      "member_bytes": 7973773,
+      "members": 12,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/FULL-ORIGINALS.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "complete read-only probe transfer receipts",
+      "member_bytes": 833390,
+      "members": 10,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/private-read01-native-transfer-records.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "verified-existing-remote-lossless-archive",
+      "member_bytes": 33058,
+      "members": 12,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/snapshot01/FULL-ORIGINALS.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "complete read-only probe transfer receipts",
+      "member_bytes": 13303,
+      "members": 1,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/snapshot01-native-transfer-records.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "verified-existing-remote-lossless-archive",
+      "member_bytes": 508570,
+      "members": 12,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/FULL-ORIGINALS.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "complete read-only probe transfer receipts",
+      "member_bytes": 44146,
+      "members": 1,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/existing-capture-read01-native-transfer-records.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "partial native receipts, errors and version records; not a complete original archive",
+      "member_bytes": 969340,
+      "members": 78,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/p4-full-archive01-native-download-records.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "230 individually exact members from incomplete original XZ prefix; remaining five missing",
+      "member_bytes": 5432177,
+      "members": 230,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/external902-p4-prefix230.local.tar.xz"
+    },
+    {
+      "all_hashes_match": true,
+      "kind": "partial native receipts, errors and version records; not a complete original archive",
+      "member_bytes": 2514768,
+      "members": 79,
+      "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/mac-full-archive01-native-download-records.tar.xz"
+    }
+  ],
+  "mac_original_download_scope": {
+    "all239_or_whole_archive_verified": false,
+    "expected_ranges": 35,
+    "prior_errors_retained": 6,
+    "successful_ranges_declared": 30
+  },
+  "old_checkpoint05_paths_overwritten": false,
+  "old_draft01_317_exact_preserved": true,
+  "p4_original_download_scope": {
+    "locally_complete_prefix_members": 230,
+    "member_groups": {
+      "material-originals": 56,
+      "sender-originals": 116,
+      "setup-fixture-originals": 55,
+      "setup-plan-originals": 3
+    },
+    "still_missing_from_prefix_carrier": [
+      "sibling-input-originals/component-inputs.tar.gz",
+      "sibling-input-originals/preserved_draft.original",
+      "sibling-input-originals/previous.original",
+      "sibling-input-originals/request.original",
+      "sibling-input-originals/stage_component.py"
+    ],
+    "whole_original_XZ_sha_or_CRC_claimed": false,
+    "whole_remote_original_members": 235
+  },
+  "qualification": {
+    "host_only": "5/5",
+    "host_source": {
+      "bytes": 4616,
+      "sha256": "b6d658adac84fef782a4edcef1219c869af709d317e8a204c19a732d57f7c395"
+    },
+    "policy_comparison": "16/16",
+    "policy_source": {
+      "bytes": 551562,
+      "sha256": "84e47675990554ddb71fc639b45a04a6349cee4e5b524213bbcdcc0d8263368d"
+    },
+    "source_or_readonly_observations_count_as_case_pass": false,
+    "whole_cases": "0/19"
+  },
+  "review_limits": [
+    "Read-only local archive/index/data inspection. No host tests, native functions, original archive code, remote calls or Git writes were run.",
+    "Actual Git CAS/publish tree and final PUBLISH-INDEX still require Root single-writer checks; this candidate index is not an upload/publish authorization.",
+    "Completeness statements apply to this snapshot; later in-flight data is deliberately excluded."
+  ],
+  "reviewed_at_utc": "2026-11-05T13:54:00.263096+00:00",
+  "root02": {
+    "failure_preserved": true,
+    "member_bytes": 6126794,
+    "members": 109,
+    "phone_stage_actor_rc": 0,
+    "phone_stage_inner_rc": 1,
+    "seven_original_child_join_and_doubleEOF_and_held_inode_records_verified": [
+      "prepare-material",
+      "host-stage-material",
+      "phone-push-material",
+      "phone-copy-material",
+      "phone-push-stage-source",
+      "phone-copy-stage-source",
+      "phone-stage"
+    ]
+  },
+  "schema": "hepta.checkpoint06.draft02.independent-fact-index-review.v1",
+  "selected_original_sources_changed_after_snapshot": [],
+  "state": "NO_BLOCKER_FOR_PROGRESS_CHECKPOINT_CLOSURE_PENDING"
+}

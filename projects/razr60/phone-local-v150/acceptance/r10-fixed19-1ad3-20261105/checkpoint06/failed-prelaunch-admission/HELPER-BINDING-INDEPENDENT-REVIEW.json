@@ -1,0 +1,18 @@
+{
+  "binding": {
+    "bytes": 54893,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/source/verify_failed_prelaunch.py",
+    "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+  },
+  "entire_remainder_byte_identical": true,
+  "main_or_remote_or_phone_calls": 0,
+  "parent": {
+    "bytes": 42223,
+    "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+  },
+  "source": {
+    "bytes": 42520,
+    "sha256": "4db85943e9d264b606bea7b452bba74e7007b08727d7a4edbea298b55de4f023"
+  },
+  "state": "INDEPENDENT_SINGLE_RHS_BYTE_INVERSE_VERIFIED"
+}

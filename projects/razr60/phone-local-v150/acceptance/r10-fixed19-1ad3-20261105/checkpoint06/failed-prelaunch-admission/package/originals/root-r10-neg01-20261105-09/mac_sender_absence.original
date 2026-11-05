@@ -1,0 +1,64 @@
+{
+  "both_later_observations_absent": true,
+  "case_pass": false,
+  "collector_source": {
+    "bytes": 9498,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-external09-1ad3-readonly-evidence01/COLLECTOR.original.py",
+    "sha256": "85697ae603d99469b414025457a09bdc1052f1910410fbcd4641321de60ab740"
+  },
+  "label": "root-r10-neg01-20261105-09",
+  "observations": [
+    {
+      "finished_unix_ns": 1793876139096490000,
+      "index": 0,
+      "matching_process_count": 0,
+      "owned_pid_or_group_or_exact_label_rows": [],
+      "ps_argv": [
+        "/bin/ps",
+        "-axo",
+        "pid=,ppid=,pgid=,sess=,lstart=,command="
+      ],
+      "ps_returncode": 0,
+      "started_unix_ns": 1793876139070893000,
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-external09-1ad3-readonly-evidence01/PS-0.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 334346,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-external09-1ad3-readonly-evidence01/PS-0.stdout.original",
+        "sha256": "9d49da786f29ed52e389e3e0d4dd6be3c21cd86075cbf479d27480b991d7c234"
+      }
+    },
+    {
+      "finished_unix_ns": 1793876140168602000,
+      "index": 1,
+      "matching_process_count": 0,
+      "owned_pid_or_group_or_exact_label_rows": [],
+      "ps_argv": [
+        "/bin/ps",
+        "-axo",
+        "pid=,ppid=,pgid=,sess=,lstart=,command="
+      ],
+      "ps_returncode": 0,
+      "started_unix_ns": 1793876140106649000,
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-external09-1ad3-readonly-evidence01/PS-1.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 328873,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-external09-1ad3-readonly-evidence01/PS-1.stdout.original",
+        "sha256": "e5dc8a697ece1b552f561f4e1059a2127dc631dac47b0b4da7e88bc3f7bb2e05"
+      }
+    }
+  ],
+  "original_capture_eof_repaired": false,
+  "original_parent_join_proven": false,
+  "original_pgid": 80237,
+  "original_sender_pid": 80237,
+  "schema": "hepta.fixed19.failed-sender-readonly-process-observation.v2",
+  "signals_sent": 0
+}

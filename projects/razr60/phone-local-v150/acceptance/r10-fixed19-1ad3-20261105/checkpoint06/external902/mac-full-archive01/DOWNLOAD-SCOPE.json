@@ -1,0 +1,35 @@
+{
+  "P4_calls": 0,
+  "all_original_files": 239,
+  "allowed_remote_operations": [
+    "binary_read"
+  ],
+  "expected_chunks": 35,
+  "files": {
+    "COLLECTOR.original.py": {
+      "bytes": 36689,
+      "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+    },
+    "EXTERNAL902-ORIGINALS.tar.xz": {
+      "bytes": 1796220,
+      "sha256": "55934b9f1fefecd4f1f30c677920935fc527a08e0a218138024b5d0230d88ffc"
+    },
+    "ORIGINALS-MANIFEST.json": {
+      "bytes": 263330,
+      "sha256": "06b153ea42ec72dfbc9c9d51a9b2b9e0c99815678484190c95bdeab76abd9966"
+    },
+    "RESULT.json": {
+      "bytes": 4968,
+      "sha256": "f59a539c21bf4c76d937f916b3ac777f1cf55aab121599a70c85ed535e7f61f2"
+    }
+  },
+  "max_native_reads_parallel": 4,
+  "observed_directories": 36,
+  "original_file_bytes": 8368292,
+  "phone_calls": 0,
+  "process_start_calls": 0,
+  "remote_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/external902-7c907661-mac-originals01",
+  "root_case_files": 199,
+  "schema": "hepta.external902.mac-originals-native-download-scope.v1",
+  "view_calls": 0
+}

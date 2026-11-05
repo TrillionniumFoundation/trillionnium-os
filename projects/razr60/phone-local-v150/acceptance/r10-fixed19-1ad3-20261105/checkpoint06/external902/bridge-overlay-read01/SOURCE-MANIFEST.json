@@ -1,0 +1,59 @@
+{
+  "business_qualified": false,
+  "files": [
+    {
+      "bytes": 73572,
+      "path": "reference/late_boundary.733d.original.py",
+      "sha256": "733d3cc6f0c6107c9c071bfc43525de9415814bdc9bea2e25b14dcb463a84d5d"
+    },
+    {
+      "bytes": 74107,
+      "path": "source/late_boundary.UNFILLED.py",
+      "sha256": "41a02a9362b98c3843158faa4ba0585a9ee3b7592560a729b1e600cfebb8424b"
+    },
+    {
+      "bytes": 74287,
+      "path": "source/late_boundary.py",
+      "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+    },
+    {
+      "bytes": 72194,
+      "path": "source/run_component_root_once.c1b03.py",
+      "sha256": "c1b03c028359342a520372a7ddaa60ef38f3b9609ade3a133f32dfe3b6b372a9"
+    },
+    {
+      "bytes": 1668,
+      "path": "validation/BUILTIN-TRANSFORM.json",
+      "sha256": "03461dc552bd9c54f6a2260d8bf44a6dd43cb5d6b9743ed27e91dc1edb4fa897"
+    },
+    {
+      "bytes": 24468,
+      "path": "validation/MAC-EXACT-LOADER-RESULT.original.json",
+      "sha256": "8f8352cfb957bf7afde895f4c5cd886aba943673b6002387c6632c901f3baea3"
+    },
+    {
+      "bytes": 733,
+      "path": "validation/MAC-EXACT-LOADER-TERMINAL.original.json",
+      "sha256": "b08f28544403841d92284df80cbfd6ca1d78c36516bcd5a7021eb69882952aec"
+    },
+    {
+      "bytes": 64870,
+      "path": "validation/MEMBERSHIP-HOST-RESULT.original.json",
+      "sha256": "d15d39291603ca0f856fafc61d70e5302908531b700db2b533e08b768911a89e"
+    },
+    {
+      "bytes": 20491,
+      "path": "validation/TRANSFORM.json",
+      "sha256": "249d5b41e88c2ea2bcf55f557c5bfa42ff2e2c4d6064539a2980ea2ca587ab57"
+    },
+    {
+      "bytes": 3776,
+      "path": "validation/TRANSPORT-HOST-RESULT.original.json",
+      "sha256": "d27e2b7c5c41a2cfd2b16fde628b08b9229297f0d5115960669318138b610292"
+    }
+  ],
+  "phone_calls": 0,
+  "runtime_file_count": 32,
+  "schema": "hepta.native-guard.current-r8-membership-overlay.v1",
+  "state": "SOURCE_ONLY_WITH_RETAINED_HOST_RECEIPTS"
+}

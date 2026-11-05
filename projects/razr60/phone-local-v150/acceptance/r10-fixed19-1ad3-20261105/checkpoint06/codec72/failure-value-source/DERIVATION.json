@@ -1,0 +1,36 @@
+{
+  "actual_command_prefix_and_success_suffix_byte_identical": true,
+  "candidate": {
+    "bytes": 39093,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/source/phone_observation_tools.py",
+    "sha256": "8f60cfd359ccfa269fabb05b616371268a2b86938fc41da37a2111c10066b792"
+  },
+  "case_pass": false,
+  "existing_nonce_or_action_replayed": false,
+  "future_lease": null,
+  "future_native_action": null,
+  "future_nonce": null,
+  "new_runtime_or_production_admission": false,
+  "one_source_literal_changed": true,
+  "only_changed_function": "PhoneTools.map",
+  "original": {
+    "bytes": 38774,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/reference/phone_observation_tools.f16c.original.py",
+    "sha256": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df"
+  },
+  "original_external_path": "/workspace/scratch/1ad3d6f55439/current_production_source_cache/phone_observation_tools.py",
+  "other_function_count_byte_identical": 16,
+  "phone_calls": 0,
+  "production_changed": false,
+  "proposed_actual_command_executed": false,
+  "schema": "hepta.codec72.failure-value-source-derivation.v1",
+  "source_suffix_including_success_envelope_byte_identical": true,
+  "state": "SOURCE_ONLY_UNSTAGED_NOT_ADMITTED",
+  "stdio_identity": {
+    "java_stdout_exact": false,
+    "native_exit_on_codec_failure": 72,
+    "stderr": "original stream prefix plus a fixed-schema diagnostic record",
+    "stdout": "shell-captured variable value, no added LF; original command substitution already removed trailing LF"
+  },
+  "whole_byte_inverse": true
+}

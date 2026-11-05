@@ -1,0 +1,6 @@
+{
+  "command": "/data/adb/magisk/busybox env -i PATH=/usr/bin:/bin:/usr/libexec/trillionnium PYTHONHOME=/usr PYTHONDONTWRITEBYTECODE=1 LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu LANG=C.UTF-8 LC_ALL=C.UTF-8 TMPDIR=/var/lib/trillionnium/owner-open/tmp NO_COLOR=1 TERM=dumb /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -B /var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/source/component_snapshot.py --lease /var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01 --lease-sha256 31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736 --package-sha256 31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb --out /var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01 --execute-original-snapshot-once",
+  "kind": "shell",
+  "root": true,
+  "timeout_seconds": 100
+}

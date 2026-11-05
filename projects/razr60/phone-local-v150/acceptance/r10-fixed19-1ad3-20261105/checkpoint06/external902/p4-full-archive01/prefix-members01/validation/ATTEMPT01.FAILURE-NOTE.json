@@ -1,0 +1,16 @@
+{
+  "cause": "local variable prefix shadowed by complete-root loop before reporting compressed-prefix digest",
+  "complete_member_files_already_written": 230,
+  "detail": "Strings must be encoded before hashing",
+  "error_type": "TypeError",
+  "outer_xz_complete": false,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "report_created": false,
+  "source": {
+    "bytes": 8242,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/extract_complete_prefix_members.py",
+    "sha256": "ad5ab78d0a62d60649e790e1a7cbc325d73c164accfeead56f7a4f36232a5183"
+  },
+  "state": "COMPLETE_MEMBER_BYTES_COPIED_BUT_LOCAL_REPORT_FAILED"
+}

@@ -1,0 +1,343 @@
+{
+  "candidate": {
+    "bytes": 39093,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/source/phone_observation_tools.py",
+    "sha256": "8f60cfd359ccfa269fabb05b616371268a2b86938fc41da37a2111c10066b792"
+  },
+  "case_pass": false,
+  "created_at_utc": "2026-11-05T13:18:46.907783+00:00",
+  "current_mapper": {
+    "bytes": 38774,
+    "path": "/workspace/scratch/1ad3d6f55439/current_production_source_cache/phone_observation_tools.py",
+    "sha256": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df"
+  },
+  "future_identity_generated": false,
+  "future_outputs": {
+    "accepted": null,
+    "action_id": null,
+    "bound_contract": null,
+    "combination": null,
+    "lease": null,
+    "nonce": null,
+    "predecessor_admission_proof": null,
+    "reviewed_production_pins": null,
+    "root_manifest": null,
+    "runtime_manifest": null,
+    "sender_contract": null,
+    "shared_material_manifest": null,
+    "source_seal": null
+  },
+  "gates": [
+    {
+      "cannot_reuse_unchanged": [
+        "73963fdc REVIEWED-PRODUCTION-PINS bytes",
+        "current runtime package descriptor"
+      ],
+      "gate": "Review and freeze the exact production source increment",
+      "order": 1,
+      "perform_now": false,
+      "required": [
+        "Retain f16c as the parent and 8f60 as the proposed leaf; preserve the exact one-literal inverse and independent review.",
+        "Produce a new reviewed 15-source pin set with only phone_observation_tools.py changed; all other 14 source bytes remain originals.",
+        "Freeze a successor runtime MANIFEST row for reference/REVIEWED-PRODUCTION-PINS.json and its explicit derivation. Existing package hash and current6282 one-late-member increment correctly reject this additional reference change."
+      ],
+      "source": {
+        "function": "load_combination",
+        "line": 209,
+        "source": {
+          "bytes": 19138,
+          "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_common.py",
+          "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+        }
+      }
+    },
+    {
+      "current_exact_values": {
+        "combination": {
+          "bytes": 4702,
+          "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+        },
+        "source_seal": {
+          "bytes": 2341,
+          "sha256": "a41a317d9ba3317b4c3bf66b66fb574f47f9bf15b1dc67201cea30d9ae0a9229"
+        }
+      },
+      "gate": "Create reviewed shared production materials and component source seal/combination",
+      "order": 2,
+      "perform_now": false,
+      "required": [
+        "Build a new shared material manifest and exact17-file set: full15 production plus existing config/service originals. Root hard pins SHARED and MATERIAL_ROOT must bind the actual new material, not patched old evidence.",
+        "Recompute component-source-seal production_files row and its descriptor; preserve the source order, full15 inventory and source/config/service bindings.",
+        "Recompute component-combination production_files and source_seal; the currently executed54b1/a41a values cannot describe8f60.",
+        "Keep configuration1493/780754, service10635/2739, artifacts and live policyf821 only if the unchanged exact verification gates pass. No artifact, policy or config mutation is implied by this source change."
+      ],
+      "sources": [
+        {
+          "function": "main",
+          "line": 204,
+          "source": {
+            "bytes": 14259,
+            "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/prepare_component.py",
+            "sha256": "46a28fd77dc64d94ccdd4c1f3e12912e22ebb39defc29b69991df831d75afc7d"
+          }
+        },
+        {
+          "function": "load_combination",
+          "line": 209,
+          "source": {
+            "bytes": 19138,
+            "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_common.py",
+            "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+          }
+        },
+        {
+          "function": "validate_plan",
+          "line": 405,
+          "source": {
+            "bytes": 72194,
+            "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/root-chain/source/run_component_root_once.py",
+            "sha256": "290af8450d0e5a5f92ebc49f4728ffc1ca7f9e4ac61b2fc9cedf390e47de1c1d"
+          }
+        }
+      ]
+    },
+    {
+      "gate": "Close and verify existing902, then explicitly admit the predecessor generation transition",
+      "known_blocker": "Current902 is31da/54b1; new production mapper implies a new combo. Currenta334/4eb4 and6282 admission do not authorize that transition.",
+      "order": 3,
+      "perform_now": false,
+      "required": [
+        "Finish original902 evidence and full native closure under its executed31da package. If its boundary already exists, verify it and do not publish another.",
+        "Preserve all old boundary/closure/inventory bytes and their executed source identities.",
+        "Current Root only has its fixed actual08 ancestor transition; a non-actual08 predecessor must exactly equal currentPKG and COMBINATION. A new mapper changes COMBINATION, so changing justPKG or the source pin cannot pass.",
+        "Any successor needs an independently reviewed explicit generation transition and whole-source derivation preserving all historical readers and live full-inventory checks. Never rebind a historical boundary to the new combo, skip a reader, or create another nonce to get around this gate."
+      ],
+      "source": {
+        "function": "validate_current_prior",
+        "line": 329,
+        "source": {
+          "bytes": 72194,
+          "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/root-chain/source/run_component_root_once.py",
+          "sha256": "290af8450d0e5a5f92ebc49f4728ffc1ca7f9e4ac61b2fc9cedf390e47de1c1d"
+        }
+      }
+    },
+    {
+      "gate": "Freeze the successor Root source package and plan preparation bindings",
+      "order": 4,
+      "perform_now": false,
+      "required": [
+        "Bind the actual new runtime package, combination, reviewed shared materials, bridge and Root source manifest with an explicit source increment proof.",
+        "Regenerate the source-only plan helper against that generation and the verified closed predecessor; current hardcoded runtime and Root source identities remain immutable.",
+        "Retain native policy verifier and transport capture semantics; re-run exact independent adoption verification on retained originals. Policy bytes and historical adoption are not hand-edited."
+      ],
+      "sources": [
+        {
+          "bytes": 72194,
+          "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/root-chain/source/run_component_root_once.py",
+          "sha256": "290af8450d0e5a5f92ebc49f4728ffc1ca7f9e4ac61b2fc9cedf390e47de1c1d"
+        },
+        {
+          "bytes": 8098,
+          "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/root-chain/source/phone_chain_bridge.py",
+          "sha256": "8195129eacdd9c0d74d6ad15de6ea6ef5417252c1dd52984a8995ce4f48ca946"
+        },
+        {
+          "bytes": 42223,
+          "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/proof/source/prepare_native_guard_root_plan.py",
+          "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+        }
+      ]
+    },
+    {
+      "future_action_id": null,
+      "future_lease": null,
+      "future_nonce": null,
+      "future_owner_request": null,
+      "gate": "Generate fresh runtime-owned lease and contracts only after normal admission",
+      "order": 5,
+      "perform_now": false,
+      "required": [
+        "prepare_component must derive LEASE combination/package and sender-contract lease/combination hashes from actual reviewed materials after the prior gate.",
+        "Original lifecycle creates BOUND-CONTRACT with new source_seal_sha256 and actual current executor_server_instance, bound to the actual lease and original provider source.",
+        "Actual ACCEPTED, five-scope context, phase plans and native action IDs are created by their original actors in the admitted transaction, never prefilled in this candidate.",
+        "Keep current600s/510s/420s and native60000ms limits, no automatic retries or old5a95 redispatch."
+      ],
+      "sources": [
+        {
+          "function": "main",
+          "line": 204,
+          "source": {
+            "bytes": 14259,
+            "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/prepare_component.py",
+            "sha256": "46a28fd77dc64d94ccdd4c1f3e12912e22ebb39defc29b69991df831d75afc7d"
+          }
+        },
+        {
+          "function": "supervise",
+          "line": 504,
+          "source": {
+            "bytes": 40261,
+            "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_lifecycle.py",
+            "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+          }
+        },
+        {
+          "function": "main",
+          "line": 579,
+          "source": {
+            "bytes": 38823,
+            "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_listener.py",
+            "sha256": "ad345c0080cbfd89f1378bb6e8583f43e1fa4af0a5928d7ecbf4ccc8d4f04c52"
+          }
+        }
+      ]
+    },
+    {
+      "gate": "Bind any final fixed19 consumers to the executed successor when producing acceptance evidence",
+      "order": 6,
+      "perform_now": false,
+      "required": [
+        "Existing consumer reconstructs the source seal and compares all15 production files, full32 runtime source pins and actual combination. Its pure6282 increment permits the inventory-prefix leaf only; it must not be loosened to accept another source row.",
+        "A formally reviewed successor consumer/constructor/cascade must consume the exact new source increment and actual generated runtime/Root/combination before new acceptance artifacts can be qualified.",
+        "Propagate actual consumer/readiness/runtime/adoption pins to affected component, UI, fault, cancel and host generation contexts; do not migrate old host/physical PASS or change the case whitelist."
+      ],
+      "sources": [
+        {
+          "bytes": 84972,
+          "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/release_boundaries.py",
+          "sha256": "57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0"
+        },
+        {
+          "bytes": 34843,
+          "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/make_component_boundary_inputs.py",
+          "sha256": "41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5"
+        },
+        {
+          "bytes": 66393,
+          "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/source/derive_final_cascade_property_r8.py",
+          "sha256": "843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54"
+        },
+        {
+          "bytes": 7269,
+          "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/source/runtime_source_increment.py",
+          "sha256": "6282d6d5478d3bd65acc368198db3af550c7284f9c8e66d0b101d6d8269628e4"
+        }
+      ]
+    }
+  ],
+  "original_context": {
+    "bound_contract": {
+      "bytes": 1842,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/BOUND-CONTRACT.json",
+      "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+    },
+    "combination": {
+      "bytes": 4702,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/inputs/COMBINATION.json",
+      "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+    },
+    "lease": {
+      "bytes": 2496,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/LEASE.json",
+      "sha256": "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736"
+    },
+    "reviewed_production_pins": {
+      "bytes": 1438,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/reference/REVIEWED-PRODUCTION-PINS.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    "runtime_manifest": {
+      "bytes": 16808,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/MANIFEST.json",
+      "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+    },
+    "same15_source_count": 15,
+    "source_seal": {
+      "bytes": 2341,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/inputs/SOURCE-SEAL.original.json",
+      "sha256": "a41a317d9ba3317b4c3bf66b66fb574f47f9bf15b1dc67201cea30d9ae0a9229"
+    }
+  },
+  "phone_calls": 0,
+  "policy_and_history": "No live policy change is requested. Actual policy/adoption and all history stay immutable and must pass their original exact verifiers.",
+  "production_changed": false,
+  "remote_calls": 0,
+  "schema": "hepta.codec72.source-refreeze-gates.v1",
+  "scope_limit": "This lists source/contract bindings enforced by the retained code. It is not a declaration that the future generation is admitted or that all actual generation work has happened.",
+  "state": "MAP_ONLY_NO_GENERATION_OR_EXECUTION_ADMISSION",
+  "unchanged_external_artifacts_expected_to_be_reverified": {
+    "busybox": {
+      "bytes": 1710600,
+      "gid": 0,
+      "mode": 493,
+      "path": "/data/adb/magisk/busybox",
+      "selinux": "u:object_r:system_file:s0",
+      "sha256": "4d60ab3f5a59ebb2ca863f2f514e6924401b581e9b64f602665c008177626651",
+      "uid": 0
+    },
+    "client": {
+      "bytes": 17390,
+      "gid": 0,
+      "mode": 384,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py",
+      "selinux": "u:object_r:trillionnium_owner_open_state_file:s0",
+      "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+      "uid": 0
+    },
+    "focus_helper": {
+      "bytes": 20732,
+      "gid": 0,
+      "mode": 420,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r9-r1/helpers/focus-text-input-v150-r9.jar",
+      "selinux": "u:object_r:trillionnium_owner_open_phone_helper_file:s0",
+      "sha256": "c8ec62529d88a29872c313052cdd335dc7611b11089db87531008b35d926e855",
+      "uid": 0
+    },
+    "python": {
+      "bytes": 7843560,
+      "gid": 0,
+      "mode": 365,
+      "path": "/usr/bin/python3",
+      "selinux": "u:object_r:trillionnium_owner_open_payload_exec:s0",
+      "sha256": "f7ad87c414fc6a5126571b2ecca19351119ac10e54d0539de6a0a9300d81087f",
+      "uid": 0
+    },
+    "screen_helper": {
+      "bytes": 16064,
+      "gid": 0,
+      "mode": 420,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r6/helpers/screen-codec-v148r1.jar",
+      "selinux": "u:object_r:trillionnium_owner_open_phone_helper_file:s0",
+      "sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639",
+      "uid": 0
+    },
+    "sidecar": {
+      "bytes": 965824,
+      "gid": 0,
+      "mode": 493,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-sidecar-r6",
+      "selinux": "u:object_r:trillionnium_owner_open_phone_executor_exec:s0",
+      "sha256": "8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976",
+      "uid": 0
+    },
+    "unicode_helper": {
+      "bytes": 16076,
+      "gid": 0,
+      "mode": 420,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r6/helpers/unicode-input-v148r2.jar",
+      "selinux": "u:object_r:trillionnium_owner_open_phone_helper_file:s0",
+      "sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2",
+      "uid": 0
+    },
+    "worker": {
+      "bytes": 296096,
+      "gid": 0,
+      "mode": 493,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-worker-r6",
+      "selinux": "u:object_r:trillionnium_owner_open_phone_worker_exec:s0",
+      "sha256": "49fb74f8798194c63d5e510c0ed81604d64a55e1df84822d9457ae4110cab6da",
+      "uid": 0
+    }
+  }
+}

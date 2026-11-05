@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1ab32d7b6-fc05-4b5b\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226163746f725f72657475726e636f6465223a20302c2022636173655f70617373223a2066616c73652c202270686f6e655f72657475726e636f6465223a20302c2022726573756c74223a207b226279746573223a20313337302c202270617468223a20222f686f6d652f616c65782f72617a7236302d6c6f63616c2d6d6f64656c2d763135302f666978656431392d726f6f742d316164332d6e656730312d73746167652d7265616430312f524553554c542e6a736f6e222c2022736861323536223a202230646164623764646563353061316537323338323364333633333430393632306531616366363964383565343164316536323964343034346236333365656566227d2c20227374617465223a2022524541445f4f4e4c595f53544147455f4f42534552564154494f4e5f434f4d504c45544544227d0a\",\n    \"eof\": true,\n    \"next_offset\": 317,\n    \"offset\": 0,\n    \"size\": 317,\n    \"text\": \"{\\\"actor_returncode\\\": 0, \\\"case_pass\\\": false, \\\"phone_returncode\\\": 0, \\\"result\\\": {\\\"bytes\\\": 1370, \\\"path\\\": \\\"/home/alex/razr60-local-model-v150/fixed19-root-1ad3-neg01-stage-read01/RESULT.json\\\", \\\"sha256\\\": \\\"0dadb7ddec50a1e723823d3633409620e1acf69d85e41d1e629d4044b633eeef\\\"}, \\\"state\\\": \\\"READ_ONLY_STAGE_OBSERVATION_COMPLETED\\\"}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

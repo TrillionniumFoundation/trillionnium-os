@@ -1,0 +1,40 @@
+{
+  "actor_returncode": 0,
+  "automatic_retry": false,
+  "caller_signal_accounting_scope": "signals_sent counts P4 caller deliveries only",
+  "case_pass": false,
+  "kernel_signal_zero_queries_in_original_gates": true,
+  "native_boundary_created": false,
+  "phone_evidence_writes": true,
+  "phone_operation": "original_full_snapshot",
+  "phone_originals": {
+    "baseline.json": {
+      "bytes": 348,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-902e851c3ca1f90deab3d880ab993774-snapshot01/baseline.json",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    "intent.json": {
+      "bytes": 1347,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-902e851c3ca1f90deab3d880ab993774-snapshot01/intent.json",
+      "sha256": "ff2ccd0ce3283f2c02d391fad332f3bfe23e854caf5d0c0a37ce63a38cc93966"
+    },
+    "result.json": {
+      "bytes": 2481,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-902e851c3ca1f90deab3d880ab993774-snapshot01/result.json",
+      "sha256": "ec47f2a86488391201c86b3880bd8c0d7c24cdbed94eb95e658474d25c5935e8"
+    }
+  },
+  "phone_returncode": 1,
+  "phone_self_SIGALRM_seconds": 75,
+  "phone_snapshot_target": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01",
+  "phone_status": "command_exited",
+  "phone_stdout": {
+    "bytes": 0,
+    "path": "/home/alex/razr60-local-model-v150/root-1ad3-external902-snapshot01/PHONE-STDOUT.original",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "signals_sent": 0,
+  "snapshot_result_requires_independent_readback": true,
+  "source_sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa",
+  "state": "ORIGINAL_SNAPSHOT_FAILED_OR_UNKNOWN_RETAIN_ORIGINALS"
+}

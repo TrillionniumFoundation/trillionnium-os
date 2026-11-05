@@ -1,0 +1,32 @@
+{
+  "explicit_splices": [
+    "scope documentation",
+    "only the actual boundary parent directory",
+    "only the three authorized existing boundary leaves",
+    "fixed literal-set error label",
+    "exact three path count",
+    "narrow exact raw bound to one MiB",
+    "one parent phase label",
+    "three-leaf order label",
+    "bookend phase label",
+    "explicit narrower output schema",
+    "explicit narrower success state",
+    "explicit narrower partial state",
+    "explicit archive-body exclusion"
+  ],
+  "parent_unexecuted_four_file_draft": {
+    "bytes": 15611,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_four_originals_reader_candidate01/package/source/read_four_existing_originals_once.py",
+    "sha256": "ff285d8d04633eaa0bf00a3ab00ec62900f50d8a5bb495fb30df8a2205efc268"
+  },
+  "phone_calls": 0,
+  "publish_intent_bytes_pin_source_derived": true,
+  "publish_intent_prior_metadata": null,
+  "remote_calls": 0,
+  "runtime_or_target_main_calls": 0,
+  "schema": "hepta.fixed-three-boundary-originals.source-derivation.v1",
+  "snapshot_archive_body_requested": false,
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "two_prior_full9_pins": true,
+  "whole_byte_inverse_to_parent": true
+}

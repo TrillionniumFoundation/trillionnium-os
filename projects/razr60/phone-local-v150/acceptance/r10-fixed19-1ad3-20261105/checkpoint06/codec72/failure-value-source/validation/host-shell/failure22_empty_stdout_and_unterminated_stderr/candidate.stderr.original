@@ -1,0 +1,2 @@
+original runtime stderr without LF
+{"schema":"hepta.codec-failure-observation.v1","codec_exit_code":22,"codec_stdout_representation":"posix_shell_command_substitution_value","java_stdout_exact":false,"stderr_has_appended_diagnostic_record":true}

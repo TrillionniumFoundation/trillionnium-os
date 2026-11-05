@@ -1,0 +1,192 @@
+{
+  "actual_phone_state_read": false,
+  "all_selected_originals_rechecked": true,
+  "automatic_retry": false,
+  "business_qualified": false,
+  "canonical_runtime_manifest": {
+    "bytes": 16808,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/runtime/MANIFEST.json",
+    "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+  },
+  "case_id": "NEG-01",
+  "combination": {
+    "bytes": 4702,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/COMBINATION.json",
+    "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+  },
+  "component_qualified": false,
+  "coordinator": {
+    "bytes": 72194,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py",
+    "sha256": "290af8450d0e5a5f92ebc49f4728ffc1ca7f9e4ac61b2fc9cedf390e47de1c1d"
+  },
+  "failed_prelaunch_admission": {
+    "admission_original": {
+      "bytes": 66905,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/FAILED-PRELAUNCH-ADMISSION.json",
+      "sha256": "e85b3bfed5e4720fdcebca8783c6735a9601d73d903066c6de61917e001bf130"
+    },
+    "forbidden_nonces": [
+      "7c79195945d64e569a191166ac122a08",
+      "7c74b84aefb177d15f746fa7eae29d54"
+    ],
+    "verification": {
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "business_qualified": false,
+      "component_qualified": false,
+      "failed_prelaunch_labels": [
+        "root-r10-neg01-20261105-09",
+        "root-r10-neg01-1ad3-01"
+      ],
+      "failed_prelaunch_nonces": [
+        "7c79195945d64e569a191166ac122a08",
+        "7c74b84aefb177d15f746fa7eae29d54"
+      ],
+      "last_real_native_boundary": {
+        "bytes": 9373,
+        "metadata": [
+          65086,
+          153711,
+          33152,
+          0,
+          0,
+          1,
+          9373,
+          1793853757339925229,
+          1793853757339925229
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/2b0b103ee6de7a422064b9571266bf5d.json",
+        "sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10"
+      },
+      "native_boundary_created": false,
+      "nonce_reuse_forbidden": true,
+      "schema": "hepta.native-guard.failed-prelaunch-admission.v1",
+      "state": "TWO_FAILED_PRELAUNCH_ATTEMPTS_RECONCILED_LAST_NATIVE08_UNCHANGED"
+    },
+    "verifier_source": {
+      "bytes": 54893,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/source/verify_failed_prelaunch.py",
+      "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+    }
+  },
+  "failed_prelaunch_evidence": {
+    "bytes": 66905,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/FAILED-PRELAUNCH-ADMISSION.json",
+    "sha256": "e85b3bfed5e4720fdcebca8783c6735a9601d73d903066c6de61917e001bf130"
+  },
+  "freeze_result": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "helper": {
+    "bytes": 42520,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-admitted-1ad3-candidate01/source/prepare_native_guard_root_plan.py",
+    "sha256": "4db85943e9d264b606bea7b452bba74e7007b08727d7a4edbea298b55de4f023"
+  },
+  "host_out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-1ad3-02",
+  "inputs": {
+    "bytes": 2356,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/neg01-1ad3-02-inputs.json",
+    "sha256": "3410240dc71f14f048272f0048f4988ef7f67e49840ef6bae116631b6a215bdf"
+  },
+  "label": "root-r10-neg01-1ad3-02",
+  "lease_fixed": false,
+  "native_submissions": 0,
+  "new_nonces_generated": 0,
+  "nonce": "bc0573ad459cecae9884d6a46568621b",
+  "phone_calls": 0,
+  "plan": {
+    "bytes": 4772,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-1ad3-02/ROOT-PLAN.json",
+    "sha256": "e3b9d77a317f6c7ac7ea6bae9a3276c9f8a689563084a54d82d7417e2a17a3e7"
+  },
+  "plan_sha256": "e3b9d77a317f6c7ac7ea6bae9a3276c9f8a689563084a54d82d7417e2a17a3e7",
+  "planned_execution_out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-02",
+  "policy_adoption": {
+    "bytes": 208226,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json",
+    "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+  },
+  "process_starts": 0,
+  "pure_validate_plan_passed": true,
+  "remote_nonce_absence_proven": false,
+  "root_chain_manifest": {
+    "bytes": 15020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/SOURCE-MANIFEST.json",
+    "sha256": "4eb4eeeb604e5526fd0c477a9a180b6b1e6d08f8016b3add7c605b62cdac22f3"
+  },
+  "runtime_manifest": {
+    "bytes": 19020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json",
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "runtime_source_increment_result": {
+    "bytes": 6132,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-INCREMENT-RESULT.json",
+    "sha256": "b13be5219320c82c9a440d2adfa83758d0ba06ee6d3e50468f7c28bb5658e171"
+  },
+  "schema": "hepta.native-guard.r8-root-plan-preparation-result.v1",
+  "source_scope": {
+    "actual_freezer_source": {
+      "bytes": 36899,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/source/freeze_property_runtime.py",
+      "sha256": "70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d"
+    },
+    "actual_r8_freeze_result": {
+      "bytes": 22392,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+      "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+    },
+    "actual_r8_root_chain_manifest": {
+      "bytes": 11442,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "7315f6561e221fb59429f9daa8ec1a34a944681fd2a117773611c11fa82a81ca"
+    },
+    "actual_r8_runtime_manifest": {
+      "bytes": 16808,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/runtime/MANIFEST.json",
+      "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+    },
+    "canonical_originals_modified": false,
+    "execution_capture_template": {
+      "bytes": 71820,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-transport-candidate03-1ad3/source/run_component_root_once.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    "execution_runtime_changed_members": [
+      "source/late_boundary.py"
+    ],
+    "execution_runtime_manifest": {
+      "bytes": 19020,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json",
+      "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+    },
+    "inherited_metadata_scope": "original_r7_to_r8_generation_preserved_not_successor_actions",
+    "original_freeze_claimed_repaired_capture": false,
+    "original_freeze_claimed_runtime_increment": false,
+    "replacement_scope": "runtime_inventory_prefix_and_root_host_transport_capture",
+    "root_capture_increment": {
+      "bytes": 12350,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/ROOT-CAPTURE-INCREMENT.json",
+      "sha256": "bb3d8fbb1133b4b46e5d389508577727414cfb7556791602d4f503fde6b15860"
+    },
+    "runtime_increment_result": {
+      "bytes": 6132,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-INCREMENT-RESULT.json",
+      "sha256": "b13be5219320c82c9a440d2adfa83758d0ba06ee6d3e50468f7c28bb5658e171"
+    },
+    "runtime_increment_verifier": {
+      "bytes": 7269,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/source/runtime_source_increment.py",
+      "sha256": "6282d6d5478d3bd65acc368198db3af550c7284f9c8e66d0b101d6d8269628e4"
+    },
+    "runtime_source_increment": {
+      "bytes": 2087,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-SOURCE-INCREMENT.json",
+      "sha256": "e6fbfdee18e95c8bb2d0ece71544669311572c672e90a0e63dc30a8984cf0656"
+    },
+    "schema": "hepta.native-guard.root-source-scope.v2"
+  },
+  "state": "HOST_PLAN_CREATED_AND_PURE_ROOT_VALIDATION_PASSED_NOT_EXECUTED"
+}

@@ -1,0 +1,25 @@
+{
+  "all_235_members_verified": false,
+  "archive_whole_sha_verified": false,
+  "case_pass": false,
+  "files": [
+    {
+      "bytes": 5213,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/complete-small-originals/RESULT.json",
+      "sha256": "3b1244bc603f33599fd739e141df5c546deacc4eeadf7be837f9a553c0edf857"
+    },
+    {
+      "bytes": 40752,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/complete-small-originals/COLLECTOR.original.py",
+      "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+    },
+    {
+      "bytes": 147912,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/complete-small-originals/ORIGINALS-MANIFEST.json",
+      "sha256": "99b413337849ebe3c2b89dece5c65dacd396d05d2d39abee5cde84d71c1e6e6e"
+    }
+  ],
+  "remote_calls": 0,
+  "source_executed": false,
+  "state": "THREE_COMPLETE_SMALL_ORIGINALS_EXACT_FULL_ARCHIVE_STILL_DOWNLOADING"
+}

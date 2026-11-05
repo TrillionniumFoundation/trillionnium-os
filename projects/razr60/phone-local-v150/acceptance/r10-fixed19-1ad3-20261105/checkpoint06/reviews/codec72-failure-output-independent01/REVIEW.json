@@ -1,0 +1,74 @@
+{
+  "author_host_shell_checks": {
+    "bytes": 8690,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/validation/HOST-SHELL-CHECKS.json",
+    "sha256": "1b408038c9720982f5ad496b6ffc2cb8976cb18b6e03010eeebda872b5e154dd"
+  },
+  "candidate": {
+    "bytes": 39093,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/source/phone_observation_tools.py",
+    "sha256": "8f60cfd359ccfa269fabb05b616371268a2b86938fc41da37a2111c10066b792"
+  },
+  "case_pass": false,
+  "changed_function": "PhoneTools.map",
+  "changed_line_after": "            shell += 'hepta_codec=$(CLASSPATH=' + shlex.quote(SCREEN_JAR) + ' app_process /system/bin org.trillionnium.hepta.screen.ScreenshotCodec ' + ' '.join(quoted) + ') || { hepta_codec_exit_code=$?; printf \\'%s\\' \"$hepta_codec\"; printf \\'\\\\n{\"schema\":\"hepta.codec-failure-observation.v1\",\"codec_exit_code\":%s,\"codec_stdout_representation\":\"posix_shell_command_substitution_value\",\"java_stdout_exact\":false,\"stderr_has_appended_diagnostic_record\":true}\\\\n\\' \"$hepta_codec_exit_code\" >&2; exit 72; }; '\n",
+  "changed_line_before": "            shell += 'hepta_codec=$(CLASSPATH=' + shlex.quote(SCREEN_JAR) + ' app_process /system/bin org.trillionnium.hepta.screen.ScreenshotCodec ' + ' '.join(quoted) + ') || exit 72; '\n",
+  "changed_source_lines": 1,
+  "existing_saved_control_results_read_without_rerun": [
+    {
+      "author_saved_outcome_bytes_match_all_declared_pins": true,
+      "candidate_returncode": 0,
+      "case": "success_same_envelope",
+      "original_returncode": 0,
+      "reviewer_executed": false
+    },
+    {
+      "author_saved_outcome_bytes_match_all_declared_pins": true,
+      "candidate_returncode": 72,
+      "case": "failure20_trailing_lf_and_literal_metacharacters",
+      "original_returncode": 72,
+      "reviewer_executed": false
+    },
+    {
+      "author_saved_outcome_bytes_match_all_declared_pins": true,
+      "candidate_returncode": 72,
+      "case": "failure22_empty_stdout_and_unterminated_stderr",
+      "original_returncode": 72,
+      "reviewer_executed": false
+    }
+  ],
+  "function_names_unchanged": true,
+  "live_failure_cause_established": false,
+  "manifest_closed_set_and_all29_member_hashes_verified": true,
+  "manifest_regular_members": 30,
+  "new_runtime_or_production_admission": false,
+  "observations": [
+    "Only the existing codec command-substitution failure tail changes; guards, argv, token, image budgets, success envelope and EXIT cleanup trap are byte-identical.",
+    "The first failure-handler assignment captures the failed assignment's shell exit status before any printf. The quoted printf %s emits the shell variable value without adding an LF or re-evaluating its metacharacters.",
+    "The added stderr record is explicitly schema-tagged and reports codec exit status plus java_stdout_exact=false and the command-substitution representation. It is appended after a leading newline; existing stderr bytes are only a prefix of the resulting stream.",
+    "The failure block still requests exit 72. The untouched EXIT trap retains its existing ability to return 69 if PNG cleanup fails; this review does not assert unconditional 72 under every I/O or cleanup failure.",
+    "POSIX command substitution already removes trailing linefeeds and cannot establish byte-identical Java stdout; this is correctly disclosed. NUL handling, Android shell, SELinux, live codec behavior and transport limits were not exercised here.",
+    "No existing guard or budget constant changes. The extra failure output still has to fit the existing actual transport/output limits; no live retention or diagnostic-cause guarantee is made.",
+    "Changing production source bytes requires separately reviewed seal/combination/runtime/Root admission. This package is not a production rollout or a case qualification."
+  ],
+  "original": {
+    "bytes": 38774,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/reference/phone_observation_tools.f16c.original.py",
+    "sha256": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df"
+  },
+  "other_whole_functions_and_methods_byte_identical": 16,
+  "production_changed": false,
+  "reviewer_phone_calls": 0,
+  "reviewer_remote_calls": 0,
+  "reviewer_shell_subprocess_tests": 0,
+  "reviewer_target_module_imports": 0,
+  "schema": "hepta.codec72.failure-output-independent-source-review.v1",
+  "scope_excludes_gate_map_full_chain_review": true,
+  "source_manifest": {
+    "bytes": 6149,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/SOURCE-MANIFEST.json",
+    "sha256": "dbabe936f5b7db11af1fa71d93ff7d6c5616fa396e63e06238df2f11c6600f22"
+  },
+  "state": "NARROW_STATIC_REVIEW_NO_BLOCKER",
+  "whole_source_reverse_replacement_exact": true
+}

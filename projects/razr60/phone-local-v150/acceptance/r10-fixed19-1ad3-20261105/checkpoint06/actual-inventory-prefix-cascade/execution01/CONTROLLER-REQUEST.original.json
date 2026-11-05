@@ -1,0 +1,14 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-c",
+    "import pathlib,hashlib,sys; p=pathlib.Path(sys.argv[1]); b=p.read_bytes(); assert len(b)==68403 and hashlib.sha256(b).hexdigest()=='7b9b709b247e0f1267957725d7159a2f87c13ac090163035af1039050587bb5a'; sys.argv=sys.argv[1:]; exec(compile(b,str(p),'exec'),{'__name__':'__main__','__file__':str(p)})",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-cascade-source-final01-1ad3/source/derive_final_cascade_property_r8.py",
+    "--execute-host-cascade-once"
+  ],
+  "idempotency_key": "root-1ad3-inventory-prefix-cascade-execute01-20261105",
+  "timeout_seconds": 180
+}

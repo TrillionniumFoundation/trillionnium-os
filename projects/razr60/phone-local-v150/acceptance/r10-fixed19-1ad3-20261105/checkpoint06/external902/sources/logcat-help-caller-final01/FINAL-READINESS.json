@@ -1,0 +1,34 @@
+{
+  "actual_capability_result_present": false,
+  "actual_execution_owner": "/root",
+  "app_process_requested": false,
+  "caller": {
+    "bytes": 7342,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "99a10978afac380dda0624cb91beaecf7c3fc1e0e0a0adf6cfd1847bbfe247fa"
+  },
+  "controller_request": {
+    "bytes": 8133,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "de886987850398518b025fc04da7215f7318940599a6e84ff74fd222acfa20d0"
+  },
+  "idempotency_key": "root-1ad3-logcat-help-capability01-20261105",
+  "log_buffer_read_or_clear_requested": false,
+  "outer_controller_timeout": null,
+  "passive_wait_seconds": 60,
+  "phone_request": {
+    "bytes": 105,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/PHONE-REQUEST.preview.json",
+    "sha256": "a99b0c274b791b1e2b8cc9f593cc1942c92b9ba2bb258573b862377e9e8a209c"
+  },
+  "phone_timeout_seconds": 30,
+  "review": {
+    "bytes": 2890,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/INDEPENDENT-REVIEW.original.json",
+    "sha256": "4c6f3f697076cd9b401711ba0919e9e473829ea5313cb509703505c2e21dbb97"
+  },
+  "schema": "hepta.logcat.help-only-final-source-readiness.v1",
+  "state": "FROZEN_SOURCE_ONLY_INDEPENDENTLY_REVIEWED",
+  "this_agent_phone_calls": 0,
+  "this_agent_remote_calls": 0
+}

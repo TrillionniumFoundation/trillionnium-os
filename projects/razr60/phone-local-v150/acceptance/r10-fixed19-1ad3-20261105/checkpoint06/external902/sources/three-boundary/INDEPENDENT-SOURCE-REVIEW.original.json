@@ -1,0 +1,85 @@
+{
+  "blockers": [],
+  "checks": [
+    {
+      "name": "manifest closed set and exact member bytes",
+      "regular_files": 15,
+      "result": "PASS"
+    },
+    {
+      "helpers": [
+        "boot",
+        "encoded",
+        "metadata",
+        "need",
+        "own_fds",
+        "parent_fd",
+        "read_directory",
+        "sha",
+        "strict"
+      ],
+      "name": "nine reviewed45aff helpers whole-byte identical",
+      "result": "PASS"
+    },
+    {
+      "boundary_sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831",
+      "name": "two retained actual boundary descriptors copied exactly",
+      "result": "PASS"
+    },
+    {
+      "bytes": 742,
+      "lease_sha256": "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736",
+      "metadata_status": "first observed, not prior observed",
+      "name": "publish intent original396d fields and1e2d canonical encoding",
+      "result": "PASS",
+      "sha256": "3d56ef41cf7d2adf1858466d8d96ec877fb4553fdb97afe5609cc8475bac04a9"
+    },
+    {
+      "detail": "One fixed parent directory and three literal regular leaves; O_RDONLY|O_NOFOLLOW|O_CLOEXEC|O_NONBLOCK; held FD/named leaf/full9/parent and newly opened canonical-parent checks; owned FDs close in finally.",
+      "name": "fixed scope and read ownership",
+      "result": "PASS"
+    },
+    {
+      "detail": "Three whole files each exact length and SHA checked twice; publish raw exact expected; complete directory names/full9 and boot reread; failures retain partial without alternate path or retry.",
+      "name": "complete bytes and bookends",
+      "result": "PASS"
+    },
+    {
+      "detail": "No runtime import, subprocess, dispatch, snapshot, close, publication, signal or source/evidence write. Only stdlib and fixed reads; result expressly later-read and not boundary verification/adoption.",
+      "name": "no effect or qualification substitution",
+      "result": "PASS"
+    },
+    {
+      "body_base64_bytes": 1305264,
+      "max_output_bytes": 8388608,
+      "name": "output budget",
+      "raw_bytes": 978944,
+      "result": "PASS"
+    }
+  ],
+  "limits": [
+    "Static source/AST and exact local data derivation only; no target helper, main, phone, P4 or Mac execution.",
+    "No source hard deadline is claimed; actual enclosing caller remains separately reviewed.",
+    "Source does not reread boundary JSON itself or prove atomicity with its earlier observation; provenance/times remain separate.",
+    "Does not verify archive bodies, native closure assertions, current process/endpoint absence or case qualification."
+  ],
+  "review_harness_history": {
+    "correction": "Independent literal AST compared to8*1024*1024; bound recorded explicitly",
+    "first_attempt": "KeyError OUTPUT_LIMIT: ast.literal_eval omits BinOp8*1024*1024; no target executed or source modified",
+    "retained": "REVIEW-SCRIPT-FIRST-ATTEMPT.json"
+  },
+  "reviewed_at_utc": "2026-11-05T13:28:27.454075+00:00",
+  "schema": "hepta.independent-source-review.v1",
+  "scope": "Fixed three existing boundary originals reader; no caller or actual phone execution claimed",
+  "source": {
+    "bytes": 14900,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/package/source/read_three_boundary_originals_once.py",
+    "sha256": "41398169b440a156db14eb3d2e701198a3d13ec0834a1c4d60c4d593a8a95fa8"
+  },
+  "source_manifest": {
+    "bytes": 2557,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/package/SOURCE-MANIFEST.json",
+    "sha256": "1d83d572082a3864d790f0471677793c32e5c80b85ef78d412e6e290d43db3d5"
+  },
+  "state": "NO_BLOCKER_IN_REQUESTED_SOURCE_SCOPE"
+}

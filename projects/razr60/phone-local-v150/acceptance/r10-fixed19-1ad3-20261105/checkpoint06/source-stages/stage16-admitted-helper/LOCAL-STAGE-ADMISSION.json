@@ -1,0 +1,32 @@
+{
+  "archive": {
+    "bytes": 41672,
+    "sha256": "8ac1bd86845da780761e125e1b9ce263cf2887202cc465904f67af11f6ab8fab"
+  },
+  "audit": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage16",
+  "candidate_source_imports": 0,
+  "entrypoint_executions": 0,
+  "idempotency_key": "root-1ad3-admitted-helper-source-stage16-20261105",
+  "local_pure_archive_parser_only": true,
+  "phone_calls": 0,
+  "regular_files": 10,
+  "remote_calls": 0,
+  "source": {
+    "bytes": 68782,
+    "sha256": "5a1ed7b8c97ed811e4500b47e7d81db1fcd459b5e03d4c8de75a183523bdc072"
+  },
+  "source_manifest": {
+    "bytes": 1949,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-admitted-1ad3-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "e229df7b7955f86910f2b7001ebe1cde21150cea225d7380bccf0af57407f283"
+  },
+  "stage13_modified": false,
+  "state": "EXACT_SOURCE_ONLY_STAGE16_PAYLOAD_ADMITTED_LOCALLY",
+  "target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-admitted-1ad3-candidate01",
+  "template_parent": {
+    "bytes": 13258,
+    "sha256": "6c9c2f26c681a090f355e7b05df80b401b0e20b55274fcbca1dcb03d54e11da9"
+  },
+  "uncompressed_file_bytes": 151102,
+  "whole_template_inverse_equal": true
+}

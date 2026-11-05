@@ -1,0 +1,299 @@
+{
+  "actual31da_vs_a334": {
+    "changed_row": {
+      "actual": {
+        "bytes": 74287,
+        "path": "source/late_boundary.py",
+        "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+      },
+      "parent": {
+        "bytes": 67005,
+        "path": "source/late_boundary.py",
+        "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+      }
+    },
+    "same_32_paths": true,
+    "source_identity_comparison_only_no_runtime_admission": true,
+    "unchanged_member_rows": 31
+  },
+  "added_functions": [
+    "verify_source_packages",
+    "verify_sender_top_originals"
+  ],
+  "additional_fixed_files": {
+    "sender-top-originals/root-r10-neg01-7c907661-01.local-once.json": {
+      "bytes": 1178,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.local-once.json",
+      "sha256": "2a1bd1c330837c3dec9e1a880ca628e7e700ed7c1ac3a09d8c5896ddf3f076e9"
+    },
+    "sender-top-originals/root-r10-neg01-7c907661-01.send-result.json": {
+      "bytes": 699,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.send-result.json",
+      "sha256": "97f1d13685636c03681120916abc20b357d0e47dfa594f1edfc22d40f68c24f5"
+    },
+    "source-provenance/membership-overlay-SOURCE-MANIFEST.json": {
+      "bytes": 1959,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r8-membership-source-396d-candidate02/freezer/overlay/SOURCE-MANIFEST.json",
+      "sha256": "9ba3fc63742139d40ae25ca72e79179e5405f40b75651096f4d594a56a7c60db"
+    }
+  },
+  "case_passes_added": 0,
+  "changed_functions": [
+    "collect_tree",
+    "main",
+    "recheck_tree",
+    "verify_ended_failure"
+  ],
+  "collector_main_executed": false,
+  "fixed_case_pins": {
+    "CHAIN-INTENT.json": [
+      363,
+      "13cc6b10faee047287e5c0e599de51425e4b8d043cf36dfb96b5517e825aa3ff"
+    ],
+    "ROOT-FAILURE.json": [
+      20867,
+      "25f7bca3dfd2f10308e2d430704db54e393c12bd0add116065ff8666be85320b"
+    ],
+    "ROOT-PLAN.original.json": [
+      4783,
+      "9a94108ffc737133ba879bd9cccd70c7ec3ae2f3da17eb689e5b1d5610789d58"
+    ],
+    "material/PREPARED.json": [
+      2873,
+      "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+    ]
+  },
+  "limits_increased": false,
+  "parent": {
+    "bytes": 20496,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/neg01-1ad3-02-root-evidence-candidate01/source/collect_failed_root_originals.py",
+    "sha256": "181889ed6477819622909d0bdd016ad5d51d3352e17925c0359fc941d87a7d66"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "retained_original_sender_joined": false,
+  "retained_original_sender_stderr_eof": false,
+  "retained_original_sender_stdout_eof": false,
+  "retained_sender_parent_pid": 54589,
+  "schema": "hepta.external902-fixed-mac-collector-derivation.v1",
+  "source": {
+    "bytes": 36689,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/package/source/collect_external902_originals.py",
+    "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+  },
+  "source_packages": {
+    "root-source-originals": {
+      "files": [
+        {
+          "bytes": 126796,
+          "path": "reference/policy_native5_verifier.py",
+          "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+        },
+        {
+          "bytes": 8098,
+          "path": "source/phone_chain_bridge.py",
+          "sha256": "72564868d7162281e34172d6163c0fb39a20c55ab24d3e8534347912e2680d27"
+        },
+        {
+          "bytes": 72194,
+          "path": "source/run_component_root_once.py",
+          "sha256": "f98ca61da43f0d62604701a1e4dc1d58df03cbb6e0cd7566bf293e298f0b15e0"
+        }
+      ],
+      "manifest": {
+        "bytes": 11894,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-membership-733d-01/root-chain/SOURCE-MANIFEST.json",
+        "sha256": "f865ae8b2edaf8c8f3076fc299796b953f66af7f848042b68932d76aaaab67c6"
+      },
+      "manifest_name": "SOURCE-MANIFEST.json",
+      "root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-membership-733d-01/root-chain"
+    },
+    "runtime-originals": {
+      "files": [
+        {
+          "bytes": 1438,
+          "path": "reference/REVIEWED-PRODUCTION-PINS.json",
+          "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+        },
+        {
+          "bytes": 664638,
+          "path": "reference/attempt05-AFTER-INVENTORY.original.json",
+          "sha256": "87103089914885fff5632781f18fbe36895ed181f01997eac6c3b49449b5579e"
+        },
+        {
+          "bytes": 164095,
+          "path": "reference/attempt05-CLOSURE.original.json",
+          "sha256": "d464bac786ef208d8fa0390587bd3bb7616a13985fb064716a209aa2394458f6"
+        },
+        {
+          "bytes": 4650,
+          "path": "reference/attempt05-SIDE-PROOF.original.json",
+          "sha256": "1bf6bca5ae5aaa5d5803b708070680e92d3f072f9541f38b09783787cfae7b9c"
+        },
+        {
+          "bytes": 18133,
+          "path": "reference/component_common_r5.py",
+          "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02"
+        },
+        {
+          "bytes": 13238,
+          "path": "reference/component_core.py",
+          "sha256": "705b982a46de0fd4427cd6a233687381c592ef74459f9818f3da15e20c03916f"
+        },
+        {
+          "bytes": 30647,
+          "path": "reference/component_once_r9.py",
+          "sha256": "1c27b548e42c91391e12db125c23608a2d5fb9e28ae2713df17c271bddc58fa2"
+        },
+        {
+          "bytes": 4116,
+          "path": "reference/decode_client_state.py",
+          "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+        },
+        {
+          "bytes": 53502,
+          "path": "reference/environment_parent_late_boundary_r6.py",
+          "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+        },
+        {
+          "bytes": 28109,
+          "path": "reference/native_guard_session.py",
+          "sha256": "77dacc52468de95b68f30baafbb1cbf7dd7452c3d9ce652980dbb4af0ca62d8b"
+        },
+        {
+          "bytes": 6701,
+          "path": "reference/native_journal_audit.py",
+          "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+        },
+        {
+          "bytes": 19740,
+          "path": "reference/non_native_attempt05.py",
+          "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4"
+        },
+        {
+          "bytes": 35730,
+          "path": "reference/policy_parent_late_boundary_r4.py",
+          "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+        },
+        {
+          "bytes": 62434,
+          "path": "reference/property_parent_late_boundary_r7.py",
+          "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+        },
+        {
+          "bytes": 40788,
+          "path": "reference/send_new_native_task_r5.py",
+          "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+        },
+        {
+          "bytes": 17390,
+          "path": "reference/tool_client_r6.py",
+          "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f"
+        },
+        {
+          "bytes": 99120,
+          "path": "source/close_component.py",
+          "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+        },
+        {
+          "bytes": 19138,
+          "path": "source/component_common.py",
+          "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+        },
+        {
+          "bytes": 40261,
+          "path": "source/component_lifecycle.py",
+          "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+        },
+        {
+          "bytes": 38823,
+          "path": "source/component_listener.py",
+          "sha256": "ad345c0080cbfd89f1378bb6e8583f43e1fa4af0a5928d7ecbf4ccc8d4f04c52"
+        },
+        {
+          "bytes": 24187,
+          "path": "source/component_snapshot.py",
+          "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+        },
+        {
+          "bytes": 74287,
+          "path": "source/late_boundary.py",
+          "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+        },
+        {
+          "bytes": 28878,
+          "path": "source/native_guard_session_r2.py",
+          "sha256": "5fe50be4dccbe655a39124876d1f9c2199de20d80ec0a84f08a63d88e7f1a931"
+        },
+        {
+          "bytes": 4633,
+          "path": "source/native_proc_profile.py",
+          "sha256": "12719e58d2e3e1a1e86b8a6a9dc9587e37bfcb36c4c3b26b023138752bb3e67b"
+        },
+        {
+          "bytes": 14259,
+          "path": "source/prepare_component.py",
+          "sha256": "46a28fd77dc64d94ccdd4c1f3e12912e22ebb39defc29b69991df831d75afc7d"
+        },
+        {
+          "bytes": 18728,
+          "path": "source/root_fixture_once.py",
+          "sha256": "bb70017c4f184efc0c9372ab072fa2d11a1cf7cbd3276257fa7b3605a426e0d1"
+        },
+        {
+          "bytes": 39149,
+          "path": "source/root_fixture_originals.py",
+          "sha256": "c1cd1402888de5bc4176255269014995e9d39dc658912d3c28a117ec51010f9e"
+        },
+        {
+          "bytes": 10498,
+          "path": "source/run_root_fixture_phase.py",
+          "sha256": "bf65791c252d0b4d9416717ffca44fe43c9021211c2f2189be5553ab8967a6b2"
+        },
+        {
+          "bytes": 40952,
+          "path": "source/send_new_native_guard_task_r10_r4.py",
+          "sha256": "aafd40345c6dc35b7b7d34ab8b04c860ebf17d326d842ed733d0404cd0a051ad"
+        },
+        {
+          "bytes": 18666,
+          "path": "source/sender_native_guard_ready_r10_r4.py",
+          "sha256": "f3b83e55a07edd370946c40cec8694f310c9713082604646d264b625e7314d99"
+        },
+        {
+          "bytes": 19116,
+          "path": "source/stage_component.py",
+          "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+        },
+        {
+          "bytes": 18137,
+          "path": "source/witness_bundle.py",
+          "sha256": "f949ae3d6cec26bf98448fd0ac20b1f46472190be022d6532b1973177e0edfca"
+        }
+      ],
+      "manifest": {
+        "bytes": 16808,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-membership-733d-01/runtime/MANIFEST.json",
+        "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+      },
+      "manifest_name": "MANIFEST.json",
+      "root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-membership-733d-01/runtime"
+    }
+  },
+  "state": "SOURCE_ONLY_FIXED_ORIGINAL_COLLECTION_NO_TARGET_EXECUTION",
+  "target_sources_imported": false,
+  "unchanged_functions_whole_bytes": [
+    "check_directory",
+    "check_time",
+    "descriptor",
+    "enc",
+    "metadata",
+    "need",
+    "open_directory",
+    "put_new",
+    "read_file",
+    "relative",
+    "sha",
+    "strict"
+  ]
+}

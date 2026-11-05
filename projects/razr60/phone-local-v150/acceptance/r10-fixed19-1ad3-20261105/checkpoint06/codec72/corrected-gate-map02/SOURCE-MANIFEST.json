@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "bytes": 22826,
+      "path": "REFREEZE-GATES.json",
+      "sha256": "caa46f859e8e88b185f2c4b43256f7d70165559b21d9518fbf05bfba132984d1"
+    },
+    {
+      "bytes": 10635,
+      "path": "reference/PHONE-SERVICE-INPUTS.2739.original.json",
+      "sha256": "2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a"
+    },
+    {
+      "bytes": 17584,
+      "path": "reference/REFREEZE-GATES.v1.original.json",
+      "sha256": "6d2c1b08fc69f8c15871bb8610767f2ddbe96fd32795bc33b7b50a3ba8008b3f"
+    },
+    {
+      "bytes": 22059,
+      "path": "reference/daily_phone_local.f42fa.original.py",
+      "sha256": "f42fa1f3268d2a2c00e49610d356b440d1e32722fbe2af877580fb6eb180f712"
+    },
+    {
+      "bytes": 1493,
+      "path": "reference/local-config.780754.original.json",
+      "sha256": "780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34"
+    }
+  ],
+  "future_nonce_or_lease_generated": false,
+  "mapper_candidate_manifest": {
+    "bytes": 6149,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/SOURCE-MANIFEST.json",
+    "sha256": "dbabe936f5b7db11af1fa71d93ff7d6c5616fa396e63e06238df2f11c6600f22"
+  },
+  "phone_calls": 0,
+  "production_changed": false,
+  "schema": "hepta.codec72.refreeze-map-source-package.v2",
+  "source_bytes_changed": false,
+  "state": "SOURCE_ONLY_GATE_MAP_NOT_ADMISSION",
+  "superseded_map": {
+    "bytes": 17584,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_failure_value_candidate01/REFREEZE-GATES.json",
+    "sha256": "6d2c1b08fc69f8c15871bb8610767f2ddbe96fd32795bc33b7b50a3ba8008b3f"
+  }
+}

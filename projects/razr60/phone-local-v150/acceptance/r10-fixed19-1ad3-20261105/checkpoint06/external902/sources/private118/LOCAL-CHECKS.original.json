@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "name": "source closed set and all 12 members plus manifest exactly hashed",
+      "passed": true
+    },
+    {
+      "name": "seven pure/read helpers byte-identical to executed 4bec source",
+      "passed": true
+    },
+    {
+      "name": "actual31da/PREPARED/902 plan and actual ORIGINS four full9 descriptors remain exact",
+      "passed": true
+    },
+    {
+      "name": "pure path gate confines all reads to exactly three fixed views and rejects sibling/traversal/depth escape",
+      "passed": true
+    },
+    {
+      "name": "pure alias equality rejects inode, raw-content and missing-relative-entry changes",
+      "passed": true
+    },
+    {
+      "name": "static source permits only read primitives and stdout; no runtime import, process, signal, cleanup or mutation",
+      "passed": true
+    }
+  ],
+  "executed_function_allowlist": [
+    "need",
+    "node_scope",
+    "verify_aliases"
+  ],
+  "passed": 6,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.fixed-external-private-roots.local-source-checks.v1",
+  "source": {
+    "bytes": 22534,
+    "sha256": "79b226e3c5caaf8665b313dfe9c19ec6b56326ebc06c1bcaebead83b3fb508e8"
+  },
+  "synthetic_alias_fixture_is_not_actual_phone_evidence": true,
+  "target_main_executed": 0,
+  "target_read_functions_executed": 0,
+  "total": 6
+}

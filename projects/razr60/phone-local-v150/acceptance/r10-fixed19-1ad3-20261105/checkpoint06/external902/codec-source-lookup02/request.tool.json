@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-c",
+    "import os,json,stat\nroot=\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work\"\nnames=sorted(os.listdir(root));assert len(names)<=2048,'bounded immediate source directory exceeded'\nhits=[]\nfor name in names:\n if any(k in name.lower() for k in ('screen','v148','screenshot','codec')):\n  s=os.lstat(os.path.join(root,name));hits.append({'name':name,'directory':stat.S_ISDIR(s.st_mode),'symlink':stat.S_ISLNK(s.st_mode)})\nprint(json.dumps({'root':root,'immediate_entries':len(names),'matches':hits,'recursive':False},sort_keys=True))"
+  ],
+  "idempotency_key": "root-1ad3-codec-sibling-name-lookup01-20261105",
+  "timeout_seconds": 30
+}

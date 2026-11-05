@@ -1,0 +1,39 @@
+{
+  "automatic_replay": false,
+  "closed_component": {
+    "bytes": 54785,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-08/CLOSURE.json",
+    "sha256": "7e42ed77926bdf3bc728e4aef5009ffb23d50adfe1f6ce6b9e236fc621aa17cb"
+  },
+  "complete_business_success": false,
+  "component_qualified": false,
+  "identity": {
+    "profile_id": "owner-open",
+    "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+    "task_id": "task-d3f61033-5b61-40e4-b8c6-7ea00d6b2d56",
+    "turn_id": "turn-23840c47-f399-44b9-a47c-3f2541f1bca3",
+    "turn_stream_id": "r5-stream-2aedff43ed0fe4400a7e12eb9a9ca742fd0c812a3b18cb084b9496414691f64b"
+  },
+  "known_all_dispatched_tools_confirmed_terminal": true,
+  "late_boundary": {
+    "bytes": 9373,
+    "metadata": [
+      65086,
+      153711,
+      33152,
+      0,
+      0,
+      1,
+      9373,
+      1793853757339925229,
+      1793853757339925229
+    ],
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/2b0b103ee6de7a422064b9571266bf5d.json",
+    "sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10"
+  },
+  "request_sha256": "7772094b73337d8becae47e0a76a99f95fc892eab25d101161ae5ed1da615c78",
+  "schema": "hepta.native-guard.closed-previous.v1",
+  "terminal": {
+    "status": "provider_failed"
+  }
+}

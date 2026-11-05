@@ -1,0 +1,57 @@
+{
+  "files": [
+    {
+      "bytes": 2026,
+      "path": "DERIVATION.json",
+      "sha256": "2a40c038fa93198f685d2624a55f2a6ea88dafc50576b30ccad7763cb2121a4a"
+    },
+    {
+      "bytes": 2094,
+      "path": "INTERFACE.json",
+      "sha256": "f6b2180ebb376659cab26eb3412eadefe9e16a1cce47f3bef938b8aef0d6d187"
+    },
+    {
+      "bytes": 1165,
+      "path": "README.md",
+      "sha256": "5aadc6f85a7bcc782474236c6c644a260386fc17bf6d71c17a24e81eebd5263b"
+    },
+    {
+      "bytes": 1746,
+      "path": "reference/ACTUAL-LOCAL-VERIFICATION.original.json",
+      "sha256": "79d3d0156d1ef748e1f94addc971ccf0e7259c623a4f5a7f89a7b56637e376b2"
+    },
+    {
+      "bytes": 42223,
+      "path": "reference/prepare_native_guard_root_plan.0d742.original.py",
+      "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+    },
+    {
+      "bytes": 54893,
+      "path": "reference/verify_failed_prelaunch.e78d.reviewed.py",
+      "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+    },
+    {
+      "bytes": 42520,
+      "path": "source/prepare_native_guard_root_plan.py",
+      "sha256": "4db85943e9d264b606bea7b452bba74e7007b08727d7a4edbea298b55de4f023"
+    },
+    {
+      "bytes": 1677,
+      "path": "validation/FAILED-PRELAUNCH-VERIFIER-BINDING.patch",
+      "sha256": "7bf20603c12882758f70920baf9690a48f2a2467a4ecd1555ff75a9dc3fc0206"
+    },
+    {
+      "bytes": 809,
+      "path": "validation/LOCAL-CHECKS.json",
+      "sha256": "944557373200d91b5303afb9160c1b7dcdbf01a2967506c50e4e48c978b266c2"
+    }
+  ],
+  "nonce_or_plan_created": false,
+  "one_rhs_only": true,
+  "parent_source_sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c",
+  "phone_operations": 0,
+  "schema": "hepta.native-guard.admitted-root-plan-helper-source-package.v1",
+  "source_entrypoint_executions": 0,
+  "state": "SOURCE_ONLY_FAILED_PRELAUNCH_VERIFIER_LITERAL_BOUND",
+  "whole_parent_inverse_verified": true
+}

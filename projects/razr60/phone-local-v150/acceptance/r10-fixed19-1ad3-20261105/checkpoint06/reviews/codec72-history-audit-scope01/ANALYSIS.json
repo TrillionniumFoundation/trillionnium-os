@@ -1,0 +1,192 @@
+{
+  "actual_action": {
+    "action_id": "5a952602788122f47ff1370cfa38dffe",
+    "app_process_child_pid_retained": false,
+    "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+    "can_redispatch": false,
+    "completed_unix_ms": 1793879037456,
+    "created_unix_ms": 1793879035986,
+    "dispatch_count": 1,
+    "dispatch_started_unix_ms": 1793879035990,
+    "elapsed_ms": 1466,
+    "exit_code": 72,
+    "group_absent": true,
+    "joined": true,
+    "label": "root-r10-neg01-7c907661-01",
+    "nonce": "902e851c3ca1f90deab3d880ab993774",
+    "stderr_bytes": 0,
+    "stdout_bytes": 0,
+    "supplementary_groups": 0,
+    "worker_credentials": [
+      2000,
+      2000,
+      2000,
+      2000
+    ],
+    "worker_entry_context": "u:r:trillionnium_owner_open_phone_worker:s0",
+    "worker_pgid": 19097,
+    "worker_pid": 19097,
+    "worker_startticks_retained": false
+  },
+  "business_or_case_qualification": false,
+  "clock_bookends": [
+    {
+      "monotonic_ns": 221289510994854,
+      "original": {
+        "bytes": 1223,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture-originals/transport-07-request_send_begin.json",
+        "sha256": "a4116cbf9c0167eb907b6a97d80e33f8b9d92b5b5c5fb9ac0094375bc84e6d7c"
+      },
+      "wall_unix_ms": 1793879035983
+    },
+    {
+      "monotonic_ns": 221290993221260,
+      "original": {
+        "bytes": 1316,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture-originals/transport-12-response_received.json",
+        "sha256": "2d834a34672ae3bd0d1560b2b252c060daaf6d4c968c2c33c01ead00978a97b0"
+      },
+      "wall_unix_ms": 1793879037466
+    }
+  ],
+  "conditional_probe_contract": [
+    "Use supported non-clearing dump/read mode with audit-only filters before user-facing retention; include exact command, actual return status, boot bookends, original selected lines and parsing/filter decisions.",
+    "Fixed six-second scope and bounded retained output. Do not silently widen time/buffers/domains on empty/error output. Do not use/proc/kmsg, dmesg-c, logcat-c, buffer resize, policy/rate-limit changes or a new worker.",
+    "No matching records means unavailable/expired/no matching audited denial; it cannot prove absence of a denial or recover the discarded Java JSON.",
+    "An AVC associated by boot/time/domain/comm is a correlated system denial; without a unique child PID or original Throwable it is not by itself the exact Java failure reason. Preserve that distinction.",
+    "If an attempted historical query cannot be bounded with actual supported capabilities, retain the source-only plan and do not read broad user logs."
+  ],
+  "created_utc": "2026-11-05T13:43:53.975558+00:00",
+  "existing_log_search": {
+    "caveat": "Search result is limited to current caches, not a claim about device ring-buffer contents or uncached artifacts.",
+    "existing_logcat_kernel_AVC_original_found": false,
+    "filename_and_content_markers": [
+      "logcat",
+      "dmesg",
+      "/dev/kmsg",
+      "avc:",
+      "audit2allow"
+    ],
+    "scoped_local_caches": [
+      "actual_external_902e_7c907661_01",
+      "current_production_source_cache",
+      "component_physical_reference",
+      "property_diagnostic/retained_operator_sources",
+      "independent_post_execution",
+      "live02_external_source_cache",
+      "policy_live_cache"
+    ]
+  },
+  "native_action_replay": false,
+  "new_worker_or_app_process": 0,
+  "next_reviewable_action": {
+    "buffer_reads": 0,
+    "caller_independent_review": "transport_fix/logcat-help-caller-independent01/REVIEW.json",
+    "caller_sha256": "99a10978afac380dda0624cb91beaecf7c3fc1e0e0a0adf6cfd1847bbfe247fa",
+    "command": "/system/bin/logcat --help",
+    "help_only_caller": "property_diagnostic/logcat_help_capability_candidate01/caller-final01/P4-LAUNCHER.py"
+  },
+  "phone_or_remote_calls_by_author": 0,
+  "production_changes": 0,
+  "proposed_fixed_scope": {
+    "comm_focus": [
+      "app_process",
+      "app_process32",
+      "app_process64"
+    ],
+    "do_not_restrict_to_parent_pid": true,
+    "exact_query_argv": null,
+    "parent_pid_hint": 19097,
+    "query_not_frozen_reason": "Device-shipped logcat options/time syntax and audit-buffer accessibility must first be read from help; no unsupported flags are assumed.",
+    "record_classes": [
+      "SELinux AVC/audit records only"
+    ],
+    "same_boot": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+    "subject_context": "u:r:trillionnium_owner_open_phone_worker:s0",
+    "system_main_radio_application_buffer_dump_allowed": false,
+    "unix_ms_from": 1793879034000,
+    "unix_ms_to": 1793879040000,
+    "unrelated_user_logs_retained": false,
+    "utc_from_inclusive": "2026-11-05T11:43:54.000Z",
+    "utc_to_exclusive": "2026-11-05T11:44:00.000Z",
+    "window_seconds": 6
+  },
+  "references": {
+    "after_clock": {
+      "bytes": 1316,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture-originals/transport-12-response_received.json",
+      "sha256": "2d834a34672ae3bd0d1560b2b252c060daaf6d4c968c2c33c01ead00978a97b0"
+    },
+    "before_clock": {
+      "bytes": 1223,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture-originals/transport-07-request_send_begin.json",
+      "sha256": "a4116cbf9c0167eb907b6a97d80e33f8b9d92b5b5c5fb9ac0094375bc84e6d7c"
+    },
+    "codec_source": {
+      "bytes": 10204,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/codec-source-from-git01/ScreenshotCodec.java",
+      "sha256": "cf11757a3de7c7000d8a9410115cf28648458c37106d4956446b8180c313c26c"
+    },
+    "command": {
+      "bytes": 2226,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture.native-command.sh",
+      "sha256": "a2e8147c79186d5255599bad42ddab99311b4b155415d567594bfb44deea3a17"
+    },
+    "intent": {
+      "bytes": 936,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json",
+      "sha256": "6b03da94090459e47dedc5bb8f27d86429f62e08cd479354266b21855e9d9f2a"
+    },
+    "policy_adoption": {
+      "bytes": 208226,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_execution/POLICY-ADOPTION.original.json",
+      "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+    },
+    "receipt": {
+      "bytes": 1512,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture-originals/receipt.original",
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a"
+    },
+    "service": {
+      "bytes": 10635,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/inputs/service-inputs.original.json",
+      "sha256": "2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a"
+    },
+    "worker_source": {
+      "bytes": 2885,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_reference/phone_tool_worker.cpp",
+      "sha256": "8c5a4cb4479c384776776448fa2907044667f99b310a05adaf88866bf6892d7d"
+    }
+  },
+  "retained_empty_streams": [
+    {
+      "bytes": 0,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/provider.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/supervisor.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture-originals/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "schema": "hepta.codec72.historical-audit-source-analysis.v1",
+  "source_candidate8f60_retained_but_not_applied": true,
+  "source_findings": [
+    "Original worker8c5a verifies worker domain/uid/gid then execs/system/bin/sh without another worker fork. The codec command substitution can run app_process under another PID;19097 cannot be the sole filter.",
+    "Neither receipt nor intent stores worker startticks or the Java child PID. Current/proc19097 must not be used to invent historical identity.",
+    "ScreenshotCodec cf117 catches Throwable and emits error JSON on stdout, exits20 or22; source does not emit a stack trace. Original a2e8 command substitution retains then discards that value on exit72.",
+    "The actual44-atom policy adoption f821 covers property-file permissions. It does not establish that every codec rejection is SELinux-related or that denial auditing was retained."
+  ],
+  "state": "SOURCE_AND_RETAINED_ORIGINALS_ANALYSIS_ONLY"
+}

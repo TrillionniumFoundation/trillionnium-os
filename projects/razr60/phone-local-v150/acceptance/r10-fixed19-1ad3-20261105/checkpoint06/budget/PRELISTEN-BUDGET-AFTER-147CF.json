@@ -1,0 +1,975 @@
+{
+  "actual_single_run_measurements": {
+    "causal_saving_or_worst_case_bound_claimed": false,
+    "explicit_147cf_wall_seconds": "43.90766118100146",
+    "explicit_diagnostic_is_original_global_clearance": false,
+    "measurements_per_variant": 1,
+    "observed_difference_seconds": "2.041702864022225",
+    "original_118d_wall_seconds": "45.949364045023685",
+    "originals_equal_except_nine_observation_clock_or_numeric_pid_fields": true,
+    "owned_lock_cleanup_complete": true
+  },
+  "budgets_unchanged": {
+    "launch_request_seconds": 60,
+    "lease_seconds": 600,
+    "native_turn_seconds": 300,
+    "strict_listener_remaining_seconds": 420,
+    "strict_prelaunch_remaining_seconds": 510
+  },
+  "conditional_arithmetic": {
+    "basis": "The retained issue-to-marker observation, minus one observed wall difference for stage, plus two measured explicit147cf full L.verify_retired calls; then the historical two nonretirement startup segments. This is a scenario, not an optimized full-chain measurement.",
+    "estimated_margin_before_strict_90_second_prelaunch_gate_seconds": "1.748342114022225",
+    "estimated_prelaunch_elapsed_seconds": "88.251657885977775",
+    "observed_issue_to_marker_persistence_seconds": "90.29336075",
+    "observed_monotonic_setup_seconds": "90.291085416",
+    "scenarios": [
+      {
+        "added_historical_nonretirement_startup_segments_seconds": "1.628",
+        "historical_case": "root-r10-neg01-20261105-07",
+        "retained_setup_minus_observed_single_pair_difference_seconds": "88.251657885977775",
+        "scenario_issue_to_ready_seconds": "177.694980247980695",
+        "subtotal_before_historical_startup_segments_seconds": "176.066980247980695",
+        "two_current_explicit_reader_calls_seconds": "87.81532236200292",
+        "unmeasured_launch_entry_overheads_and_variability_allowance_seconds": "2.305019752019305"
+      },
+      {
+        "added_historical_nonretirement_startup_segments_seconds": "1.412",
+        "historical_case": "root-r10-neg01-20261105-08",
+        "retained_setup_minus_observed_single_pair_difference_seconds": "88.251657885977775",
+        "scenario_issue_to_ready_seconds": "177.478980247980695",
+        "subtotal_before_historical_startup_segments_seconds": "176.066980247980695",
+        "two_current_explicit_reader_calls_seconds": "87.81532236200292",
+        "unmeasured_launch_entry_overheads_and_variability_allowance_seconds": "2.521019752019305"
+      }
+    ]
+  },
+  "decision": "Use the already reviewed a334 runtime once, only after required failed-prelaunch admission is independently closed. Do not add another optimization or performance diagnostic for this budget question.",
+  "exact_current_startup_sources": {
+    "component_common.py": {
+      "bytes": 19138,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    "component_lifecycle.py": {
+      "bytes": 40261,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_lifecycle.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    "component_listener.py": {
+      "bytes": 38823,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_listener.py",
+      "sha256": "ad345c0080cbfd89f1378bb6e8583f43e1fa4af0a5928d7ecbf4ccc8d4f04c52"
+    }
+  },
+  "fallback_source_analysis_not_implemented": {
+    "historical_reference_sources_unchanged": {
+      "R4": {
+        "bytes": 35730,
+        "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+      },
+      "R6": {
+        "bytes": 53502,
+        "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+      },
+      "R7": {
+        "bytes": 62434,
+        "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+      }
+    },
+    "mandatory_derivation_constraints": [
+      "Whole derived R7 source must invert exactly to original3c71 by the single reviewed expression replacement; all AST outside inventory_value preserved.",
+      "Use a new executed module/compile identity and separate exact historical-original and executed-derived source descriptors; never advertise original3c71 as the executed body.",
+      "Keep original R7/R6/R4 files, publisher identities, all historical boundary/inventory/closure raw bytes and all live reads unchanged; nested R6/R4 loaders stay original.",
+      "No invocation cache, memoization, C.read monkeypatch or skipped validation. Current a334/6282 source gates correctly reject such a new increment until separately derived and rebound with new source/runtime/Root/consumer pins."
+    ],
+    "phone_speedup_not_inferred_from_partial_profile": true,
+    "smallest_identified_algorithm": "A separate current R8 property_parent_reader derivation could preserve and validate original R7 bytes, then compile an explicitly identified R7 variant changing only the same inventory_value unique-root membership expression to the reviewed path-parts prefix expression.",
+    "trigger": "Only revisit if an actual original gate refuses with new evidence; no proactive third diagnostic or enlarged source increment now."
+  },
+  "gate_order_correction": {
+    "listen_precedes_420_check": true,
+    "ready_and_accept_loop_follow_420_check": true,
+    "supersedes_incorrect_prior_phrase": "The frozen PRELISTEN-STATIC-BUDGET.json said before its sole listen. The actual source listens first, then refuses at420 before READY or the accept loop. The frozen earlier file is preserved unchanged."
+  },
+  "historical_startup_evidence": [
+    {
+      "case_label": "root-r10-neg01-20261105-07",
+      "detached_intent_to_supervisor_seconds": "0.316",
+      "exact_home": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07",
+      "full_original_timestamp_rows": [
+        {
+          "bytes": 2080,
+          "kind": "file",
+          "metadata": [
+            65086,
+            155395,
+            33152,
+            0,
+            0,
+            1,
+            2080,
+            1793849495311926855,
+            1793849495311926855
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/DETACHED-LAUNCH-INTENT.json",
+          "sha256": "305900d57e66327c968ef5c1cc69d239232ee7f08be7b7438c9d23d945af0399"
+        },
+        {
+          "bytes": 408,
+          "kind": "file",
+          "metadata": [
+            65086,
+            157658,
+            33152,
+            0,
+            0,
+            1,
+            408,
+            1793849495319926855,
+            1793849495319926855
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/DETACHED-LAUNCH-RESULT.json",
+          "sha256": "42825cf94b5cd8bc0f9729ee8e347786f92d7574e931f14b57723724f513c659"
+        },
+        {
+          "bytes": 450,
+          "kind": "file",
+          "metadata": [
+            65086,
+            155347,
+            33152,
+            0,
+            0,
+            1,
+            450,
+            1793849495627926855,
+            1793849495627926855
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/LIFECYCLE-ATTEMPT.json",
+          "sha256": "80f5345cbbdca406d9d6651da5347d49728fbea04efcabf245de92501eae94f3"
+        },
+        {
+          "bytes": 1024,
+          "kind": "file",
+          "metadata": [
+            65086,
+            154927,
+            33152,
+            0,
+            0,
+            1,
+            1024,
+            1793849495627926855,
+            1793849495627926855
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/SUPERVISOR.json",
+          "sha256": "1d0c6bfd4360d2817e21896aea971161d77e26b3979e6d23e086796a8ceb64a4"
+        },
+        {
+          "bytes": 7419,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156105,
+            33152,
+            0,
+            0,
+            1,
+            7419,
+            1793849520475926845,
+            1793849520475926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/RETIRED-BASELINE-VERIFIED.json",
+          "sha256": "61a936a3ccf3a079fe40c1738ef66ac55d8e25acaf7c3ba3135a3d4cbe10fc59"
+        },
+        {
+          "bytes": 607656,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156113,
+            33152,
+            0,
+            0,
+            1,
+            607656,
+            1793849520647926845,
+            1793849520647926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/BASELINE-INVENTORY.json",
+          "sha256": "eba775333041fba0de22537edaf4008769fd9e4a8e7dce53abe6acb6b819dda3"
+        },
+        {
+          "bytes": 111,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156114,
+            33152,
+            0,
+            0,
+            1,
+            111,
+            1793849520651926845,
+            1793849520651926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/PORT-RESERVED.json",
+          "sha256": "51dc890ff96c782e2caccf57e6d61f9062ef0b8e1c47c5b91831efc2c7386634"
+        },
+        {
+          "bytes": 173,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156115,
+            33152,
+            0,
+            0,
+            1,
+            173,
+            1793849520655926845,
+            1793849520655926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/sidecar.SPAWN-INTENT.json",
+          "sha256": "39625035cfb731bdfb2cb32c3ccb1a5608dfeb6b66783e8b32a4ad1b4c8c2fe9"
+        },
+        {
+          "bytes": 712,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156118,
+            33152,
+            0,
+            0,
+            1,
+            712,
+            1793849520655926845,
+            1793849520655926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/sidecar.SPAWNED.json",
+          "sha256": "557be5542421d128a5536cb175d93b9001913024facff88dbd5687bbfb9fa0d8"
+        },
+        {
+          "bytes": 146,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156124,
+            33152,
+            0,
+            0,
+            1,
+            146,
+            1793849520923926845,
+            1793849520923926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/sidecar.barrier.json",
+          "sha256": "40961d7aaec04b19bbaec17273dd4fd33ccba25247e1438410a9e3f5a35210d0"
+        },
+        {
+          "bytes": 188,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156126,
+            33152,
+            0,
+            0,
+            1,
+            188,
+            1793849520967926845,
+            1793849520967926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/sidecar.ADMIT.json",
+          "sha256": "abf1a307af4ad623143f0a7f6aafae53486ece49c7b128bb9ab7d8fe354ff11c"
+        },
+        {
+          "bytes": 365,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153833,
+            33152,
+            0,
+            0,
+            1,
+            365,
+            1793849521027926845,
+            1793849521027926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/SIDECAR-HEALTH.original.json",
+          "sha256": "b4ab6b57a81c4f620b5f037d81ff76e789ed98c17408d7ee0b0d6f302115aac1"
+        },
+        {
+          "bytes": 1842,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153298,
+            33152,
+            0,
+            0,
+            1,
+            1842,
+            1793849521031926845,
+            1793849521031926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/BOUND-CONTRACT.json",
+          "sha256": "d750b6b0144c6418651849dc1d2912d3cf67e283eaf631ec3b82383ba1a39f19"
+        },
+        {
+          "bytes": 174,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156132,
+            33152,
+            0,
+            0,
+            1,
+            174,
+            1793849521035926845,
+            1793849521035926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/provider.SPAWN-INTENT.json",
+          "sha256": "6a23862432512a4b7218d98e0e97cee4c4a0fb81433ae95a38d5140584addb79"
+        },
+        {
+          "bytes": 733,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156135,
+            33152,
+            0,
+            0,
+            1,
+            733,
+            1793849521035926845,
+            1793849521035926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/provider.SPAWNED.json",
+          "sha256": "ae01beb09a4255d2515db0bc66801edd54466d2b24dcc9fd9ce174fc67a34f42"
+        },
+        {
+          "bytes": 146,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156171,
+            33152,
+            0,
+            0,
+            1,
+            146,
+            1793849521315926845,
+            1793849521315926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/provider.barrier.json",
+          "sha256": "18679aa63ffc34b4bfcb3b305dd4675e2267fe769de823896fb312f80babb4ba"
+        },
+        {
+          "bytes": 189,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156177,
+            33152,
+            0,
+            0,
+            1,
+            189,
+            1793849521347926845,
+            1793849521347926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/provider.ADMIT.json",
+          "sha256": "b8aa2eb4adbd4b7c5eec2cddd5ff97721b5c2655ad577559fed2d40a86e1fa98"
+        },
+        {
+          "bytes": 365,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156183,
+            33152,
+            0,
+            0,
+            1,
+            365,
+            1793849521783926845,
+            1793849521783926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/PROVIDER-HEALTH.original.json",
+          "sha256": "b4ab6b57a81c4f620b5f037d81ff76e789ed98c17408d7ee0b0d6f302115aac1"
+        },
+        {
+          "bytes": 1710,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156187,
+            33152,
+            0,
+            0,
+            1,
+            1710,
+            1793849521787926845,
+            1793849521787926845
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/READY.json",
+          "sha256": "c8035741e6a8cc32147c0001aa292147b69c5d26e83b73179d203177cb6da916"
+        }
+      ],
+      "historical_retirement_duration_not_substituted_for_current_147cf": true,
+      "inventory_original": {
+        "bytes": 849854,
+        "path": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/actual08-inventory-read01/INVENTORY.original.json",
+        "sha256": "80b8a56ee78055c19caf3b342af5bc5e479180843b0f3bc223751649188b7fc4"
+      },
+      "retired_record_to_ready_seconds": "1.312",
+      "same_current_startup_source_rows": {
+        "component_common.py": {
+          "bytes": 19138,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153260,
+            33152,
+            0,
+            0,
+            1,
+            19138,
+            1793849437971926877,
+            1793849437971926877
+          ],
+          "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+        },
+        "component_lifecycle.py": {
+          "bytes": 40261,
+          "kind": "file",
+          "metadata": [
+            65086,
+            151400,
+            33152,
+            0,
+            0,
+            1,
+            40261,
+            1793849437971926877,
+            1793849437971926877
+          ],
+          "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+        },
+        "component_listener.py": {
+          "bytes": 38823,
+          "kind": "file",
+          "metadata": [
+            65086,
+            150540,
+            33152,
+            0,
+            0,
+            1,
+            38823,
+            1793849437971926877,
+            1793849437971926877
+          ],
+          "sha256": "ad345c0080cbfd89f1378bb6e8583f43e1fa4af0a5928d7ecbf4ccc8d4f04c52"
+        }
+      },
+      "seconds_from_retired_record": {
+        "BASELINE-INVENTORY.json": "0.172",
+        "BOUND-CONTRACT.json": "0.556",
+        "PORT-RESERVED.json": "0.176",
+        "PROVIDER-HEALTH.original.json": "1.308",
+        "READY.json": "1.312",
+        "SIDECAR-HEALTH.original.json": "0.552",
+        "provider.ADMIT.json": "0.872",
+        "provider.SPAWN-INTENT.json": "0.56",
+        "provider.SPAWNED.json": "0.56",
+        "provider.barrier.json": "0.84",
+        "sidecar.ADMIT.json": "0.492",
+        "sidecar.SPAWN-INTENT.json": "0.18",
+        "sidecar.SPAWNED.json": "0.18",
+        "sidecar.barrier.json": "0.448"
+      },
+      "supervisor_record_to_retired_record_seconds": "24.84799999",
+      "two_non_retirement_startup_segments_seconds": "1.628"
+    },
+    {
+      "case_label": "root-r10-neg01-20261105-08",
+      "detached_intent_to_supervisor_seconds": "0.32",
+      "exact_home": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08",
+      "full_original_timestamp_rows": [
+        {
+          "bytes": 2080,
+          "kind": "file",
+          "metadata": [
+            65086,
+            157547,
+            33152,
+            0,
+            0,
+            1,
+            2080,
+            1793851328871926155,
+            1793851328871926155
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/DETACHED-LAUNCH-INTENT.json",
+          "sha256": "f13448abe85b7f45e8c97a7825fd39864cc38263b4d4f033807a6e17eb1be127"
+        },
+        {
+          "bytes": 407,
+          "kind": "file",
+          "metadata": [
+            65086,
+            157188,
+            33152,
+            0,
+            0,
+            1,
+            407,
+            1793851328879926155,
+            1793851328879926155
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/DETACHED-LAUNCH-RESULT.json",
+          "sha256": "b2a57a5d2b4c6bb2700b431b235562430271a3ad9723129c7068a38fd31a3067"
+        },
+        {
+          "bytes": 447,
+          "kind": "file",
+          "metadata": [
+            65086,
+            151069,
+            33152,
+            0,
+            0,
+            1,
+            447,
+            1793851329183926155,
+            1793851329183926155
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/LIFECYCLE-ATTEMPT.json",
+          "sha256": "b9e5e54d4819c3c5f9a71e731de31eb6618a498259ce68e4ebcc5c863ffd81d8"
+        },
+        {
+          "bytes": 1021,
+          "kind": "file",
+          "metadata": [
+            65086,
+            149552,
+            33152,
+            0,
+            0,
+            1,
+            1021,
+            1793851329191926155,
+            1793851329191926155
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/SUPERVISOR.json",
+          "sha256": "8e12880132ea65b837a40d73ca0c3d6e42013a43327e9de6e341f5e7440befce"
+        },
+        {
+          "bytes": 7723,
+          "kind": "file",
+          "metadata": [
+            65086,
+            157665,
+            33152,
+            0,
+            0,
+            1,
+            7723,
+            1793851352503926146,
+            1793851352503926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/RETIRED-BASELINE-VERIFIED.json",
+          "sha256": "62f72c238314645ff9947519c525fce7feb3c6ff16009fc717b4c411cfdd9db7"
+        },
+        {
+          "bytes": 611915,
+          "kind": "file",
+          "metadata": [
+            65086,
+            150777,
+            33152,
+            0,
+            0,
+            1,
+            611915,
+            1793851352623926146,
+            1793851352623926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/BASELINE-INVENTORY.json",
+          "sha256": "d863e8cc3f278d7baf7e6bf72afd19b98e12212e3f013f9420d9045c254e494f"
+        },
+        {
+          "bytes": 111,
+          "kind": "file",
+          "metadata": [
+            65086,
+            154173,
+            33152,
+            0,
+            0,
+            1,
+            111,
+            1793851352635926146,
+            1793851352635926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/PORT-RESERVED.json",
+          "sha256": "51dc890ff96c782e2caccf57e6d61f9062ef0b8e1c47c5b91831efc2c7386634"
+        },
+        {
+          "bytes": 173,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153326,
+            33152,
+            0,
+            0,
+            1,
+            173,
+            1793851352635926146,
+            1793851352635926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/sidecar.SPAWN-INTENT.json",
+          "sha256": "669550ce0c369b897fc3f7026684a4d8524ba4c1977307b651926581cca3aeb7"
+        },
+        {
+          "bytes": 708,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153909,
+            33152,
+            0,
+            0,
+            1,
+            708,
+            1793851352635926146,
+            1793851352635926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/sidecar.SPAWNED.json",
+          "sha256": "3c152304554ff592e36230b7680fdc060d375879b3349be05d77739d3107eaca"
+        },
+        {
+          "bytes": 140,
+          "kind": "file",
+          "metadata": [
+            65086,
+            151644,
+            33152,
+            0,
+            0,
+            1,
+            140,
+            1793851352835926146,
+            1793851352835926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/sidecar.barrier.json",
+          "sha256": "3852e687a4c2d7d94f6c2109d7b816d2f72ca1fc1f94a34c578d11c4df2010bb"
+        },
+        {
+          "bytes": 182,
+          "kind": "file",
+          "metadata": [
+            65086,
+            150962,
+            33152,
+            0,
+            0,
+            1,
+            182,
+            1793851352843926146,
+            1793851352843926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/sidecar.ADMIT.json",
+          "sha256": "b46c9b3ee171b30d7b17dc0ed3ceb8c7bffb148d67efe17a601b900600be973d"
+        },
+        {
+          "bytes": 365,
+          "kind": "file",
+          "metadata": [
+            65086,
+            156982,
+            33152,
+            0,
+            0,
+            1,
+            365,
+            1793851352955926146,
+            1793851352955926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/SIDECAR-HEALTH.original.json",
+          "sha256": "5dd4934a87ddc481d8c81fa90a5fd656238fd6cb2d54e4594cf828a5eeb45ce1"
+        },
+        {
+          "bytes": 1838,
+          "kind": "file",
+          "metadata": [
+            65086,
+            151846,
+            33152,
+            0,
+            0,
+            1,
+            1838,
+            1793851352963926146,
+            1793851352963926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/BOUND-CONTRACT.json",
+          "sha256": "da9b0e778a7483cdde643aad22d97ff47c303ce114b9de1fa14c7bf1c86f2511"
+        },
+        {
+          "bytes": 174,
+          "kind": "file",
+          "metadata": [
+            65086,
+            150972,
+            33152,
+            0,
+            0,
+            1,
+            174,
+            1793851352963926146,
+            1793851352963926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/provider.SPAWN-INTENT.json",
+          "sha256": "910437f3378f4f93a8ac6d496cc4dcc698bee9936e3a2523d199bcc3a3c9c1d4"
+        },
+        {
+          "bytes": 729,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153402,
+            33152,
+            0,
+            0,
+            1,
+            729,
+            1793851352967926146,
+            1793851352967926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/provider.SPAWNED.json",
+          "sha256": "b5bbb51ecfe4bc1def434676196efd005101cbebced38fa4482722c6628404b9"
+        },
+        {
+          "bytes": 140,
+          "kind": "file",
+          "metadata": [
+            65086,
+            149959,
+            33152,
+            0,
+            0,
+            1,
+            140,
+            1793851353179926146,
+            1793851353179926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/provider.barrier.json",
+          "sha256": "a6f08137394356cbe794374c4ba1314ed74d645e65f15ce4aae888b9dfa06a1e"
+        },
+        {
+          "bytes": 183,
+          "kind": "file",
+          "metadata": [
+            65086,
+            151053,
+            33152,
+            0,
+            0,
+            1,
+            183,
+            1793851353219926146,
+            1793851353219926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/provider.ADMIT.json",
+          "sha256": "2b28870cf55af942e71dd459de1f5af6e78b01595dcd8ba7dd879a8cf1117d12"
+        },
+        {
+          "bytes": 365,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153880,
+            33152,
+            0,
+            0,
+            1,
+            365,
+            1793851353591926146,
+            1793851353591926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/PROVIDER-HEALTH.original.json",
+          "sha256": "5dd4934a87ddc481d8c81fa90a5fd656238fd6cb2d54e4594cf828a5eeb45ce1"
+        },
+        {
+          "bytes": 1706,
+          "kind": "file",
+          "metadata": [
+            65086,
+            157392,
+            33152,
+            0,
+            0,
+            1,
+            1706,
+            1793851353595926146,
+            1793851353595926146
+          ],
+          "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/READY.json",
+          "sha256": "4dc225931a68dba579d7516f9202f36318b64d9f9100ce74fd0913fd140bed3d"
+        }
+      ],
+      "historical_retirement_duration_not_substituted_for_current_147cf": true,
+      "inventory_original": {
+        "bytes": 849854,
+        "path": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/actual08-inventory-read01/INVENTORY.original.json",
+        "sha256": "80b8a56ee78055c19caf3b342af5bc5e479180843b0f3bc223751649188b7fc4"
+      },
+      "retired_record_to_ready_seconds": "1.092",
+      "same_current_startup_source_rows": {
+        "component_common.py": {
+          "bytes": 19138,
+          "kind": "file",
+          "metadata": [
+            65086,
+            155813,
+            33152,
+            0,
+            0,
+            1,
+            19138,
+            1793851261115926181,
+            1793851261115926181
+          ],
+          "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+        },
+        "component_lifecycle.py": {
+          "bytes": 40261,
+          "kind": "file",
+          "metadata": [
+            65086,
+            153458,
+            33152,
+            0,
+            0,
+            1,
+            40261,
+            1793851261119926181,
+            1793851261119926181
+          ],
+          "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+        },
+        "component_listener.py": {
+          "bytes": 38823,
+          "kind": "file",
+          "metadata": [
+            65086,
+            155818,
+            33152,
+            0,
+            0,
+            1,
+            38823,
+            1793851261119926181,
+            1793851261119926181
+          ],
+          "sha256": "ad345c0080cbfd89f1378bb6e8583f43e1fa4af0a5928d7ecbf4ccc8d4f04c52"
+        }
+      },
+      "seconds_from_retired_record": {
+        "BASELINE-INVENTORY.json": "0.12",
+        "BOUND-CONTRACT.json": "0.46",
+        "PORT-RESERVED.json": "0.132",
+        "PROVIDER-HEALTH.original.json": "1.088",
+        "READY.json": "1.092",
+        "SIDECAR-HEALTH.original.json": "0.452",
+        "provider.ADMIT.json": "0.716",
+        "provider.SPAWN-INTENT.json": "0.46",
+        "provider.SPAWNED.json": "0.464",
+        "provider.barrier.json": "0.676",
+        "sidecar.ADMIT.json": "0.34",
+        "sidecar.SPAWN-INTENT.json": "0.132",
+        "sidecar.SPAWNED.json": "0.132",
+        "sidecar.barrier.json": "0.332"
+      },
+      "supervisor_record_to_retired_record_seconds": "23.311999991",
+      "two_non_retirement_startup_segments_seconds": "1.412"
+    }
+  ],
+  "input_originals": [
+    {
+      "bytes": 849854,
+      "path": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/actual08-inventory-read01/INVENTORY.original.json",
+      "sha256": "80b8a56ee78055c19caf3b342af5bc5e479180843b0f3bc223751649188b7fc4"
+    },
+    {
+      "bytes": 25177,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/originals/PHONE-STDOUT.original",
+      "sha256": "62dd1f589d6ebce4b7ddd98c2acc2f60d89a2183a0d079224b99db2038ef4700"
+    },
+    {
+      "bytes": 27326,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/explicit-prefix-diagnostic01/originals/PHONE-STDOUT.original",
+      "sha256": "bfab24df3bd9d9bb05279ecdd1ac9aa76bd2e6adfcb7e06bb9c81152e6b95882"
+    },
+    {
+      "bytes": 3454,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/explicit-prefix-diagnostic01/LOCAL-ORIGINALS-AND-COMPARISON.json",
+      "sha256": "2c8038bc4e03e8c43890323be743837f56f30983857168554dde8bb42bf8359c"
+    },
+    {
+      "bytes": 26192,
+      "path": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/DIAGNOSTIC-REVIEW.json",
+      "sha256": "ad489cd6f1a8ea823a26d91db128cf3dca99b9beb5b38ab888f30ce252d5e86a"
+    }
+  ],
+  "limitations": [
+    "All historical spans are differences between the original file mtime_ns/full9 records, also equal to ctime_ns here. They are not direct monotonic function timers or fsync-completion bounds; local copy timestamps are not used.",
+    "07 and08 common/lifecycle/listener source bytes equal current a334, but their late reader and historical chain were older; their retired verification durations are explicitly not used to estimate current late work.",
+    "The new 43.907661181s explicit measurement is one full verification call with current immutable inventory; it does not measure a complete new private-stage, detached-launcher, supervisor or listener transaction.",
+    "The original-versus-explicit difference combines one measurement each; it is a useful observed scenario input, not a proven causal or repeatable savings bound.",
+    "The remaining scenario allowance must cover launcher routing and pre-verify bootstrap not represented by the two historical segments, filesystem timestamp granularity/completion gaps, and future scheduling/I/O/verification variation.",
+    "Local package validation, production imports, live artifact/policy rereads, all original full9/current inventory/endpoint/group checks and held-lock operations remain mandatory. No successful forecast bypasses a runtime gate.",
+    "No native case or component PASS is created by these timings, and this report does not replace failed-prelaunch closure or current policy/runtime source admission."
+  ],
+  "new_runtime_or_case_executed_by_this_review": false,
+  "new_runtime_sources_implemented": false,
+  "phone_calls_by_this_review": 0,
+  "remote_calls_by_this_review": 0,
+  "schema": "hepta.root.prelisten-budget-after-explicit-147cf.v1",
+  "state": "OBSERVED_HISTORY_SUPPORTS_ONE_CONTROLLED_A334_ATTEMPT_WITH_ALL_ORIGINAL_GATES",
+  "static_order_after_supervisor_verify_retired": [
+    {
+      "observation": "08 file timestamp interval 0.120s; 07 0.172s",
+      "source": "component_lifecycle.py:547-548",
+      "step": "Persist RETIRED-BASELINE-VERIFIED; full inventory of 11 baseline roots; persist BASELINE-INVENTORY"
+    },
+    {
+      "observation": "08 cumulative 0.132s; 07 0.176s",
+      "source": "component_lifecycle.py:549-554",
+      "step": "Create TCP socket and exclusive bind to fixed port; persist PORT-RESERVED"
+    },
+    {
+      "observation": "08 cumulative SIDECAR-HEALTH 0.452s; 07 0.552s",
+      "source": "component_lifecycle.py:354-419,555-591",
+      "step": "Spawn sidecar through owned process/session, package/combination validation, child barrier/admit, external live checks, exact exec, readiness, read-only health"
+    },
+    {
+      "observation": "08 cumulative PROVIDER-HEALTH 1.088s; 07 1.308s",
+      "source": "component_lifecycle.py:592-602; component_listener.py:505-534",
+      "step": "Persist BOUND-CONTRACT; spawn provider through same barrier with inherited exclusive socket; provider validates package/combination/external sources, imports production, checks identity and read-only sidecar health"
+    },
+    {
+      "observation": "08 cumulative READY 1.092s; 07 1.312s",
+      "source": "component_listener.py:535-552",
+      "step": "Validate inherited socket and provider credentials, call listen(1), establish 420/120 monotonic deadlines, enforce original wall-clock lease remains greater than420, then publish READY"
+    }
+  ]
+}

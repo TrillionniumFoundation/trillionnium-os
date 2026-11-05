@@ -1,0 +1,71 @@
+{
+  "actual_originals_used_for_static_pin_check": [
+    {
+      "bytes": 6664,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-originals/ROOT-FAILURE.json",
+      "sha256": "e057408165ccca775f8fcc196dc7fdc69fe0aaba72b18f1da0cf5e0f4c8ae471"
+    },
+    {
+      "bytes": 4772,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/ROOT-PLAN.json",
+      "sha256": "e3b9d77a317f6c7ac7ea6bae9a3276c9f8a689563084a54d82d7417e2a17a3e7"
+    },
+    {
+      "bytes": 3130,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-originals/phone-stage/stdout.original",
+      "sha256": "049f43bb4c3a700b95ffd2de37a346499c2b0a6bb87822f9d9b27d9c22c9c15c"
+    },
+    {
+      "bytes": 2489,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-originals/phone-stage/OUTPUT-CAPTURE.json",
+      "sha256": "fc88b3663783a354ab31bfcd5ac9490f9260c95999be1ef47e9f0ec544cb2aba"
+    }
+  ],
+  "candidate_modified": false,
+  "case_qualification": false,
+  "checks": {
+    "all_7_host_results_require_actual_joined_rc0": true,
+    "all_source_files_and_directories_bookended": true,
+    "all_tar_members_regular_and_relative": true,
+    "failure_instant_identity_not_claimed": true,
+    "filesystem_snapshot_not_claimed_atomic": true,
+    "fixed_source_and_out_disjoint": true,
+    "fixed_three_original_pins_match_actual_local_bytes": true,
+    "hard_preemptive_filesystem_deadline_not_claimed": true,
+    "no_later_sender_or_fixture_phase_permitted": true,
+    "original_failure_not_rewritten_or_promoted": true,
+    "output_creation_exclusive_no_cleanup_retry": true,
+    "phone_or_P4_calls": false,
+    "phone_stage_requires_actual_phone_rc1_failure": true,
+    "source_tree_writes_or_unlink_or_rename": false,
+    "subprocess_or_signal_or_target_imports": false
+  },
+  "invocation_requirements": [
+    "Controller wrapper must bind COLLECTOR_SOURCE to the exact 20496-byte source executed; the standalone module intentionally does not define that external value.",
+    "Collector success must include actual controller rc0 and its final stdout receipt; RESULT.json alone is insufficient because a final recheck follows its creation and a later failure preserves both outputs."
+  ],
+  "main_calls": 0,
+  "remote_operations": 0,
+  "review_limits": [
+    "Static source and exact local original pin review only. No collector function, main, archive creation, Mac, P4 or phone operation was run by reviewer.",
+    "No assertion that the seven host phase receipts or current filesystem observations have already been collected by this candidate.",
+    "Complete bookends detect persistent changes but do not claim an atomic snapshot or the failure-time filesystem state."
+  ],
+  "review_scope": [
+    "Fixed SOURCE/OUT and exact failure/plan/phone-stage identities",
+    "All source opens read-only, nofollow, single-link regular files, held directory fd and full9/path identities",
+    "Complete child-name sets, all-file byte/full9 rechecks before writes, after copies, and after RESULT",
+    "Exact seven ended host phase receipts and original capture EOF/inode/stdout/stderr links",
+    "New OUT and evidence files create-only with fsync and held-inode readback",
+    "Tar regular-only canonical relative paths and lossless XZ roundtrip",
+    "Later observation/non-atomic semantics and preserved failure state"
+  ],
+  "reviewed_source": {
+    "bytes": 20496,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/neg01-1ad3-02-root-evidence-candidate01/source/collect_failed_root_originals.py",
+    "sha256": "181889ed6477819622909d0bdd016ad5d51d3352e17925c0359fc941d87a7d66"
+  },
+  "schema": "hepta.fixed19.failed-root-collector-independent-review.v1",
+  "state": "SOURCE_SCOPE_REVIEW_NO_BLOCKER",
+  "target_imports": 0
+}

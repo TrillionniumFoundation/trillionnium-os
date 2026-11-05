@@ -1,0 +1,100 @@
+{
+  "directories": [
+    {
+      "metadata": [
+        65086,
+        157440,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793882485267914270,
+        1793882485267914270
+      ],
+      "names": [
+        "AFTER-INVENTORY.original.json",
+        "CLOSURE.original.json",
+        "PUBLISH-INTENT.json"
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774"
+    }
+  ],
+  "files": [
+    {
+      "bytes": 55124,
+      "metadata": [
+        65086,
+        156890,
+        33152,
+        0,
+        0,
+        1,
+        55124,
+        1793882485259914270,
+        1793882485259914270
+      ],
+      "name": "CLOSURE.original.json",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/CLOSURE.original.json",
+      "pin_origin": "actual_6e1d_boundary_descriptor",
+      "prior_metadata_bound": true,
+      "sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+    },
+    {
+      "bytes": 923078,
+      "metadata": [
+        65086,
+        156601,
+        33152,
+        0,
+        0,
+        1,
+        923078,
+        1793882485267914270,
+        1793882485267914270
+      ],
+      "name": "AFTER-INVENTORY.original.json",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/AFTER-INVENTORY.original.json",
+      "pin_origin": "actual_6e1d_boundary_descriptor",
+      "prior_metadata_bound": true,
+      "sha256": "b9da7fdf1e8e110f9cb5cb253627c7a9bdad98a7660fddca16653bab1b93e94d"
+    },
+    {
+      "bytes": 742,
+      "metadata": null,
+      "name": "PUBLISH-INTENT.json",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/PUBLISH-INTENT.json",
+      "pin_origin": "source_396d_publish_fields_and_1e2d_compact_encoding_of_actual_boundary_and_lease",
+      "prior_metadata_bound": false,
+      "sha256": "3d56ef41cf7d2adf1858466d8d96ec877fb4553fdb97afe5609cc8475bac04a9"
+    }
+  ],
+  "publish_intent_expected": {
+    "automatic_retry": false,
+    "closure": {
+      "bytes": 55124,
+      "sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+    },
+    "inventory": {
+      "bytes": 923078,
+      "sha256": "b9da7fdf1e8e110f9cb5cb253627c7a9bdad98a7660fddca16653bab1b93e94d"
+    },
+    "lease_sha256": "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736",
+    "maximum_publish_attempts": 1,
+    "nonce": "902e851c3ca1f90deab3d880ab993774",
+    "schema": "hepta.native-guard.boundary-publish-intent.v1",
+    "scope": {
+      "profile_id": "owner-open",
+      "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+      "task_id": "task-d3f61033-5b61-40e4-b8c6-7ea00d6b2d56",
+      "turn_id": "turn-c2247546-2cb4-4c98-b20f-b4ee06c2f14c",
+      "turn_stream_id": "r5-stream-6d465a4b53634e510a9b448f5d53be3ce4115ea2303e9ceeefaccd99bcc04475"
+    }
+  },
+  "publish_intent_prior_metadata": null,
+  "publish_intent_source_derived_descriptor": {
+    "bytes": 742,
+    "sha256": "3d56ef41cf7d2adf1858466d8d96ec877fb4553fdb97afe5609cc8475bac04a9"
+  },
+  "publisher_function_called": false
+}

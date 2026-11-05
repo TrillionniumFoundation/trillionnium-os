@@ -1,0 +1,84 @@
+{
+  "blockers": [],
+  "caller": {
+    "bytes": 36877,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "35695321f9c62791d9c4889fcdf8bff3e41b2d80465a6a014992fce1c3bd08ee"
+  },
+  "checks": [
+    {
+      "name": "seven exact source splices whole-byte inverse",
+      "result": "PASS",
+      "splices": [
+        "PROBE",
+        "REQ",
+        "LABEL",
+        "out",
+        "source assertion",
+        "state body",
+        "state orelse"
+      ]
+    },
+    {
+      "functions": [
+        "put",
+        "enc"
+      ],
+      "name": "helper and all non-splice caller statements unchanged",
+      "result": "PASS"
+    },
+    {
+      "controller_stdin_exact": true,
+      "name": "source/phone request/controller stdin binding",
+      "phone_command_bytes": 15379,
+      "phone_command_limit": 65536,
+      "phone_request_scope": {
+        "kind": "shell",
+        "root": true,
+        "timeout_seconds": 210
+      },
+      "phone_source_exact": true,
+      "quoted_heredoc_envelope_inverse": true,
+      "result": "PASS"
+    },
+    {
+      "details": "One Popen after durable request/intent; passive wait240 seconds; timeout UNKNOWN and no signals/retry; original12 evidence files and16MiB archive bound; output target create-only.",
+      "name": "original179a actor and passive lifecycle unchanged",
+      "result": "PASS"
+    },
+    {
+      "idempotency_key": "root-1ad3-external902-boundary-three-read01-20261105",
+      "name": "fixed identities and no outer timeout",
+      "out": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-boundary-three-read01",
+      "outer_timeout_present": false,
+      "result": "PASS",
+      "tag": "ng-902e851c3ca1f90deab3d880ab993774-boundary-three-read01"
+    }
+  ],
+  "limits": [
+    "Static AST/exactbytes/local literals only; no imports/caller execution/phone/P4/Mac requests.",
+    "Backup read of existing three boundary leaves, not closure/publication/admission or case pass.",
+    "Inherited caller capture semantics and prior review unchanged; actual success requires controller completion and original phone result, not a source review."
+  ],
+  "parent": {
+    "bytes": 44799,
+    "sha256": "db1f4a18b37ab6b8c21d338978e28a6993249b7fa987a33ee3d04d0fe5ae996d"
+  },
+  "phone_source": {
+    "bytes": 14900,
+    "sha256": "41398169b440a156db14eb3d2e701198a3d13ec0834a1c4d60c4d593a8a95fa8"
+  },
+  "request": {
+    "bytes": 39279,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "12995ec70ec9eba16c7fce116f600415a9a867c5bfed0aff5d98f1fda6841107"
+  },
+  "review_harness_history": {
+    "correction": "Confirmed exact enclosing command inverse to originaldb1f after replacing only source and delimiter; neither caller changed",
+    "first_attempt": "AssertionError from assuming one source/delimiter newline plus finalLF; actual caller preserves original extra separator LF and EOF delimiter",
+    "retained": "REVIEW-SCRIPT-FIRST-ATTEMPT.json"
+  },
+  "reviewed_at_utc": "2026-11-05T13:29:40.541623+00:00",
+  "schema": "hepta.independent-caller-source-review.v1",
+  "state": "NO_BLOCKER_IN_REQUESTED_CALLER_SCOPE"
+}

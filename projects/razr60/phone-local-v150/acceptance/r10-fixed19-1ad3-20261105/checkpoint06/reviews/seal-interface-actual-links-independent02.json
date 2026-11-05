@@ -1,0 +1,87 @@
+{
+  "actual_adoption": {
+    "bytes": 208226,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json",
+    "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+  },
+  "actual_delivery": {
+    "bytes": 28755,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json",
+    "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+  },
+  "actual_manifests": {
+    "acceptance": {
+      "bytes": 21485,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01/MANIFEST.json",
+      "sha256": "00ea6a0575b41ecc4cbbe47b93799b6d8ed176a1f02bc9a80d458fba97f45671"
+    },
+    "constructor": {
+      "bytes": 6239,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-component-boundary-input-entry-r8-inventory-prefix-1ad3-01/MANIFEST.json",
+      "sha256": "659a27087f462879d38050990e71ebf84e27ecea088b4044563784297aa6272d"
+    },
+    "consumer": {
+      "bytes": 30832,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/MANIFEST.json",
+      "sha256": "b26a60719eed3b6548d8e2a1b52abac25f5678afdace72d9865de24e17d24a53"
+    }
+  },
+  "actual_policy": {
+    "bytes": 2667740,
+    "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+  },
+  "actual_runtime": {
+    "bytes": 19020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json",
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "checks": {
+    "AC_final_consumer_manifest_same_b26a": true,
+    "FC_AC_CC_current_runtime_same_a334": true,
+    "FC_actual_adoption_same_527374": true,
+    "actual_policy_same_f821": true,
+    "all_five_runtime_source_rows_match_consumer_manifest": true,
+    "both_runtime_reference_rows_and_delivery_increment_same_exact_a334_original": true,
+    "bundled_four_actual_originals_byte_equal_root_actual_cache": true,
+    "constructor_row_matches_delivery_and_consumer_hash": true,
+    "delivery_descriptor_exact_path_length_hash": true,
+    "materializer_matches_acceptance_and_delivery": true,
+    "new_suffix_output_and_FC_CC_sources_consistent": true,
+    "source_only_flags_and_current_case_pending_preserved": true,
+    "three_manifest_descriptors_exact_path_length_hash": true
+  },
+  "complementary_review": {
+    "bytes": 2287,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/seal-interface-inventory-prefix-independent01/REVIEW.json",
+    "sha256": "aedb3a97c6c5743581389952dbd1ec807674e06f567ce1dea21bb78d2ae85977"
+  },
+  "constructor_source": {
+    "bytes": 35160,
+    "sha256": "1b413401405878720fb84807012c2d767b3c0fa38c63f41250ced8822df61aaf"
+  },
+  "consumer_source": {
+    "bytes": 85346,
+    "sha256": "3814f8414ff6bdfea5672b1bfdb9ee17193b352e9d414957c2d8b2fc66b998ca"
+  },
+  "fixed_interface_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-seal-interface-r8-r1-inventory-prefix-1ad3-01",
+  "limits": [
+    "Source/main/generator/constructor/builder not imported or executed by review. No remote, P4, phone, plan or nonce.",
+    "This review verifies descriptor links using the retained actual cascade and manifest raw bytes, not a new read of every deployed source body. The unchanged writer source performs canonical/full9/source-byte/runtime/adoption checks at its execution.",
+    "No actual current component originals, sealed release, readiness, or business/physical qualification is asserted.",
+    "Output absence remains a live create-only gate; it was not probed here."
+  ],
+  "materializer": {
+    "bytes": 24834,
+    "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+  },
+  "reviewer": "transport_review",
+  "schema": "hepta.root.independent-source-review.v1",
+  "scope": "Cross-check fixed DELIVERY/OUT bindings against retained actual cascade originals and corresponding FC/AC/CC/current runtime manifest links; no duplicate whole-source inverse review or execution.",
+  "source": {
+    "bytes": 41236,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/seal_interface_inventory_prefix_candidate01/package/source/write_final_seal_interface_property_r8.py",
+    "sha256": "991511989c7c0e2f826f9df0302d570938eca03ab1136adfa02c96b61feee3f0"
+  },
+  "source_unchanged_bookend": true,
+  "state": "NARROW_INTERFACE_ACTUAL_BINDINGS_VERIFIED_NO_ENTRYPOINT_EXECUTED"
+}

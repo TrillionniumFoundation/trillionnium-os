@@ -1,0 +1,134 @@
+{
+  "additional_fixed_files": {
+    "setup-plan-originals/ACCEPTED.json": {
+      "bytes": 552,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/ACCEPTED.json",
+      "sha256": "a3e0cdace4d9eb2f875beddd9556b8ee94f38820f086bc15387386660b6bb603"
+    },
+    "setup-plan-originals/BOUND-CONTRACT.json": {
+      "bytes": 1842,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/BOUND-CONTRACT.json",
+      "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+    },
+    "setup-plan-originals/ROOT-SETUP-PLAN.json": {
+      "bytes": 6402,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/ROOT-SETUP-PLAN.json",
+      "sha256": "824880935f6bfe854d4b1f096f7c7c593db7bb85d200153ddca3daea291f1607"
+    },
+    "sibling-input-originals/component-inputs.tar.gz": {
+      "bytes": 471979,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/component-inputs.tar.gz",
+      "sha256": "989a78d8c9a844ea0f06859a9e9e2b66bafeacd4702a9b8388d6a031b7775afb"
+    },
+    "sibling-input-originals/preserved_draft.original": {
+      "bytes": 282,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/preserved_draft.original",
+      "sha256": "9d801d675a461de996206b1bdc911309aeb40df599c49860ddc9699779d4e741"
+    },
+    "sibling-input-originals/previous.original": {
+      "bytes": 1428,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/previous.original",
+      "sha256": "9133e2511a66a809be647cb8bb49e3afb351825db5e465f75b1f2f0b6d9d88f4"
+    },
+    "sibling-input-originals/request.original": {
+      "bytes": 317,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/request.original",
+      "sha256": "526568aa9d2c95f333caf396f9873deaf8baca2df841e7a94100e04b28bb93eb"
+    },
+    "sibling-input-originals/stage_component.py": {
+      "bytes": 19116,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    }
+  },
+  "after_copy_full_recheck": {
+    "checked_directory_count": 12,
+    "checked_file_count": 235,
+    "completed_monotonic_ns": 909026869709355,
+    "completed_unix_ns": 1793883317581137752
+  },
+  "archive": {
+    "bytes": 820660,
+    "metadata": [
+      66306,
+      33991650,
+      33152,
+      1000,
+      1000,
+      1,
+      820660,
+      1793883317563311695,
+      1793883317563311695
+    ],
+    "path": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01/EXTERNAL902-P4-ORIGINALS.tar.xz",
+    "sha256": "ab778aa6c6f45b33f8b1d4af11be68f7d33306af0a40492c1738556af2100a8d"
+  },
+  "atomic_filesystem_snapshot": false,
+  "automatic_retry": false,
+  "business_qualified": false,
+  "case_pass": false,
+  "collector_source": {
+    "bytes": 40752,
+    "metadata": [
+      66306,
+      33991649,
+      33152,
+      1000,
+      1000,
+      1,
+      40752,
+      1793883317562197160,
+      1793883317562197160
+    ],
+    "path": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01/COLLECTOR.original.py",
+    "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+  },
+  "complete_source_roots": {
+    "material-originals": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/material",
+    "sender-originals": "/home/alex/codex-hepta-natural-root-r10-neg01-7c907661-01-root-v150",
+    "setup-fixture-originals": "/home/alex/codex-hepta-native-guard-fixtures-r10-r1/902e851c3ca1f90deab3d880ab993774/setup"
+  },
+  "complete_tree_file_counts": {
+    "material-originals": 56,
+    "sender-originals": 116,
+    "setup-fixture-originals": 55
+  },
+  "component_qualified": false,
+  "filesystem_or_compression_hard_deadline": false,
+  "fixed_sibling_file_count": 8,
+  "label": "root-r10-neg01-7c907661-01",
+  "mac_actor_py_in_this_archive": false,
+  "manifest": {
+    "bytes": 147912,
+    "metadata": [
+      66306,
+      33991651,
+      33152,
+      1000,
+      1000,
+      1,
+      147912,
+      1793883317570188919,
+      1793883317570188919
+    ],
+    "path": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01/ORIGINALS-MANIFEST.json",
+    "sha256": "99b413337849ebe3c2b89dece5c65dacd396d05d2d39abee5cde84d71c1e6e6e"
+  },
+  "native_cleanup_or_boundary_publication_verified_here": false,
+  "network_calls": 0,
+  "nonce": "902e851c3ca1f90deab3d880ab993774",
+  "observed_directories": 12,
+  "original_mac_sender_pid": 54589,
+  "original_sender_join_or_EOF_retrofitted": false,
+  "originals_modified": false,
+  "out": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01",
+  "phone_calls": 0,
+  "process_census_performed": false,
+  "same_instant_as_failure": false,
+  "schema": "hepta.root.external902-p4-originals-collection.v1",
+  "signals_sent": 0,
+  "state": "EXTERNAL902_THREE_P4_TREES_AND_PINNED_SIBLING_ORIGINALS_ARCHIVED",
+  "subprocesses": 0,
+  "total_original_file_bytes": 5925299,
+  "total_original_files": 235
+}

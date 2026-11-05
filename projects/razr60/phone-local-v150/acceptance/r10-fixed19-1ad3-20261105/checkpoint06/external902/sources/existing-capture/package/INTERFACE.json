@@ -1,0 +1,26 @@
+{
+  "PARTIAL_CAPTURE_body_max_bytes": 2097152,
+  "RESULT_body_max_bytes": 65536,
+  "arguments_allowed": false,
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "observe_existing_capture_once.py"
+  ],
+  "boundary_JSON_body_max_bytes": 1048576,
+  "capture_json_max_bytes": 16777216,
+  "capture_json_retained_body_max_bytes": 1048576,
+  "neither_existing_capture_nor_boundary_is_adopted": true,
+  "no_phone_writes": true,
+  "no_runtime_or_snapshot_call": true,
+  "no_snapshot_subtree_traversal": true,
+  "output_limit_bytes": 8388608,
+  "schema": "hepta.existing-capture-observer.interface.v1",
+  "source": {
+    "bytes": 18736,
+    "path": "source/observe_existing_capture_once.py",
+    "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+  },
+  "whole_archive_hash_max_bytes": 67108864
+}

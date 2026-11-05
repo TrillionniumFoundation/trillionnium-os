@@ -1,0 +1,2926 @@
+{
+  "all_fd_and_named_full9_equal": true,
+  "case_pass": false,
+  "closed_set_bookend_equal": true,
+  "directories": [
+    {
+      "metadata": [
+        66306,
+        34750585,
+        16832,
+        1000,
+        1000,
+        2,
+        12288,
+        1793871588879829220,
+        1793871588879829220
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150",
+      "relative_path": "."
+    }
+  ],
+  "files": [
+    {
+      "bytes": 152,
+      "metadata": [
+        66306,
+        34780859,
+        33152,
+        1000,
+        1000,
+        1,
+        152,
+        1793871585612916468,
+        1793871585612916468
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/ACTOR-FAILURE.json",
+      "relative_path": "ACTOR-FAILURE.json",
+      "sha256": "a267bcba2736b00460ce367f69a3f97b7074f32c192e0a90e687c8bfd436a27a"
+    },
+    {
+      "bytes": 22729,
+      "metadata": [
+        66306,
+        34750599,
+        33152,
+        1000,
+        1000,
+        1,
+        22729,
+        1793871482358118320,
+        1793871482358118320
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/CLOSE-DETAILS-0.json",
+      "relative_path": "CLOSE-DETAILS-0.json",
+      "sha256": "8486c7568e1df464cdf37f66b5b8d2751ebe6f7f5a62b58c4406f0334bb64119"
+    },
+    {
+      "bytes": 16617,
+      "metadata": [
+        66306,
+        34750600,
+        33152,
+        1000,
+        1000,
+        1,
+        16617,
+        1793871484591082565,
+        1793871484591082565
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/CLOSE-DETAILS-1.json",
+      "relative_path": "CLOSE-DETAILS-1.json",
+      "sha256": "0e7d252c7a32f60be7d2e9efeb9f17f9c2218008fc3eb6240f44f952ef1944b4"
+    },
+    {
+      "bytes": 1034,
+      "metadata": [
+        66306,
+        34750605,
+        33152,
+        1000,
+        1000,
+        1,
+        1034,
+        1793871487456391393,
+        1793871487456391393
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-PREPARED-NO-SEND.json",
+      "relative_path": "COMPONENT-PREPARED-NO-SEND.json",
+      "sha256": "98e472c07bf2efb51dfff0567d8d1d84ed59659b1dd33c0b07ba775188c283be"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750606,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871487891254348,
+        1793871487891254348
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0001.original-read.json",
+      "relative_path": "COMPONENT-READY-0001.original-read.json",
+      "sha256": "f52ac48b463b299f13a1b74ca4c8055801fa3070ce055c8810bb22d61bd9158a"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750607,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871488574271180,
+        1793871488574271180
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0002.original-read.json",
+      "relative_path": "COMPONENT-READY-0002.original-read.json",
+      "sha256": "7328247eaf97e7530bb5eed5ce5021873511243e81f557b4a8a669b1ada322aa"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750608,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871489260703870,
+        1793871489260703870
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0003.original-read.json",
+      "relative_path": "COMPONENT-READY-0003.original-read.json",
+      "sha256": "5c28559700e72de1bbde5d902c0776b8a556a01574aad80e2f8df89f3768cb1c"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750609,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871489948428900,
+        1793871489948428900
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0004.original-read.json",
+      "relative_path": "COMPONENT-READY-0004.original-read.json",
+      "sha256": "dcec7d47f702badef6644a75d5c62d0ea92045a1cf79f845d31993b9138914cd"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750610,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871490634376854,
+        1793871490634376854
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0005.original-read.json",
+      "relative_path": "COMPONENT-READY-0005.original-read.json",
+      "sha256": "fc0db9c74dce1742ed6b2b4e8ced65bcdce7b9197c707a1f824107caed982cf9"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750611,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871491310338685,
+        1793871491310338685
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0006.original-read.json",
+      "relative_path": "COMPONENT-READY-0006.original-read.json",
+      "sha256": "3356654370ee33900619b7f709e3ce99acee20cfd59a564ef1ba41ba4ba4edb2"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750612,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871491988849753,
+        1793871491988849753
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0007.original-read.json",
+      "relative_path": "COMPONENT-READY-0007.original-read.json",
+      "sha256": "d2edf599a93a2f6bf296552a4a87c495f73af6586b61317c8136aabc1f6ba3eb"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750613,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871492666372192,
+        1793871492666372192
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0008.original-read.json",
+      "relative_path": "COMPONENT-READY-0008.original-read.json",
+      "sha256": "84ee7e97f4ae711cefbb0e737edbb7a2836b7dd2596ef75b1078419c89c05a13"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750614,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871493352265697,
+        1793871493352265697
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0009.original-read.json",
+      "relative_path": "COMPONENT-READY-0009.original-read.json",
+      "sha256": "72f0b0ec4af447d773318188424b883268e33e1a0f1c7d88f6f636b13c65a2a3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750615,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871494046913708,
+        1793871494046913708
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0010.original-read.json",
+      "relative_path": "COMPONENT-READY-0010.original-read.json",
+      "sha256": "ed7239a845b0d1f0191d3f97f089180b0afa824257300a08b0bb32a1db88e28a"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750616,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871494733309802,
+        1793871494733309802
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0011.original-read.json",
+      "relative_path": "COMPONENT-READY-0011.original-read.json",
+      "sha256": "21772a2d572e9d268b2280bfa7c6c69960b84a80bad20f3ce937aef986f07508"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750617,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871495427824932,
+        1793871495427824932
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0012.original-read.json",
+      "relative_path": "COMPONENT-READY-0012.original-read.json",
+      "sha256": "3037194d8395000cee51d34085fbbbe911412c9c1b9aff73a3517a61a28d0ee9"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750618,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871496127218554,
+        1793871496127218554
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0013.original-read.json",
+      "relative_path": "COMPONENT-READY-0013.original-read.json",
+      "sha256": "8d5a7f3ece9430537a6a11291059fed66eb18262c827445ecfef788164d75df1"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750619,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871496815133210,
+        1793871496815133210
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0014.original-read.json",
+      "relative_path": "COMPONENT-READY-0014.original-read.json",
+      "sha256": "f3842e81469e1d43cde7ebb0088410a5b37939eaa8853f444bcfeb6a2d4aed4f"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750620,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871497493291655,
+        1793871497493291655
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0015.original-read.json",
+      "relative_path": "COMPONENT-READY-0015.original-read.json",
+      "sha256": "c1e604bfc74468b0fd09ec93f1eba0ecd3a10206b747684aae55a88b3e7173ab"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750621,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871498185508909,
+        1793871498185508909
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0016.original-read.json",
+      "relative_path": "COMPONENT-READY-0016.original-read.json",
+      "sha256": "a2ba75d9f44958afe2b8228451353ffc9a4039d7194a8992f92da8bf90013514"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750622,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871498869837254,
+        1793871498869837254
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0017.original-read.json",
+      "relative_path": "COMPONENT-READY-0017.original-read.json",
+      "sha256": "f4922b35b597477dc6e726f4aa4b387cb8269b5b4848b6dbd9b42c03d0778e3b"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750623,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871499556137305,
+        1793871499556137305
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0018.original-read.json",
+      "relative_path": "COMPONENT-READY-0018.original-read.json",
+      "sha256": "94b5a766dc1db2ebfc99035ab382d739305b5413edacd97e3306d047d5b446cf"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750624,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871500256174488,
+        1793871500256174488
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0019.original-read.json",
+      "relative_path": "COMPONENT-READY-0019.original-read.json",
+      "sha256": "fd2a0cfcfd748e71d2aff49064e14c699bd0b56c96862d37674b756a0185dd8d"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750625,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871500940836188,
+        1793871500940836188
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0020.original-read.json",
+      "relative_path": "COMPONENT-READY-0020.original-read.json",
+      "sha256": "8265605b28d2319af7e74dfdd40a965cfaa2a6f8c6f0510d4ff1e5e703d74540"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750626,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871501635351314,
+        1793871501635351314
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0021.original-read.json",
+      "relative_path": "COMPONENT-READY-0021.original-read.json",
+      "sha256": "06615c66f472b10db0a765921a241f81a4614dc387ca2c2978b11fbfbf8f76ba"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750627,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871502325753652,
+        1793871502325753652
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0022.original-read.json",
+      "relative_path": "COMPONENT-READY-0022.original-read.json",
+      "sha256": "37fe8d7027f100f8a22bc3b59bf94af5a3327e08d85202690096180cb37f14ed"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750628,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871503014191714,
+        1793871503014191714
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0023.original-read.json",
+      "relative_path": "COMPONENT-READY-0023.original-read.json",
+      "sha256": "9036aabe0459e011b75515f708b8133c185d796f6733f656a277264648cca65a"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750629,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871503698690692,
+        1793871503698690692
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0024.original-read.json",
+      "relative_path": "COMPONENT-READY-0024.original-read.json",
+      "sha256": "4469f989634739db2337f466d1ce9c0785b991432bdeaaa6dda02b1eb2193176"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750630,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871504386140479,
+        1793871504386140479
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0025.original-read.json",
+      "relative_path": "COMPONENT-READY-0025.original-read.json",
+      "sha256": "2e023ae6e162708ad018358d82fdd1ca8e0c4929c2da404baec1e62a3f80f6a5"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750631,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871505083413081,
+        1793871505083413081
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0026.original-read.json",
+      "relative_path": "COMPONENT-READY-0026.original-read.json",
+      "sha256": "9297140358ec96acf84ae704ade25e237264d90264629f7db264587e0fb55607"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750632,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871505776697838,
+        1793871505776697838
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0027.original-read.json",
+      "relative_path": "COMPONENT-READY-0027.original-read.json",
+      "sha256": "28ac5f8252fca0dc8f7fef8ace587a514d43e4ccef0b2a4f70c1042e0eef6eb0"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750633,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871506474904247,
+        1793871506474904247
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0028.original-read.json",
+      "relative_path": "COMPONENT-READY-0028.original-read.json",
+      "sha256": "a2f4c4bfe1a9ccb71797638059ada8bfb86fee30a1bb616f6d86d4aa8a263c77"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750634,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871507173389383,
+        1793871507173389383
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0029.original-read.json",
+      "relative_path": "COMPONENT-READY-0029.original-read.json",
+      "sha256": "bc41fea410762470b1d58e969c719e5a9e6b9df26f34bcdaf8cb66195afdbf95"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750635,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871507871388267,
+        1793871507871388267
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0030.original-read.json",
+      "relative_path": "COMPONENT-READY-0030.original-read.json",
+      "sha256": "2e456595b6c9d5f367317a5d05c25d91af03c2f86b3d7be8a8fdc91dafe8bcf5"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750636,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871508569767608,
+        1793871508569767608
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0031.original-read.json",
+      "relative_path": "COMPONENT-READY-0031.original-read.json",
+      "sha256": "3a2bb3741a775a65d340d5110b8c38598ce09004503cc2516dc8e7b42904cac1"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750637,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871509256784790,
+        1793871509256784790
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0032.original-read.json",
+      "relative_path": "COMPONENT-READY-0032.original-read.json",
+      "sha256": "675825568ce6255f785d1cec8bd4ecddcf061a10cda3dade65de514fc2ed23f2"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750638,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871509949802129,
+        1793871509949802129
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0033.original-read.json",
+      "relative_path": "COMPONENT-READY-0033.original-read.json",
+      "sha256": "32e320c0c6d720cd1ef4d1f167ff502f3673a0653ca61bd50d7951253a0d6f5d"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750639,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871510628819129,
+        1793871510628819129
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0034.original-read.json",
+      "relative_path": "COMPONENT-READY-0034.original-read.json",
+      "sha256": "da9bb1a74fd0a8a44fadd71a8c1aafea9eb5705f24faaee737cb04546f77266c"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750640,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871511330942978,
+        1793871511330942978
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0035.original-read.json",
+      "relative_path": "COMPONENT-READY-0035.original-read.json",
+      "sha256": "a319c79dbc19d375cd37737b6dd28773b939bb10e385a30e70208a0d07ea6a82"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750641,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871512024186186,
+        1793871512024186186
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0036.original-read.json",
+      "relative_path": "COMPONENT-READY-0036.original-read.json",
+      "sha256": "a6d9cdc0cc4430913fdd7867cdaf3d9d1f4b873132188cbd940c3719885a863c"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750642,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871512710020272,
+        1793871512710020272
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0037.original-read.json",
+      "relative_path": "COMPONENT-READY-0037.original-read.json",
+      "sha256": "ca9812ad9db458b471ab12c217f2f950d39fcbf184c02291a830726550c0a618"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750643,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871513402730219,
+        1793871513402730219
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0038.original-read.json",
+      "relative_path": "COMPONENT-READY-0038.original-read.json",
+      "sha256": "da036659bc4a7f60707a222dba697c6eb1154a5bf6ed50a19ef651fcb3de40c2"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750644,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871514097906098,
+        1793871514097906098
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0039.original-read.json",
+      "relative_path": "COMPONENT-READY-0039.original-read.json",
+      "sha256": "61e34d001bf678686bbfd5cd069f4b65851a1ac1e7e661c6191a193bd1cdcdb4"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750645,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871514791923523,
+        1793871514791923523
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0040.original-read.json",
+      "relative_path": "COMPONENT-READY-0040.original-read.json",
+      "sha256": "d6d7332c26454c44b29156f65a44928e1a3cb9a76be1bdef0e29c1e0f62de144"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750646,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871515489941056,
+        1793871515489941056
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0041.original-read.json",
+      "relative_path": "COMPONENT-READY-0041.original-read.json",
+      "sha256": "a7e5606c38543142eb9d756be451a9f59f42707dafef274ef4e59906a65970f3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750647,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871516186857172,
+        1793871516186857172
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0042.original-read.json",
+      "relative_path": "COMPONENT-READY-0042.original-read.json",
+      "sha256": "79f91390bd89b4c2dda404a99fa54355a57fe8ce9dde20a8ab47836a5e60891f"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750648,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871516883233609,
+        1793871516883233609
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0043.original-read.json",
+      "relative_path": "COMPONENT-READY-0043.original-read.json",
+      "sha256": "be44689f686fb914c71e2da6333d15bc48b69e08221227aa5c7ff9a57fe25c52"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750649,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871517578993579,
+        1793871517578993579
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0044.original-read.json",
+      "relative_path": "COMPONENT-READY-0044.original-read.json",
+      "sha256": "037dcefc99ce312cf56cace6c6280441073ce2790cf3a418695a441fc900c89d"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750650,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871518273279169,
+        1793871518273279169
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0045.original-read.json",
+      "relative_path": "COMPONENT-READY-0045.original-read.json",
+      "sha256": "28fab21415e16a95f4f7ba325e73584793235280c5aeaaeb7769b910b60271ee"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750651,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871518969028568,
+        1793871518969028568
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0046.original-read.json",
+      "relative_path": "COMPONENT-READY-0046.original-read.json",
+      "sha256": "8287d781c7154270e74d81fccb58282e9f120dcc06de9f914a21e1f430ed2c4d"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750652,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871519661046001,
+        1793871519661046001
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0047.original-read.json",
+      "relative_path": "COMPONENT-READY-0047.original-read.json",
+      "sha256": "6a2318678ca1e5edda41f533a8cd6bbf34bfce9604e69f18edf6a6eac1d2260f"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750653,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871520351919979,
+        1793871520351919979
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0048.original-read.json",
+      "relative_path": "COMPONENT-READY-0048.original-read.json",
+      "sha256": "da26b74c921eda235538cdd7d506fad6ea2b989514d9c9da225f649b72c61c4b"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750654,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871521036803318,
+        1793871521036803318
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0049.original-read.json",
+      "relative_path": "COMPONENT-READY-0049.original-read.json",
+      "sha256": "dcff8011b8470e25c61f1bbc68743a006423f7bb7352e2c8bb49ea48266b6264"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750655,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871521718097867,
+        1793871521718097867
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0050.original-read.json",
+      "relative_path": "COMPONENT-READY-0050.original-read.json",
+      "sha256": "68a2d283739cc65a563d4c0e6d7f51debc75487e6b379949957b040010052cf3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750656,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871522402786872,
+        1793871522402786872
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0051.original-read.json",
+      "relative_path": "COMPONENT-READY-0051.original-read.json",
+      "sha256": "6aaca044428b20efda36169beda860d94fb8731dd4f11d30aa72762be73ad252"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750657,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871523099132727,
+        1793871523099132727
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0052.original-read.json",
+      "relative_path": "COMPONENT-READY-0052.original-read.json",
+      "sha256": "54898eb567a9ad2747af28520540fd06dd6e26bc066b3e2ac870fdd2287f5990"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750658,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871523785783308,
+        1793871523785783308
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0053.original-read.json",
+      "relative_path": "COMPONENT-READY-0053.original-read.json",
+      "sha256": "12d8fd2c12befd3d43790cf976ded975f41039ce7c70576f60f72da46de0e33c"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34750692,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871524477376860,
+        1793871524477376860
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0054.original-read.json",
+      "relative_path": "COMPONENT-READY-0054.original-read.json",
+      "sha256": "aaaca576b1519c48485c2d76c8e9614173ed3bdcd5f0401bb7e6d5455c09fad3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751323,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871525179644123,
+        1793871525179644123
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0055.original-read.json",
+      "relative_path": "COMPONENT-READY-0055.original-read.json",
+      "sha256": "12c1397699e7ab890737117ee2c42acb5bcf8faa46e079802dd0e506d1291c50"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751331,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871525874202875,
+        1793871525874202875
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0056.original-read.json",
+      "relative_path": "COMPONENT-READY-0056.original-read.json",
+      "sha256": "6fd4bad034aafdcc705d89a65755f59a23721a34b6d57007dfd0e90065ac1a2f"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751332,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871526569397033,
+        1793871526569397033
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0057.original-read.json",
+      "relative_path": "COMPONENT-READY-0057.original-read.json",
+      "sha256": "b158c3302a4a6a5109e43ef7f623747bd28affca4d48fdba8ee0c5e398fa528b"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751333,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871527262238011,
+        1793871527262238011
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0058.original-read.json",
+      "relative_path": "COMPONENT-READY-0058.original-read.json",
+      "sha256": "7cd2899167b40bd88dc4ec64e2e172579139cbeea50c69acb1654c8204a3dda3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751334,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871527962255742,
+        1793871527962255742
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0059.original-read.json",
+      "relative_path": "COMPONENT-READY-0059.original-read.json",
+      "sha256": "09c3bd9fe89aaba49353565b3aa696204ce4b2e59184b4c48adf01b345ec7823"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751335,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871528654399626,
+        1793871528654399626
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0060.original-read.json",
+      "relative_path": "COMPONENT-READY-0060.original-read.json",
+      "sha256": "d715ca3ad8848925b50d51037689a337143f1df59eeacd36bb2751dda6dd1951"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751336,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871529358291130,
+        1793871529358291130
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0061.original-read.json",
+      "relative_path": "COMPONENT-READY-0061.original-read.json",
+      "sha256": "d77fa40c1e38ef03f92560b4f98bca90ce795b6bbecb86c755366824e868bf55"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751337,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871530056410955,
+        1793871530056410955
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0062.original-read.json",
+      "relative_path": "COMPONENT-READY-0062.original-read.json",
+      "sha256": "7bf18b79c578f6d59940edc27735d43d417d7e2c9e5d39c5f26ff5c3e0625ea2"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751338,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871530745946389,
+        1793871530745946389
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0063.original-read.json",
+      "relative_path": "COMPONENT-READY-0063.original-read.json",
+      "sha256": "706d9c88c6be1754a972519b87517a6e27a1c6506011767814b2317eda72664e"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751339,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871531442344019,
+        1793871531442344019
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0064.original-read.json",
+      "relative_path": "COMPONENT-READY-0064.original-read.json",
+      "sha256": "e959d18099c7936066a39bbec96daa6a0c24c8f413631ebd781444864bcf76c7"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751340,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871532146928376,
+        1793871532146928376
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0065.original-read.json",
+      "relative_path": "COMPONENT-READY-0065.original-read.json",
+      "sha256": "f3de4c0f743ba03b2af6f32eafed1a05d3e6d978bbfc1e96512f4ae4af981aa0"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751341,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871532838367051,
+        1793871532838367051
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0066.original-read.json",
+      "relative_path": "COMPONENT-READY-0066.original-read.json",
+      "sha256": "9e4a049ccf4726043174b809df0796b0a1eecbe5278c6a1d2cf7bb6fa3de32b2"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751342,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871533526928971,
+        1793871533526928971
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0067.original-read.json",
+      "relative_path": "COMPONENT-READY-0067.original-read.json",
+      "sha256": "1914edd02785507dc944c9351b6e0e1ac7a64f0ecfe880e2762a233964c2e411"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751343,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871534239415115,
+        1793871534239415115
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0068.original-read.json",
+      "relative_path": "COMPONENT-READY-0068.original-read.json",
+      "sha256": "6d825c41be1bae3cfc6d4aff4a4dc9c58fdf3338544bca7b6985e8d7634544e4"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751344,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871534929182342,
+        1793871534929182342
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0069.original-read.json",
+      "relative_path": "COMPONENT-READY-0069.original-read.json",
+      "sha256": "a10cadfa1fa5766c2e65cdfef6c78478c8ebe03c8faaf2782d946d27c155a454"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751356,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871535626791841,
+        1793871535626791841
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0070.original-read.json",
+      "relative_path": "COMPONENT-READY-0070.original-read.json",
+      "sha256": "e9ce9535f8186ae96537d7df70f1636b3aa5acf4d38acc5636f7aa9eb97f057e"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751362,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871536308467793,
+        1793871536308467793
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0071.original-read.json",
+      "relative_path": "COMPONENT-READY-0071.original-read.json",
+      "sha256": "4c0bef668b6793dbf676007f5fdfb8f6abdd3764d13c632f989335190210a26b"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751363,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871537006653828,
+        1793871537006653828
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0072.original-read.json",
+      "relative_path": "COMPONENT-READY-0072.original-read.json",
+      "sha256": "e0c8f4daf2e498b69a7f523618f8b5d82c2e757be4f6b5ff42f8653a5d20f942"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34751364,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871537692290811,
+        1793871537692290811
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0073.original-read.json",
+      "relative_path": "COMPONENT-READY-0073.original-read.json",
+      "sha256": "8ad937a4b95daff9b5b9382163a831ca8cb06adfd1ebe334d793bfc5fb0a83a5"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780790,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871538384133475,
+        1793871538384133475
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0074.original-read.json",
+      "relative_path": "COMPONENT-READY-0074.original-read.json",
+      "sha256": "ac236d3046d38ed6c5fc73bc06948d65062fb09afa80c0bcdb1601b7c87a22ec"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780791,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871539077538400,
+        1793871539077538400
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0075.original-read.json",
+      "relative_path": "COMPONENT-READY-0075.original-read.json",
+      "sha256": "ccea896e42eaef6e0851bdef27942f7165a2324b726bbbdf452c7f90fde406b0"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780792,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871539777210261,
+        1793871539777210261
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0076.original-read.json",
+      "relative_path": "COMPONENT-READY-0076.original-read.json",
+      "sha256": "0ede52d432228ccf6bb28206b58962768b4091c53eee7656d9ef578486027400"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780793,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871540475295836,
+        1793871540475295836
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0077.original-read.json",
+      "relative_path": "COMPONENT-READY-0077.original-read.json",
+      "sha256": "0a85b318406980bb642cbb9ee358121ed2ea7604cdefffca33f14360880ef0cd"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780794,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871541176592008,
+        1793871541176592008
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0078.original-read.json",
+      "relative_path": "COMPONENT-READY-0078.original-read.json",
+      "sha256": "af99e8671733fa7b7db32a1baea05bcc7a06a9b0167a2928c701282918e7b5f7"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780795,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871541889315849,
+        1793871541889315849
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0079.original-read.json",
+      "relative_path": "COMPONENT-READY-0079.original-read.json",
+      "sha256": "14ed8365b4b4ba32739b86fba52f71974c262c18ef29b4f901a489ec143b93a0"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780796,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871542598385715,
+        1793871542598385715
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0080.original-read.json",
+      "relative_path": "COMPONENT-READY-0080.original-read.json",
+      "sha256": "01a0cb5ad3a9b03a88bfbe2d57155571ccc8ac4b6ebdd03ce5e3a9b15abfc7a8"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780797,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871543310378249,
+        1793871543310378249
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0081.original-read.json",
+      "relative_path": "COMPONENT-READY-0081.original-read.json",
+      "sha256": "8c64c1336854b5848186cf78cdaad472b7f2b39286ad79c1dd3233af0e903864"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780798,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871544013303999,
+        1793871544013303999
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0082.original-read.json",
+      "relative_path": "COMPONENT-READY-0082.original-read.json",
+      "sha256": "4d3b4789346e47ef620ae3ec7fe38ec36817a74f50bb3b3b0d359dbe7e6e3c85"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780799,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871544712728231,
+        1793871544712728231
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0083.original-read.json",
+      "relative_path": "COMPONENT-READY-0083.original-read.json",
+      "sha256": "85cabbb5f15f38d95fc577d24e1d5267fca01852189d3385123a7f38758858c3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780800,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871545417511301,
+        1793871545417511301
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0084.original-read.json",
+      "relative_path": "COMPONENT-READY-0084.original-read.json",
+      "sha256": "0cd7bed6cfc58601ad0c2b46de1da01d58d5d2f34afb166cc178da2e4aa497e7"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780801,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871546117718483,
+        1793871546117718483
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0085.original-read.json",
+      "relative_path": "COMPONENT-READY-0085.original-read.json",
+      "sha256": "51d49f86b691a641ed22e23f2e3b0fcf51edb899e29eb47aa4662ed84194b769"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780802,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871546810309720,
+        1793871546810309720
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0086.original-read.json",
+      "relative_path": "COMPONENT-READY-0086.original-read.json",
+      "sha256": "c37a2b73519a0948759922ebb58e1845c6fb72dd1e3e419fcd9321cc581e95f3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780803,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871547501003359,
+        1793871547501003359
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0087.original-read.json",
+      "relative_path": "COMPONENT-READY-0087.original-read.json",
+      "sha256": "1b34c06443d027aa56b30f4ecbafd9fa848156ee1907531749b680b50f7c4a87"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780804,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871548199771897,
+        1793871548199771897
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0088.original-read.json",
+      "relative_path": "COMPONENT-READY-0088.original-read.json",
+      "sha256": "a7538265e2b490b22de82f2127e6c26cf0f95721137d6ec68af91210233c1e4a"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780805,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871548890999200,
+        1793871548890999200
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0089.original-read.json",
+      "relative_path": "COMPONENT-READY-0089.original-read.json",
+      "sha256": "520e4c4fe7f51d83f440a4281232079b5bc469ba589eee4885e12d8c83b5b061"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780806,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871549594412601,
+        1793871549594412601
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0090.original-read.json",
+      "relative_path": "COMPONENT-READY-0090.original-read.json",
+      "sha256": "41b52bdcf78ab84ff474562bcfccc394683cbc6c75301a886ef4d49a4fea79e1"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780807,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871550286824598,
+        1793871550286824598
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0091.original-read.json",
+      "relative_path": "COMPONENT-READY-0091.original-read.json",
+      "sha256": "dd9adc074d6f9da0a0468df500705d1106cd40c3862f65a3b67b828e918b10b0"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780808,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871550982875652,
+        1793871550982875652
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0092.original-read.json",
+      "relative_path": "COMPONENT-READY-0092.original-read.json",
+      "sha256": "852b4bfe202b5ece18fd6ab7bb98ea0e3e3bb3ba4a715a678b57466dabcedd20"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780809,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871551680282869,
+        1793871551680282869
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0093.original-read.json",
+      "relative_path": "COMPONENT-READY-0093.original-read.json",
+      "sha256": "f61b7ec622ea1ea504f5ec82261ddfd4e740bea52ac26cf87c469ca0708eaf20"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780810,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871552381879396,
+        1793871552381879396
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0094.original-read.json",
+      "relative_path": "COMPONENT-READY-0094.original-read.json",
+      "sha256": "a8d049958bc8007fa84d0d6f8d12ed9acffc8a5775366461b307095e08a0e432"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780811,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871553082310859,
+        1793871553082310859
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0095.original-read.json",
+      "relative_path": "COMPONENT-READY-0095.original-read.json",
+      "sha256": "00ee5c7d21a24eb8aeecdf1fea79d800415d627eba9d49622863737680865cf9"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780812,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871553774020524,
+        1793871553774020524
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0096.original-read.json",
+      "relative_path": "COMPONENT-READY-0096.original-read.json",
+      "sha256": "5342e8d8d8dc9374ec26000a50f80568a2a43d862879c75ccdb2c91add7ddc2b"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780813,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871554469319202,
+        1793871554469319202
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0097.original-read.json",
+      "relative_path": "COMPONENT-READY-0097.original-read.json",
+      "sha256": "f46a3f2767c600edd960163169506fb01d17d8f209b3dc4f8cc6e25031d53303"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780814,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871555160942778,
+        1793871555160942778
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0098.original-read.json",
+      "relative_path": "COMPONENT-READY-0098.original-read.json",
+      "sha256": "896de60ac0c0c0c251f7d0af955e60f1aff75c757b3fe6f04b739e9f9dae2d79"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780815,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871555845968650,
+        1793871555845968650
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0099.original-read.json",
+      "relative_path": "COMPONENT-READY-0099.original-read.json",
+      "sha256": "afecfa974bfdb97aebc9994c24a99a7a951f3e7a165b74ebb2777a6b7fa1cabe"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780816,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871556534114559,
+        1793871556534114559
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0100.original-read.json",
+      "relative_path": "COMPONENT-READY-0100.original-read.json",
+      "sha256": "6877a01ff8e3fd2472dd6c01340ab12f52a679af7d52e4597fefc37023cad03c"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780817,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871557214105670,
+        1793871557214105670
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0101.original-read.json",
+      "relative_path": "COMPONENT-READY-0101.original-read.json",
+      "sha256": "fb75610034f0e285f3f2ee79114394aff93da1a598f47ed1378e3271bdf9e8af"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780818,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871557908758741,
+        1793871557908758741
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0102.original-read.json",
+      "relative_path": "COMPONENT-READY-0102.original-read.json",
+      "sha256": "9274178498fdbf4df967fa572592b3d94bd89816ab10c49f090771a2d8e9e7b2"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780819,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871558610198410,
+        1793871558610198410
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0103.original-read.json",
+      "relative_path": "COMPONENT-READY-0103.original-read.json",
+      "sha256": "a1ea43a36bba031a339ab863692f8e116bf1688cf170b6d8318114f6bad863ab"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780820,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871559305941664,
+        1793871559305941664
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0104.original-read.json",
+      "relative_path": "COMPONENT-READY-0104.original-read.json",
+      "sha256": "3f41eeec9e9a7ef8fa824ba597c9b52dc000a99c026b363d3fa92a1cbb55f63e"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780821,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871560002224127,
+        1793871560002224127
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0105.original-read.json",
+      "relative_path": "COMPONENT-READY-0105.original-read.json",
+      "sha256": "d9ff921e9cf3808f0254cc9811519b2a4732fe63cf5d8956f6375546f7ae3ce0"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780822,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871560690093784,
+        1793871560690093784
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0106.original-read.json",
+      "relative_path": "COMPONENT-READY-0106.original-read.json",
+      "sha256": "65081114f82381a1a3402ed417dba2b38955439e5fe3affb4c466f447ed3a6a2"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780823,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871561384282136,
+        1793871561384282136
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0107.original-read.json",
+      "relative_path": "COMPONENT-READY-0107.original-read.json",
+      "sha256": "02bb14dee095c199bc569fd610977a827994b977119e244e8b67a3613b260833"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780824,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871562074072651,
+        1793871562074072651
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0108.original-read.json",
+      "relative_path": "COMPONENT-READY-0108.original-read.json",
+      "sha256": "4854feec462eb61734acbd3fb43d600f670cebcc22286a4c28115769f96c800f"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780825,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871562757789437,
+        1793871562757789437
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0109.original-read.json",
+      "relative_path": "COMPONENT-READY-0109.original-read.json",
+      "sha256": "81c70e0830ac117a772b35ccb0f35cd4db512281157fa1168d9bfab5a7571951"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780826,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871563449806421,
+        1793871563449806421
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0110.original-read.json",
+      "relative_path": "COMPONENT-READY-0110.original-read.json",
+      "sha256": "995f9c934c2c7f781975a4f637da309ec7648be888e4b53bb8d5ff6805be97df"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780827,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871564146183287,
+        1793871564146183287
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0111.original-read.json",
+      "relative_path": "COMPONENT-READY-0111.original-read.json",
+      "sha256": "fc2fd15784f578becfa32196e8b208d204fb84d4daeb45f73e09e24799c66759"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780828,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871564833043438,
+        1793871564833043438
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0112.original-read.json",
+      "relative_path": "COMPONENT-READY-0112.original-read.json",
+      "sha256": "7b86eb882edd35d3e4c6a5faa94f83fc35feb39c8d7e6f6db81646526c79116d"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780829,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871565536856935,
+        1793871565536856935
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0113.original-read.json",
+      "relative_path": "COMPONENT-READY-0113.original-read.json",
+      "sha256": "d2b2d03b22698574724743d0e51d9b7b05b97b9dc258dbb7ca1ec9adf00056b3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780830,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871566233237428,
+        1793871566233237428
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0114.original-read.json",
+      "relative_path": "COMPONENT-READY-0114.original-read.json",
+      "sha256": "54dabe10b42e52c494577f1706a98c780b268b303e33d6ec477fbf053a905367"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780831,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871566926005267,
+        1793871566926005267
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0115.original-read.json",
+      "relative_path": "COMPONENT-READY-0115.original-read.json",
+      "sha256": "06caa02e75431b6e96cd2027355b7bc11b7e523680add6deba3fd4946a6bee67"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780832,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871567615372361,
+        1793871567615372361
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0116.original-read.json",
+      "relative_path": "COMPONENT-READY-0116.original-read.json",
+      "sha256": "564a6dfbc397e34be2f0147541b0e707ddac20fec183e52521476fddd8c745d1"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780833,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871568301291143,
+        1793871568301291143
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0117.original-read.json",
+      "relative_path": "COMPONENT-READY-0117.original-read.json",
+      "sha256": "8eb44432601a7af7fecf408ce698a63a29adc084f32b690662bfc31cdb9241b5"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780834,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871568985350242,
+        1793871568985350242
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0118.original-read.json",
+      "relative_path": "COMPONENT-READY-0118.original-read.json",
+      "sha256": "79c0aa4b743ae4d42713a24eaef240131f06955d477f26405ed42ab01f0d6403"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780835,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871569674823910,
+        1793871569674823910
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0119.original-read.json",
+      "relative_path": "COMPONENT-READY-0119.original-read.json",
+      "sha256": "d9313832e6f0d864cf0a074b8b901e0d5189c69768fce2f2922a418de6e4399b"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780836,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871570360198942,
+        1793871570360198942
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0120.original-read.json",
+      "relative_path": "COMPONENT-READY-0120.original-read.json",
+      "sha256": "1d1ae88fbbfe8cd1c502f5857efa663679c996ea471f3e7c2d58faa7cad98241"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780837,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871571037031138,
+        1793871571037031138
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0121.original-read.json",
+      "relative_path": "COMPONENT-READY-0121.original-read.json",
+      "sha256": "fd30ca6f9278fab6979ad85e0dc5f74f3ee1889b475c14f3839bc18724786a48"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780838,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871571725878601,
+        1793871571725878601
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0122.original-read.json",
+      "relative_path": "COMPONENT-READY-0122.original-read.json",
+      "sha256": "cf835f8296a8e4bcea0a7a443abfdd230f3c092689e3d89a2283b0ba4c2e590c"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780839,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871572412594127,
+        1793871572412594127
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0123.original-read.json",
+      "relative_path": "COMPONENT-READY-0123.original-read.json",
+      "sha256": "d051caf4ca66078876132110f0a252e82e8035a2f416cc9fec5f0c0a7b0b67cf"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780840,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871573098891084,
+        1793871573098891084
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0124.original-read.json",
+      "relative_path": "COMPONENT-READY-0124.original-read.json",
+      "sha256": "23c9f06ab838bc26ac3e39bf0d3b91f080eaeb75776b1aead7280ae712cacfca"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780841,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871573794232153,
+        1793871573794232153
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0125.original-read.json",
+      "relative_path": "COMPONENT-READY-0125.original-read.json",
+      "sha256": "b82c0162e18c30a33e9806ad30b3b23984fdf7dd0fbe7d9d44d5ababfcea6b5e"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780842,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871574480729457,
+        1793871574480729457
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0126.original-read.json",
+      "relative_path": "COMPONENT-READY-0126.original-read.json",
+      "sha256": "fe18e68ef24038c2e9536cdc6eb914f28242269411d4b8afbd39a8a1b35dcaaf"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780843,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871575181470321,
+        1793871575181470321
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0127.original-read.json",
+      "relative_path": "COMPONENT-READY-0127.original-read.json",
+      "sha256": "e1958089f46549f44e35ab62ba1911b900a74f23d2df9148a3a4d584b9dc2b16"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780844,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871575872488357,
+        1793871575872488357
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0128.original-read.json",
+      "relative_path": "COMPONENT-READY-0128.original-read.json",
+      "sha256": "ed4dcaa62abb442cdf6c2ca4203740ebba24db3995aa8caa65f63ef4f56a1a0f"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780845,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871576568506533,
+        1793871576568506533
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0129.original-read.json",
+      "relative_path": "COMPONENT-READY-0129.original-read.json",
+      "sha256": "8f8f38d9fd5f06fa377f43b6f0ce0a4b59d290a879cc23d59b630b2b17a51e2c"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780846,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871577262855028,
+        1793871577262855028
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0130.original-read.json",
+      "relative_path": "COMPONENT-READY-0130.original-read.json",
+      "sha256": "b74948148a36c2e4de8b49ae8189290ee29e63ee7dc54b3d8d33298650f47405"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780847,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871577954353121,
+        1793871577954353121
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0131.original-read.json",
+      "relative_path": "COMPONENT-READY-0131.original-read.json",
+      "sha256": "0b6eeadd8758a83c4fb0b566d024558cd93cc2ec2e76d8a0f577e2e9899dabfc"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780848,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871578645229625,
+        1793871578645229625
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0132.original-read.json",
+      "relative_path": "COMPONENT-READY-0132.original-read.json",
+      "sha256": "11e365bb5ee5367334bd5a487c13f3731fc69fb9505de42af8377b32540422c0"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780849,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871579344054771,
+        1793871579344054771
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0133.original-read.json",
+      "relative_path": "COMPONENT-READY-0133.original-read.json",
+      "sha256": "efa8dab398318448cb48e878280394d15d9bd4a6adf8199fc1869e609900028d"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780850,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871580045717454,
+        1793871580045717454
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0134.original-read.json",
+      "relative_path": "COMPONENT-READY-0134.original-read.json",
+      "sha256": "48fb47c3345935691d0e2736be01efa8f068a4023d8e6274176591a8ff2c0d2e"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780851,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871580733821822,
+        1793871580733821822
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0135.original-read.json",
+      "relative_path": "COMPONENT-READY-0135.original-read.json",
+      "sha256": "98c7b68f61503a78396871ad7f0cbf9d38f7d638c4793ee856ea70ab355bec48"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780852,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871581426858822,
+        1793871581426858822
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0136.original-read.json",
+      "relative_path": "COMPONENT-READY-0136.original-read.json",
+      "sha256": "ebb3c44b726a423506e0b6a4247e98d16bef2f19c89bb300d48c5320f8949cf3"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780853,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871582124409038,
+        1793871582124409038
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0137.original-read.json",
+      "relative_path": "COMPONENT-READY-0137.original-read.json",
+      "sha256": "0095f9434398a631753ec41ed7fb346d231d19b9cb9ff3341595d70201152eca"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780854,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871582820670119,
+        1793871582820670119
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0138.original-read.json",
+      "relative_path": "COMPONENT-READY-0138.original-read.json",
+      "sha256": "3be18eddf6959658af21fa7549e13aee1725115626408dc866674c3e7a2aafe4"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780855,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871583524056249,
+        1793871583524056249
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0139.original-read.json",
+      "relative_path": "COMPONENT-READY-0139.original-read.json",
+      "sha256": "92c54368a287947a9e3127a3c41b36f46e8e5f78f120f993f9eb43c7a68ca1b6"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780856,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871584220774820,
+        1793871584220774820
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0140.original-read.json",
+      "relative_path": "COMPONENT-READY-0140.original-read.json",
+      "sha256": "85843a575e78e9d1f95a2ea6abb013bc2a5f03c782a3b0f761e7f03ed87ee398"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780857,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871584923962618,
+        1793871584923962618
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0141.original-read.json",
+      "relative_path": "COMPONENT-READY-0141.original-read.json",
+      "sha256": "015e4b66f68c0d20b790bfd103815d26fcd2b70608b109b801276f561d81316f"
+    },
+    {
+      "bytes": 35177,
+      "metadata": [
+        66306,
+        34780858,
+        33152,
+        1000,
+        1000,
+        1,
+        35177,
+        1793871585612045285,
+        1793871585612045285
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/COMPONENT-READY-0142.original-read.json",
+      "relative_path": "COMPONENT-READY-0142.original-read.json",
+      "sha256": "4be438163143f336974f28c87934dded4d38bfb9a24f30c9871522053c6a2bfd"
+    },
+    {
+      "bytes": 22729,
+      "metadata": [
+        66306,
+        34750591,
+        33152,
+        1000,
+        1000,
+        1,
+        22729,
+        1793871468012086308,
+        1793871468012086308
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/CONNECT-MENU.json",
+      "relative_path": "CONNECT-MENU.json",
+      "sha256": "c7d2706d592232ab21492adbf294365f282ffc31f3950991bc753f29da5101bb"
+    },
+    {
+      "bytes": 10073,
+      "metadata": [
+        66306,
+        34750592,
+        33152,
+        1000,
+        1000,
+        1,
+        10073,
+        1793871470740816020,
+        1793871470740816020
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/CURRENT-CONNECTION.json",
+      "relative_path": "CURRENT-CONNECTION.json",
+      "sha256": "d9457ef9a6c475d786c3e3c93ebd8f0323682cc737019072f955fb00bce58c33"
+    },
+    {
+      "bytes": 22729,
+      "metadata": [
+        66306,
+        34750595,
+        33152,
+        1000,
+        1000,
+        1,
+        22729,
+        1793871477927276627,
+        1793871477927276627
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/DETAILS-MENU.json",
+      "relative_path": "DETAILS-MENU.json",
+      "sha256": "825ee678700986178851ad039f0529cf33fa05ee060d54f8f39ee5e10f6a8038"
+    },
+    {
+      "bytes": 222,
+      "metadata": [
+        66306,
+        34780866,
+        33152,
+        1000,
+        1000,
+        1,
+        222,
+        1793871588880770543,
+        1793871588880770543
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/DRAFT-RESTORE-RESULT.json",
+      "relative_path": "DRAFT-RESTORE-RESULT.json",
+      "sha256": "48b1e1f4865919702ef7c57cabfcd978d32f6d967de47e500bff9870fb6e8db1"
+    },
+    {
+      "bytes": 7533,
+      "metadata": [
+        66306,
+        34750590,
+        33152,
+        1000,
+        1000,
+        1,
+        7533,
+        1793871465792714460,
+        1793871465792714460
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/DRAFT.json",
+      "relative_path": "DRAFT.json",
+      "sha256": "36d51fdfde339a1bff333689be9ccd120a4998632ec713682e249ad02d36c98d"
+    },
+    {
+      "bytes": 27050,
+      "metadata": [
+        66306,
+        34750602,
+        33152,
+        1000,
+        1000,
+        1,
+        27050,
+        1793871485195951211,
+        1793871485195951211
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/FINAL-PRE-SEND-RETIREMENT.original-read.json",
+      "relative_path": "FINAL-PRE-SEND-RETIREMENT.original-read.json",
+      "sha256": "8d16a5a7c2ce0b0a6f68eecfae4e8b535d9a8ee42b2e600e2735944e5e3be2c8"
+    },
+    {
+      "bytes": 727,
+      "metadata": [
+        66306,
+        34750603,
+        33152,
+        1000,
+        1000,
+        1,
+        727,
+        1793871485306926454,
+        1793871485306926454
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/FINAL-PRE-SEND-SELECTED.original-read.json",
+      "relative_path": "FINAL-PRE-SEND-SELECTED.original-read.json",
+      "sha256": "1a4e6221f20ffc8427ce1d85ad3a0710bc0834862c9e0b74548ea3f72e77edbf"
+    },
+    {
+      "bytes": 16617,
+      "metadata": [
+        66306,
+        34750604,
+        33152,
+        1000,
+        1000,
+        1,
+        16617,
+        1793871487454994806,
+        1793871487454994806
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/FINAL-PRE-SEND-UI.json",
+      "relative_path": "FINAL-PRE-SEND-UI.json",
+      "sha256": "33fc6a8ca1ae3aa5d299504a80abb55f1f9333f5189cbc6d23942ac2a82c6a71"
+    },
+    {
+      "bytes": 11015,
+      "metadata": [
+        66306,
+        34750587,
+        33152,
+        1000,
+        1000,
+        1,
+        11015,
+        1793871463268282460,
+        1793871463268282460
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/INITIAL.json",
+      "relative_path": "INITIAL.json",
+      "sha256": "aeee003b2a1b5b8b1a7ef5a2c57b4af037facf0fb495693a5ca241ba3d513e99"
+    },
+    {
+      "bytes": 13011,
+      "metadata": [
+        66306,
+        34750601,
+        33152,
+        1000,
+        1000,
+        1,
+        13011,
+        1793871484939708611,
+        1793871484939708611
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/LATENCY-PRE-SEND.original-read.json",
+      "relative_path": "LATENCY-PRE-SEND.original-read.json",
+      "sha256": "08676c80def68c834dbb8405e1996c4e8c60e0ac73dd087590cbdb0f5c430c46"
+    },
+    {
+      "bytes": 2041,
+      "metadata": [
+        66306,
+        34750589,
+        33152,
+        1000,
+        1000,
+        1,
+        2041,
+        1793871463683116489,
+        1793871463683116489
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/OPERATOR-CHINESE-PROMPT-INPUT.json",
+      "relative_path": "OPERATOR-CHINESE-PROMPT-INPUT.json",
+      "sha256": "c4669274b3d867e3d78766e16c6227a485014cf6c5ae6b0d74ac5936d57d5e6a"
+    },
+    {
+      "bytes": 27050,
+      "metadata": [
+        66306,
+        34750586,
+        33152,
+        1000,
+        1000,
+        1,
+        27050,
+        1793871460515586894,
+        1793871460515586894
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/PRE-MUTATION-RETIREMENT.original-read.json",
+      "relative_path": "PRE-MUTATION-RETIREMENT.original-read.json",
+      "sha256": "8d16a5a7c2ce0b0a6f68eecfae4e8b535d9a8ee42b2e600e2735944e5e3be2c8"
+    },
+    {
+      "bytes": 345,
+      "metadata": [
+        66306,
+        34780862,
+        33152,
+        1000,
+        1000,
+        1,
+        345,
+        1793871586103284873,
+        1793871586103284873
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/PRE-RESTORE-FOREGROUND.json",
+      "relative_path": "PRE-RESTORE-FOREGROUND.json",
+      "sha256": "5d9818b7bcdc5f5ba37eb4f22277e89b611cce2a2b200c1b18e79e49dfa36965"
+    },
+    {
+      "bytes": 21041,
+      "metadata": [
+        66306,
+        34750598,
+        33152,
+        1000,
+        1000,
+        1,
+        21041,
+        1793871480154818376,
+        1793871480154818376
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/PRE-SEND-QUALIFIED.json",
+      "relative_path": "PRE-SEND-QUALIFIED.json",
+      "sha256": "c6ceaaf0ce0a8971c540887515454a870130e604114409b5ba4cedf68aba9eb2"
+    },
+    {
+      "bytes": 1621,
+      "metadata": [
+        66306,
+        34780865,
+        33152,
+        1000,
+        1000,
+        1,
+        1621,
+        1793871588878829193,
+        1793871588878829193
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/PRESERVED-DRAFT-RESTORE.original.json",
+      "relative_path": "PRESERVED-DRAFT-RESTORE.original.json",
+      "sha256": "7c0488b120564b4747c46d65779f7b71f76d45f216e884b5bce7838c01a560bc"
+    },
+    {
+      "bytes": 180,
+      "metadata": [
+        66306,
+        34750588,
+        33152,
+        1000,
+        1000,
+        1,
+        180,
+        1793871463269403744,
+        1793871463269403744
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/PRESERVED-USER-DRAFT.json",
+      "relative_path": "PRESERVED-USER-DRAFT.json",
+      "sha256": "b60c6be1928d5490e6ebd57dba67769796a779e5e58eefeb7fb70f071348b661"
+    },
+    {
+      "bytes": 38018,
+      "metadata": [
+        66306,
+        34750597,
+        33152,
+        1000,
+        1000,
+        1,
+        38018,
+        1793871480153942656,
+        1793871480153942656
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/PREVIOUS-ORIGINAL-READBACK.json",
+      "relative_path": "PREVIOUS-ORIGINAL-READBACK.json",
+      "sha256": "93856b5bc896e0cec72e36f51264d4d5ecd9e915ef214a826c16b936caac3c6c"
+    },
+    {
+      "bytes": 40615,
+      "metadata": [
+        66306,
+        34750596,
+        33152,
+        1000,
+        1000,
+        1,
+        40615,
+        1793871480151064217,
+        1793871480151064217
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/RAW-DETAILS.json",
+      "relative_path": "RAW-DETAILS.json",
+      "sha256": "f72df81b04167a66e03ca9cbb4f3923ffb45037eec12345710953cf4ec105626"
+    },
+    {
+      "bytes": 16613,
+      "metadata": [
+        66306,
+        34750594,
+        33152,
+        1000,
+        1000,
+        1,
+        16613,
+        1793871475710205902,
+        1793871475710205902
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/READBACK.json",
+      "relative_path": "READBACK.json",
+      "sha256": "e6af1e55e9079e52f417524de2d6ffb76a338ff1d1c790b1ec5c4a6b7f6ddffe"
+    },
+    {
+      "bytes": 27050,
+      "metadata": [
+        66306,
+        34780860,
+        33152,
+        1000,
+        1000,
+        1,
+        27050,
+        1793871585879272747,
+        1793871585879272747
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/RESTORE-GLOBAL-GATE.original-read.json",
+      "relative_path": "RESTORE-GLOBAL-GATE.original-read.json",
+      "sha256": "8d16a5a7c2ce0b0a6f68eecfae4e8b535d9a8ee42b2e600e2735944e5e3be2c8"
+    },
+    {
+      "bytes": 11333,
+      "metadata": [
+        66306,
+        34780863,
+        33152,
+        1000,
+        1000,
+        1,
+        11333,
+        1793871588381249748,
+        1793871588381249748
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/RESTORE-INITIAL.json",
+      "relative_path": "RESTORE-INITIAL.json",
+      "sha256": "492f32184fd70b14580bb080be91fa869ebceb7d37326119b64027ba7527ccb4"
+    },
+    {
+      "bytes": 727,
+      "metadata": [
+        66306,
+        34780864,
+        33152,
+        1000,
+        1000,
+        1,
+        727,
+        1793871588494737495,
+        1793871588494737495
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/RESTORE-SELECTED-FINAL.original-read.json",
+      "relative_path": "RESTORE-SELECTED-FINAL.original-read.json",
+      "sha256": "1a4e6221f20ffc8427ce1d85ad3a0710bc0834862c9e0b74548ea3f72e77edbf"
+    },
+    {
+      "bytes": 727,
+      "metadata": [
+        66306,
+        34780861,
+        33152,
+        1000,
+        1000,
+        1,
+        727,
+        1793871585997355635,
+        1793871585997355635
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/RESTORE-SELECTED.original-read.json",
+      "relative_path": "RESTORE-SELECTED.original-read.json",
+      "sha256": "1a4e6221f20ffc8427ce1d85ad3a0710bc0834862c9e0b74548ea3f72e77edbf"
+    },
+    {
+      "bytes": 12250,
+      "metadata": [
+        66306,
+        34750593,
+        33152,
+        1000,
+        1000,
+        1,
+        12250,
+        1793871472977707766,
+        1793871472977707766
+      ],
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150/TASK-CONTROLS.json",
+      "relative_path": "TASK-CONTROLS.json",
+      "sha256": "6807edee07498ca5633c8252947cbdf6412ce527cbfe837abc3923cadb8e6ac3"
+    }
+  ],
+  "finished_unix_ns": 1793876155902727994,
+  "label": "root-r10-neg01-20261105-09",
+  "original_files_changed": false,
+  "phone_calls": 0,
+  "schema": "hepta.fixed19.readonly-original-sender-inventory.v2",
+  "send_named_records_present": [],
+  "signals_sent": 0,
+  "source": "/home/alex/codex-hepta-natural-root-r10-neg01-20261105-09-root-v150",
+  "source_bytes": 5366983,
+  "source_file_count": 170,
+  "started_unix_ns": 1793876155860056542,
+  "state": "EXACT_CLOSED_SENDER_ORIGINAL_SET_READ_WITH_FULL9_BOOKENDS"
+}

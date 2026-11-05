@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-c",
+    "import os,json,stat,time\nroot=\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1\"\nt0=time.monotonic();hits=[];count=0\nfor current,dirs,files in os.walk(root,topdown=True,followlinks=False):\n if time.monotonic()-t0>20 or count>20000:raise RuntimeError('bounded source lookup exhausted; partial not absence')\n depth=len(os.path.relpath(current,root).split(os.sep)) if current!=root else 0\n dirs[:]=sorted(d for d in dirs if depth<5 and not os.path.islink(os.path.join(current,d)) and d not in ('.git','node_modules','private','retirement-originals','originals','phone-added-originals'))\n for n in sorted(files):\n  count+=1\n  if ('codec' in n.lower() or 'screenshot' in n.lower()) and n.endswith(('.java','.c','.cpp','.h','.json','.py')):\n   p=os.path.join(current,n);s=os.lstat(p)\n   if stat.S_ISREG(s.st_mode):hits.append({'path':p,'bytes':s.st_size})\n if len(hits)>256:raise RuntimeError('bounded source matches exhausted')\nprint(json.dumps({'schema':'bounded-readonly-source-name-lookup.v1','root':root,'max_depth':5,'files_considered':count,'hits':hits,'elapsed':time.monotonic()-t0,'executed_sources':False},sort_keys=True))"
+  ],
+  "idempotency_key": "root-1ad3-external902-codec-source-name-lookup01-20261105",
+  "timeout_seconds": 30
+}

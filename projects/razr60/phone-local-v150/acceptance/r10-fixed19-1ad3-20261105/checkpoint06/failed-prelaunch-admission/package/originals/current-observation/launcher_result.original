@@ -1,0 +1,33 @@
+{
+  "actor_returncode": 0,
+  "automatic_retry": false,
+  "case_pass": false,
+  "native_boundary_created": false,
+  "phone_originals": {
+    "baseline.json": {
+      "bytes": 348,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-7c74b84aefb177d15f746fa7eae29d54-publication-read01/baseline.json",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    "intent.json": {
+      "bytes": 14313,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-7c74b84aefb177d15f746fa7eae29d54-publication-read01/intent.json",
+      "sha256": "a5d333d38296a4ba7aef37334a95fc2e430aa99fe4719562f33c78dfb7e76dcd"
+    },
+    "result.json": {
+      "bytes": 86961,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-7c74b84aefb177d15f746fa7eae29d54-publication-read01/result.json",
+      "sha256": "4887f084568fc2bd5df564c24a238462ad2d5d4cf1833ca24464cf5cdab2dcdd"
+    }
+  },
+  "phone_returncode": 0,
+  "phone_status": "command_exited",
+  "phone_stdout": {
+    "bytes": 66595,
+    "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-failed-prelaunch-current-read01/PHONE-STDOUT.original",
+    "sha256": "2931845e3b074b13959fa203f9a2d14a49c6c7dad206ee262e72a685c3246ac9"
+  },
+  "signals_sent": 0,
+  "source_sha256": "1956c026152ff82a9c3065388139c8782c55c5788afa9cfeacfef054651f18ed",
+  "state": "READ_ONLY_FAILED_PRELAUNCH_CURRENT_COMPLETED"
+}

@@ -1,0 +1,179 @@
+{
+  "P4_calls": 0,
+  "case_pass": false,
+  "collect_tree_exact_replacements": [
+    {
+      "after": "combined P4 original byte budget exceeded",
+      "before": "combined case/source/original byte budget exceeded"
+    },
+    {
+      "after": "    for prefix, path in FIXED_TREES.items():\n        visit(Path(path), prefix)",
+      "before": "    visit(SOURCE, 'root-originals')\n    for prefix, package in SOURCE_PACKAGES.items():\n        visit(Path(package['root']), prefix)"
+    },
+    {
+      "after": "and P4_BASE in path.parents,",
+      "before": "and B in path.parents,"
+    },
+    {
+      "after": "fixed sibling original path must stay inside /home/alex",
+      "before": "fixed additional source path must stay inside B"
+    }
+  ],
+  "collect_tree_inverse_exact": true,
+  "fixed_sibling_originals": {
+    "setup-plan-originals/ACCEPTED.json": {
+      "bytes": 552,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/ACCEPTED.json",
+      "sha256": "a3e0cdace4d9eb2f875beddd9556b8ee94f38820f086bc15387386660b6bb603"
+    },
+    "setup-plan-originals/BOUND-CONTRACT.json": {
+      "bytes": 1842,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/BOUND-CONTRACT.json",
+      "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+    },
+    "setup-plan-originals/ROOT-SETUP-PLAN.json": {
+      "bytes": 6402,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/plans/setup/ROOT-SETUP-PLAN.json",
+      "sha256": "824880935f6bfe854d4b1f096f7c7c593db7bb85d200153ddca3daea291f1607"
+    },
+    "sibling-input-originals/component-inputs.tar.gz": {
+      "bytes": 471979,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/component-inputs.tar.gz",
+      "sha256": "989a78d8c9a844ea0f06859a9e9e2b66bafeacd4702a9b8388d6a031b7775afb"
+    },
+    "sibling-input-originals/preserved_draft.original": {
+      "bytes": 282,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/preserved_draft.original",
+      "sha256": "9d801d675a461de996206b1bdc911309aeb40df599c49860ddc9699779d4e741"
+    },
+    "sibling-input-originals/previous.original": {
+      "bytes": 1428,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/previous.original",
+      "sha256": "9133e2511a66a809be647cb8bb49e3afb351825db5e465f75b1f2f0b6d9d88f4"
+    },
+    "sibling-input-originals/request.original": {
+      "bytes": 317,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/request.original",
+      "sha256": "526568aa9d2c95f333caf396f9873deaf8baca2df841e7a94100e04b28bb93eb"
+    },
+    "sibling-input-originals/stage_component.py": {
+      "bytes": 19116,
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/inputs/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    }
+  },
+  "fixed_trees": {
+    "material-originals": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/material",
+    "sender-originals": "/home/alex/codex-hepta-natural-root-r10-neg01-7c907661-01-root-v150",
+    "setup-fixture-originals": "/home/alex/codex-hepta-native-guard-fixtures-r10-r1/902e851c3ca1f90deab3d880ab993774/setup"
+  },
+  "material_members": 56,
+  "material_reference": {
+    "original_component_archive": {
+      "bytes": 471979,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-7c907661-01/material/component-inputs.tar.gz",
+      "sha256": "989a78d8c9a844ea0f06859a9e9e2b66bafeacd4702a9b8388d6a031b7775afb"
+    },
+    "original_prepared": {
+      "bytes": 2873,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-7c907661-01/material/PREPARED.json",
+      "sha256": "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+    },
+    "original_root_plan": {
+      "bytes": 4783,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-7c907661-01/ROOT-PLAN.original.json",
+      "sha256": "9a94108ffc737133ba879bd9cccd70c7ec3ae2f3da17eb689e5b1d5610789d58"
+    },
+    "selected_complete_gzip_whole_sha_verified": true,
+    "selection_origin": "Complete member from native-version-pinned XZ prefix, independently matched to exact PREPARED archive pin",
+    "whole_outer_xz_or_239_member_verification_claimed_here": false
+  },
+  "native_cleanup_or_boundary_publication_verified": false,
+  "output": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01",
+  "parent_collector": {
+    "bytes": 36689,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/delivery-final01/package/source/collect_external902_originals.py",
+    "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+  },
+  "phone_calls": 0,
+  "process_start_calls": 0,
+  "schema": "hepta.external902-p4-collector-source-derivation.v1",
+  "scope_changes": [
+    "Three fixed P4 trees in place of Mac case/runtime/Root trees",
+    "Five fixed sibling inputs and three actual setup plan originals",
+    "P4 material tree must match all 56 original Mac material member pins",
+    "Current P4 sender original branch is retained without replay or qualification",
+    "Original Mac sender54589 unjoined/EOFfalse is preserved as historical fact"
+  ],
+  "selected_complete_gzip_verification": {
+    "bytes": 18906,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/selected-gzip-input/SELECTED-INPUTS-VERIFICATION.json",
+    "sha256": "405801e5308c49401cf8fcd8ef35a66bce971561d4aa2f4e0548948ddc6ccb85"
+  },
+  "setup_plan_original_sources": {
+    "ACCEPTED.json": {
+      "bytes": 552,
+      "local_original": {
+        "bytes": 552,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/ACCEPTED.json",
+        "sha256": "a3e0cdace4d9eb2f875beddd9556b8ee94f38820f086bc15387386660b6bb603"
+      },
+      "observation_source": "Later private read matching original Root fixture intent SHA",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/ACCEPTED.json",
+      "sha256": "a3e0cdace4d9eb2f875beddd9556b8ee94f38820f086bc15387386660b6bb603"
+    },
+    "BOUND-CONTRACT.json": {
+      "bytes": 1842,
+      "local_original": {
+        "bytes": 1842,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/BOUND-CONTRACT.json",
+        "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+      },
+      "observation_source": "Later private read matching original Root fixture intent SHA",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/BOUND-CONTRACT.json",
+      "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+    },
+    "ROOT-SETUP-PLAN.json": {
+      "bytes": 6402,
+      "local_original": {
+        "bytes": 6402,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/phone-private-originals/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/ROOT-SETUP-PLAN.json",
+        "sha256": "824880935f6bfe854d4b1f096f7c7c593db7bb85d200153ddca3daea291f1607"
+      },
+      "observation_source": "Later private read matching original Root fixture intent SHA",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/ROOT-SETUP-PLAN.json",
+      "sha256": "824880935f6bfe854d4b1f096f7c7c593db7bb85d200153ddca3daea291f1607"
+    }
+  },
+  "signals_sent": 0,
+  "source": {
+    "bytes": 40752,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/source/collect_external902_p4_originals.py",
+    "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+  },
+  "source_imported_or_main_executed": false,
+  "state": "SOURCE_ONLY_FIXED_ORIGINAL_READ_SCOPE_NOT_EXECUTED",
+  "unchanged_budgets": {
+    "MAX_BYTES": 67108864,
+    "MAX_DIRECTORIES": 512,
+    "MAX_FILES": 2048,
+    "MAX_SECONDS": 100,
+    "archive_framing_extra_bytes": 4194304
+  },
+  "whole_byte_unchanged_helpers": [
+    "need",
+    "sha",
+    "enc",
+    "strict",
+    "metadata",
+    "descriptor",
+    "relative",
+    "check_time",
+    "open_directory",
+    "check_directory",
+    "read_file",
+    "recheck_tree",
+    "put_new"
+  ],
+  "whole_outer_xz_or_239_member_verification_claimed_here": false
+}

@@ -1,0 +1,258 @@
+{
+  "component_qualified": false,
+  "files": [
+    {
+      "bytes": 2496,
+      "metadata": [
+        65086,
+        153927,
+        33152,
+        0,
+        0,
+        1,
+        2496,
+        1793878948651915619,
+        1793878948651915619
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/LEASE.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736"
+    },
+    {
+      "bytes": 1224,
+      "metadata": [
+        65086,
+        157817,
+        33152,
+        0,
+        0,
+        1,
+        1224,
+        1793879037783915585,
+        1793879037783915585
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/LIFECYCLE-ENDED.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "4262eacbbfdb5ab260ed29cd202cc3601d826c27da42adaa5ac88a3ee5736024"
+    },
+    {
+      "bytes": 1024,
+      "metadata": [
+        65086,
+        156765,
+        33152,
+        0,
+        0,
+        1,
+        1024,
+        1793879003167915598,
+        1793879003167915598
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/SUPERVISOR.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "e84afe7f2c79908ea720cdbfb5a284e6393252e5550fd5af93d687d47a6cbd32"
+    },
+    {
+      "bytes": 450,
+      "metadata": [
+        65086,
+        157250,
+        33152,
+        0,
+        0,
+        1,
+        450,
+        1793879003163915598,
+        1793879003163915598
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/LIFECYCLE-ATTEMPT.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "f7edd3985d242a5b5979cb0e2d2d36c0e6d69ef8a7e887f125cedb3b8dc2b392"
+    },
+    {
+      "bytes": 2084,
+      "metadata": [
+        65086,
+        144222,
+        33152,
+        0,
+        0,
+        1,
+        2084,
+        1793879002851915598,
+        1793879002851915598
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/DETACHED-LAUNCH-INTENT.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "0aae94688a863f367d21da0c7f707d9c03a86da668f6ec725943aa6ed528092e"
+    },
+    {
+      "bytes": 411,
+      "metadata": [
+        65086,
+        155460,
+        33152,
+        0,
+        0,
+        1,
+        411,
+        1793879002863915598,
+        1793879002863915598
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/DETACHED-LAUNCH-RESULT.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "c3c5ca6d2abefee99684f1d2803fb9f4bb32ec1d222840ed513423571d447bb0"
+    },
+    {
+      "bytes": 733,
+      "metadata": [
+        65086,
+        155511,
+        33152,
+        0,
+        0,
+        1,
+        733,
+        1793879022699915591,
+        1793879022699915591
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/provider.SPAWNED.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "64641e53ca5cae33e40e4f94668c34fdaa0a078f354434dcb893c2ab67bf6f06"
+    },
+    {
+      "bytes": 399,
+      "metadata": [
+        65086,
+        156668,
+        33152,
+        0,
+        0,
+        1,
+        399,
+        1793879037711915585,
+        1793879037711915585
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/provider.JOINED.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "c8f32464572c8e30ec661126e2a795e663da4d8265f33c0aa0d7c62931173bc3"
+    },
+    {
+      "bytes": 712,
+      "metadata": [
+        65086,
+        157005,
+        33152,
+        0,
+        0,
+        1,
+        712,
+        1793879022319915591,
+        1793879022319915591
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/sidecar.SPAWNED.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "072ad0624de6b6bc3a2d0e3bd8c72bfef41e2136261fc74f62f4e39f33f3b5a5"
+    },
+    {
+      "bytes": 423,
+      "metadata": [
+        65086,
+        150839,
+        33152,
+        0,
+        0,
+        1,
+        423,
+        1793879037775915585,
+        1793879037775915585
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/sidecar.JOINED.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "bf236069a2c2d43e3f64531c5032c380f53c7f8dcf36d99ee3f7c678b77d1ded"
+    },
+    {
+      "bytes": 266,
+      "metadata": [
+        65086,
+        155468,
+        33152,
+        0,
+        0,
+        1,
+        266,
+        1793879037555915585,
+        1793879037555915585
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/PROVIDER-ENDED.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "b357cf854550644ad0e2043b8e7eef2acf30cf6c9b595902d41ff4350fc0355a"
+    },
+    {
+      "bytes": 552,
+      "metadata": [
+        65086,
+        154928,
+        33152,
+        0,
+        0,
+        1,
+        552,
+        1793879027299915589,
+        1793879027299915589
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/ACCEPTED.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "a3e0cdace4d9eb2f875beddd9556b8ee94f38820f086bc15387386660b6bb603"
+    },
+    {
+      "bytes": 1842,
+      "metadata": [
+        65086,
+        157372,
+        33152,
+        0,
+        0,
+        1,
+        1842,
+        1793879022695915591,
+        1793879022695915591
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/BOUND-CONTRACT.json",
+      "selinux_raw_hex": "753a6f626a6563745f723a7472696c6c696f6e6e69756d5f6f776e65725f6f70656e5f73746174655f66696c653a733000",
+      "sha256": "5b34b08df6897149afc321508481b755ac2e68d439131075ff8bb4f7e37c6b3b"
+    }
+  ],
+  "fresh_group_or_endpoint_observations_not_yet_made": true,
+  "historical_joins_verified": true,
+  "historical_sidecar_SIGTERM_by_original_supervisor": 1,
+  "new_signals_sent_by_this_preparation": 0,
+  "private_observation": {
+    "bytes": 3933358,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/originals/PHONE-STDOUT.original",
+    "sha256": "b9778101ffee78dcdcab4ef1c0f70ffe663f733365ffce867bc5dd91a580b7ce"
+  },
+  "provider_exit_code": 70,
+  "roles": {
+    "provider": [
+      18351,
+      18351,
+      18351,
+      22127622
+    ],
+    "sidecar": [
+      18340,
+      18340,
+      18340,
+      22127585
+    ],
+    "supervisor": [
+      17727,
+      17727,
+      17727,
+      22125639
+    ]
+  },
+  "schema": "hepta.external902.actual-role-original-bindings.v1",
+  "sidecar_exit_code": 0
+}

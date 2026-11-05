@@ -1,0 +1,30 @@
+{
+  "actual_case_fixed_pins_checked": 4,
+  "actual_manifest_fixed_pins_checked": 2,
+  "actual_sender_top_fixed_pins_checked": 2,
+  "actual_source_bodies_fixed_pins_checked": 2,
+  "compile_only_no_execution": true,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "root_declared_members": 3,
+  "runtime_declared_members": 32,
+  "source_bytes": 36689,
+  "source_sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc",
+  "standalone_collector_source_under_65536": true,
+  "state": "LOCAL_SOURCE_COMPILATION_FIXED_PINS_AND_UNCHANGED_IO_FUNCTIONS_CHECKED",
+  "target_functions_executed": 0,
+  "unchanged_io_and_helper_functions": [
+    "check_directory",
+    "check_time",
+    "descriptor",
+    "enc",
+    "metadata",
+    "need",
+    "open_directory",
+    "put_new",
+    "read_file",
+    "relative",
+    "sha",
+    "strict"
+  ]
+}

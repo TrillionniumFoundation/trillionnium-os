@@ -1,0 +1,13 @@
+{
+  "admission_created": false,
+  "error": "'job_id'",
+  "error_type": "KeyError",
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "source": {
+    "bytes": 51736,
+    "sha256": "d63cdfa88bbafcb43813e138eee8af9804402bc493c791ea9ce8b3403f56b223"
+  },
+  "state": "ACTUAL_ORIGINAL_CONSUMPTION_REJECTED_NO_ADMISSION",
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/validation/assemble_actual_originals.py\", line 90, in main\n    admission=v.assemble_failed_prelaunch(inputs,read_pinned=read)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/source/verify_failed_prelaunch.py\", line 637, in assemble_failed_prelaunch\n    stage=stage_observation(O,attempt,prepared,files,lease,sources['stage_template'],prefix)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/source/verify_failed_prelaunch.py\", line 494, in stage_observation\n    stage,source,control=phone_observation(O,attempt['stage_observation'])\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/source/verify_failed_prelaunch.py\", line 204, in phone_observation\n    control=completed_controller(O,record)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/source/verify_failed_prelaunch.py\", line 175, in completed_controller\n    and job['args']==['-I','-B','-'] and job['id']==status['job_id']==read['job_id'],\n                                                    ~~~~~~^^^^^^^^^^\nKeyError: 'job_id'\n"
+}

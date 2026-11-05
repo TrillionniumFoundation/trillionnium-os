@@ -1,0 +1,94 @@
+{
+  "case_pass": false,
+  "checks": {
+    "additional_encoded_helper_also_whole_byte_equal": true,
+    "all_read_FDs_closed_or_result_rejects": true,
+    "capture_directory_complete_names_full9": true,
+    "declared_11_helpers_whole_byte_equal": [
+      "need",
+      "sha",
+      "strict",
+      "metadata",
+      "parent_fd",
+      "read_original",
+      "read_directory",
+      "boot",
+      "recheck_bootstrap",
+      "own_fds",
+      "fixed_boundary_observation"
+    ],
+    "fixed_boundary_two_leaves_only_no_child_reads": true,
+    "fixed_capture_leaf_stat_before_nonblocking_nofollow_open": true,
+    "fixed_capture_suffix": "capture-01",
+    "fixed_same_label_and_nonce": true,
+    "held_parent_and_fresh_canonical_parent_bookends": true,
+    "honest_later_observation_and_no_adoption": true,
+    "manifest_exact_declared_members": 5,
+    "manifest_total_regular_files": 6,
+    "no_alternate_arguments": true,
+    "no_file_write_signal_process_network_calls": true,
+    "no_import_exec_runtime_or_snapshot_entry": true,
+    "only_changed_existing_function": "main",
+    "only_new_function": "observe_capture_leaf",
+    "source_exact_again_at_review_end": true,
+    "whole_file_hash_and_full9_twice": true
+  },
+  "limitations": [
+    "Observed archive digest and CAPTURE descriptors do not themselves validate or adopt existing snapshot content. The archive body is not retained by this observer.",
+    "An existing boundary is retained for later independent verification; this source cannot publish, replace, or adopt it.",
+    "The source uses bounded file sizes and read scopes but contains no hard or cooperative execution deadline. Filesystem calls may block; actual caller timeout and terminal reconciliation remain separate requirements.",
+    "Fixed boundary reader is the prior byte-identical reader. New capture leaf reads add O_NONBLOCK and reject nonregular or raced identities.",
+    "No case pass, global clearance, native cleanup or fresh snapshot creation is claimed."
+  ],
+  "original_failed_snapshot": {
+    "bytes": 2481,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/snapshot01/originals/phone-result.json.original",
+    "sha256": "ec47f2a86488391201c86b3880bd8c0d7c24cdbed94eb95e658474d25c5935e8"
+  },
+  "parent_source": {
+    "bytes": 28397,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/package/reference/observe_fixed_external_additions_once.4bec.original.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "phone_calls": 0,
+  "retention": {
+    "CAPTURE.json": {
+      "full_body_max": 1048576,
+      "larger_body_explicitly_omitted": true,
+      "whole_hash_max": 16777216
+    },
+    "ORIGINALS.tar.gz": {
+      "full_body_retained": false,
+      "whole_hash_max": 67108864
+    },
+    "PARTIAL-CAPTURE.json": {
+      "full_body_max": 2097152,
+      "whole_hash_max": 2097152
+    },
+    "RESULT.json": {
+      "full_body_max": 65536,
+      "whole_hash_max": 65536
+    },
+    "boundary_directory": "Names and full9 only; no child reads.",
+    "boundary_json": {
+      "whole_hash_and_full_body_max": 1048576
+    },
+    "stdout_cap": 8388608
+  },
+  "reviewed_at_utc": "2026-11-05T13:06:06.647997+00:00",
+  "schema": "hepta.independent.existing-capture-observer-source-review.v1",
+  "scope": "Read exact local source, AST, and retained actual failure bytes; no target import/function/main execution and no Mac/P4/phone requests. Caller is reviewed separately.",
+  "source": {
+    "bytes": 18736,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/package/source/observe_existing_capture_once.py",
+    "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+  },
+  "source_manifest": {
+    "bytes": 1000,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/package/SOURCE-MANIFEST.json",
+    "sha256": "8448dc9b6d7a2846e868a65329e09fc982fe73504ef0b6ccb92b2b51315205f3"
+  },
+  "state": "NO_BLOCKER_IN_REVIEWED_FIXED_OBSERVATION_SOURCE",
+  "target_function_calls": 0,
+  "target_imports": 0
+}

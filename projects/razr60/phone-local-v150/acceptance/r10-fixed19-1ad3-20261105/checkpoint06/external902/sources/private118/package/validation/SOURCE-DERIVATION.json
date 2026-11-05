@@ -1,0 +1,129 @@
+{
+  "actual_completed_additions_observation": {
+    "bytes": 290642,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/originals/PHONE-STDOUT.original",
+    "sha256": "d7be9355122929210e7c736e5e68a57ac56f84095005e3e201e0c549f0e33f6b"
+  },
+  "actual_runtime_manifest": {
+    "bytes": 16808,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/source-manifests-read01/runtime-MANIFEST.original.json",
+    "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+  },
+  "ancestors_metadata_only": true,
+  "copied_helpers": [
+    "need",
+    "sha",
+    "strict",
+    "metadata",
+    "parent_fd",
+    "boot",
+    "own_fds"
+  ],
+  "fixed_plan": {
+    "bytes": 4783,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/ROOT-PLAN.original.json",
+    "sha256": "9a94108ffc737133ba879bd9cccd70c7ec3ae2f3da17eb689e5b1d5610789d58"
+  },
+  "fixed_prepared": {
+    "bytes": 2873,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/material/PREPARED.json",
+    "sha256": "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+  },
+  "fixture_owner_modes_from_original_inventory": {
+    "directory_mode": "0700",
+    "file_modes": [
+      "0600",
+      "0400"
+    ],
+    "gid": 2000,
+    "uid": 2000
+  },
+  "origin_pins": [
+    {
+      "bytes": 936,
+      "metadata": [
+        65086,
+        154878,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793879035983915586,
+        1793879035983915586
+      ],
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json",
+      "sha256": "6b03da94090459e47dedc5bb8f27d86429f62e08cd479354266b21855e9d9f2a"
+    },
+    {
+      "bytes": 1512,
+      "metadata": [
+        65086,
+        147691,
+        33152,
+        0,
+        0,
+        1,
+        1512,
+        1793879037451915585,
+        1793879037455915585
+      ],
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/receipt.json",
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a"
+    },
+    {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        154328,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stdout.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        154570,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stderr.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_root_sources_identity_confirmed": [
+    "component_common.py",
+    "component_lifecycle.py",
+    "stage_component.py"
+  ],
+  "parent": {
+    "bytes": 28397,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/package/source/observe_fixed_external_additions_once.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "phone_calls": 0,
+  "read_only_root_scope": [
+    "GNU whole home",
+    "Android executor alias",
+    "one nonce-specific fixture"
+  ],
+  "remote_calls": 0,
+  "runtime_imports": 0,
+  "schema": "hepta.fixed-external-private-roots.derivation.v1",
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "target_main_calls": 0,
+  "unknown_links_or_special_nodes_refused": true
+}

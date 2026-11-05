@@ -1,0 +1,87 @@
+{
+  "actual_cascade_delivery": {
+    "bytes": 28755,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json",
+    "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+  },
+  "actual_finalization_expected": {
+    "acceptance_manifest": {
+      "bytes": 21485,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01/MANIFEST.json",
+      "sha256": "00ea6a0575b41ecc4cbbe47b93799b6d8ed176a1f02bc9a80d458fba97f45671"
+    },
+    "consumer_manifest": {
+      "bytes": 30832,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/MANIFEST.json",
+      "sha256": "b26a60719eed3b6548d8e2a1b52abac25f5678afdace72d9865de24e17d24a53"
+    },
+    "current_policy": {
+      "bytes": 2667740,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/live-policy-after.bin",
+      "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+    },
+    "policy_adoption": {
+      "bytes": 208226,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json",
+      "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+    }
+  },
+  "actual_host_package_preparer": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-runtime-properties-r8-operator-inventory-prefix-1ad3-01/source/prepare_fixed19_host_r10.py",
+  "actual_namespace_absence_not_observed_here": true,
+  "actual_original_importer": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-runtime-properties-r8-operator-inventory-prefix-1ad3-01/source/import_six_host_results.py",
+  "binding_entrypoint": {
+    "bytes": 15258,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/source/prepare_six_host_generation.py",
+    "sha256": "71c9a2d20c5eff36e94635151f5d3e93e0b16b0e117a631b0657ff2cb74683a5"
+  },
+  "case_groups": {
+    "component": [
+      "NEG-10",
+      "NEG-11",
+      "NEG-12",
+      "NEG-13"
+    ],
+    "service": [
+      "NEG-06",
+      "NEG-14"
+    ]
+  },
+  "future_component_boundary_inputs": null,
+  "future_host_plan": null,
+  "future_sealed_release": null,
+  "generated_operator_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-runtime-properties-r8-operator-inventory-prefix-1ad3-01",
+  "generator_manifest": {
+    "bytes": 2308,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/MANIFEST.json",
+    "sha256": "5ad06a9c1992590421872caf03abc2cbbaf09957c2d20576ba2a1dd9a77d5b26"
+  },
+  "generator_source": {
+    "bytes": 17186,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/source/derive_six_host_property_pins.py",
+    "sha256": "9ef4c79511e8b3cee5098eb8c9bf292d21b04bfbec7747cbd345efc673ac9df3"
+  },
+  "release_and_all_17_material_gates_must_pass_before_six_cases": true,
+  "schema": "hepta.fixed19.six-host-inventory-prefix-source-interface.v1",
+  "source_only_no_case_nonce_or_plan_generated": true,
+  "source_only_prepare_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/source/prepare_six_host_generation.py",
+    "--cascade-delivery-desc",
+    "{\"bytes\":28755,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json\",\"sha256\":\"4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714\"}",
+    "--out",
+    "<fresh_root_selected_Mac_source_binding_directory>",
+    "--execute-host-preparation"
+  ],
+  "source_target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01",
+  "subsequent_generator_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "<bound_source_directory>/source/derive_six_host_property_pins.py",
+    "--execute-host-only",
+    "--out",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-runtime-properties-r8-operator-inventory-prefix-1ad3-01"
+  ]
+}

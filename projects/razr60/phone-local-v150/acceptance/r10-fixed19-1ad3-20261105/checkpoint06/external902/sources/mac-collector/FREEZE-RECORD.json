@@ -1,0 +1,35 @@
+{
+  "actor_py_not_in_this_fixed_collection_scope": true,
+  "actor_py_remains_required_for_later_full_closure": true,
+  "case_passes_added": 0,
+  "controller_request": {
+    "bytes": 38217,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/delivery-final01/CONTROLLER-REQUEST.json",
+    "sha256": "3c6c85c43cf61707b05248728ce297fad4113ff7afaf30a108d1403ce084d835"
+  },
+  "independent_review": {
+    "bytes": 4277,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/delivery-final01/INDEPENDENT-REVIEW.json",
+    "sha256": "2fbd95866fc140e09b4c0f0946669a4d0c813446eef8a49f5c667d518dc42588"
+  },
+  "original_candidate_bytes_unchanged": true,
+  "regular_package_files": 18,
+  "remote_calls_by_packager": 0,
+  "requires_actual_controller_rc0_and_final_stdout": true,
+  "schema": "hepta.external902-fixed-mac-collector-frozen-delivery.v1",
+  "sender54589_original_joined": false,
+  "sender54589_original_stderr_eof": false,
+  "sender54589_original_stdout_eof": false,
+  "source": {
+    "bytes": 36689,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/delivery-final01/package/source/collect_external902_originals.py",
+    "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+  },
+  "source_execution_by_packager": 0,
+  "source_manifest": {
+    "bytes": 3150,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_mac_originals_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "29c0cafbd9a6dc0febec477fab80a83a818496d3eb86c88eeaf539b657ba6bac"
+  },
+  "state": "REVIEWED_SOURCE_ONLY_FROZEN_READY_FOR_ROOT_OWNED_SINGLE_EXECUTION"
+}

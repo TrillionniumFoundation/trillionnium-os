@@ -1,0 +1,22 @@
+--- reviewed-parent
++++ explicit-inventory-prefix-successor
+@@ -18,7 +18,7 @@
+ sys.dont_write_bytecode = True
+ B = Path("/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1")
+ PARENT = B / 'fixed19-six-host-native5-provenance-candidate01'
+-OUT = B / 'fixed19-six-host-runtime-properties-r8-operator-r1'
++OUT = B / 'fixed19-six-host-runtime-properties-r8-operator-inventory-prefix-1ad3-01'
+ FINALIZATION = None
+ PARENT_MANIFEST = {'path': str(PARENT / 'MANIFEST.json'), 'bytes': 3977,
+     'sha256': 'b28556e5ce6b2cba4dd69bbc29b00843446554de5b7d2427ae297372d2ed276b'}
+@@ -38,8 +38,8 @@
+     'inputs/original-protocol.json', 'inputs/historical-protocol-binding-r7-r3.json',
+     'inputs/protocol.json',
+ )
+-CONSUMER_ROOT = B / 'r10-boundary-consumers-final-r8'
+-ACCEPTANCE_ROOT = B / 'scoped-acceptance-v150-r10-r1-readiness-r9'
++CONSUMER_ROOT = B / 'r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01'
++ACCEPTANCE_ROOT = B / 'scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01'
+ CONSUMER_SCHEMA = 'hepta.r10.final-boundary-consumers.v8'
+ MATERIALIZER_BYTES = 24834
+ MATERIALIZER_SHA = 'b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290'

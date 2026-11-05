@@ -1,0 +1,155 @@
+{
+  "byte_exact_java_stream_option": {
+    "constraint": "Do not claim the minimal patch above solves byte-exact Java stdout retention. Any tempfile/FD-based alternative needs its own bounded ownership and cleanup review.",
+    "implemented": false,
+    "minimum_honest_design": "A separately reviewed diagnostic-only native worker command may stream app_process stdout directly to the original native stdout pipe and append its exit code to a distinct retained channel. That changes the diagnostic response contract and cannot be represented as the unchanged production success mapper.",
+    "required_if": "A later decision requires the byte-exact app_process stdout including trailing newlines rather than the shell variable value."
+  },
+  "created_at_utc": "2026-11-05T13:11:30.124612+00:00",
+  "evidence": {
+    "actual_capture_command": {
+      "bytes": 2226,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture.native-command.sh",
+      "sha256": "a2e8147c79186d5255599bad42ddab99311b4b155415d567594bfb44deea3a17"
+    },
+    "actual_native_dispatch_intent": {
+      "bytes": 7215,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture.dispatch-intent.json",
+      "sha256": "4179d278ed261f67f49dbdc63f288621ce15acd9711d600f084520887170373e"
+    },
+    "actual_native_receipt": {
+      "bytes": 1512,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/added-originals-read01/phone-added-originals/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence/20261105-114342-902e851c3ca1f90deab3d880ab993774/capture-originals/receipt.original",
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a"
+    },
+    "codec_java": {
+      "bytes": 10204,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/codec-source-from-git01/ScreenshotCodec.java",
+      "sha256": "cf11757a3de7c7000d8a9410115cf28648458c37106d4956446b8180c313c26c"
+    },
+    "current_production_mapper": {
+      "bytes": 38774,
+      "path": "/workspace/scratch/1ad3d6f55439/current_production_source_cache/phone_observation_tools.py",
+      "sha256": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df"
+    },
+    "pure_contract_java": {
+      "bytes": 9233,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/codec-source-from-git01/ScreenContract.java",
+      "sha256": "6bf974d539792f54d43ee50edd98e822d0eb23b44b02ac98882b42451251f144"
+    },
+    "source_jar_mapping_readback": {
+      "bytes": 1129,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/codec-source-from-git01/LOCAL-SOURCE-VERIFICATION.json",
+      "sha256": "478e4a3dbe49f164f549575507e8359569f1cc7382af1abe3d49aa196c187cf9"
+    },
+    "source_seal": {
+      "bytes": 1932,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/codec-source-from-git01/SOURCE-SEAL.json",
+      "sha256": "30f2175283e8fcb018b864db55a74b1c60f20c5c74b2059db8968b3d61491916"
+    }
+  },
+  "known_original_facts": {
+    "action_id": "5a952602788122f47ff1370cfa38dffe",
+    "can_redispatch": false,
+    "case_nonce": "902e851c3ca1f90deab3d880ab993774",
+    "codec_actual_exit20_or22_retained": false,
+    "codec_specific_failure_reason_retained": false,
+    "dispatch_count": 1,
+    "executor_context": "u:r:trillionnium_owner_open_phone_executor:s0",
+    "native_exit_code": 72,
+    "original_group_absent": true,
+    "original_stderr_bytes": 0,
+    "original_stdout_bytes": 0,
+    "original_waitpid_joined": true,
+    "worker_context_is_historical_receipt_not_new_observation": true,
+    "worker_domain_verified": true,
+    "worker_execution_context": "u:r:trillionnium_owner_open_phone_worker:s0",
+    "worker_execution_egid": 2000,
+    "worker_execution_euid": 2000,
+    "worker_execution_gid": 2000,
+    "worker_execution_uid": 2000,
+    "worker_supplementary_group_count": 0
+  },
+  "local_validation": {
+    "phone_calls": 0,
+    "production_writes": 0,
+    "proposed_source_ast_parses": true,
+    "remote_calls": 0,
+    "same_action_replay": false,
+    "shell_or_android_runtime_executed": 0,
+    "source_or_native_module_imports": 0,
+    "source_whole_byte_inverse": true,
+    "target_functions_executed": 0
+  },
+  "minimal_candidate": {
+    "ast_parse_only": true,
+    "derived_bytes": 39093,
+    "derived_sha256": "8f60cfd359ccfa269fabb05b616371268a2b86938fc41da37a2111c10066b792",
+    "derived_source_materialized_or_applied": false,
+    "only_changed_source_literal_after": "') || { hepta_codec_exit_code=$?; printf \\'%s\\' \"$hepta_codec\"; printf \\'\\\\n{\"schema\":\"hepta.codec-failure-observation.v1\",\"codec_exit_code\":%s,\"codec_stdout_representation\":\"posix_shell_command_substitution_value\",\"java_stdout_exact\":false,\"stderr_has_appended_diagnostic_record\":true}\\\\n\\' \"$hepta_codec_exit_code\" >&2; exit 72; }; '",
+    "only_changed_source_literal_before": "') || exit 72; '",
+    "output_limit_behavior": "Existing native output limits remain unchanged. A limit or incomplete stream means diagnostic output is incomplete and cannot prove the entire shell value; it never becomes a success envelope. No budget is enlarged.",
+    "planned_observable_behavior": {
+      "business_or_component_qualification": false,
+      "codec_failure": "Save immediate codec status in hepta_codec_exit_code, emit printf %s of the shell-captured value to stdout with no added stdout newline, append a fixed diagnostic JSON record to stderr, and keep outer exit 72. Original trap still runs.",
+      "codec_success": "Same existing codec invocation, success envelope bytes, guard handling and image budgets; failure brace is skipped when status is zero.",
+      "stderr_identity": "Original command and codec stderr prefix plus the explicit diagnostic JSON suffix. This is not labeled a pure Java stderr stream.",
+      "stdout_identity": "Exact shell variable value as emitted by printf %s, subject to original native output limit. It is not the original Java byte stream.",
+      "success_envelope_on_failure": false
+    },
+    "target_function": "PhoneTools.map, phone.screenshot branch",
+    "target_source": {
+      "bytes": 38774,
+      "path": "/workspace/scratch/1ad3d6f55439/current_production_source_cache/phone_observation_tools.py",
+      "sha256": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df"
+    },
+    "unchanged_gates": [
+      "serial and exact jar SHA",
+      "original safe capture token and absent temporary path",
+      "native execute authorization and dedicated r6 worker transition",
+      "original pre/post page and viewport observations",
+      "original screenshot and PNG/viewport validation",
+      "196608 per-image ceiling and existing per-turn budget",
+      "existing command, stream, frame and native 60000ms timeout limits",
+      "same actual receipt/full streams/transport identity verification",
+      "original cleanup trap",
+      "no automatic retry"
+    ],
+    "whole_byte_inverse_to_current_mapper": true
+  },
+  "not_claimed": [
+    "Specific reason for original rc72",
+    "Fresh worker or device observations",
+    "Successful codec/image qualification",
+    "Closed902 or published boundary",
+    "Permission to execute a future native action"
+  ],
+  "postclosure_execution_admission": {
+    "conditions": [
+      "Read and independently verify the existing capture01 and existing902 boundary, if present; do not replay snapshot or republish an existing boundary.",
+      "Resolve and verify the original902 failed execution, sender and full inventory under its exact31da runtime.",
+      "Pass current global predecessor, policy, runtime source and original native authorization gates. No gate is bypassed by another nonce.",
+      "If the mapper increment is selected, produce an exact reviewed source derivation and all required downstream production/runtime pins before it can be executed. Current f16c/31da/a334 bytes are not altered by this report.",
+      "Issue a separately authorized normal native diagnostic action only after that admission. Retain its original owner request/intent, action identity, transport trace, worker credential/domain receipt and full native stdout/stderr.",
+      "Keep original5a95 action can_redispatch false and all902 original evidence immutable. Any future diagnostic has zero fixed19 case credit."
+    ],
+    "future_action_id": null,
+    "future_case_nonce": null,
+    "future_request": null,
+    "ready": false
+  },
+  "schema": "hepta.codec72.source-only-diagnostic-plan.v1",
+  "source_findings": [
+    "ScreenshotCodec.encode first checks its own real and effective UID are both 2000. A Root app_process invocation exercises a different credential context.",
+    "ScreenshotCodec.main prints one rejection JSON and returns 20 for IllegalArgumentException or 22 for other Throwable; unknown earlier app_process/loader failures may have a different code or output.",
+    "The actual a2e814 command captures codec stdout using command substitution and immediately exits 72 on nonzero status. The value is never printed on that branch. Zero native stdout does not prove the codec produced no JSON.",
+    "POSIX command substitution removes trailing newline bytes; the existing shell variable is not a byte-exact record of Java stdout. An original stderr stream is also different from stderr with appended diagnostic metadata.",
+    "Original cleanup trap removes the temporary PNG. The source and receipt do not provide the deleted PNG or a recoverable original codec reason. No failure reason is inferred."
+  ],
+  "state": "SOURCE_ONLY_UNAPPLIED_PROPOSAL_NO_RUNTIME_OR_CASE_ADMISSION",
+  "unapplied_patch": {
+    "bytes": 1469,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/codec72-source-diagnostic-plan01/UNAPPLIED-FAILURE-OUTPUT.patch",
+    "sha256": "20b6a8c5bd035237f1b7d8f292740d69936b6d3e94564b43eb2e2d203ccacb53"
+  }
+}

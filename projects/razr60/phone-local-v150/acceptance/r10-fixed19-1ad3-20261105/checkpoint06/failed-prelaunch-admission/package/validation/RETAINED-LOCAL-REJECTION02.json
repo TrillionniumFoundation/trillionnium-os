@@ -1,0 +1,13 @@
+{
+  "admission_created": false,
+  "error": "'ABSENT'",
+  "error_type": "KeyError",
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "source": {
+    "bytes": 52125,
+    "sha256": "33d725eb7bb8d5099cafb5ad4473d5d37a4163613d1aa458cb6b744ae8eb7b1a"
+  },
+  "state": "ACTUAL_ORIGINAL_CONSUMPTION_REJECTED_NO_ADMISSION",
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/validation/assemble_actual_originals.py\", line 90, in main\n    admission=v.assemble_failed_prelaunch(inputs,read_pinned=read)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/source/verify_failed_prelaunch.py\", line 643, in assemble_failed_prelaunch\n    stage=stage_observation(O,attempt,prepared,files,lease,sources['stage_template'],prefix)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/source/verify_failed_prelaunch.py\", line 523, in stage_observation\n    need(set(stage['explicit_absence'])==set(base['ABSENT'])\n                                             ~~~~^^^^^^^^^^\nKeyError: 'ABSENT'\n"
+}

@@ -1,0 +1,34 @@
+{
+  "actual_observation_complete": true,
+  "boundary_validation_or_publication": false,
+  "files": [
+    {
+      "body_present_locally_from_this_observation": false,
+      "bytes": 2204770,
+      "metadata": [
+        65086,
+        153268,
+        33152,
+        0,
+        0,
+        1,
+        2204770,
+        1793882440179914287,
+        1793882440179914287
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/ORIGINALS.tar.gz",
+      "purpose": "independent_original_snapshot_validation",
+      "reason": "fixed_archive_descriptor_only",
+      "required_before_any_snapshot_adoption": true,
+      "sha256": "462da4db9b36028cfec2b933f94bd52c185a103e12d1a771d2b67a47a21d9e03"
+    }
+  ],
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.fixed-existing-output.readback-needed.v1",
+  "source_PHONE_STDOUT": {
+    "bytes": 211933,
+    "sha256": "6be3fbb0726b450ff98aac38defd38f89fff093bf644da56568688e7d99fc647"
+  },
+  "state": "FIXED_OBSERVED_DESCRIPTORS_ONLY_NO_RETRIEVAL_EXECUTED"
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\n  \"audit_recorded\": true,\n  \"backend\": \"detached\",\n  \"identity\": {\n    \"kind\": \"ps_lstart\",\n    \"value\": \"Thu Nov  5 19:50:51 2026\"\n  },\n  \"job_id\": \"1a1ab8c20a9-fc05-4e93\",\n  \"pid\": 57082,\n  \"state\": \"running\"\n}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

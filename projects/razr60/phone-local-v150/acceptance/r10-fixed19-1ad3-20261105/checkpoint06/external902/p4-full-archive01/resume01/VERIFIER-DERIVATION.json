@@ -1,0 +1,45 @@
+{
+  "exact_replacements": [
+    {
+      "after": "assert download['state'] == 'DOWNLOAD_INCOMPLETE_ERRORS_PRESERVED' and download['verified_chunks'] == 23\nassert download['expected_chunks'] == 34 and len(download['failures']) == 1\nresume = json.loads((R / 'resume01/RESUME-RESULT.json').read_bytes())\nassert resume['state'] == 'ELEVEN_MISSING_P4_CHUNKS_VERIFIED_AT_ORIGINAL_VERSION' and resume['verified_chunks'] == 11 and resume['failures'] == []\nassert resume['maximum_parallel_reads'] == 1 and resume['limit'] == 32768\nerror_path = R / 'receipts/EXTERNAL902-P4-ORIGINALS.tar.xz.offset-00491520.MCP.original.json'\nassert json.loads(error_path.read_bytes()).get('isError') is True",
+      "before": "assert download['state'] == 'ALL_34_NATIVE_BINARY_CHUNKS_FIRST_VERSION_PINNED_AND_VERIFIED'\nassert download['verified_chunks'] == download['expected_chunks'] == 34 and download['failures'] == []"
+    },
+    {
+      "after": "        folder = R / 'resume01' if name == 'EXTERNAL902-P4-ORIGINALS.tar.xz' and offset >= 491520 else R\n        assert json.loads((folder / 'versions' / (name + '.json')).read_bytes()) == version\n        stem = name + '.offset-' + str(offset).zfill(8)",
+      "before": "        stem = name + '.offset-' + str(offset).zfill(8)"
+    },
+    {
+      "after": "        receipt_path = folder / 'receipts' / (stem + '.MCP.original.json')\n        verification_path = folder / 'receipts' / (stem + '.VERIFIED.json')",
+      "before": "        receipt_path = R / 'receipts' / (stem + '.MCP.original.json')\n        verification_path = R / 'receipts' / (stem + '.VERIFIED.json')"
+    },
+    {
+      "after": "        chunk = folder / 'chunks' / name / (str(offset).zfill(8) + '.bin')",
+      "before": "        chunk = R / 'chunks' / name / (str(offset).zfill(8) + '.bin')"
+    },
+    {
+      "after": "    'native_binary_read_calls': 35, 'successful_chunks': 34, 'maximum_parallel_reads': 1, 'chunk_limit': 32768,\n    'all_chunks_first_version_pinned': True, 'download_failures_retained': [desc(error_path)], 'tool_output_truncation': False,",
+      "before": "    'native_binary_read_calls': 34, 'maximum_parallel_reads': 1, 'chunk_limit': 32768,\n    'all_chunks_first_version_pinned': True, 'download_failures': [], 'tool_output_truncation': False,"
+    },
+    {
+      "after": "    'download_result': desc(R / 'DOWNLOAD-RESULT.json'), 'resume_result': desc(R / 'resume01/RESUME-RESULT.json'),\n    'verifier_source': desc(Path(__file__).resolve())}",
+      "before": "    'download_result': desc(R / 'DOWNLOAD-RESULT.json'), 'verifier_source': desc(Path(__file__).resolve())}"
+    },
+    {
+      "after": "    'raw_MCP_receipts': 35, 'verified_chunks': 34, 'failed_MCP_receipts': [desc(error_path)], 'files': {name: desc(R / name) for name in FILES},",
+      "before": "    'raw_MCP_receipts': 34, 'verified_chunks': 34, 'files': {name: desc(R / name) for name in FILES},"
+    }
+  ],
+  "parent": {
+    "bytes": 17688,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/verify_complete_download.py",
+    "sha256": "58a00f305ac9e959844cbb93538578a30fbd4339d239b405af05b0b9ce21f4db"
+  },
+  "remote_calls": 0,
+  "source": {
+    "bytes": 18492,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/verify_complete_download_with_resume.py",
+    "sha256": "ec30bf2ce8621407c6d4bfa9a6849611db670ed9a422852c6ec81f5af97c8c2b"
+  },
+  "state": "LOCAL_VERIFIER_PREPARED_NOT_EXECUTED_AWAITING_ELEVEN_SEGMENTS",
+  "target_source_execution": false
+}

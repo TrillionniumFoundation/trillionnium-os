@@ -1,0 +1,31 @@
+{
+  "state": "SEALED_SOURCE_AND_LIVE_JAR_MAPPING_VERIFIED_NOT_DIAGNOSTIC_EXECUTION",
+  "commit": "dd299611fc2044fb87d3ee8c76fcaa361108774d",
+  "repository_path": "projects/razr60/stock16-v149/android/screen-codec-v148r1",
+  "source_seal_sha256": "30f2175283e8fcb018b864db55a74b1c60f20c5c74b2059db8968b3d61491916",
+  "source_files": {
+    "ScreenContract.java": {
+      "sha256": "6bf974d539792f54d43ee50edd98e822d0eb23b44b02ac98882b42451251f144",
+      "bytes": 9233
+    },
+    "ScreenshotCodec.java": {
+      "sha256": "cf11757a3de7c7000d8a9410115cf28648458c37106d4956446b8180c313c26c",
+      "bytes": 10204
+    },
+    "build.py": {
+      "sha256": "550573eed2be2a1bd08b38a4f717c4e9b00915fedd2dd92cb1a33e44fe22869a",
+      "bytes": 2833
+    },
+    "CONTRACT.json": {
+      "sha256": "f10107093973c84e4aed6227e4c8baeb8ae1ae7ebae8d7990e7e59c84d636cef",
+      "bytes": 5825
+    }
+  },
+  "sealed_jar": {
+    "sha256": "bb1176b7707d1a2a67bcfd2bc9bd1b5db16036c3929f8eb1d8820b927ef62639",
+    "bytes": 16064
+  },
+  "live_jar_pin_matches": true,
+  "device_or_android_runtime_executed": false,
+  "codec_failure_reason_observed": false
+}

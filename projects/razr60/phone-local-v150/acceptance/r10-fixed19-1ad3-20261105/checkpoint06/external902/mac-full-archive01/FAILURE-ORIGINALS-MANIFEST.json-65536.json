@@ -1,0 +1,10 @@
+{
+  "task": {
+    "name": "ORIGINALS-MANIFEST.json",
+    "offset": 65536,
+    "version": "16777233:588533028:263330:1793881880643453078:1793881880643453078"
+  },
+  "worker": 2,
+  "error": "Error: native binary_read isError",
+  "remote_repeat_attempted": false
+}

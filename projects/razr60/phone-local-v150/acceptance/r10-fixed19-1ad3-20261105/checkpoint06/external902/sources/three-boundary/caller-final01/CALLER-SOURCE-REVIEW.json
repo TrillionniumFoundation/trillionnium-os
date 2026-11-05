@@ -1,0 +1,58 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 36877,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "35695321f9c62791d9c4889fcdf8bff3e41b2d80465a6a014992fce1c3bd08ee"
+  },
+  "controller_request": {
+    "bytes": 39279,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "12995ec70ec9eba16c7fce116f600415a9a867c5bfed0aff5d98f1fda6841107"
+  },
+  "explicit_source_splices": [
+    "PROBE exact 413981 raw bytes",
+    "REQ same fixed shell envelope and 210 seconds; only quoted probe and marker",
+    "fixed existing 902 nonce observation tag",
+    "new exact probe length and SHA assertion",
+    "new independent create-only collector output",
+    "descriptive result state",
+    "descriptive result state"
+  ],
+  "functions_byte_identical": [
+    "put",
+    "enc"
+  ],
+  "idempotency_key": "root-1ad3-external902-boundary-three-read01-20261105",
+  "outer_controller_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-boundary-three-read01",
+  "parent": {
+    "bytes": 44799,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "db1f4a18b37ab6b8c21d338978e28a6993249b7fa987a33ee3d04d0fe5ae996d"
+  },
+  "passive_wait_seconds": 240,
+  "phone_actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+  "phone_calls": 0,
+  "phone_calls_max": 1,
+  "phone_command_bytes": 15379,
+  "phone_request_preview": {
+    "bytes": 15723,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/caller-final01/PHONE-REQUEST.preview.json",
+    "sha256": "1af286b585e122ca52198f3ad3fc26559912974af62b0ea082e8c9f79ef86444"
+  },
+  "phone_source_or_case_writes": 0,
+  "phone_timeout_seconds": 210,
+  "probe": {
+    "bytes": 14900,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_three_boundary_reader_candidate01/delivery-final01/package/source/read_three_boundary_originals_once.py",
+    "sha256": "41398169b440a156db14eb3d2e701198a3d13ec0834a1c4d60c4d593a8a95fa8"
+  },
+  "remote_calls": 0,
+  "schema": "hepta.fixed-three-boundary-originals.caller-source-derivation.v1",
+  "signals_sent": 0,
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "tag": "ng-902e851c3ca1f90deab3d880ab993774-boundary-three-read01",
+  "target_calls_executed": 0,
+  "whole_byte_inverse_to_parent": true
+}

@@ -1,0 +1,222 @@
+{
+  "alias_ancestor_bookends_only": [
+    {
+      "android": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1",
+      "gnu": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1"
+    },
+    {
+      "android": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01",
+      "gnu": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01"
+    }
+  ],
+  "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "cleanup_or_new_case_admitted": false,
+  "critical_list_is_not_a_leaf_whitelist": "Read all regular files under the three explicitly bounded views. Optional failure/TERM/READY files must not be invented or required solely from this list. Preserve observed absence and exact directory membership.",
+  "critical_whole_files_under_home": [
+    "LEASE.json",
+    "owner-request.txt",
+    "STAGE-COMPLETE.json",
+    "DETACHED-LAUNCH-INTENT.json",
+    "DETACHED-LAUNCH-RESULT.json",
+    "LIFECYCLE-ATTEMPT.json",
+    "SUPERVISOR.json",
+    "RETIRED-BASELINE-VERIFIED.json",
+    "BASELINE-INVENTORY.json",
+    "PORT-RESERVED.json",
+    "BOUND-CONTRACT.json",
+    "SIDECAR-HEALTH.original.json",
+    "PROVIDER-HEALTH.original.json",
+    "READY.json",
+    "ACCEPTED.json",
+    "PROVIDER-ENDED.json",
+    "LIFECYCLE-ENDED.json",
+    "LIFECYCLE-FAILURE.json",
+    "provider.SPAWN-INTENT.json",
+    "provider.SPAWNED.json",
+    "provider.ADMIT.json",
+    "provider.barrier.json",
+    "provider.JOINED.json",
+    "provider.TERM-INTENT.json",
+    "provider.stdout",
+    "provider.stderr",
+    "sidecar.SPAWN-INTENT.json",
+    "sidecar.SPAWNED.json",
+    "sidecar.ADMIT.json",
+    "sidecar.barrier.json",
+    "sidecar.JOINED.json",
+    "sidecar.TERM-INTENT.json",
+    "executor/sidecar.stdout",
+    "executor/sidecar.stderr",
+    "executor/server.lock",
+    "executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json",
+    "executor/actions/5a952602788122f47ff1370cfa38dffe/receipt.json",
+    "executor/actions/5a952602788122f47ff1370cfa38dffe/stdout.bin",
+    "executor/actions/5a952602788122f47ff1370cfa38dffe/stderr.bin",
+    "package/MANIFEST.json",
+    "package/source/late_boundary.py",
+    "operator/"
+  ],
+  "current_boundary_observation": {
+    "directory": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774",
+    "does_not_establish_global_clearance": true,
+    "json": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774.json",
+    "root_reported_actual_exact76_both_ENOENT": true
+  },
+  "exclude_from_this_probe": [
+    "all other component homes or fixture nonces",
+    "old global production/provider/ledger trees except explicitly requested later",
+    "P4 sender/fixture directories (different host)",
+    "arbitrary targets referenced in captured JSON",
+    "symbolic links, sockets, devices, FIFO or mounted descendants not established by fixed aliases",
+    "no source imports, package main, client.inspect/execute, lifecycle stop, lock acquisition, signals, launch or writes"
+  ],
+  "four_executor_original_pins_from_actual_capture_ORIGINS": {
+    "intent": {
+      "bytes": 936,
+      "metadata": [
+        65086,
+        154878,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793879035983915586,
+        1793879035983915586
+      ],
+      "sha256": "6b03da94090459e47dedc5bb8f27d86429f62e08cd479354266b21855e9d9f2a",
+      "source_path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json"
+    },
+    "receipt": {
+      "bytes": 1512,
+      "metadata": [
+        65086,
+        147691,
+        33152,
+        0,
+        0,
+        1,
+        1512,
+        1793879037451915585,
+        1793879037455915585
+      ],
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a",
+      "source_path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/receipt.json"
+    },
+    "stderr": {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        154570,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stderr.bin"
+    },
+    "stdout": {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        154328,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stdout.bin"
+    }
+  },
+  "label": "root-r10-neg01-7c907661-01",
+  "later_observation_not_failure_time_atomic": true,
+  "lease": {
+    "bytes": 2496,
+    "sha256": "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736"
+  },
+  "nonce": "902e851c3ca1f90deab3d880ab993774",
+  "package": {
+    "bytes": 16808,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-membership-733d-01/runtime/MANIFEST.json",
+    "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+  },
+  "prepared": {
+    "bytes": 2873,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/material/PREPARED.json",
+    "sha256": "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+  },
+  "read_scope_only": true,
+  "schema": "hepta.external902.private-original-read-map.v1",
+  "separate_optional_fixed_leaf_if_Root_authorizes": {
+    "basis": "The exact captured shell command installs a removal trap for this path. Three private trees do not include it.",
+    "not_in_current_three_tree_authority": true,
+    "path": "/proc/1/root/data/local/tmp/hepta-shot-5a952602788122f47ff1370cfa38dffe.png",
+    "proposed_read": "leaf lstat with full canonical-parent bookends; do not scan /data/local/tmp or recreate capture"
+  },
+  "source_alias_semantics": {
+    "executor_selinux_label": "u:object_r:trillionnium_owner_open_phone_executor_data_file:s0",
+    "shared_selinux_label": "u:object_r:trillionnium_owner_open_state_file:s0",
+    "stage_function": "create_isolated_journal",
+    "whole_source": {
+      "bytes": 19116,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    }
+  },
+  "source_plan": {
+    "bytes": 4783,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/ROOT-PLAN.original.json",
+    "sha256": "9a94108ffc737133ba879bd9cccd70c7ec3ae2f3da17eb689e5b1d5610789d58"
+  },
+  "state": "LOCAL_STATIC_EXACT_READ_SCOPE_NOT_EXECUTED",
+  "views": [
+    {
+      "only_observed_names_beneath_this_fixed_root": true,
+      "ownership": "uid/gid0",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01",
+      "private_modes": {
+        "directories": "0700",
+        "regular_files": [
+          "0600",
+          "0400"
+        ]
+      },
+      "recursive_whole_regular_files": true,
+      "symlinks_and_special_files": "reject"
+    },
+    {
+      "compare_all_relative_rows_with": [
+        "full9_metadata",
+        "directory_names",
+        "whole_bytes_sha256",
+        "selinux_xattr_raw"
+      ],
+      "counts_as_independent_tree": false,
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor",
+      "recursive_whole_regular_files": true,
+      "same_inode_alias_of": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor"
+    },
+    {
+      "no_follow_outside_root": true,
+      "ownership_if_present": "uid/gid2000",
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-902e851c3ca1f90deab3d880ab993774",
+      "positive_ENOENT_leaf_allowed": true,
+      "private_modes": {
+        "directories": "0700",
+        "regular_files": [
+          "0600",
+          "0400"
+        ]
+      },
+      "recursive_whole_regular_files": true
+    }
+  ]
+}

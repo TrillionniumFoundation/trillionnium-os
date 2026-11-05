@@ -1,0 +1,59 @@
+{
+  "actual_cascade_delivery": {
+    "bytes": 28755,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json",
+    "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+  },
+  "archive": {
+    "bytes": 34809,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/six_host_inventory_prefix_candidate01/delivery-final01/six-host-inventory-prefix-source-final01.tar.gz",
+    "sha256": "4078126913f5b1aa99ce1917a9a1520b13e486b241b8501c7255f225cc1a74ec"
+  },
+  "archive_plain_tar": {
+    "bytes": 194560,
+    "sha256": "e046c833596c7c73b7ff19aa19c088ed391342ff02acf47dda6b7d968b1c9e77"
+  },
+  "binder": {
+    "bytes": 15258,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/source/prepare_six_host_generation.py",
+    "sha256": "71c9a2d20c5eff36e94635151f5d3e93e0b16b0e117a631b0657ff2cb74683a5"
+  },
+  "case_runs": 0,
+  "entrypoint_executions": 0,
+  "future_component_boundary_inputs": null,
+  "future_host_plan": null,
+  "future_release": null,
+  "generator": {
+    "bytes": 17186,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/source/derive_six_host_property_pins.py",
+    "sha256": "9ef4c79511e8b3cee5098eb8c9bf292d21b04bfbec7747cbd345efc673ac9df3"
+  },
+  "generator_prepare_calls": 0,
+  "independent_reviews": [
+    {
+      "bytes": 4074,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/six-host-prefix-binding-independent01/REVIEW.json",
+      "sha256": "6df9d8351a54bb5c61cbc8009a43ceb1c5821a7f3b538d4fb2b0e9d04100a5fd"
+    },
+    {
+      "bytes": 2583,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/six-host-inventory-prefix-independent02/REVIEW.json",
+      "sha256": "81bc8b6cf6e204d3af2a8ece397f58456b5e36a54560831cfac85f8ffb273600"
+    }
+  ],
+  "nonce_created": false,
+  "phone_calls": 0,
+  "regular_files": 17,
+  "remote_calls": 0,
+  "schema": "hepta.fixed19.six-host-inventory-prefix-source-delivery.v1",
+  "source_closed_set_verified": true,
+  "source_manifest": {
+    "bytes": 3972,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "1c62db17d75a7850942bf680dca46bb764cd3564f5ad9dd024b807e0e763193c"
+  },
+  "source_target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01",
+  "state": "REVIEWED_SOURCE_ONLY_ARCHIVE_READY_NOT_STAGED",
+  "target_source_imports": 0,
+  "uncompressed_file_bytes": 176501
+}

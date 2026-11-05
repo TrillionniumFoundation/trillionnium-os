@@ -1,0 +1,58 @@
+{
+  "claims": {
+    "business_qualified": false,
+    "byteexact_reproduction_executed": false,
+    "closure_verified_here": false,
+    "component_qualified": false,
+    "phone_operations": 0,
+    "remote_operations": 0
+  },
+  "finding": {
+    "affected_production_paths": [
+      "snapshot/home/inputs/production/phone_observation_tools.py",
+      "snapshot/home/inputs/production/phone_task_guards.py",
+      "snapshot/home/inputs/production/phone_local_tools.py"
+    ],
+    "call_chain": [
+      "close(a): out = Path(a.out); snapshot = out / snapshot; materialize(snapshot, files)",
+      "load_production(snapshot, files): root = snapshot / home/inputs; prepend root/production; import seven production modules",
+      "FIXTURE.verify_attempts: when nonempty actual attempts exist, source_modules(originals, files, package_sha)",
+      "source_modules: read phone_observation_tools, phone_task_guards, phone_local_tools from sys.modules[name].__file__ through Originals.read",
+      "Originals.read: record absolute canonical path -> metadata + bytes + sha256",
+      "close: original_host_inputs = originals.files in encoded CLOSURE.original.json"
+    ],
+    "conclusion": "Using unchanged CLI close(a) with a different --out rematerializes these files at different absolute paths and records those new paths and new file metadata. The resulting closure cannot be byte-identical to the old closure, even if all source contents and other evidence are identical.",
+    "condition": "The source_modules call occurs for an actual nonempty declared Root fixture attempt set with matching existing namespace; the external902 case has a setup attempt, so this path is applicable.",
+    "new_out_to_original_host_inputs_other_paths_found_in_two_sources": false,
+    "other_read_origins": [
+      "The explicit closure plan path and its descriptors",
+      "Every manifest-bound runtime package source at its declared package path",
+      "close/LATE/FIXTURE and FIXTURE C/L/K/W/X module __file__ paths",
+      "Original fixture parent terminals/intents/children/streams/actor inputs at fixed plan-derived P4 paths",
+      "Sender original directory and explicitly pinned sender result/once/actor/previous/preserved files"
+    ],
+    "out_derived_files": "typed_reparse writes new derived artifacts; its returned summary does not directly place output paths into original_host_inputs. sender_originals output copies are written to new OUT but reads use prior input descriptors.",
+    "snapshot_named_parser_modules": "The auditor/decoder/K/listener created from snapshot bytes have new __file__ values, but no direct Originals.read of those locally created module objects was found in these two sources. FIXTURE source_modules uses its imported globals instead."
+  },
+  "requirements_for_future_explicit_driver": [
+    "Do not patch Originals.files or falsify module.__file__ to obtain equality.",
+    "Use actual retained old snapshot sources with normal loading, validate their exact identities and metadata, and write only new derived products under the new output namespace.",
+    "Keep original runtime module paths and explicit plan descriptor paths unchanged if byte equality is claimed.",
+    "Recompute all original gates and final exact closure bytes; the source trace alone does not establish an independently reproduced closure."
+  ],
+  "schema": "hepta.independent-source-review.v1",
+  "scope": "Read-only local source trace; no import, main, closure, phone, remote, filesystem mutation of originals, or existing package modification.",
+  "sources": [
+    {
+      "bytes": 99120,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/close_component.py",
+      "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+    },
+    {
+      "bytes": 39149,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/root_fixture_originals.py",
+      "sha256": "c1cd1402888de5bc4176255269014995e9d39dc658912d3c28a117ec51010f9e"
+    }
+  ],
+  "state": "CONFIRMED_NEW_OUT_CHANGES_THREE_ORIGINAL_HOST_INPUT_PATHS"
+}

@@ -1,0 +1,66 @@
+{
+  "files": [
+    {
+      "bytes": 688,
+      "path": "INTERFACE.json",
+      "sha256": "ad28f2b7937e1c0b781ed24377154c0a7c81fd44a6d24f6acfed3cb7691439a5"
+    },
+    {
+      "bytes": 290642,
+      "path": "reference/ADDITIONS-OBSERVATION.original.json",
+      "sha256": "d7be9355122929210e7c736e5e68a57ac56f84095005e3e201e0c549f0e33f6b"
+    },
+    {
+      "bytes": 6268,
+      "path": "reference/CAPTURE-ORIGINS.original.json",
+      "sha256": "745c84c0965d9611ad6888b08ee18203c2b2220f2a24b94a3e708f7939d3249d"
+    },
+    {
+      "bytes": 2873,
+      "path": "reference/PREPARED.original.json",
+      "sha256": "a8b8b355a9bde5db21123cf503be5f62a24d55226e154ce5ed95a428347d1898"
+    },
+    {
+      "bytes": 4783,
+      "path": "reference/ROOT-PLAN.original.json",
+      "sha256": "9a94108ffc737133ba879bd9cccd70c7ec3ae2f3da17eb689e5b1d5610789d58"
+    },
+    {
+      "bytes": 16808,
+      "path": "reference/RUNTIME-MANIFEST.original.json",
+      "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+    },
+    {
+      "bytes": 19138,
+      "path": "reference/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 40261,
+      "path": "reference/component_lifecycle.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 28397,
+      "path": "reference/observe_fixed_external_additions_once.4bec.original.py",
+      "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+    },
+    {
+      "bytes": 19116,
+      "path": "reference/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    },
+    {
+      "bytes": 22534,
+      "path": "source/observe_external902_private_roots_once.py",
+      "sha256": "79b226e3c5caaf8665b313dfe9c19ec6b56326ebc06c1bcaebead83b3fb508e8"
+    },
+    {
+      "bytes": 4098,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "7b71248b161d96b3f72ae4c57d90fcbd117be46ad6121fee40637085de618247"
+    }
+  ],
+  "schema": "hepta.fixed-external-private-roots.source-package.v1",
+  "state": "SOURCE_ONLY_UNEXECUTED"
+}

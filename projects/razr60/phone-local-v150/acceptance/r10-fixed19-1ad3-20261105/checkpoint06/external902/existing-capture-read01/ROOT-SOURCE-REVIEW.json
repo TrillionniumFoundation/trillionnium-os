@@ -1,0 +1,31 @@
+{
+  "copied_helpers_exact": [
+    "need",
+    "sha",
+    "strict",
+    "metadata",
+    "parent_fd",
+    "read_original",
+    "read_directory",
+    "boot",
+    "recheck_bootstrap",
+    "own_fds",
+    "fixed_boundary_observation"
+  ],
+  "phone_calls": 0,
+  "review_conclusions": [
+    "Only fixed capture01 top names and four leaves plus fixed902 boundary JSON and directory names.",
+    "No runtime import, phone source or evidence write, dispatch, socket, subprocess or signal.",
+    "RESULT whole bounded body first; archive body omitted with whole-file SHA and full9.",
+    "Originals and directory names re-read with complete bookends; absent leaves require ENOENT bookends.",
+    "Existing capture and boundary are observed only and are not adopted or declared closed."
+  ],
+  "reviewed_at_utc": "2026-11-05T13:05:38.846435+00:00",
+  "schema": "hepta.root.existing-capture-source-review.v1",
+  "source": {
+    "bytes": 18736,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/package/source/observe_existing_capture_once.py",
+    "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+  },
+  "state": "SOURCE_REVIEW_COMPLETE_CALLER_REVIEW_PENDING"
+}

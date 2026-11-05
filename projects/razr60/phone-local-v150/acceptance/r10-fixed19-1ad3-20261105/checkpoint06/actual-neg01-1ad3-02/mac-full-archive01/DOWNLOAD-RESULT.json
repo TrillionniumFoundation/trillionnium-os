@@ -1,0 +1,420 @@
+{
+  "schema": "hepta.fixed19.root02-native-binary-download.v1",
+  "state": "ALL_NATIVE_BINARY_CHUNKS_VERSION_PINNED_AND_VERIFIED",
+  "host": "mac",
+  "remote_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/neg01-1ad3-02-root-evidence01",
+  "maximum_parallel_native_reads": 4,
+  "native_binary_read_only": true,
+  "remote_process_start": 0,
+  "remote_view": 0,
+  "P4_calls": 0,
+  "phone_calls": 0,
+  "expected_chunks": 31,
+  "verified_chunks": 31,
+  "failures": [],
+  "chunks": [
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 65536,
+      "offset": 0,
+      "verification": {
+        "bytes": 1284,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00000000.VERIFIED.json",
+        "sha256": "32d5f4956eb2dd54ff59f90063bab994aaed878ffb80e17166cd4bbcc793bd8f"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 327680,
+      "offset": 262144,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00262144.VERIFIED.json",
+        "sha256": "9d4ed28d2956b6139172af969b22e4771b1d987534250613c158eed675d9594f"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 131072,
+      "offset": 65536,
+      "verification": {
+        "bytes": 1289,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00065536.VERIFIED.json",
+        "sha256": "bae99fcc52e47e0b018c655170393c85b487552eb94623f8671a0ea9a271c659"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 262144,
+      "offset": 196608,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00196608.VERIFIED.json",
+        "sha256": "e44d339a64d5ab6e9388ecdfdf5428e39fbb93a4032254daaf8a45a2e36d06ae"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 196608,
+      "offset": 131072,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00131072.VERIFIED.json",
+        "sha256": "4a87626beca40e941caff788e1563c92a3eff31780ce7ea6ed4e0de70322ba65"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 393216,
+      "offset": 327680,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00327680.VERIFIED.json",
+        "sha256": "ef8104bbf3cdfd3cca2482838481f6d65919aac423ef5e2c635fb4b95c54ee1a"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 458752,
+      "offset": 393216,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00393216.VERIFIED.json",
+        "sha256": "ec53868618f7eaebbc743b87da21251ffb031736af71b17b1c4dacacdc68ce2b"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 524288,
+      "offset": 458752,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00458752.VERIFIED.json",
+        "sha256": "cc5c1414d8934688075ef0f5b9d175b2cf53c83bcfc3eb56e47d8bc4dce8a78f"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 589824,
+      "offset": 524288,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00524288.VERIFIED.json",
+        "sha256": "0a686818ccad440de97d53af0c481b0621599a0f1edf1f34e30642e44d9421e2"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 655360,
+      "offset": 589824,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00589824.VERIFIED.json",
+        "sha256": "970fb0392e2e000b1e1a36e90d4c81b9fa55e7e2a852bdf34fbc1116adbdd0ba"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 786432,
+      "offset": 720896,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00720896.VERIFIED.json",
+        "sha256": "56ae0b32869bb305169bdbbe826b2b435985526d6a7611bd1dea2dc90459a9c6"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 720896,
+      "offset": 655360,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00655360.VERIFIED.json",
+        "sha256": "601d0c83d935962b8a9fd6b0d05009a40eba92ecd795b3d1951ecf25717f6013"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 851968,
+      "offset": 786432,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00786432.VERIFIED.json",
+        "sha256": "b232138618f0d1e5d9b2d1d27e374a617183ae4e40ba39e671265835e596a18e"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 917504,
+      "offset": 851968,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00851968.VERIFIED.json",
+        "sha256": "271cf83a717272ab24e2c289f8cfd9b27972d3316cd00a4ee1336b0c32d7e4bd"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 983040,
+      "offset": 917504,
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00917504.VERIFIED.json",
+        "sha256": "495f162488b4cc9d25a6fa7e7dd535dbd736888516e45bf17debe9e542890b7b"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1048576,
+      "offset": 983040,
+      "verification": {
+        "bytes": 1291,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00983040.VERIFIED.json",
+        "sha256": "473ab6bd3c40bb8c8d5de56152e77ad658763137e9ae93f493f4695549a87320"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1114112,
+      "offset": 1048576,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01048576.VERIFIED.json",
+        "sha256": "3473772d97f80843540469e7629133751f4a23380849fccbf751bd7f138ca045"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1179648,
+      "offset": 1114112,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01114112.VERIFIED.json",
+        "sha256": "b8b68ace09be72267cb83fd8e5639c1df8ce2e3a3b00ab57e0d6bb5e8ef3bf85"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1245184,
+      "offset": 1179648,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01179648.VERIFIED.json",
+        "sha256": "9e760923c5f2078025135f39869999bf75c88782d3a5f92b9d63b86d6fe06493"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1310720,
+      "offset": 1245184,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01245184.VERIFIED.json",
+        "sha256": "a89d47ca404d95793cfd5979959f85d5a5caee17aab013fc47631928907abec9"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1376256,
+      "offset": 1310720,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01310720.VERIFIED.json",
+        "sha256": "bbab9209e974330d20f2846e5fd1bafecdf2b8f2e9432218aabd5be1ec1d8f3d"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1507328,
+      "offset": 1441792,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01441792.VERIFIED.json",
+        "sha256": "80019aa1eb0a10921c3c7dded635e49e912111a71085dbd3243c47fde316ff54"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1441792,
+      "offset": 1376256,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01376256.VERIFIED.json",
+        "sha256": "96d6ce123b59b4fbfdafd7bf4f7c8454cb47f57af0ab42248cb6068546ce97c1"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1572864,
+      "offset": 1507328,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01507328.VERIFIED.json",
+        "sha256": "52ef0c4785c4c32c17daebe40652ff8cbb0ea9817dd89959e687d19c0d2ac4f7"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1638400,
+      "offset": 1572864,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01572864.VERIFIED.json",
+        "sha256": "648c55d19476b3de62e4fd461c2c3dd150ac8830b147ed83ff722c01bceb29c2"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1703936,
+      "offset": 1638400,
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01638400.VERIFIED.json",
+        "sha256": "04ad21555a4a1daf0115dbdb46d3d8956b04f84b5b179b87d732741f4fc557d2"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 23016,
+      "eof": true,
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "next_offset": 1726952,
+      "offset": 1703936,
+      "verification": {
+        "bytes": 1291,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01703936.VERIFIED.json",
+        "sha256": "60bab1a2c456d1fabcf8f6c42a68e00cf4cc1482719719ae7fbcbce56b8cf1e3"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk_bytes": 3314,
+      "eof": true,
+      "name": "RESULT.json",
+      "next_offset": 3314,
+      "offset": 0,
+      "verification": {
+        "bytes": 1234,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/RESULT.json.offset-00000000.VERIFIED.json",
+        "sha256": "29dca81a8241bd53dc465082f535ba69776f83bdd2bf9966f99928b03b2fecef"
+      },
+      "version": "16777233:588514847:3314:1793880824809490245:1793880824809490245"
+    },
+    {
+      "chunk_bytes": 65536,
+      "eof": false,
+      "name": "ORIGINALS-MANIFEST.json",
+      "next_offset": 65536,
+      "offset": 0,
+      "verification": {
+        "bytes": 1288,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00000000.VERIFIED.json",
+        "sha256": "81bf4e9d73d595adb34c682e6865c832532d01431bcf6495c3b7b5ef4550c250"
+      },
+      "version": "16777233:588514846:83642:1793880824803499688:1793880824803499688"
+    },
+    {
+      "chunk_bytes": 20496,
+      "eof": true,
+      "name": "COLLECTOR.original.py",
+      "next_offset": 20496,
+      "offset": 0,
+      "verification": {
+        "bytes": 1279,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/COLLECTOR.original.py.offset-00000000.VERIFIED.json",
+        "sha256": "22fcdabeb117384c2d0223ca9123fbe7584481b4b05d4f31a5a77e76f107e8af"
+      },
+      "version": "16777233:588514844:20496:1793880824798656353:1793880824798656353"
+    },
+    {
+      "chunk_bytes": 18106,
+      "eof": true,
+      "name": "ORIGINALS-MANIFEST.json",
+      "next_offset": 83642,
+      "offset": 65536,
+      "verification": {
+        "bytes": 1291,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00065536.VERIFIED.json",
+        "sha256": "387223e3b72a194750e402982e92801101d97e8734f55a37f115fcb21444dbad"
+      },
+      "version": "16777233:588514846:83642:1793880824803499688:1793880824803499688"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+--- stage13-template
++++ stage16-template
+@@ -14,13 +14,13 @@
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ R = B / 'root-fixed19-1ad3-20261105-r1'
+-AUDIT = R / 'source-stage13'
+-TARGET = B / 'native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01'
+-KEY = 'root-1ad3-runtime-prefix-source-stage13-20261105'
+-ARCHIVE_NAME = 'runtime-root-inventory-prefix-source-final01.tar.gz'
+-ARCHIVE_PIN = (573032, 'f1baeb82aceca4a86a86c8aba0c95045b8ec26fee750e99f50436348156ca963')
+-TAR_PIN = (2600960, '130722a23a4bf435a949960c18048d702bb4c98d66281e262674b14e7e1986b1')
+-MANIFEST_PIN = (14729, '431aee36a79b86a59bc3e9de37d9a7f88efa60151c1440cec5e79ada7017385e')
++AUDIT = R / 'source-stage16'
++TARGET = B / 'native-guard-root-plan-inventory-prefix-admitted-1ad3-candidate01'
++KEY = 'root-1ad3-admitted-helper-source-stage16-20261105'
++ARCHIVE_NAME = 'admitted-runtime-prefix-plan-helper-source-final01.tar.gz'
++ARCHIVE_PIN = (41672, '8ac1bd86845da780761e125e1b9ce263cf2887202cc465904f67af11f6ab8fab')
++TAR_PIN = (163840, '999944c34668e285fdaa3c109f7fb3848e581207396af5b03c52398d4b7963fa')
++MANIFEST_PIN = (1949, 'e229df7b7955f86910f2b7001ebe1cde21150cea225d7380bccf0af57407f283')
+ PAYLOAD_B64 = '__EXACT_REVIEWED_ARCHIVE_BASE64__'
+ META = ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink', 'st_size', 'st_mtime_ns', 'st_ctime_ns')
+ DIR_META = ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid')
+@@ -162,7 +162,7 @@
+     result = {}
+     with tarfile.open(fileobj=io.BytesIO(tar_raw), mode='r:') as archive:
+         members = archive.getmembers()
+-        need(len(members) == 73 and sum(m.size for m in members) == 2541109, 'exact archive inventory budget differs')
++        need(len(members) == 10 and sum(m.size for m in members) == 151102, 'exact archive inventory budget differs')
+         for member in members:
+             relative(member.name)
+             need(member.type == tarfile.REGTYPE and member.isfile() and not member.linkname
+@@ -178,8 +178,8 @@
+     need((len(mf), sha(mf)) == MANIFEST_PIN, 'reviewed manifest original differs')
+     value = strict(mf)
+     rows = value['files']
+-    need(value['schema'] == 'hepta.native-guard.runtime-root-source-successor-package.v1'
+-         and type(rows) is list and len(rows) == 72, 'reviewed source manifest shape differs')
++    need(value['schema'] == 'hepta.native-guard.admitted-root-plan-helper-source-package.v1'
++         and type(rows) is list and len(rows) == 9, 'reviewed source manifest shape differs')
+     names = set()
+     for row in rows:
+         need(type(row) is dict and set(row) == {'path', 'bytes', 'sha256'}, 'exact manifest member descriptor required')
+@@ -190,7 +190,7 @@
+         raw = result[row['path']]
+         need((len(raw), sha(raw)) == (row['bytes'], row['sha256']), 'declared member bytes differ')
+     need(set(result) == names | {'SOURCE-MANIFEST.json'}, 'tar is not the manifest closed regular-file set')
+-    need(sum(map(len, result.values())) == 2541109, 'exact uncompressed source bytes differ')
++    need(sum(map(len, result.values())) == 151102, 'exact uncompressed source bytes differ')
+     return packed, result
+ 
+ 
+@@ -206,9 +206,9 @@
+         archive_row = put(AUDIT / ARCHIVE_NAME, packed)
+         stage_source_row = put(AUDIT / 'STAGE-SOURCE.original.py', STAGE_SOURCE)
+         put(AUDIT / 'STAGE-CONTROL.json', encoded({
+-            'schema': 'hepta.runtime-prefix.source-source-stage-control.v1', 'idempotency_key': KEY,
++            'schema': 'hepta.admitted-helper.source-stage-control.v1', 'idempotency_key': KEY,
+             'archive': archive_row, 'target': str(TARGET), 'source_manifest_pin': list(MANIFEST_PIN),
+-            'regular_files': 73, 'uncompressed_file_bytes': 2541109,
++            'regular_files': 10, 'uncompressed_file_bytes': 151102,
+             'phone_calls': 0, 'p4_calls': 0, 'case_runs': 0, 'runtime_freezes': 0, 'plan_preparations': 0,
+             'automatic_retry': False, 'existing_outputs_overwritten': False,
+         }))
+@@ -242,16 +242,16 @@
+         for path in sorted(DIRS):
+             directory_fd(Path(path))
+         staged_row = put(AUDIT / 'STAGED-FILES.json', encoded({
+-            'schema': 'hepta.runtime-prefix.source-staged-source-files.v1', 'files': staged,
++            'schema': 'hepta.admitted-helper.staged-source-files.v1', 'files': staged,
+             'all_created_single_link_regular_inodes': True, 'file_and_directory_fsync': True,
+             'all_raw_bytes_and_full9_metadata_bookended': True,
+         }))
+         result = {
+-            'schema': 'hepta.runtime-prefix.source-source-stage-result.v1',
++            'schema': 'hepta.admitted-helper.source-stage-result.v1',
+             'state': 'REVIEWED_SOURCE_PACKAGE_STAGED_NO_ENTRYPOINT_EXECUTED',
+             'idempotency_key': KEY, 'target': str(TARGET), 'audit': str(AUDIT),
+             'archive': archive_row, 'stage_source': stage_source_row, 'source_manifest': desc(TARGET / 'SOURCE-MANIFEST.json', files['SOURCE-MANIFEST.json']),
+-            'staged_files': staged_row, 'regular_files': len(staged), 'declared_source_members': 72,
++            'staged_files': staged_row, 'regular_files': len(staged), 'declared_source_members': 9,
+             'uncompressed_file_bytes': sum(map(len, files.values())),
+             'exact_original_manifest_preserved': True, 'created_inode_readback_complete': True,
+             'closed_regular_inventory_verified': True, 'elapsed_monotonic_ns': time.monotonic_ns() - started,

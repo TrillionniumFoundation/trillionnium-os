@@ -1,0 +1,110 @@
+{
+  "files": [
+    {
+      "bytes": 2595,
+      "path": "INTERFACE.json",
+      "sha256": "45538b314e1537193d23e1bd467fbd0f7d8c5d08724c81d2c5dc4726e6ec6efc"
+    },
+    {
+      "bytes": 56190,
+      "path": "reference/final-cascade-contract.original.py",
+      "sha256": "5196112d9d3469eefbbd1b564eb29ee41169dab428346d275ed8f1dd18f0a717"
+    },
+    {
+      "bytes": 6936,
+      "path": "reference/parent-r9/component/execute_namespace_once.py",
+      "sha256": "67449b38ce232e295dcbf4100fc451fb57a7b1109aea2bbc48f5da625c243be4"
+    },
+    {
+      "bytes": 30154,
+      "path": "reference/parent-r9/component/host_negative_runner.py",
+      "sha256": "32dd8e70d3b253748f6bfa1b068dd26497cb9ef530dcf5bad49caa5ba5d75d5f"
+    },
+    {
+      "bytes": 38377,
+      "path": "reference/parent-r9/inputs/historical-protocol-binding-r7-r3.json",
+      "sha256": "47ef681e8add5cecd3d69ca211054f0cf04d6510ba9865768a4815e46890c172"
+    },
+    {
+      "bytes": 37318,
+      "path": "reference/parent-r9/inputs/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 38620,
+      "path": "reference/parent-r9/inputs/protocol.json",
+      "sha256": "4ccba1f9683b004ac7e1f0b0bfb06a519d37ba4d24f73462f526f07ca54ce0ef"
+    },
+    {
+      "bytes": 6492,
+      "path": "reference/parent-r9/service/binding_adapter.py",
+      "sha256": "57ee4c4d377de692f78938f39c74219a4bfabf3a5479c4efdfad3c9cee68e0fd"
+    },
+    {
+      "bytes": 7271,
+      "path": "reference/parent-r9/service/execute_namespace_once.py",
+      "sha256": "5d330285f5b0444307b795b9c62bfbd7c74752e39b456999e7c9b2f1e1112292"
+    },
+    {
+      "bytes": 14704,
+      "path": "reference/parent-r9/service/fixture_server.py",
+      "sha256": "80a859b0b00f7dc95932d32f06e0eccba3d3031b4e5e2fc5d2dde22af526988b"
+    },
+    {
+      "bytes": 23719,
+      "path": "reference/parent-r9/service/service_negative_runner.py",
+      "sha256": "c7b3ff0a7ed1204535fffd7a7fba5fc1a7dc5942bcf54e0e1b576455e1f73019"
+    },
+    {
+      "bytes": 3977,
+      "path": "reference/provenance-parent/MANIFEST.original.json",
+      "sha256": "b28556e5ce6b2cba4dd69bbc29b00843446554de5b7d2427ae297372d2ed276b"
+    },
+    {
+      "bytes": 16474,
+      "path": "reference/provenance-parent/harness_import_provenance.py",
+      "sha256": "ef468183f4a32063a98c30336460a7362524be8080cdeaf345fc0553d9b061d0"
+    },
+    {
+      "bytes": 44478,
+      "path": "reference/provenance-parent/import_six_host_results.py",
+      "sha256": "996c1fe01688d1394013498b095051243af689beb6a29a14aff18821ab3e20f8"
+    },
+    {
+      "bytes": 29515,
+      "path": "reference/provenance-parent/prepare_fixed19_host_r10.py",
+      "sha256": "40a0beee0c53e138fd1f06d45450d444ca701cabb826ab243adfedcd270add6b"
+    },
+    {
+      "bytes": 17114,
+      "path": "source/derive_six_host_property_pins.py",
+      "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+    },
+    {
+      "bytes": 29173,
+      "path": "validation/ARCHIVE-SOURCE.original.py",
+      "sha256": "dd603aea98cf948966ad5d586028d802152f57d75b6910fdb011b8e8ee99b165"
+    },
+    {
+      "bytes": 2771,
+      "path": "validation/FIXTURE-ONLY-13-SLOT-INCREMENT.patch",
+      "sha256": "45b9076314c386906e0861958301fdcd9b406c3455287862c99d24e195d22ae3"
+    },
+    {
+      "bytes": 988,
+      "path": "validation/HOST-GATES.json",
+      "sha256": "ba9a212bd273fb399045e3dc6aa81f93e3867543665ec814e9b2f310d81eba1a"
+    },
+    {
+      "bytes": 9424,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "aff6f27430b706199b3e8faa4b5af1346f7842fc26548f87ac37e2f0d1f7b3b9"
+    }
+  ],
+  "future_output_generated": false,
+  "main_executed": false,
+  "phone_operations": 0,
+  "schema": "hepta.fixed19.runtime-properties-thirteen-slot-generation-candidate.v1",
+  "six_host_cases_executed": 0,
+  "state": "SOURCE_ONLY_FUTURE_FINALIZATION_NONE"
+}

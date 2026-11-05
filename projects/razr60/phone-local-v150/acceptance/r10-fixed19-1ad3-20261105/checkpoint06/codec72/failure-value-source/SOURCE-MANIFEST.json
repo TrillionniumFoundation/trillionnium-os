@@ -1,0 +1,160 @@
+{
+  "case_pass": false,
+  "files": [
+    {
+      "bytes": 1608,
+      "path": "DERIVATION.json",
+      "sha256": "b3ca59543221de87508ae550b288d9db12e1d8a1d4f821d4597b6f068482c897"
+    },
+    {
+      "bytes": 1394,
+      "path": "FREEZE-RECORD.json",
+      "sha256": "2e822eebf1d8eaa240f26872942276e994d8d4658a137dccc270893fa5cc4313"
+    },
+    {
+      "bytes": 17584,
+      "path": "REFREEZE-GATES.json",
+      "sha256": "6d2c1b08fc69f8c15871bb8610767f2ddbe96fd32795bc33b7b50a3ba8008b3f"
+    },
+    {
+      "bytes": 10301,
+      "path": "reference/DIAGNOSTIC-PLAN.original.json",
+      "sha256": "536977a355032617da5cf857fcd9b9c54f7281c89494064df025c4441e6905d1"
+    },
+    {
+      "bytes": 2226,
+      "path": "reference/capture.a2e814.original-command.txt",
+      "sha256": "a2e8147c79186d5255599bad42ddab99311b4b155415d567594bfb44deea3a17"
+    },
+    {
+      "bytes": 38774,
+      "path": "reference/phone_observation_tools.f16c.original.py",
+      "sha256": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df"
+    },
+    {
+      "bytes": 39093,
+      "path": "source/phone_observation_tools.py",
+      "sha256": "8f60cfd359ccfa269fabb05b616371268a2b86938fc41da37a2111c10066b792"
+    },
+    {
+      "bytes": 1453,
+      "path": "validation/FAILURE-OUTPUT-INCREMENT.patch",
+      "sha256": "4cc19fc63b9bcc3e9fd2457b88f46a811ef57938bdb797bf8ee6913a71c82610"
+    },
+    {
+      "bytes": 8690,
+      "path": "validation/HOST-SHELL-CHECKS.json",
+      "sha256": "1b408038c9720982f5ad496b6ffc2cb8976cb18b6e03010eeebda872b5e154dd"
+    },
+    {
+      "bytes": 2539,
+      "path": "validation/PROPOSED-COMMAND-NOT-EXECUTED.txt",
+      "sha256": "83a6fd0504a9eef4dc3ce863df41b6573bb6ee62d051141590a6cf8d2dad3cba"
+    },
+    {
+      "bytes": 9710,
+      "path": "validation/build_candidate.original.py",
+      "sha256": "03b27903ff75b6501c17b60237ae4187ff85c1ef50770256a990efab95b857cd"
+    },
+    {
+      "bytes": 784,
+      "path": "validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/candidate.sh",
+      "sha256": "0f23ff476137fe6c9fdaff24ab300ebf37bbe306070a66d552b7b0b6aa914232"
+    },
+    {
+      "bytes": 234,
+      "path": "validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/candidate.stderr.original",
+      "sha256": "13772a670427fa56ef3cadda5109260de3a069d4ebcee3e1ddfa518f36fefa0d"
+    },
+    {
+      "bytes": 78,
+      "path": "validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/candidate.stdout.original",
+      "sha256": "49a86cdece30bd0914a3e975ac01faf4f34a07e03899d60e82b47dff80c94ee4"
+    },
+    {
+      "bytes": 471,
+      "path": "validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/original.sh",
+      "sha256": "59b7893fee8043b2bbe85797043ebcacb26b99abdcdedcaed53468a12db61a8c"
+    },
+    {
+      "bytes": 22,
+      "path": "validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/original.stderr.original",
+      "sha256": "6362bfe390204db52fbb7de2cdd983ac872409c7fa1c2b5125ec33507211e3f5"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/host-shell/failure20_trailing_lf_and_literal_metacharacters/original.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 715,
+      "path": "validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/candidate.sh",
+      "sha256": "114e1393a3e64d75d5d488c71fb68ec44f42c55381944805d80cc2912983fc94"
+    },
+    {
+      "bytes": 246,
+      "path": "validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/candidate.stderr.original",
+      "sha256": "0dc124bf0512a0ddf8512e202f93f3b07733ad204359c964e1bbbab12f41fcb9"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/candidate.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 402,
+      "path": "validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/original.sh",
+      "sha256": "49edbf80eb4b4057bc09a315c82fecad2484880f1ad6222af7305695f7dd6726"
+    },
+    {
+      "bytes": 34,
+      "path": "validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/original.stderr.original",
+      "sha256": "dd0602432f14e2cd5c5eeccd5748bd9e89a53b46bfa4cff500c1ae1db62bd327"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/host-shell/failure22_empty_stdout_and_unterminated_stderr/original.stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 730,
+      "path": "validation/host-shell/success_same_envelope/candidate.sh",
+      "sha256": "11dc1dc63fe2068a092686cfd89e653f22fe00c42ba1f624546367cb463a3e6d"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/host-shell/success_same_envelope/candidate.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 224,
+      "path": "validation/host-shell/success_same_envelope/candidate.stdout.original",
+      "sha256": "c8a674c756083af24a68e4c3d5f2821ca179f7c20c12d7b4001407af776bf947"
+    },
+    {
+      "bytes": 417,
+      "path": "validation/host-shell/success_same_envelope/original.sh",
+      "sha256": "9e6b423cb87dde9a7f54058efe5c907e87f439b15a1e03e83bfe6286a65d7591"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/host-shell/success_same_envelope/original.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 224,
+      "path": "validation/host-shell/success_same_envelope/original.stdout.original",
+      "sha256": "c8a674c756083af24a68e4c3d5f2821ca179f7c20c12d7b4001407af776bf947"
+    }
+  ],
+  "future_identity_generated": false,
+  "phone_calls": 0,
+  "production_changed": false,
+  "schema": "hepta.codec72.failure-value-candidate-source-package.v1",
+  "source": {
+    "bytes": 39093,
+    "path": "source/phone_observation_tools.py",
+    "sha256": "8f60cfd359ccfa269fabb05b616371268a2b86938fc41da37a2111c10066b792"
+  },
+  "state": "SOURCE_ONLY_UNSTAGED_NOT_ADMITTED"
+}

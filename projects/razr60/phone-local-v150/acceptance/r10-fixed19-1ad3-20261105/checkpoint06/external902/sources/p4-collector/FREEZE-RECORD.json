@@ -1,0 +1,42 @@
+{
+  "Mac_actor_included_as_reference_only": true,
+  "archive_outer_239_mac_collection_still_pending": true,
+  "case_pass": false,
+  "controller_request": {
+    "bytes": 41704,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/delivery-final01/CONTROLLER-REQUEST.json",
+    "sha256": "a7ecb0133be28ad6bfb5886e1cd87e9498c9025fdc74240ae4312ce7c3baab01"
+  },
+  "independent_review": {
+    "bytes": 5589,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/delivery-final01/INDEPENDENT-REVIEW.json",
+    "sha256": "fb689ff3d7ed7aa849d922826bec261d6f2ad7486b4a09a77e28e43d5ac80228"
+  },
+  "later_private_plans_match_original_fixture_argv": true,
+  "manifest": {
+    "bytes": 2738,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "4bcad02456b0fed749e440b656ccc9ed3a9a5b6e634c48c1e43157c8e637c9f5"
+  },
+  "material_gzip_independent_whole_sha_verified": true,
+  "original_source_manifest_and_request_bytes_preserved": true,
+  "output_directory": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01",
+  "phone_calls": 0,
+  "regular_source_package_files": 14,
+  "remote_process_start": 0,
+  "schema": "hepta.external902-p4-collector-frozen-delivery.v1",
+  "source": {
+    "bytes": 40752,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/delivery-final01/package/source/collect_external902_p4_originals.py",
+    "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+  },
+  "source_archive": {
+    "bytes": 49543,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/delivery-final01/external902-p4-source-package-final01.tar.gz",
+    "sha256": "8fe85a32e4f0947bcc64b16328a6ecf79db2e95096fc4fc7c55211cdcf3f3053"
+  },
+  "source_package_file_bytes": 205679,
+  "state": "SOURCE_ONLY_INDEPENDENTLY_REVIEWED_FROZEN_NOT_EXECUTED",
+  "target_collector_main_executed": false,
+  "target_collector_module_imported": false
+}

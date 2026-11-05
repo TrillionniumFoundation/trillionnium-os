@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1abaf69f9-fc05-4fb9\",\n  \"stderr\": {\n    \"bytes_hex\": \"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e6520332c20696e203c6d6f64756c653e0a417373657274696f6e4572726f723a20626f756e64656420696d6d65646961746520736f75726365206469726563746f72792065786365656465640a\",\n    \"eof\": true,\n    \"next_offset\": 134,\n    \"offset\": 0,\n    \"size\": 134,\n    \"text\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 3, in <module>\\nAssertionError: bounded immediate source directory exceeded\\n\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

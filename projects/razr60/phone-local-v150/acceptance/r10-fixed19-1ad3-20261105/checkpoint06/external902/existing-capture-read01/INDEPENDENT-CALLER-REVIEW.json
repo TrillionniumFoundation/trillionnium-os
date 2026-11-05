@@ -1,0 +1,55 @@
+{
+  "caller": {
+    "bytes": 44799,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "db1f4a18b37ab6b8c21d338978e28a6993249b7fa987a33ee3d04d0fe5ae996d"
+  },
+  "case_pass": false,
+  "checks": {
+    "PROBE_exact_source_and_runtime_sha_assert": true,
+    "all_functions_and_remaining_control_flow_byte_identical": true,
+    "controller_outer_timeout": null,
+    "exact_idempotency_key": "root-1ad3-external902-existing-capture-read01-20261105",
+    "exact_splices": 7,
+    "existing_same_nonce_only": true,
+    "fixed_create_only_p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-existing-capture-read01",
+    "one_actor_start_only": true,
+    "original_phone_actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+    "passive_p4_wait_seconds": 240,
+    "phone_command_bytes": 19219,
+    "phone_request_command_embeds_exact_source_and_unchanged_original_GNU_environment": true,
+    "phone_timeout_seconds": 210,
+    "quoted_heredoc_marker_exact": "FIXED_READONLY_EXISTING_CAPTURE_45AF",
+    "source_bytes_unchanged_at_end": true,
+    "twelve_raw_originals_and_sixteen_MiB_archive_budget_unchanged": true,
+    "whole_byte_inverse_to_actual_6ee7_parent": true
+  },
+  "controller_request": {
+    "bytes": 47329,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "d2067b6f13ea5adb503830811ab4840c3752ac223b0f9805983ba64d03635f98"
+  },
+  "limits": [
+    "Only collector P4 files are newly written; the phone probe itself contains no case/source/evidence writes, runtime dispatch or boundary publication.",
+    "Controller rc0 alone does not mean phone observation success. Require actual phone rc0, observation_complete true, all bookends and read-FD closure, and complete durable controller output.",
+    "The source snapshot and archive descriptors are observations, not adopted or validated closure. Existing boundary content must be verified independently rather than republished.",
+    "No capture suffix substitution, original snapshot replay or new case identity is admitted.",
+    "No hard deadline is claimed for underlying filesystem reads; retained actor/phone terminal status and no automatic retry remain required."
+  ],
+  "parent_caller": {
+    "bytes": 52781,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/P4-LAUNCHER.6ee7.original.py",
+    "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+  },
+  "phone_calls_executed": 0,
+  "phone_source": {
+    "bytes": 18736,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/package/source/observe_existing_capture_once.py",
+    "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+  },
+  "reviewed_at_utc": "2026-11-05T13:07:18.471231+00:00",
+  "schema": "hepta.independent.existing-capture-caller-source-review.v1",
+  "scope": "Only local exact bytes, AST and request binding. No target source import, function/main execution, P4, phone or remote request.",
+  "state": "NO_BLOCKER_IN_REVIEWED_FIXED_CALLER_BINDING",
+  "target_function_calls": 0
+}

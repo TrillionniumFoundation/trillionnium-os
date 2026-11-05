@@ -1,0 +1,69 @@
+--- read_four_existing_originals_once.ff285.unexecuted.py
++++ read_three_boundary_originals_once.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Retain four fixed existing originals; no snapshot/closure/publication is executed."""
++"""Retain three fixed existing boundary originals; no archive body or runtime action."""
+ import sys
+ sys.dont_write_bytecode=True
+ import base64
+@@ -17,8 +17,8 @@
+ META=('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ DIRECTORIES={}
+ OUTPUT_LIMIT=8*1024*1024
+-FIXED_DIRECTORIES=[{'metadata': [65086, 154599, 16832, 0, 0, 3, 3452, 1793882440195914287, 1793882440195914287], 'names': ['CAPTURE.json', 'ORIGINALS.tar.gz', 'RESULT.json', 'snapshot'], 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01'}, {'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774', 'metadata': [65086, 157440, 16832, 0, 0, 2, 3452, 1793882485267914270, 1793882485267914270], 'names': ['AFTER-INVENTORY.original.json', 'CLOSURE.original.json', 'PUBLISH-INTENT.json']}]
+-FIXED_FILES=[{'name': 'CLOSURE.original.json', 'bytes': 55124, 'metadata': [65086, 156890, 33152, 0, 0, 1, 55124, 1793882485259914270, 1793882485259914270], 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/CLOSURE.original.json', 'sha256': 'ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719', 'prior_metadata_bound': True, 'pin_origin': 'actual_6e1d_boundary_descriptor'}, {'name': 'AFTER-INVENTORY.original.json', 'bytes': 923078, 'metadata': [65086, 156601, 33152, 0, 0, 1, 923078, 1793882485267914270, 1793882485267914270], 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/AFTER-INVENTORY.original.json', 'sha256': 'b9da7fdf1e8e110f9cb5cb253627c7a9bdad98a7660fddca16653bab1b93e94d', 'prior_metadata_bound': True, 'pin_origin': 'actual_6e1d_boundary_descriptor'}, {'name': 'PUBLISH-INTENT.json', 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/PUBLISH-INTENT.json', 'bytes': 742, 'sha256': '3d56ef41cf7d2adf1858466d8d96ec877fb4553fdb97afe5609cc8475bac04a9', 'metadata': None, 'prior_metadata_bound': False, 'pin_origin': 'source_396d_publish_fields_and_1e2d_compact_encoding_of_actual_boundary_and_lease'}, {'name': 'ORIGINALS.tar.gz', 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/ORIGINALS.tar.gz', 'bytes': 2204770, 'sha256': '462da4db9b36028cfec2b933f94bd52c185a103e12d1a771d2b67a47a21d9e03', 'metadata': [65086, 153268, 33152, 0, 0, 1, 2204770, 1793882440179914287, 1793882440179914287], 'prior_metadata_bound': True, 'pin_origin': 'actual_45aff_whole_file_hash_and_full9'}]
++FIXED_DIRECTORIES=[{'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774', 'metadata': [65086, 157440, 16832, 0, 0, 2, 3452, 1793882485267914270, 1793882485267914270], 'names': ['AFTER-INVENTORY.original.json', 'CLOSURE.original.json', 'PUBLISH-INTENT.json']}]
++FIXED_FILES=[{'name': 'CLOSURE.original.json', 'bytes': 55124, 'metadata': [65086, 156890, 33152, 0, 0, 1, 55124, 1793882485259914270, 1793882485259914270], 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/CLOSURE.original.json', 'sha256': 'ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719', 'prior_metadata_bound': True, 'pin_origin': 'actual_6e1d_boundary_descriptor'}, {'name': 'AFTER-INVENTORY.original.json', 'bytes': 923078, 'metadata': [65086, 156601, 33152, 0, 0, 1, 923078, 1793882485267914270, 1793882485267914270], 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/AFTER-INVENTORY.original.json', 'sha256': 'b9da7fdf1e8e110f9cb5cb253627c7a9bdad98a7660fddca16653bab1b93e94d', 'prior_metadata_bound': True, 'pin_origin': 'actual_6e1d_boundary_descriptor'}, {'name': 'PUBLISH-INTENT.json', 'path': '/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/PUBLISH-INTENT.json', 'bytes': 742, 'sha256': '3d56ef41cf7d2adf1858466d8d96ec877fb4553fdb97afe5609cc8475bac04a9', 'metadata': None, 'prior_metadata_bound': False, 'pin_origin': 'source_396d_publish_fields_and_1e2d_compact_encoding_of_actual_boundary_and_lease'}]
+ PUBLISH_EXPECTED=b'{"automatic_retry":false,"closure":{"bytes":55124,"sha256":"ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"},"inventory":{"bytes":923078,"sha256":"b9da7fdf1e8e110f9cb5cb253627c7a9bdad98a7660fddca16653bab1b93e94d"},"lease_sha256":"31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736","maximum_publish_attempts":1,"nonce":"902e851c3ca1f90deab3d880ab993774","schema":"hepta.native-guard.boundary-publish-intent.v1","scope":{"profile_id":"owner-open","session_id":"session-ee897738-8fc2-4d3e-a916-5fe368b340ef","task_id":"task-d3f61033-5b61-40e4-b8c6-7ea00d6b2d56","turn_id":"turn-c2247546-2cb4-4c98-b20f-b4ee06c2f14c","turn_stream_id":"r5-stream-6d465a4b53634e510a9b448f5d53be3ce4115ea2303e9ceeefaccd99bcc04475"}}\n'
+ ACTUAL_INPUT_REFERENCES={'observation': {'path': '/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/PHONE-STDOUT.original', 'bytes': 211933, 'sha256': '6be3fbb0726b450ff98aac38defd38f89fff093bf644da56568688e7d99fc647'}, 'capture': {'path': '/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01/retained-bodies/capture/CAPTURE.json', 'bytes': 144079, 'sha256': 'b6dffc54291f7a35486cab4b677c5ff5ea3fe4fb4fa2bad4a28d3094ddbca04d'}, 'snapshot_result': {'path': '/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01/retained-bodies/capture/RESULT.json', 'bytes': 714, 'sha256': 'f67f2365baeaf24ee224caf9d0f53661bbb0faba69d6d219ce94da3877c62f08'}, 'boundary': {'path': '/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01/retained-bodies/boundary/902e851c3ca1f90deab3d880ab993774.json', 'bytes': 9686, 'sha256': '6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831'}, 'publisher_source': {'path': '/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/source-binary-read01/late_boundary.original.py', 'bytes': 74287, 'sha256': '396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97'}, 'common_source': {'path': '/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_common.py', 'bytes': 19138, 'sha256': '1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab'}}
+ 
+@@ -102,7 +102,7 @@
+ 
+ def fixed_original(row):
+     need(row in FIXED_FILES and set(row)=={'name','path','bytes','sha256','metadata','prior_metadata_bound','pin_origin'},
+-         'only four literal existing-file descriptors permitted')
++         'only three literal existing-boundary descriptors permitted')
+     path=Path(row['path']);parent,leaf=parent_fd(path);fd=None;before=None;parent_before=None
+     try:
+         parent_before=os.fstat(parent)
+@@ -145,14 +145,14 @@
+     try:
+         need(len(sys.argv)==1,'fixed reader accepts no alternate path, nonce, or options')
+         need(os.getuid()==os.geteuid()==os.getgid()==os.getegid()==0,'actual Root required')
+-        need(len(FIXED_FILES)==4 and len({r['path'] for r in FIXED_FILES})==4
+-             and sum(r['bytes'] for r in FIXED_FILES)<4*1024*1024,'four originals exact raw budget')
++        need(len(FIXED_FILES)==3 and len({r['path'] for r in FIXED_FILES})==3
++             and sum(r['bytes'] for r in FIXED_FILES)<1024*1024,'three originals exact raw budget')
+         before=own_fds();boot_raw=boot()
+-        phase='two_fixed_parent_directories'
++        phase='one_fixed_boundary_parent_directory'
+         for expected in FIXED_DIRECTORIES:need(read_directory(expected['path'])==expected,'fixed directory full9/names changed')
+-        phase='closure_inventory_publish_intent_then_archive'
++        phase='closure_inventory_publish_intent'
+         for expected in FIXED_FILES:rows.append(fixed_original(expected))
+-        phase='four_whole_file_full9_and_parent_bookends'
++        phase='three_whole_file_full9_and_parent_bookends'
+         for expected,observed in zip(FIXED_FILES,rows):need(fixed_original(expected)==observed,'whole original changed at final bookend')
+         for expected in FIXED_DIRECTORIES:need(read_directory(expected['path'])==expected,'fixed directory changed at final bookend')
+         bookends=True;need(boot()==boot_raw,'boot changed');boot_bookend=True;complete=True;phase='complete'
+@@ -171,8 +171,8 @@
+             except BaseException as exc:
+                 complete=False;fd_observation={'complete':False,'type':type(exc).__name__,'detail':str(exc)[:1024]}
+                 if failure is None:failure={'type':type(exc).__name__,'detail':str(exc)[:2048],'phase':'FD_bookend'}
+-    result={'schema':'hepta.native-guard.four-fixed-existing-originals.v1',
+-        'state':'FOUR_FIXED_EXISTING_ORIGINALS_RETAINED' if complete else 'FIXED_EXISTING_ORIGINALS_FAILED_OR_PARTIAL',
++    result={'schema':'hepta.native-guard.three-fixed-boundary-originals.v1',
++        'state':'THREE_FIXED_BOUNDARY_ORIGINALS_RETAINED' if complete else 'FIXED_BOUNDARY_ORIGINALS_FAILED_OR_PARTIAL',
+         'observation_complete':complete,'failure':failure,'boot_id':BOOT,'label':LABEL,'nonce':NONCE,
+         'files':rows,'directories':list(DIRECTORIES.values()),'all_whole_file_bookends_complete':bookends,
+         'boot_bookends_complete':boot_bookend,'owned_read_fd_observation':fd_observation,
+@@ -185,7 +185,7 @@
+         'phone_source_writes':0,'phone_evidence_writes':0,'process_launches':0,'signals':0,
+         'kernel_signal_zero_queries':0,'model_requests':0,'native_dispatches':0,'socket_connections':0,
+         'snapshot_entry_calls':0,'closure_entry_calls':0,'publication_entry_calls':0,'runtime_cleanup_calls':0,
+-        'new_case_or_nonce':False,'snapshot_archive_decoded_or_validated':False,'existing_boundary_validated_or_adopted':False,
++        'new_case_or_nonce':False,'snapshot_archive_body_requested':False,'snapshot_archive_decoded_or_validated':False,'existing_boundary_validated_or_adopted':False,
+         'native_boundary_published':False,'component_qualified':False,'case_pass':False,'automatic_retry':False,
+         'fresh_later_read_not_original_snapshot_or_publication_time':True}
+     try:

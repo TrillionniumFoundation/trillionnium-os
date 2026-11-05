@@ -1,0 +1,46 @@
+{
+  "automatic_retry": false,
+  "collector_manifest_sha256": "3ea86b134d2cc469a39b25c0f06190cf1ef0ddc679a33cf076b510c0a98679a0",
+  "files": [
+    {
+      "bytes": 25550,
+      "path": "capture_originals_r10.py",
+      "sha256": "7e8b3920f9fa1345e8e2906f9cc05afb9db8b9c70c05577d5e5ad2202243d10c"
+    },
+    {
+      "bytes": 41173,
+      "path": "close_original_r10.py",
+      "sha256": "19af371cb5271ea6b3f8c2929ab969357aee07d14d498dcf50f57e9b3bbc9e75"
+    },
+    {
+      "bytes": 27540,
+      "path": "export_originals_r10.py",
+      "sha256": "034cebffe8569f09139d3e39dfcef7882683923af6fb5ae7935bb04162e43586"
+    },
+    {
+      "bytes": 2549,
+      "path": "read_archive_chunk_r10.py",
+      "sha256": "afb19e6792dcced3dc443d25bb5cd9534e56030e3792a85bf7a0c6b7ba574f32"
+    },
+    {
+      "bytes": 10669,
+      "path": "registration_phone_r10.py",
+      "sha256": "0922878919264a7af3c10db6db960392955654c1e7dbb09716f8a980754546f5"
+    },
+    {
+      "bytes": 27535,
+      "path": "root_acceptance_r10.py",
+      "sha256": "36bd398814688ca90417a7d8ea4da48dff75c691e372c1f9b6f207ba6b371d47"
+    }
+  ],
+  "model_requests": 0,
+  "new_acceptance_nonce_generated": false,
+  "parent_operator_manifest_sha256": "d8b106084b5329e6e991a1d81aa3542c19421bab2142e001604f2c79b0563d50",
+  "phone_calls": 0,
+  "qualification": "HOST_PREPARED_ONLY_REQUIRES_ACTUAL_SEALED_RELEASE_AND_READY",
+  "release_id": "v150-r10-r1",
+  "reviewed_readiness_helper_sha256": "2bde19fd977e1c491eacabe9a2a7596559403a151d787ac281813b1157720fb1",
+  "schema": "hepta.root-acceptance-sources.v150.r10.1",
+  "sender_sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281",
+  "source_integration_sha256": "ced151565021df4a9d61f0ec8d5ac39d558d30885bdd7bd757119b08be3ab31a"
+}

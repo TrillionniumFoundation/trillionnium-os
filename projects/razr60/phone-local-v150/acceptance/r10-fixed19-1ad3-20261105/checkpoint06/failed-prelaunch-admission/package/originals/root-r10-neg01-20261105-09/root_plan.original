@@ -1,0 +1,73 @@
+{
+  "artifacts": {
+    "bytes": 2515,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/component-artifacts-adopted-r10-r1-01/ARTIFACTS.json",
+    "sha256": "515b78cf454965f95d969a1efb96e6edab09ad385f9f520da91cfd50aed92e77"
+  },
+  "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "case_id": "NEG-01",
+  "label": "root-r10-neg01-20261105-09",
+  "live_policy_sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70",
+  "nonce": "7c79195945d64e569a191166ac122a08",
+  "out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-09",
+  "package": {
+    "bytes": 16808,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/runtime/MANIFEST.json",
+    "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+  },
+  "policy_adoption": {
+    "bytes": 208226,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json",
+    "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+  },
+  "preserved_draft": {
+    "bytes": 282,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/private/USER-DRAFT-PRESERVATION.json",
+    "sha256": "9d801d675a461de996206b1bdc911309aeb40df599c49860ddc9699779d4e741"
+  },
+  "previous": {
+    "bytes": 1428,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-08/ACTUAL-PREVIOUS-INPUT.json",
+    "sha256": "9133e2511a66a809be647cb8bb49e3afb351825db5e465f75b1f2f0b6d9d88f4"
+  },
+  "prior_boundary_descriptor": {
+    "bytes": 367,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-08/LATE-BOUNDARY-DESCRIPTOR.json",
+    "sha256": "724d7d54679299433498654530ad3dc082c107aa76fde9de54b0ed6c0ad3de08"
+  },
+  "prior_boundary_original": {
+    "bytes": 9373,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-08/LATE-BOUNDARY.original.json",
+    "sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10"
+  },
+  "profile_id": "owner-open",
+  "request": {
+    "bytes": 317,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-20261105-09/REQUEST.txt",
+    "sha256": "83552b168a1d10718dcea0177c00e50ca44c4b2cb10d484a7abf888bc15b1b07"
+  },
+  "retirement_descriptor": {
+    "bytes": 2220,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/module-r10-r1-retirement-reconciliation-01/ACTUAL-RETIREMENT-INPUTS.json",
+    "sha256": "e3c8411f3d85440018392597d4f9f8795cfd7a60c44fc1680068a60949d20999"
+  },
+  "retirement_originals": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/module-r10-r1-retirement-reconciliation-01/retirement-originals",
+  "schema": "hepta.native-guard.root-chain-plan.v1",
+  "sender_retirement_resolution": {
+    "bytes": 1237,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/ondevice-contract-review-v150/retirement-resolution-r4-01/pocket4/RESOLUTION.json",
+    "sha256": "7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433"
+  },
+  "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+  "shared_materials": {
+    "bytes": 3519,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-material-r1/actual-material-01/SHARED-MATERIALS.json",
+    "sha256": "121416839ffdac15485270cda0e95445e376b0a24801fa283659a3da084ae45f"
+  },
+  "shared_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-material-r1/actual-material-01",
+  "source_package": {
+    "bytes": 11442,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/root-chain/SOURCE-MANIFEST.json",
+    "sha256": "7315f6561e221fb59429f9daa8ec1a34a944681fd2a117773611c11fa82a81ca"
+  }
+}

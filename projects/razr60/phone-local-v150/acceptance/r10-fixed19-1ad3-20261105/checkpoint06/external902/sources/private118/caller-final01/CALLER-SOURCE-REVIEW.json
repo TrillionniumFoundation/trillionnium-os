@@ -1,0 +1,58 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 52781,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+  },
+  "controller_request": {
+    "bytes": 55740,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "8a6fa8011027ae5fb18e37caeec3748cc1b2f7846ca25532751bb302786740be"
+  },
+  "explicit_source_splices": [
+    "PROBE exact 79b2 raw bytes",
+    "REQ same fixed shell envelope and 210 seconds; only quoted probe and marker",
+    "fixed existing 902 nonce observation tag",
+    "new exact probe length and SHA assertion",
+    "new independent create-only collector output",
+    "descriptive result state",
+    "descriptive result state"
+  ],
+  "functions_byte_identical": [
+    "put",
+    "enc"
+  ],
+  "idempotency_key": "root-1ad3-external902-private-read01-20261105",
+  "outer_controller_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-private-read01",
+  "parent": {
+    "bytes": 64533,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "ac8c5ab5f4947315515afc912b2b8973e22d35b1de07a8e46b5a348d87259b59"
+  },
+  "passive_wait_seconds": 240,
+  "phone_actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+  "phone_calls": 0,
+  "phone_calls_max": 1,
+  "phone_command_bytes": 23017,
+  "phone_request_preview": {
+    "bytes": 23496,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/PHONE-REQUEST.preview.json",
+    "sha256": "921b1f60c238b16f0fc3eae4ee813261203021cb021b9c5e8fa530c0723ab19e"
+  },
+  "phone_source_or_case_writes": 0,
+  "phone_timeout_seconds": 210,
+  "probe": {
+    "bytes": 22534,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/delivery-final01/package/source/observe_external902_private_roots_once.py",
+    "sha256": "79b226e3c5caaf8665b313dfe9c19ec6b56326ebc06c1bcaebead83b3fb508e8"
+  },
+  "remote_calls": 0,
+  "schema": "hepta.fixed-external-private-roots.caller-source-derivation.v1",
+  "signals_sent": 0,
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "tag": "ng-902e851c3ca1f90deab3d880ab993774-private-read01",
+  "target_calls_executed": 0,
+  "whole_byte_inverse_to_parent": true
+}

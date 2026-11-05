@@ -1,0 +1,23 @@
+{
+  "PR_created": false,
+  "all_544_path_mode_type_blob_sha_size_readbacks_verified": true,
+  "branch": "codex/razr60-fixed19-r10-20261105-1ad3",
+  "commit": "dd299611fc2044fb87d3ee8c76fcaa361108774d",
+  "files": 544,
+  "force": false,
+  "later_admission_and_neg01_1ad3_02_not_in_this_frozen_snapshot": true,
+  "merged": false,
+  "new_blobs_verified": 424,
+  "parent": "6a16a332baa4a09a6a8495673949db897821574b",
+  "prior_blobs_reused": 24,
+  "prior_prefix_files_preserved": 292,
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "schema": "hepta.fixed19.checkpoint05.git-publication-result.v1",
+  "snapshot_host_layer_passed": 5,
+  "snapshot_policy_comparison_passed": 16,
+  "snapshot_whole_cases_qualified": 0,
+  "state": "CHECKPOINT05_COMMIT_AND_EXPECTED_HEAD_CAS_READBACK_VERIFIED",
+  "tree": "a1a9b7fd5160c11616fc0b08a90eae2b1315e68f",
+  "tree_readback_report": "git_checkpoint05_delivery/git-tree-readback-independent01/TREE-READBACK-VERIFICATION.json",
+  "unique_blobs": 448
+}

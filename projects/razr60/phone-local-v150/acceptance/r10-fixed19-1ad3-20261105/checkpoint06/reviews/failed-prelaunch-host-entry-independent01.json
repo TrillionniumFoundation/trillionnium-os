@@ -1,0 +1,21 @@
+{
+  "actual_mac_success_claimed": false,
+  "issues": [],
+  "no_candidate_functions_executed_by_review": true,
+  "phone_operations": 0,
+  "remote_operations": 0,
+  "required_invocation": "/usr/bin/python3 -I -B <fixed source>; no -O optimization, preserving explicit asserts and ignoring PYTHONOPTIMIZE environment",
+  "schema": "hepta.native-guard.failed-prelaunch-host-entry-independent-review.v1",
+  "scope": [
+    "Fixed V e78d54893 and A e85b66905 canonical exact3 descriptors; bounded nofollow single-link V fd read with full9/path bookends and hash before compile.",
+    "Named types.ModuleType keeps verifier __name__ away from __main__; no verifier CLI invoked.",
+    "A uses exact V.local_read + strict; verify_failed_prelaunch_admission recomputes using the actual local_read callback and its own complete originals recheck.",
+    "Final V raw re-read equals initial source; only stdout summary is emitted."
+  ],
+  "source": {
+    "bytes": 2115,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/delivery-final01/package/source/verify_admission_host_once.py",
+    "sha256": "e024328ffd9497c1a6e5f89e4d4b6d4300ccd3c99726075c55cfd55a734fb294"
+  },
+  "state": "NARROW_STATIC_REVIEW_PASSED"
+}

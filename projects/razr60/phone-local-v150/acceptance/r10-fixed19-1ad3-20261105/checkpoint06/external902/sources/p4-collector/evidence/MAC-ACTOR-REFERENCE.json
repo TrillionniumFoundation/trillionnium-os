@@ -1,0 +1,11 @@
+{
+  "P4_copy_assumed": false,
+  "bytes": 82909,
+  "local_original": {
+    "bytes": 82909,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/actor-read01/root-r10-neg01-7c907661-01.actor.py",
+    "sha256": "e583b6183479f871bec64808304992f71972e6eed3566f6181ab9c870b245598"
+  },
+  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.actor.py",
+  "sha256": "e583b6183479f871bec64808304992f71972e6eed3566f6181ab9c870b245598"
+}

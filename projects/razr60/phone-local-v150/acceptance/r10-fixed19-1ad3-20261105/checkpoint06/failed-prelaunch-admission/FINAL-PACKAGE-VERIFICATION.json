@@ -1,0 +1,22 @@
+{
+  "archive": {
+    "bytes": 1514566,
+    "sha256": "7651dc63b6525f7730c72fede6cf7a5e8a28fcfb6bbe5cb7b2e7e9e0c18dd45c"
+  },
+  "existing_mac_originals": 50,
+  "files": 141,
+  "mac_stage_performed": false,
+  "manifest": {
+    "bytes": 26324,
+    "sha256": "bd3753d51fbc8fa6736e5af86b840263ae5c794f555474c7356020711b85ab49"
+  },
+  "phone_calls": 0,
+  "schema": "hepta.failed-prelaunch.delivery-byte-verification.v1",
+  "state": "DELIVERY_CLOSED_SET_AND_ALL_ORIGINAL_PATH_ROUTES_VERIFIED",
+  "tar": {
+    "bytes": 3543040,
+    "sha256": "a424f48508bb7100b2a781c0501a938658bfe8b6ec8e18d4721160796edd65ba"
+  },
+  "verified_original_bytes": 3119744,
+  "verified_original_descriptors": 119
+}

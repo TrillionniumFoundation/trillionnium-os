@@ -1,0 +1,51 @@
+{
+  "automatic_retry": false,
+  "boot_after_help_rechecked": false,
+  "caller": {
+    "bytes": 7342,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "99a10978afac380dda0624cb91beaecf7c3fc1e0e0a0adf6cfd1847bbfe247fa"
+  },
+  "controller_request": {
+    "bytes": 8133,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "de886987850398518b025fc04da7215f7318940599a6e84ff74fd222acfa20d0"
+  },
+  "expected_actor_baseline_boot": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "functions_exact_parent_bytes": [
+    "put",
+    "enc"
+  ],
+  "help_query_opens_no_explicit_log_buffer": true,
+  "idempotency_key": "root-1ad3-logcat-help-capability01-20261105",
+  "local_exact_help_original_search_found": false,
+  "native_result_original_byte_limit": 8388608,
+  "no_app_process": true,
+  "no_log_buffer_clear": true,
+  "originals_count": 13,
+  "originals_total_byte_limit": 16777216,
+  "outer_controller_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-logcat-help01",
+  "parent": {
+    "bytes": 44799,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "db1f4a18b37ab6b8c21d338978e28a6993249b7fa987a33ee3d04d0fe5ae996d"
+  },
+  "passive_wait_seconds": 60,
+  "phone_actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+  "phone_command_bytes": 25,
+  "phone_request_preview": {
+    "bytes": 105,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/PHONE-REQUEST.preview.json",
+    "sha256": "a99b0c274b791b1e2b8cc9f593cc1942c92b9ba2bb258573b862377e9e8a209c"
+  },
+  "phone_timeout_seconds": 30,
+  "remote_calls": 0,
+  "requested_command": "/system/bin/logcat --help",
+  "schema": "hepta.logcat.help-only-caller-source-derivation.v1",
+  "signals_sent": 0,
+  "source_only_no_capability_result": true,
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "tag": "ng-902e851c3ca1f90deab3d880ab993774-logcat-help01",
+  "target_or_phone_calls": 0
+}

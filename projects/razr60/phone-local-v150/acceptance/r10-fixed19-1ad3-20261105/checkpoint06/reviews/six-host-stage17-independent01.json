@@ -1,0 +1,56 @@
+{
+  "archive": {
+    "bytes": 34809,
+    "sha256": "4078126913f5b1aa99ce1917a9a1520b13e486b241b8501c7255f225cc1a74ec"
+  },
+  "boundaries": [
+    "No target source import, entrypoint, subprocess, phone, P4, case, runtime freeze or plan preparation invoked by review.",
+    "Reviewed loader preserves stage16 create-only O_EXCL/NOFOLLOW inode/full9 readback, canonical held directories, full file/directory fsync, failure retention and no automatic retry.",
+    "Controller bootstrap compiles only this exact pinned loader from stdin; it does not execute staged package sources.",
+    "Actual stage17 not performed or attested by this local review. Fresh target/audit existence remains an execution-time gate.",
+    "After RESULT publication final bookend may still fail: actual success requires durable controller exit 0/full capture, not merely RESULT presence."
+  ],
+  "checks": {
+    "all17_tar_members_equal_previously_reviewed_package": true,
+    "changed_constant_occurrences": 21,
+    "constant_only_ast_change": true,
+    "every_changed_constant_in_explicit_authorized_pairs": true,
+    "filled_source_only_payload_substitution": true,
+    "manifest16_plus_manifest_exact_regular_closedset": true,
+    "only_stdlib_imports": true,
+    "request_stdin_exact_loader_bytes_and_single_fixed_key": true,
+    "target_imports_or_dynamic_execution_in_loader": false,
+    "uncompressed_file_bytes": 176501,
+    "whole_template_inverse_equals_stage16": true
+  },
+  "controller_request": {
+    "bytes": 60888,
+    "sha256": "844ad504249fcb18fa373ebae777d468d49eef3ba2a8a2578a13e5b85b333bd1"
+  },
+  "new_template": {
+    "bytes": 13243,
+    "sha256": "0d3f6cb7ef52d730ca9f50685eca5bb531e5522ea9982b727f396b98e9453fcb"
+  },
+  "parent_template": {
+    "bytes": 13251,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_admitted_helper_candidate01/actual-stage16/stage_mac_source16.template.py",
+    "sha256": "39ea10d048066cebc894ef84d900b1a2cddf98ca18449048501a0d813db77646"
+  },
+  "reviewed_source": {
+    "bytes": 59622,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/six_host_inventory_prefix_candidate01/actual-stage17/stage_mac_source17.py",
+    "sha256": "0ec1b314386cc6a9f006323bf1b5fcb0cc8b76b86861cc4989e67e6b94d5ebc0"
+  },
+  "reviewer": "transport_review",
+  "schema": "hepta.root.independent-source-review.v1",
+  "source_manifest": {
+    "bytes": 3972,
+    "sha256": "1c62db17d75a7850942bf680dca46bb764cd3564f5ad9dd024b807e0e763193c"
+  },
+  "source_unchanged_bookend": true,
+  "state": "NARROW_STAGE17_SOURCE_REVIEW_PASSED_NO_ENTRYPOINT_EXECUTED",
+  "tar": {
+    "bytes": 194560,
+    "sha256": "e046c833596c7c73b7ff19aa19c088ed391342ff02acf47dda6b7d968b1c9e77"
+  }
+}

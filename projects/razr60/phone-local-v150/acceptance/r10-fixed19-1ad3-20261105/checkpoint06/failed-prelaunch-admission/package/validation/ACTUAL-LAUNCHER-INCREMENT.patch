@@ -1,0 +1,84 @@
+--- d669-source
++++ e78d-source
+@@ -41,6 +41,21 @@
+ # Exact reviewed source for the actual two-attempt current publication and
+ # selected-state observation; a different source is never an implicit waiver.
+ CURRENT_PUBLICATION_SOURCE_TEMPLATE=(13192,'1956c026152ff82a9c3065388139c8782c55c5788afa9cfeacfef054651f18ed')
++PHONE_ACTOR_SHA='179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22'
++# These are the four actual, retained controller stdin programs. They are
++# parsed as data, never imported. Trusted controller receipts remain the
++# execution-origin evidence; no stdin digest reconstruction is claimed.
++READONLY_LAUNCHERS={
++ STAGE_TEMPLATE[1]:((51692,'a6823b2544c19dbf38aaa178298ba61d8271dd4e4fe28775b5c7a5763f370ae7'),
++  '1a1ab32d7b6-fc05-4b5b','fixed19-root-1ad3-neg01-stage-read01'),
++ 'a460562d2217bcbbd167ac6a4ae2e38d4713da05dee8b57337ff4ce3eceb37be':
++  ((48346,'8c30eda635a93396d5e7ed46cf4a1ef6900d6f19c80a47b6a9c573622e9ea9b7'),
++   '1a1ab5f2e9d-fc05-4d0f','fixed19-root-1ad3-external09-stage-read01'),
++ GLOBAL_SOURCE[1]:((41213,'046e6ca126c5c5bb204301a9d44f833e3051d5844ec4d118495d30194202ab26'),
++  '1a1ab559f85-fc05-4cb3','fixed19-root-1ad3-neg01-retired-read02'),
++ CURRENT_PUBLICATION_SOURCE_TEMPLATE[1]:
++  ((33230,'1593b08bc5bea4b7f0b8d213296376cfe9b7962fb9734a30696dd5beff25f668'),
++   '1a1ab5cfe76-fc05-4d02','fixed19-root-1ad3-failed-prelaunch-current-read01')}
+ MAX_FILE=16*1024*1024
+ MAX_READSET=32*1024*1024
+ MAX_ARCHIVE_PLAIN=16*1024*1024
+@@ -52,7 +67,7 @@
+ ATTEMPT_FIELDS={'label','root_plan','root_failure','chain_intent','prepared','component_archive',
+  'sender_inventory','sender_archive_xz','sender_result','sender_actor','sender_execute_intent','sender_child',
+  'mac_sender_absence','stage_observation'}
+-OBSERVATION_FIELDS={'source','controller_start','controller_status','controller_read','launcher_result',
++OBSERVATION_FIELDS={'source','launcher_source','controller_start','controller_status','controller_read','launcher_result',
+  'joined','phone_intent','phone_result','phone_stdout'}
+ 
+ def need(ok,why):
+@@ -202,12 +217,20 @@
+          'controller terminal stdout does not name the successful native collector result')
+     # Native rc is separately required below. A successful collector is never
+     # accepted as proof that the original phone verification succeeded.
+-    return {'job_id':job['id'],'created_unix_ms':job['created_unix_ms'],'terminal_unix_ms':status['at_unix_ms']}
++    return {'job_id':job['id'],'created_unix_ms':job['created_unix_ms'],'terminal_unix_ms':status['at_unix_ms'],
++            'launcher_result_original':descriptor(matches[0]['result'])}
+ 
+ def phone_observation(O,record,source_expected=None):
+     exact(record,OBSERVATION_FIELDS,'complete native observation originals required')
+     source=O.read(record['source'],262144,source_expected)
++    need(sha(source) in READONLY_LAUNCHERS,'one of the four actual read-only observations is required')
++    launcher_pin,job_id,out_name=READONLY_LAUNCHERS[sha(source)]
++    launcher=O.read(record['launcher_source'],262144,launcher_pin)
++    bound=literals(launcher)
+     control=completed_controller(O,record)
++    need(control['job_id']==job_id and bound['PROBE']==source
++        and control['launcher_result_original']['path']=='/home/alex/razr60-local-model-v150/'+out_name+'/RESULT.json',
++        'retained controller job, actual launcher and original result namespace differ')
+     joined=O.value(record['joined'],16384);need(joined['wait_returned'] is True and joined['returncode']==0
+         and joined['signals_sent']==0,'read-only observer actor did not join normally')
+     intent=O.value(record['phone_intent'],MAX_INPUT);native=O.value(record['phone_result'],8*1024*1024)
+@@ -218,6 +241,10 @@
+          and native['model_decision'] is False and native['native_task_result'] is False,
+          'actual read-only native wrapper shape differs')
+     request=intent['request'];exact(request,('kind','root','timeout_seconds','command'),'one shell request required')
++    request_raw=(json.dumps(request,sort_keys=True,ensure_ascii=False,indent=2,allow_nan=False)+'\n').encode()
++    need(bound['REQ']==request and bound['LABEL']==intent['label']
++         and intent['request_sha256']==sha(request_raw) and intent['automatic_replay'] is False,
++         'actual launcher request bytes and native intent differ')
+     need(request['kind']=='shell' and request['root'] is True and type(request['timeout_seconds']) is int
+          and 1<=request['timeout_seconds']<=210,'bounded Root read-only request required')
+     outer=shlex.split(native['phone']['command'])
+@@ -246,12 +273,16 @@
+     need(result['actor_returncode']==result['phone_returncode']==0
+          and result['phone_status']=='command_exited' and result['source_sha256']==sha(source)
+          and {k:result['phone_stdout'][k] for k in ('bytes','sha256')}==bare(stdout)
+-         and result['signals_sent']==0 and result['case_pass'] is False
++         and result['signals_sent']==0 and result['automatic_retry'] is False and result['case_pass'] is False
+          and result['native_boundary_created'] is False,'native collector crosslink differs')
+     need({k:result['phone_originals']['intent.json'][k] for k in ('bytes','sha256')}==bare(O.read(record['phone_intent']))
+          and {k:result['phone_originals']['result.json'][k] for k in ('bytes','sha256')}==bare(O.read(record['phone_result'])),
+          'native original manifest crosslink differs')
+     control['source_transport']=encoding
++    control['retained_launcher_source']=bare(launcher)
++    control['launcher_pinned_phone_actor_sha256']=PHONE_ACTOR_SHA
++    control['execution_origin']='TRUSTED_RETAINED_CONTROLLER_TOOL_RECEIPTS'
++    control['controller_stdin_digest_recomputed']=False
+     return strict(stdout),source,control
+ 
+ def material(O,attempt):

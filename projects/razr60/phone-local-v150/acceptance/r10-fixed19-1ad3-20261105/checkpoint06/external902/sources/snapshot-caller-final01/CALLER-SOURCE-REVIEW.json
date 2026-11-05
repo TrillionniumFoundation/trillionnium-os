@@ -1,0 +1,91 @@
+{
+  "actual_role_bindings": {
+    "bytes": 8120,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/ACTUAL-ROLE-ORIGINAL-PINS.json",
+    "sha256": "d7f2156ceba2503f8956909cb985c87d4fe52ee344604029cf6da61fa7bbd0a8"
+  },
+  "admission_granted": false,
+  "alternate_capture_suffix_on_failure": false,
+  "caller": {
+    "bytes": 32619,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "a8f53c2dad61f64d303316ea299ba14bcfefe3eea21dc38d42e0c409fc8c7286"
+  },
+  "component_qualified": false,
+  "controller_request": {
+    "bytes": 34616,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "687bc84f0462fa97ace98aef124632cbe1daf5f701685004f98ffe0ab4a7d3fb"
+  },
+  "direct_original_phone_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/source/component_snapshot.py",
+    "--lease",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01",
+    "--lease-sha256",
+    "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736",
+    "--package-sha256",
+    "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb",
+    "--out",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01",
+    "--execute-original-snapshot-once"
+  ],
+  "explicit_source_edits": [
+    "retain exact original staged snapshot2d624 as source evidence",
+    "original frozen-phone GNU ENV plus direct-file argv; timeout100",
+    "fixed same902 snapshot observation tag",
+    "exact retained original source assertion",
+    "new independent host snapshot continuation directory",
+    "explicit original snapshot writes, self-alarm, signal-zero and zero replay scope",
+    "bounded passive P4 wait130; no kill on timeout",
+    "result explicitly distinguishes completed caller from actual snapshot qualification"
+  ],
+  "idempotency_key": "root-1ad3-external902-snapshot01-20261105",
+  "initial_role_gate_endpoint_table_sets": 1,
+  "initial_role_gate_group_rounds": 2,
+  "initial_role_gate_signal_zero_queries": 6,
+  "inline_runtime_source_substitution": false,
+  "later_closure_and_boundary_publication_require_actual_snapshot_descriptors": true,
+  "lease_extension": false,
+  "new_case_or_nonce": false,
+  "new_evidence_capture_target": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01",
+  "original_self_SIGALRM_seconds": 75,
+  "outer_controller_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/root-1ad3-external902-snapshot01",
+  "parent": {
+    "bytes": 52781,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+  },
+  "passive_wait_seconds": 130,
+  "phone_calls_during_preparation": 0,
+  "phone_case_or_source_original_writes": 0,
+  "phone_command_bytes": 960,
+  "phone_env_prefix_exactly_inherited": true,
+  "phone_request_preview": {
+    "bytes": 1041,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/PHONE-REQUEST.preview.json",
+    "sha256": "257f57c8d37dbe7097088ffc84eb1d5a3f35948f1433e02047edfd2d072443e3"
+  },
+  "phone_timeout_seconds": 100,
+  "schema": "hepta.external902.original-snapshot-caller-preparation.v1",
+  "snapshot_outcome_unknown_until_actual_readback": true,
+  "source_original": {
+    "bytes": 24187,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/component_snapshot.2d624.original.py",
+    "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+  },
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "tag": "ng-902e851c3ca1f90deab3d880ab993774-snapshot01",
+  "target_functions_executed_during_preparation": 0,
+  "target_modules_imported_during_preparation": 0,
+  "target_must_be_create_only": true,
+  "unchanged_functions": [
+    "put",
+    "enc"
+  ],
+  "whole_inverse_to_parent": true,
+  "zero_queries_are_not_delivered_TERM_or_KILL": true
+}

@@ -1,0 +1,24 @@
+{
+  "all_collector_functions_identical_to_actual_046e": true,
+  "case_qualification": false,
+  "changes": [
+    "PROBE",
+    "REQ quoted heredoc",
+    "LABEL",
+    "out",
+    "PROBE length/hash assertion",
+    "two descriptive result state strings"
+  ],
+  "idempotency_key": "root-1ad3-neg01-inventory-diff01-20261105",
+  "new_native_nonce": false,
+  "out": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-02-inventory-diff01",
+  "outer_job_timeout": null,
+  "passive_wait_seconds": 240,
+  "phone_calls_max": 1,
+  "phone_probe_bytes": 21700,
+  "phone_probe_sha256": "d36b5b639cecb9a632a299df543fd55374cef67f3f5f1c2f1db813b18d25fec5",
+  "phone_source_or_case_writes": 0,
+  "phone_timeout_seconds": 210,
+  "source_bytes": 50942,
+  "source_sha256": "a4ba9e5bb4550a84fcffdd8215c7572ff19d102e0c6b77759b5903d26239ce6d"
+}

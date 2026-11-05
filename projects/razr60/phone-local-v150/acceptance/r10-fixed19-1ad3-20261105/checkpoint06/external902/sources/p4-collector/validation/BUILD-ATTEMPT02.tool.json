@@ -1,0 +1,7 @@
+{
+  "chunk_id": "8ac9d2",
+  "wall_time_seconds": 0.07091816,
+  "exit_code": 0,
+  "original_token_count": 194,
+  "output": "{\"files\": 14, \"manifest\": {\"bytes\": 2738, \"path\": \"/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/SOURCE-MANIFEST.json\", \"sha256\": \"4bcad02456b0fed749e440b656ccc9ed3a9a5b6e634c48c1e43157c8e637c9f5\"}, \"p4_out\": \"/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01\", \"request\": {\"bytes\": 41704, \"path\": \"/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/CONTROLLER-REQUEST.json\", \"sha256\": \"a7ecb0133be28ad6bfb5886e1cd87e9498c9025fdc74240ae4312ce7c3baab01\"}, \"source\": {\"bytes\": 40752, \"path\": \"/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/source/collect_external902_p4_originals.py\", \"sha256\": \"c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d\"}, \"source_only\": true}\n"
+}

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "root-1ad3-ext902-p4-archive-read-491520-65536-v1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "pocket4",
+      "path": "/home/alex/codex-hepta-external902-7c907661-originals-1ad3-01/EXTERNAL902-P4-ORIGINALS.tar.xz",
+      "offset": 491520,
+      "limit": 65536,
+      "expected_version": "66306:33991650:820660:1793883317563311695:1793883317563311695"
+    }
+  }
+}

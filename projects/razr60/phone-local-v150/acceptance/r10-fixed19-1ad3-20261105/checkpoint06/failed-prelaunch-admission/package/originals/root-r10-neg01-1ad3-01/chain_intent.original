@@ -1,0 +1,12 @@
+{
+  "automatic_lease_extension": false,
+  "automatic_retry": false,
+  "case_id": "NEG-01",
+  "label": "root-r10-neg01-1ad3-01",
+  "lease_expires_unix_ms": 1793872564534,
+  "maximum_detached_launches": 1,
+  "maximum_native_sends": 1,
+  "model_requests": 0,
+  "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+  "schema": "hepta.native-guard.root-chain-intent.v1"
+}

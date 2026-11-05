@@ -1,0 +1,25 @@
+{
+  "added_directories_expected": 4,
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "observe_fixed_external_additions_once.py"
+  ],
+  "boundary_directory_names_maximum": 128,
+  "boundary_files_maximum_bytes": 1048576,
+  "changed_parent_directories_expected": 2,
+  "file_bytes_expected": 165391,
+  "file_count_expected": 72,
+  "output": "one JSON object on stdout; exit zero only for complete retained observations",
+  "output_budget_bytes": 8388608,
+  "qualification": "Observation only. No global clearance, native qualification, writer attribution, or admission.",
+  "schema": "hepta.fixed-external-additions.observer-interface.v1",
+  "scope": "Only the 78 exact observed rows and two fixed boundary leaves; no recursive boundary or case-home reads.",
+  "source": {
+    "bytes": 28397,
+    "path": "source/observe_fixed_external_additions_once.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "target_read_only": true
+}

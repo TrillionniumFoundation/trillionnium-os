@@ -1,0 +1,26 @@
+{
+  "bytes": 469839,
+  "chunks": 8,
+  "local": "/workspace/scratch/1ad3d6f55439/failed_prelaunch_input_cache/external09-component-inputs.original.tar.gz",
+  "original": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 20,
+      "link_count": 1,
+      "metadata_platform": "darwin",
+      "mode": 384,
+      "uid": 501,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-09/material/component-inputs.tar.gz",
+    "sha256": "79106cab8e032e60958419e26506d80e78f7127a22300e9668949d573c0ff07c",
+    "size": 469839,
+    "version": "16777233:588362355:469839:1793871387313820294:1793871387313820294"
+  },
+  "original_gzip_not_tar_recompression": true,
+  "schema": "hepta.failed-prelaunch.original-gzip-readback.v1",
+  "sha256": "79106cab8e032e60958419e26506d80e78f7127a22300e9668949d573c0ff07c",
+  "version_pinned": true
+}

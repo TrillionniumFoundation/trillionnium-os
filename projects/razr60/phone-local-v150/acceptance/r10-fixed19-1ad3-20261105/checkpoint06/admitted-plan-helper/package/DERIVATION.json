@@ -1,0 +1,33 @@
+{
+  "actual_source_stage13_bytes_changed": false,
+  "actual_verifier_executed_here": false,
+  "all_other_bytes_unchanged": true,
+  "candidate": {
+    "bytes": 42520,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-admitted-1ad3-candidate01/source/prepare_native_guard_root_plan.py",
+    "sha256": "4db85943e9d264b606bea7b452bba74e7007b08727d7a4edbea298b55de4f023"
+  },
+  "case_or_nonce_generated": false,
+  "changed_literal": "FAILED_PRELAUNCH_VERIFIER",
+  "new_value": {
+    "bytes": 54893,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/source/verify_failed_prelaunch.py",
+    "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+  },
+  "old_value": null,
+  "parent": {
+    "bytes": 42223,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+  },
+  "phone_operations": 0,
+  "reviewed_admission_descriptor_after_actual_host_verification": {
+    "bytes": 66905,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/FAILED-PRELAUNCH-ADMISSION.json",
+    "sha256": "e85b3bfed5e4720fdcebca8783c6735a9601d73d903066c6de61917e001bf130"
+  },
+  "schema": "hepta.native-guard.admitted-plan-helper-derivation.v1",
+  "source_scope": "Only a new immutable helper artifact. Existing runtime/Root/consumer/adoption/history pins, resource bounds, failed-nonce exclusion and no-replay checks are byte-identical.",
+  "state": "SOURCE_ONLY_FAILED_PRELAUNCH_VERIFIER_LITERAL_BOUND",
+  "whole_inverse_sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+}

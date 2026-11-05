@@ -1,0 +1,53 @@
+{
+  "actual_cascade_delivery": {
+    "bytes": 28755,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json",
+    "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+  },
+  "archive": {
+    "bytes": 45691,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/seal_interface_inventory_prefix_candidate01/delivery-final01/seal-interface-inventory-prefix-source-final01.tar.gz",
+    "sha256": "b06a46c21f428ecdea6363928d228699f803464519e4d4dc20e24060474fa9dc"
+  },
+  "archive_plain_tar": {
+    "bytes": 204800,
+    "sha256": "e658c6ef10cc12900e4011ef757f5e5b45ec3700af8d6aa02067b645118bb21a"
+  },
+  "case_inputs": [],
+  "host_interface_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-seal-interface-r8-r1-inventory-prefix-1ad3-01",
+  "independent_reviews": [
+    {
+      "bytes": 2287,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/seal-interface-inventory-prefix-independent01/REVIEW.json",
+      "sha256": "aedb3a97c6c5743581389952dbd1ec807674e06f567ce1dea21bb78d2ae85977"
+    }
+  ],
+  "main_executed": false,
+  "native_execute_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-seal-interface-r8-inventory-prefix-source-1ad3-candidate01/source/write_final_seal_interface_property_r8.py",
+    "--execute-host-interface-once"
+  ],
+  "nonce_created": false,
+  "phone_calls": 0,
+  "qualification_granted": false,
+  "regular_files": 12,
+  "remote_calls": 0,
+  "schema": "hepta.property-policy.inventory-prefix-seal-interface-source-delivery.v1",
+  "sealed_release": null,
+  "source": {
+    "bytes": 41236,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-seal-interface-r8-inventory-prefix-source-1ad3-candidate01/source/write_final_seal_interface_property_r8.py",
+    "sha256": "991511989c7c0e2f826f9df0302d570938eca03ab1136adfa02c96b61feee3f0"
+  },
+  "source_manifest": {
+    "bytes": 3369,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-seal-interface-r8-inventory-prefix-source-1ad3-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "63a1641012478cc73313bf94fbba97f01e0e95efc805f3abdccc7041a6cc298a"
+  },
+  "source_target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-seal-interface-r8-inventory-prefix-source-1ad3-candidate01",
+  "state": "REVIEWED_SOURCE_BOUND_ARCHIVE_READY_NOT_STAGED",
+  "uncompressed_file_bytes": 186476
+}

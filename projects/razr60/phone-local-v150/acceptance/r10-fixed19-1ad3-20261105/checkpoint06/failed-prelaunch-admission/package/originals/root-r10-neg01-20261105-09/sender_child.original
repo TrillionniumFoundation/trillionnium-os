@@ -1,0 +1,8 @@
+{
+  "identity_missing_only_if_actual_child_already_joined": false,
+  "maximum_starts": 1,
+  "pgid": 80237,
+  "pid": 80237,
+  "sid": 80237,
+  "source_intent_sha256": "26d12e6922de725625672b4b48def6f50522ec7e559cc53983a61b64f28cde0b"
+}

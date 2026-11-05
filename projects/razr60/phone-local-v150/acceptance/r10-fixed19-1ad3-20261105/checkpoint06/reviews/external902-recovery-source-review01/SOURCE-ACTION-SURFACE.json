@@ -1,0 +1,165 @@
+{
+  "actual_private_evidence_not_yet_consumed_by_this_report": true,
+  "actual_side_effects_by_this_review": {
+    "Mac_calls": 0,
+    "P4_calls": 0,
+    "new_case_or_nonce": 0,
+    "originals_modified": false,
+    "phone_calls": 0,
+    "signals": 0,
+    "source_modules_imported": 0,
+    "target_functions_executed": 0
+  },
+  "case_pass": false,
+  "created_at_utc": "2026-11-05T12:41:11.610017+00:00",
+  "label": "root-r10-neg01-7c907661-01",
+  "minimal_reuse_sequence": [
+    "Bind actual private79b complete originals and same source generation; confirm ended/provider/sidecar receipts and absent capture01 target.",
+    "Either use original verify_role_end through a fixed reviewed loader or directly use original snapshot, which already performs it before writes. Do not implement an alternate proc scanner.",
+    "Collect original P4 sender/setup/material and fixed sibling inputs; retain Mac actor/send/local once originals.",
+    "After Root review, one original snapshot; retain complete output/capture/transport.",
+    "Build closure-plan only from actual descriptors and one original setup attempt; run original P4 closer once into a new output.",
+    "Only on actual failed-closed verification, review one create-only396d publish using actual closure/inventory.",
+    "Any subsequent generation admission remains blocked by existing31da/a334 identity gates until explicitly reviewed; no new case identity here."
+  ],
+  "nonce": "902e851c3ca1f90deab3d880ab993774",
+  "schema": "hepta.external902.same-nonce-recovery-source-surface.v1",
+  "source_pins_checked_against_actual31da_manifest": {
+    "close_component.py": {
+      "bytes": 99120,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/close_component.py",
+      "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+    },
+    "component_common.py": {
+      "bytes": 19138,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    "component_lifecycle.py": {
+      "bytes": 40261,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_lifecycle.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    "component_snapshot.py": {
+      "bytes": 24187,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_snapshot.py",
+      "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+    },
+    "late_boundary.py": {
+      "bytes": 74287,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/source-binary-read01/late_boundary.original.py",
+      "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+    }
+  },
+  "state": "SOURCE_ANALYSIS_ONLY_ACTUAL_BINDINGS_PENDING",
+  "surfaces": [
+    {
+      "call_target": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01",
+      "conditions": "Original lifecycle roles_joined_and_groups_absent true; original JOINED objects equal ended roles and original spawned identities. Every census/group-zero query and endpoint table must pass, otherwise fail closed.",
+      "endpoint_bytes_per_table_max": 1048576,
+      "entry": "component_snapshot.verify_role_end(home)",
+      "group_bound": {
+        "numeric_pids_per_round": 4096,
+        "seconds_per_round_cooperative": 2
+      },
+      "groups_and_endpoints_observation_count": {
+        "endpoint_table_sets": 1,
+        "groups": 2
+      },
+      "kernel_signal_zero_existence_probes": {
+        "implementation": "original component_common.absent_groups calls os.kill(-original_pgid,0) and requires ESRCH; not a TERM/KILL send",
+        "per_round": 3,
+        "rounds": 2,
+        "total_for_distinct_three_roles": 6
+      },
+      "not_a_full_native_or_global_clearance": true,
+      "process_launches": false,
+      "reads": [
+        "LIFECYCLE-ENDED.json",
+        "SUPERVISOR.json",
+        "provider.SPAWNED.json",
+        "sidecar.SPAWNED.json",
+        "provider.JOINED.json",
+        "sidecar.JOINED.json",
+        "two independent /proc censuses bound to exact PID/PGID/SID/start_ticks",
+        "one /proc/net/tcp, /proc/net/tcp6, /proc/net/unix table set"
+      ],
+      "return_values": "AFTER-ROLES object and three raw /proc/net table bytes; component_qualified/native_turn_verified remain false.",
+      "true_signals_delivered": false,
+      "writes": false
+    },
+    {
+      "capture_limits": {
+        "capture_read_cooperative_seconds": 55,
+        "file_count": 8192,
+        "native_line_bytes": 4194304,
+        "native_scan_bytes": 134217728,
+        "per_file": 16777216,
+        "retained_bytes": 67108864,
+        "self_alarm_seconds": 75
+      },
+      "cli_is_plan_only_not_executed": true,
+      "does_not_award_case_pass": true,
+      "entry": "component_snapshot.snapshot / original main",
+      "exact_original_cli": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/source/component_snapshot.py",
+        "--lease",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01",
+        "--lease-sha256",
+        "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736",
+        "--package-sha256",
+        "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb",
+        "--out",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01",
+        "--execute-original-snapshot-once"
+      ],
+      "requires": [
+        "same expired lease permitted by load_lease(require_live=False)",
+        "exact staged31da package and source path",
+        "owner/accepted/bound/native start exact originals",
+        "verify_role_end passes BEFORE any capture output mkdir",
+        "fixed original capture namespace absent"
+      ],
+      "retained_scope": "home, actual native run, executor alias, action-ledger, original retirement/prior chains, fixed non-native sidebranch, exact native action client receipts/traces, all cumulative inventory roots and fixed fixture, selected actual five-scope native original records, fresh role/endpoint proof.",
+      "self_signal_mechanism": "Installs a SIGALRM handler then alarm(75), cancels and restores handler in finally. This is not a pure-read entry. No external process signals or service launch.",
+      "writes": "Only new explicit capture root, snapshot copied originals, observation files, CAPTURE.json, ORIGINALS.tar.gz, RESULT.json or PARTIAL-CAPTURE.json; original source/case bytes not modified."
+    },
+    {
+      "capture_failure_branch": {
+        "accepted_shape": "One original capture call and one result; exact r6 terminal completed/exit72 joined/group_absent, matched native streams/transport and final provider_failed native terminal; no later effect.",
+        "guard_or_after_guard_not_required_for_failed_capture": true,
+        "possible_result_if_all_checks_pass": "ORIGINAL_NATIVE_COMPONENT_FAILED_CLOSED",
+        "qualified": false,
+        "required_original_setup_attempts": 1,
+        "source_functions": [
+          "native_originals",
+          "bound_r6",
+          "typed_reparse",
+          "verify_roles",
+          "verify_ledger_inventory",
+          "sender_originals",
+          "close"
+        ],
+        "unknown_effects_not_assumed": "The closer only sets unknown_effects0 after all native, r6, sender, fixture, ledger, role and preservation checks; the current map grants no such result."
+      },
+      "entry": "close_component.close / original --execute-host-closure-once on P4",
+      "exec_note": "Executes only exact retained validator/parser module sources locally; compares all shell command bytes without invoking them. Must run source9025 adjacent to source396d/package31da; a334/147cf is not an interchangeable loader.",
+      "external_signals": false,
+      "native_or_model_execution": false,
+      "phone_or_network_calls": false,
+      "reads_phone": false,
+      "writes": "A new canonical P4 output containing captured materialization, parser-derived observations, copied sender originals, NATIVE-AUDIT.original.json, AFTER-INVENTORY.original.json, CLOSURE.original.json, RESULT.json."
+    },
+    {
+      "cannot_run_before_actual_closure": true,
+      "does_not_extend_lease_or_restart": true,
+      "entry": "actual396d late_boundary.publish / --execute-publish-once",
+      "fresh_checks": "current_inventory twice, cumulative exact roles absent_groups twice including zero-signal probes, one endpoint table set, whole original rechecks.",
+      "requires": "Actual independent closure and full after-inventory exact descriptors; same expired lease and boot, staged31da/396d; original prior chain/retirement preservation; nonce target absent.",
+      "writes": "New fixed902 boundary directory with PUBLISH-INTENT and original closure/inventory copies, then fixed902.json create-only. No legacy original overwrites."
+    }
+  ]
+}

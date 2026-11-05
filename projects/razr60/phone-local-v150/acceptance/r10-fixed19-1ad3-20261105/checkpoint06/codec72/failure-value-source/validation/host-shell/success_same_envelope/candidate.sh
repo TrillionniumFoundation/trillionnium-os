@@ -1,0 +1,3 @@
+hepta_page_before_b64=SE9TVF9PTkxZ; hepta_page_after_b64=SE9TVF9PTkxZ; hepta_codec=$(printf %s '{"schema":"host-only-control","status":"encoded"}
+'; printf %s '' >&2; exit 0) || { hepta_codec_exit_code=$?; printf '%s' "$hepta_codec"; printf '\n{"schema":"hepta.codec-failure-observation.v1","codec_exit_code":%s,"codec_stdout_representation":"posix_shell_command_substitution_value","java_stdout_exact":false,"stderr_has_appended_diagnostic_record":true}\n' "$hepta_codec_exit_code" >&2; exit 72; }; printf '{"schema":"hepta.capture-page-envelope.v149.1","capture_id":"5a952602788122f47ff1370cfa38dffe","page_before_b64":"%s","page_after_b64":"%s","screenshot":%s}
+' "$hepta_page_before_b64" "$hepta_page_after_b64" "$hepta_codec"

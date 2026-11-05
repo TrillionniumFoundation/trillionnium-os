@@ -1,0 +1,53 @@
+{
+  "caller": {
+    "bytes": 52781,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+  },
+  "case_pass": false,
+  "controller_request": {
+    "bytes": 55740,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "8a6fa8011027ae5fb18e37caeec3748cc1b2f7846ca25532751bb302786740be"
+  },
+  "create_only_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-private-read01",
+  "exact_embedded_probe_and_heredoc": true,
+  "fixed_label": "ng-902e851c3ca1f90deab3d880ab993774-private-read01",
+  "functions_byte_identical": [
+    "put",
+    "enc"
+  ],
+  "idempotency_key": "root-1ad3-external902-private-read01-20261105",
+  "limitations": [
+    "Source review only; no actual collection, cleanup or native case qualification asserted.",
+    "Size caps are refusal gates; current home serialized size remains unknown.",
+    "Passive wait timeout remains unknown with no signals or retry.",
+    "An initial local assertion used an assumed key ending private-originals-read01; inspection showed the actual request key private-read01. Corrected the review assertion to the exact fixed actual request without modifying source/request; no target execution occurred."
+  ],
+  "native_result_bound_bytes": 8388608,
+  "original_child_passive_wait_seconds": 240,
+  "outer_timeout_supplied": false,
+  "parent_actual_caller": {
+    "bytes": 64533,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "ac8c5ab5f4947315515afc912b2b8973e22d35b1de07a8e46b5a348d87259b59"
+  },
+  "phone_actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+  "phone_command_bytes": 23017,
+  "phone_observation_seconds": 210,
+  "probe": {
+    "bytes": 22534,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/delivery-final01/package/source/observe_external902_private_roots_once.py",
+    "sha256": "79b226e3c5caaf8665b313dfe9c19ec6b56326ebc06c1bcaebead83b3fb508e8"
+  },
+  "reviewed_at_utc": "2026-11-05T12:35:22.995237+00:00",
+  "reviewer_phone_calls": 0,
+  "reviewer_remote_calls": 0,
+  "schema": "hepta.independent.external902-private-caller-review.v1",
+  "seven_splice_whole_byte_inverse": true,
+  "single_actor_start_and_no_replay_or_signals": true,
+  "source_and_request_digest_bound": true,
+  "state": "LOCAL_SOURCE_REVIEW_NO_BLOCKER",
+  "target_main_or_functions_run": false,
+  "twelve_original_archive_bound_bytes": 16777216
+}

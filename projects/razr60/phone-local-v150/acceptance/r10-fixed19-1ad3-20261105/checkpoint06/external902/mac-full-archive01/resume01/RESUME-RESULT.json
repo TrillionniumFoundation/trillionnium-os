@@ -1,0 +1,43 @@
+{
+  "state": "RESUME_INCOMPLETE_ERRORS_PRESERVED",
+  "verified_chunks": 1,
+  "expected_chunks": 6,
+  "failures": [
+    {
+      "task": {
+        "name": "EXTERNAL902-ORIGINALS.tar.xz",
+        "offset": 1703936
+      },
+      "worker": 0,
+      "error": "Error: native binary_read isError",
+      "further_remote_retry": false
+    },
+    {
+      "task": {
+        "name": "ORIGINALS-MANIFEST.json",
+        "offset": 65536
+      },
+      "worker": 1,
+      "error": "Error: native binary_read isError",
+      "further_remote_retry": false
+    }
+  ],
+  "maximum_parallel_reads": 2,
+  "remote_process_start": 0,
+  "phone_calls": 0,
+  "chunks": [
+    {
+      "chunk_bytes": 26748,
+      "eof": true,
+      "name": "EXTERNAL902-ORIGINALS.tar.xz",
+      "next_offset": 1796220,
+      "offset": 1769472,
+      "verification": {
+        "bytes": 1338,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/resume01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01769472.VERIFIED.json",
+        "sha256": "d27a4079ebd5f7614291713c14ab8960d70c88c84e0d2fc966304cf625725ba7"
+      },
+      "version": "16777233:588533027:1796220:1793881880637206994:1793881880637206994"
+    }
+  ]
+}

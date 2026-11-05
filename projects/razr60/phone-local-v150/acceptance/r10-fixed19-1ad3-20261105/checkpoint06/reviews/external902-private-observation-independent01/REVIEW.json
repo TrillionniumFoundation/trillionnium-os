@@ -1,0 +1,110 @@
+{
+  "case_pass": false,
+  "checks": [
+    {
+      "functions": [
+        "need",
+        "sha",
+        "strict",
+        "metadata",
+        "parent_fd",
+        "boot",
+        "own_fds"
+      ],
+      "name": "seven_pure_read_helpers_byte_identical4bec",
+      "passed": true
+    },
+    {
+      "files_including_manifest": 13,
+      "name": "manifest_closedset_all_bytes",
+      "passed": true
+    },
+    {
+      "detail": "Only GNU one-case home, Android executor alias, same-nonce fixture are traversed. Ancestors never list sibling names. Unknown special/link nodes refuse.",
+      "name": "three_fixed_roots_and_four_metadata_only_ancestors",
+      "passed": true
+    },
+    {
+      "name": "fixture_ENOENT_requires_repeated_held_and_canonical_parent_bookends",
+      "passed": true
+    },
+    {
+      "detail": "stat before open; O_NONBLOCK plus NOFOLLOW and exact fstat metadata prevents FIFO-substitution blocking/success.",
+      "name": "no_open_before_regular_or_directory_type_admission",
+      "passed": true
+    },
+    {
+      "detail": "Root files0600/directories0700; fixture uid/gid2000 files0600/0400 and directories0700. No new permissions written.",
+      "name": "root_and_fixture_ownership_separate",
+      "passed": true
+    },
+    {
+      "detail": "Own FD closure in finally; subsequent canonical-parent read; repeated complete tree node checks before success.",
+      "name": "whole_file_full9_selinux_and_directory_name_bookends",
+      "passed": true
+    },
+    {
+      "detail": "Exact lease expiry without renewal, manifest complete files/dirs set, all32 source hashes, actual action original full9. No runtime imports.",
+      "name": "lease2496_runtime31da32_and_four_action_origin_pins_match_actual_raw",
+      "passed": true
+    },
+    {
+      "detail": "Parent/home full9+SELinux and every executor relative name/metadata/label/hash/raw equal; explicitly not independent trees.",
+      "name": "GNU_Android_alias_checked_all_relative_rows_and_whole_bytes",
+      "passed": true
+    },
+    {
+      "depth": 16,
+      "detail": "Eight-MiB output oversize yields explicit incomplete failure, not truncated success. Alias duplicated bytes count toward total.",
+      "directory_names": 512,
+      "entries": 1024,
+      "name": "bounded_reads_output_and_fail_closed_serialization",
+      "output_bytes": 8388608,
+      "passed": true,
+      "per_file_bytes": 8388608,
+      "total_raw_bytes": 16777216
+    },
+    {
+      "detail": "Only read FDs, actual ownFD census checks unknown FDs without closing them; no subprocess/signal/socket/flock/write/runtime/case calls.",
+      "name": "ownership_and_no_side_effect_runtime_surface",
+      "passed": true
+    },
+    {
+      "detail": "later non-atomic read; process_absence/global_clearance/component/admission all false.",
+      "name": "observational_claims_remain_separate_from_clearance",
+      "passed": true
+    }
+  ],
+  "exact_scope_map": {
+    "bytes": 8815,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/external902-reconciliation-map01/PRIVATE-READ-MAP.json",
+    "sha256": "bd0ad443d3abbc6d6691ffe102caeb370681c519c4c3c0074df6ca32993c0c22"
+  },
+  "limitations": [
+    "No phone, Mac, P4, probe function, source import or main was executed by reviewer.",
+    "No observed size for current private home yet. Direct base64 may exceed output8MiB despite raw16MiB cap; source correctly refuses and cannot promise fit. If lossless compression is introduced it requires a new reviewed source.",
+    "This source has finite size/count bounds but no internal elapsed-time cutoff; use the separately reviewed actor observation timeout, and do not describe it as a hard self-deadline.",
+    "The codec temporary PNG and global process/net/ledger state are outside these fixed trees and are not inspected.",
+    "No actual lifecycle cleanup, native closure or late-boundary admission is established."
+  ],
+  "manifest": {
+    "bytes": 2189,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/package/SOURCE-MANIFEST.json",
+    "sha256": "69d9bcae52df6b7ec0f218ed546548b6f5b161c363a2bb9d896d9951a1d0bca1"
+  },
+  "parent": {
+    "bytes": 28397,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/package/reference/observe_fixed_external_additions_once.4bec.original.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "reviewed_at_utc": "2026-11-05T12:32:54.717596+00:00",
+  "schema": "hepta.independent.external902-private-observation-review.v1",
+  "source": {
+    "bytes": 22534,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/package/source/observe_external902_private_roots_once.py",
+    "sha256": "79b226e3c5caaf8665b313dfe9c19ec6b56326ebc06c1bcaebead83b3fb508e8"
+  },
+  "state": "SOURCE_ONLY_NO_BLOCKER"
+}

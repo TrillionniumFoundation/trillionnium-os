@@ -1,0 +1,71 @@
+{
+  "blockers": [],
+  "caller": {
+    "bytes": 7342,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "99a10978afac380dda0624cb91beaecf7c3fc1e0e0a0adf6cfd1847bbfe247fa"
+  },
+  "checks": [
+    {
+      "actual_android_shell": "/debug_ramdisk/su -c '/system/bin/logcat --help'",
+      "app_process_requested": false,
+      "clears_requested": false,
+      "log_buffers_requested": false,
+      "name": "unique literal requested command",
+      "request": {
+        "command": "/system/bin/logcat --help",
+        "kind": "shell",
+        "root": true,
+        "timeout_seconds": 30
+      },
+      "result": "PASS"
+    },
+    {
+      "actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+      "name": "existing actor protocol and boot/request/command binding",
+      "note": "Read exact cached actor and shell return schema; baseline first line boot checked; intent raw request hash and exact su command checked; no after-help boot reread claimed.",
+      "result": "PASS",
+      "route_source_sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b"
+    },
+    {
+      "Popen_count": 1,
+      "evidence_regular_files": 13,
+      "name": "owned host lifecycle and bounded retention",
+      "passive_wait_seconds": 60,
+      "result": "PASS",
+      "stdout_stderr": "both complete strings retained separately from native operation original",
+      "timeout_action": "UNKNOWN retained, no signal/retry",
+      "total_original_limit": 16777216
+    },
+    {
+      "functions": [
+        "enc",
+        "put"
+      ],
+      "name": "byte-identical retained helpers",
+      "result": "PASS"
+    },
+    {
+      "idempotency_key": "root-1ad3-logcat-help-capability01-20261105",
+      "name": "controller input and namespace",
+      "outer_timeout_present": false,
+      "output_create_only": true,
+      "result": "PASS",
+      "stdin_exact": true
+    }
+  ],
+  "limits": [
+    "Static source and exact local cache only; no caller/phone/remote execution performed.",
+    "Wrapper exit0 alone is not a successful help query: result.observation_complete and help_command_returned_zero are separate and must be inspected.",
+    "Help options are not parsed or assumed here; this request reads help text, not current or historical logs.",
+    "Existing actor performs its fixed read-only baseline before the one requested help command."
+  ],
+  "request": {
+    "bytes": 8133,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/logcat_help_capability_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "de886987850398518b025fc04da7215f7318940599a6e84ff74fd222acfa20d0"
+  },
+  "reviewed_at_utc": "2026-11-05T13:37:03.818421+00:00",
+  "schema": "hepta.independent-help-caller-review.v1",
+  "state": "NO_BLOCKER_IN_HELP_ONLY_SCOPE"
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793873598390,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1ab32d7b6-fc05-4b5b\",\n    \"idempotency_key\": \"root-1ad3-neg01-existing-stage-readonly01-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1ab32d7b6-fc05-4b5b\",\n    \"request_digest\": \"fe9b29c38878e61c4d614b0644e3fbd065b517b396e1b385df7082df92162c35\",\n    \"request_fingerprint\": 18346303426808833564,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab32d7b6-fc05-4b5b\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ab32d7b6-fc05-4b5b\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

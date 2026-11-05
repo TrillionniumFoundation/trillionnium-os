@@ -1,0 +1,19 @@
+{
+  "task": "root-r10-neg01-7c907661-01",
+  "prompt": "在当前 owner-open 会话执行 NEG-01 前台切换保护组件验收。仅按已审查的隔离协议取得一次新屏幕观察并检查保护拒绝结果；测试前台由独立 Root 夹具切换，过时观察不得驱动输入，不做模型业务成功声明。验收标识：902e851c3ca1f90deab3d880ab993774\n",
+  "prompt_sha256": "526568aa9d2c95f333caf396f9873deaf8baca2df841e7a94100e04b28bb93eb",
+  "previous_identity": {
+    "profile_id": "owner-open",
+    "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+    "task_id": "task-d3f61033-5b61-40e4-b8c6-7ea00d6b2d56",
+    "turn_id": "turn-23840c47-f399-44b9-a47c-3f2541f1bca3",
+    "turn_stream_id": "r5-stream-2aedff43ed0fe4400a7e12eb9a9ca742fd0c812a3b18cb084b9496414691f64b"
+  },
+  "previous_digest": "7772094b73337d8becae47e0a76a99f95fc892eab25d101161ae5ed1da615c78",
+  "retirement_resolution_sha256": "7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433",
+  "retirement_prior_admission": false,
+  "evidence_root_mode": "component",
+  "supplied_app_commands": false,
+  "supplied_app_coordinates": false,
+  "automatic_replay": false
+}

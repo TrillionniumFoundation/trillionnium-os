@@ -1,0 +1,66 @@
+{
+  "actual_private_observation": {
+    "bytes": 3933358,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/private-read01/originals/PHONE-STDOUT.original",
+    "sha256": "b9778101ffee78dcdcab4ef1c0f70ffe663f733365ffce867bc5dd91a580b7ce"
+  },
+  "actual_role_original_pins": {
+    "bytes": 8120,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/ACTUAL-ROLE-ORIGINAL-PINS.json",
+    "sha256": "d7f2156ceba2503f8956909cb985c87d4fe52ee344604029cf6da61fa7bbd0a8"
+  },
+  "caller": {
+    "bytes": 32619,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "a8f53c2dad61f64d303316ea299ba14bcfefe3eea21dc38d42e0c409fc8c7286"
+  },
+  "case_pass": false,
+  "checks": {
+    "actual13_role_rows_full9_bytes_sha_equal_complete_private_read": true,
+    "direct_staged_original_path_not_inline_substitution": true,
+    "eight_splice_whole_byte_inverse_to6ee7": true,
+    "exact_same902_lease3168_runtime31da_and_capture01": true,
+    "explicit_capture_writes_self_SIGALRM75_and_kernel_sig0_disclosures": true,
+    "one179a_actor_start": true,
+    "phone100_passive130_no_outer_timeout_or_retry": true,
+    "put_enc_byte_identical": true,
+    "same_GNU_environment": true,
+    "source_case_original_writes_zero": true,
+    "source_original_unchanged": true
+  },
+  "controller_request": {
+    "bytes": 34616,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "687bc84f0462fa97ace98aef124632cbe1daf5f701685004f98ffe0ab4a7d3fb"
+  },
+  "idempotency_key": "root-1ad3-external902-snapshot01-20261105",
+  "new_case_or_nonce": false,
+  "original_snapshot": {
+    "bytes": 24187,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/component_snapshot.2d624.original.py",
+    "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+  },
+  "parent_actual_caller": {
+    "bytes": 52781,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_snapshot_recovery_candidate01/caller-final01/P4-LAUNCHER.6ee7.original.py",
+    "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+  },
+  "phone_command_bytes": 960,
+  "reviewed_at_utc": "2026-11-05T12:47:39.486096+00:00",
+  "reviewer_remote_calls": 0,
+  "reviewer_target_calls": 0,
+  "schema": "hepta.independent.external902-original-snapshot-caller-review.v1",
+  "semantics": [
+    "Original snapshot performs fresh original group/endpoint gate before new capture mkdir.",
+    "Existing capture01 refuses; no auto suffix02 or alternative identity.",
+    "P4 caller signal count0 does not hide phone self SIGALRM or original kernel signal-zero queries; INTENT and RESULT explicitly distinguish them.",
+    "Returncode0 only says original snapshot process returned; full actual capture/archive readback and independent closer remain required.",
+    "Old provider70/sidecar0 joins are retained original evidence, not new cleanup actions."
+  ],
+  "source_surface_review": {
+    "bytes": 9389,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/external902-recovery-source-review01/SOURCE-ACTION-SURFACE.json",
+    "sha256": "4623fbc427d43870131307fac5853ce74c317be6eb0bdefad40c9936680029ea"
+  },
+  "state": "SOURCE_ONLY_NO_BLOCKER"
+}

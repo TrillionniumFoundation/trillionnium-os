@@ -1,0 +1,29 @@
+{
+  "archive": {
+    "bytes": 10456,
+    "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint06_delivery/draft02/generated/snapshot01-native-transfer-records.tar.xz",
+    "sha256": "6456eb37e13a832a4f4c66218de4d4be7328956152b20fbbaa34c496467f4200"
+  },
+  "case_pass": false,
+  "files": [
+    {
+      "member": "chunk0.tool.json",
+      "original": {
+        "bytes": 13303,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/snapshot01/chunk0.tool.json",
+        "sha256": "6d1a3d6810d4e4be79d7d04e1b84e29bf2502402ba29904f9b36c61c2ac0ddff"
+      }
+    }
+  ],
+  "kind": "complete read-only probe transfer receipts",
+  "member_bytes": 13303,
+  "members": 1,
+  "original_metadata_reproduced": false,
+  "remote_collection_performed": false,
+  "schema": "hepta.local-lossless-evidence-carrier.v1",
+  "state": "LOCAL_REPACK_OF_EXISTING_EXACT_BYTES",
+  "tar": {
+    "bytes": 20480,
+    "sha256": "5764e5cbd49eec45071997b36aaea02ab19022fe6fea1706c5419db1781fd3f6"
+  }
+}

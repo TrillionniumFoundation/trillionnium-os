@@ -1,0 +1,16 @@
+{
+  "state": "ORIGINAL_SNAPSHOT_CREATE_ONLY_REFUSED_EXISTING_CAPTURE_01",
+  "phone_returncode": 1,
+  "actor_returncode": 0,
+  "all_12_actor_originals_verified": true,
+  "actual_capture_directory_state_not_yet_read": true,
+  "alternate_suffix_not_used": true,
+  "native_case_pass": false,
+  "native_boundary_adopted": false,
+  "source_exception": "Traceback (most recent call last):\n  File \"/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/source/component_snapshot.py\", line 403, in <module>\n    if __name__=='__main__':raise SystemExit(main())\n                                             ^^^^^^\n  File \"/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/source/component_snapshot.py\", line 400, in main\n    return snapshot(p.parse_args())\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/source/component_snapshot.py\", line 316, in snapshot\n    C.private_dir(out,create=True)\n  File \"/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/package/source/component_common.py\", line 141, in private_dir\n    os.mkdir(name, mode=0o700, dir_fd=parent); os.fsync(parent)\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileExistsError: [Errno 17] File exists: 'root-r10-neg01-7c907661-01-capture-01'\n",
+  "original": {
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/snapshot01/originals/phone-result.json.original",
+    "bytes": 2481,
+    "sha256": "ec47f2a86488391201c86b3880bd8c0d7c24cdbed94eb95e658474d25c5935e8"
+  }
+}

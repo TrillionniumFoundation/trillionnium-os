@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-c\",\n      \"import sys,hashlib; body=sys.stdin.buffer.read(1048577); assert len(body)<=1048576; assert hashlib.sha256(body).hexdigest()=='a4ba9e5bb4550a84fcffdd8215c7572ff19d102e0c6b77759b5903d26239ce6d'; exec(compile(body,'/home/alex/razr60-local-model-v150/fixed19-root-1ad3-02-inventory-diff01/P4-LAUNCHER.original.py','exec'),{'__name__':'__main__','__file__':'/home/alex/razr60-local-model-v150/fixed19-root-1ad3-02-inventory-diff01/P4-LAUNCHER.original.py'})\"\n    ],\n    \"created_unix_ms\": 1793880322526,\n    \"cwd\": \"/home/alex/razr60-local-model-v150\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1ab9971de-fc05-4ee8\",\n    \"idempotency_key\": \"root-1ad3-neg01-inventory-diff01-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1ab9971de-fc05-4ee8\",\n    \"request_digest\": \"df32baa4ca28fe5fddc3513c461f0d23be4cc53e4a434e4c8f928e363eecf9d9\",\n    \"request_fingerprint\": 16083122436222549599,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab9971de-fc05-4ee8\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ab9971de-fc05-4ee8\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

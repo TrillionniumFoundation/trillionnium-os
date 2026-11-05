@@ -1,0 +1,104 @@
+{
+  "checks": {
+    "all_three_full_rechecks_preserved": true,
+    "collect_tree_four_replacements_whole_byte_inverse": true,
+    "collector_target_source_evaluation_or_child_calls": 0,
+    "declared_members_exact_and_hashed": 13,
+    "eight_sibling_files_exact": true,
+    "final_success_requires_controller_rc0_and_final_stdout": true,
+    "fixed_complete_trees": {
+      "material-originals": "/home/alex/codex-native-guard-chain-r10-r1/902e851c3ca1f90deab3d880ab993774/material",
+      "sender-originals": "/home/alex/codex-hepta-natural-root-r10-neg01-7c907661-01-root-v150",
+      "setup-fixture-originals": "/home/alex/codex-hepta-native-guard-fixtures-r10-r1/902e851c3ca1f90deab3d880ab993774/setup"
+    },
+    "material_files_exact": 56,
+    "material_gzip_complete_member_sha_verified": {
+      "bytes": 471979,
+      "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/selected-gzip-input/root-originals/material/component-inputs.tar.gz",
+      "sha256": "989a78d8c9a844ea0f06859a9e9e2b66bafeacd4702a9b8388d6a031b7775afb"
+    },
+    "new_output_create_only_exclusive_fsync_readback": true,
+    "package_regular_files_including_manifest": 14,
+    "read_source_bookends_held_fd_named_full9_bytes_and_child_names": true,
+    "request_exact_source_and_wrapper": true,
+    "reviewed_source_bytes_unchanged_at_end": true,
+    "setup_plan_current_phone_bytes_match_original_fixture_intent_path_and_sha": {
+      "bytes": 1730,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/ROOT-FIXTURE-setup.INTENT.json",
+      "sha256": "1d3c11738401839db48e22f2edaa31fafa3c034a95ad8fa136ce65d4be11f869"
+    },
+    "setup_terminal_bound_to_original_root_failure": {
+      "bytes": 24411,
+      "path": "/home/alex/codex-hepta-native-guard-fixtures-r10-r1/902e851c3ca1f90deab3d880ab993774/setup/HOST-TERMINAL.json",
+      "sha256": "82b4faebc69bae4d2e917af81300d82483f0183b7d3f357aa594c57cd6926ff6"
+    },
+    "single_sender_result_or_unknown_branch_no_qualification": true,
+    "tar_member_mapping": "Exact original member name under material/tree; original gzip has no tree/ prefix.",
+    "unchanged_helpers_whole_byte": [
+      "need",
+      "sha",
+      "enc",
+      "strict",
+      "metadata",
+      "descriptor",
+      "relative",
+      "check_time",
+      "open_directory",
+      "check_directory",
+      "read_file",
+      "recheck_tree",
+      "put_new"
+    ]
+  },
+  "controller_request": {
+    "bytes": 41704,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/CONTROLLER-REQUEST.json",
+    "sha256": "a7ecb0133be28ad6bfb5886e1cd87e9498c9025fdc74240ae4312ce7c3baab01"
+  },
+  "limits": {
+    "aggregate_original_bytes": 67108864,
+    "atomic_snapshot": false,
+    "boundary_verified": false,
+    "case_pass": false,
+    "controller_request_timeout_seconds": 150,
+    "directories": 512,
+    "hard_filesystem_deadline": false,
+    "native_cleanup_verified": false,
+    "observation_seconds_cooperative": 100,
+    "original_mac_sender54589_parent_join_or_EOF_retrofitted": false,
+    "regular_files": 2048,
+    "same_instant_as_failure": false,
+    "whole_outer_mac_xz_or_239_members_verified_here": false
+  },
+  "notes": [
+    "The selected gzip member is complete and independently pinned by original PREPARED. It does not prove the incomplete outer Mac archive or all 239 members.",
+    "Three setup plan bodies are later phone-private raw copies matching original Root fixture intent exact SHA and actual P4 paths. Their later observation is explicit.",
+    "Collector preserves unknown/unjoined Mac sender state; result/unknown P4 branch is retained, not promoted to business or native cleanup proof.",
+    "Inherited file reads are cooperative regular-file observations. File I/O or compression cannot be preempted by the in-process budget; the collector explicitly declines a hard deadline claim.",
+    "RESULT.json is written before the final full recheck. Durable controller rc0, complete final stdout and final readback remain required."
+  ],
+  "parent_collector": {
+    "bytes": 36689,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/reference/collect_external902_mac_originals.original.py",
+    "sha256": "4ab7739134578d6ab641eeac07e9676721ca3c2967b29a2f5a2bb320c2041ebc"
+  },
+  "reviewed_at_utc": "2026-11-05T12:53:59.283132+00:00",
+  "reviewer_local_correction_retained": {
+    "actual_source_defect": false,
+    "correction": "Apply the original prepared material tree mapping tree/ + member name, then verify all 56 exact paths/bytes/SHA against constants. Target source, package and request were not modified.",
+    "initial_check": "Direct comparison of gzip member names to P4 material-relative names failed because the former intentionally excludes tree/."
+  },
+  "schema": "hepta.independent.external902-p4-collector-source-review.v1",
+  "scope": "Local raw bytes, AST, constant bindings and source control-flow only; no target import, helper call, main, remote, P4 or phone execution.",
+  "source": {
+    "bytes": 40752,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/source/collect_external902_p4_originals.py",
+    "sha256": "c1e5867be5cb2f03efb9b41d01c26097309adb7f9b7fd4a95f48a36b7fefe34d"
+  },
+  "source_manifest": {
+    "bytes": 2738,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_p4_originals_candidate01/package/SOURCE-MANIFEST.json",
+    "sha256": "4bcad02456b0fed749e440b656ccc9ed3a9a5b6e634c48c1e43157c8e637c9f5"
+  },
+  "state": "NO_BLOCKER_IN_REVIEWED_FIXED_SOURCE_SCOPE"
+}

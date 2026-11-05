@@ -1,0 +1,10 @@
+{
+  "task": {
+    "name": "EXTERNAL902-ORIGINALS.tar.xz",
+    "offset": 1703936,
+    "version": "16777233:588533027:1796220:1793881880637206994:1793881880637206994"
+  },
+  "worker": 0,
+  "error": "Error: native binary_read isError",
+  "remote_repeat_attempted": false
+}

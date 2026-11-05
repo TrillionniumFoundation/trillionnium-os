@@ -1,0 +1,5 @@
+{
+  "first_attempt": "sorted JSON key order differs from original Python literal insertion order; local assertion rejected before any cascade execution",
+  "resolution": "reconstruct fixed source-declared eight-key dict order and require entire actual manifest hash",
+  "phone_operations": 0
+}

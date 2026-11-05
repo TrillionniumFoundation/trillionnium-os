@@ -1,0 +1,32 @@
+{
+  "actual_input_root": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01",
+  "actual_parser_main_calls": 0,
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/parse_existing_capture_locally_v2.py",
+    "--out",
+    "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01"
+  ],
+  "calls_to_phone_or_remote": 0,
+  "expected_required_inputs": [
+    "ARCHIVE-MANIFEST.json",
+    "FULL-ORIGINALS.tar.xz"
+  ],
+  "future_body_readback_pins": "only those present in actual observed descriptor rows",
+  "optional_local_mirrors": "originals/ exact12 if present",
+  "review": {
+    "bytes": 2675,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/INDEPENDENT-REVIEW.original.json",
+    "sha256": "2935e471e1513331bf562448d7e61c589bd8ed09f61c1667770104fb8928df47"
+  },
+  "schema": "hepta.existing-capture.local-parser-preparation.v1",
+  "snapshot_or_boundary_adoption": false,
+  "source": {
+    "bytes": 23683,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/parse_existing_capture_locally_v2.py",
+    "sha256": "b272dbe278d30ed6bf9543882e0ed4d7d25995754055bc45b4652662bb98b92b"
+  },
+  "state": "SOURCE_PREPARED_ACTUAL_INPUTS_NOT_YET_PARSED"
+}

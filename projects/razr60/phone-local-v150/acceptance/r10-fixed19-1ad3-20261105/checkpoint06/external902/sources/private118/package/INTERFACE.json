@@ -1,0 +1,22 @@
+{
+  "arguments_allowed": false,
+  "argv": [
+    "python3",
+    "-I",
+    "-B",
+    "observe_external902_private_roots_once.py"
+  ],
+  "no_close_or_cleanup": true,
+  "no_global_clearance_or_case_qualification": true,
+  "no_new_native_diagnostic_command": true,
+  "no_runtime_import_or_execution": true,
+  "output_limit_bytes": 8388608,
+  "phone_mode": "read-only wholefile and directory metadata observation",
+  "schema": "hepta.fixed-external-private-roots.interface.v1",
+  "source": {
+    "bytes": 22534,
+    "path": "source/observe_external902_private_roots_once.py",
+    "sha256": "79b226e3c5caaf8665b313dfe9c19ec6b56326ebc06c1bcaebead83b3fb508e8"
+  },
+  "target_execution_count": 0
+}

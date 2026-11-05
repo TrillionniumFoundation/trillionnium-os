@@ -1,0 +1,58 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 44799,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "db1f4a18b37ab6b8c21d338978e28a6993249b7fa987a33ee3d04d0fe5ae996d"
+  },
+  "controller_request": {
+    "bytes": 47329,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "d2067b6f13ea5adb503830811ab4840c3752ac223b0f9805983ba64d03635f98"
+  },
+  "explicit_source_splices": [
+    "PROBE exact 45affc raw bytes",
+    "REQ same fixed shell envelope and 210 seconds; only quoted probe and marker",
+    "fixed existing 902 nonce observation tag",
+    "new exact probe length and SHA assertion",
+    "new independent create-only collector output",
+    "descriptive result state",
+    "descriptive result state"
+  ],
+  "functions_byte_identical": [
+    "put",
+    "enc"
+  ],
+  "idempotency_key": "root-1ad3-external902-existing-capture-read01-20261105",
+  "outer_controller_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-existing-capture-read01",
+  "parent": {
+    "bytes": 52781,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+  },
+  "passive_wait_seconds": 240,
+  "phone_actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+  "phone_calls": 0,
+  "phone_calls_max": 1,
+  "phone_command_bytes": 19219,
+  "phone_request_preview": {
+    "bytes": 19641,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/PHONE-REQUEST.preview.json",
+    "sha256": "13eb23bd490d8f676448adf7113e2be60406ea803a38bcd8775c136c3fc0a5ae"
+  },
+  "phone_source_or_case_writes": 0,
+  "phone_timeout_seconds": 210,
+  "probe": {
+    "bytes": 18736,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/package/source/observe_existing_capture_once.py",
+    "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+  },
+  "remote_calls": 0,
+  "schema": "hepta.fixed-existing-capture.caller-source-derivation.v1",
+  "signals_sent": 0,
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "tag": "ng-902e851c3ca1f90deab3d880ab993774-existing-capture-read01",
+  "target_calls_executed": 0,
+  "whole_byte_inverse_to_parent": true
+}

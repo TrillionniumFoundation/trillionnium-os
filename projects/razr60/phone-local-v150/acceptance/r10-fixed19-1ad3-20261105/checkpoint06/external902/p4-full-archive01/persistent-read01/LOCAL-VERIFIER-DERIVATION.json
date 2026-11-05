@@ -1,0 +1,26 @@
+{
+  "case_pass": false,
+  "direct_successful_prefix_chunks": 23,
+  "expected_verified_payload_chunks": 29,
+  "full_archive_verified": false,
+  "parent": {
+    "bytes": 17688,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/verify_complete_download.py",
+    "sha256": "58a00f305ac9e959844cbb93538578a30fbd4339d239b405af05b0b9ce21f4db"
+  },
+  "persistent_chunks": 6,
+  "remote_operations": 0,
+  "retained_source_executed": false,
+  "segment_verifier": {
+    "bytes": 10729,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/persistent_binary_result_verify.py",
+    "sha256": "90cc878b6ab605bf64501a595166ecd6b6bd211933a371a798a9d33fabb20859"
+  },
+  "state": "LOCAL_ONLY_PERSISTENT_RESULT_ASSEMBLY_ADAPTER_PREPARED_NOT_EXECUTED",
+  "successor": {
+    "bytes": 21138,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-full-archive01/verify_complete_download_persistent.py",
+    "sha256": "565b78b331b5d57e5392666ffc6e0d6792ee7a952eefc56cc535f381b3db6e9e"
+  },
+  "unchanged_original_member_source_controller_validation_bytes": 10075
+}

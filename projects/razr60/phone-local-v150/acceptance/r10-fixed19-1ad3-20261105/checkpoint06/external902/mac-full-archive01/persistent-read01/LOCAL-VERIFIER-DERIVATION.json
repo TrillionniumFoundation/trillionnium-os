@@ -1,0 +1,26 @@
+{
+  "case_pass": false,
+  "direct_successful_chunks": 30,
+  "expected_verified_payload_chunks": 35,
+  "full_archive_verified": false,
+  "parent": {
+    "bytes": 18160,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/verify_complete_download_with_resumes.py",
+    "sha256": "5db3bb99e979e7f93b16fc35541d019b6bcfe3a59d44f0abda51e7a0f12a5080"
+  },
+  "persistent_chunks": 5,
+  "remote_operations": 0,
+  "retained_source_executed": false,
+  "segment_verifier": {
+    "bytes": 10729,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/persistent_binary_result_verify.py",
+    "sha256": "90cc878b6ab605bf64501a595166ecd6b6bd211933a371a798a9d33fabb20859"
+  },
+  "state": "LOCAL_ONLY_PERSISTENT_RESULT_ASSEMBLY_ADAPTER_PREPARED_NOT_EXECUTED",
+  "successor": {
+    "bytes": 20804,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/verify_complete_download_persistent.py",
+    "sha256": "4e296d697b9e1baad14c3715db45362d9dc82ce942c629728a5cfed878f1bed8"
+  },
+  "unchanged_original_member_source_controller_validation_bytes": 9435
+}

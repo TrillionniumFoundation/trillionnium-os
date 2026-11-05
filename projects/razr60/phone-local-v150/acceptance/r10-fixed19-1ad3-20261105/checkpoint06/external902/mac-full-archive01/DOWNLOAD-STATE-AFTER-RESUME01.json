@@ -1,0 +1,77 @@
+{
+  "all_239_members_verified": false,
+  "all_successful_chunks_original_version_pinned": true,
+  "automatic_further_retry": false,
+  "expected_unique_chunks": 35,
+  "failed_calls": 6,
+  "failure_receipts": [
+    {
+      "bytes": 243,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01703936.MCP.original.json",
+      "sha256": "61986c59687d772e04a245559289e3cf76f40bceb299a048a16674095e44b728"
+    },
+    {
+      "bytes": 243,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01769472.MCP.original.json",
+      "sha256": "61986c59687d772e04a245559289e3cf76f40bceb299a048a16674095e44b728"
+    },
+    {
+      "bytes": 243,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00065536.MCP.original.json",
+      "sha256": "61986c59687d772e04a245559289e3cf76f40bceb299a048a16674095e44b728"
+    },
+    {
+      "bytes": 243,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00131072.MCP.original.json",
+      "sha256": "61986c59687d772e04a245559289e3cf76f40bceb299a048a16674095e44b728"
+    },
+    {
+      "bytes": 243,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/resume01/receipts/EXTERNAL902-ORIGINALS.tar.xz.offset-01703936.MCP.original.json",
+      "sha256": "61986c59687d772e04a245559289e3cf76f40bceb299a048a16674095e44b728"
+    },
+    {
+      "bytes": 243,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/resume01/receipts/ORIGINALS-MANIFEST.json.offset-00065536.MCP.original.json",
+      "sha256": "61986c59687d772e04a245559289e3cf76f40bceb299a048a16674095e44b728"
+    }
+  ],
+  "first_attempt": {
+    "bytes": 17906,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/DOWNLOAD-RESULT.json",
+    "sha256": "c58164701b44eb580891fb64a5b9e17e6d6b49672ac0b34bb244ce50a06ea328"
+  },
+  "full_archive_sha_verified": false,
+  "missing": [
+    {
+      "name": "EXTERNAL902-ORIGINALS.tar.xz",
+      "offset": 1703936
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 65536
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 131072
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 196608
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 262144
+    }
+  ],
+  "phone_calls": 0,
+  "remote_process_start": 0,
+  "remote_requests_inflight": 0,
+  "resume01": {
+    "bytes": 1217,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/mac-full-archive01/resume01/RESUME-RESULT.json",
+    "sha256": "d5903c0281c1b5cc031c60180fa35895dad684c5c602edce51c912139e8e846d"
+  },
+  "state": "NATIVE_DOWNLOAD_PAUSED_AFTER_REPEATED_MCP_TIMEOUTS_ORIGINALS_RETAINED",
+  "successful_unique_chunks": 30
+}

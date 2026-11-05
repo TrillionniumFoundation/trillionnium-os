@@ -1,0 +1,15 @@
+{
+  "actual_lease_contract_fields_match": true,
+  "case_pass": false,
+  "collector_main_executed": false,
+  "collector_module_imported": false,
+  "material_members": 56,
+  "phone_calls": 0,
+  "regular_files": 14,
+  "remote_calls": 0,
+  "request_stdin_exact_source": true,
+  "sibling_inputs": 8,
+  "source_compile_only": true,
+  "state": "LOCAL_EXACT_SOURCE_PACKAGE_AND_ACTUAL_MATERIAL_INTERFACE_CHECKED",
+  "whole_byte_reused_helpers": 13
+}

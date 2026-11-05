@@ -1,0 +1,58 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 64533,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "ac8c5ab5f4947315515afc912b2b8973e22d35b1de07a8e46b5a348d87259b59"
+  },
+  "controller_request": {
+    "bytes": 67488,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "7eaab46175de494b3ae8e93e86e36931a1395afd01be93e2e50a3fc5808b7064"
+  },
+  "explicit_source_splices": [
+    "PROBE exact 4bec raw bytes",
+    "REQ same fixed shell envelope and 210 seconds; only quoted probe and marker",
+    "fixed existing 902 nonce observation tag",
+    "new exact probe length and SHA assertion",
+    "new independent create-only collector output",
+    "descriptive result state",
+    "descriptive result state"
+  ],
+  "functions_byte_identical": [
+    "put",
+    "enc"
+  ],
+  "idempotency_key": "root-1ad3-external902-exact-additions-read01-20261105",
+  "outer_controller_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-additions-read01",
+  "parent": {
+    "bytes": 50942,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/inventory-diff-read01/P4-LAUNCHER.original.py",
+    "sha256": "a4ba9e5bb4550a84fcffdd8215c7572ff19d102e0c6b77759b5903d26239ce6d"
+  },
+  "passive_wait_seconds": 240,
+  "phone_actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+  "phone_calls": 0,
+  "phone_calls_max": 1,
+  "phone_command_bytes": 28884,
+  "phone_request_preview": {
+    "bytes": 29329,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/caller-final01/PHONE-REQUEST.preview.json",
+    "sha256": "e90fbf0ac25437bac2698e51946696c52f44fade1ce228efc7fedaa73f3367f0"
+  },
+  "phone_source_or_case_writes": 0,
+  "phone_timeout_seconds": 210,
+  "probe": {
+    "bytes": 28397,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/package/source/observe_fixed_external_additions_once.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "remote_calls": 0,
+  "schema": "hepta.fixed-external-additions.caller-source-derivation.v1",
+  "signals_sent": 0,
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "tag": "ng-902e851c3ca1f90deab3d880ab993774-added-originals-read01",
+  "target_calls_executed": 0,
+  "whole_byte_inverse_to_parent": true
+}

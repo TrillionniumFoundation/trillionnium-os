@@ -1,0 +1,17 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-plan-inventory-prefix-admitted-1ad3-candidate01/source/prepare_native_guard_root_plan.py",
+    "--inputs-desc",
+    "{\"bytes\":2356,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/neg01-1ad3-02-inputs.json\",\"sha256\":\"3410240dc71f14f048272f0048f4988ef7f67e49840ef6bae116631b6a215bdf\"}",
+    "--failed-prelaunch-admission-desc",
+    "{\"bytes\":66905,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/FAILED-PRELAUNCH-ADMISSION.json\",\"sha256\":\"e85b3bfed5e4720fdcebca8783c6735a9601d73d903066c6de61917e001bf130\"}",
+    "--execute-host-plan"
+  ],
+  "cwd": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1",
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "root-1ad3-neg01-plan-preparation02-20261105",
+  "timeout_seconds": 120
+}

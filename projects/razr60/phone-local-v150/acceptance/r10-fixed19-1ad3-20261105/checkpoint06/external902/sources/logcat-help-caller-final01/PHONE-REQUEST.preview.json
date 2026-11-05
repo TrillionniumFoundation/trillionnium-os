@@ -1,0 +1,6 @@
+{
+  "command": "/system/bin/logcat --help",
+  "kind": "shell",
+  "root": true,
+  "timeout_seconds": 30
+}

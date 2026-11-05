@@ -1,0 +1,47 @@
+--- reviewed-parent
++++ explicit-inventory-prefix-successor
+@@ -16,12 +16,12 @@
+ import types
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-PARENT = B/'fixed19-six-host-property-r8-generation-candidate01'
+-SOURCE = {'path':str(PARENT/'source/derive_six_host_property_pins.py'), 'bytes':17114,
+-    'sha256':'67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e'}
+-SOURCE_MANIFEST = {'path':str(PARENT/'MANIFEST.json'), 'bytes':3902,
+-    'sha256':'3eedff8e162886085493527ee686108b683e734d63bdeb40707ed7af60cd9038'}
+-DELIVERY = B/'r10-boundary-consumers-final-r8/DELIVERY-RESULT.json'
++PARENT = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator')
++SOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/source/derive_six_host_property_pins.py', 'bytes': 17186, 'sha256': '9ef4c79511e8b3cee5098eb8c9bf292d21b04bfbec7747cbd345efc673ac9df3'}
++SOURCE_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/MANIFEST.json', 'bytes': 2308, 'sha256': '5ad06a9c1992590421872caf03abc2cbbaf09957c2d20576ba2a1dd9a77d5b26'}
++DELIVERY = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json')
++ACTUAL_DELIVERY = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json', 'bytes': 28755, 'sha256': '4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714'}
++ACTUAL_FINALIZATION = {'consumer_manifest': {'bytes': 30832, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/MANIFEST.json', 'sha256': 'b26a60719eed3b6548d8e2a1b52abac25f5678afdace72d9865de24e17d24a53'}, 'acceptance_manifest': {'bytes': 21485, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01/MANIFEST.json', 'sha256': '00ea6a0575b41ecc4cbbe47b93799b6d8ed176a1f02bc9a80d458fba97f45671'}, 'policy_adoption': {'bytes': 208226, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json', 'sha256': '527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a'}, 'current_policy': {'bytes': 2667740, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/live-policy-after.bin', 'sha256': 'f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70'}}
+ META = ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ LIMIT = 16*1024*1024
+ 
+@@ -101,7 +101,7 @@
+ 
+ def finalization_from_delivery(row, raw, read):
+     exact3(row)
+-    need(row['path']==str(DELIVERY) and descriptor(DELIVERY,raw)==row,'exact completed cascade original')
++    need(row==ACTUAL_DELIVERY and row['path']==str(DELIVERY) and descriptor(DELIVERY,raw)==row,'exact completed cascade original')
+     value = strict(raw)
+     need(value.get('schema')=='hepta.property-policy.final-boundary-cascade-delivery.v1'
+         and value.get('state')=='HOST_ONLY_PUBLISHED' and type(value.get('phone_calls')) is int
+@@ -125,6 +125,7 @@
+     final = {'consumer_manifest':exact3(value['consumer']),
+         'acceptance_manifest':exact3(value['acceptance']),
+         'policy_adoption':adoption_row,'current_policy':policy_row}
++    need(final==ACTUAL_FINALIZATION,'only the actual inventory-prefix cascade dependencies are admitted')
+     return final,value
+ 
+ 
+@@ -224,7 +225,7 @@
+         'finalization':final,'bound_generator':descriptor(target,derived),
+         'predicted_generated_source_pins':predicted,'generator_preview_entry':preview_entry,
+         'generator_execute_entry':execute_entry,'generator_output':str(generator.OUT),
+-        'changed_source_literals':['FINALIZATION'],'whole_source_inverse_to_67eff':True,
++        'changed_source_literals':['FINALIZATION'],'whole_source_inverse_to_reviewed_generator':True,
+         'original_generator_prepare_validated_only':True,'generator_main_calls':0,
+         'generated_operator_published':False,'sealed_release_required_by_preparer_later':True,
+         'complete_adoption_reverified_by_this_constructor':False,

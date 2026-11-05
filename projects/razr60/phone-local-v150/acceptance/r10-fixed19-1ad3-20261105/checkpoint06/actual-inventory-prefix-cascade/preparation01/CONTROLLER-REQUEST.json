@@ -1,0 +1,20 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-c",
+    "import pathlib,hashlib,sys; p=pathlib.Path(sys.argv[1]); b=p.read_bytes(); assert len(b)==16055 and hashlib.sha256(b).hexdigest()=='a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea'; sys.argv=sys.argv[1:]; exec(compile(b,str(p),'exec'),{'__name__':'__main__','__file__':str(p)})",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/preparer/prepare_final_cascade.py",
+    "--runtime-freeze-result-desc",
+    "{\"bytes\":22392,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json\",\"sha256\":\"f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67\"}",
+    "--runtime-successor-manifest-desc",
+    "{\"bytes\":19020,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json\",\"sha256\":\"a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7\"}",
+    "--out",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-cascade-source-final01-1ad3",
+    "--execute-host-preparation"
+  ],
+  "idempotency_key": "root-1ad3-inventory-prefix-cascade-prepare01-20261105",
+  "timeout_seconds": 180
+}

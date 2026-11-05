@@ -1,0 +1,39 @@
+{
+  "archive_whole_hash_not_body": true,
+  "capture_json_body_may_be_omitted_above_one_MiB": true,
+  "capture_leaves_in_order": [
+    "RESULT.json",
+    "CAPTURE.json",
+    "PARTIAL-CAPTURE.json",
+    "ORIGINALS.tar.gz"
+  ],
+  "copied_functions": [
+    "need",
+    "sha",
+    "strict",
+    "metadata",
+    "parent_fd",
+    "read_original",
+    "read_directory",
+    "boot",
+    "recheck_bootstrap",
+    "own_fds",
+    "fixed_boundary_observation"
+  ],
+  "failed_original": {
+    "bytes": 2481,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/snapshot01/originals/phone-result.json.original",
+    "sha256": "ec47f2a86488391201c86b3880bd8c0d7c24cdbed94eb95e658474d25c5935e8"
+  },
+  "parent": {
+    "bytes": 28397,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/package/source/observe_fixed_external_additions_once.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "phone_calls": 0,
+  "read_scope": "capture01 top directory names, four exact leaves,902 boundary JSON and directory names only",
+  "remote_calls": 0,
+  "schema": "hepta.existing-capture-observer.source-derivation.v1",
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "target_function_calls": 0
+}

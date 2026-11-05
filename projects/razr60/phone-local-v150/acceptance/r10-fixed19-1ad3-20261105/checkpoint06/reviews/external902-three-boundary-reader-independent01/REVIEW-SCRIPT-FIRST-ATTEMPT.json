@@ -1,0 +1,8 @@
+{
+  "state": "LOCAL_REVIEW_SCRIPT_ERROR_NOT_TARGET_FAILURE",
+  "error": "KeyError: OUTPUT_LIMIT",
+  "cause": "ast.literal_eval does not evaluate multiplication; source OUTPUT_LIMIT remained unchanged",
+  "target_imports": 0,
+  "target_calls": 0,
+  "remote_calls": 0
+}

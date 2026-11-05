@@ -1,0 +1,39 @@
+{
+  "added_directories": 4,
+  "archive": {
+    "bytes": 335338,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/exact76-added-originals-source-final01.tar.gz",
+    "sha256": "2c0bf5313001a92b8b5d8a60247dc3690daa77725dadf8e5a7a22f4b481a7562"
+  },
+  "changed_parent_directories": 2,
+  "exact_original_files": 72,
+  "file_bytes": 165391,
+  "fixed_boundary_leaves": 2,
+  "global_clearance": false,
+  "independent_review": "transport_review reported no blocker for source 4bec7d3e; report retained separately when delivered",
+  "local_check_scope_note": "Check 4 exercised a well-compressed malformed JSON descriptor; it does not by itself prove the compressed-pin mismatch gate.",
+  "local_checks": {
+    "bytes": 1876,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/LOCAL-CHECKS.original.json",
+    "sha256": "389e28d4e646afbc25608943da1cd0a45cbed2a6db878c26620eb63fc7c38038"
+  },
+  "manifest": {
+    "bytes": 1553,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "346367953427360f831f13e10c1956b44945c7dbb56ff5dd51a6cbbb02a6aea6"
+  },
+  "native_boundary_qualification_or_adoption": false,
+  "output_limit_bytes": 8388608,
+  "phone_calls": 0,
+  "raw_bytes": 1944321,
+  "regular_members": 9,
+  "remote_calls": 0,
+  "schema": "hepta.fixed-external-additions.delivery.v1",
+  "source": {
+    "bytes": 28397,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/package/source/observe_fixed_external_additions_once.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "state": "FROZEN_SOURCE_ONLY_NOT_EXECUTED",
+  "target_main_calls": 0
+}

@@ -1,0 +1,93 @@
+{
+  "all_created_single_link_regular_inodes": true,
+  "all_raw_bytes_and_full9_metadata_bookended": true,
+  "file_and_directory_fsync": true,
+  "files": [
+    {
+      "bytes": 5264,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/INTERFACE.json",
+      "sha256": "9662b946899b38aa8567e21dd03f229533847a7b7fbf09befc43c5c91c3ec31e"
+    },
+    {
+      "bytes": 820,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/README.txt",
+      "sha256": "e2849a01a13a2f3f1d1874f2e95210641bf8e06c1f2e331be5b3577c5da50d62"
+    },
+    {
+      "bytes": 3972,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/SOURCE-MANIFEST.json",
+      "sha256": "1c62db17d75a7850942bf680dca46bb764cd3564f5ad9dd024b807e0e763193c"
+    },
+    {
+      "bytes": 1145,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/DERIVATION.json",
+      "sha256": "01f2d0e3ce0193b03bd3cfaf4c4b42f34d2b577d9ee10bdce5e1243571b80fb6"
+    },
+    {
+      "bytes": 2308,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/MANIFEST.json",
+      "sha256": "5ad06a9c1992590421872caf03abc2cbbaf09957c2d20576ba2a1dd9a77d5b26"
+    },
+    {
+      "bytes": 3902,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/reference/GENERATOR-MANIFEST.3eed.original.json",
+      "sha256": "3eedff8e162886085493527ee686108b683e734d63bdeb40707ed7af60cd9038"
+    },
+    {
+      "bytes": 17114,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/reference/derive_six_host_property_pins.67eff.original.py",
+      "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+    },
+    {
+      "bytes": 17186,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/generator/source/derive_six_host_property_pins.py",
+      "sha256": "9ef4c79511e8b3cee5098eb8c9bf292d21b04bfbec7747cbd345efc673ac9df3"
+    },
+    {
+      "bytes": 21485,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/reference/actual-cascade/ACCEPTANCE-MANIFEST.original.json",
+      "sha256": "00ea6a0575b41ecc4cbbe47b93799b6d8ed176a1f02bc9a80d458fba97f45671"
+    },
+    {
+      "bytes": 6239,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/reference/actual-cascade/CONSTRUCTOR-MANIFEST.original.json",
+      "sha256": "659a27087f462879d38050990e71ebf84e27ecea088b4044563784297aa6272d"
+    },
+    {
+      "bytes": 30832,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/reference/actual-cascade/CONSUMER-MANIFEST.original.json",
+      "sha256": "b26a60719eed3b6548d8e2a1b52abac25f5678afdace72d9865de24e17d24a53"
+    },
+    {
+      "bytes": 28755,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/reference/actual-cascade/DELIVERY-RESULT.original.json",
+      "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+    },
+    {
+      "bytes": 12989,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/reference/prepare_six_host_generation.665b.original.py",
+      "sha256": "665b5e22ab4e6a24f1ecea56608ace7a299a07bc27b0f2e03c83cae70b560796"
+    },
+    {
+      "bytes": 15258,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/source/prepare_six_host_generation.py",
+      "sha256": "71c9a2d20c5eff36e94635151f5d3e93e0b16b0e117a631b0657ff2cb74683a5"
+    },
+    {
+      "bytes": 4982,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/validation/BINDER-ACTUAL-DEPENDENCIES-INCREMENT.patch",
+      "sha256": "b6b421be8dcdbc6f1cbb4aa68cee401591759cf7099a655c52e483a43eec5f0a"
+    },
+    {
+      "bytes": 1225,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/validation/GENERATOR-NAMESPACE-INCREMENT.patch",
+      "sha256": "10cfd71e61b8fef7c9792f22d5004b60d5b8121d2ea305d33c23d8fb7b65f1dd"
+    },
+    {
+      "bytes": 3025,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-inventory-prefix-generation-1ad3-candidate01/validation/LOCAL-SOURCE-CHECKS.json",
+      "sha256": "6862b975d22f850445f4218458efd11fb253f57499fae5269e4e18cb3434cdf1"
+    }
+  ],
+  "schema": "hepta.six-host-prefix.staged-source-files.v1"
+}

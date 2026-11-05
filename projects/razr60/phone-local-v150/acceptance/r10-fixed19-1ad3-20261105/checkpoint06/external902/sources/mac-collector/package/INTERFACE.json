@@ -1,0 +1,31 @@
+{
+  "RESULT_alone_is_not_success": true,
+  "additional_fixed_paths": [
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.send-result.json",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-7c907661-01.local-once.json",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r8-membership-source-396d-candidate02/freezer/overlay/SOURCE-MANIFEST.json"
+  ],
+  "automatic_retry": false,
+  "case_pass": false,
+  "case_source_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-7c907661-01",
+  "collection_only_no_process_or_phone_actions": true,
+  "complete_root_source_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-membership-733d-01/root-chain",
+  "complete_runtime_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-membership-733d-01/runtime",
+  "failure_outputs_retained": true,
+  "fixed_original_failure_state_must_remain": "FAILED_OR_UNKNOWN_ORIGINALS_PRESERVED_NO_AUTOMATIC_CONTINUATION",
+  "later_sender_result_does_not_retrofit_parent_observations": true,
+  "no_full_native_cleanup_or_boundary_publication_claim": true,
+  "no_same_instant_or_atomic_snapshot_claim": true,
+  "out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/external902-7c907661-mac-originals01",
+  "output_members": [
+    "COLLECTOR.original.py",
+    "EXTERNAL902-ORIGINALS.tar.xz",
+    "ORIGINALS-MANIFEST.json",
+    "RESULT.json"
+  ],
+  "requires_controller_terminal_rc0_and_final_stdout_after_last_full_recheck": true,
+  "schema": "hepta.external902-fixed-mac-collector-interface.v1",
+  "sender_original_output_EOFs": false,
+  "sender_original_pid54589_joined": false,
+  "state": "SOURCE_ONLY_WAITING_INDEPENDENT_REVIEW"
+}

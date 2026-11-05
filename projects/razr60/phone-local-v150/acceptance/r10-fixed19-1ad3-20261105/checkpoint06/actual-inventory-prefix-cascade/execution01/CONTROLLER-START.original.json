@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-c\",\n      \"import pathlib,hashlib,sys; p=pathlib.Path(sys.argv[1]); b=p.read_bytes(); assert len(b)==68403 and hashlib.sha256(b).hexdigest()=='7b9b709b247e0f1267957725d7159a2f87c13ac090163035af1039050587bb5a'; sys.argv=sys.argv[1:]; exec(compile(b,str(p),'exec'),{'__name__':'__main__','__file__':str(p)})\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-cascade-source-final01-1ad3/source/derive_final_cascade_property_r8.py\",\n      \"--execute-host-cascade-once\"\n    ],\n    \"created_unix_ms\": 1793877790990,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1ab72d10e-fc05-4dfc\",\n    \"idempotency_key\": \"root-1ad3-inventory-prefix-cascade-execute01-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1ab72d10e-fc05-4dfc\",\n    \"request_digest\": \"22e82f97a9e2e4046d7cdde228b46b4cd52c2646718fc728b68846e6e4662e68\",\n    \"request_fingerprint\": 2515312720323208196,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab72d10e-fc05-4dfc\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 45572,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1ab72d10e-fc05-4dfc\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

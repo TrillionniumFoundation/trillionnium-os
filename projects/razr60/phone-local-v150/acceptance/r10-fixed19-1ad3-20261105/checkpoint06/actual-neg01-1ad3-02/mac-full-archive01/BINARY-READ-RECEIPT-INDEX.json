@@ -1,0 +1,671 @@
+{
+  "files": {
+    "COLLECTOR.original.py": {
+      "bytes": 20496,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/COLLECTOR.original.py",
+      "sha256": "181889ed6477819622909d0bdd016ad5d51d3352e17925c0359fc941d87a7d66"
+    },
+    "ORIGINALS-MANIFEST.json": {
+      "bytes": 83642,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/ORIGINALS-MANIFEST.json",
+      "sha256": "f816acf43134b5cd9b6ae8c62f1e740fac90a3ff7a3c191cb77bfd4e037f8550"
+    },
+    "RESULT.json": {
+      "bytes": 3314,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/RESULT.json",
+      "sha256": "8e791adcd831ecdb28c27740198155054a0e0d7de501470e38d68a123a13d750"
+    },
+    "ROOT-ORIGINALS.tar.xz": {
+      "bytes": 1726952,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/ROOT-ORIGINALS.tar.xz",
+      "sha256": "c1af0a770a53ea43a75ca27268147a9ed1059ffd2952006dd76753a997af7a4c"
+    }
+  },
+  "raw_MCP_receipts": 31,
+  "receipts": [
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00000000.bin",
+        "sha256": "cfbd86950853bcfbdb1419db9740c8afd3e6638a5c3eab7b751ccb9c79bf5927"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 0,
+      "raw_MCP_receipt": {
+        "bytes": 87962,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00000000.MCP.original.json",
+        "sha256": "89d926c03e69dc92097e6954ef492d9425a20d26f99144ae0b5ccc35e1ff0f49"
+      },
+      "verification": {
+        "bytes": 1284,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00000000.VERIFIED.json",
+        "sha256": "32d5f4956eb2dd54ff59f90063bab994aaed878ffb80e17166cd4bbcc793bd8f"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00065536.bin",
+        "sha256": "f789785115dbc0aa35759d8e8e600a9f37a5c299f413c9b79f22a01d59acf7ab"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 65536,
+      "raw_MCP_receipt": {
+        "bytes": 87967,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00065536.MCP.original.json",
+        "sha256": "4b337fe4993511237e1dce63d7a48e9bbbe50fddad02bf3b69ceee6c7769663b"
+      },
+      "verification": {
+        "bytes": 1289,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00065536.VERIFIED.json",
+        "sha256": "bae99fcc52e47e0b018c655170393c85b487552eb94623f8671a0ea9a271c659"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00131072.bin",
+        "sha256": "f2e06767edce38e18a6b42cfd650442e3513191f0fd4f1312f7e13ee15e0ec64"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 131072,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00131072.MCP.original.json",
+        "sha256": "2dc2d83345103d3dff3edd98f5ececf2d045e9f2ec096f4c26c42f2a19c93113"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00131072.VERIFIED.json",
+        "sha256": "4a87626beca40e941caff788e1563c92a3eff31780ce7ea6ed4e0de70322ba65"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00196608.bin",
+        "sha256": "574be687c3ce1022128d5a35858778710c4807e3c4e55414ebf2a16260ffdc76"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 196608,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00196608.MCP.original.json",
+        "sha256": "cf7803ceaf1e8d5729ee1142eabf2cb2570771e53ed85382a412b5ba717ee762"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00196608.VERIFIED.json",
+        "sha256": "e44d339a64d5ab6e9388ecdfdf5428e39fbb93a4032254daaf8a45a2e36d06ae"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00262144.bin",
+        "sha256": "a5dc94dd98d283231d550228947f36f005458f1a379b02f33294300e967b3e66"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 262144,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00262144.MCP.original.json",
+        "sha256": "6422bf0aca288d2463c1e091d261c620f755bd9ab1e252d8cacb86c0816637c2"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00262144.VERIFIED.json",
+        "sha256": "9d4ed28d2956b6139172af969b22e4771b1d987534250613c158eed675d9594f"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00327680.bin",
+        "sha256": "ca2eba81909f1f679ea0bd9ccddceddb0184e902143782717de2a7c01208a1a9"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 327680,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00327680.MCP.original.json",
+        "sha256": "dbfafe92e96c982dbc39217364c9fc5d81d0032e2a6033f8cc99e20fcb2d9814"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00327680.VERIFIED.json",
+        "sha256": "ef8104bbf3cdfd3cca2482838481f6d65919aac423ef5e2c635fb4b95c54ee1a"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00393216.bin",
+        "sha256": "706aeacdc4d271f19d1d9224f4e952a855919b1f682aa4272197112233572e2c"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 393216,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00393216.MCP.original.json",
+        "sha256": "b829b8ce3a86a191129d91e88de4be5a816d756151c77bbed0231bdd209d1930"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00393216.VERIFIED.json",
+        "sha256": "ec53868618f7eaebbc743b87da21251ffb031736af71b17b1c4dacacdc68ce2b"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00458752.bin",
+        "sha256": "6aa8b647ec81e9c8de58e360c92e04db9499cfef2ede2ea21a29c92c4be0cff5"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 458752,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00458752.MCP.original.json",
+        "sha256": "4a1209fca1c389ec478bbac25031dab9404d995aa2bdc92a42713bde2d422160"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00458752.VERIFIED.json",
+        "sha256": "cc5c1414d8934688075ef0f5b9d175b2cf53c83bcfc3eb56e47d8bc4dce8a78f"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00524288.bin",
+        "sha256": "5a01ac958ba466701926caae12c1f1ecae7c8c3985463ebb2fc924197c0dea33"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 524288,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00524288.MCP.original.json",
+        "sha256": "5f79e07a5d43174ac7cca643ee6a2db248831e01f2a67baeda6272f361653e7c"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00524288.VERIFIED.json",
+        "sha256": "0a686818ccad440de97d53af0c481b0621599a0f1edf1f34e30642e44d9421e2"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00589824.bin",
+        "sha256": "98ed7a5366e09981e1c412a0c427950586aea81d4ce06884900c4bf79ce6eea7"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 589824,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00589824.MCP.original.json",
+        "sha256": "5ad4cda98ce4c3e0aeda271a850397f971f2f53f3e809d294c85c6427994f7f0"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00589824.VERIFIED.json",
+        "sha256": "970fb0392e2e000b1e1a36e90d4c81b9fa55e7e2a852bdf34fbc1116adbdd0ba"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00655360.bin",
+        "sha256": "55527c392b8c772daba95dd11fd92138c3aa42904db332cbaad9e1ae8ecc482a"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 655360,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00655360.MCP.original.json",
+        "sha256": "9bda9c403e5fc3c53221cfebbd5cef9cadf673b97aaabc894ab939ad2114417b"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00655360.VERIFIED.json",
+        "sha256": "601d0c83d935962b8a9fd6b0d05009a40eba92ecd795b3d1951ecf25717f6013"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00720896.bin",
+        "sha256": "433ce0ff1ae89b71858b8cf9a2d43728590ec9dbd6e9430f5d137d6680ac79d4"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 720896,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00720896.MCP.original.json",
+        "sha256": "01dbf5606005e07d00efa998214d0f07da78452104810a677da811fd15e7754c"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00720896.VERIFIED.json",
+        "sha256": "56ae0b32869bb305169bdbbe826b2b435985526d6a7611bd1dea2dc90459a9c6"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00786432.bin",
+        "sha256": "af51f9d5ec68466538b948c2b40a5db73952696e39424dec734f4a35c7063224"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 786432,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00786432.MCP.original.json",
+        "sha256": "5b9c895aea5cc3f24520fb7bc19b9aac7caa69f7907d25981e566b45c7e10b4e"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00786432.VERIFIED.json",
+        "sha256": "b232138618f0d1e5d9b2d1d27e374a617183ae4e40ba39e671265835e596a18e"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00851968.bin",
+        "sha256": "d1a4bb6a8f27d1171ea78a12378353a49daf430483c4a793aed4a077d3136e39"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 851968,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00851968.MCP.original.json",
+        "sha256": "61bb8e1d0617d322d86162801817714da5126e36fc6c3352ceba214b4539830c"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00851968.VERIFIED.json",
+        "sha256": "271cf83a717272ab24e2c289f8cfd9b27972d3316cd00a4ee1336b0c32d7e4bd"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00917504.bin",
+        "sha256": "98e7ddb1e5b9b514cfffa1766ebabdf8698fa9d652cf8282348a39f93778e5bd"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 917504,
+      "raw_MCP_receipt": {
+        "bytes": 87968,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00917504.MCP.original.json",
+        "sha256": "1cfaf94e78b54c411c5ec8f1fe9bd98f9c2ccdce399ab4ea90a313519ad8855c"
+      },
+      "verification": {
+        "bytes": 1290,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00917504.VERIFIED.json",
+        "sha256": "495f162488b4cc9d25a6fa7e7dd535dbd736888516e45bf17debe9e542890b7b"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/00983040.bin",
+        "sha256": "23c0b54f5defcb136896a3bbce841543adf861488e092633c554633fbdbc631d"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 983040,
+      "raw_MCP_receipt": {
+        "bytes": 87969,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00983040.MCP.original.json",
+        "sha256": "960c4736bcecd5d57194551caecb2c4b9d05b907d2797a712b1d44653c91fe9b"
+      },
+      "verification": {
+        "bytes": 1291,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-00983040.VERIFIED.json",
+        "sha256": "473ab6bd3c40bb8c8d5de56152e77ad658763137e9ae93f493f4695549a87320"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01048576.bin",
+        "sha256": "be2c5543b1ca597a571cbcf38a9bc892d9c111324acc7859bd0b712c185abe54"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1048576,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01048576.MCP.original.json",
+        "sha256": "52d675e7a4f3a4672e5b1bc4708459cb10b4f99d379bba8b61a1f49ba7d1b6b0"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01048576.VERIFIED.json",
+        "sha256": "3473772d97f80843540469e7629133751f4a23380849fccbf751bd7f138ca045"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01114112.bin",
+        "sha256": "b35b7aee72e59b2c098fa8de5b0c9fd52638f57e404810d61dcb2a70e3aa9720"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1114112,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01114112.MCP.original.json",
+        "sha256": "8420692998f97b6f7ca50abc749c1cc7821c7c43ec4a3f2f7350a697be50815a"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01114112.VERIFIED.json",
+        "sha256": "b8b68ace09be72267cb83fd8e5639c1df8ce2e3a3b00ab57e0d6bb5e8ef3bf85"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01179648.bin",
+        "sha256": "1ac9e96f11c89fa8ac1b9eab0e851ac995c7fb76d958f6c161d31cf5e2cbb50e"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1179648,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01179648.MCP.original.json",
+        "sha256": "3272e5bd78d1357022872663112cb74e6dc078fcce512097763cb5262e823a31"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01179648.VERIFIED.json",
+        "sha256": "9e760923c5f2078025135f39869999bf75c88782d3a5f92b9d63b86d6fe06493"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01245184.bin",
+        "sha256": "cf9a3b3f1d142809672a3508ca079783e466532c18ff9402a04688ff81e8aa7a"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1245184,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01245184.MCP.original.json",
+        "sha256": "809a9dc83a08ee6795abab32bc958b909dd4e75427e715079e461ea1bc0e4c91"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01245184.VERIFIED.json",
+        "sha256": "a89d47ca404d95793cfd5979959f85d5a5caee17aab013fc47631928907abec9"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01310720.bin",
+        "sha256": "a4aa25dfa913c136cb01f12e6a1f2d735bdfeabccab64a307148ae4d268f53cd"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1310720,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01310720.MCP.original.json",
+        "sha256": "032fd4c16f0bbd92ede3f6864c7f2c311261a44a0170c26c59f60a3311489e63"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01310720.VERIFIED.json",
+        "sha256": "bbab9209e974330d20f2846e5fd1bafecdf2b8f2e9432218aabd5be1ec1d8f3d"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01376256.bin",
+        "sha256": "b84c5016814b1fe6d6a633243197c4be8572a2f4dec306890a691fc8ea3c7212"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1376256,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01376256.MCP.original.json",
+        "sha256": "59aef8dc8aaa89faacbed2503ffb9ffad0c9b0eaf02dc642b256af151fc88a20"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01376256.VERIFIED.json",
+        "sha256": "96d6ce123b59b4fbfdafd7bf4f7c8454cb47f57af0ab42248cb6068546ce97c1"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01441792.bin",
+        "sha256": "14ff87a00b74b93f1c73a5bbea77af7bf18cedeb6da532e7f6d7a534f1bbab93"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1441792,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01441792.MCP.original.json",
+        "sha256": "9a63129eb27bb2d2ad8ee5a3c500db54d490db41d1983cec38a765696e14d7bd"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01441792.VERIFIED.json",
+        "sha256": "80019aa1eb0a10921c3c7dded635e49e912111a71085dbd3243c47fde316ff54"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01507328.bin",
+        "sha256": "aeaf0f6a959fe920b97a576d25189854b5b5c8cada5efe43122840b7eb12364d"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1507328,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01507328.MCP.original.json",
+        "sha256": "10ca8f0fc474c6b7d90c44e8c06a4c37d4ad2a9e7fdf434290f2307a52c41ede"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01507328.VERIFIED.json",
+        "sha256": "52ef0c4785c4c32c17daebe40652ff8cbb0ea9817dd89959e687d19c0d2ac4f7"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01572864.bin",
+        "sha256": "e7650a096dcbc34dcdaee9f9faf494e5359ffbd3cb34faca5322b886a5bbe358"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1572864,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01572864.MCP.original.json",
+        "sha256": "a5c0dca6d1157d6acb9e3461bcc9e657e8fb053c84f74875c75d11dec3118b72"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01572864.VERIFIED.json",
+        "sha256": "648c55d19476b3de62e4fd461c2c3dd150ac8830b147ed83ff722c01bceb29c2"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01638400.bin",
+        "sha256": "9ee2d60896def9af2ada7d21da8df7004fc022f26228bc407a2b153ec26721fc"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1638400,
+      "raw_MCP_receipt": {
+        "bytes": 87970,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01638400.MCP.original.json",
+        "sha256": "c98254ce2a7980b2d2d56455cbd6feaab329d45a4f03e072a9dcc5984476ef31"
+      },
+      "verification": {
+        "bytes": 1292,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01638400.VERIFIED.json",
+        "sha256": "04ad21555a4a1daf0115dbdb46d3d8956b04f84b5b179b87d732741f4fc557d2"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 23016,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ROOT-ORIGINALS.tar.xz/01703936.bin",
+        "sha256": "5e84d11f5fef82a6585c2611fae6f458fa49709c3ac163be76ced4b0e31d7d16"
+      },
+      "name": "ROOT-ORIGINALS.tar.xz",
+      "offset": 1703936,
+      "raw_MCP_receipt": {
+        "bytes": 31273,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01703936.MCP.original.json",
+        "sha256": "1fdbd8a83eb2c357d0bc371253e7094b82e56cdd48a37b2fbce55ea968317c2a"
+      },
+      "verification": {
+        "bytes": 1291,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ROOT-ORIGINALS.tar.xz.offset-01703936.VERIFIED.json",
+        "sha256": "60bab1a2c456d1fabcf8f6c42a68e00cf4cc1482719719ae7fbcbce56b8cf1e3"
+      },
+      "version": "16777233:588514845:1726952:1793880824799001416:1793880824799001416"
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ORIGINALS-MANIFEST.json/00000000.bin",
+        "sha256": "01d853b381b08607c435bac876081f8a07c4445ac4d0d862fc651cf2dda5240f"
+      },
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 0,
+      "raw_MCP_receipt": {
+        "bytes": 87960,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00000000.MCP.original.json",
+        "sha256": "7fc233c21c7cd253bb47985a32bf66880858b4ff70179343f4261cbc3cc57ff1"
+      },
+      "verification": {
+        "bytes": 1288,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00000000.VERIFIED.json",
+        "sha256": "81bf4e9d73d595adb34c682e6865c832532d01431bcf6495c3b7b5ef4550c250"
+      },
+      "version": "16777233:588514846:83642:1793880824803499688:1793880824803499688"
+    },
+    {
+      "chunk": {
+        "bytes": 18106,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/ORIGINALS-MANIFEST.json/00065536.bin",
+        "sha256": "bce3f12070484a8e51f9fd87f6d88885583453ee2e5aed87956b21467263d11f"
+      },
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 65536,
+      "raw_MCP_receipt": {
+        "bytes": 24723,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00065536.MCP.original.json",
+        "sha256": "a6a55c5a7be070c0f922d70030959fe8369f4dc4ac4c4703a62a73ca4f19a4df"
+      },
+      "verification": {
+        "bytes": 1291,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/ORIGINALS-MANIFEST.json.offset-00065536.VERIFIED.json",
+        "sha256": "387223e3b72a194750e402982e92801101d97e8734f55a37f115fcb21444dbad"
+      },
+      "version": "16777233:588514846:83642:1793880824803499688:1793880824803499688"
+    },
+    {
+      "chunk": {
+        "bytes": 3314,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/RESULT.json/00000000.bin",
+        "sha256": "8e791adcd831ecdb28c27740198155054a0e0d7de501470e38d68a123a13d750"
+      },
+      "name": "RESULT.json",
+      "offset": 0,
+      "raw_MCP_receipt": {
+        "bytes": 4980,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/RESULT.json.offset-00000000.MCP.original.json",
+        "sha256": "c9644e602a86a46978db3842f525b82d56782a7f110bde793422e2c31d036b84"
+      },
+      "verification": {
+        "bytes": 1234,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/RESULT.json.offset-00000000.VERIFIED.json",
+        "sha256": "29dca81a8241bd53dc465082f535ba69776f83bdd2bf9966f99928b03b2fecef"
+      },
+      "version": "16777233:588514847:3314:1793880824809490245:1793880824809490245"
+    },
+    {
+      "chunk": {
+        "bytes": 20496,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/chunks/COLLECTOR.original.py/00000000.bin",
+        "sha256": "181889ed6477819622909d0bdd016ad5d51d3352e17925c0359fc941d87a7d66"
+      },
+      "name": "COLLECTOR.original.py",
+      "offset": 0,
+      "raw_MCP_receipt": {
+        "bytes": 27901,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/COLLECTOR.original.py.offset-00000000.MCP.original.json",
+        "sha256": "b141354dd1aa2d4f30d599faec11448d36dce81d0e513fd9c7cbae0b07db9aa8"
+      },
+      "verification": {
+        "bytes": 1279,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/receipts/COLLECTOR.original.py.offset-00000000.VERIFIED.json",
+        "sha256": "22fcdabeb117384c2d0223ca9123fbe7584481b4b05d4f31a5a77e76f107e8af"
+      },
+      "version": "16777233:588514844:20496:1793880824798656353:1793880824798656353"
+    }
+  ],
+  "schema": "hepta.fixed19.root02-binary-read-receipt-index.v1",
+  "verified_chunks": 31,
+  "versions": [
+    {
+      "bytes": 392,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/versions/ROOT-ORIGINALS.tar.xz.json",
+      "sha256": "37e4820db9df06446e1918c56c337610b038b7c6868d7627c1d0969bfbdf4f7e"
+    },
+    {
+      "bytes": 390,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/versions/ORIGINALS-MANIFEST.json.json",
+      "sha256": "bbaa727e6ec989177dce6ab16769a6d27becac6833e1605383b70a6e30e95da2"
+    },
+    {
+      "bytes": 376,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/versions/RESULT.json.json",
+      "sha256": "c43e8a273fc1227836461ade9b1bca2b26d4d3868863426222fd9847d1546ce4"
+    },
+    {
+      "bytes": 388,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/mac-full-archive01/versions/COLLECTOR.original.py.json",
+      "sha256": "bae2334533da223b3712202b0dffd765c136c2e920e353fbd50168e2f3061399"
+    }
+  ]
+}

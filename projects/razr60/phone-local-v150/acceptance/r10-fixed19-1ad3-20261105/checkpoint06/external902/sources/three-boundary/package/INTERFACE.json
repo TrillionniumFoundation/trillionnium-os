@@ -1,0 +1,96 @@
+{
+  "arguments_allowed": false,
+  "directory": {
+    "metadata": [
+      65086,
+      157440,
+      16832,
+      0,
+      0,
+      2,
+      3452,
+      1793882485267914270,
+      1793882485267914270
+    ],
+    "names": [
+      "AFTER-INVENTORY.original.json",
+      "CLOSURE.original.json",
+      "PUBLISH-INTENT.json"
+    ],
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774"
+  },
+  "files": [
+    {
+      "bytes": 55124,
+      "metadata": [
+        65086,
+        156890,
+        33152,
+        0,
+        0,
+        1,
+        55124,
+        1793882485259914270,
+        1793882485259914270
+      ],
+      "name": "CLOSURE.original.json",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/CLOSURE.original.json",
+      "pin_origin": "actual_6e1d_boundary_descriptor",
+      "prior_metadata_bound": true,
+      "sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+    },
+    {
+      "bytes": 923078,
+      "metadata": [
+        65086,
+        156601,
+        33152,
+        0,
+        0,
+        1,
+        923078,
+        1793882485267914270,
+        1793882485267914270
+      ],
+      "name": "AFTER-INVENTORY.original.json",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/AFTER-INVENTORY.original.json",
+      "pin_origin": "actual_6e1d_boundary_descriptor",
+      "prior_metadata_bound": true,
+      "sha256": "b9da7fdf1e8e110f9cb5cb253627c7a9bdad98a7660fddca16653bab1b93e94d"
+    },
+    {
+      "bytes": 742,
+      "metadata": null,
+      "name": "PUBLISH-INTENT.json",
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/PUBLISH-INTENT.json",
+      "pin_origin": "source_396d_publish_fields_and_1e2d_compact_encoding_of_actual_boundary_and_lease",
+      "prior_metadata_bound": false,
+      "sha256": "3d56ef41cf7d2adf1858466d8d96ec877fb4553fdb97afe5609cc8475bac04a9"
+    }
+  ],
+  "no_snapshot_archive_body": true,
+  "no_snapshot_close_publish_runtime": true,
+  "output_budget": {
+    "actual_future_output_measured": false,
+    "base64_body_characters": 1305264,
+    "conservative_native_result_wrapper_additional_reserve_bytes": 262144,
+    "conservative_observation_non_body_reserve_bytes": 262144,
+    "conservative_phone_result_original_bytes": 1829552,
+    "conservative_phone_stdout_bytes": 1567408,
+    "conservative_remaining_ten_originals_reserve_bytes": 524288,
+    "conservative_twelve_originals_total_bytes": 3921248,
+    "native_result_original_limit_bytes": 8388608,
+    "no_limits_increased": true,
+    "phone_stdout_limit_bytes": 8388608,
+    "publish_intent_prior_raw_observed": false,
+    "raw_three_files_bytes": 978944,
+    "snapshot_archive_body_included": false,
+    "twelve_originals_total_limit_bytes": 16777216
+  },
+  "schema": "hepta.fixed-three-boundary-originals.interface.v1",
+  "source": {
+    "bytes": 14900,
+    "path": "source/read_three_boundary_originals_once.py",
+    "sha256": "41398169b440a156db14eb3d2e701198a3d13ec0834a1c4d60c4d593a8a95fa8"
+  }
+}

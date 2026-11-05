@@ -1,0 +1,76 @@
+{
+  "files": [
+    {
+      "bytes": 3235,
+      "path": "INTERFACE.json",
+      "sha256": "c6f7f56de2eb7fa5dc214bc0be73ab8dddc379c82e789aa222302365d49eaa50"
+    },
+    {
+      "bytes": 9686,
+      "path": "reference/BOUNDARY.original.json",
+      "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+    },
+    {
+      "bytes": 144079,
+      "path": "reference/CAPTURE.original.json",
+      "sha256": "b6dffc54291f7a35486cab4b677c5ff5ea3fe4fb4fa2bad4a28d3094ddbca04d"
+    },
+    {
+      "bytes": 211933,
+      "path": "reference/PHONE-STDOUT.original",
+      "sha256": "6be3fbb0726b450ff98aac38defd38f89fff093bf644da56568688e7d99fc647"
+    },
+    {
+      "bytes": 714,
+      "path": "reference/SNAPSHOT-RESULT.original.json",
+      "sha256": "f67f2365baeaf24ee224caf9d0f53661bbb0faba69d6d219ce94da3877c62f08"
+    },
+    {
+      "bytes": 19138,
+      "path": "reference/component_common.1e2d.original.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 74287,
+      "path": "reference/late_boundary.396d.original.py",
+      "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+    },
+    {
+      "bytes": 18736,
+      "path": "reference/observe_existing_capture_once.45aff.original.py",
+      "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+    },
+    {
+      "bytes": 15611,
+      "path": "reference/read_four_existing_originals_once.ff285.unexecuted.py",
+      "sha256": "ff285d8d04633eaa0bf00a3ab00ec62900f50d8a5bb495fb30df8a2205efc268"
+    },
+    {
+      "bytes": 14900,
+      "path": "source/read_three_boundary_originals_once.py",
+      "sha256": "41398169b440a156db14eb3d2e701198a3d13ec0834a1c4d60c4d593a8a95fa8"
+    },
+    {
+      "bytes": 3286,
+      "path": "validation/FIXED-READ-INPUTS.json",
+      "sha256": "0fd696af054b0396ca03ad99ff3a45092590c20aee706ec35b2f9133974545ec"
+    },
+    {
+      "bytes": 730,
+      "path": "validation/OUTPUT-BUDGET.json",
+      "sha256": "f10df7413e646de75b4e94ccdca43aafd08424e2c4e042473db8a8dc2d52adab"
+    },
+    {
+      "bytes": 1224,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "35061da687fd7b496e1dd3f22dcbf8fe9398704fc1bde9a31a3e3cc624f966be"
+    },
+    {
+      "bytes": 10840,
+      "path": "validation/THREE-LEAF-SCOPE-INCREMENT.patch",
+      "sha256": "56b052012833f1695551932c76c5ce3e26999629a069ae6011b49c175b22429f"
+    }
+  ],
+  "schema": "hepta.fixed-three-boundary-originals.source-package.v1",
+  "state": "SOURCE_ONLY_UNEXECUTED"
+}

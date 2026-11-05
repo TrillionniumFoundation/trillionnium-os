@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py", line 1005, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py", line 995, in main
+    try:return c.run()
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py", line 845, in run
+    self.frozen_phone('stage',['/usr/bin/python3','-I','-B',staging+p['label']+'.stage.py',
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py", line 807, in frozen_phone
+    return self.phone(tag,{'kind':'shell','root':True,'timeout_seconds':timeout,'command':ENV+shlex.join(argv)})
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py", line 794, in phone
+    ph=w['phone'];need(type(ph['rc']) is int and ph['rc']==0,'actual phone command failed; no new key retry');return strict(ph['stdout'])
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/source/run_component_root_once.py", line 53, in need
+    if not v:raise ValueError(s)
+ValueError: actual phone command failed; no new key retry

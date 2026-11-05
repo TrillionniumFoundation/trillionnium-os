@@ -1,0 +1,51 @@
+{
+  "expected_first_versions_unchanged": true,
+  "host": "mac",
+  "limit": 32768,
+  "maximum_parallel_reads": 1,
+  "missing_segments": [
+    {
+      "name": "EXTERNAL902-ORIGINALS.tar.xz",
+      "offset": 1703936
+    },
+    {
+      "name": "EXTERNAL902-ORIGINALS.tar.xz",
+      "offset": 1736704
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 65536
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 98304
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 131072
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 163840
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 196608
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 229376
+    },
+    {
+      "name": "ORIGINALS-MANIFEST.json",
+      "offset": 262144
+    }
+  ],
+  "new_32KiB_segments": 9,
+  "on_first_timeout": "preserve_error_and_stop_no_automatic_retry",
+  "original_missing_64KiB_ranges": 5,
+  "phone_calls": 0,
+  "remote_calls_so_far": 0,
+  "remote_process_start": 0,
+  "state": "LOCAL_PREPARATION_ONLY_EXECUTION_AFTER_P4_COMPLETE"
+}

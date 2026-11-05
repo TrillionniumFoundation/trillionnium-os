@@ -1,0 +1,39 @@
+{
+  "binder": {
+    "bytes": 15258,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/six_host_inventory_prefix_candidate01/package/source/prepare_six_host_generation.py",
+    "sha256": "71c9a2d20c5eff36e94635151f5d3e93e0b16b0e117a631b0657ff2cb74683a5"
+  },
+  "binder_main_calls": 0,
+  "case_pass_claimed": false,
+  "checks": [
+    "Generator exactly reverses three RHS values OUT/CONSUMER_ROOT/ACCEPTANCE_ROOT to original67eff; all functions/classes and FINALIZATION=None unchanged.",
+    "Binder exactly reverses four source/dependency assignments, removes two fixed actual-data assignments and two added equality checks, restores one truthful output key, to original665b whole bytes.",
+    "Actual4683 delivery and actualb26a/00ea manifests equal bundled raw original byte pins; actual527374 adoption actual_export equals fixed f821 current policy.",
+    "Inner generator manifest pins generator/reference sources without depending on outer binder; no hash cycle. Outer manifest closed members all match exact sizes/SHA.",
+    "Generator retains exact parent40a0/996c/ef46 source pins and fill_slots whole inverse/function-byte gates; original prepare and importer sealed17 membership/byte equality and production15 checks remain unchanged.",
+    "New operator namespace is independent; old canonical outputs are not overwritten. Release/component/hostplan remain future required inputs, no fake readiness or qualification generated."
+  ],
+  "generator": {
+    "bytes": 17186,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/six_host_inventory_prefix_candidate01/package/generator/source/derive_six_host_property_pins.py",
+    "sha256": "9ef4c79511e8b3cee5098eb8c9bf292d21b04bfbec7747cbd345efc673ac9df3"
+  },
+  "generator_main_calls": 0,
+  "generator_prepare_calls": 0,
+  "issues": [],
+  "phone_operations": 0,
+  "remote_operations": 0,
+  "schema": "hepta.fixed19.six-host-inventory-prefix-independent-review.v1",
+  "scope_limits": [
+    "No generator prepare/main, binder main, actual sealed release validation, harness, remote or phone call executed by this review.",
+    "This is source/interface admission only; actual six-host generation still must consume real sealed17 inputs."
+  ],
+  "source_manifest": {
+    "bytes": 3972,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/six_host_inventory_prefix_candidate01/package/SOURCE-MANIFEST.json",
+    "sha256": "1c62db17d75a7850942bf680dca46bb764cd3564f5ad9dd024b807e0e763193c"
+  },
+  "state": "NARROW_SOURCE_NAMESPACE_AND_DEPENDENCY_REVIEW_PASSED",
+  "target_code_imports": 0
+}

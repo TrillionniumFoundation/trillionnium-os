@@ -1,0 +1,90 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 64533,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "ac8c5ab5f4947315515afc912b2b8973e22d35b1de07a8e46b5a348d87259b59"
+  },
+  "case_pass": false,
+  "checks": [
+    {
+      "count": 7,
+      "name": "seven_splice_whole_byte_inverse",
+      "passed": true
+    },
+    {
+      "functions": [
+        "put",
+        "enc"
+      ],
+      "name": "all_functions_byte_identical",
+      "passed": true
+    },
+    {
+      "name": "exact_probe_in_PROBE_and_heredoc",
+      "passed": true
+    },
+    {
+      "name": "same_shell_prefix_and_210_second_timeout",
+      "passed": true
+    },
+    {
+      "name": "request_serialization_exact_preview",
+      "passed": true,
+      "request_bytes": 29329
+    },
+    {
+      "label": "ng-902e851c3ca1f90deab3d880ab993774-added-originals-read01",
+      "name": "fixed_nonce_label_and_create_only_output",
+      "output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-additions-read01",
+      "passed": true
+    },
+    {
+      "name": "single_actor_Popen_179a_pin_passive_240_and_no_signals_retry",
+      "passed": true,
+      "scope": "unchanged literal source inverse to reviewed actual a4ba parent"
+    },
+    {
+      "name": "controller_exact_stdin_key_and_no_outer_timeout",
+      "passed": true
+    },
+    {
+      "name": "same_8MiB_native_and_16MiB_12_original_archive_limits",
+      "passed": true,
+      "scope": "unchanged source inverse"
+    }
+  ],
+  "controller_request": {
+    "bytes": 67488,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/caller-final01/CONTROLLER-REQUEST.json",
+    "sha256": "7eaab46175de494b3ae8e93e86e36931a1395afd01be93e2e50a3fc5808b7064"
+  },
+  "limitations": [
+    "Source review only; no target call, function, import, main, remote, P4 or phone executed by reviewer.",
+    "Root already dispatched by the time this independent caller review completed; this record is not a pre-execution gate.",
+    "Passive child wait/captured observations do not establish remote cleanup or a physical case PASS.",
+    "Initial local display helper incorrectly attempted literal_eval on pathlib.Path; it raised before any target execution and was corrected."
+  ],
+  "parent": {
+    "bytes": 50942,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_02/reconciliation/inventory-diff-read01/P4-LAUNCHER.original.py",
+    "sha256": "a4ba9e5bb4550a84fcffdd8215c7572ff19d102e0c6b77759b5903d26239ce6d"
+  },
+  "phone_command_bytes": 28884,
+  "probe": {
+    "bytes": 28397,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/exact76_added_originals_candidate01/delivery-final01/package/source/observe_fixed_external_additions_once.py",
+    "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+  },
+  "review_chronology": {
+    "caller_review_completed_after_root_dispatch": true,
+    "probe_4bec_independent_review_completed_before_dispatch": true,
+    "root_had_completed_own_caller_review_before_dispatch": true,
+    "root_reported_job_id": "1a1aba9ff82-fc05-4f81"
+  },
+  "reviewed_at_utc": "2026-11-05T12:24:41.622161+00:00",
+  "reviewer_phone_calls": 0,
+  "reviewer_remote_calls": 0,
+  "schema": "hepta.independent.fixed-external-additions-caller-review.v1",
+  "state": "LOCAL_SOURCE_REVIEW_NO_BLOCKER"
+}

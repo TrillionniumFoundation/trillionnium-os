@@ -1,0 +1,712 @@
+{
+  "caller_wrapper_chain_verified_here": true,
+  "case_pass": false,
+  "local_input_bookends": [
+    {
+      "bytes": 2434,
+      "local_metadata": [
+        27,
+        3809869,
+        33188,
+        0,
+        0,
+        1,
+        2434,
+        1793884240031268071,
+        1793884240031268071
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/ARCHIVE-MANIFEST.json",
+      "sha256": "7f4807caa59c83cac97b1fd8f0fba3abd2ad32db889c8500969c5a7d691b1dfc"
+    },
+    {
+      "bytes": 43672,
+      "local_metadata": [
+        27,
+        3811962,
+        33188,
+        0,
+        0,
+        1,
+        43672,
+        1793884812794230836,
+        1793884812794230836
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/FULL-ORIGINALS.tar.xz",
+      "sha256": "02be356e404f163aa9764a4a2225ada4364fe91016e4b7f6c4516a30b3979091"
+    },
+    {
+      "bytes": 72,
+      "local_metadata": [
+        27,
+        3811964,
+        33188,
+        0,
+        0,
+        1,
+        72,
+        1793884812798575568,
+        1793884812798575568
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/CHILD.json",
+      "sha256": "4713d26ee350d0c2de423cb67e2719db0ec8bb74a5b6ef6583ba7ccb68815db3"
+    },
+    {
+      "bytes": 618,
+      "local_metadata": [
+        27,
+        3811965,
+        33188,
+        0,
+        0,
+        1,
+        618,
+        1793884812798765410,
+        1793884812798765410
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/INTENT.json",
+      "sha256": "a5d3a95a0021d3f851971545cb9e5c164219dd70e4483688431e2671418dba89"
+    },
+    {
+      "bytes": 86,
+      "local_metadata": [
+        27,
+        3811966,
+        33188,
+        0,
+        0,
+        1,
+        86,
+        1793884812798853968,
+        1793884812798853968
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/JOINED.json",
+      "sha256": "43ef5f933b97bb3b121122c3e3b80ec09a838f10366352d5b1a91e6e004faa38"
+    },
+    {
+      "bytes": 211933,
+      "local_metadata": [
+        27,
+        3811967,
+        33188,
+        0,
+        0,
+        1,
+        211933,
+        1793884812799168444,
+        1793884812799168444
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/PHONE-STDOUT.original",
+      "sha256": "6be3fbb0726b450ff98aac38defd38f89fff093bf644da56568688e7d99fc647"
+    },
+    {
+      "bytes": 18736,
+      "local_metadata": [
+        27,
+        3811968,
+        33188,
+        0,
+        0,
+        1,
+        18736,
+        1793884812799342686,
+        1793884812799342686
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/PROBE-SOURCE.original.py",
+      "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+    },
+    {
+      "bytes": 19641,
+      "local_metadata": [
+        27,
+        3811969,
+        33188,
+        0,
+        0,
+        1,
+        19641,
+        1793884812799412254,
+        1793884812799412254
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/REQUEST.original.json",
+      "sha256": "13eb23bd490d8f676448adf7113e2be60406ea803a38bcd8775c136c3fc0a5ae"
+    },
+    {
+      "bytes": 1440,
+      "local_metadata": [
+        27,
+        3811970,
+        33188,
+        0,
+        0,
+        1,
+        1440,
+        1793884812799458434,
+        1793884812799458434
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/RESULT.json",
+      "sha256": "0643e8070c3bed7717ba0618d7667f237b1a2e5e8d5bf42b31c7a405b21d5a89"
+    },
+    {
+      "bytes": 0,
+      "local_metadata": [
+        27,
+        3811971,
+        33188,
+        0,
+        0,
+        1,
+        0,
+        1793884812799458434,
+        1793884812799458434
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/actor.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 313,
+      "local_metadata": [
+        27,
+        3811972,
+        33188,
+        0,
+        0,
+        1,
+        313,
+        1793884812799572215,
+        1793884812799572215
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/actor.stdout.original",
+      "sha256": "55bb1aefe05e0237c791c049584aa7a7ca2fe968e97c267535cdf2cb7e40a76e"
+    },
+    {
+      "bytes": 348,
+      "local_metadata": [
+        27,
+        3811973,
+        33188,
+        0,
+        0,
+        1,
+        348,
+        1793884812799615705,
+        1793884812799615705
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/phone-baseline.json.original",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    {
+      "bytes": 19960,
+      "local_metadata": [
+        27,
+        3811974,
+        33188,
+        0,
+        0,
+        1,
+        19960,
+        1793884812799682137,
+        1793884812799682137
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/phone-intent.json.original",
+      "sha256": "42e3aab2672014899d6f250883515deb969743d1565eb58607d08b060142dc3d"
+    },
+    {
+      "bytes": 235423,
+      "local_metadata": [
+        27,
+        3811975,
+        33188,
+        0,
+        0,
+        1,
+        235423,
+        1793884812800632718,
+        1793884812800632718
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/existing-capture-read01/originals/phone-result.json.original",
+      "sha256": "9e0d6fa01b8b2dd2b9d5fdea295a19b959c71fb071ecd33b2151b30f336b0280"
+    },
+    {
+      "bytes": 18736,
+      "local_metadata": [
+        27,
+        3808675,
+        33188,
+        0,
+        0,
+        1,
+        18736,
+        1793883865021098713,
+        1793883925006103736
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/delivery-final01/package/source/observe_existing_capture_once.py",
+      "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+    },
+    {
+      "bytes": 44799,
+      "local_metadata": [
+        27,
+        3808692,
+        33188,
+        0,
+        0,
+        1,
+        44799,
+        1793883947411837996,
+        1793883947411837996
+      ],
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_observer_candidate01/caller-final01/P4-LAUNCHER.py",
+      "sha256": "db1f4a18b37ab6b8c21d338978e28a6993249b7fa987a33ee3d04d0fe5ae996d"
+    }
+  ],
+  "observation": {
+    "automatic_retry": false,
+    "boundary_directory_children_read": false,
+    "boundary_file_body_retained": true,
+    "boundary_observations": [
+      {
+        "bytes": 9686,
+        "encoding": "base64",
+        "kind": "file",
+        "metadata": [
+          65086,
+          156280,
+          33152,
+          0,
+          0,
+          1,
+          9686,
+          1793882486435914270,
+          1793882486435914270
+        ],
+        "parent_metadata": [
+          65086,
+          153411,
+          16832,
+          0,
+          0,
+          8,
+          3452,
+          1793882486435914270,
+          1793882486435914270
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774.json",
+        "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831",
+        "state": "REGULAR_ORIGINAL_RETAINED"
+      },
+      {
+        "kind": "directory",
+        "metadata": [
+          65086,
+          157440,
+          16832,
+          0,
+          0,
+          2,
+          3452,
+          1793882485267914270,
+          1793882485267914270
+        ],
+        "names": [
+          "AFTER-INVENTORY.original.json",
+          "CLOSURE.original.json",
+          "PUBLISH-INTENT.json"
+        ],
+        "parent_metadata": [
+          65086,
+          153411,
+          16832,
+          0,
+          0,
+          8,
+          3452,
+          1793882486435914270,
+          1793882486435914270
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774",
+        "state": "DIRECTORY_NAMES_OBSERVED_NO_CHILD_READS"
+      }
+    ],
+    "boundary_reported_header": {
+      "case_id": "NEG-01",
+      "component_qualified": false,
+      "nonce": "902e851c3ca1f90deab3d880ab993774",
+      "schema": "hepta.native-guard.late-boundary.v1",
+      "state": "CLOSED_COMPONENT_AND_CUMULATIVE_ORIGINALS_PRESERVED"
+    },
+    "capture_directory": {
+      "metadata": [
+        65086,
+        154599,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793882440195914287,
+        1793882440195914287
+      ],
+      "names": [
+        "CAPTURE.json",
+        "ORIGINALS.tar.gz",
+        "RESULT.json",
+        "snapshot"
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01"
+    },
+    "capture_leaves": [
+      {
+        "body_retention_limit_bytes": 65536,
+        "bytes": 714,
+        "encoding": "base64",
+        "kind": "file",
+        "metadata": [
+          65086,
+          155451,
+          33152,
+          0,
+          0,
+          1,
+          714,
+          1793882440195914287,
+          1793882440195914287
+        ],
+        "parent_metadata": [
+          65086,
+          154599,
+          16832,
+          0,
+          0,
+          3,
+          3452,
+          1793882440195914287,
+          1793882440195914287
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/RESULT.json",
+        "sha256": "f67f2365baeaf24ee224caf9d0f53661bbb0faba69d6d219ce94da3877c62f08",
+        "state": "REGULAR_ORIGINAL_OBSERVED",
+        "whole_bytes_retained": true,
+        "whole_file_hash_computed": true
+      },
+      {
+        "body_retention_limit_bytes": 1048576,
+        "bytes": 144079,
+        "encoding": "base64",
+        "kind": "file",
+        "metadata": [
+          65086,
+          157565,
+          33152,
+          0,
+          0,
+          1,
+          144079,
+          1793882439779914287,
+          1793882439779914287
+        ],
+        "parent_metadata": [
+          65086,
+          154599,
+          16832,
+          0,
+          0,
+          3,
+          3452,
+          1793882440195914287,
+          1793882440195914287
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/CAPTURE.json",
+        "sha256": "b6dffc54291f7a35486cab4b677c5ff5ea3fe4fb4fa2bad4a28d3094ddbca04d",
+        "state": "REGULAR_ORIGINAL_OBSERVED",
+        "whole_bytes_retained": true,
+        "whole_file_hash_computed": true
+      },
+      {
+        "leaf_errno": 2,
+        "parent_metadata": [
+          65086,
+          154599,
+          16832,
+          0,
+          0,
+          3,
+          3452,
+          1793882440195914287,
+          1793882440195914287
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/PARTIAL-CAPTURE.json",
+        "state": "ENOENT",
+        "whole_bytes_retained": false,
+        "whole_file_hash_computed": false
+      },
+      {
+        "body_omission_reason": "fixed_archive_descriptor_only",
+        "body_retention_limit_bytes": 0,
+        "bytes": 2204770,
+        "kind": "file",
+        "metadata": [
+          65086,
+          153268,
+          33152,
+          0,
+          0,
+          1,
+          2204770,
+          1793882440179914287,
+          1793882440179914287
+        ],
+        "parent_metadata": [
+          65086,
+          154599,
+          16832,
+          0,
+          0,
+          3,
+          3452,
+          1793882440195914287,
+          1793882440195914287
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/ORIGINALS.tar.gz",
+        "sha256": "462da4db9b36028cfec2b933f94bd52c185a103e12d1a771d2b67a47a21d9e03",
+        "state": "REGULAR_ORIGINAL_OBSERVED",
+        "whole_bytes_retained": false,
+        "whole_file_hash_computed": true
+      }
+    ],
+    "case_pass": false,
+    "complete": true,
+    "existing_boundary_validated_or_adopted": false,
+    "native_boundary_published": false,
+    "native_capture_report_header": {
+      "action_ids": [
+        "5a952602788122f47ff1370cfa38dffe"
+      ],
+      "automatic_retry": false,
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "business_qualified": false,
+      "case_id": "NEG-01",
+      "combination_sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e",
+      "component_qualified": false,
+      "inventory_is_closure_or_retirement": false,
+      "lease_sha256": "31688136fbcb7ae520c096decc11c9c36a67a304172401c3aab6c14e7848c736",
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "non_native_sidebranch": {
+        "closure": {
+          "bytes": 164095,
+          "metadata": [
+            65086,
+            153455,
+            33152,
+            0,
+            0,
+            1,
+            164095,
+            1793843548839929123,
+            1793843548839929123
+          ],
+          "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-nonnative-boundaries-r10-r1/e4c3ccb0b2d706be3b7bf105ae772405/CLOSURE.original.json",
+          "sha256": "d464bac786ef208d8fa0390587bd3bb7616a13985fb064716a209aa2394458f6"
+        },
+        "component_qualified": false,
+        "component_role_identities": {
+          "provider": [
+            23913,
+            23913,
+            23913,
+            18133299
+          ],
+          "sidecar": [
+            23911,
+            23911,
+            23911,
+            18133265
+          ],
+          "supervisor": [
+            23779,
+            23779,
+            23779,
+            18132959
+          ]
+        },
+        "inventory": {
+          "bytes": 664638,
+          "metadata": [
+            65086,
+            143754,
+            33152,
+            0,
+            0,
+            1,
+            664638,
+            1793843548843929123,
+            1793843548843929123
+          ],
+          "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-nonnative-boundaries-r10-r1/e4c3ccb0b2d706be3b7bf105ae772405/AFTER-INVENTORY.original.json",
+          "sha256": "87103089914885fff5632781f18fbe36895ed181f01997eac6c3b49449b5579e"
+        },
+        "native_case_count": 0,
+        "native_predecessor": {
+          "bytes": 4748,
+          "metadata": [
+            65086,
+            149437,
+            33152,
+            0,
+            0,
+            1,
+            4748,
+            1793828404835934900,
+            1793828404835934900
+          ],
+          "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/c705647dd4ebb5d421be1041a9c41ca6.json",
+          "sha256": "3216ab18adcafa0dda95e8a93ad35a2070e7aec286d7a518794918068ce31d12"
+        },
+        "nonce": "e4c3ccb0b2d706be3b7bf105ae772405",
+        "preserved_roots": [
+          "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/evidence",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/client-receipts",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/executor-r6",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/health-contracts/bindings",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/task-contracts/bindings",
+          "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03",
+          "/proc/1/root/data/local/tmp/hepta-native-guard-88d68d88130d3c74e6c950a6346357c1",
+          "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04",
+          "/proc/1/root/data/local/tmp/hepta-native-guard-c705647dd4ebb5d421be1041a9c41ca6",
+          "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor",
+          "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05",
+          "/proc/1/root/data/local/tmp/hepta-native-guard-e4c3ccb0b2d706be3b7bf105ae772405"
+        ],
+        "private_roots": [
+          "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05",
+          "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor",
+          "/proc/1/root/data/local/tmp/hepta-native-guard-e4c3ccb0b2d706be3b7bf105ae772405"
+        ],
+        "proof": {
+          "bytes": 4650,
+          "metadata": [
+            65086,
+            147519,
+            33152,
+            0,
+            0,
+            1,
+            4650,
+            1793843550651929122,
+            1793843550651929122
+          ],
+          "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-nonnative-boundaries-r10-r1/e4c3ccb0b2d706be3b7bf105ae772405/SIDE-PROOF.original.json",
+          "sha256": "1bf6bca5ae5aaa5d5803b708070680e92d3f072f9541f38b09783787cfae7b9c"
+        },
+        "schema": "hepta.native-guard.non-native-sidebranch-binding.v1"
+      },
+      "nonce": "902e851c3ca1f90deab3d880ab993774",
+      "owner_request_sha256": "526568aa9d2c95f333caf396f9873deaf8baca2df841e7a94100e04b28bb93eb",
+      "package_sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb",
+      "prior_boundary_sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10",
+      "retained_bytes": 11486249,
+      "retirement_proof_sha256": "b139e096969f5a860f5e7cb9e3e988db3d0b2e868528dd4c38b8c9411df4fb90",
+      "run_basename": "20261105-114342-902e851c3ca1f90deab3d880ab993774",
+      "schema": "hepta.native-guard.original-capture.v1",
+      "scope": {
+        "profile_id": "owner-open",
+        "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+        "task_id": "task-d3f61033-5b61-40e4-b8c6-7ea00d6b2d56",
+        "turn_id": "turn-c2247546-2cb4-4c98-b20f-b4ee06c2f14c",
+        "turn_stream_id": "r5-stream-6d465a4b53634e510a9b448f5d53be3ce4115ea2303e9ceeefaccd99bcc04475"
+      },
+      "socket_connections": 0,
+      "source_original_writes": 0,
+      "state": "ORIGINAL_BYTES_CAPTURED_FOR_INDEPENDENT_AUDIT",
+      "ui_actions": 0
+    },
+    "native_result_descriptor_links_checked": true,
+    "native_snapshot_result_reported": {
+      "archive": {
+        "bytes": 2204770,
+        "sha256": "462da4db9b36028cfec2b933f94bd52c185a103e12d1a771d2b67a47a21d9e03"
+      },
+      "archive_members": 273,
+      "archive_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/ORIGINALS.tar.gz",
+      "automatic_retry": false,
+      "business_qualified": false,
+      "capture": {
+        "bytes": 144079,
+        "sha256": "b6dffc54291f7a35486cab4b677c5ff5ea3fe4fb4fa2bad4a28d3094ddbca04d"
+      },
+      "capture_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/CAPTURE.json",
+      "component_qualified": false,
+      "model_requests": 0,
+      "schema": "hepta.native-guard.snapshot-result.v1",
+      "state": "ORIGINAL_CAPTURE_ARCHIVED"
+    },
+    "snapshot_archive_body_retained": false,
+    "snapshot_archive_contents_validated": false,
+    "state": "COMPLETE_FIXED_OUTPUT_OBSERVATION_PARSED"
+  },
+  "phone_calls": 0,
+  "phone_stdout": {
+    "bytes": 211933,
+    "sha256": "6be3fbb0726b450ff98aac38defd38f89fff093bf644da56568688e7d99fc647"
+  },
+  "readback_needed": [
+    {
+      "body_present_locally_from_this_observation": false,
+      "bytes": 2204770,
+      "metadata": [
+        65086,
+        153268,
+        33152,
+        0,
+        0,
+        1,
+        2204770,
+        1793882440179914287,
+        1793882440179914287
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/ORIGINALS.tar.gz",
+      "purpose": "independent_original_snapshot_validation",
+      "reason": "fixed_archive_descriptor_only",
+      "required_before_any_snapshot_adoption": true,
+      "sha256": "462da4db9b36028cfec2b933f94bd52c185a103e12d1a771d2b67a47a21d9e03"
+    }
+  ],
+  "remote_calls": 0,
+  "retained_bodies": [
+    {
+      "bytes": 9686,
+      "full_body_preserved": true,
+      "local_path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01/retained-bodies/boundary/902e851c3ca1f90deab3d880ab993774.json",
+      "original_phone_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774.json",
+      "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+    },
+    {
+      "bytes": 144079,
+      "full_body_preserved": true,
+      "local_path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01/retained-bodies/capture/CAPTURE.json",
+      "original_phone_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/CAPTURE.json",
+      "sha256": "b6dffc54291f7a35486cab4b677c5ff5ea3fe4fb4fa2bad4a28d3094ddbca04d"
+    },
+    {
+      "bytes": 714,
+      "full_body_preserved": true,
+      "local_path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01/retained-bodies/capture/RESULT.json",
+      "original_phone_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-snapshots-r10-r1/root-r10-neg01-7c907661-01-capture-01/RESULT.json",
+      "sha256": "f67f2365baeaf24ee224caf9d0f53661bbb0faba69d6d219ce94da3877c62f08"
+    }
+  ],
+  "schema": "hepta.existing-capture.local-parsed-originals.v1",
+  "snapshot_or_boundary_adopted": false,
+  "source_sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84",
+  "trusted_retained_controller_tool_receipts_verified_here": false,
+  "wrapper": {
+    "actor_returncode": 0,
+    "actor_stderr_bytes": 0,
+    "native_stderr": "",
+    "phone_returncode": 0,
+    "wrapper_completed_successfully": true
+  }
+}

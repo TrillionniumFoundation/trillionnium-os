@@ -1,0 +1,44 @@
+{
+  "admission": {
+    "bytes": 66905,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/FAILED-PRELAUNCH-ADMISSION.json",
+    "sha256": "e85b3bfed5e4720fdcebca8783c6735a9601d73d903066c6de61917e001bf130"
+  },
+  "consumer_api": "verify_failed_prelaunch_admission(strict(raw_ADMISSION), read_pinned=originals.read)",
+  "existing_original_paths_required": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/EXTERNAL-ORIGINALS.json",
+  "helper_admission_argument": [
+    "--failed-prelaunch-admission-desc",
+    "{\"bytes\":66905,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/FAILED-PRELAUNCH-ADMISSION.json\",\"sha256\":\"e85b3bfed5e4720fdcebca8783c6735a9601d73d903066c6de61917e001bf130\"}"
+  ],
+  "helper_binding_only": {
+    "FAILED_PRELAUNCH_VERIFIER": {
+      "bytes": 54893,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/source/verify_failed_prelaunch.py",
+      "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+    }
+  },
+  "inputs": {
+    "bytes": 26529,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/INPUTS.json",
+    "sha256": "8228741fb6f27c51c23255beb51c7824305a31d5b43fc1c3907ddea9ed0304cf"
+  },
+  "new_plan_requires_separate_root_owned_authorization_and_identity": true,
+  "reassembly_api": "assemble_failed_prelaunch(strict(raw_INPUTS), read_pinned=originals.read)",
+  "schema": "hepta.failed-prelaunch.host-entrypoints.v1",
+  "verifier_source": {
+    "bytes": 54893,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/source/verify_failed_prelaunch.py",
+    "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+  },
+  "verify_only": {
+    "args": [
+      "-I",
+      "-B",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/failed-prelaunch-admission01/source/verify_admission_host_once.py"
+    ],
+    "executable": "/usr/bin/python3",
+    "newcase_or_nonce_created": false,
+    "phone_calls": 0,
+    "writes": 0
+  }
+}

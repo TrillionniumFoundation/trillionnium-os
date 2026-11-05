@@ -1,0 +1,31 @@
+{
+  "files": [
+    {
+      "bytes": 814,
+      "path": "INTERFACE.json",
+      "sha256": "4c93025dae6e80811c4cc14bbb23d6b85d8dcf24981b9bb5789f05e913cccebe"
+    },
+    {
+      "bytes": 2481,
+      "path": "reference/FAILED-SNAPSHOT-PHONE-RESULT.original.json",
+      "sha256": "ec47f2a86488391201c86b3880bd8c0d7c24cdbed94eb95e658474d25c5935e8"
+    },
+    {
+      "bytes": 28397,
+      "path": "reference/observe_fixed_external_additions_once.4bec.original.py",
+      "sha256": "4bec7d3e36648fd8b2ab3230136a3c779d03c8a884b147010864ad03b4efed06"
+    },
+    {
+      "bytes": 18736,
+      "path": "source/observe_existing_capture_once.py",
+      "sha256": "45affc6439458dec09e1326c25a0c1be01ac66732d08ad3e754e3773230c0c84"
+    },
+    {
+      "bytes": 1292,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "b508d43ef0275809ca935fd1dd5ea463b7a0fa26b40e49dceabe02c33d0471d0"
+    }
+  ],
+  "schema": "hepta.existing-capture-observer.source-package.v1",
+  "state": "SOURCE_ONLY_UNEXECUTED"
+}

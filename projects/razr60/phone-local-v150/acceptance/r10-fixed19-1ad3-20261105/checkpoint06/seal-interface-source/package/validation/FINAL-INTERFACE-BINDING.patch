@@ -1,0 +1,20 @@
+--- 1d889-reviewed-source
++++ actual4683-bound-source
+@@ -18,7 +18,7 @@
+ 
+ sys.dont_write_bytecode = True
+ B=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-DELIVERY=None
++DELIVERY={'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json', 'bytes': 28755, 'sha256': '4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714'}
+ FC=B/'r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01'
+ C=B/'r10-component-boundary-input-entry-r8-inventory-prefix-1ad3-01'
+ RUNTIME_PARENT=B/'native-guard-r10-r1-operator-r7/runtime'
+@@ -29,7 +29,7 @@
+ ENVIRONMENT_PARENT_BOUNDARY_SHA='eca628a18327146b7710a478fc2c2f716f79d55907b2821666828a0795e2060f'
+ RET=B/'module-r10-r1-retirement-reconciliation-01'
+ S=B/'r10-boundary-consumers-material-r1/actual-material-01/SHARED-MATERIALS.json'
+-OUT=None
++OUT=B/'property-policy-final-seal-interface-r8-r1-inventory-prefix-1ad3-01'
+ PRE_POLICY_BOUNDARY_SHA='3216ab18adcafa0dda95e8a93ad35a2070e7aec286d7a518794918068ce31d12'
+ EXTERNAL_BOUNDARY_SHA='ee008c3b2adec701be4c0bdfd38ca7ac0d650da9b7783f51d3fe4638bfdc5b58'
+ F08=B/'native-guard-root-chains-r10-r1/root-r10-neg01-20261105-08'

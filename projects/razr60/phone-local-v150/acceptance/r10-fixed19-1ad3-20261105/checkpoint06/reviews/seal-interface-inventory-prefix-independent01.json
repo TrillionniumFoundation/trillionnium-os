@@ -1,0 +1,33 @@
+{
+  "case_qualification_claimed": false,
+  "checks": [
+    "Only DELIVERY and OUT top-level None RHS change; full byte inverse equals parent1d889, every function/class remains byte-identical.",
+    "DELIVERY is the exact actual4683 original, pinned path/28755 bytes/SHA; OUT equals the unchanged hard-gated unique inventory-prefix interface namespace.",
+    "All11 declared members plus SOURCE-MANIFEST are the exact12-file closed set; original source reference and actual cascade references preserve their pins.",
+    "Default CLI prints preview without I/O. Explicit --execute-host-interface-once verifies local originals via pinned pure modules, rechecks input identities, then creates only COMPONENT-PLAN.template.json with cases=[], INTERFACE.json and RESULT.json.",
+    "No constructor, final builder, process launch or phone entry is called. Empty cases and qualification_pending flags remain explicit; sealed17, actual qualified NEG01/NEG02 and unchanged33554432-byte gate remain required."
+  ],
+  "issues": [],
+  "main_calls": 0,
+  "parent": {
+    "bytes": 40887,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/seal_interface_inventory_prefix_candidate01/package/reference/write_final_seal_interface_property_r8.1d889.original.py",
+    "sha256": "1d88947679e6bb01a24762aa0b86e9875928f836b97eb9a4aff216ee6de0b500"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.fixed19.inventory-prefix-seal-interface-independent-review.v1",
+  "scope_limit": "Static inverse/interface review only. Pure proof functions, actual constructor/seal execution and source entrypoint were not run by the reviewer.",
+  "source": {
+    "bytes": 41236,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/seal_interface_inventory_prefix_candidate01/package/source/write_final_seal_interface_property_r8.py",
+    "sha256": "991511989c7c0e2f826f9df0302d570938eca03ab1136adfa02c96b61feee3f0"
+  },
+  "source_manifest": {
+    "bytes": 3369,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/seal_interface_inventory_prefix_candidate01/package/SOURCE-MANIFEST.json",
+    "sha256": "63a1641012478cc73313bf94fbba97f01e0e95efc805f3abdccc7041a6cc298a"
+  },
+  "state": "EXACT_TWO_LITERAL_SOURCE_AND_NAMESPACE_REVIEW_PASSED",
+  "target_code_imports": 0
+}

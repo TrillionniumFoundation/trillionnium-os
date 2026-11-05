@@ -1,0 +1,63 @@
+{
+  "actual_delivery": {
+    "bytes": 28755,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/DELIVERY-RESULT.json",
+    "sha256": "4683e907b33377d657bb0f4b7c2cd772b6d84881ab09ad66e77a6445f36ed714"
+  },
+  "actual_dependency_map": {
+    "acceptance_manifest": {
+      "bytes": 21485,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01/MANIFEST.json",
+      "sha256": "00ea6a0575b41ecc4cbbe47b93799b6d8ed176a1f02bc9a80d458fba97f45671"
+    },
+    "consumer_manifest": {
+      "bytes": 30832,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01/MANIFEST.json",
+      "sha256": "b26a60719eed3b6548d8e2a1b52abac25f5678afdace72d9865de24e17d24a53"
+    },
+    "current_policy": {
+      "bytes": 2667740,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/live-policy-after.bin",
+      "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+    },
+    "policy_adoption": {
+      "bytes": 208226,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json",
+      "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+    }
+  },
+  "actual_full_generator_prepare_deferred_to_host": true,
+  "actual_policy_bytes_not_loaded_here": true,
+  "binder": {
+    "bytes": 15258,
+    "sha256": "71c9a2d20c5eff36e94635151f5d3e93e0b16b0e117a631b0657ff2cb74683a5"
+  },
+  "binder_changed_functions": [
+    "finalization_from_delivery",
+    "main"
+  ],
+  "binder_semantic_changes": "exact actual delivery/dependency equality gates only; main result inverse label corrected",
+  "binder_whole_inverse": true,
+  "case_runs": 0,
+  "finalization_still_None_in_delivered_source": true,
+  "future_release_descriptor": null,
+  "generator": {
+    "bytes": 17186,
+    "sha256": "9ef4c79511e8b3cee5098eb8c9bf292d21b04bfbec7747cbd345efc673ac9df3"
+  },
+  "generator_all_functions_byte_identical": true,
+  "generator_main_calls": 0,
+  "generator_prepare_calls": 0,
+  "generator_three_assignment_whole_inverse": true,
+  "new_native_nonce_or_lease": false,
+  "original_three_source_template_pins_unchanged": true,
+  "phone_calls": 0,
+  "pure_refusals": [
+    "unbound_source_rejected",
+    "old_canonical_namespace_rejects_actual_successor"
+  ],
+  "remote_calls": 0,
+  "schema": "hepta.fixed19.six-host-namespace-source-checks.v1",
+  "sealed_release_validate_release_validate_bundle_17_material_gates_unchanged": true,
+  "state": "LOCAL_SOURCE_AND_PURE_INTERFACE_CHECKS_PASSED_NOT_HOST_PREPARATION"
+}

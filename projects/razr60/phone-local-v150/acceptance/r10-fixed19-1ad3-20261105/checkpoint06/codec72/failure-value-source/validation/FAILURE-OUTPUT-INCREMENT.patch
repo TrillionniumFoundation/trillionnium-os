@@ -1,0 +1,11 @@
+--- reference/phone_observation_tools.f16c.original.py
++++ source/phone_observation_tools.py
+@@ -253,7 +253,7 @@
+                     '--viewport-before-b64', '$hepta_before_b64', '--viewport-after-b64', '$hepta_after_b64',
+                     '--max-bytes', str(budget)]
+             quoted = [('\"' + value + '\"') if value.startswith('$hepta_') else shlex.quote(value) for value in argv]
+-            shell += 'hepta_codec=$(CLASSPATH=' + shlex.quote(SCREEN_JAR) + ' app_process /system/bin org.trillionnium.hepta.screen.ScreenshotCodec ' + ' '.join(quoted) + ') || exit 72; '
++            shell += 'hepta_codec=$(CLASSPATH=' + shlex.quote(SCREEN_JAR) + ' app_process /system/bin org.trillionnium.hepta.screen.ScreenshotCodec ' + ' '.join(quoted) + ') || { hepta_codec_exit_code=$?; printf \'%s\' "$hepta_codec"; printf \'\\n{"schema":"hepta.codec-failure-observation.v1","codec_exit_code":%s,"codec_stdout_representation":"posix_shell_command_substitution_value","java_stdout_exact":false,"stderr_has_appended_diagnostic_record":true}\\n\' "$hepta_codec_exit_code" >&2; exit 72; }; '
+             template = '{"schema":"hepta.capture-page-envelope.v149.1","capture_id":"' + token + '","page_before_b64":"%s","page_after_b64":"%s","screenshot":%s}\n'
+             shell += 'printf ' + shlex.quote(template) + ' "$hepta_page_before_b64" "$hepta_page_after_b64" "$hepta_codec"'
+             record.update(max_image_bytes=budget, source_png_path=path)

@@ -1,0 +1,21 @@
+--- parse_existing_capture_locally.py
++++ parse_existing_capture_locally_v2.py
+@@ -274,13 +274,15 @@
+         need(native_result['schema']=='hepta.native-guard.snapshot-result.v1'
+              and native_result['state']=='ORIGINAL_CAPTURE_ARCHIVED','native result is original snapshot schema')
+         by_name={Path(r['path']).name:r for r in leaves}
++        links=True
+         for field,name in (('capture','CAPTURE.json'),('archive','ORIGINALS.tar.gz')):
+-            row=by_name[name];need(row['state']=='REGULAR_ORIGINAL_OBSERVED'
+-                and native_result[field]=={'bytes':row['bytes'],'sha256':row['sha256']}
++            row=by_name.get(name)
++            if row is None or row['state']!='REGULAR_ORIGINAL_OBSERVED':
++                need(not complete,'complete observation lacks a native-result file');links=False;continue
++            need(native_result[field]=={'bytes':row['bytes'],'sha256':row['sha256']}
+                 and native_result[field+'_path']==CAPTURE+'/'+name,'native snapshot result matches observed whole-file descriptor')
+         need(native_result['component_qualified'] is False and native_result['business_qualified'] is False
+              and native_result['model_requests']==0 and native_result['automatic_retry'] is False,'snapshot result is not qualification')
+-        links=True
+     if 'capture/CAPTURE.json' in bodies:
+         native_capture=strict(bodies['capture/CAPTURE.json'])
+         need(native_capture['schema']=='hepta.native-guard.original-capture.v1'

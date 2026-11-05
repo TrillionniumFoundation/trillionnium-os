@@ -1,0 +1,71 @@
+{
+  "actual_admission": {
+    "bytes": 66905,
+    "sha256": "e85b3bfed5e4720fdcebca8783c6735a9601d73d903066c6de61917e001bf130"
+  },
+  "case_passes_added": 0,
+  "checks": [
+    {
+      "name": "missing_actual_global",
+      "passed": true,
+      "rejection": "actual full global and current publication/selected originals are mandatory"
+    },
+    {
+      "name": "missing_current_publication",
+      "passed": true,
+      "rejection": "actual full global and current publication/selected originals are mandatory"
+    },
+    {
+      "name": "external09_cannot_be_omitted",
+      "passed": true,
+      "rejection": "both original failed attempts are required, in original order"
+    },
+    {
+      "name": "unbound_actual_launcher_rejected",
+      "passed": true,
+      "rejection": "complete native observation originals required"
+    },
+    {
+      "name": "original_resource_budget_not_enlarged",
+      "passed": true,
+      "rejection": "bounded canonical original descriptor required"
+    },
+    {
+      "name": "forged_nonce_exclusion_summary_rejected",
+      "passed": true,
+      "rejection": "admission fields or consumed original set differ"
+    },
+    {
+      "name": "failure_cannot_be_qualified",
+      "passed": true,
+      "rejection": "admission fields or consumed original set differ"
+    },
+    {
+      "name": "concatenated_original_gzip_rejected",
+      "passed": true,
+      "rejection": "one complete bounded archive compression stream required"
+    },
+    {
+      "name": "duplicate_JSON_key_rejected",
+      "passed": true,
+      "rejection": "duplicate JSON key"
+    },
+    {
+      "name": "nonoriginal_global_verifier_rejected",
+      "passed": true,
+      "rejection": "reviewed exact source/original differs"
+    }
+  ],
+  "checks_passed": 10,
+  "checks_total": 10,
+  "fixtures_are_copies_not_replacement_originals": true,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "runtime_source_imports": 0,
+  "schema": "hepta.failed-prelaunch.local-required-rejections.v1",
+  "source": {
+    "bytes": 54893,
+    "sha256": "e78defb9c9be3e6cf6a6d3f0616309beef920fa9be87ab594fb36db57b921975"
+  },
+  "state": "LOCAL_PURE_REJECTIONS_PASSED_NOT_PHYSICAL_CASES"
+}

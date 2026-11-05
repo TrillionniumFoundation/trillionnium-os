@@ -1,0 +1,63 @@
+{
+  "actual_bridge_source": {
+    "bytes": 8098,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/bridge-overlay-read01/phone_chain_bridge.py",
+    "sha256": "72564868d7162281e34172d6163c0fb39a20c55ab24d3e8534347912e2680d27"
+  },
+  "actual_coord_source": {
+    "bytes": 72194,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/source-binary-read01/run_component_root_once.original.py",
+    "sha256": "f98ca61da43f0d62604701a1e4dc1d58df03cbb6e0cd7566bf293e298f0b15e0"
+  },
+  "actual_late_source": {
+    "bytes": 74287,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/source-binary-read01/late_boundary.original.py",
+    "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+  },
+  "admission_consequence": "Existing 6282/a334 exact gate must reject 31da/396d. Same 31 source members and same Root transport do not authorize changing our pinned runtime or treating this external failed case as ours.",
+  "case_pass": false,
+  "changed_ast_functions_or_classes_vs_147cf": [
+    "CurrentPropertyParentReader",
+    "_current_property_parent_reader",
+    "inventory_value",
+    "property_parent_reader"
+  ],
+  "external_root": {
+    "bytes": 11894,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/source-manifests-read01/root-SOURCE-MANIFEST.original.json",
+    "sha256": "f865ae8b2edaf8c8f3076fc299796b953f66af7f848042b68932d76aaaab67c6"
+  },
+  "external_runtime": {
+    "bytes": 16808,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/source-manifests-read01/runtime-MANIFEST.original.json",
+    "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+  },
+  "membership_delta": [
+    "Current inventory helper precomputes distinct root parts/depths and uses bounded prefix membership.",
+    "CurrentPropertyParentReader exposes four historical reader methods through a read-only mapping.",
+    "Current _current_property_parent_reader binds current inventory_value code into exact loaded R7 globals, explicitly marks historical_reader_executed_unmodified false, removes main/publish and original reviewed execution hash, preserves historical publisher source identity for original boundaries.",
+    "Current property_parent_reader returns this composed reader and restores previous sys.modules presence explicitly."
+  ],
+  "no_source_or_policy_modification": true,
+  "not_a_full_semantic_or_host_test_review_of_overlay": true,
+  "overlay_evidence_not_locally_loaded": [
+    "validation/TRANSFORM.json",
+    "validation/BUILTIN-TRANSFORM.json",
+    "validation/MEMBERSHIP-HOST-RESULT.original.json",
+    "validation/MAC-EXACT-LOADER-RESULT.original.json"
+  ],
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.external902.source-compatibility-review.v1",
+  "source_overlay_manifest": {
+    "bytes": 1959,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/bridge-overlay-read01/SOURCE-MANIFEST.json",
+    "sha256": "9ba3fc63742139d40ae25ca72e79179e5405f40b75651096f4d594a56a7c60db"
+  },
+  "state": "SHARED_PRIMITIVES_EXACT_DISTINCT_MEMBERSHIP_GENERATION_NOT_INTERCHANGEABLE",
+  "whole_byte_checks": {
+    "all_31_other_runtime_sources_exact": true,
+    "both_coord_and_bridge_only_PKG_literal_diff": true,
+    "runtime_manifest_unique_late_row_inverse_to_canonical67dc": true
+  }
+}
