@@ -1,0 +1,43 @@
+{
+  "capture_transport": {
+    "bytes": 68481,
+    "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+  },
+  "case_runs": 0,
+  "changed_case_nodes": [
+    "config_tree: explicit optional cleanup-path scope",
+    "run_case: current daily pin, exact initial READY bytes, live phase procstat and pre-late originals",
+    "main: current source count/schema, shared absolute child deadline and input binding"
+  ],
+  "derived_cases": {
+    "bytes": 27301,
+    "sha256": "1f2ea3fcba45099acd3ae1b488fd0afe05d0bffd0fef50ec2ccf87e0011eeafc"
+  },
+  "fixture_server_and_counter_byte_identical": true,
+  "original_cases": {
+    "bytes": 26214,
+    "sha256": "6163449a9c92fd370fb5e27b190461ae46f2bfe11c180ea7ca1987bdb190b178"
+  },
+  "original_git_commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "schema": "hepta.fixed19.host-lifecycle-source-derivation.v1",
+  "support": {
+    "bytes": 15960,
+    "sha256": "5735be88424d4243c0eb77833b6d90c825ed7a0b1697d22a6cdb28975dbdcdfa"
+  },
+  "support_scope": "Only shared host helpers; no NEG06/10/11/12/13/14 case is imported or awarded.",
+  "unchanged_case_functions_and_classes": [
+    "raw_write",
+    "wait_until",
+    "daily_args",
+    "Wire",
+    "claim_path",
+    "accepted_run",
+    "current_claim_hashes",
+    "worker_cleanup",
+    "duplicate_attempt",
+    "begin_counter",
+    "finish_counter"
+  ]
+}

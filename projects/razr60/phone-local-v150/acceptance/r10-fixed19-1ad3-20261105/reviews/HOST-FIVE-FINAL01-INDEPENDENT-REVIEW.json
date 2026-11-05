@@ -1,0 +1,124 @@
+{
+  "allowed_result_scope": "current source host_isolated layer only",
+  "bound_server_cleanup_branch_qualified": false,
+  "case_ids": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09"
+  ],
+  "checks": [
+    {
+      "name": "exact_final_package_and_input_manifest_members",
+      "result": "passed_read_only_hash_check"
+    },
+    {
+      "name": "current_15_production_raw_sources_match_fixed_production_pins",
+      "result": "passed_read_only_hash_check"
+    },
+    {
+      "name": "unmodified_0374_host_capture_source",
+      "result": "passed_read_only_hash_check"
+    },
+    {
+      "name": "only_explicit_P4_execution_and_fresh_private_output",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "exact_user_pid_network_ipc_uts_and_mount_namespace_argv_no_fallback",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "readonly_source_inputs_no_phone_mount_no_real_credentials_or_model",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "90_second_inner_and_105_second_outer_capture_deadlines_preserved",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "owned_process_identity_signals_wait_empty_group_output_EOF_and_worker_join",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "captured_original_paths_only_work_or_declared_output_root_and_complete_inventory",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "independent_terminal_claim_dispatch_action_ledger_and_worker_JSON_fields_match_current_sources",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "precise_counter_daily_fixture_and_outer_namespace_argv_reconstructed",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "initial_daily_ready_raw_retained_then_same_instance_stopped_ready_verified",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "late_result_before_fence_and_consumed_identity_readmission_evidence_preserved",
+      "result": "source_review_passed"
+    },
+    {
+      "name": "honest_host_only_qualification_and_null_model_usage_cost",
+      "result": "source_review_passed"
+    }
+  ],
+  "delivery": {
+    "bytes": 1888,
+    "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/DELIVERY.json",
+    "sha256": "92c7c3c68efc2a620131d03d547bb14a901ae2a9147bd525b0b0e3233690a6dd"
+  },
+  "findings": [],
+  "fixed19_whole_cases_closed": false,
+  "future_deployment_binding_qualified": false,
+  "host_cases_run_by_this_review": 0,
+  "namespace_processes_started_by_this_review": 0,
+  "next_action": "Root may use the exact frozen DELIVERY.json argv for one actual P4 execution; acceptance still requires actual original inventory and independent HOST-VERIFICATION result.",
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "preparation_gates_rerun_by_this_review": false,
+  "remote_calls": 0,
+  "reviewed_inputs": {
+    "bytes": 4521,
+    "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/inputs/INPUT-MANIFEST.json",
+    "sha256": "c423b4b663a7237e81ed6111922eeef76b85cffa65c603a5361ec3c3f53227b1"
+  },
+  "reviewed_package": {
+    "bytes": 3716,
+    "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b"
+  },
+  "schema": "hepta.fixed19.host-five-independent-source-review.v1",
+  "source_files_modified": false,
+  "source_subjects": {
+    "host_capture_transport.py": {
+      "bytes": 68481,
+      "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/package/source/host_capture_transport.py",
+      "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+    },
+    "host_lifecycle.py": {
+      "bytes": 21183,
+      "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/package/source/host_lifecycle.py",
+      "sha256": "19e0ac1e1d8820eddcea6420779e272529ee27d81d802219b74bdb4c71909784"
+    },
+    "lifecycle_support.py": {
+      "bytes": 15960,
+      "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/package/source/lifecycle_support.py",
+      "sha256": "5735be88424d4243c0eb77833b6d90c825ed7a0b1697d22a6cdb28975dbdcdfa"
+    },
+    "run_fault_cases.py": {
+      "bytes": 27301,
+      "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/package/source/run_fault_cases.py",
+      "sha256": "1f2ea3fcba45099acd3ae1b488fd0afe05d0bffd0fef50ec2ccf87e0011eeafc"
+    },
+    "verify_host_originals.py": {
+      "bytes": 28759,
+      "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/package/source/verify_host_originals.py",
+      "sha256": "b4d22fc4964bc236c6e3108d4c0fc509cb98d8e4f61d5c5bd679ac7a225b5e98"
+    }
+  },
+  "state": "FROZEN_CURRENT_SOURCE_HOST_ONLY_RUNNER_REVIEWED_NO_BLOCKING_FINDING"
+}

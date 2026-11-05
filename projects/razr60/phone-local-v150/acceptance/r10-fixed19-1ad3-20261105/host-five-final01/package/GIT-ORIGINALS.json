@@ -1,0 +1,55 @@
+{
+  "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+  "files": [
+    {
+      "bytes": 3130,
+      "git_blob_sha1": "c39e8792f56afd5cb4878092824d6665eadd992f",
+      "path": "lifecycle_host_r10/reference/r7-r3/README.r7-r2.original.md",
+      "sha256": "150615f7733e1847c39d284e791c7c938fee7adecd4a2548c986091acb8c548b"
+    },
+    {
+      "bytes": 6171,
+      "git_blob_sha1": "c64107b53576b67b392743d698416601e0741af6",
+      "path": "lifecycle_host_r10/reference/r7-r3/SOURCE-SEAL.PUBLIC.json",
+      "sha256": "d1ec59f6c80f27bb2522f00b69a8af983303fdeef4b922b58c98669e17d8134d"
+    },
+    {
+      "bytes": 2299,
+      "git_blob_sha1": "079aa89864421bd3a84c064d054db4fc62215d4b",
+      "path": "lifecycle_host_r10/reference/r7-r3/counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 7559,
+      "git_blob_sha1": "4fa919507a5a9bec5e21da5427d7017d13e134bc",
+      "path": "lifecycle_host_r10/reference/r7-r3/execute_namespace_once.py",
+      "sha256": "d9dce9dd6c6612fc5a85ff07a1b321bc0d08c7ff9dc4c24e077771ee3bf0de5f"
+    },
+    {
+      "bytes": 5371,
+      "git_blob_sha1": "291a538dc082da112db976df5b984c05df6b31ad",
+      "path": "lifecycle_host_r10/reference/r7-r3/fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 22963,
+      "git_blob_sha1": "a70314895cf7608346b6d7fc90d4a64eab4511d1",
+      "path": "lifecycle_host_r10/reference/r7-r3/frozen_fixture_support.py",
+      "sha256": "f43ca2a3009405cb1a7b58e7fa43808f8d1fba4632da525468972c6e1f4b5cdb"
+    },
+    {
+      "bytes": 26214,
+      "git_blob_sha1": "93206c807e4998ead849f813ae92ddd0b56cadad",
+      "path": "lifecycle_host_r10/reference/r7-r3/run_fault_cases.py",
+      "sha256": "6163449a9c92fd370fb5e27b190461ae46f2bfe11c180ea7ca1987bdb190b178"
+    },
+    {
+      "bytes": 2975,
+      "git_blob_sha1": "aaa94b17c531e700cb9f6311fe8c365f3e6a1a74",
+      "path": "lifecycle_host_r10/reference/r7-r3/run_fixed_faults_once.py",
+      "sha256": "b8f68ae2f9d41d7a5509cd8bbcb8987bceb4277accd66cc92d545b1204a45ea3"
+    }
+  ],
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "tree": "c50e5ed4cddbd10dbdcf566928ad7b279db604f6"
+}

@@ -1,0 +1,141 @@
+{
+  "schema": "hepta.root.fixed19.integration-checkpoint.v2",
+  "state": "FIVE_HOST_LAYERS_VERIFIED_ACTUAL_LIVE02_CAPTURED_POST_COMPARISON_PENDING",
+  "required_cases": 19,
+  "qualified_whole_cases": 0,
+  "historical_passes_inherited": false,
+  "root_session_phone_calls": 0,
+  "root_session_policy_apply_calls": 0,
+  "host_lifecycle": {
+    "state": "FIVE_CURRENT_SOURCE_HOST_LAYERS_VERIFIED",
+    "cases": [
+      {
+        "case_id": "NEG-04",
+        "effect_counter": 0,
+        "elapsed_seconds": 0.893532948102802,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 8172,
+          "path": "NEG-04/RESULT.json",
+          "sha256": "72a297f0f230766f964d852c6ca4df3a079aec484b211a0133858466430fb6b8"
+        },
+        "semantic_claim_sha256": "dc9ac513c6546feb6ef0c71f9825c6d735e6c8714179e0e99d6afd681b6023be",
+        "terminal_sha256": "0eabff336737238a2acf7d48e37d5bb040db3675da2417f493e56e616f492ee7"
+      },
+      {
+        "case_id": "NEG-05",
+        "effect_counter": 1,
+        "elapsed_seconds": 1.4624142829561606,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10636,
+          "path": "NEG-05/RESULT.json",
+          "sha256": "d9b4521307ffbac8983e53f2038f32c9bd4277159a5a08188e2eb47fcc4b024b"
+        },
+        "semantic_claim_sha256": "cbe7a3b2b56cb9f417cabafbeae7513085855f4dd9688d894366b41bc64bf4de",
+        "terminal_sha256": "6ac8ff2566cf00244f665ae3516660b1d8b5fbaa69f5564e5da720ff05f2b80b"
+      },
+      {
+        "case_id": "NEG-07",
+        "effect_counter": 1,
+        "elapsed_seconds": 2.2597564340103418,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10788,
+          "path": "NEG-07/RESULT.json",
+          "sha256": "7e4107ab191bd8b6a5999b02119dd4186afa7ea4114cd6008ec6484067b7910f"
+        },
+        "semantic_claim_sha256": "4d999c1fcc50cc316bfe6275abe52ede3faa434efa8d1dc670bcc7a1cea9c50d",
+        "terminal_sha256": "900d351ac0644174f3a32b5df4a346df3351e58a019488629bea9202adc09e6f"
+      },
+      {
+        "case_id": "NEG-08",
+        "effect_counter": 0,
+        "elapsed_seconds": 0.8683929290855303,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 8216,
+          "path": "NEG-08/RESULT.json",
+          "sha256": "ddb1f12b9d43185150a5b5f587ccc3a1de42d96c19ad3caf9932560604b77cae"
+        },
+        "semantic_claim_sha256": "c5d48486bade92ab364af0a947f46125261fe1787de32e2e1775e54945f8cc50",
+        "terminal_sha256": "8f2d29e2d4baecbb38f30c029769a9f4804c72544e29b7cd6373bfbb1d8ffa53"
+      },
+      {
+        "case_id": "NEG-09",
+        "effect_counter": 1,
+        "elapsed_seconds": 1.0604317140532658,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10501,
+          "path": "NEG-09/RESULT.json",
+          "sha256": "0d26d38a151ff0d3fed6d4d51efbaf437f48aca38acf8e3004b3be4155c32902"
+        },
+        "semantic_claim_sha256": "7e48454a394ddf94faa2da1b74f8d12cfe39cbace0cae3e4d3be35f7c988d455",
+        "terminal_sha256": "ed76721c8966eb60595a8344785896197b3f891974501a1709325cf5aa06883f"
+      }
+    ],
+    "source_manifest_sha256": "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b",
+    "input_manifest_sha256": "c423b4b663a7237e81ed6111922eeef76b85cffa65c603a5361ec3c3f53227b1",
+    "future_deployment_binding_qualified": false,
+    "bound_server_cleanup_branch_qualified": false,
+    "physical_case_pass": false,
+    "original_files": 476,
+    "original_bytes": 973331,
+    "archive_bytes": 210615,
+    "archive_sha256": "5a1fb2b0f826e3e9af3ce691c6e043f6a6669c7470aad1ddd9afb99e404ecf87",
+    "actual_execution_job": "1a1aaafbb8a-fc05-4610",
+    "original_recheck_and_archive_job": "1a1aab2df57-fc05-4641",
+    "case_reexecutions_during_recheck": 0
+  },
+  "existing_live02": {
+    "root_execution_sha256": "d5173756537a5303b78573b21b43d57e64bfdfe75010115b55b1fe925b1da849",
+    "state": "ORIGINAL_POLICY_APPLY_CAPTURED_PENDING_INDEPENDENT_COMPARISON",
+    "policy_apply_calls": 1,
+    "phone_calls": 17,
+    "actual_live_policy": {
+      "bytes": 2667740,
+      "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+    },
+    "offline_candidate_equal": false,
+    "actual_driver_sha256": "574e639f52a3b99dc2ea6d6f82a7455d445fdb4d758bc486cf877df316921ebb",
+    "actual_transport_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+    "actual_guard_sha256": "b77e84776df4b375c1ad7a150195e1ce78389207176ce16dd1d874e2019b269f",
+    "actual_verifier_sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00",
+    "root_followthrough_job": "1a1aab965f6-fc05-4689",
+    "root_followthrough_driver_starts": 0,
+    "prior_failure_reconciliation_sha256": "c52efc070658e5f05f47e3e5f57acf4272f5556a8ab32c6bc615b8f57c4f0cb4",
+    "post_retention_prior_attempt": {
+      "state": "HOST_FINALIZATION_STOPPED_NO_REPLAY",
+      "phase": "complete_actual_verify_live_capture",
+      "error": "exact expected fields differ",
+      "retention_executions": 0,
+      "comparison_executions": 0,
+      "phone_operations": 0,
+      "failure_sha256": "523e85e3ba549db118d2d6953467d4bc6e06002dcfd2acb026a4dfe9849aa93f"
+    }
+  },
+  "next_required_evidence": [
+    "actual live export complete sixteen-check comparison and adoption",
+    "R8 runtime and downstream finalization",
+    "qualified fresh NEG01/NEG02; sealed release and READY",
+    "four fresh business cases, direct COMP01 and actual NEG03",
+    "physical NEG04/05/07/08/09 with phase-specific original receipts",
+    "six host cases under the actual final generation"
+  ]
+}

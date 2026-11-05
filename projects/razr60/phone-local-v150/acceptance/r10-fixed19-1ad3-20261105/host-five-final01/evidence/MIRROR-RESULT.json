@@ -1,0 +1,68 @@
+{
+  "case_reexecutions": 0,
+  "mirrors": {
+    "archive": {
+      "bytes": 210615,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/HOST-FIVE-ORIGINALS.tar.gz",
+      "sha256": "5a1fb2b0f826e3e9af3ce691c6e043f6a6669c7470aad1ddd9afb99e404ecf87"
+    },
+    "inventory": {
+      "bytes": 89806,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/ORIGINAL-FILES.original.json",
+      "sha256": "0b661e0d993587a886a92b0789773d4b101672919a9f0a910c6211ac8dc50742"
+    },
+    "outer": {
+      "bytes": 4044,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/OUTER-RESULT.original.json",
+      "sha256": "11236aac462d640b2b3d2143af78c072acff7f9791501743bc27ae85eaa40241"
+    },
+    "verification": {
+      "bytes": 4616,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/HOST-VERIFICATION.original.json",
+      "sha256": "b6d658adac84fef782a4edcef1219c869af709d317e8a204c19a732d57f7c395"
+    }
+  },
+  "p4_export": {
+    "bytes": 6492,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/P4-EXPORT-RESULT.original.json",
+    "sha256": "15804b19003e5d6ffac27059f70565deaa03b8cd9d26e69c69465943e237a6e9"
+  },
+  "phone_calls": 0,
+  "state": "FULL_HOST_FIVE_ORIGINALS_MIRRORED",
+  "steps": [
+    {
+      "automatic_retry": false,
+      "phase": "host-five-archive",
+      "pid": 13293,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/host-five-archive/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 5498,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/host-five-archive/stdout.original",
+        "sha256": "1ce51572617349cfc62795329e38c650285146013bc7220034140abe22507aee"
+      }
+    },
+    {
+      "automatic_retry": false,
+      "phase": "host-five-originals-read",
+      "pid": 13300,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/host-five-originals-read/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 413100,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-evidence-01/host-five-originals-read/stdout.original",
+        "sha256": "407a465805fae430094a25302e4651af02a8bf77ab90113dcaefa7d5619a38f5"
+      }
+    }
+  ]
+}

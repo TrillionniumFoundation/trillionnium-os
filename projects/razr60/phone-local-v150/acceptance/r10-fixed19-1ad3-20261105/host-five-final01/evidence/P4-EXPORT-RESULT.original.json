@@ -1,0 +1,151 @@
+{
+  "archive": {
+    "bytes": 210615,
+    "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/archive-export-01/HOST-FIVE-ORIGINALS.tar.gz",
+    "sha256": "5a1fb2b0f826e3e9af3ce691c6e043f6a6669c7470aad1ddd9afb99e404ecf87"
+  },
+  "case_reexecutions": 0,
+  "input_manifest_sha256": "c423b4b663a7237e81ed6111922eeef76b85cffa65c603a5361ec3c3f53227b1",
+  "original_bytes": 973331,
+  "original_file_count": 476,
+  "original_inventory": {
+    "bytes": 89806,
+    "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/attempt-01/ORIGINAL-FILES.json",
+    "sha256": "0b661e0d993587a886a92b0789773d4b101672919a9f0a910c6211ac8dc50742"
+  },
+  "phone_calls": 0,
+  "read_only_verification": {
+    "automatic_retry": false,
+    "bound_server_cleanup_branch_qualified": false,
+    "deployment_source_seal_sha256": null,
+    "fixed19_whole_cases_closed": false,
+    "future_deployment_binding_qualified": false,
+    "host_case_count": 5,
+    "host_cases": [
+      {
+        "case_id": "NEG-04",
+        "effect_counter": 0,
+        "elapsed_seconds": 0.893532948102802,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 8172,
+          "path": "NEG-04/RESULT.json",
+          "sha256": "72a297f0f230766f964d852c6ca4df3a079aec484b211a0133858466430fb6b8"
+        },
+        "semantic_claim_sha256": "dc9ac513c6546feb6ef0c71f9825c6d735e6c8714179e0e99d6afd681b6023be",
+        "terminal_sha256": "0eabff336737238a2acf7d48e37d5bb040db3675da2417f493e56e616f492ee7"
+      },
+      {
+        "case_id": "NEG-05",
+        "effect_counter": 1,
+        "elapsed_seconds": 1.4624142829561606,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10636,
+          "path": "NEG-05/RESULT.json",
+          "sha256": "d9b4521307ffbac8983e53f2038f32c9bd4277159a5a08188e2eb47fcc4b024b"
+        },
+        "semantic_claim_sha256": "cbe7a3b2b56cb9f417cabafbeae7513085855f4dd9688d894366b41bc64bf4de",
+        "terminal_sha256": "6ac8ff2566cf00244f665ae3516660b1d8b5fbaa69f5564e5da720ff05f2b80b"
+      },
+      {
+        "case_id": "NEG-07",
+        "effect_counter": 1,
+        "elapsed_seconds": 2.2597564340103418,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10788,
+          "path": "NEG-07/RESULT.json",
+          "sha256": "7e4107ab191bd8b6a5999b02119dd4186afa7ea4114cd6008ec6484067b7910f"
+        },
+        "semantic_claim_sha256": "4d999c1fcc50cc316bfe6275abe52ede3faa434efa8d1dc670bcc7a1cea9c50d",
+        "terminal_sha256": "900d351ac0644174f3a32b5df4a346df3351e58a019488629bea9202adc09e6f"
+      },
+      {
+        "case_id": "NEG-08",
+        "effect_counter": 0,
+        "elapsed_seconds": 0.8683929290855303,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 8216,
+          "path": "NEG-08/RESULT.json",
+          "sha256": "ddb1f12b9d43185150a5b5f587ccc3a1de42d96c19ad3caf9932560604b77cae"
+        },
+        "semantic_claim_sha256": "c5d48486bade92ab364af0a947f46125261fe1787de32e2e1775e54945f8cc50",
+        "terminal_sha256": "8f2d29e2d4baecbb38f30c029769a9f4804c72544e29b7cd6373bfbb1d8ffa53"
+      },
+      {
+        "case_id": "NEG-09",
+        "effect_counter": 1,
+        "elapsed_seconds": 1.0604317140532658,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10501,
+          "path": "NEG-09/RESULT.json",
+          "sha256": "0d26d38a151ff0d3fed6d4d51efbaf437f48aca38acf8e3004b3be4155c32902"
+        },
+        "semantic_claim_sha256": "7e48454a394ddf94faa2da1b74f8d12cfe39cbace0cae3e4d3be35f7c988d455",
+        "terminal_sha256": "ed76721c8966eb60595a8344785896197b3f891974501a1709325cf5aa06883f"
+      }
+    ],
+    "host_material_generation": {
+      "host_material_combination_canonical_sha256": "dd36f903443ea036251571071ce99fe46429049d9c9bb6515bf04b544382af7d",
+      "host_material_combination_sha256": "4c3dcc1fe255beec0613b875644d967388e55f41134931f21eef69ebc9cecccd",
+      "host_source_seal_sha256": "4763fa63fd9c6bd6247ed06e10d22a9d68dd09dad738c136d76bb667f5405eb3"
+    },
+    "input_manifest_sha256": "c423b4b663a7237e81ed6111922eeef76b85cffa65c603a5361ec3c3f53227b1",
+    "limits": {
+      "inner_seconds": 90,
+      "original_members": 2048,
+      "original_pool_bytes": 33554432,
+      "outer_seconds": 105,
+      "per_original_bytes": 4194304
+    },
+    "model_cost": null,
+    "model_usage": null,
+    "original_inventory_sha256": "0b661e0d993587a886a92b0789773d4b101672919a9f0a910c6211ac8dc50742",
+    "phone_calls": 0,
+    "physical_case_pass": false,
+    "physical_followup": "Required separately for each of the five cases; no host counter or fixture is physical evidence.",
+    "schema": "hepta.fixed19.r10.host-lifecycle-original-verification.v1",
+    "source_manifest_sha256": "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b",
+    "state": "FIVE_CURRENT_SOURCE_HOST_LAYERS_VERIFIED"
+  },
+  "schema": "hepta.host-five.original-archive.v1",
+  "source_manifest_sha256": "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b",
+  "state": "FULL_ORIGINALS_RECHECKED_AND_ARCHIVED",
+  "steps": [
+    {
+      "automatic_retry": false,
+      "phase": "read-only-recheck",
+      "pid": 1558989,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/archive-export-01/read-only-recheck/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 4022,
+        "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/archive-export-01/read-only-recheck/stdout.original",
+        "sha256": "ff57af91dd7fb061dd1d1df044479741b59c9a127849f8c411386fe826ec8d83"
+      }
+    }
+  ]
+}

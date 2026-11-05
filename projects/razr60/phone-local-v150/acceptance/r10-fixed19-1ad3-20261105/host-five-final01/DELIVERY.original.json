@@ -1,0 +1,47 @@
+{
+  "P4_root": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01",
+  "actual_host_case_runs": 0,
+  "archives": [
+    {
+      "bytes": 88216,
+      "members": 21,
+      "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/host-lifecycle-r10-1ad3-final01-package.tar.gz",
+      "sha256": "954f0295d3901191f438795ef85140182c4ac42335cfdaf81ecd62c951b9a0ca",
+      "unpacked_bytes": 337920
+    },
+    {
+      "bytes": 110965,
+      "members": 23,
+      "path": "/workspace/scratch/1ad3d6f55439/lifecycle_host_r10/delivery-final01/host-lifecycle-r10-1ad3-final01-inputs.tar.gz",
+      "sha256": "53476236adff32b78aea542f79a046fc6c9bf52a63e6a6564c74cfe444a8e3bb",
+      "unpacked_bytes": 460800
+    }
+  ],
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/package/source/host_lifecycle.py",
+    "--source-manifest-sha256",
+    "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b",
+    "--inputs",
+    "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/inputs",
+    "--input-manifest-sha256",
+    "c423b4b663a7237e81ed6111922eeef76b85cffa65c603a5361ec3c3f53227b1",
+    "--out",
+    "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/attempt-01",
+    "--execute-once"
+  ],
+  "automatic_retry": false,
+  "controller_deadline_seconds": 120,
+  "inner_deadline_seconds": 90,
+  "input_manifest_sha256": "c423b4b663a7237e81ed6111922eeef76b85cffa65c603a5361ec3c3f53227b1",
+  "local_preparation_gates": 7,
+  "namespace_free_fallback": false,
+  "outer_deadline_seconds": 105,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "schema": "hepta.fixed19.host-five-delivery.v1",
+  "source_manifest_sha256": "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b",
+  "state": "FROZEN_SOURCE_AND_INPUTS_READY_FOR_ACTUAL_P4_RUN"
+}

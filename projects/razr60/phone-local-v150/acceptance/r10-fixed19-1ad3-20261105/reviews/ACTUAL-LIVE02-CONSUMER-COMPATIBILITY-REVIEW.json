@@ -1,0 +1,163 @@
+{
+  "actual_capture_read": false,
+  "actual_identity": {
+    "driver_sha256": "574e639f52a3b99dc2ea6d6f82a7455d445fdb4d758bc486cf877df316921ebb",
+    "not_replaced_by_reviewed_0374_exact3_UTF8_candidate": true,
+    "root_package_member_count": 2,
+    "root_package_sha256": "534fa9485da7ae9732714be05db62c5888acdbc9fe399fdfecdac2775580928d",
+    "stage_compressed_maximum": 196608,
+    "stage_part_count_maximum": 8,
+    "stage_part_maximum": 24576,
+    "transport_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22"
+  },
+  "actual_nine_sources_modified": false,
+  "adoption_executed": false,
+  "case_qualification": false,
+  "comparison_executed": false,
+  "consumer_sources": {
+    "collect_runtime_properties_proof.py": {
+      "bytes": 24722,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/collect_runtime_properties_proof.py",
+      "sha256": "aac16c1dfbc4abf964096c4fa80c370f39284a25ea339bebc2192b26bad16eee"
+    },
+    "prepare_runtime_properties_post_v2.py": {
+      "bytes": 24245,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_runtime_properties_post_v2.py",
+      "sha256": "f909ee61dbd9a227933f2061047950c650027974e89575eede6c39a303c292bc"
+    }
+  },
+  "entry_findings": [
+    {
+      "detail": "f909 mac-stage requires its own EXACT_LITERAL_SOURCE_FREEZE_AND_PREPARATION_INPUTS_WRITTEN_HOST_ONLY receipt; this external source package provides a different manifest/preparation. Passing another candidate freeze would mix actual identities.",
+      "kind": "consumer_interface"
+    },
+    {
+      "detail": "External a57e retention avoids that freeze dependency and dynamically collects every actual verify_live_capture callback read, including fixed failed predecessor; it constructs actual .bin inputs and exact post16 plan.",
+      "kind": "reuse"
+    },
+    {
+      "detail": "External retention ACTUAL_INPUTS is None; execution rejects before original reads or writes. Only real live provenance/captured verifier/Root execution may fill the final candidate.",
+      "kind": "expected_unfilled_binding"
+    },
+    {
+      "detail": "Original 574e Root driver does not emit LIVE-PROVENANCE-INPUTS.json. A host step must construct and verify that exact live provenance from successful capture before retention.",
+      "kind": "actual_missing_output_dependency"
+    },
+    {
+      "detail": "External retention still imports 860a remote_files, whose synchronous stdin write precedes timeout and durable CHILD; its outer handler does not own cleanup. Semantic reuse is supported, but this source cannot be described as bounded transport.",
+      "kind": "known_transport_risk"
+    },
+    {
+      "detail": "aac p4-proof accepts the resulting actual post execution unchanged. aac mac-inputs requires f909 stage result, seed and freeze; an external retention importer/adapter is required for that phase.",
+      "kind": "collector_interface"
+    }
+  ],
+  "external_retention_sources": {
+    "INTERFACE.json": {
+      "bytes": 3469,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_post_retention/INTERFACE.json",
+      "sha256": "c9f0fe350d6d96671e2e6a12500b3f001157752113f8359dec404e8a9272bdfa"
+    },
+    "MANIFEST.json": {
+      "bytes": 7288,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_post_retention/MANIFEST.json",
+      "sha256": "2f8fcaa065e207a598f6d9c031d69aeb1b2b5cf0a535ce2293c6ed6606d9f16a"
+    },
+    "retain_actual_live_inputs.py": {
+      "bytes": 19679,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_post_retention/retain_actual_live_inputs.py",
+      "sha256": "a57e4d95a02ebdf9cffff55fd0bdac58ea67a4d273f9ab419b039cfac0e97381"
+    }
+  },
+  "minimal_after_actual_capture": [
+    "Produce and verify actual LIVE-PROVENANCE-INPUTS.json without invoking phone.",
+    "Bind exact three ACTUAL_INPUTS descriptors in a separately reviewed retention candidate; request collector_source must identify those final bytes.",
+    "Execute the retained source through its explicit --execute-host-retention entry once; consume only its actual RESULT.comparison_cli after complete P4 transfer readback.",
+    "Execute the frozen 0f6c post runner once on P4; require actual 16/16 completed result.",
+    "Use unchanged aac p4-proof for the actual post result; import proof through external-retention-compatible host consumer before the existing actual e11f assembler."
+  ],
+  "old_helpers_modified": false,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "retention_executed": false,
+  "schema": "hepta.runtime-properties.actual-live02-consumer-compatibility-review.v1",
+  "source_originals": [
+    {
+      "bytes": 2444,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/apply_runtime_properties_once.template.sh",
+      "sha256": "d10a330cd8b4aa4e8f7a480d6a29de23733260e04475b4efdf2fb0af964ade91"
+    },
+    {
+      "bytes": 12963,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/capture_runtime_properties_originals.py",
+      "sha256": "2208cc14dff80e0953314d9acbc4eccd83c0a1cc92829965b2625c5466b5877c"
+    },
+    {
+      "bytes": 49202,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/guard_live_runtime_properties.py",
+      "sha256": "b77e84776df4b375c1ad7a150195e1ce78389207176ce16dd1d874e2019b269f"
+    },
+    {
+      "bytes": 2936,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/make_runtime_properties_adoption.py",
+      "sha256": "95b27ac75e7e887f205d390975f0e805f24d2b03214275ee55b7a6c69b0cdae6"
+    },
+    {
+      "bytes": 6046,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/make_runtime_properties_adoption_inputs.py",
+      "sha256": "e11f0e72257c80efbd38468a5c700ea9c7ae5c1543abd3aab5e83c41fb20b262"
+    },
+    {
+      "bytes": 2604,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/make_runtime_properties_expectation.py",
+      "sha256": "a228a614af8fd871020abebe86f422ca2ce180b69fd2fe7cc0289faca7013827"
+    },
+    {
+      "bytes": 124306,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/policy_runtime_properties_verifier.py",
+      "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+    },
+    {
+      "bytes": 19126,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/prepare_live_runtime_properties.py",
+      "sha256": "3e91bca1e46258abd46c4eda8f887138bb028eba61662c8550af60af35d2a24e"
+    },
+    {
+      "bytes": 3338,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/runtime_properties_host_originals.py",
+      "sha256": "d1a3b84875fe1b02867b904463621fff5a602160cdebe300db5a89dd40b43593"
+    }
+  ],
+  "state": "ACTUAL_SOURCE_INTERFACES_REVIEWED_RETENTION_INPUT_BINDING_PENDING",
+  "static_checks": {
+    "all_nine_match_actual_manifest": true,
+    "comparison_and_adoption_algorithms_AST_unchanged": {
+      "validate_adoption_value": true,
+      "validate_complete_comparison": true,
+      "verified_offline": true,
+      "verify_comparison_proof": true,
+      "verify_live_capture": true
+    },
+    "post_algorithm_checks": 16,
+    "post_comparator_plan_exact_keys_compatible": true,
+    "post_comparator_sha256": "151a1d724a82d611202054eb0dd5326fe4f4311ff78599b61c6bf58d68a2cf8f",
+    "post_runner_sha256": "0f6cb3d1a73a59f880566f5adc1afaa285fcb5366ceebf3a5373caf3167518a1",
+    "prior_fixed_descriptor_matches_post_v2": true,
+    "prior_function_AST_equals_reviewed_fragment": true,
+    "prior_reads_collected_by_actual_assembler_add_callback": true,
+    "proof_p4_phase_compatible_with_external_post_plan": true,
+    "sole_captured_verifier_origin_preserved": true
+  },
+  "subjects": {
+    "PREPARED.json": {
+      "bytes": 4240,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/PREPARED.json",
+      "sha256": "d4b2362694a9a5eb087f69b3471162de83df7039a20840d8511cb90fe5f13e46"
+    },
+    "SOURCE-MANIFEST.json": {
+      "bytes": 5245,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/SOURCE-MANIFEST.json",
+      "sha256": "d0f6825ca7923cb2c6c4e1e48704f158d4f96eb1ed4e919cf1c2338167d63cfc"
+    }
+  }
+}

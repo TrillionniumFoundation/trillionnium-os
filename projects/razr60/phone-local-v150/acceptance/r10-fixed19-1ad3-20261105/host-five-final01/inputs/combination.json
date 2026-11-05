@@ -1,0 +1,12 @@
+{
+  "client_sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+  "configuration_sha256": "780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34",
+  "deployment_combination": false,
+  "host_source_seal_sha256": "4763fa63fd9c6bd6247ed06e10d22a9d68dd09dad738c136d76bb667f5405eb3",
+  "physical_case_pass": false,
+  "production_imports_or_task_dispatches": 0,
+  "protocol_sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0",
+  "schema": "hepta.fixed19.host-only-material-combination.v1",
+  "service_inputs_sha256": "2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a",
+  "source_package_manifest_sha256": "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b"
+}

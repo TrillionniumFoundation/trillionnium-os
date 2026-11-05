@@ -1,0 +1,147 @@
+{
+  "automatic_retry": false,
+  "mac_transport_steps": [
+    {
+      "automatic_retry": false,
+      "phase": "host-five-execute",
+      "pid": 9398,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-execute-01/host-five-execute/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 4221,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host5-execute-01/host-five-execute/stdout.original",
+        "sha256": "277c1fce05013f7a14f8ea0ef81f6609eacfeb4e3cef392a4f3debeed684e5c1"
+      }
+    }
+  ],
+  "phone_calls": 0,
+  "schema": "hepta.host-five.controller-result.v1",
+  "state": "ORIGINAL_HOST_SUITE_JOINED",
+  "stdout_summary": {
+    "fixed19_whole_cases_closed": false,
+    "host_cases": [
+      {
+        "case_id": "NEG-04",
+        "effect_counter": 0,
+        "elapsed_seconds": 0.893532948102802,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 8172,
+          "path": "NEG-04/RESULT.json",
+          "sha256": "72a297f0f230766f964d852c6ca4df3a079aec484b211a0133858466430fb6b8"
+        },
+        "semantic_claim_sha256": "dc9ac513c6546feb6ef0c71f9825c6d735e6c8714179e0e99d6afd681b6023be",
+        "terminal_sha256": "0eabff336737238a2acf7d48e37d5bb040db3675da2417f493e56e616f492ee7"
+      },
+      {
+        "case_id": "NEG-05",
+        "effect_counter": 1,
+        "elapsed_seconds": 1.4624142829561606,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10636,
+          "path": "NEG-05/RESULT.json",
+          "sha256": "d9b4521307ffbac8983e53f2038f32c9bd4277159a5a08188e2eb47fcc4b024b"
+        },
+        "semantic_claim_sha256": "cbe7a3b2b56cb9f417cabafbeae7513085855f4dd9688d894366b41bc64bf4de",
+        "terminal_sha256": "6ac8ff2566cf00244f665ae3516660b1d8b5fbaa69f5564e5da720ff05f2b80b"
+      },
+      {
+        "case_id": "NEG-07",
+        "effect_counter": 1,
+        "elapsed_seconds": 2.2597564340103418,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10788,
+          "path": "NEG-07/RESULT.json",
+          "sha256": "7e4107ab191bd8b6a5999b02119dd4186afa7ea4114cd6008ec6484067b7910f"
+        },
+        "semantic_claim_sha256": "4d999c1fcc50cc316bfe6275abe52ede3faa434efa8d1dc670bcc7a1cea9c50d",
+        "terminal_sha256": "900d351ac0644174f3a32b5df4a346df3351e58a019488629bea9202adc09e6f"
+      },
+      {
+        "case_id": "NEG-08",
+        "effect_counter": 0,
+        "elapsed_seconds": 0.8683929290855303,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 8216,
+          "path": "NEG-08/RESULT.json",
+          "sha256": "ddb1f12b9d43185150a5b5f587ccc3a1de42d96c19ad3caf9932560604b77cae"
+        },
+        "semantic_claim_sha256": "c5d48486bade92ab364af0a947f46125261fe1787de32e2e1775e54945f8cc50",
+        "terminal_sha256": "8f2d29e2d4baecbb38f30c029769a9f4804c72544e29b7cd6373bfbb1d8ffa53"
+      },
+      {
+        "case_id": "NEG-09",
+        "effect_counter": 1,
+        "elapsed_seconds": 1.0604317140532658,
+        "fixed19_whole_case_closed": false,
+        "host_case_pass": true,
+        "physical_case_pass": false,
+        "qualification_layer": "host_isolated",
+        "result_original": {
+          "bytes": 10501,
+          "path": "NEG-09/RESULT.json",
+          "sha256": "0d26d38a151ff0d3fed6d4d51efbaf437f48aca38acf8e3004b3be4155c32902"
+        },
+        "semantic_claim_sha256": "7e48454a394ddf94faa2da1b74f8d12cfe39cbace0cae3e4d3be35f7c988d455",
+        "terminal_sha256": "ed76721c8966eb60595a8344785896197b3f891974501a1709325cf5aa06883f"
+      }
+    ],
+    "host_verification": {
+      "bytes": 4616,
+      "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/attempt-01/HOST-VERIFICATION.json",
+      "sha256": "b6d658adac84fef782a4edcef1219c869af709d317e8a204c19a732d57f7c395"
+    },
+    "original_inventory": {
+      "bytes": 89806,
+      "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/attempt-01/ORIGINAL-FILES.json",
+      "sha256": "0b661e0d993587a886a92b0789773d4b101672919a9f0a910c6211ac8dc50742"
+    },
+    "outer_result": {
+      "bytes": 4044,
+      "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/attempt-01/OUTER-RESULT.json",
+      "sha256": "11236aac462d640b2b3d2143af78c072acff7f9791501743bc27ae85eaa40241"
+    },
+    "phone_calls": 0,
+    "physical_case_pass": false,
+    "state": "HOST_ORIGINALS_VERIFIED"
+  },
+  "steps": [
+    {
+      "automatic_retry": false,
+      "phase": "suite",
+      "pid": 1548525,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/suite-controller-01/suite/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 3492,
+        "path": "/home/alex/razr60-local-model-v150/host-lifecycle-r10-1ad3-final01/suite-controller-01/suite/stdout.original",
+        "sha256": "fcd5a193441a05ab4584b48718f14f0ab4f308bb7295b509e8bb6187613b31c4"
+      }
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "actual_inputs": null,
+  "actual_retention_calls": 0,
+  "captured_root_driver_sha256": "e57d5df7d77b2742e5b0bb610d89c82b1cd3466d774d475f5d003ab4125d45ec",
+  "derivation": {
+    "bytes": 6982,
+    "path": "validation/DERIVATION.json",
+    "sha256": "fcfeacc0f79d9ea39af962648b00a89549e3282f462a64c23b71c403c64c1a22"
+  },
+  "files": [
+    {
+      "bytes": 21855,
+      "path": "source/retain_actual_live_inputs.py",
+      "sha256": "ef215dfb45f13983607547e8f73a856cc6bba0d3eca245e0d90d18c983703621"
+    },
+    {
+      "bytes": 51032,
+      "path": "reference/run_component_root_once.r4.transport_fixed.py",
+      "sha256": "cb6bd4afb6010c68e2ef1c633dabe1aec61a72a627b85f5ca4c0847c704d2336"
+    },
+    {
+      "bytes": 43438,
+      "path": "reference/run_component_root_once.r4.original.py",
+      "sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22"
+    }
+  ],
+  "fixed_namespace_and_runtime_limits_preserved": true,
+  "host_regression_cases_failed": 0,
+  "host_regression_cases_passed": 10,
+  "increment": {
+    "bytes": 4763,
+    "path": "validation/TRANSPORT-REPAIR.patch",
+    "sha256": "9a4c21e823cb58239412aaf3e2031f0bd72163e5d003b019a7f411c13e230ea0"
+  },
+  "independent_source_review_pass": true,
+  "interface": {
+    "bytes": 3380,
+    "path": "INTERFACE.json",
+    "sha256": "4a14143dcc7190f36ca84a8d578ff3e957192f8a83152e043ed2aab8c9ae6ece"
+  },
+  "interface_deltas": {
+    "captured_root_driver_binding_changed": false,
+    "control_original_rows_expand_to_include_selected_and_retained_transport": true,
+    "failure_payload_fields_added": [
+      "host_cleanup"
+    ],
+    "failure_payload_schema_identifier_changed": false,
+    "request_fields_and_post_plan_fields_changed": false,
+    "success_payload_fields_changed": false
+  },
+  "legacy_validation_transport_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+  "mac_readonly_compatibility_check_executed": false,
+  "phone_operations": 0,
+  "post_calls": 0,
+  "qualified": false,
+  "real_local_python_process_starts": 4,
+  "references": [
+    {
+      "bytes": 19657,
+      "path": "validation/retain_actual_live_inputs.original.py",
+      "sha256": "4ef013eda115f8fbebab9c5b88595d69c0fe43e3ddfcabf7506634c2fc09d14e"
+    },
+    {
+      "bytes": 20328,
+      "path": "validation/run_runtime_properties_policy_once.7711.original.py",
+      "sha256": "7711a81150f445d7b6fcc1a57633d7e6d5aaad3a60d98b150dad6fef2f20c7d1"
+    },
+    {
+      "bytes": 4836,
+      "path": "validation/baseline/MANIFEST.json",
+      "sha256": "01a56d4a49b81cc6c895f2628b0c4cfe17a2f9e2af99244f38b52bb9acd4af1b"
+    },
+    {
+      "bytes": 2273,
+      "path": "validation/baseline/INTERFACE.json",
+      "sha256": "28fd999090ea53ab66c5d26c0983220ab76c6dc10edffc2abcd53240031273e6"
+    },
+    {
+      "bytes": 615,
+      "path": "validation/baseline/validation/HOST-GATES.json",
+      "sha256": "e6c5cd035cef742e6068cc7447d842030118a2892782352eba1daf09fb13a741"
+    }
+  ],
+  "schema": "hepta.runtime-properties.post-retention-transport-source-package.v1",
+  "selected_execution_transport_sha256": "cb6bd4afb6010c68e2ef1c633dabe1aec61a72a627b85f5ca4c0847c704d2336",
+  "source_package_file_count": 3,
+  "state": "HOST_LOADER_AND_LOCAL_SYNC_TRANSPORT_PASS_ACTUAL_INPUTS_UNPUBLISHED",
+  "target_main_calls": 0,
+  "validation": [
+    {
+      "bytes": 9759,
+      "path": "validation/HOST-COMPATIBILITY.json",
+      "sha256": "444d56c290300fae235ba6061acbb6234ba7afab702ba933258b5b577dff292f"
+    },
+    {
+      "bytes": 898,
+      "path": "validation/HOST-COMPATIBILITY.stdout",
+      "sha256": "787d3db3b359ebfa8b1cdb00cdc3f8ab60aeb0fd5f7426a61024750f0415934b"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/HOST-COMPATIBILITY.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 16414,
+      "path": "validation/test_candidate01.original.py",
+      "sha256": "a07f460dd9decd7b973085f93fc7f91d551f975d412344fdcf0164484830601f"
+    },
+    {
+      "bytes": 10295,
+      "path": "validation/build_candidate01.original.py",
+      "sha256": "9dbfcf5df7f92416ceadf1310357b112cc6246ae4363d89352439426986ba79f"
+    },
+    {
+      "bytes": 5018,
+      "path": "validation/INDEPENDENT-SOURCE-REVIEW.json",
+      "sha256": "f04ab8b1e8858ab54b60b0894427994ee80cb3b088702abfe3c5a2773c2be9e9"
+    },
+    {
+      "bytes": 8474,
+      "path": "validation/verify_mac_candidate01_readonly.py",
+      "sha256": "5434af67a8a9e3e602756b3ccd74fadf53049889cc8ca653ef0eb9a4bfb3869a"
+    },
+    {
+      "bytes": 2705,
+      "path": "validation/SOURCE-MANIFEST.before-host-regression.json",
+      "sha256": "93257899ce33dc6f3377f146e60582f73dbd06b9349593db6da3d61c79bc085f"
+    }
+  ]
+}

@@ -1,0 +1,1780 @@
+{
+  "binding_sha256": "5bcb168fda64c2f1e958cce15a2bd28cb45dfd10ffd2d79570d0dcef5e06bb1b",
+  "business_qualified": false,
+  "file_count": 104,
+  "files": [
+    {
+      "bytes": 2220,
+      "metadata": [
+        65086,
+        156479,
+        33152,
+        0,
+        0,
+        1,
+        2220,
+        1793865039843920925,
+        1793865039843920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/ACTUAL-RETIREMENT-INPUTS.original.json",
+      "path": "ACTUAL-RETIREMENT-INPUTS.original.json",
+      "sha256": "e3c8411f3d85440018392597d4f9f8795cfd7a60c44fc1680068a60949d20999"
+    },
+    {
+      "bytes": 885,
+      "metadata": [
+        65086,
+        154575,
+        33152,
+        0,
+        0,
+        1,
+        885,
+        1793865049691920921,
+        1793865049691920921
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/APPLY-INTENT.json",
+      "path": "APPLY-INTENT.json",
+      "sha256": "ca2a4cbf2d941880ff4dd447e86351708d220124c78d13f08a8d993a10292beb"
+    },
+    {
+      "bytes": 25562,
+      "metadata": [
+        65086,
+        151499,
+        33152,
+        0,
+        0,
+        1,
+        25562,
+        1793865039863920925,
+        1793865039863920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/BINDING.original.json",
+      "path": "BINDING.original.json",
+      "sha256": "5bcb168fda64c2f1e958cce15a2bd28cb45dfd10ffd2d79570d0dcef5e06bb1b"
+    },
+    {
+      "bytes": 13446,
+      "metadata": [
+        65086,
+        157457,
+        33152,
+        0,
+        0,
+        1,
+        13446,
+        1793865039855920925,
+        1793865039855920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/CLOSED-COMPONENT-PACKAGE.original.json",
+      "path": "CLOSED-COMPONENT-PACKAGE.original.json",
+      "sha256": "683481bdb653bd7cb97bd6171d6b14f6ecaf4f9948ed2691c7b7c420fea5fe3c"
+    },
+    {
+      "bytes": 605,
+      "metadata": [
+        65086,
+        157401,
+        33152,
+        0,
+        0,
+        1,
+        605,
+        1793865050323920921,
+        1793865050323920921
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/COMMAND-RETURN.json",
+      "path": "COMMAND-RETURN.json",
+      "sha256": "2faf571623dcbdb9a2dae78868c4ab9c0d6525c4dc00313f9fc7125870e32be4"
+    },
+    {
+      "bytes": 1413,
+      "metadata": [
+        65086,
+        156592,
+        33152,
+        0,
+        0,
+        1,
+        1413,
+        1793865099247920902,
+        1793865099247920902
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/GLOBAL-GATE-post.json",
+      "path": "GLOBAL-GATE-post.json",
+      "sha256": "b85375b5f0dbdd8e53ea9619360f3955c1a2c75a897a96a43d04331c8ea34d21"
+    },
+    {
+      "bytes": 1413,
+      "metadata": [
+        65086,
+        157706,
+        33152,
+        0,
+        0,
+        1,
+        1413,
+        1793865040167920925,
+        1793865040167920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/GLOBAL-GATE-pre.json",
+      "path": "GLOBAL-GATE-pre.json",
+      "sha256": "b85375b5f0dbdd8e53ea9619360f3955c1a2c75a897a96a43d04331c8ea34d21"
+    },
+    {
+      "bytes": 367,
+      "metadata": [
+        65086,
+        157081,
+        33152,
+        0,
+        0,
+        1,
+        367,
+        1793865039851920925,
+        1793865039851920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/LATEST-BOUNDARY-DESCRIPTOR.original.json",
+      "path": "LATEST-BOUNDARY-DESCRIPTOR.original.json",
+      "sha256": "724d7d54679299433498654530ad3dc082c107aa76fde9de54b0ed6c0ad3de08"
+    },
+    {
+      "bytes": 378604,
+      "metadata": [
+        65086,
+        157490,
+        33152,
+        0,
+        0,
+        1,
+        378604,
+        1793865039855920925,
+        1793865039855920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/OFFLINE-COMPLETE-COMPARISON.original.json",
+      "path": "OFFLINE-COMPLETE-COMPARISON.original.json",
+      "sha256": "149c5063d98b3b7674364e34b98465c387d8f187fe1f26d3060ebf0e75c739cf"
+    },
+    {
+      "bytes": 33139,
+      "metadata": [
+        65086,
+        156766,
+        33152,
+        0,
+        0,
+        1,
+        33139,
+        1793865039975920925,
+        1793865039975920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/ORIGINAL-SOURCE-PATHS.json",
+      "path": "ORIGINAL-SOURCE-PATHS.json",
+      "sha256": "12c9650fccdcd6308e69696e57a7851631a0f7e054c74b622a08941b1e380682"
+    },
+    {
+      "bytes": 146368,
+      "metadata": [
+        65086,
+        153246,
+        33152,
+        0,
+        0,
+        1,
+        146368,
+        1793865039847920925,
+        1793865039847920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/PARENT-ADOPTION-HISTORY.original.json",
+      "path": "PARENT-ADOPTION-HISTORY.original.json",
+      "sha256": "a5f94e24ead8b7b811025197439ddbfa762d05eaf7d1de2a5f61f26d9502ebd5"
+    },
+    {
+      "bytes": 35114,
+      "metadata": [
+        65086,
+        155504,
+        33152,
+        0,
+        0,
+        1,
+        35114,
+        1793865099291920902,
+        1793865099291920902
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/POLICY-APPLY.json",
+      "path": "POLICY-APPLY.json",
+      "sha256": "7dcf0e0eb5e44c8b7a6a69e581ff4653dcf3e4959278c00929c82322f586fabd"
+    },
+    {
+      "bytes": 47160,
+      "metadata": [
+        65086,
+        154825,
+        33152,
+        0,
+        0,
+        1,
+        47160,
+        1793865040175920925,
+        1793865040175920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/PRECHECK.json",
+      "path": "PRECHECK.json",
+      "sha256": "764d566d79efb0a3cf5b044875a95a84f9a6a1bc8e709b1b455e3fac3b8800ed"
+    },
+    {
+      "bytes": 2489,
+      "metadata": [
+        65086,
+        153838,
+        33152,
+        0,
+        0,
+        1,
+        2489,
+        1793865039847920925,
+        1793865039847920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/RETIREMENT-HOST-CLOSURE.original.json",
+      "path": "RETIREMENT-HOST-CLOSURE.original.json",
+      "sha256": "14c4bfeb4932067b682cc47b0472f3f2e994cac6ae72a33662ad702b73a4a906"
+    },
+    {
+      "bytes": 388,
+      "metadata": [
+        65086,
+        154859,
+        33152,
+        0,
+        0,
+        1,
+        388,
+        1793865039967920925,
+        1793865039967920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/RETIREMENT-OPERATOR.original.json",
+      "path": "RETIREMENT-OPERATOR.original.json",
+      "sha256": "34c0d883814726ad09a2e94f48f246da3916771ba4d8a3dcd2ba6d6be0ca33e8"
+    },
+    {
+      "bytes": 5601,
+      "metadata": [
+        65086,
+        156649,
+        33152,
+        0,
+        0,
+        1,
+        5601,
+        1793865039871920925,
+        1793865039871920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/RETIREMENT-SERVICE-RECORDS.original.tsv",
+      "path": "RETIREMENT-SERVICE-RECORDS.original.tsv",
+      "sha256": "9b9c49501f08af5aa41e0e1deb6dda9ac47a760ec459e1868a301a4ee17e0004"
+    },
+    {
+      "bytes": 24830,
+      "metadata": [
+        65086,
+        154520,
+        33152,
+        0,
+        0,
+        1,
+        24830,
+        1793865039847920925,
+        1793865039847920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/ROOT-SCOPE-DECISION.original.json",
+      "path": "ROOT-SCOPE-DECISION.original.json",
+      "sha256": "5a08041da77eeec9168c869ae76adae0a117a5e34872aa07a1a096bc06a36132"
+    },
+    {
+      "bytes": 2559,
+      "metadata": [
+        65086,
+        157545,
+        33152,
+        0,
+        0,
+        1,
+        2559,
+        1793865039867920925,
+        1793865039867920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/STAGE-COMPLETE.original.json",
+      "path": "STAGE-COMPLETE.original.json",
+      "sha256": "7d0338ab700d5e08a41280547b87b0ad13bd2e5b2ceb725294d905aed04e06f3"
+    },
+    {
+      "bytes": 3589,
+      "metadata": [
+        65086,
+        157325,
+        33152,
+        0,
+        0,
+        1,
+        3589,
+        1793865039867920925,
+        1793865039867920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/STAGE-INTENT.original.json",
+      "path": "STAGE-INTENT.original.json",
+      "sha256": "de48c876c481f59062599de7a65741cee857f22e4861c37cc2bcb11be78e9b22"
+    },
+    {
+      "bytes": 2482,
+      "metadata": [
+        65086,
+        157233,
+        33152,
+        0,
+        0,
+        1,
+        2482,
+        1793865039971920925,
+        1793865039971920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/apply_runtime_properties_once.original.sh",
+      "path": "apply_runtime_properties_once.original.sh",
+      "sha256": "17ab98b91eab7509a836a735f92ea26db560e3d9dba3e8662da3802d7c03e1fa"
+    },
+    {
+      "bytes": 5003,
+      "metadata": [
+        65086,
+        155678,
+        33152,
+        0,
+        0,
+        1,
+        5003,
+        1793865039943920925,
+        1793865039943920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-03-BOUNDARY.original.json",
+      "path": "closed-03-BOUNDARY.original.json",
+      "sha256": "ee008c3b2adec701be4c0bdfd38ca7ac0d650da9b7783f51d3fe4638bfdc5b58"
+    },
+    {
+      "bytes": 119753,
+      "metadata": [
+        65086,
+        157283,
+        33152,
+        0,
+        0,
+        1,
+        119753,
+        1793865039947920925,
+        1793865039947920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-03-CLOSURE.original.json",
+      "path": "closed-03-CLOSURE.original.json",
+      "sha256": "b8a27617eaff8dda0f1c61b5aa14a89d7014a157e0b33280b14162c7591bcaa3"
+    },
+    {
+      "bytes": 563365,
+      "metadata": [
+        65086,
+        157721,
+        33152,
+        0,
+        0,
+        1,
+        563365,
+        1793865039943920925,
+        1793865039943920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-03-INVENTORY.original.json",
+      "path": "closed-03-INVENTORY.original.json",
+      "sha256": "145d5937cd328ed568b1af9c73f7d331211d1c44cfad8ecf960b47d91f308eee"
+    },
+    {
+      "bytes": 4748,
+      "metadata": [
+        65086,
+        156955,
+        33152,
+        0,
+        0,
+        1,
+        4748,
+        1793865039939920925,
+        1793865039939920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-04-BOUNDARY.original.json",
+      "path": "closed-04-BOUNDARY.original.json",
+      "sha256": "3216ab18adcafa0dda95e8a93ad35a2070e7aec286d7a518794918068ce31d12"
+    },
+    {
+      "bytes": 49087,
+      "metadata": [
+        65086,
+        154778,
+        33152,
+        0,
+        0,
+        1,
+        49087,
+        1793865039943920925,
+        1793865039943920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-04-CLOSURE.original.json",
+      "path": "closed-04-CLOSURE.original.json",
+      "sha256": "559f2440fdd1c9f43c64399351f3fda0be95890d21cbde4aea211751e5f9aa81"
+    },
+    {
+      "bytes": 633600,
+      "metadata": [
+        65086,
+        154324,
+        33152,
+        0,
+        0,
+        1,
+        633600,
+        1793865039939920925,
+        1793865039939920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-04-INVENTORY.original.json",
+      "path": "closed-04-INVENTORY.original.json",
+      "sha256": "e48c39003bd26f65dde74958f0081a89c23027da19a11afd4fc2a81414c5c349"
+    },
+    {
+      "bytes": 8774,
+      "metadata": [
+        65086,
+        153468,
+        33152,
+        0,
+        0,
+        1,
+        8774,
+        1793865039935920925,
+        1793865039935920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-06-BOUNDARY.original.json",
+      "path": "closed-06-BOUNDARY.original.json",
+      "sha256": "eca628a18327146b7710a478fc2c2f716f79d55907b2821666828a0795e2060f"
+    },
+    {
+      "bytes": 54878,
+      "metadata": [
+        65086,
+        154827,
+        33152,
+        0,
+        0,
+        1,
+        54878,
+        1793865039939920925,
+        1793865039939920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-06-CLOSURE.original.json",
+      "path": "closed-06-CLOSURE.original.json",
+      "sha256": "8fc9d05e877d91f6706558968276848e252784414983ea026b5c9ef00a8deb2a"
+    },
+    {
+      "bytes": 737114,
+      "metadata": [
+        65086,
+        155010,
+        33152,
+        0,
+        0,
+        1,
+        737114,
+        1793865039935920925,
+        1793865039935920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-06-INVENTORY.original.json",
+      "path": "closed-06-INVENTORY.original.json",
+      "sha256": "fcd752b17eed7d36718f81e61a0f81d22554aa1a478180371619de1c10d98759"
+    },
+    {
+      "bytes": 9078,
+      "metadata": [
+        65086,
+        148413,
+        33152,
+        0,
+        0,
+        1,
+        9078,
+        1793865039931920925,
+        1793865039931920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-07-BOUNDARY.original.json",
+      "path": "closed-07-BOUNDARY.original.json",
+      "sha256": "46b03cd66426395198b4a3093117659d5cfb128cc981815934fc1ea695c97be0"
+    },
+    {
+      "bytes": 25716,
+      "metadata": [
+        65086,
+        154432,
+        33152,
+        0,
+        0,
+        1,
+        25716,
+        1793865039935920925,
+        1793865039935920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-07-CLOSURE.original.json",
+      "path": "closed-07-CLOSURE.original.json",
+      "sha256": "d5a6433d473ced291328536664497d9fa9861b42f126ecf9ad189df497520a57"
+    },
+    {
+      "bytes": 776988,
+      "metadata": [
+        65086,
+        155528,
+        33152,
+        0,
+        0,
+        1,
+        776988,
+        1793865039935920925,
+        1793865039935920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-07-INVENTORY.original.json",
+      "path": "closed-07-INVENTORY.original.json",
+      "sha256": "32726cebc8d85dc7086073ba9d6494248a3ec625826a5ed635cffa6715811432"
+    },
+    {
+      "bytes": 9373,
+      "metadata": [
+        65086,
+        157144,
+        33152,
+        0,
+        0,
+        1,
+        9373,
+        1793865039931920925,
+        1793865039931920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-08-BOUNDARY.original.json",
+      "path": "closed-08-BOUNDARY.original.json",
+      "sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10"
+    },
+    {
+      "bytes": 54785,
+      "metadata": [
+        65086,
+        157200,
+        33152,
+        0,
+        0,
+        1,
+        54785,
+        1793865039931920925,
+        1793865039931920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-08-CLOSURE.original.json",
+      "path": "closed-08-CLOSURE.original.json",
+      "sha256": "7e42ed77926bdf3bc728e4aef5009ffb23d50adfe1f6ce6b9e236fc621aa17cb"
+    },
+    {
+      "bytes": 849854,
+      "metadata": [
+        65086,
+        157320,
+        33152,
+        0,
+        0,
+        1,
+        849854,
+        1793865039931920925,
+        1793865039931920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-08-INVENTORY.original.json",
+      "path": "closed-08-INVENTORY.original.json",
+      "sha256": "80b8a56ee78055c19caf3b342af5bc5e479180843b0f3bc223751649188b7fc4"
+    },
+    {
+      "bytes": 664638,
+      "metadata": [
+        65086,
+        151782,
+        33152,
+        0,
+        0,
+        1,
+        664638,
+        1793865039947920925,
+        1793865039947920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-reference-attempt05-AFTER-INVENTORY.original.json",
+      "path": "closed-reference-attempt05-AFTER-INVENTORY.original.json",
+      "sha256": "87103089914885fff5632781f18fbe36895ed181f01997eac6c3b49449b5579e"
+    },
+    {
+      "bytes": 164095,
+      "metadata": [
+        65086,
+        157690,
+        33152,
+        0,
+        0,
+        1,
+        164095,
+        1793865039947920925,
+        1793865039947920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-reference-attempt05-CLOSURE.original.json",
+      "path": "closed-reference-attempt05-CLOSURE.original.json",
+      "sha256": "d464bac786ef208d8fa0390587bd3bb7616a13985fb064716a209aa2394458f6"
+    },
+    {
+      "bytes": 4650,
+      "metadata": [
+        65086,
+        157291,
+        33152,
+        0,
+        0,
+        1,
+        4650,
+        1793865039951920925,
+        1793865039951920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-reference-attempt05-SIDE-PROOF.original.json",
+      "path": "closed-reference-attempt05-SIDE-PROOF.original.json",
+      "sha256": "1bf6bca5ae5aaa5d5803b708070680e92d3f072f9541f38b09783787cfae7b9c"
+    },
+    {
+      "bytes": 18133,
+      "metadata": [
+        65086,
+        157397,
+        33152,
+        0,
+        0,
+        1,
+        18133,
+        1793865039951920925,
+        1793865039951920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-reference-component_common_r5.original.py",
+      "path": "closed-reference-component_common_r5.original.py",
+      "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02"
+    },
+    {
+      "bytes": 53502,
+      "metadata": [
+        65086,
+        156388,
+        33152,
+        0,
+        0,
+        1,
+        53502,
+        1793865039951920925,
+        1793865039951920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-reference-environment_parent_late_boundary_r6.original.py",
+      "path": "closed-reference-environment_parent_late_boundary_r6.original.py",
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+    },
+    {
+      "bytes": 19740,
+      "metadata": [
+        65086,
+        156437,
+        33152,
+        0,
+        0,
+        1,
+        19740,
+        1793865039951920925,
+        1793865039951920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-reference-non_native_attempt05.original.py",
+      "path": "closed-reference-non_native_attempt05.original.py",
+      "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4"
+    },
+    {
+      "bytes": 35730,
+      "metadata": [
+        65086,
+        155012,
+        33152,
+        0,
+        0,
+        1,
+        35730,
+        1793865039951920925,
+        1793865039951920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-reference-policy_parent_late_boundary_r4.original.py",
+      "path": "closed-reference-policy_parent_late_boundary_r4.original.py",
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+    },
+    {
+      "bytes": 19138,
+      "metadata": [
+        65086,
+        156322,
+        33152,
+        0,
+        0,
+        1,
+        19138,
+        1793865039955920925,
+        1793865039955920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-source-component_common.original.py",
+      "path": "closed-source-component_common.original.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 40261,
+      "metadata": [
+        65086,
+        157586,
+        33152,
+        0,
+        0,
+        1,
+        40261,
+        1793865039955920925,
+        1793865039955920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-source-component_lifecycle.original.py",
+      "path": "closed-source-component_lifecycle.original.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 24187,
+      "metadata": [
+        65086,
+        155807,
+        33152,
+        0,
+        0,
+        1,
+        24187,
+        1793865039955920925,
+        1793865039955920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-source-component_snapshot.original.py",
+      "path": "closed-source-component_snapshot.original.py",
+      "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+    },
+    {
+      "bytes": 62434,
+      "metadata": [
+        65086,
+        151874,
+        33152,
+        0,
+        0,
+        1,
+        62434,
+        1793865039955920925,
+        1793865039955920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-source-late_boundary.original.py",
+      "path": "closed-source-late_boundary.original.py",
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+    },
+    {
+      "bytes": 4633,
+      "metadata": [
+        65086,
+        151310,
+        33152,
+        0,
+        0,
+        1,
+        4633,
+        1793865039959920925,
+        1793865039959920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/closed-source-native_proc_profile.original.py",
+      "path": "closed-source-native_proc_profile.original.py",
+      "sha256": "12719e58d2e3e1a1e86b8a6a9dc9587e37bfcb36c4c3b26b023138752bb3e67b"
+    },
+    {
+      "bytes": 17284,
+      "metadata": [
+        65086,
+        155369,
+        33152,
+        0,
+        0,
+        1,
+        17284,
+        1793865039863920925,
+        1793865039863920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/full-candidate.rule",
+      "path": "full-candidate.rule",
+      "sha256": "424e1c680d37583f039c8cc5e2727200b3f9ad8fd29d35616173a5102b0218d1"
+    },
+    {
+      "bytes": 49202,
+      "metadata": [
+        65086,
+        154942,
+        33152,
+        0,
+        0,
+        1,
+        49202,
+        1793865039967920925,
+        1793865039967920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/guard_live_runtime_properties.original.py",
+      "path": "guard_live_runtime_properties.original.py",
+      "sha256": "b77e84776df4b375c1ad7a150195e1ce78389207176ce16dd1d874e2019b269f"
+    },
+    {
+      "bytes": 2667740,
+      "metadata": [
+        65086,
+        155936,
+        33152,
+        0,
+        0,
+        1,
+        2667740,
+        1793865050339920921,
+        1793865050339920921
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/live-policy-after.bin",
+      "path": "live-policy-after.bin",
+      "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+    },
+    {
+      "bytes": 2667608,
+      "metadata": [
+        65086,
+        156538,
+        33152,
+        0,
+        0,
+        1,
+        2667608,
+        1793865039971920925,
+        1793865039971920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/live-policy-before.bin",
+      "path": "live-policy-before.bin",
+      "sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7"
+    },
+    {
+      "bytes": 14130,
+      "metadata": [
+        65086,
+        156313,
+        33152,
+        0,
+        0,
+        1,
+        14130,
+        1793865039859920925,
+        1793865039859920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/parent-candidate.rule",
+      "path": "parent-candidate.rule",
+      "sha256": "aeda92123f1d043de2c53dd345dd7372b98da7b776299d57bda531dda868e4a1"
+    },
+    {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        155589,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793865049687920921,
+        1793865049687920921
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/policy.stderr",
+      "path": "policy.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        155526,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793865049683920921,
+        1793865049683920921
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/policy.stdout",
+      "path": "policy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 124306,
+      "metadata": [
+        65086,
+        157362,
+        33152,
+        0,
+        0,
+        1,
+        124306,
+        1793865039967920925,
+        1793865039967920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/policy_runtime_properties_verifier.original.py",
+      "path": "policy_runtime_properties_verifier.original.py",
+      "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+    },
+    {
+      "bytes": 848888,
+      "metadata": [
+        65086,
+        156394,
+        33152,
+        0,
+        0,
+        1,
+        848888,
+        1793865039959920925,
+        1793865039959920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/retirement-bound_inputs.original",
+      "path": "retirement-bound_inputs.original",
+      "sha256": "607f832e4f1b0904a67e1102c3653543961aa71e55aa7a309cd6911c6234ec61"
+    },
+    {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        156310,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793865039959920925,
+        1793865039959920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/retirement-disabled_flag.original",
+      "path": "retirement-disabled_flag.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 703888,
+      "metadata": [
+        65086,
+        155269,
+        33152,
+        0,
+        0,
+        1,
+        703888,
+        1793865039963920925,
+        1793865039963920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/retirement-preflight.original",
+      "path": "retirement-preflight.original",
+      "sha256": "5205cd79b2f117d775c5574c63110b33e9b55f7cb69f5e212e034b8c4e9c9254"
+    },
+    {
+      "bytes": 766658,
+      "metadata": [
+        65086,
+        148919,
+        33152,
+        0,
+        0,
+        1,
+        766658,
+        1793865039963920925,
+        1793865039963920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/retirement-probe.original",
+      "path": "retirement-probe.original",
+      "sha256": "d1fe1478ee9699b5a1199aa4c2b96a2a405f7cafd0b5707071cfd2238dbe5df4"
+    },
+    {
+      "bytes": 37869,
+      "metadata": [
+        65086,
+        154779,
+        33152,
+        0,
+        0,
+        1,
+        37869,
+        1793865039967920925,
+        1793865039967920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/retirement-proof.original",
+      "path": "retirement-proof.original",
+      "sha256": "b139e096969f5a860f5e7cb9e3e988db3d0b2e868528dd4c38b8c9411df4fb90"
+    },
+    {
+      "bytes": 3154,
+      "metadata": [
+        65086,
+        157633,
+        33152,
+        0,
+        0,
+        1,
+        3154,
+        1793865039859920925,
+        1793865039859920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/runtime-properties.delta.rule",
+      "path": "runtime-properties.delta.rule",
+      "sha256": "fa32d9ae9dfd1f8e9100ebb966a327bf059ed53d307b58be9ed69c8c9b90c1d6"
+    },
+    {
+      "bytes": 69,
+      "metadata": [
+        65086,
+        150606,
+        33152,
+        0,
+        0,
+        1,
+        69,
+        1793865039871920925,
+        1793865039871920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-business-qualification.original",
+      "path": "service-business-qualification.original",
+      "sha256": "ff17d20cc434122c96ae8e84c7b05bb08279ba5083baddf8e8831f66a3fef8fe"
+    },
+    {
+      "bytes": 4,
+      "metadata": [
+        65086,
+        154766,
+        33152,
+        0,
+        0,
+        1,
+        4,
+        1793865039875920925,
+        1793865039875920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-exit-code.original",
+      "path": "service-exit-code.original",
+      "sha256": "9d9b18720961e9b4689fd763b85e7b6f36160ccd3a8a1c9ddc5103bb0f66c396"
+    },
+    {
+      "bytes": 84,
+      "metadata": [
+        65086,
+        157879,
+        33152,
+        0,
+        0,
+        1,
+        84,
+        1793865039875920925,
+        1793865039875920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-intent.original",
+      "path": "service-intent.original",
+      "sha256": "103201e89698e2b95b111a8845ab45ec2aae098985afe274327de8767ad67769"
+    },
+    {
+      "bytes": 86,
+      "metadata": [
+        65086,
+        155166,
+        33152,
+        0,
+        0,
+        1,
+        86,
+        1793865039875920925,
+        1793865039875920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model-binding-complete.original",
+      "path": "service-model-binding-complete.original",
+      "sha256": "82de6ca622b796225b070b39a2068f4c17243aeec0ebee45deda935b72c36ba2"
+    },
+    {
+      "bytes": 83,
+      "metadata": [
+        65086,
+        157664,
+        33152,
+        0,
+        0,
+        1,
+        83,
+        1793865039879920925,
+        1793865039879920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model-binding-intent.original",
+      "path": "service-model-binding-intent.original",
+      "sha256": "39a0e98b0fdf1cf92a7636750693e28c341787d7670eccf482aea89ac03a6bd7"
+    },
+    {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        154967,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793865039879920925,
+        1793865039879920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model-binding.stderr.original",
+      "path": "service-model-binding.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 403,
+      "metadata": [
+        65086,
+        157813,
+        33152,
+        0,
+        0,
+        1,
+        403,
+        1793865039879920925,
+        1793865039879920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model-binding.stdout.original",
+      "path": "service-model-binding.stdout.original",
+      "sha256": "31945513c4340f3d2f7eab8df0cb1b9990217b0a5516e71f6f942a15768ad119"
+    },
+    {
+      "bytes": 61,
+      "metadata": [
+        65086,
+        157561,
+        33152,
+        0,
+        0,
+        1,
+        61,
+        1793865039883920925,
+        1793865039883920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model-qualification.original",
+      "path": "service-model-qualification.original",
+      "sha256": "3f6f5965cd1b3ed9190b206385215f54774b4a770be02e8c22c0d6560f93d235"
+    },
+    {
+      "bytes": 110,
+      "metadata": [
+        65086,
+        155193,
+        33152,
+        0,
+        0,
+        1,
+        110,
+        1793865039883920925,
+        1793865039883920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model-runtime-directory.original",
+      "path": "service-model-runtime-directory.original",
+      "sha256": "f5804e995470d3596620949d2e79a01d59edc6b9c5c6a391e531d7df7e30b2be"
+    },
+    {
+      "bytes": 27,
+      "metadata": [
+        65086,
+        155048,
+        33152,
+        0,
+        0,
+        1,
+        27,
+        1793865039887920925,
+        1793865039887920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.admit.original",
+      "path": "service-model.admit.original",
+      "sha256": "1ea5d6689bd9e186c4b3a339cdef1496aee641fc1edefbefd179226176b501c1"
+    },
+    {
+      "bytes": 166,
+      "metadata": [
+        65086,
+        155372,
+        33152,
+        0,
+        0,
+        1,
+        166,
+        1793865039887920925,
+        1793865039887920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.exec-identity.original",
+      "path": "service-model.exec-identity.original",
+      "sha256": "6d5981eaf0d792413ab684714b85bd66a36a0eb3d8b2675a3ea25e482196a1ca"
+    },
+    {
+      "bytes": 27,
+      "metadata": [
+        65086,
+        156967,
+        33152,
+        0,
+        0,
+        1,
+        27,
+        1793865039891920925,
+        1793865039891920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.identity.original",
+      "path": "service-model.identity.original",
+      "sha256": "1ea5d6689bd9e186c4b3a339cdef1496aee641fc1edefbefd179226176b501c1"
+    },
+    {
+      "bytes": 65,
+      "metadata": [
+        65086,
+        153643,
+        33152,
+        0,
+        0,
+        1,
+        65,
+        1793865039891920925,
+        1793865039891920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.spawn-intent.original",
+      "path": "service-model.spawn-intent.original",
+      "sha256": "9b46e3acd737ef16934e6056946f2515cf3c0c3d2aed9f5502b2f23cfc972971"
+    },
+    {
+      "bytes": 6,
+      "metadata": [
+        65086,
+        144311,
+        33152,
+        0,
+        0,
+        1,
+        6,
+        1793865039895920925,
+        1793865039895920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.spawn-pid.original",
+      "path": "service-model.spawn-pid.original",
+      "sha256": "aff83f2888daa6381a641fc9218ef8edd15f72156ae40a5433f4b35d3341e2de"
+    },
+    {
+      "bytes": 21,
+      "metadata": [
+        65086,
+        156221,
+        33152,
+        0,
+        0,
+        1,
+        21,
+        1793865039895920925,
+        1793865039895920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.started.original",
+      "path": "service-model.started.original",
+      "sha256": "078e7134e68f9a414bcecffeffd1ca6ce72467a12ffa6a4112c7c2f9f40ae102"
+    },
+    {
+      "bytes": 18520,
+      "metadata": [
+        65086,
+        155950,
+        33152,
+        0,
+        0,
+        1,
+        18520,
+        1793865039895920925,
+        1793865039895920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.stderr.original",
+      "path": "service-model.stderr.original",
+      "sha256": "e2c763c1422c580a3cb8d3a58ac3e523911b4482bee1561267bd43889e482602"
+    },
+    {
+      "bytes": 20065,
+      "metadata": [
+        65086,
+        152095,
+        33152,
+        0,
+        0,
+        1,
+        20065,
+        1793865039899920925,
+        1793865039899920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.stdout.original",
+      "path": "service-model.stdout.original",
+      "sha256": "5085f6d2bc69597b5f61262ac4214bc68515a17b4003f42a1e9aea053e51dad4"
+    },
+    {
+      "bytes": 90,
+      "metadata": [
+        65086,
+        157303,
+        33152,
+        0,
+        0,
+        1,
+        90,
+        1793865039899920925,
+        1793865039899920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-model.stop.original",
+      "path": "service-model.stop.original",
+      "sha256": "05f53268c92b8d730520b7f3a78ff61ba1eaa87c8c7f0ef174f46ec17eb3a815"
+    },
+    {
+      "bytes": 60,
+      "metadata": [
+        65086,
+        155370,
+        33152,
+        0,
+        0,
+        1,
+        60,
+        1793865039903920925,
+        1793865039903920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-module-path.original",
+      "path": "service-module-path.original",
+      "sha256": "f7260820f9c2ab4598b5bf5172c0c6524238c8cf793179b91c86f09f6205e838"
+    },
+    {
+      "bytes": 33,
+      "metadata": [
+        65086,
+        155058,
+        33152,
+        0,
+        0,
+        1,
+        33,
+        1793865039903920925,
+        1793865039903920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-native-profile.original",
+      "path": "service-native-profile.original",
+      "sha256": "1d3394a6967ab0655373a6c8a6778762003d5ab0bc3d2f9df92ee6373c43a722"
+    },
+    {
+      "bytes": 27,
+      "metadata": [
+        65086,
+        155128,
+        33152,
+        0,
+        0,
+        1,
+        27,
+        1793865039903920925,
+        1793865039903920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.admit.original",
+      "path": "service-provider.admit.original",
+      "sha256": "e9f4ef72a19e3061bcdd0e64df70921fd47f247635a8da6e1c305a853925605d"
+    },
+    {
+      "bytes": 158,
+      "metadata": [
+        65086,
+        154111,
+        33152,
+        0,
+        0,
+        1,
+        158,
+        1793865039911920925,
+        1793865039911920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.exec-identity.original",
+      "path": "service-provider.exec-identity.original",
+      "sha256": "889df544198ea28ba429e1bf3837345ad080aedea6207de2750c5e77f603eb77"
+    },
+    {
+      "bytes": 27,
+      "metadata": [
+        65086,
+        157518,
+        33152,
+        0,
+        0,
+        1,
+        27,
+        1793865039911920925,
+        1793865039911920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.identity.original",
+      "path": "service-provider.identity.original",
+      "sha256": "e9f4ef72a19e3061bcdd0e64df70921fd47f247635a8da6e1c305a853925605d"
+    },
+    {
+      "bytes": 65,
+      "metadata": [
+        65086,
+        157267,
+        33152,
+        0,
+        0,
+        1,
+        65,
+        1793865039915920925,
+        1793865039915920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.spawn-intent.original",
+      "path": "service-provider.spawn-intent.original",
+      "sha256": "9b46e3acd737ef16934e6056946f2515cf3c0c3d2aed9f5502b2f23cfc972971"
+    },
+    {
+      "bytes": 6,
+      "metadata": [
+        65086,
+        156426,
+        33152,
+        0,
+        0,
+        1,
+        6,
+        1793865039915920925,
+        1793865039915920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.spawn-pid.original",
+      "path": "service-provider.spawn-pid.original",
+      "sha256": "aa9b79560e36a894d7697727d798360999da4579c01fe05b13a98279153bc9f4"
+    },
+    {
+      "bytes": 21,
+      "metadata": [
+        65086,
+        155540,
+        33152,
+        0,
+        0,
+        1,
+        21,
+        1793865039915920925,
+        1793865039915920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.started.original",
+      "path": "service-provider.started.original",
+      "sha256": "78672133f20a74025f7898aaae19a198d1427908a5f6d5b3e54e46d9d91e129c"
+    },
+    {
+      "bytes": 0,
+      "metadata": [
+        65086,
+        157669,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793865039915920925,
+        1793865039915920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.stderr.original",
+      "path": "service-provider.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 20065,
+      "metadata": [
+        65086,
+        157708,
+        33152,
+        0,
+        0,
+        1,
+        20065,
+        1793865039919920925,
+        1793865039919920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.stdout.original",
+      "path": "service-provider.stdout.original",
+      "sha256": "a74f9c0f4797ac3e49923cd14573a1c33bb0cfc8f3e57b9cdd84da47f45d2c9e"
+    },
+    {
+      "bytes": 90,
+      "metadata": [
+        65086,
+        153594,
+        33152,
+        0,
+        0,
+        1,
+        90,
+        1793865039919920925,
+        1793865039919920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-provider.stop.original",
+      "path": "service-provider.stop.original",
+      "sha256": "05f53268c92b8d730520b7f3a78ff61ba1eaa87c8c7f0ef174f46ec17eb3a815"
+    },
+    {
+      "bytes": 12,
+      "metadata": [
+        65086,
+        143762,
+        33152,
+        0,
+        0,
+        1,
+        12,
+        1793865039919920925,
+        1793865039919920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-runtime-location.original",
+      "path": "service-runtime-location.original",
+      "sha256": "6ea9b5ea524b6ee9232e72a51f6a8caa956374b70d8e6efb7964948823d76158"
+    },
+    {
+      "bytes": 142,
+      "metadata": [
+        65086,
+        154857,
+        33152,
+        0,
+        0,
+        1,
+        142,
+        1793865039919920925,
+        1793865039919920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-services-started.original",
+      "path": "service-services-started.original",
+      "sha256": "1456167b8147b7a527b7f218cbdaed114c80a663d853d0fba8425811ba9eca0d"
+    },
+    {
+      "bytes": 123,
+      "metadata": [
+        65086,
+        155043,
+        33152,
+        0,
+        0,
+        1,
+        123,
+        1793865039919920925,
+        1793865039919920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar-log-directory.original",
+      "path": "service-sidecar-log-directory.original",
+      "sha256": "6ed2a7f70847fb269c0936f4ae55bd0be8e4ab5f2d4160d95705c3597ead67b3"
+    },
+    {
+      "bytes": 27,
+      "metadata": [
+        65086,
+        157502,
+        33152,
+        0,
+        0,
+        1,
+        27,
+        1793865039923920925,
+        1793865039923920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar.admit.original",
+      "path": "service-sidecar.admit.original",
+      "sha256": "0f05d822ce9ae7d0619a92776775b75e9865661f37dcc7fc4c57b68370cc6998"
+    },
+    {
+      "bytes": 209,
+      "metadata": [
+        65086,
+        138493,
+        33152,
+        0,
+        0,
+        1,
+        209,
+        1793865039923920925,
+        1793865039923920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar.exec-identity.original",
+      "path": "service-sidecar.exec-identity.original",
+      "sha256": "e78699cc9561d62c7ddbaefc62b919995058f15dfa391b948770b7060d31f766"
+    },
+    {
+      "bytes": 27,
+      "metadata": [
+        65086,
+        156744,
+        33152,
+        0,
+        0,
+        1,
+        27,
+        1793865039923920925,
+        1793865039923920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar.identity.original",
+      "path": "service-sidecar.identity.original",
+      "sha256": "0f05d822ce9ae7d0619a92776775b75e9865661f37dcc7fc4c57b68370cc6998"
+    },
+    {
+      "bytes": 65,
+      "metadata": [
+        65086,
+        157620,
+        33152,
+        0,
+        0,
+        1,
+        65,
+        1793865039923920925,
+        1793865039923920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar.spawn-intent.original",
+      "path": "service-sidecar.spawn-intent.original",
+      "sha256": "9b46e3acd737ef16934e6056946f2515cf3c0c3d2aed9f5502b2f23cfc972971"
+    },
+    {
+      "bytes": 6,
+      "metadata": [
+        65086,
+        155430,
+        33152,
+        0,
+        0,
+        1,
+        6,
+        1793865039923920925,
+        1793865039923920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar.spawn-pid.original",
+      "path": "service-sidecar.spawn-pid.original",
+      "sha256": "262bc38a79fcea4889cd2908b177f73b739a8d33096c42551a0a9bf2da13f574"
+    },
+    {
+      "bytes": 21,
+      "metadata": [
+        65086,
+        156524,
+        33152,
+        0,
+        0,
+        1,
+        21,
+        1793865039923920925,
+        1793865039923920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar.started.original",
+      "path": "service-sidecar.started.original",
+      "sha256": "f69965e7b9b69d2ce75f85b40c7825cf363bc18f8ee34fc505df77cd90ac5f7b"
+    },
+    {
+      "bytes": 90,
+      "metadata": [
+        65086,
+        153420,
+        33152,
+        0,
+        0,
+        1,
+        90,
+        1793865039927920925,
+        1793865039927920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-sidecar.stop.original",
+      "path": "service-sidecar.stop.original",
+      "sha256": "05f53268c92b8d730520b7f3a78ff61ba1eaa87c8c7f0ef174f46ec17eb3a815"
+    },
+    {
+      "bytes": 21,
+      "metadata": [
+        65086,
+        155763,
+        33152,
+        0,
+        0,
+        1,
+        21,
+        1793865039927920925,
+        1793865039927920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-start-utc.original",
+      "path": "service-start-utc.original",
+      "sha256": "0f06b9e8ade3afd144e8aa583bd5f5a073f8b7ba76bf3d53dbd709f46b7e77c3"
+    },
+    {
+      "bytes": 27,
+      "metadata": [
+        65086,
+        155517,
+        33152,
+        0,
+        0,
+        1,
+        27,
+        1793865039927920925,
+        1793865039927920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-supervisor.identity.original",
+      "path": "service-supervisor.identity.original",
+      "sha256": "7a2be9b88cbf6addf11cd538b61efbceeccc9e329821b3b9f94eeddd654a6080"
+    },
+    {
+      "bytes": 86,
+      "metadata": [
+        65086,
+        154461,
+        33152,
+        0,
+        0,
+        1,
+        86,
+        1793865039927920925,
+        1793865039927920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-terminal-scope.original",
+      "path": "service-terminal-scope.original",
+      "sha256": "f9afc0a437eec1be0217928b66936935a7d1a2bb41b6ae231da974f9c42abf71"
+    },
+    {
+      "bytes": 87,
+      "metadata": [
+        65086,
+        153403,
+        33152,
+        0,
+        0,
+        1,
+        87,
+        1793865039927920925,
+        1793865039927920925
+      ],
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/policy-runtime-properties-r10-live-02/service-worker-qualification.original",
+      "path": "service-worker-qualification.original",
+      "sha256": "2f5655f0cdcbb96530422876bdea34d9d15306ddd5e75d227abd834931370cdb"
+    }
+  ],
+  "new_effects": 0,
+  "policy_adoption_authorized": false,
+  "schema": "hepta.runtime-properties-r10.live-original-capture.v1",
+  "state": "CAPTURED_EXISTING_APPLY_ORIGINALS",
+  "total_bytes": 13703600
+}

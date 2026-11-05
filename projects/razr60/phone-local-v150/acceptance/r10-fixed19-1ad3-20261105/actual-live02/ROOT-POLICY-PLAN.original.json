@@ -1,0 +1,60 @@
+{
+  "apply_request": {
+    "bytes": 353,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-preparation-02/PHONE-APPLY-REQUEST.json",
+    "sha256": "fa3ada649439f5f510716d06c4eceb2acaabd0ca4d5c17596fd7f337fe3e46f7"
+  },
+  "binding": {
+    "bytes": 25562,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-preparation-02/tree/BINDING.json",
+    "sha256": "5bcb168fda64c2f1e958cce15a2bd28cb45dfd10ffd2d79570d0dcef5e06bb1b"
+  },
+  "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "capture_source": {
+    "bytes": 12963,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-operator-r2-candidate01/source/capture_runtime_properties_originals.py",
+    "sha256": "2208cc14dff80e0953314d9acbc4eccd83c0a1cc92829965b2625c5466b5877c"
+  },
+  "driver_source": {
+    "bytes": 19616,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-live-driver-r2-candidate01/source/run_runtime_properties_policy_once.py",
+    "sha256": "574e639f52a3b99dc2ea6d6f82a7455d445fdb4d758bc486cf877df316921ebb"
+  },
+  "out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02",
+  "pre_live_expectation": {
+    "bytes": 1991,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-preparation-02/PRE-LIVE-EXPECTATION.json",
+    "sha256": "6e060e403c09ead35cc5732d54b04968e004f178c6cbf24605cec80be5b71d00"
+  },
+  "prepared": {
+    "bytes": 4240,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-preparation-02/PREPARED.json",
+    "sha256": "d4b2362694a9a5eb087f69b3471162de83df7039a20840d8511cb90fe5f13e46"
+  },
+  "prior_failed_transaction": {
+    "bytes": 3715,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-01/FAILED-PREFLIGHT-RECONCILIATION-01/RESULT.json",
+    "sha256": "c52efc070658e5f05f47e3e5f57acf4272f5556a8ab32c6bc615b8f57c4f0cb4"
+  },
+  "schema": "hepta.root.runtime-properties-live-plan.v2",
+  "source_package": {
+    "bytes": 452,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-live-driver-r2-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "534fa9485da7ae9732714be05db62c5888acdbc9fe399fdfecdac2775580928d"
+  },
+  "stage_requests": {
+    "bytes": 3500,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-preparation-02/PHONE-STAGE-REQUESTS.json",
+    "sha256": "9fb4927cdf10f333ac9b2ccf17d7fc82040446c6f1c75448c2ba3777b9da10f5"
+  },
+  "transport_root_plan": {
+    "bytes": 4715,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-20261104-04/ROOT-PLAN.original.json",
+    "sha256": "fa773ad886e127185ecee5aa015a714c79fe889f4001184d61b569f07a063360"
+  },
+  "verifier_source": {
+    "bytes": 124306,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-operator-r2-candidate01/source/policy_runtime_properties_verifier.py",
+    "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+  }
+}
