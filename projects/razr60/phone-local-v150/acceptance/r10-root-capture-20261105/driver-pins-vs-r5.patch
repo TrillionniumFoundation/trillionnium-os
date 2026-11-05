@@ -1,0 +1,15 @@
+--- r5/run_runtime_properties_policy_once.py
++++ source/run_runtime_properties_policy_once.py
+@@ -19,9 +19,9 @@
+ B=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ BOOT='f8019f83-20a7-4f18-bea1-51c980621e4d'
+ NONCE='c705647dd4ebb5d421be1041a9c41ca6'
+-TRANSPORT_SOURCE=B/'root-runtime-properties-transport-r5-20261105-1ad3/source/run_component_root_once.py'
+-TRANSPORT_SHA='246d6122b14bd204d4f2344a9b9475085a952060ad149078b0d0c4464e40abf4'
+-TRANSPORT_BYTES=52024
++TRANSPORT_SOURCE=B/'root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py'
++TRANSPORT_SHA='0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd'
++TRANSPORT_BYTES=68481
+ ORIGINAL_VALIDATOR_SOURCE=B/'native-guard-r10-r1-operator-r4/root-chain/source/run_component_root_once.py'
+ ORIGINAL_VALIDATOR_SHA='860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22'
+ ORIGINAL_VALIDATOR_BYTES=43438

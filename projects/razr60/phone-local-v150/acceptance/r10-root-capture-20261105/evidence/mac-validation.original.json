@@ -1,0 +1,119 @@
+{
+  "fixed19_qualification": false,
+  "format_correction": {
+    "change": "Remove one terminal literal backslash-n from outer runner JSON and reserialize with LF; original preserved",
+    "original": {
+      "bytes": 5265,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/MAC-VALIDATION-RESULT.json",
+      "sha256": "c62902d2ddf09a7b2c48ae4e67a8e74c6173992cf0617cd0bb0ece8fd3e6f7cf"
+    },
+    "suite_originals_independently_rechecked": [
+      {
+        "bytes": 90295,
+        "failed": 0,
+        "passed": 33,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/regression33-evidence/TEST-RESULT.json",
+        "sha256": "b3f0059e2fa9aa6666ef3ffb2ee4acb61c516714c9619b33220fe4e42e689e0b"
+      },
+      {
+        "bytes": 21012,
+        "failed": 0,
+        "passed": 6,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/TEST-RESULT.json",
+        "sha256": "c06d765c4722a9c9c3fe7f8c186a4aa646e6d62be4e18ff200efb427efa6d63f"
+      },
+      {
+        "bytes": 42531,
+        "failed": 0,
+        "passed": 7,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/INDEPENDENT-RESULT.json",
+        "sha256": "85bb0678a651105621a1cce7ac8158a9a8cce3f8f0e83536b2bfa04b9bcd6cd9"
+      }
+    ]
+  },
+  "phone_calls": 0,
+  "python": "3.9.6 (default, Oct 19 2026, 19:18:13) \n[Clang 21.0.0 (clang-2100.4.1.1)]",
+  "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+  "state": "ALL_MAC_HOST_CAPTURE_SUITES_PASSED",
+  "suites": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/test_transport_structural.py"
+      ],
+      "elapsed_seconds": 6.594909209,
+      "evidence": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/regression33-evidence",
+      "harness_sha256": "59f46211672f70183e091172434939449070972fa54a61e9154e92cb60d98419",
+      "name": "regression33",
+      "phone_calls": 0,
+      "returncode": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/regression33.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 3469,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/regression33.stdout.original",
+        "sha256": "3ebe8871775241d0fac0f1b0422f43ea575e4dbecf078eed58b30bd65fde3141"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/test_capture_ownership.py"
+      ],
+      "elapsed_seconds": 1.4775673749999996,
+      "evidence": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence",
+      "harness_sha256": "94d1eb87d161a22749cab7e13d71c122917cbb12ee9327eac806474d51811a37",
+      "name": "ownership6",
+      "phone_calls": 0,
+      "returncode": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 344,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6.stdout.original",
+        "sha256": "ea7175494cdf191edf7507f2bfd2eb2c64b2c413bea747a8a4e88b8c4f5374d8"
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/independent_capture_review_portable.py",
+        "--source",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py",
+        "--out",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence"
+      ],
+      "elapsed_seconds": 2.190253875,
+      "evidence": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence",
+      "harness_sha256": "603868481a8f58c7ea4f526289fd3a5561c353093939d55fbe0d9f9db1b4c177",
+      "name": "independent7",
+      "phone_calls": 0,
+      "returncode": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7.stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 591,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7.stdout.original",
+        "sha256": "289a0ca94398a025eff5c2805aa16d88fb59731d72930145682b80bff5bf4f4a"
+      }
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.razr60.fixed19.root-checkpoint.v1",
+  "checkpoint": "2026-11-05-root-1ad3-capture-repair",
+  "state": "HOST_TRANSPORT_REPAIRED_DEVICE_POLICY_PREPARATION_BLOCKED_BY_EXISTING_CAPACITY_CHECK",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "branch": "codex/razr60-fixed19-r10-20261105-1ad3",
+  "parent_commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+  "current_fixed19_qualified": 0,
+  "historical_case_credit": false,
+  "phone_calls_by_this_root_workflow": 0,
+  "policy_apply_calls_by_this_root_workflow": 0,
+  "transport": {
+    "source_bytes": 68481,
+    "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+    "driver_bytes": 19879,
+    "driver_sha256": "3d41a301f2944640b1721bade7bb72b2e493e92470c2c417f5223a015a195fd6",
+    "source_manifest_sha256": "55050f0520f865e0774f6936699d1024773edc61d7f56038db6f56ab543681cd",
+    "fixed": [
+      "Use a pinned retained read-only stdin descriptor so input transfer is covered by the original execution deadline.",
+      "Persist and retain the actual child identity and handle after every successful spawn.",
+      "Drain both output pipes during asynchronous execution using one owned bounded capture worker.",
+      "Require child join, both pipe EOFs, worker join and output verification within the original deadline.",
+      "Bind captured bytes to the original held output inode and reject path replacement.",
+      "Use an explicit reader ownership transfer to avoid closing descriptors while a late-starting worker can still acquire them.",
+      "Retain partial output and unknown child state without signalling, replay or a false cleanup claim."
+    ],
+    "limits_preserved": {
+      "output_bytes_per_stream": 67108864,
+      "automatic_retry": false,
+      "signals_sent": 0
+    },
+    "remote_cleanup_proven_by_host_capture": false
+  },
+  "verification": {
+    "linux": {
+      "candidate_regressions_passed": 31,
+      "historical_defects_reproduced": 2,
+      "ownership_and_capacity_cases_passed": 6,
+      "independent_capture_cases_passed": 7,
+      "driver_original_validator_and_execution_transport_separate": true,
+      "source_tamper_rejected": true
+    },
+    "macos": {
+      "durable_job_id": "1a1aa6bb0f0-fc05-42d0",
+      "candidate_regressions_passed": 31,
+      "historical_defects_reproduced": 2,
+      "ownership_and_capacity_cases_passed": 6,
+      "independent_capture_cases_passed": 7,
+      "suite_returncodes": [0, 0, 0],
+      "suite_stderr_bytes": [0, 0, 0]
+    },
+    "fixed19_cases_qualified_by_these_host_tests": 0
+  },
+  "policy": {
+    "actual_offline_comparison_checks_passed": 16,
+    "offline_candidate_bytes": 2667740,
+    "offline_candidate_sha256": "105ee3f837cd2225a5528eab18bad63f4efa31244b22ec02259acd21d8a5c1ee",
+    "offline_report_sha256": "149c5063d98b3b7674364e34b98465c387d8f187fe1f26d3060ebf0e75c739cf",
+    "offline_execution_sha256": "e3ccc2b642900e9e1be62bd25bded6d74889249c5c8273cc438b2e9ceaa0f559",
+    "live_apply_attempted": false,
+    "live_export_compared": false,
+    "new_policy_adopted": false,
+    "preparation_rejection": {
+      "durable_job_id": "1a1aa6e5f20-fc05-42fb",
+      "reason": "bounded compressed stage envelope",
+      "compressed_limit_bytes": 131072,
+      "plain_limit_bytes": 2097152,
+      "maximum_parts": 8,
+      "maximum_part_bytes": 16384,
+      "single_adb_service_limit_bytes": 65536,
+      "phone_operations_before_rejection": 0,
+      "next_step": "Measure an exact UTF-8 envelope for the 14 text originals while preserving every existing size and identity check."
+    }
+  },
+  "required_cases": [
+    "E2E01", "E2E02", "E2E03", "E2E04", "COMP01",
+    "NEG01", "NEG02", "NEG03", "NEG04", "NEG05", "NEG06", "NEG07", "NEG08", "NEG09",
+    "NEG10", "NEG11", "NEG12", "NEG13", "NEG14"
+  ],
+  "current_combination_case_status": "NOT_RUN",
+  "remaining": [
+    "Prepare and execute the single actual device policy transaction after capacity-compliant source review.",
+    "Compare the actual exported live policy with all 16 checks and verify explicit adoption.",
+    "Freeze the repaired R8 root coordinator and all downstream operators to the actual current combination.",
+    "Execute the fixed 19 cases with original host and physical evidence, preserving old failures separately."
+  ]
+}

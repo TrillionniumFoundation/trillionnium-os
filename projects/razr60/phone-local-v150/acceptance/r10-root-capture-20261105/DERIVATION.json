@@ -1,0 +1,82 @@
+{
+  "driver": {
+    "bytes": 19879,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/source/run_runtime_properties_policy_once.py",
+    "sha256": "3d41a301f2944640b1721bade7bb72b2e493e92470c2c417f5223a015a195fd6"
+  },
+  "driver_changes_from_r5": [
+    "TRANSPORT_SOURCE",
+    "TRANSPORT_SHA",
+    "TRANSPORT_BYTES"
+  ],
+  "driver_execution_transport": {
+    "bytes": 68481,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py",
+    "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+  },
+  "driver_interfaces_unchanged": [
+    "load_transport() -> (module, raw, original_validator)",
+    "validate(module, original_validator, raw)"
+  ],
+  "driver_original_validator": {
+    "bytes": 43438,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r4/root-chain/source/run_component_root_once.py",
+    "sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22"
+  },
+  "fixed19_qualification": false,
+  "historical_validator_true_path_preserved": true,
+  "independent_host_report": {
+    "bytes": 40417,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/INDEPENDENT-RESULT.json",
+    "sha256": "467a119258342ad00ba5b19dff10bd471c9f6a7fe072c4b431099e51d6698b72"
+  },
+  "limitations": [
+    "Host capture tests do not qualify phone behavior or downstream native acceptance.",
+    "A joined direct child plus pipe EOF does not prove remote effects ended.",
+    "Unknown children and incomplete captures remain unknown without retry or signals.",
+    "Non-preemptible host filesystem operations cannot supply a hard real-time deadline."
+  ],
+  "network_calls": 0,
+  "parent_driver": {
+    "bytes": 19879,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-transport-r5-20261105-1ad3/source/run_runtime_properties_policy_once.py",
+    "sha256": "56571b217f3921b5b949767e6a7e745740415ba8e2ea5714cbbdb9f3c38fd625"
+  },
+  "parent_transport": {
+    "bytes": 52024,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-transport-r5-20261105-1ad3/source/run_component_root_once.py",
+    "sha256": "246d6122b14bd204d4f2344a9b9475085a952060ad149078b0d0c4464e40abf4"
+  },
+  "phone_calls": 0,
+  "reviewed_execution_source": {
+    "bytes": 68481,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/source/run_component_root_once.py",
+    "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+  },
+  "schema": "hepta.root.transport-capture-driver-derivation.v1",
+  "signals_sent": 0,
+  "source_manifest": {
+    "bytes": 621,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "55050f0520f865e0774f6936699d1024773edc61d7f56038db6f56ab543681cd"
+  },
+  "source_manifest_exact_three_members": true,
+  "source_rows": [
+    {
+      "bytes": 68481,
+      "path": "source/run_component_root_once.py",
+      "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+    },
+    {
+      "bytes": 19879,
+      "path": "source/run_runtime_properties_policy_once.py",
+      "sha256": "3d41a301f2944640b1721bade7bb72b2e493e92470c2c417f5223a015a195fd6"
+    },
+    {
+      "bytes": 43438,
+      "path": "reference/run_component_root_once.r4.original.py",
+      "sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22"
+    }
+  ],
+  "state": "HOST_SOURCE_CANDIDATE_NOT_DEPLOYED_OR_EXECUTED_ON_PHONE"
+}

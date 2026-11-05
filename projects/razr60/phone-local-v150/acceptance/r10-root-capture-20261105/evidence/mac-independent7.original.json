@@ -1,0 +1,1297 @@
+{
+  "cases": [
+    {
+      "actual_sender_join_ast_sha256": "70251808079ebdd5635e3cac11bd95dc4ae73912c4ae66c8ce512306abc50851",
+      "all_fixture_direct_children_naturally_joined": true,
+      "async_start": false,
+      "at_return": {
+        "additional_live_thread_ids": [],
+        "child_identity_written": true,
+        "child_returncodes": [
+          0
+        ],
+        "error": null,
+        "error_type": null,
+        "failure_written": false,
+        "parent_fds": [
+          0,
+          1,
+          2
+        ],
+        "parent_original_streams_closed": true,
+        "sender_joined_written": false,
+        "success_result_written": true
+      },
+      "automatic_replay": false,
+      "budget_seconds": 2,
+      "case": "tail-within-budget",
+      "checks": [
+        {
+          "name": "one_child",
+          "passed": true
+        },
+        {
+          "name": "child_identity_persisted",
+          "passed": true
+        },
+        {
+          "name": "outcome_matches",
+          "passed": true
+        },
+        {
+          "name": "minimum_elapsed",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_at_return",
+          "passed": true
+        },
+        {
+          "name": "parent_original_streams_closed_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak_at_return",
+          "passed": true
+        },
+        {
+          "name": "all_parent_original_streams_closed",
+          "passed": true
+        },
+        {
+          "name": "stdout_exact",
+          "passed": true
+        },
+        {
+          "name": "stderr_exact",
+          "passed": true
+        },
+        {
+          "name": "success_schema",
+          "passed": true
+        },
+        {
+          "name": "stdout_receipt_exact",
+          "passed": true
+        },
+        {
+          "name": "stderr_receipt_exact",
+          "passed": true
+        },
+        {
+          "name": "descendant_naturally_ended",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_left",
+          "passed": true
+        }
+      ],
+      "execute_return_seconds": 0.301420083,
+      "fds_after": [
+        0,
+        1,
+        2
+      ],
+      "fds_before": [
+        0,
+        1,
+        2
+      ],
+      "final_return_seconds": 0.30142125,
+      "outer_cleanup": {
+        "host_children": [],
+        "stream_cleanup_errors": []
+      },
+      "passed": true,
+      "ready_before_join": null,
+      "signals_sent": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "steps": [
+        {
+          "automatic_retry": false,
+          "phase": "phase",
+          "pid": 53301,
+          "returncode": 0,
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "stderr": {
+            "bytes": 8,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/tail-within-budget/phase/stderr.original",
+            "sha256": "fcae913fca771a83c660b49866badcc903840806b0c37b784b2c0d25f9ae3768"
+          },
+          "stdout": {
+            "bytes": 12,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/tail-within-budget/phase/stdout.original",
+            "sha256": "9ab13bf36ebbfdb7bc5574b9bef2228e7075a56d2696845533ec33ad4f0a5e31"
+          }
+        }
+      ],
+      "thread_ids_after": [
+        8407703936
+      ],
+      "thread_ids_before": [
+        8407703936
+      ]
+    },
+    {
+      "actual_sender_join_ast_sha256": "70251808079ebdd5635e3cac11bd95dc4ae73912c4ae66c8ce512306abc50851",
+      "all_fixture_direct_children_naturally_joined": true,
+      "async_start": false,
+      "at_return": {
+        "additional_live_thread_ids": [],
+        "child_identity_written": true,
+        "child_returncodes": [
+          0
+        ],
+        "error": "unknown original phase phase",
+        "error_type": "RuntimeError",
+        "failure_written": false,
+        "parent_fds": [
+          0,
+          1,
+          2
+        ],
+        "parent_original_streams_closed": true,
+        "sender_joined_written": false,
+        "success_result_written": false
+      },
+      "automatic_replay": false,
+      "budget_seconds": 0.15,
+      "case": "tail-after-deadline",
+      "checks": [
+        {
+          "name": "one_child",
+          "passed": true
+        },
+        {
+          "name": "child_identity_persisted",
+          "passed": true
+        },
+        {
+          "name": "outcome_matches",
+          "passed": true
+        },
+        {
+          "name": "minimum_elapsed",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_at_return",
+          "passed": true
+        },
+        {
+          "name": "parent_original_streams_closed_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak_at_return",
+          "passed": true
+        },
+        {
+          "name": "bounded_return",
+          "passed": true
+        },
+        {
+          "name": "no_success_receipt",
+          "passed": true
+        },
+        {
+          "name": "descendant_naturally_ended",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_left",
+          "passed": true
+        }
+      ],
+      "execute_return_seconds": null,
+      "fds_after": [
+        0,
+        1,
+        2
+      ],
+      "fds_before": [
+        0,
+        1,
+        2
+      ],
+      "final_return_seconds": 0.1537965,
+      "outer_cleanup": {
+        "host_children": [
+          {
+            "automatic_retry": false,
+            "output_capture": {
+              "automatic_retry": false,
+              "captured": {
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 7,
+                  "sha256": "461870d19e048f8ceb6088952155667c2a9311a20b2394dec03899363364e57c"
+                }
+              },
+              "child_join_observed_monotonic": 0.482103625,
+              "child_returncode": 0,
+              "child_wait_returned": true,
+              "deadline_validity": "this_running_coordinator_only",
+              "eof_observed_monotonic": {
+                "stderr": null,
+                "stdout": null
+              },
+              "error": {
+                "code": "OUTPUT_EOF_DEADLINE_EXCEEDED",
+                "error_type": "TimeoutError"
+              },
+              "execution_deadline_monotonic": 0.570966125,
+              "files": {
+                "stderr": {
+                  "bytes": 0,
+                  "metadata": {
+                    "st_ctime_ns": 1793860559835089703,
+                    "st_dev": 16777233,
+                    "st_gid": 20,
+                    "st_ino": 588151814,
+                    "st_mode": 33152,
+                    "st_mtime_ns": 1793860559835089703,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_uid": 501
+                  },
+                  "original_created_inode_bound": true,
+                  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/tail-after-deadline/phase/stderr.original",
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 7,
+                  "metadata": {
+                    "st_ctime_ns": 1793860559987360089,
+                    "st_dev": 16777233,
+                    "st_gid": 20,
+                    "st_ino": 588151813,
+                    "st_mode": 33152,
+                    "st_mtime_ns": 1793860559987360089,
+                    "st_nlink": 1,
+                    "st_size": 7,
+                    "st_uid": 501
+                  },
+                  "original_created_inode_bound": true,
+                  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/tail-after-deadline/phase/stdout.original",
+                  "sha256": "461870d19e048f8ceb6088952155667c2a9311a20b2394dec03899363364e57c"
+                }
+              },
+              "output_limit_bytes_per_stream": 67108864,
+              "persist_errors": [],
+              "phase": "phase",
+              "pid": 53311,
+              "pipe_close_errors": [],
+              "pipe_reader_owner": "closed_by_worker",
+              "prefix_only_or_unknown": true,
+              "remote_terminal_or_cleanup_proven": false,
+              "schema": "hepta.native-guard.host-output-capture.v1",
+              "signals_sent": 0,
+              "source_intent_sha256": "4573073636a29dcf49223f9a9f009750d03c69f8fd37e185958cdc49032256ef",
+              "stderr_eof": false,
+              "stdout_eof": false,
+              "worker_joined": true,
+              "worker_started": true
+            },
+            "phase": "phase",
+            "pid": 53311,
+            "returncode": 0,
+            "signals_sent": 0,
+            "state": "OWNED_HOST_CHILD_JOINED_NO_BUSINESS_QUALIFICATION"
+          }
+        ],
+        "stream_cleanup_errors": []
+      },
+      "passed": true,
+      "ready_before_join": null,
+      "signals_sent": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "steps": [
+        {
+          "automatic_retry": false,
+          "child_returncode": 0,
+          "child_wait_returned": true,
+          "cleanup_errors": [],
+          "error_type": "TimeoutExpired",
+          "output_capture": {
+            "automatic_retry": false,
+            "captured": {
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stdout": {
+                "bytes": 7,
+                "sha256": "461870d19e048f8ceb6088952155667c2a9311a20b2394dec03899363364e57c"
+              }
+            },
+            "child_join_observed_monotonic": 0.482103625,
+            "child_returncode": 0,
+            "child_wait_returned": true,
+            "deadline_validity": "this_running_coordinator_only",
+            "eof_observed_monotonic": {
+              "stderr": null,
+              "stdout": null
+            },
+            "error": {
+              "code": "OUTPUT_EOF_DEADLINE_EXCEEDED",
+              "error_type": "TimeoutError"
+            },
+            "execution_deadline_monotonic": 0.570966125,
+            "files": {
+              "stderr": {
+                "bytes": 0,
+                "metadata": {
+                  "st_ctime_ns": 1793860559835089703,
+                  "st_dev": 16777233,
+                  "st_gid": 20,
+                  "st_ino": 588151814,
+                  "st_mode": 33152,
+                  "st_mtime_ns": 1793860559835089703,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_uid": 501
+                },
+                "original_created_inode_bound": true,
+                "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/tail-after-deadline/phase/stderr.original",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stdout": {
+                "bytes": 7,
+                "metadata": {
+                  "st_ctime_ns": 1793860559987360089,
+                  "st_dev": 16777233,
+                  "st_gid": 20,
+                  "st_ino": 588151813,
+                  "st_mode": 33152,
+                  "st_mtime_ns": 1793860559987360089,
+                  "st_nlink": 1,
+                  "st_size": 7,
+                  "st_uid": 501
+                },
+                "original_created_inode_bound": true,
+                "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/tail-after-deadline/phase/stdout.original",
+                "sha256": "461870d19e048f8ceb6088952155667c2a9311a20b2394dec03899363364e57c"
+              }
+            },
+            "output_limit_bytes_per_stream": 67108864,
+            "persist_errors": [],
+            "phase": "phase",
+            "pid": 53311,
+            "pipe_close_errors": [],
+            "pipe_reader_owner": "closed_by_worker",
+            "prefix_only_or_unknown": true,
+            "remote_terminal_or_cleanup_proven": false,
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "signals_sent": 0,
+            "source_intent_sha256": "4573073636a29dcf49223f9a9f009750d03c69f8fd37e185958cdc49032256ef",
+            "stderr_eof": false,
+            "stdout_eof": false,
+            "worker_joined": true,
+            "worker_started": true
+          },
+          "pgid": 53311,
+          "phase": "phase",
+          "pid": 53311,
+          "sid": 53311,
+          "signals_sent": 0,
+          "source_intent_sha256": "4573073636a29dcf49223f9a9f009750d03c69f8fd37e185958cdc49032256ef",
+          "state": "OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED"
+        }
+      ],
+      "thread_ids_after": [
+        8407703936
+      ],
+      "thread_ids_before": [
+        8407703936
+      ]
+    },
+    {
+      "actual_sender_join_ast_sha256": "70251808079ebdd5635e3cac11bd95dc4ae73912c4ae66c8ce512306abc50851",
+      "all_fixture_direct_children_naturally_joined": true,
+      "async_start": false,
+      "at_return": {
+        "additional_live_thread_ids": [],
+        "child_identity_written": true,
+        "child_returncodes": [
+          0
+        ],
+        "error": "host output persistence or identity failed: [{'stream': 'stdout', 'operation': 'persist_or_bind_output', 'error_type': 'ValueError', 'detail': 'original output inode or content changed'}]",
+        "error_type": "ValueError",
+        "failure_written": false,
+        "parent_fds": [
+          0,
+          1,
+          2
+        ],
+        "parent_original_streams_closed": true,
+        "sender_joined_written": false,
+        "success_result_written": false
+      },
+      "automatic_replay": false,
+      "budget_seconds": 2,
+      "case": "path-replacement",
+      "checks": [
+        {
+          "name": "one_child",
+          "passed": true
+        },
+        {
+          "name": "child_identity_persisted",
+          "passed": true
+        },
+        {
+          "name": "outcome_matches",
+          "passed": true
+        },
+        {
+          "name": "minimum_elapsed",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_at_return",
+          "passed": true
+        },
+        {
+          "name": "parent_original_streams_closed_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_success_receipt",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_left",
+          "passed": true
+        }
+      ],
+      "execute_return_seconds": null,
+      "fds_after": [
+        0,
+        1,
+        2
+      ],
+      "fds_before": [
+        0,
+        1,
+        2
+      ],
+      "final_return_seconds": 0.04990733299999994,
+      "outer_cleanup": {
+        "host_children": [
+          {
+            "automatic_retry": false,
+            "output_capture": {
+              "automatic_retry": false,
+              "captured": {
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 7,
+                  "sha256": "6b6b4c65fa8c534925e363487bd983d8e4b7d31fb05c6b1d651d45ac2065781a"
+                }
+              },
+              "child_join_observed_monotonic": 1.25239625,
+              "child_returncode": 0,
+              "child_wait_returned": true,
+              "deadline_validity": "this_running_coordinator_only",
+              "eof_observed_monotonic": {
+                "stderr": 1.248018333,
+                "stdout": 1.248033083
+              },
+              "error": null,
+              "execution_deadline_monotonic": 3.204204583,
+              "files": {
+                "stderr": {
+                  "bytes": 0,
+                  "metadata": {
+                    "st_ctime_ns": 1793860560618337684,
+                    "st_dev": 16777233,
+                    "st_gid": 20,
+                    "st_ino": 588151863,
+                    "st_mode": 33152,
+                    "st_mtime_ns": 1793860560618337684,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_uid": 501
+                  },
+                  "original_created_inode_bound": true,
+                  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/path-replacement/phase/stderr.original",
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 7,
+                  "metadata": {
+                    "st_ctime_ns": 1793860560666865419,
+                    "st_dev": 16777233,
+                    "st_gid": 20,
+                    "st_ino": 588151866,
+                    "st_mode": 33152,
+                    "st_mtime_ns": 1793860560666865419,
+                    "st_nlink": 1,
+                    "st_size": 7,
+                    "st_uid": 501
+                  },
+                  "original_created_inode_bound": false,
+                  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/path-replacement/phase/stdout.captured-prefix.original",
+                  "sha256": "6b6b4c65fa8c534925e363487bd983d8e4b7d31fb05c6b1d651d45ac2065781a"
+                }
+              },
+              "output_limit_bytes_per_stream": 67108864,
+              "persist_errors": [
+                {
+                  "detail": "original output inode or content changed",
+                  "error_type": "ValueError",
+                  "operation": "persist_or_bind_output",
+                  "stream": "stdout"
+                }
+              ],
+              "phase": "phase",
+              "pid": 53409,
+              "pipe_close_errors": [],
+              "pipe_reader_owner": "closed_by_worker",
+              "prefix_only_or_unknown": true,
+              "remote_terminal_or_cleanup_proven": false,
+              "schema": "hepta.native-guard.host-output-capture.v1",
+              "signals_sent": 0,
+              "source_intent_sha256": "a2ea1514b681b8882b567c06a4a3c01510cc33c046c3720f7aac31dbea1b1770",
+              "stderr_eof": true,
+              "stdout_eof": true,
+              "worker_joined": true,
+              "worker_started": true
+            },
+            "phase": "phase",
+            "pid": 53409,
+            "returncode": 0,
+            "signals_sent": 0,
+            "state": "OWNED_HOST_CHILD_JOINED_NO_BUSINESS_QUALIFICATION"
+          }
+        ],
+        "stream_cleanup_errors": [
+          {
+            "detail": "original output inode or content changed",
+            "error_type": "ValueError",
+            "operation": "persist_or_bind_output",
+            "stream": "stdout"
+          }
+        ]
+      },
+      "passed": true,
+      "ready_before_join": null,
+      "signals_sent": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "steps": [
+        {
+          "automatic_retry": false,
+          "child_returncode": 0,
+          "child_wait_returned": true,
+          "cleanup_errors": [
+            {
+              "detail": "original output inode or content changed",
+              "error_type": "ValueError",
+              "operation": "persist_or_bind_output",
+              "stream": "stdout"
+            }
+          ],
+          "error_type": "ValueError",
+          "output_capture": {
+            "automatic_retry": false,
+            "captured": {
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stdout": {
+                "bytes": 7,
+                "sha256": "6b6b4c65fa8c534925e363487bd983d8e4b7d31fb05c6b1d651d45ac2065781a"
+              }
+            },
+            "child_join_observed_monotonic": 1.25239625,
+            "child_returncode": 0,
+            "child_wait_returned": true,
+            "deadline_validity": "this_running_coordinator_only",
+            "eof_observed_monotonic": {
+              "stderr": 1.248018333,
+              "stdout": 1.248033083
+            },
+            "error": null,
+            "execution_deadline_monotonic": 3.204204583,
+            "files": {
+              "stderr": {
+                "bytes": 0,
+                "metadata": {
+                  "st_ctime_ns": 1793860560618337684,
+                  "st_dev": 16777233,
+                  "st_gid": 20,
+                  "st_ino": 588151863,
+                  "st_mode": 33152,
+                  "st_mtime_ns": 1793860560618337684,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_uid": 501
+                },
+                "original_created_inode_bound": true,
+                "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/path-replacement/phase/stderr.original",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stdout": {
+                "bytes": 7,
+                "metadata": {
+                  "st_ctime_ns": 1793860560666865419,
+                  "st_dev": 16777233,
+                  "st_gid": 20,
+                  "st_ino": 588151866,
+                  "st_mode": 33152,
+                  "st_mtime_ns": 1793860560666865419,
+                  "st_nlink": 1,
+                  "st_size": 7,
+                  "st_uid": 501
+                },
+                "original_created_inode_bound": false,
+                "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/path-replacement/phase/stdout.captured-prefix.original",
+                "sha256": "6b6b4c65fa8c534925e363487bd983d8e4b7d31fb05c6b1d651d45ac2065781a"
+              }
+            },
+            "output_limit_bytes_per_stream": 67108864,
+            "persist_errors": [
+              {
+                "detail": "original output inode or content changed",
+                "error_type": "ValueError",
+                "operation": "persist_or_bind_output",
+                "stream": "stdout"
+              }
+            ],
+            "phase": "phase",
+            "pid": 53409,
+            "pipe_close_errors": [],
+            "pipe_reader_owner": "closed_by_worker",
+            "prefix_only_or_unknown": true,
+            "remote_terminal_or_cleanup_proven": false,
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "signals_sent": 0,
+            "source_intent_sha256": "a2ea1514b681b8882b567c06a4a3c01510cc33c046c3720f7aac31dbea1b1770",
+            "stderr_eof": true,
+            "stdout_eof": true,
+            "worker_joined": true,
+            "worker_started": true
+          },
+          "pgid": 53409,
+          "phase": "phase",
+          "pid": 53409,
+          "sid": 53409,
+          "signals_sent": 0,
+          "source_intent_sha256": "a2ea1514b681b8882b567c06a4a3c01510cc33c046c3720f7aac31dbea1b1770",
+          "state": "OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED"
+        }
+      ],
+      "thread_ids_after": [
+        8407703936
+      ],
+      "thread_ids_before": [
+        8407703936
+      ]
+    },
+    {
+      "actual_sender_join_ast_sha256": "70251808079ebdd5635e3cac11bd95dc4ae73912c4ae66c8ce512306abc50851",
+      "all_fixture_direct_children_naturally_joined": true,
+      "async_start": false,
+      "at_return": {
+        "additional_live_thread_ids": [],
+        "child_identity_written": true,
+        "child_returncodes": [
+          0
+        ],
+        "error": null,
+        "error_type": null,
+        "failure_written": false,
+        "parent_fds": [
+          0,
+          1,
+          2
+        ],
+        "parent_original_streams_closed": true,
+        "sender_joined_written": false,
+        "success_result_written": true
+      },
+      "automatic_replay": false,
+      "budget_seconds": 3,
+      "case": "both-pipes-full",
+      "checks": [
+        {
+          "name": "one_child",
+          "passed": true
+        },
+        {
+          "name": "child_identity_persisted",
+          "passed": true
+        },
+        {
+          "name": "outcome_matches",
+          "passed": true
+        },
+        {
+          "name": "minimum_elapsed",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_at_return",
+          "passed": true
+        },
+        {
+          "name": "parent_original_streams_closed_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak_at_return",
+          "passed": true
+        },
+        {
+          "name": "all_parent_original_streams_closed",
+          "passed": true
+        },
+        {
+          "name": "stdout_exact",
+          "passed": true
+        },
+        {
+          "name": "stderr_exact",
+          "passed": true
+        },
+        {
+          "name": "success_schema",
+          "passed": true
+        },
+        {
+          "name": "stdout_receipt_exact",
+          "passed": true
+        },
+        {
+          "name": "stderr_receipt_exact",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_left",
+          "passed": true
+        }
+      ],
+      "execute_return_seconds": 0.029466082999999976,
+      "fds_after": [
+        0,
+        1,
+        2
+      ],
+      "fds_before": [
+        0,
+        1,
+        2
+      ],
+      "final_return_seconds": 0.029466250000000027,
+      "outer_cleanup": {
+        "host_children": [],
+        "stream_cleanup_errors": []
+      },
+      "passed": true,
+      "ready_before_join": null,
+      "signals_sent": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "steps": [
+        {
+          "automatic_retry": false,
+          "phase": "phase",
+          "pid": 53410,
+          "returncode": 0,
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "stderr": {
+            "bytes": 2097152,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/both-pipes-full/phase/stderr.original",
+            "sha256": "6b63375c57986b454ce0218bb04186997587ff1929b43e3a7c372600b150a3cd"
+          },
+          "stdout": {
+            "bytes": 2097152,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/both-pipes-full/phase/stdout.original",
+            "sha256": "11c878ac25e3e008b40869c980a3d02658da11f4c99c93a60915622886e7bd51"
+          }
+        }
+      ],
+      "thread_ids_after": [
+        8407703936
+      ],
+      "thread_ids_before": [
+        8407703936
+      ]
+    },
+    {
+      "actual_sender_join_ast_sha256": "70251808079ebdd5635e3cac11bd95dc4ae73912c4ae66c8ce512306abc50851",
+      "all_fixture_direct_children_naturally_joined": true,
+      "async_start": true,
+      "at_return": {
+        "additional_live_thread_ids": [],
+        "child_identity_written": true,
+        "child_returncodes": [
+          0
+        ],
+        "error": null,
+        "error_type": null,
+        "failure_written": false,
+        "parent_fds": [
+          0,
+          1,
+          2
+        ],
+        "parent_original_streams_closed": true,
+        "sender_joined_written": true,
+        "success_result_written": false
+      },
+      "automatic_replay": false,
+      "budget_seconds": 3,
+      "case": "async-drain-before-join",
+      "checks": [
+        {
+          "name": "async_output_drained_before_join",
+          "passed": true
+        },
+        {
+          "name": "one_child",
+          "passed": true
+        },
+        {
+          "name": "child_identity_persisted",
+          "passed": true
+        },
+        {
+          "name": "outcome_matches",
+          "passed": true
+        },
+        {
+          "name": "minimum_elapsed",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_at_return",
+          "passed": true
+        },
+        {
+          "name": "parent_original_streams_closed_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak_at_return",
+          "passed": true
+        },
+        {
+          "name": "bounded_return",
+          "passed": true
+        },
+        {
+          "name": "all_parent_original_streams_closed",
+          "passed": true
+        },
+        {
+          "name": "stdout_exact",
+          "passed": true
+        },
+        {
+          "name": "stderr_exact",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_left",
+          "passed": true
+        }
+      ],
+      "execute_return_seconds": 0.002270582999999826,
+      "fds_after": [
+        0,
+        1,
+        2
+      ],
+      "fds_before": [
+        0,
+        1,
+        2
+      ],
+      "final_return_seconds": 0.0507467909999999,
+      "outer_cleanup": {
+        "host_children": [],
+        "stream_cleanup_errors": []
+      },
+      "passed": true,
+      "ready_before_join": true,
+      "signals_sent": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "steps": [],
+      "thread_ids_after": [
+        8407703936
+      ],
+      "thread_ids_before": [
+        8407703936
+      ]
+    },
+    {
+      "actual_sender_join_ast_sha256": "70251808079ebdd5635e3cac11bd95dc4ae73912c4ae66c8ce512306abc50851",
+      "all_fixture_direct_children_naturally_joined": true,
+      "async_start": false,
+      "at_return": {
+        "additional_live_thread_ids": [],
+        "child_identity_written": true,
+        "child_returncodes": [
+          0
+        ],
+        "error": null,
+        "error_type": null,
+        "failure_written": false,
+        "parent_fds": [
+          0,
+          1,
+          2
+        ],
+        "parent_original_streams_closed": true,
+        "sender_joined_written": false,
+        "success_result_written": true
+      },
+      "automatic_replay": false,
+      "budget_seconds": 2,
+      "case": "utf8-binary-input",
+      "checks": [
+        {
+          "name": "one_child",
+          "passed": true
+        },
+        {
+          "name": "child_identity_persisted",
+          "passed": true
+        },
+        {
+          "name": "outcome_matches",
+          "passed": true
+        },
+        {
+          "name": "minimum_elapsed",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_at_return",
+          "passed": true
+        },
+        {
+          "name": "parent_original_streams_closed_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak_at_return",
+          "passed": true
+        },
+        {
+          "name": "all_parent_original_streams_closed",
+          "passed": true
+        },
+        {
+          "name": "stdout_exact",
+          "passed": true
+        },
+        {
+          "name": "stderr_exact",
+          "passed": true
+        },
+        {
+          "name": "success_schema",
+          "passed": true
+        },
+        {
+          "name": "stdout_receipt_exact",
+          "passed": true
+        },
+        {
+          "name": "stderr_receipt_exact",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_left",
+          "passed": true
+        }
+      ],
+      "execute_return_seconds": 0.030128749999999815,
+      "fds_after": [
+        0,
+        1,
+        2
+      ],
+      "fds_before": [
+        0,
+        1,
+        2
+      ],
+      "final_return_seconds": 0.030129083999999917,
+      "outer_cleanup": {
+        "host_children": [],
+        "stream_cleanup_errors": []
+      },
+      "passed": true,
+      "ready_before_join": null,
+      "signals_sent": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "steps": [
+        {
+          "automatic_retry": false,
+          "phase": "phase",
+          "pid": 53412,
+          "returncode": 0,
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "stderr": {
+            "bytes": 0,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/utf8-binary-input/phase/stderr.original",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 65,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/utf8-binary-input/phase/stdout.original",
+            "sha256": "cc567eec932079ca2c4a7c635b018c464d51c71afaaccbdaf77c1d2f3ef8a6f9"
+          }
+        }
+      ],
+      "thread_ids_after": [
+        8407703936
+      ],
+      "thread_ids_before": [
+        8407703936
+      ]
+    },
+    {
+      "actual_sender_join_ast_sha256": "70251808079ebdd5635e3cac11bd95dc4ae73912c4ae66c8ce512306abc50851",
+      "all_fixture_direct_children_naturally_joined": true,
+      "async_start": true,
+      "at_return": {
+        "additional_live_thread_ids": [],
+        "child_identity_written": true,
+        "child_returncodes": [
+          null
+        ],
+        "error": "original sender still running or output incomplete; no signal/replay",
+        "error_type": "RuntimeError",
+        "failure_written": false,
+        "parent_fds": [
+          0,
+          1,
+          2
+        ],
+        "parent_original_streams_closed": true,
+        "sender_joined_written": false,
+        "success_result_written": false
+      },
+      "automatic_replay": false,
+      "budget_seconds": 0.15,
+      "case": "async-original-deadline",
+      "checks": [
+        {
+          "name": "one_child",
+          "passed": true
+        },
+        {
+          "name": "child_identity_persisted",
+          "passed": true
+        },
+        {
+          "name": "outcome_matches",
+          "passed": true
+        },
+        {
+          "name": "minimum_elapsed",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_at_return",
+          "passed": true
+        },
+        {
+          "name": "parent_original_streams_closed_at_return",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak_at_return",
+          "passed": true
+        },
+        {
+          "name": "bounded_return",
+          "passed": true
+        },
+        {
+          "name": "no_success_receipt",
+          "passed": true
+        },
+        {
+          "name": "no_parent_fd_leak",
+          "passed": true
+        },
+        {
+          "name": "no_capture_thread_left",
+          "passed": true
+        }
+      ],
+      "execute_return_seconds": 0.00523687500000003,
+      "fds_after": [
+        0,
+        1,
+        2
+      ],
+      "fds_before": [
+        0,
+        1,
+        2
+      ],
+      "final_return_seconds": 0.15634204100000004,
+      "outer_cleanup": {
+        "host_children": [
+          {
+            "automatic_retry": false,
+            "output_capture": {
+              "automatic_retry": false,
+              "captured": {
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              "child_join_observed_monotonic": null,
+              "child_returncode": null,
+              "child_wait_returned": false,
+              "deadline_validity": "this_running_coordinator_only",
+              "eof_observed_monotonic": {
+                "stderr": null,
+                "stdout": null
+              },
+              "error": {
+                "code": "OUTPUT_EOF_DEADLINE_EXCEEDED",
+                "error_type": "TimeoutError"
+              },
+              "execution_deadline_monotonic": 1.5685912499999999,
+              "files": {
+                "stderr": {
+                  "bytes": 0,
+                  "metadata": {
+                    "st_ctime_ns": 1793860560832749419,
+                    "st_dev": 16777233,
+                    "st_gid": 20,
+                    "st_ino": 588151913,
+                    "st_mode": 33152,
+                    "st_mtime_ns": 1793860560832749419,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_uid": 501
+                  },
+                  "original_created_inode_bound": true,
+                  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/async-original-deadline/sender-execute/stderr.original",
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stdout": {
+                  "bytes": 0,
+                  "metadata": {
+                    "st_ctime_ns": 1793860560832683211,
+                    "st_dev": 16777233,
+                    "st_gid": 20,
+                    "st_ino": 588151912,
+                    "st_mode": 33152,
+                    "st_mtime_ns": 1793860560832683211,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_uid": 501
+                  },
+                  "original_created_inode_bound": true,
+                  "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/independent7-evidence/async-original-deadline/sender-execute/stdout.original",
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              "output_limit_bytes_per_stream": 67108864,
+              "persist_errors": [],
+              "phase": "sender-execute",
+              "pid": 53413,
+              "pipe_close_errors": [],
+              "pipe_reader_owner": "closed_by_worker",
+              "prefix_only_or_unknown": true,
+              "remote_terminal_or_cleanup_proven": false,
+              "schema": "hepta.native-guard.host-output-capture.v1",
+              "signals_sent": 0,
+              "source_intent_sha256": "97f81aff5a17ed05dbb098721b9978a9313ccf4d2bd52597e04a3fde55adcfbc",
+              "stderr_eof": false,
+              "stdout_eof": false,
+              "worker_joined": true,
+              "worker_started": true
+            },
+            "phase": "sender-execute",
+            "pid": 53413,
+            "returncode": null,
+            "signals_sent": 0,
+            "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY"
+          }
+        ],
+        "stream_cleanup_errors": []
+      },
+      "passed": true,
+      "ready_before_join": null,
+      "signals_sent": 0,
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "steps": [],
+      "thread_ids_after": [
+        8407703936
+      ],
+      "thread_ids_before": [
+        8407703936
+      ]
+    }
+  ],
+  "failed": 0,
+  "fixed19_qualification": false,
+  "host_os": "darwin",
+  "network_calls": 0,
+  "passed": 7,
+  "phone_calls": 0,
+  "reviewer_source": {
+    "bytes": 13884,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/independent_capture_review_portable.py",
+    "sha256": "603868481a8f58c7ea4f526289fd3a5561c353093939d55fbe0d9f9db1b4c177"
+  },
+  "schema": "hepta.root.transport-log-independent-review.v1",
+  "signals_sent": 0,
+  "source": {
+    "bytes": 68481,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py",
+    "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+  }
+}

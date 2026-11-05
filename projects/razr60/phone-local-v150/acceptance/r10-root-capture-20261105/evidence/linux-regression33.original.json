@@ -1,0 +1,2685 @@
+{
+  "schema": "razr60.r8-transport-real-process-tests.v1",
+  "candidate": {
+    "base_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+    "candidate_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+    "scope": "Local bounded output transport regression; no phone or network",
+    "harness_parent_sha256": "6f754ae091b8b03e89c7d374f8227ff97579d16d10f39624f7969d1fa94fe52a"
+  },
+  "passed": 33,
+  "failed": 0,
+  "cases": [
+    {
+      "case": "original-nonreader-2m",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": false
+      },
+      "source_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+      "input_bytes": 2097152,
+      "budget_seconds": 0.05,
+      "elapsed_to_return_seconds": 1.5438629130003392,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 6,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [],
+      "error_type": "BrokenPipeError",
+      "error_message": "[Errno 32] Broken pipe",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "original-earlyexit-2m",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": false
+      },
+      "source_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+      "input_bytes": 2097152,
+      "budget_seconds": 0.05,
+      "elapsed_to_return_seconds": 0.041339878996950574,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 7,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [],
+      "error_type": "BrokenPipeError",
+      "error_message": "[Errno 32] Broken pipe",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fixed-nonreader-2m",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 0.05,
+      "elapsed_to_return_seconds": 0.07620863400006783,
+      "method_waits": [
+        {
+          "timeout": 0.0468073239972,
+          "outcome": "TimeoutExpired",
+          "elapsed": 0.04695512100079213
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 8,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "RuntimeError",
+      "error_message": "unknown original phase phase",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": true,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY",
+          "phase": "phase",
+          "pid": 8,
+          "pgid": 8,
+          "sid": 8,
+          "source_intent_sha256": "73136f7792c3ffd0ed9c452008922432d9b833eb86c09c853b9dda264cfc5836",
+          "child_wait_returned": false,
+          "child_returncode": null,
+          "error_type": "TimeoutExpired",
+          "cleanup_errors": [],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 8,
+            "source_intent_sha256": "73136f7792c3ffd0ed9c452008922432d9b833eb86c09c853b9dda264cfc5836",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": true,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_worker",
+            "child_wait_returned": false,
+            "child_returncode": null,
+            "child_join_observed_monotonic": null,
+            "execution_deadline_monotonic": 24396.834216209998,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": false,
+            "stderr_eof": false,
+            "eof_observed_monotonic": {
+              "stdout": null,
+              "stderr": null
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-nonreader-2m/phase/stdout.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409257,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860390204528483,
+                  "st_ctime_ns": 1793860390204528483
+                },
+                "original_created_inode_bound": true
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-nonreader-2m/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409258,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860390204528483,
+                  "st_ctime_ns": 1793860390204528483
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": {
+              "code": "CAPTURE_STOP_REQUESTED",
+              "error_type": "InterruptedError"
+            },
+            "persist_errors": [],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          }
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fixed-earlyexit-2m",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.06796289199701278,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.0315205570004764
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 10,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": true,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "phase": "phase",
+          "pid": 10,
+          "returncode": 0,
+          "stdout": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-earlyexit-2m/phase/stdout.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-earlyexit-2m/phase/stderr.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "automatic_retry": false
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fixed-readback",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.1790986289997818,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "TimeoutExpired",
+          "elapsed": 0.05020946800141246
+        },
+        {
+          "timeout": 0.05,
+          "outcome": "TimeoutExpired",
+          "elapsed": 0.05125705400132574
+        },
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.017576659000042127
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 12,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": true,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "phase": "phase",
+          "pid": 12,
+          "returncode": 0,
+          "stdout": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-readback/phase/stdout.original",
+            "bytes": 114,
+            "sha256": "39882a78e3fc6b7c01fc856d103f82d3d98bbbffdf950fb233ebfe1ee951b117"
+          },
+          "stderr": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-readback/phase/stderr.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "automatic_retry": false
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fixed-empty-input",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 0,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.06791851999878418,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.03228790600041975
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 14,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": true,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "phase": "phase",
+          "pid": 14,
+          "returncode": 0,
+          "stdout": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-empty-input/phase/stdout.original",
+            "bytes": 108,
+            "sha256": "d5b8c7450878f6fd6a975cd588177b8565546ec80e85730caa56c3c99a84f0c9"
+          },
+          "stderr": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-empty-input/phase/stderr.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "automatic_retry": false
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fixed-no-input",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": null,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.04161341700091725,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.01603789399814559
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 16,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": true,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "phase": "phase",
+          "pid": 16,
+          "returncode": 0,
+          "stdout": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-no-input/phase/stdout.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-no-input/phase/stderr.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "automatic_retry": false
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fixed-earlyclose",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.2012680919979175,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "TimeoutExpired",
+          "elapsed": 0.05020752999917022
+        },
+        {
+          "timeout": 0.05,
+          "outcome": "TimeoutExpired",
+          "elapsed": 0.05024465899987263
+        },
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.05016169299778994
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 18,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": true,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "ORIGINAL_HOST_CHILD_JOINED",
+          "phase": "phase",
+          "pid": 18,
+          "returncode": 0,
+          "stdout": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-earlyclose/phase/stdout.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fixed-earlyclose/phase/stderr.original",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "automatic_retry": false
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-popen",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.024730938999709906,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": "FileNotFoundError",
+      "error_message": "[Errno 2] injected absent local executable",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-stderr-open",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.025661987001512898,
+      "method_waits": [],
+      "start_calls": 0,
+      "actual_children": [],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": "OSError",
+      "error_message": "[Errno 5] injected stderr open",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-stream-create-fsync",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.030510251999658067,
+      "method_waits": [],
+      "start_calls": 0,
+      "actual_children": [],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": "OSError",
+      "error_message": "[Errno 5] injected output creation fsync",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-identity",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.040664526997716166,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 20,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "OSError",
+      "error_message": "[Errno 5] injected identity read",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": true,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY",
+          "phase": "phase",
+          "pid": 20,
+          "pgid": null,
+          "sid": null,
+          "source_intent_sha256": "8f643e8e2f054bf07ad145a419f898431cc375e93b29f6c9b07954918456282a",
+          "child_wait_returned": false,
+          "child_returncode": null,
+          "error_type": "OSError",
+          "cleanup_errors": [],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 20,
+            "source_intent_sha256": "8f643e8e2f054bf07ad145a419f898431cc375e93b29f6c9b07954918456282a",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": false,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_caller",
+            "child_wait_returned": false,
+            "child_returncode": null,
+            "child_join_observed_monotonic": null,
+            "execution_deadline_monotonic": 24400.571253363,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": false,
+            "stderr_eof": false,
+            "eof_observed_monotonic": {
+              "stdout": null,
+              "stderr": null
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-identity/phase/stdout.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409336,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860392992495737,
+                  "st_ctime_ns": 1793860392992495737
+                },
+                "original_created_inode_bound": true
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-identity/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409337,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860392992495737,
+                  "st_ctime_ns": 1793860392992495737
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": {
+              "code": "CAPTURE_NOT_STARTED",
+              "error_type": "RuntimeError"
+            },
+            "persist_errors": [],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          }
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-child-record",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.03684937300204183,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 21,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "OSError",
+      "error_message": "[Errno 5] injected CHILD persistence",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": true,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY",
+          "phase": "phase",
+          "pid": 21,
+          "pgid": 21,
+          "sid": 21,
+          "source_intent_sha256": "8f643e8e2f054bf07ad145a419f898431cc375e93b29f6c9b07954918456282a",
+          "child_wait_returned": false,
+          "child_returncode": null,
+          "error_type": "OSError",
+          "cleanup_errors": [],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 21,
+            "source_intent_sha256": "8f643e8e2f054bf07ad145a419f898431cc375e93b29f6c9b07954918456282a",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": false,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_caller",
+            "child_wait_returned": false,
+            "child_returncode": null,
+            "child_join_observed_monotonic": null,
+            "execution_deadline_monotonic": 24400.923352889,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": false,
+            "stderr_eof": false,
+            "eof_observed_monotonic": {
+              "stdout": null,
+              "stderr": null
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-child-record/phase/stdout.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409345,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860393344491603,
+                  "st_ctime_ns": 1793860393344491603
+                },
+                "original_created_inode_bound": true
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-child-record/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409346,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860393344491603,
+                  "st_ctime_ns": 1793860393344491603
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": {
+              "code": "CAPTURE_NOT_STARTED",
+              "error_type": "RuntimeError"
+            },
+            "persist_errors": [],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          }
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-child-unknown-record",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.04075377200206276,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 22,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "OSError",
+      "error_message": "[Errno 5] injected CHILD persistence",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY",
+          "phase": "phase",
+          "pid": 22,
+          "pgid": 22,
+          "sid": 22,
+          "source_intent_sha256": "8f643e8e2f054bf07ad145a419f898431cc375e93b29f6c9b07954918456282a",
+          "child_wait_returned": false,
+          "child_returncode": null,
+          "error_type": "OSError",
+          "cleanup_errors": [],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 22,
+            "source_intent_sha256": "8f643e8e2f054bf07ad145a419f898431cc375e93b29f6c9b07954918456282a",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": false,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_caller",
+            "child_wait_returned": false,
+            "child_returncode": null,
+            "child_join_observed_monotonic": null,
+            "execution_deadline_monotonic": 24401.195007087,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": false,
+            "stderr_eof": false,
+            "eof_observed_monotonic": {
+              "stdout": null,
+              "stderr": null
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-child-unknown-record/phase/stdout.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409354,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860393616488408,
+                  "st_ctime_ns": 1793860393616488408
+                },
+                "original_created_inode_bound": true
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-child-unknown-record/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409355,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860393616488408,
+                  "st_ctime_ns": 1793860393616488408
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": {
+              "code": "CAPTURE_NOT_STARTED",
+              "error_type": "RuntimeError"
+            },
+            "persist_errors": [],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          },
+          "unknown_record_error_type": "OSError"
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-stdin-mutate",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.03674207599760848,
+      "method_waits": [],
+      "start_calls": 0,
+      "actual_children": [],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": "ValueError",
+      "error_message": "retained stdin content differs from original input",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-stdin-replace",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.03478757699849666,
+      "method_waits": [],
+      "start_calls": 0,
+      "actual_children": [],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": "ValueError",
+      "error_message": "retained stdin must be the private exact-size regular input",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-stdin-mode",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.018977024003106635,
+      "method_waits": [],
+      "start_calls": 0,
+      "actual_children": [],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [],
+      "error_type": "ValueError",
+      "error_message": "retained stdin must be the private exact-size regular input",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": false,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-postjoin-mutate",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.08421290899786982,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.03478055700179539
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 23,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "ValueError",
+      "error_message": "retained stdin file identity changed",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": true,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED",
+          "phase": "phase",
+          "pid": 23,
+          "pgid": 23,
+          "sid": 23,
+          "source_intent_sha256": "677299675b3d851c2a6aa8d20253fcbf323ffd93d14262cdde5e1c9540465bb4",
+          "child_wait_returned": true,
+          "child_returncode": 0,
+          "error_type": "ValueError",
+          "cleanup_errors": [],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 23,
+            "source_intent_sha256": "677299675b3d851c2a6aa8d20253fcbf323ffd93d14262cdde5e1c9540465bb4",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": true,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_worker",
+            "child_wait_returned": true,
+            "child_returncode": 0,
+            "child_join_observed_monotonic": 24400.850996874,
+            "execution_deadline_monotonic": 24401.812695662,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "eof_observed_monotonic": {
+              "stdout": 24400.84524613,
+              "stderr": 24400.845215139
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 114,
+                "sha256": "39882a78e3fc6b7c01fc856d103f82d3d98bbbffdf950fb233ebfe1ee951b117"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-postjoin-mutate/phase/stdout.original",
+                "bytes": 114,
+                "sha256": "39882a78e3fc6b7c01fc856d103f82d3d98bbbffdf950fb233ebfe1ee951b117",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409377,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 114,
+                  "st_mtime_ns": 1793860394272480703,
+                  "st_ctime_ns": 1793860394272480703
+                },
+                "original_created_inode_bound": true
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-postjoin-mutate/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409378,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860394232481173,
+                  "st_ctime_ns": 1793860394232481173
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": null,
+            "persist_errors": [],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          }
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-stdout-fsync",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.08610923200103571,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.05017634999967413
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 25,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "ValueError",
+      "error_message": "host output persistence or identity failed: [{'stream': 'stdout', 'operation': 'persist_or_bind_output', 'error_type': 'OSError', 'detail': '[Errno 5] injected stdout fsync'}]",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": true,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED",
+          "phase": "phase",
+          "pid": 25,
+          "pgid": 25,
+          "sid": 25,
+          "source_intent_sha256": "677299675b3d851c2a6aa8d20253fcbf323ffd93d14262cdde5e1c9540465bb4",
+          "child_wait_returned": true,
+          "child_returncode": 0,
+          "error_type": "ValueError",
+          "cleanup_errors": [
+            {
+              "stream": "stdout",
+              "operation": "persist_or_bind_output",
+              "error_type": "OSError",
+              "detail": "[Errno 5] injected stdout fsync"
+            }
+          ],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 25,
+            "source_intent_sha256": "677299675b3d851c2a6aa8d20253fcbf323ffd93d14262cdde5e1c9540465bb4",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": true,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_worker",
+            "child_wait_returned": true,
+            "child_returncode": 0,
+            "child_join_observed_monotonic": 24401.010682055,
+            "execution_deadline_monotonic": 24401.957915721,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "eof_observed_monotonic": {
+              "stdout": 24400.995092702,
+              "stderr": 24400.995059943
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 114,
+                "sha256": "39882a78e3fc6b7c01fc856d103f82d3d98bbbffdf950fb233ebfe1ee951b117"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-stdout-fsync/phase/stdout.captured-prefix.original",
+                "bytes": 114,
+                "sha256": "39882a78e3fc6b7c01fc856d103f82d3d98bbbffdf950fb233ebfe1ee951b117",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409390,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 114,
+                  "st_mtime_ns": 1793860394436478777,
+                  "st_ctime_ns": 1793860394436478777
+                },
+                "original_created_inode_bound": false
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-stdout-fsync/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409388,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860394380479435,
+                  "st_ctime_ns": 1793860394380479435
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": null,
+            "persist_errors": [
+              {
+                "stream": "stdout",
+                "operation": "persist_or_bind_output",
+                "error_type": "OSError",
+                "detail": "[Errno 5] injected stdout fsync"
+              }
+            ],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          }
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-record-delay",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 0.05,
+      "elapsed_to_return_seconds": 0.1291331430002174,
+      "method_waits": [
+        {
+          "timeout": 0.0,
+          "outcome": "TimeoutExpired",
+          "elapsed": 3.942900002584793e-05
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 27,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "RuntimeError",
+      "error_message": "unknown original phase phase",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": true,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY",
+          "phase": "phase",
+          "pid": 27,
+          "pgid": 27,
+          "sid": 27,
+          "source_intent_sha256": "67173f8b741713781b700d7d20be0d6c3f91e93cf4d438b31667ffb30a5b8dcf",
+          "child_wait_returned": false,
+          "child_returncode": null,
+          "error_type": "TimeoutExpired",
+          "cleanup_errors": [],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 27,
+            "source_intent_sha256": "67173f8b741713781b700d7d20be0d6c3f91e93cf4d438b31667ffb30a5b8dcf",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": true,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_worker",
+            "child_wait_returned": false,
+            "child_returncode": null,
+            "child_join_observed_monotonic": null,
+            "execution_deadline_monotonic": 24401.115996231998,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": false,
+            "stderr_eof": false,
+            "eof_observed_monotonic": {
+              "stdout": null,
+              "stderr": null
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-record-delay/phase/stdout.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409398,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860394484478213,
+                  "st_ctime_ns": 1793860394484478213
+                },
+                "original_created_inode_bound": true
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-record-delay/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409399,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860394488478166,
+                  "st_ctime_ns": 1793860394488478166
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": {
+              "code": "CAPTURE_STOP_REQUESTED",
+              "error_type": "InterruptedError"
+            },
+            "persist_errors": [],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          }
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "fault-late-join",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 0.1,
+      "elapsed_to_return_seconds": 0.2625206840020837,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.2316561929983436
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 29,
+          "returncode": 0
+        }
+      ],
+      "at_return_outputs_closed": true,
+      "at_return_owned": [
+        "phase"
+      ],
+      "error_type": "ValueError",
+      "error_message": "host child joined after execution deadline",
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": true,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED",
+          "phase": "phase",
+          "pid": 29,
+          "pgid": 29,
+          "sid": 29,
+          "source_intent_sha256": "becf0d1de8109f4ea7906f00a4b69d4e472b9cc833e894c7f301cba40278e91b",
+          "child_wait_returned": true,
+          "child_returncode": 0,
+          "error_type": "ValueError",
+          "cleanup_errors": [],
+          "automatic_retry": false,
+          "signals_sent": 0,
+          "output_capture": {
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "phase": "phase",
+            "pid": 29,
+            "source_intent_sha256": "becf0d1de8109f4ea7906f00a4b69d4e472b9cc833e894c7f301cba40278e91b",
+            "output_limit_bytes_per_stream": 67108864,
+            "worker_started": true,
+            "worker_joined": true,
+            "pipe_reader_owner": "closed_by_worker",
+            "child_wait_returned": true,
+            "child_returncode": 0,
+            "child_join_observed_monotonic": 24401.677527903,
+            "execution_deadline_monotonic": 24401.543312318998,
+            "deadline_validity": "this_running_coordinator_only",
+            "stdout_eof": true,
+            "stderr_eof": true,
+            "eof_observed_monotonic": {
+              "stdout": 24401.462839774,
+              "stderr": 24401.462810729
+            },
+            "prefix_only_or_unknown": true,
+            "captured": {
+              "stdout": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            "files": {
+              "stdout": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-late-join/phase/stdout.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409413,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860394864473750,
+                  "st_ctime_ns": 1793860394864473750
+                },
+                "original_created_inode_bound": true
+              },
+              "stderr": {
+                "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/fault-late-join/phase/stderr.original",
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "metadata": {
+                  "st_dev": 27,
+                  "st_ino": 3409414,
+                  "st_mode": 33152,
+                  "st_uid": 0,
+                  "st_gid": 0,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_mtime_ns": 1793860394864473750,
+                  "st_ctime_ns": 1793860394864473750
+                },
+                "original_created_inode_bound": true
+              }
+            },
+            "error": null,
+            "persist_errors": [],
+            "pipe_close_errors": [],
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "remote_terminal_or_cleanup_proven": false
+          }
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "async-abi-exact-readback",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.024671254999702796,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 31,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [
+        "sender-execute"
+      ],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "async-real-caller-readback",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.02436152399968705,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.05029613399892696
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 33,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [
+        "sender-execute"
+      ],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "async-real-caller-fsync-failure",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.025408803001482738,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.050163000996690243
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 35,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [
+        "sender-execute"
+      ],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": "ValueError",
+      "join_error_message": "host output persistence or identity failed: [{'stream': 'stdout', 'operation': 'persist_or_bind_output', 'error_type': 'OSError', 'detail': '[Errno 5] injected stdout fsync'}]",
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "HOST_OUTPUT_FINALIZATION_FAILED",
+          "phase": "sender-execute",
+          "cleanup_errors": [
+            {
+              "stream": "stdout",
+              "operation": "persist_or_bind_output",
+              "error_type": "OSError",
+              "detail": "[Errno 5] injected stdout fsync"
+            }
+          ],
+          "automatic_retry": false,
+          "signals_sent": 0
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "async-real-caller-timeout-and-fsync",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 0.1,
+      "elapsed_to_return_seconds": 0.024980635000247275,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "TimeoutExpired",
+          "elapsed": 0.05015442999865627
+        },
+        {
+          "timeout": 0.046395047997066285,
+          "outcome": "TimeoutExpired",
+          "elapsed": 0.04654124800072168
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 37,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [
+        "sender-execute"
+      ],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": "RuntimeError",
+      "join_error_message": "original sender still running or output incomplete; no signal/replay",
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [
+        {
+          "state": "HOST_OUTPUT_FINALIZATION_FAILED",
+          "phase": "sender-execute",
+          "cleanup_errors": [
+            {
+              "stream": "stdout",
+              "operation": "persist_or_bind_output",
+              "error_type": "OSError",
+              "detail": "[Errno 5] injected stdout fsync"
+            }
+          ],
+          "automatic_retry": false,
+          "signals_sent": 0
+        }
+      ],
+      "outer_cleanup": null,
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "async-late-join-known-child",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 0.1,
+      "elapsed_to_return_seconds": 0.038564208000025246,
+      "method_waits": [
+        {
+          "timeout": 0.05,
+          "outcome": "joined",
+          "returncode": 0,
+          "elapsed": 0.25058811900089495
+        }
+      ],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 39,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [
+        "sender-execute"
+      ],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": "ValueError",
+      "join_error_message": "host child joined after execution deadline",
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": {
+        "stream_cleanup_errors": [],
+        "host_children": [
+          {
+            "phase": "sender-execute",
+            "pid": 39,
+            "returncode": 0,
+            "state": "OWNED_HOST_CHILD_JOINED_NO_BUSINESS_QUALIFICATION",
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "output_capture": {
+              "schema": "hepta.native-guard.host-output-capture.v1",
+              "phase": "sender-execute",
+              "pid": 39,
+              "source_intent_sha256": "b276aed26cf997ac656d825fa6eeb0124857bc5ad5cf32910f42e488f7db7033",
+              "output_limit_bytes_per_stream": 67108864,
+              "worker_started": true,
+              "worker_joined": true,
+              "pipe_reader_owner": "closed_by_worker",
+              "child_wait_returned": true,
+              "child_returncode": 0,
+              "child_join_observed_monotonic": 24403.079250154,
+              "execution_deadline_monotonic": 24402.923540206,
+              "deadline_validity": "this_running_coordinator_only",
+              "stdout_eof": true,
+              "stderr_eof": true,
+              "eof_observed_monotonic": {
+                "stdout": 24402.877895797,
+                "stderr": 24402.877858375
+              },
+              "prefix_only_or_unknown": true,
+              "captured": {
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              "files": {
+                "stdout": {
+                  "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/async-late-join-known-child/sender-execute/stdout.original",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "metadata": {
+                    "st_dev": 27,
+                    "st_ino": 3409482,
+                    "st_mode": 33152,
+                    "st_uid": 0,
+                    "st_gid": 0,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_mtime_ns": 1793860396244457541,
+                    "st_ctime_ns": 1793860396244457541
+                  },
+                  "original_created_inode_bound": true
+                },
+                "stderr": {
+                  "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/async-late-join-known-child/sender-execute/stderr.original",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "metadata": {
+                    "st_dev": 27,
+                    "st_ino": 3409483,
+                    "st_mode": 33152,
+                    "st_uid": 0,
+                    "st_gid": 0,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_mtime_ns": 1793860396244457541,
+                    "st_ctime_ns": 1793860396244457541
+                  },
+                  "original_created_inode_bound": true
+                }
+              },
+              "error": null,
+              "persist_errors": [],
+              "pipe_close_errors": [],
+              "automatic_retry": false,
+              "signals_sent": 0,
+              "remote_terminal_or_cleanup_proven": false
+            }
+          }
+        ]
+      },
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "async-outer-failure-cleanup",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.0251778829988325,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 41,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [
+        "sender-execute"
+      ],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": {
+        "stream_cleanup_errors": [],
+        "host_children": [
+          {
+            "phase": "sender-execute",
+            "pid": 41,
+            "returncode": null,
+            "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY",
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "output_capture": {
+              "schema": "hepta.native-guard.host-output-capture.v1",
+              "phase": "sender-execute",
+              "pid": 41,
+              "source_intent_sha256": "070d2123c631de0fc98b07f78e75c3463380166e1a2e77fae6d49ba6ac3c4f83",
+              "output_limit_bytes_per_stream": 67108864,
+              "worker_started": true,
+              "worker_joined": true,
+              "pipe_reader_owner": "closed_by_worker",
+              "child_wait_returned": false,
+              "child_returncode": null,
+              "child_join_observed_monotonic": null,
+              "execution_deadline_monotonic": 24404.160422126,
+              "deadline_validity": "this_running_coordinator_only",
+              "stdout_eof": false,
+              "stderr_eof": false,
+              "eof_observed_monotonic": {
+                "stdout": null,
+                "stderr": null
+              },
+              "prefix_only_or_unknown": true,
+              "captured": {
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              "files": {
+                "stdout": {
+                  "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/async-outer-failure-cleanup/sender-execute/stdout.original",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "metadata": {
+                    "st_dev": 27,
+                    "st_ino": 3409492,
+                    "st_mode": 33152,
+                    "st_uid": 0,
+                    "st_gid": 0,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_mtime_ns": 1793860396580453593,
+                    "st_ctime_ns": 1793860396580453593
+                  },
+                  "original_created_inode_bound": true
+                },
+                "stderr": {
+                  "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/async-outer-failure-cleanup/sender-execute/stderr.original",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "metadata": {
+                    "st_dev": 27,
+                    "st_ino": 3409493,
+                    "st_mode": 33152,
+                    "st_uid": 0,
+                    "st_gid": 0,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_mtime_ns": 1793860396580453593,
+                    "st_ctime_ns": 1793860396580453593
+                  },
+                  "original_created_inode_bound": true
+                }
+              },
+              "error": {
+                "code": "CAPTURE_STOP_REQUESTED",
+                "error_type": "InterruptedError"
+              },
+              "persist_errors": [],
+              "pipe_close_errors": [],
+              "automatic_retry": false,
+              "signals_sent": 0,
+              "remote_terminal_or_cleanup_proven": false
+            }
+          }
+        ]
+      },
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "async-outer-fsync-failure",
+      "pass": true,
+      "fd_check": {
+        "directory": "/proc/self/fd",
+        "before": [
+          0,
+          1,
+          2
+        ],
+        "after": [
+          0,
+          1,
+          2
+        ],
+        "leak_assertion_applied": true
+      },
+      "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+      "input_bytes": 2097152,
+      "budget_seconds": 1.0,
+      "elapsed_to_return_seconds": 0.019164950001140824,
+      "method_waits": [],
+      "start_calls": 1,
+      "actual_children": [
+        {
+          "pid": 43,
+          "returncode": null
+        }
+      ],
+      "at_return_outputs_closed": false,
+      "at_return_owned": [
+        "sender-execute"
+      ],
+      "error_type": null,
+      "error_message": null,
+      "join_error_type": null,
+      "join_error_message": null,
+      "records_at_execute_return": {
+        "INTENT.json": true,
+        "CHILD.json": true,
+        "UNKNOWN.json": false,
+        "RESULT.json": false,
+        "JOINED.json": false,
+        "OWNED-CHILD-FAILURE.json": false
+      },
+      "steps": [],
+      "outer_cleanup": {
+        "stream_cleanup_errors": [
+          {
+            "stream": "stdout",
+            "operation": "persist_or_bind_output",
+            "error_type": "OSError",
+            "detail": "[Errno 5] injected stdout fsync"
+          }
+        ],
+        "host_children": [
+          {
+            "phase": "sender-execute",
+            "pid": 43,
+            "returncode": null,
+            "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY",
+            "automatic_retry": false,
+            "signals_sent": 0,
+            "output_capture": {
+              "schema": "hepta.native-guard.host-output-capture.v1",
+              "phase": "sender-execute",
+              "pid": 43,
+              "source_intent_sha256": "070d2123c631de0fc98b07f78e75c3463380166e1a2e77fae6d49ba6ac3c4f83",
+              "output_limit_bytes_per_stream": 67108864,
+              "worker_started": true,
+              "worker_joined": true,
+              "pipe_reader_owner": "closed_by_worker",
+              "child_wait_returned": false,
+              "child_returncode": null,
+              "child_join_observed_monotonic": null,
+              "execution_deadline_monotonic": 24404.243320494,
+              "deadline_validity": "this_running_coordinator_only",
+              "stdout_eof": false,
+              "stderr_eof": false,
+              "eof_observed_monotonic": {
+                "stdout": null,
+                "stderr": null
+              },
+              "prefix_only_or_unknown": true,
+              "captured": {
+                "stdout": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "stderr": {
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                }
+              },
+              "files": {
+                "stdout": {
+                  "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/async-outer-fsync-failure/sender-execute/stdout.captured-prefix.original",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "metadata": {
+                    "st_dev": 27,
+                    "st_ino": 3409505,
+                    "st_mode": 33152,
+                    "st_uid": 0,
+                    "st_gid": 0,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_mtime_ns": 1793860396692452277,
+                    "st_ctime_ns": 1793860396692452277
+                  },
+                  "original_created_inode_bound": false
+                },
+                "stderr": {
+                  "path": "/workspace/scratch/1ad3d6f55439/transport_review_local/capture_r6_candidate/evidence/regression0374-run01/cases/async-outer-fsync-failure/sender-execute/stderr.original",
+                  "bytes": 0,
+                  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                  "metadata": {
+                    "st_dev": 27,
+                    "st_ino": 3409503,
+                    "st_mode": 33152,
+                    "st_uid": 0,
+                    "st_gid": 0,
+                    "st_nlink": 1,
+                    "st_size": 0,
+                    "st_mtime_ns": 1793860396664452606,
+                    "st_ctime_ns": 1793860396664452606
+                  },
+                  "original_created_inode_bound": true
+                }
+              },
+              "error": {
+                "code": "CAPTURE_STOP_REQUESTED",
+                "error_type": "InterruptedError"
+              },
+              "persist_errors": [
+                {
+                  "stream": "stdout",
+                  "operation": "persist_or_bind_output",
+                  "error_type": "OSError",
+                  "detail": "[Errno 5] injected stdout fsync"
+                }
+              ],
+              "pipe_close_errors": [],
+              "automatic_retry": false,
+              "signals_sent": 0,
+              "remote_terminal_or_cleanup_proven": false
+            }
+          }
+        ]
+      },
+      "natural_local_children_joined": true,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "invalid-budget-nan",
+      "pass": true,
+      "start_calls": 0
+    },
+    {
+      "case": "invalid-budget-inf",
+      "pass": true,
+      "start_calls": 0
+    },
+    {
+      "case": "invalid-budget-zero",
+      "pass": true,
+      "start_calls": 0
+    },
+    {
+      "case": "invalid-budget-bool",
+      "pass": true,
+      "start_calls": 0
+    },
+    {
+      "case": "invalid-budget-negative",
+      "pass": true,
+      "start_calls": 0
+    }
+  ],
+  "host_platform": "linux",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "harness_sha256": "59f46211672f70183e091172434939449070972fa54a61e9154e92cb60d98419",
+  "fd_check": {
+    "directory": "/proc/self/fd",
+    "inventory_method": "numeric entries verified live using os.fstat; transient directory fd excluded",
+    "closed_stream_assertions": true,
+    "raw_fd_ebadf_assertions": true,
+    "candidate_live_fd_set_equality": true,
+    "unsupported_inventory": "fail before first child, no skipped checks"
+  },
+  "scope": "AST-extracted exact helpers/constants, capture ownership methods and actual sender join segment; real OS subprocesses/files/owned capture workers; no main/SSH/device/API or signals",
+  "phone_calls": 0,
+  "production_mutations": 0,
+  "all_local_children_naturally_joined": true
+}

@@ -1,0 +1,25 @@
+{
+  "files": [
+    {
+      "bytes": 17397,
+      "path": "test_transport_structural.py",
+      "sha256": "59f46211672f70183e091172434939449070972fa54a61e9154e92cb60d98419"
+    },
+    {
+      "bytes": 5583,
+      "path": "test_capture_ownership.py",
+      "sha256": "94d1eb87d161a22749cab7e13d71c122917cbb12ee9327eac806474d51811a37"
+    },
+    {
+      "bytes": 350,
+      "path": "CANDIDATE-BINDING.json",
+      "sha256": "9dbcd14d470342ae59526a9d9f7b787e947a7652b8b04756c4d7b526b7aa0600"
+    },
+    {
+      "bytes": 13884,
+      "path": "independent_capture_review_portable.py",
+      "sha256": "603868481a8f58c7ea4f526289fd3a5561c353093939d55fbe0d9f9db1b4c177"
+    }
+  ],
+  "schema": "hepta.root.transport-validation-files.v1"
+}

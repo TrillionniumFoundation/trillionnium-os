@@ -1,0 +1,6 @@
+{
+  "base_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+  "candidate_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+  "scope": "Local bounded output transport regression; no phone or network",
+  "harness_parent_sha256": "6f754ae091b8b03e89c7d374f8227ff97579d16d10f39624f7969d1fa94fe52a"
+}

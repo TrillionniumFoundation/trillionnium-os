@@ -1,0 +1,12 @@
+{
+  "case": "driver-explicit-source-separation",
+  "passed": true,
+  "execution_module_actual_file": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py",
+  "historical_validator_actual_file": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-transport-r6-20261105-1ad3/reference/run_component_root_once.r4.original.py",
+  "modified_execution_source_rejected": true,
+  "modified_historical_source_rejected": true,
+  "manifest_exact_three_files_verified": true,
+  "historical_plan_validator_call_is_explicit": true,
+  "full_actual_mac_plan_not_executed": true,
+  "phone_calls": 0
+}

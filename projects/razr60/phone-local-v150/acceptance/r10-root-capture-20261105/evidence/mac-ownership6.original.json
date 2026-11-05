@@ -1,0 +1,542 @@
+{
+  "schema": "hepta.capture-ownership-real-process-tests.v1",
+  "source_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+  "harness_sha256": "94d1eb87d161a22749cab7e13d71c122917cbb12ee9327eac806474d51811a37",
+  "passed": 6,
+  "failed": 0,
+  "cases": [
+    {
+      "case": "capture-construction",
+      "pass": true,
+      "elapsed_seconds": 0.0019004589999999932,
+      "error_type": "OSError",
+      "pipe_readers_closed_at_return": true,
+      "worker_inventory_equal_at_return": true,
+      "fd_inventory_equal_at_return": true,
+      "no_success_result": true,
+      "retained_actual_child_handle": true,
+      "unknown": {
+        "automatic_retry": false,
+        "child_returncode": null,
+        "child_wait_returned": false,
+        "cleanup_errors": [],
+        "error_type": "OSError",
+        "output_capture": null,
+        "pgid": null,
+        "phase": "phase",
+        "pid": 53230,
+        "sid": null,
+        "signals_sent": 0,
+        "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+        "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY"
+      },
+      "test_holder_natural_child_join_rc": 0,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "thread-start-failed",
+      "pass": true,
+      "elapsed_seconds": 0.005638499999999991,
+      "error_type": "RuntimeError",
+      "pipe_readers_closed_at_return": true,
+      "worker_inventory_equal_at_return": true,
+      "fd_inventory_equal_at_return": true,
+      "no_success_result": true,
+      "retained_actual_child_handle": true,
+      "unknown": {
+        "automatic_retry": false,
+        "child_returncode": null,
+        "child_wait_returned": false,
+        "cleanup_errors": [],
+        "error_type": "RuntimeError",
+        "output_capture": {
+          "automatic_retry": false,
+          "captured": {
+            "stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "child_join_observed_monotonic": null,
+          "child_returncode": null,
+          "child_wait_returned": false,
+          "deadline_validity": "this_running_coordinator_only",
+          "eof_observed_monotonic": {
+            "stderr": null,
+            "stdout": null
+          },
+          "error": {
+            "code": "CAPTURE_NOT_STARTED",
+            "error_type": "RuntimeError"
+          },
+          "execution_deadline_monotonic": 1.307068125,
+          "files": {
+            "stderr": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793860558243008516,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151698,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860558243008516,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/thread-start-failed/phase/stderr.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793860558242843349,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151697,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860558242843349,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/thread-start-failed/phase/stdout.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "output_limit_bytes_per_stream": 67108864,
+          "persist_errors": [],
+          "phase": "phase",
+          "pid": 53231,
+          "pipe_close_errors": [],
+          "pipe_reader_owner": "closed_by_caller",
+          "prefix_only_or_unknown": true,
+          "remote_terminal_or_cleanup_proven": false,
+          "schema": "hepta.native-guard.host-output-capture.v1",
+          "signals_sent": 0,
+          "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+          "stderr_eof": false,
+          "stdout_eof": false,
+          "worker_joined": true,
+          "worker_started": false
+        },
+        "pgid": 53231,
+        "phase": "phase",
+        "pid": 53231,
+        "sid": 53231,
+        "signals_sent": 0,
+        "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+        "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY"
+      },
+      "test_holder_natural_child_join_rc": 0,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "interrupt-before-thread-start",
+      "pass": true,
+      "elapsed_seconds": 0.0055539580000000255,
+      "error_type": "KeyboardInterrupt",
+      "pipe_readers_closed_at_return": true,
+      "worker_inventory_equal_at_return": true,
+      "fd_inventory_equal_at_return": true,
+      "no_success_result": true,
+      "retained_actual_child_handle": true,
+      "unknown": {
+        "automatic_retry": false,
+        "child_returncode": null,
+        "child_wait_returned": false,
+        "cleanup_errors": [
+          {
+            "error_type": "RuntimeError",
+            "operation": "capture_worker_join",
+            "phase": "phase"
+          },
+          {
+            "error_type": "RuntimeError",
+            "operation": "persist_unjoined_capture_refused",
+            "phase": "phase"
+          }
+        ],
+        "error_type": "KeyboardInterrupt",
+        "output_capture": {
+          "automatic_retry": false,
+          "captured": {
+            "stderr": {
+              "bytes": 0,
+              "sha256": null
+            },
+            "stdout": {
+              "bytes": 0,
+              "sha256": null
+            }
+          },
+          "child_join_observed_monotonic": null,
+          "child_returncode": null,
+          "child_wait_returned": false,
+          "deadline_validity": "this_running_coordinator_only",
+          "eof_observed_monotonic": {
+            "stderr": null,
+            "stdout": null
+          },
+          "error": null,
+          "execution_deadline_monotonic": 1.547539666,
+          "files": {},
+          "output_limit_bytes_per_stream": 67108864,
+          "persist_errors": [],
+          "phase": "phase",
+          "pid": 53256,
+          "pipe_close_errors": [],
+          "pipe_reader_owner": "closed_by_caller",
+          "prefix_only_or_unknown": true,
+          "remote_terminal_or_cleanup_proven": false,
+          "schema": "hepta.native-guard.host-output-capture.v1",
+          "signals_sent": 0,
+          "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+          "stderr_eof": false,
+          "stdout_eof": false,
+          "worker_joined": false,
+          "worker_started": false
+        },
+        "pgid": 53256,
+        "phase": "phase",
+        "pid": 53256,
+        "sid": 53256,
+        "signals_sent": 0,
+        "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+        "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY"
+      },
+      "test_holder_natural_child_join_rc": 0,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "interrupt-after-thread-start",
+      "pass": true,
+      "elapsed_seconds": 0.03266533299999996,
+      "error_type": "KeyboardInterrupt",
+      "pipe_readers_closed_at_return": true,
+      "worker_inventory_equal_at_return": true,
+      "fd_inventory_equal_at_return": true,
+      "no_success_result": true,
+      "retained_actual_child_handle": true,
+      "unknown": {
+        "automatic_retry": false,
+        "child_returncode": null,
+        "child_wait_returned": false,
+        "cleanup_errors": [],
+        "error_type": "KeyboardInterrupt",
+        "output_capture": {
+          "automatic_retry": false,
+          "captured": {
+            "stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "child_join_observed_monotonic": null,
+          "child_returncode": null,
+          "child_wait_returned": false,
+          "deadline_validity": "this_running_coordinator_only",
+          "eof_observed_monotonic": {
+            "stderr": null,
+            "stdout": null
+          },
+          "error": {
+            "code": "CAPTURE_STOP_REQUESTED",
+            "error_type": "InterruptedError"
+          },
+          "execution_deadline_monotonic": 1.783262125,
+          "files": {
+            "stderr": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793860558719201511,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151734,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860558719201511,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/interrupt-after-thread-start/phase/stderr.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793860558719035844,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151733,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860558719035844,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/interrupt-after-thread-start/phase/stdout.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "output_limit_bytes_per_stream": 67108864,
+          "persist_errors": [],
+          "phase": "phase",
+          "pid": 53269,
+          "pipe_close_errors": [],
+          "pipe_reader_owner": "closed_by_worker",
+          "prefix_only_or_unknown": true,
+          "remote_terminal_or_cleanup_proven": false,
+          "schema": "hepta.native-guard.host-output-capture.v1",
+          "signals_sent": 0,
+          "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+          "stderr_eof": false,
+          "stdout_eof": false,
+          "worker_joined": true,
+          "worker_started": true
+        },
+        "pgid": 53269,
+        "phase": "phase",
+        "pid": 53269,
+        "sid": 53269,
+        "signals_sent": 0,
+        "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+        "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY"
+      },
+      "test_holder_natural_child_join_rc": 0,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "interrupt-child-wait",
+      "pass": true,
+      "elapsed_seconds": 0.013845624999999862,
+      "error_type": "KeyboardInterrupt",
+      "pipe_readers_closed_at_return": true,
+      "worker_inventory_equal_at_return": true,
+      "fd_inventory_equal_at_return": true,
+      "no_success_result": true,
+      "retained_actual_child_handle": true,
+      "unknown": {
+        "automatic_retry": false,
+        "child_returncode": null,
+        "child_wait_returned": false,
+        "cleanup_errors": [],
+        "error_type": "KeyboardInterrupt",
+        "output_capture": {
+          "automatic_retry": false,
+          "captured": {
+            "stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "child_join_observed_monotonic": null,
+          "child_returncode": null,
+          "child_wait_returned": false,
+          "deadline_validity": "this_running_coordinator_only",
+          "eof_observed_monotonic": {
+            "stderr": null,
+            "stdout": null
+          },
+          "error": {
+            "code": "CAPTURE_STOP_REQUESTED",
+            "error_type": "InterruptedError"
+          },
+          "execution_deadline_monotonic": 2.050856125,
+          "files": {
+            "stderr": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793860558986599532,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151753,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860558986599532,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/interrupt-child-wait/phase/stderr.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793860558982832732,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151752,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860558982832732,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/interrupt-child-wait/phase/stdout.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          "output_limit_bytes_per_stream": 67108864,
+          "persist_errors": [],
+          "phase": "phase",
+          "pid": 53282,
+          "pipe_close_errors": [],
+          "pipe_reader_owner": "closed_by_worker",
+          "prefix_only_or_unknown": true,
+          "remote_terminal_or_cleanup_proven": false,
+          "schema": "hepta.native-guard.host-output-capture.v1",
+          "signals_sent": 0,
+          "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+          "stderr_eof": false,
+          "stdout_eof": false,
+          "worker_joined": true,
+          "worker_started": true
+        },
+        "pgid": 53282,
+        "phase": "phase",
+        "pid": 53282,
+        "sid": 53282,
+        "signals_sent": 0,
+        "source_intent_sha256": "55aac82d6a971a1c081e79292f98b3b522cbf7516ee98b09c6405cb275e59afe",
+        "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY"
+      },
+      "test_holder_natural_child_join_rc": 0,
+      "signals_sent": 0,
+      "automatic_replay": false
+    },
+    {
+      "case": "output-limit-plus-one",
+      "pass": true,
+      "elapsed_seconds": 0.12641704200000015,
+      "error_type": "ValueError",
+      "pipe_readers_closed_at_return": true,
+      "worker_inventory_equal_at_return": true,
+      "fd_inventory_equal_at_return": true,
+      "no_success_result": true,
+      "retained_actual_child_handle": true,
+      "unknown": {
+        "automatic_retry": false,
+        "child_returncode": 0,
+        "child_wait_returned": true,
+        "cleanup_errors": [],
+        "error_type": "ValueError",
+        "output_capture": {
+          "automatic_retry": false,
+          "captured": {
+            "stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 67108864,
+              "sha256": "e20a69eca39368572e90b9135738a613838f954987a0b44b6220889c171cbb76"
+            }
+          },
+          "child_join_observed_monotonic": 1.4152235,
+          "child_returncode": 0,
+          "child_wait_returned": true,
+          "deadline_validity": "this_running_coordinator_only",
+          "eof_observed_monotonic": {
+            "stderr": null,
+            "stdout": null
+          },
+          "error": {
+            "code": "OUTPUT_LIMIT_EXCEEDED",
+            "error_type": "ValueError",
+            "limit_bytes": 67108864,
+            "stream": "stdout"
+          },
+          "execution_deadline_monotonic": 6.336257541,
+          "files": {
+            "stderr": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793860559272174804,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151777,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860559272174804,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/output-limit-plus-one/phase/stderr.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 67108864,
+              "metadata": {
+                "st_ctime_ns": 1793860559372440531,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 588151776,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793860559372440531,
+                "st_nlink": 1,
+                "st_size": 67108864,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-transport-r6-20261105-1ad3/mac-validation-01/ownership6-evidence/output-limit-plus-one/phase/stdout.original",
+              "sha256": "e20a69eca39368572e90b9135738a613838f954987a0b44b6220889c171cbb76"
+            }
+          },
+          "output_limit_bytes_per_stream": 67108864,
+          "persist_errors": [],
+          "phase": "phase",
+          "pid": 53299,
+          "pipe_close_errors": [],
+          "pipe_reader_owner": "closed_by_worker",
+          "prefix_only_or_unknown": true,
+          "remote_terminal_or_cleanup_proven": false,
+          "schema": "hepta.native-guard.host-output-capture.v1",
+          "signals_sent": 0,
+          "source_intent_sha256": "0dda488f0ec10c648669cfecae86e9dc6d435e5cee38d93d27a62bb44687dbf3",
+          "stderr_eof": false,
+          "stdout_eof": false,
+          "worker_joined": true,
+          "worker_started": true
+        },
+        "pgid": 53299,
+        "phase": "phase",
+        "pid": 53299,
+        "sid": 53299,
+        "signals_sent": 0,
+        "source_intent_sha256": "0dda488f0ec10c648669cfecae86e9dc6d435e5cee38d93d27a62bb44687dbf3",
+        "state": "OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED"
+      },
+      "test_holder_natural_child_join_rc": 0,
+      "signals_sent": 0,
+      "automatic_replay": false
+    }
+  ],
+  "phone_calls": 0,
+  "network_calls": 0,
+  "signals_sent": 0,
+  "all_local_test_children_naturally_joined": true
+}

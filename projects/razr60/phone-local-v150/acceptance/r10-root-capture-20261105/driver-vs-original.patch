@@ -1,0 +1,100 @@
+--- original-driver/run_runtime_properties_policy_once.py
++++ source/run_runtime_properties_policy_once.py
+@@ -19,8 +19,12 @@
+ B=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ BOOT='f8019f83-20a7-4f18-bea1-51c980621e4d'
+ NONCE='c705647dd4ebb5d421be1041a9c41ca6'
+-TRANSPORT_SOURCE=B/'native-guard-r10-r1-operator-r4/root-chain/source/run_component_root_once.py'
+-TRANSPORT_SHA='860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22'
++TRANSPORT_SOURCE=B/'root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py'
++TRANSPORT_SHA='0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd'
++TRANSPORT_BYTES=68481
++ORIGINAL_VALIDATOR_SOURCE=B/'native-guard-r10-r1-operator-r4/root-chain/source/run_component_root_once.py'
++ORIGINAL_VALIDATOR_SHA='860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22'
++ORIGINAL_VALIDATOR_BYTES=43438
+ TRANSPORT_PLAN=B/'native-guard-root-chains-r10-r1/root-r10-neg01-20261104-04/ROOT-PLAN.original.json'
+ TRANSPORT_PLAN_SHA='fa773ad886e127185ecee5aa015a714c79fe889f4001184d61b569f07a063360'
+ OUT=B/'policy-runtime-properties-r10-live-01'
+@@ -41,15 +45,22 @@
+     return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite JSON')))
+ def load_transport():
+     raw=TRANSPORT_SOURCE.read_bytes()
+-    need(len(raw)==43438 and sha(raw)==TRANSPORT_SHA,'frozen original transport source differs')
++    need(len(raw)==TRANSPORT_BYTES and sha(raw)==TRANSPORT_SHA,'reviewed execution transport source differs')
+     sys.dont_write_bytecode=True
+-    module=types.ModuleType('reviewed_original_root_phone_transport')
++    module=types.ModuleType('reviewed_repaired_root_phone_transport')
+     module.__file__=str(TRANSPORT_SOURCE)
+     exec(compile(raw,str(TRANSPORT_SOURCE),'exec'),module.__dict__)
+-    need(module.read(TRANSPORT_SOURCE)==raw,'transport source changed')
+-    return module,raw
+-
+-def validate(m,raw):
++    need(module.read(TRANSPORT_SOURCE)==raw,'execution transport source changed')
++    original_raw=module.read(ORIGINAL_VALIDATOR_SOURCE)
++    need(len(original_raw)==ORIGINAL_VALIDATOR_BYTES and sha(original_raw)==ORIGINAL_VALIDATOR_SHA,
++         'historical r4 plan validator source differs')
++    original_validator=types.ModuleType('reviewed_original_r4_plan_validator_only')
++    original_validator.__file__=str(ORIGINAL_VALIDATOR_SOURCE)
++    exec(compile(original_raw,str(ORIGINAL_VALIDATOR_SOURCE),'exec'),original_validator.__dict__)
++    need(original_validator.read(ORIGINAL_VALIDATOR_SOURCE)==original_raw,'historical validator source changed')
++    return module,raw,original_validator
++
++def validate(m,original_validator,raw):
+     p=strict(raw)
+     fields={'schema','boot_id','prepared','stage_requests','apply_request','binding',
+         'pre_live_expectation','capture_source','verifier_source','transport_root_plan',
+@@ -60,19 +71,24 @@
+     need(sources['schema']=='hepta.root.runtime-properties-live-source-package.v1'
+          and Path(p['source_package']['path']).parent==HERE.parent
+          and {r['path'] for r in sources['files']}=={
+-             'source/run_runtime_properties_policy_once.py','reference/run_component_root_once.r4.original.py'}
+-         and len(sources['files'])==2,'exact reviewed Root policy source package required')
++             'source/run_runtime_properties_policy_once.py','source/run_component_root_once.py',
++             'reference/run_component_root_once.r4.original.py'}
++         and len(sources['files'])==3,'exact reviewed Root policy source package required')
+     for row in sources['files']:
+         source=m.read(HERE.parent/row['path'])
+         need(len(source)==row['bytes'] and sha(source)==row['sha256'],'Root driver source changed')
+     need(p['driver_source']['path']==str(HERE/'run_runtime_properties_policy_once.py')
+          and m.pin(p['driver_source'])==m.read(HERE/'run_runtime_properties_policy_once.py'),
+          'explicit current driver original differs')
+-    need(m.read(HERE.parent/'reference/run_component_root_once.r4.original.py')==m.read(TRANSPORT_SOURCE),
+-         'reviewed original transport reference differs')
++    need(m.read(HERE/'run_component_root_once.py')==m.read(TRANSPORT_SOURCE),
++         'reviewed execution transport package member differs')
++    need(m.read(HERE.parent/'reference/run_component_root_once.r4.original.py')
++         ==original_validator.read(ORIGINAL_VALIDATOR_SOURCE),
++         'reviewed historical r4 validator reference differs')
+     need(p['transport_root_plan']=={'path':str(TRANSPORT_PLAN),'bytes':4715,'sha256':TRANSPORT_PLAN_SHA},
+          'only the original closed04 transport namespace is authorized')
+-    original=m.pin(p['transport_root_plan']);transport_plan,_=m.validate_plan(original)
++    original=original_validator.pin(p['transport_root_plan'])
++    transport_plan,_=original_validator.validate_plan(original)
+     need(transport_plan['nonce']==NONCE,'no new native nonce may be created')
+     prepared_raw=m.pin(p['prepared']);prepared=strict(prepared_raw)
+     need(prepared['schema']=='hepta.runtime-properties-r10.live-host-preparation.v1'
+@@ -140,9 +156,9 @@
+     parser.add_argument('--plan',type=Path,required=True);parser.add_argument('--plan-sha256',required=True)
+     parser.add_argument('--execute-root-runtime-properties-policy-once',action='store_true')
+     a=parser.parse_args(argv);need(HASH.fullmatch(a.plan_sha256),'explicit plan hash required')
+-    m,_source=load_transport();raw=m.read(a.plan)
++    m,_source,original_validator=load_transport();raw=m.read(a.plan)
+     need(sha(raw)==a.plan_sha256,'Root policy plan bytes differ')
+-    p,transport_plan,requests,apply_pair,verifier=validate(m,raw)
++    p,transport_plan,requests,apply_pair,verifier=validate(m,original_validator,raw)
+     if not a.execute_root_runtime_properties_policy_once:
+         print(json.dumps({'state':'HOST_PREVIEW_NO_PHONE_NO_POLICY_APPLY','plan_sha256':sha(raw),
+             'phone_calls':0,'policy_apply_calls':0,'new_native_case_nonces':0},sort_keys=True));return 0
+@@ -251,8 +267,10 @@
+             'new_native_case_nonces':0,'native_case_sends':0},sort_keys=True))
+         return 0 if clean else 2
+     except BaseException as error:
++        host_cleanup=c.close_owned_host_outputs()
+         m.put(OUT/'ROOT-FAILURE.json',encode({'schema':'hepta.root.runtime-properties-live-failure.v1',
+-            'state':'ORIGINAL_TRANSACTION_STOPPED_NO_REPLAY','error_type':type(error).__name__,
++            'state':'ORIGINAL_TRANSACTION_STOPPED_NO_REPLAY','host_cleanup':host_cleanup,
++            'error_type':type(error).__name__,
+             'detail':str(error)[:2048],'root_plan':root_plan,'root_intent':intent_row,
+             'policy_apply_calls':apply_calls,'phone_phase_names':phases,'steps':c.steps,
+             'automatic_retry':False,'automatic_rollback':False,'automatic_policy_adoption':False,
