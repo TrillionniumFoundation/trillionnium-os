@@ -1,10 +1,15 @@
+> Rendering note (2026-11-04): The [previously published bytes](README-as-published-86c0424.raw.txt)
+> remain unchanged. This display copy adds this note and rebases navigation
+> links from the former project-root location to this history directory.
+> Historical results and qualification statements are unchanged.
+
 # RAZR60 phone-local model — r7-r2 measured checkpoint
 
 **The model runs locally on the phone. The new health request passed. Both new phone business tasks failed. The formal nineteen-case result is 7 PASS / 2 FAIL / 10 BLOCKED; daily-use qualification remains unestablished.**
 
 This checkpoint records the installed v150-r7-r2 combination. Both real business requests reached one authorized Android application operation, whose original worker exited with code 68 and reported “Can't find service: display”. The original tasks, effects and drafts have been independently closed without replay. The actual policy change in this combination is limited to four servicemanager-property file-read permissions. It does not establish that service discovery or the full business flows now work.
 
-Read the [complete quality and resource report](qualification/r7-r2-checkpoint/README.md), [machine-readable result](qualification/r7-r2-checkpoint/QUALITY-SUMMARY.json) and [report provenance](qualification/r7-r2-checkpoint/PROVENANCE.json). The former [r7-r1 checkpoint](qualification/r7-r1-checkpoint/README.md) remains unchanged. Subsequent policy candidates are outside this measured combination.
+Read the [complete quality and resource report](../r7-r2-checkpoint/README.md), [machine-readable result](../r7-r2-checkpoint/QUALITY-SUMMARY.json) and [report provenance](../r7-r2-checkpoint/PROVENANCE.json). The former [r7-r1 checkpoint](../r7-r1-checkpoint/README.md) remains unchanged. Subsequent policy candidates are outside this measured combination.
 
 ## What is running on the phone
 
@@ -45,13 +50,13 @@ The visible error is that the original worker could not find the Android display
 
 The frozen aggregator returns **7 PASS / 2 FAIL / 10 BLOCKED**. NEG-03, NEG-06 and NEG-10 through NEG-14 are PASS. E2E-01 and E2E-02 are FAIL. NEG-04/05/07/08/09 passed their host layers but remain BLOCKED because their required physical-native layers have no current sample. E2E-03/E2E-04, COMP-01 and NEG-01/NEG-02 are also BLOCKED.
 
-All twelve host/component samples were actually executed for this full combination. They comprise 462 runtime assertions and fourteen original-export/process-closure assertions. Assertions are not sample counts, and expected failure in a negative fixture is not model business success. See the [five host-fault report](acceptance/r7-r2/host-cancel-faults/REPORT-PUBLIC.json), [seven host/component summary](acceptance/r7-r2/host-negative/PUBLIC-SAFE-SUMMARY.json) and the full [case-by-layer table](qualification/r7-r2-checkpoint/README.md).
+All twelve host/component samples were actually executed for this full combination. They comprise 462 runtime assertions and fourteen original-export/process-closure assertions. Assertions are not sample counts, and expected failure in a negative fixture is not model business success. See the [five host-fault report](../../acceptance/r7-r2/host-cancel-faults/REPORT-PUBLIC.json), [seven host/component summary](../../acceptance/r7-r2/host-negative/PUBLIC-SAFE-SUMMARY.json) and the full [case-by-layer table](../r7-r2-checkpoint/README.md).
 
-The formal protocol retains all nineteen cases, original limits, geometry and dual-layer gates. Its published review copy and source relationship are under [acceptance/r7-r2](acceptance/r7-r2/README-PUBLIC.md). The older provider/r7/qa historical copy is not the current normative acceptance protocol. Projected files with private bindings removed are not executable qualification manifests.
+The formal protocol retains all nineteen cases, original limits, geometry and dual-layer gates. Its published review copy and source relationship are under [acceptance/r7-r2](../../acceptance/r7-r2/README-PUBLIC.md). The older provider/r7/qa historical copy is not the current normative acceptance protocol. Projected files with private bindings removed are not executable qualification manifests.
 
 ## Policy, installation and preserved history
 
-The r7-r2 policy adds only worker-to-servicemanager_prop file getattr, open, read and map. The actual installed live policy passed a 26-check semantic audit: exactly these four permission atoms were added, with no deletion, new type, or other checked table expansion. The offline candidate and actual kernel serialization differ in bytes but have the audited equivalent policy content. Enforcing remained enabled. See the [policy summary](policy/r7-r2-property/POLICY-PUBLIC-SUMMARY.json) and [rule projection](policy/r7-r2-property/README.md).
+The r7-r2 policy adds only worker-to-servicemanager_prop file getattr, open, read and map. The actual installed live policy passed a 26-check semantic audit: exactly these four permission atoms were added, with no deletion, new type, or other checked table expansion. The offline candidate and actual kernel serialization differ in bytes but have the audited equivalent policy content. Enforcing remained enabled. See the [policy summary](../../policy/r7-r2-property/POLICY-PUBLIC-SUMMARY.json) and [rule projection](../../policy/r7-r2-property/README.md).
 
 The prior r7-r1 module was retired before policy application. Its four original groups were independently absent twice, the original supervisor exit was retained, and both historical timed-out actions stayed in their original journal. The new module verified the existing production payload rather than replacing model/provider/executor bytes. Current business actions add two separately closed exit-68 records; none of the old actions was removed or replayed.
 
@@ -59,7 +64,7 @@ The first r7-r2 installer stopped before unpacking or starting a role because it
 
 The second installation and readiness observation had actual host, actor and phone exit statuses of zero. Readiness checked 89 startup originals, every one of the 67 module files, 65 sums, 44 payloads and the 22 retained provider/config/service files. Large previous evidence was hashed instead of repeatedly copied into readiness stdout. The following health and two business tasks were new requests under this installed combination.
 
-The historical [r7-r1 measurements](qualification/r7-r1-checkpoint/README.md) remain 1 health PASS and 2 business FAIL with property-read errors and roughly 60-second original tool timeouts. The older [r6-r2 stage02](qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json) remains 7 PASS / 3 FAIL / 9 BLOCKED, including its physical cancellation/slot-busy failure. Their original requests, actions and results were not assigned to r7-r2. The [previous main README](qualification/history/README-as-published-4f7f0886.md) is preserved exactly.
+The historical [r7-r1 measurements](../r7-r1-checkpoint/README.md) remain 1 health PASS and 2 business FAIL with property-read errors and roughly 60-second original tool timeouts. The older [r6-r2 stage02](../checkpoints/QUALITY-v150-r6-r2-stage02.json) remains 7 PASS / 3 FAIL / 9 BLOCKED, including its physical cancellation/slot-busy failure. Their original requests, actions and results were not assigned to r7-r2. The [previous main README](README-as-published-4f7f0886.md) is preserved exactly.
 
 ## Resources and evidence limits
 
@@ -88,11 +93,11 @@ The final reporting process reread 373 inputs and executed the frozen aggregate 
 | Mapping-aware collector | e5fc961d5cec94ab2e075c84dd5672b0d616863a616d59270d92cfd527dfddc7 | acceptance/r7-r2/business-collector review sources |
 | Current public quality | 3e926af3685fdf0a8a4f8e813456be8da483cd112c566f8c9d45ee207e6ef64d | qualification/r7-r2-checkpoint/QUALITY-SUMMARY.json |
 
-These original identifiers bind privately retained frozen artifacts. Public projections have their own hashes and are explicitly distinguished from those originals. The complete public file map is in [PUBLISH-MANIFEST.json](PUBLISH-MANIFEST.json); [PUBLIC-PROJECTION-INDEX.json](PUBLIC-PROJECTION-INDEX.json) and the [r7-r2 increment index](qualification/publication/PROJECTION-INDEX-v150-r7-r2-checkpoint.json) record the source relationships.
+These original identifiers bind privately retained frozen artifacts. Public projections have their own hashes and are explicitly distinguished from those originals. The complete public file map is in [PUBLISH-MANIFEST.json](../../PUBLISH-MANIFEST.json); [PUBLIC-PROJECTION-INDEX.json](../../PUBLIC-PROJECTION-INDEX.json) and the [r7-r2 increment index](../publication/PROJECTION-INDEX-v150-r7-r2-checkpoint.json) record the source relationships.
 
 ## Capture and execution rules
 
-The normal evidence workflow is **preview → capture (includes export) → collect**. The separate [workflow erratum](acceptance/r7/business-original-export/WORKFLOW-ERRATA.md) corrects the older four-phase README. A duplicate export refuses an existing archive. It does not justify a new task or another effect.
+The normal evidence workflow is **preview → capture (includes export) → collect**. The separate [workflow erratum](../../acceptance/r7/business-original-export/WORKFLOW-ERRATA.md) corrects the older four-phase README. A duplicate export refuses an existing archive. It does not justify a new task or another effect.
 
 Every new task requires a fresh one-use contract and original native identity. The unresolved-action gate persists across tasks. A failed effect can be resolved only from its original receipt and supported disposition. Durable intent precedes dispatch; the fixed client and executor verify the peer, dedicated domains, UID/GID 2000 and no supplemental groups. Original exit, joined child and absent group are required terminal facts. Cleanup does not undo an Android action.
 

@@ -1,0 +1,236 @@
+--- a/run_component_root_once.py
++++ b/run_component_root_once.py
+@@ -86,9 +86,26 @@
+     p.mkdir(mode=0o700);syncdir(p);syncdir(p.parent)
+ def original_stream(p):
+     fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+-    os.fsync(fd);syncdir(p.parent);return os.fdopen(fd,'wb')
++    try:
++        os.fsync(fd);syncdir(p.parent);return os.fdopen(fd,'wb')
++    except BaseException:
++        os.close(fd);raise
++def close_streams_owned(streams):
++    errors=[]
++    for label,stream in streams:
++        if stream is None or stream.closed:continue
++        try:stream.flush();os.fsync(stream.fileno())
++        except BaseException as error:
++            errors.append({'stream':label,'operation':'flush_fsync','error_type':type(error).__name__})
++        finally:
++            try:stream.close()
++            except BaseException as error:
++                errors.append({'stream':label,'operation':'close','error_type':type(error).__name__})
++    return errors
++
+ def finish_stream(stream):
+-    stream.flush();os.fsync(stream.fileno());stream.close()
++    errors=close_streams_owned([('output',stream)])
++    need(not errors,'stream finalization failed: '+repr(errors))
+ def filedesc(p):return desc(p,read(p))
+ 
+ REMOTE_IO='''from pathlib import Path
+@@ -336,34 +353,146 @@
+         compile(self.bridge,'phone_chain_bridge.py','exec')
+     def execute_process(self,name,argv,timeout,input_raw=None,async_start=False):
+         need(re.fullmatch('[a-z0-9-]{1,55}',name),'phase name')
++        need(type(timeout) in (int,float) and 0<timeout<float('inf'),'finite positive host execution budget')
+         d=self.out/name;newdir(d)
+         intent={'schema':'hepta.native-guard.root-host-command.v1','phase':name,'argv':argv,
+             'stdin_sha256':None if input_raw is None else sha(input_raw),'maximum_starts':1,
+-            'maximum_wait_seconds':timeout,'automatic_retry':False,'signals_on_timeout':False}
++            'maximum_wait_seconds':timeout,'automatic_retry':False,'signals_on_timeout':False,
++            'deadline_scope':'popen_start_through_actual_join',
++            'input_transport':'retained_readonly_regular_fd_child_reads_within_execution_budget',
++            'hard_bound_on_filesystem_spawn_or_cleanup':False}
+         put(d/'INTENT.json',enc(intent))
+         if input_raw is not None:put(d/'stdin.original',input_raw)
+-        stdout=original_stream(d/'stdout.original');stderr=original_stream(d/'stderr.original')
+-        child=subprocess.Popen(argv,stdin=subprocess.PIPE if input_raw is not None else subprocess.DEVNULL,
+-            stdout=stdout,stderr=stderr,start_new_session=True,close_fds=True)
+-        if input_raw is not None:child.stdin.write(input_raw);child.stdin.close()
+-        try:group,session=os.getpgid(child.pid),os.getsid(child.pid)
+-        except ProcessLookupError:
+-            need(child.poll() is not None,'host child identity unknown before wait')
+-            group=session=None
+-        put(d/'CHILD.json',enc({'pid':child.pid,'pgid':group,'sid':session,
+-            'source_intent_sha256':sha(enc(intent)),'maximum_starts':1,
+-            'identity_missing_only_if_actual_child_already_joined':group is None}))
+-        if async_start:return child,d,stdout,stderr
+-        try:rc=child.wait(timeout=timeout)
+-        except subprocess.TimeoutExpired:
+-            put(d/'UNKNOWN.json',enc({'state':'OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY','pid':child.pid,'automatic_retry':False}))
+-            finish_stream(stdout);finish_stream(stderr);raise RuntimeError('unknown original phase '+name)
+-        finish_stream(stdout);finish_stream(stderr);o=read(d/'stdout.original');e=read(d/'stderr.original')
+-        result={'state':'ORIGINAL_HOST_CHILD_JOINED','phase':name,'pid':child.pid,'returncode':rc,
+-            'stdout':desc(d/'stdout.original',o),'stderr':desc(d/'stderr.original',e),'automatic_retry':False}
+-        put(d/'RESULT.json',enc(result));self.steps.append(result)
+-        need(rc==0,'original phase failed; no replay: '+name)
+-        return o
++        stdin_file=stdout=stderr=child=None
++        group=session=None;wait_returned=False;result_recorded=False;cleanup_errors=[]
++        stdin_metadata=None
++        owners=self.__dict__.setdefault('_owned_host_children',{})
++        deadlines=self.__dict__.setdefault('_owned_host_deadlines',{})
++        streams=self.__dict__.setdefault('_owned_host_streams',{})
++        deadline=None
++
++        def input_metadata(value):
++            return tuple(getattr(value,key) for key in ('st_dev','st_ino','st_mode','st_uid','st_gid',
++                'st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
++
++        def pin_retained_input(fd,expected_metadata):
++            held=os.fstat(fd)
++            need(stat.S_ISREG(held.st_mode) and held.st_nlink==1 and held.st_size==len(input_raw)
++                and held.st_uid==os.geteuid() and stat.S_IMODE(held.st_mode)==0o600,
++                'retained stdin must be the private exact-size regular input')
++            need(input_metadata(held)==expected_metadata==input_metadata((d/'stdin.original').lstat()),
++                'retained stdin file identity changed')
++            os.lseek(fd,0,os.SEEK_SET)
++            digest=hashlib.sha256();total=0;remaining=len(input_raw)+1
++            while remaining:
++                chunk=os.read(fd,min(65536,remaining))
++                if not chunk:break
++                total+=len(chunk);remaining-=len(chunk);digest.update(chunk)
++            need(total==len(input_raw) and digest.hexdigest()==intent['stdin_sha256'],
++                'retained stdin content differs from original input')
++            need(input_metadata(os.fstat(fd))==expected_metadata==input_metadata((d/'stdin.original').lstat()),
++                'retained stdin changed during content pin')
++            os.lseek(fd,0,os.SEEK_SET)
++
++        def close_owned_streams():
++            errors=[]
++            for label,stream in (('stdin',stdin_file),('stdout',stdout),('stderr',stderr)):
++                if stream is None or stream.closed:continue
++                try:
++                    if label!='stdin':stream.flush();os.fsync(stream.fileno())
++                except BaseException as error:
++                    errors.append({'stream':label,'operation':'flush_fsync','error_type':type(error).__name__})
++                finally:
++                    try:stream.close()
++                    except BaseException as error:
++                        errors.append({'stream':label,'operation':'close','error_type':type(error).__name__})
++            return errors
++
++        try:
++            if input_raw is not None:
++                # The already retained input is the child's readable fd. No parent
++                # pipe write can delay ownership publication or entry into wait().
++                stdin_metadata=input_metadata((d/'stdin.original').lstat())
++                fd=os.open(d/'stdin.original',os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
++                try:
++                    pin_retained_input(fd,stdin_metadata)
++                    stdin_file=os.fdopen(fd,'rb')
++                except BaseException:os.close(fd);raise
++            stdout=original_stream(d/'stdout.original');stderr=original_stream(d/'stderr.original')
++            deadline=time.monotonic()+float(timeout)
++            child=subprocess.Popen(argv,stdin=stdin_file if stdin_file is not None else subprocess.DEVNULL,
++                stdout=stdout,stderr=stderr,start_new_session=True,close_fds=True)
++            # Retain the actual Popen handle before fallible identity/file recording.
++            # This is not permission to signal, restart, or replay the child.
++            owners[name]=child;deadlines[name]=deadline;streams[name]=(stdout,stderr)
++            try:group,session=os.getpgid(child.pid),os.getsid(child.pid)
++            except ProcessLookupError:
++                need(child.poll() is not None,'host child identity unknown before wait')
++                group=session=None
++            put(d/'CHILD.json',enc({'pid':child.pid,'pgid':group,'sid':session,
++                'source_intent_sha256':sha(enc(intent)),'maximum_starts':1,
++                'execution_deadline_monotonic':deadline,
++                'deadline_validity':'this_running_coordinator_only',
++                'identity_missing_only_if_actual_child_already_joined':group is None}))
++            if async_start:
++                need(time.monotonic()<deadline,'host async launch exceeded execution deadline')
++                if stdin_file is not None:stdin_file.close()
++                return child,d,stdout,stderr
++            # The same monotonic budget includes child input consumption and
++            # identity publication. Blocking OS calls remain non-preemptible;
++            # a late join is recorded as failure rather than late success.
++            rc=child.wait(timeout=max(0.0,deadline-time.monotonic()));wait_returned=True
++            owners.pop(name,None);deadlines.pop(name,None)
++            need(time.monotonic()<=deadline,'host child joined after execution deadline')
++            if stdin_file is not None:pin_retained_input(stdin_file.fileno(),stdin_metadata)
++            cleanup_errors+=close_owned_streams();streams.pop(name,None)
++            need(not cleanup_errors,'owned host stream finalization failed: '+repr(cleanup_errors))
++            o=read(d/'stdout.original');e=read(d/'stderr.original')
++            result={'state':'ORIGINAL_HOST_CHILD_JOINED','phase':name,'pid':child.pid,'returncode':rc,
++                'stdout':desc(d/'stdout.original',o),'stderr':desc(d/'stderr.original',e),'automatic_retry':False}
++            put(d/'RESULT.json',enc(result));self.steps.append(result);result_recorded=True
++            need(rc==0,'original phase failed; no replay: '+name)
++            return o
++        except BaseException as error:
++            cleanup_errors+=close_owned_streams();streams.pop(name,None)
++            if child is not None and not result_recorded:
++                failure={'state':'OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED' if child.returncode is not None
++                    else 'OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY',
++                    'phase':name,'pid':child.pid,'pgid':group,'sid':session,
++                    'source_intent_sha256':sha(enc(intent)),'child_wait_returned':wait_returned,
++                    'child_returncode':child.returncode,'error_type':type(error).__name__,
++                    'cleanup_errors':cleanup_errors,'automatic_retry':False,'signals_sent':0}
++                # The outer retainer already preserves self.steps in FAILURE.json.
++                # Keep that ownership path even if CHILD/UNKNOWN file creation fails.
++                self.steps.append(failure)
++                try:put(d/'UNKNOWN.json',enc(failure))
++                except BaseException as record_error:
++                    failure['unknown_record_error_type']=type(record_error).__name__
++                if child.returncode is not None:owners.pop(name,None);deadlines.pop(name,None)
++            if isinstance(error,subprocess.TimeoutExpired):
++                raise RuntimeError('unknown original phase '+name) from error
++            raise
++    def close_owned_host_outputs(self):
++        # Releasing our file descriptors never proves a remote process stopped.
++        # Preserve child handles and record each outstanding identity on failure.
++        errors=[]
++        streams=self.__dict__.setdefault('_owned_host_streams',{})
++        owners=self.__dict__.setdefault('_owned_host_children',{})
++        for name,(stdout,stderr) in list(streams.items()):
++            errors.extend(close_streams_owned([(name+':stdout',stdout),(name+':stderr',stderr)]))
++            streams.pop(name,None)
++        rows=[]
++        for name,child in list(owners.items()):
++            row={'phase':name,'pid':child.pid,'returncode':child.returncode,
++                'state':'OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY' if child.returncode is None
++                    else 'OWNED_HOST_CHILD_JOINED_NO_BUSINESS_QUALIFICATION',
++                'automatic_retry':False,'signals_sent':0}
++            rows.append(row)
++            try:put(self.out/name/'OWNED-CHILD-FAILURE.json',enc(row))
++            except BaseException as error:
++                row['record_error_type']=type(error).__name__
++        return {'stream_cleanup_errors':errors,'host_children':rows}
++
+     def remote(self,name,code,timeout=60):
+         compile(code,'root_p4_'+name,'exec')
+         raw=self.execute_process(name,SSH,timeout,code.encode())
+@@ -518,10 +647,22 @@
+                 '--lease',home,'--lease-sha256',self.prepared['lease']['sha256'],'--archive',staging+p['label']+'-'+phase+'.witness.tar.gz',
+                 '--archive-sha256',row['sha256'],'--execute-publish-original-bytes-once'],35)
+         child,d,so,se=self.sender
+-        try:rc=child.wait(timeout=380)
++        sender_deadline=self._owned_host_deadlines['sender-execute']
++        try:
++            need(self._owned_host_children['sender-execute'] is child,'original sender handle differs')
++            rc=child.wait(timeout=min(380,max(0.0,sender_deadline-time.monotonic())))
++            need(time.monotonic()<=sender_deadline,'original sender joined after execution deadline')
+         except subprocess.TimeoutExpired:raise RuntimeError('original sender still running; no signal/replay')
+-        finally:finish_stream(so);finish_stream(se)
++        finally:
++            cleanup_errors=close_streams_owned([('sender:stdout',so),('sender:stderr',se)])
++            self._owned_host_streams.pop('sender-execute',None)
++            if cleanup_errors:
++                self.steps.append({'state':'HOST_OUTPUT_FINALIZATION_FAILED','phase':'sender-execute',
++                    'cleanup_errors':cleanup_errors,'automatic_retry':False,'signals_sent':0})
++        need(not cleanup_errors,'sender output finalization failed: '+repr(cleanup_errors))
+         put(d/'JOINED.json',enc({'pid':child.pid,'returncode':rc,'wait_returned':True,'automatic_retry':False}))
++        self._owned_host_children.pop('sender-execute',None)
++        self._owned_host_deadlines.pop('sender-execute',None)
+         need(rc==0,'original sender child failed')
+         sent=strict(read(B/(p['label']+'.send-result.json')))
+         need(sent.get('rc')==0 and sent.get('stderr')=='','actual P4 sender failed/unknown; retain originals')
+@@ -600,7 +741,9 @@
+     c=Chain(p,raw)
+     try:return c.run()
+     except BaseException as error:
++        host_cleanup=c.close_owned_host_outputs()
+         value={'state':'FAILED_OR_UNKNOWN_ORIGINALS_PRESERVED_NO_AUTOMATIC_CONTINUATION',
++            'host_cleanup':host_cleanup,
+             'error_type':type(error).__name__,'detail':str(error)[:1024],'steps':c.steps,'root_fixture_attempts':c.root_attempts,
+             'automatic_retry':False,'new_identity_retry':False,'send_again':False,'signals_sent_by_coordinator':0,
+             'policy_changes':0,'model_requests':0,'component_qualified':False,'business_qualified':False,
