@@ -1,0 +1,176 @@
+{
+  "business_qualification": false,
+  "cases": [
+    {
+      "all_test_children_naturally_joined": true,
+      "automatic_replays": 0,
+      "budget_seconds": 0.08,
+      "case": "original-nonreader",
+      "classification": "original_defect_reproduced",
+      "elapsed_seconds": 0.653317,
+      "exception_type": "BrokenPipeError",
+      "fd_baseline_restored": true,
+      "input_bytes": 2097152,
+      "parent_streams_closed_before_harness_cleanup": false,
+      "pass": true,
+      "process_starts": 1,
+      "records_at_return": {
+        "CHILD.json": false,
+        "RESULT.json": false,
+        "UNKNOWN.json": false
+      },
+      "signals": 0,
+      "source_sha256": "3359e542d1335bd786c7938197c1aaba007ad8c3ad8c141083bd7febc52ef604"
+    },
+    {
+      "all_test_children_naturally_joined": true,
+      "automatic_replays": 0,
+      "budget_seconds": 0.08,
+      "case": "original-earlyexit",
+      "classification": "original_defect_reproduced",
+      "elapsed_seconds": 0.089888,
+      "exception_type": "BrokenPipeError",
+      "fd_baseline_restored": true,
+      "input_bytes": 2097152,
+      "parent_streams_closed_before_harness_cleanup": false,
+      "pass": true,
+      "process_starts": 1,
+      "records_at_return": {
+        "CHILD.json": false,
+        "RESULT.json": false,
+        "UNKNOWN.json": false
+      },
+      "signals": 0,
+      "source_sha256": "3359e542d1335bd786c7938197c1aaba007ad8c3ad8c141083bd7febc52ef604"
+    },
+    {
+      "all_test_children_naturally_joined": true,
+      "automatic_replays": 0,
+      "budget_seconds": 0.08,
+      "case": "fixed-nonreader",
+      "classification": "candidate_local_regression",
+      "elapsed_seconds": 0.114361,
+      "exception_type": "RuntimeError",
+      "fd_baseline_restored": true,
+      "input_bytes": 2097152,
+      "parent_streams_closed_before_harness_cleanup": true,
+      "pass": true,
+      "process_starts": 1,
+      "records_at_return": {
+        "CHILD.json": true,
+        "RESULT.json": false,
+        "UNKNOWN.json": true
+      },
+      "signals": 0,
+      "source_sha256": "cd1b372cb5ccd058d32fa870fe418b05f2c138ba41ca23de6f7f4a45fa853478"
+    },
+    {
+      "all_test_children_naturally_joined": true,
+      "automatic_replays": 0,
+      "budget_seconds": 0.25,
+      "case": "fixed-earlyexit",
+      "classification": "candidate_local_regression",
+      "elapsed_seconds": 0.059555,
+      "exception_type": null,
+      "fd_baseline_restored": true,
+      "input_bytes": 2097152,
+      "parent_streams_closed_before_harness_cleanup": true,
+      "pass": true,
+      "process_starts": 1,
+      "records_at_return": {
+        "CHILD.json": true,
+        "RESULT.json": true,
+        "UNKNOWN.json": false
+      },
+      "signals": 0,
+      "source_sha256": "cd1b372cb5ccd058d32fa870fe418b05f2c138ba41ca23de6f7f4a45fa853478"
+    },
+    {
+      "all_test_children_naturally_joined": true,
+      "automatic_replays": 0,
+      "budget_seconds": 1,
+      "case": "fixed-readback",
+      "classification": "candidate_local_regression",
+      "elapsed_seconds": 0.058059,
+      "exception_type": null,
+      "fd_baseline_restored": true,
+      "input_bytes": 2097152,
+      "parent_streams_closed_before_harness_cleanup": true,
+      "pass": true,
+      "process_starts": 1,
+      "records_at_return": {
+        "CHILD.json": true,
+        "RESULT.json": true,
+        "UNKNOWN.json": false
+      },
+      "signals": 0,
+      "source_sha256": "cd1b372cb5ccd058d32fa870fe418b05f2c138ba41ca23de6f7f4a45fa853478"
+    },
+    {
+      "all_test_children_naturally_joined": true,
+      "automatic_replays": 0,
+      "budget_seconds": 1,
+      "case": "fixed-child-record-error",
+      "classification": "candidate_local_regression",
+      "elapsed_seconds": 0.02317,
+      "exception_type": "OSError",
+      "fd_baseline_restored": true,
+      "input_bytes": 2097152,
+      "parent_streams_closed_before_harness_cleanup": true,
+      "pass": true,
+      "process_starts": 1,
+      "records_at_return": {
+        "CHILD.json": false,
+        "RESULT.json": false,
+        "UNKNOWN.json": true
+      },
+      "signals": 0,
+      "source_sha256": "cd1b372cb5ccd058d32fa870fe418b05f2c138ba41ca23de6f7f4a45fa853478"
+    },
+    {
+      "case": "public-delta-run_component_root_once.py",
+      "classification": "public_projection_delta",
+      "pass": true,
+      "target_sha256": "cd1b372cb5ccd058d32fa870fe418b05f2c138ba41ca23de6f7f4a45fa853478"
+    },
+    {
+      "case": "public-delta-run_runtime_properties_policy_once.py",
+      "classification": "public_projection_delta",
+      "pass": true,
+      "target_sha256": "358c5541b4717c6cc02d2f500b4c274c0a4d3cae647ccdbf7a780636160229fb"
+    },
+    {
+      "case": "direct-entry-refuses-run_component_root_once.r4.BASELINE.PUBLIC.py",
+      "classification": "noninstallable_public_projection",
+      "pass": true
+    },
+    {
+      "case": "direct-entry-refuses-run_component_root_once.r4.transport_fixed.PUBLIC.py",
+      "classification": "noninstallable_public_projection",
+      "pass": true
+    },
+    {
+      "case": "direct-entry-refuses-run_runtime_properties_policy_once.BASELINE.PUBLIC.py",
+      "classification": "noninstallable_public_projection",
+      "pass": true
+    },
+    {
+      "case": "direct-entry-refuses-run_runtime_properties_policy_once.PUBLIC.py",
+      "classification": "noninstallable_public_projection",
+      "pass": true
+    }
+  ],
+  "direct_entry_refusals": 4,
+  "failed": 0,
+  "fixed19_qualification": false,
+  "fixed_transport_process_cases": 4,
+  "model_requests": 0,
+  "native_task_sends": 0,
+  "original_defects_reproduced": 2,
+  "passed": 12,
+  "phone_calls": 0,
+  "policy_operations": 0,
+  "public_patch_roundtrips": 2,
+  "schema": "hepta.transport-public-local-fixture-results.v1",
+  "scope": "synthetic local Unix children and public source projections only"
+}

@@ -1,0 +1,208 @@
+{
+  "automatic_execution": false,
+  "business_qualified": false,
+  "component_qualified": false,
+  "daily_use_qualified": false,
+  "direct_script_entry": "PUBLIC_SOURCE_PROJECTION_REVIEW_ONLY_NOT_INSTALLABLE",
+  "files": [
+    {
+      "bytes": 5837,
+      "path": "HOST-FIXTURES.PUBLIC.json",
+      "sha256": "c0431c6f274ff8a63335ebadc3b6c84108cb945c690b7835f1b8915d5035e044"
+    },
+    {
+      "bytes": 4780,
+      "path": "README.md",
+      "sha256": "b40d08064537e5e630aab06f63d4c4988cbe3b3820f274fcc648f19300455d96"
+    },
+    {
+      "bytes": 5772,
+      "path": "changes/policy-driver.PUBLIC.patch",
+      "sha256": "ceec149d0cad8084de13aa52699a834cbc7257b12b5512a0c2b4e0bbdf812c55"
+    },
+    {
+      "bytes": 12596,
+      "path": "changes/r4-transport.PUBLIC.patch",
+      "sha256": "767439f7d3f9fb8557b2be9cc0a38674cd1475c8c9b3e96e916b5a3092dd57a3"
+    },
+    {
+      "bytes": 42600,
+      "path": "reference/run_component_root_once.r4.BASELINE.PUBLIC.py",
+      "sha256": "3359e542d1335bd786c7938197c1aaba007ad8c3ad8c141083bd7febc52ef604"
+    },
+    {
+      "bytes": 18459,
+      "path": "reference/run_runtime_properties_policy_once.BASELINE.PUBLIC.py",
+      "sha256": "7b8c32c8092b34528b44dd15e214703a52cdf47a82b18546b2ed9e3946961c27"
+    },
+    {
+      "bytes": 50194,
+      "path": "source/run_component_root_once.r4.transport_fixed.PUBLIC.py",
+      "sha256": "cd1b372cb5ccd058d32fa870fe418b05f2c138ba41ca23de6f7f4a45fa853478"
+    },
+    {
+      "bytes": 20150,
+      "path": "source/run_runtime_properties_policy_once.PUBLIC.py",
+      "sha256": "358c5541b4717c6cc02d2f500b4c274c0a4d3cae647ccdbf7a780636160229fb"
+    },
+    {
+      "bytes": 8011,
+      "path": "tests/test_transport_projection.py",
+      "sha256": "5a0af638f34eb4d3692598fec37125aec487aac269f9a21b0c35516f748b3f76"
+    }
+  ],
+  "fixed19_credits_added": 0,
+  "installable": false,
+  "omitted": [
+    "Private requests and nonces",
+    "Draft contents and digests",
+    "Real claim, scope, boot and process identities",
+    "Credentials and key-content digests",
+    "Private runtime/configuration/plan bindings",
+    "Original native and device logs",
+    "Model weights, binaries, policy snapshots and deployment archives",
+    "Private original execution and validation receipts"
+  ],
+  "phone_runtime_changed_by_publication": false,
+  "placeholder_bearing": true,
+  "policy_adoption_qualified": false,
+  "private_candidate_validation_summary": {
+    "child_starts": 0,
+    "historical_runtime_file_count": 24,
+    "independent_focused_source_review": "passed",
+    "local_integration_failed": 0,
+    "local_integration_passed": 10,
+    "mac_readonly_complete_original_and_repaired_plan_validation": "same actual inputs, equal results",
+    "phone_calls": 0,
+    "policy_operations": 0,
+    "raw_private_receipts_published": false,
+    "scope": "Private exact-source candidate, not this public projection."
+  },
+  "private_execution_plan_created_by_publication": false,
+  "private_values_list_published": false,
+  "public_allowlist": [
+    "HOST-FIXTURES.PUBLIC.json",
+    "PROJECTION.json",
+    "README.md",
+    "changes/policy-driver.PUBLIC.patch",
+    "changes/r4-transport.PUBLIC.patch",
+    "reference/run_component_root_once.r4.BASELINE.PUBLIC.py",
+    "reference/run_runtime_properties_policy_once.BASELINE.PUBLIC.py",
+    "source/run_component_root_once.r4.transport_fixed.PUBLIC.py",
+    "source/run_runtime_properties_policy_once.PUBLIC.py",
+    "tests/test_transport_projection.py"
+  ],
+  "public_fixture_validation": {
+    "direct_entry_refusals": 4,
+    "failed": 0,
+    "fixed_transport_process_cases": 4,
+    "original_defect_reproductions": 2,
+    "passed": 12,
+    "public_patch_roundtrips": 2,
+    "result": "HOST-FIXTURES.PUBLIC.json"
+  },
+  "public_source_boundary": "../../PUBLIC-SOURCE-BOUNDARY.md",
+  "repository_base_commit": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+  "schema": "hepta.transport-source-candidate.public-projection.v1",
+  "scope": "Host synchronous transport source candidate; explicit public projections; no new physical or business qualification.",
+  "self_binding": "PROJECTION.json is bound by its repository commit and the cumulative publication index, not by a self hash.",
+  "sources": [
+    {
+      "exact_original_bytes": false,
+      "original_source_bytes": 43438,
+      "original_source_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+      "path": "reference/run_component_root_once.r4.BASELINE.PUBLIC.py",
+      "published_bytes": 42600,
+      "published_sha256": "3359e542d1335bd786c7938197c1aaba007ad8c3ad8c141083bd7febc52ef604",
+      "role": "r4_transport_baseline",
+      "transformation": "explicit_noninstallable_public_projection",
+      "transformations": {
+        "binding_assignments_replaced": 6,
+        "boot_id_substitutions": 1,
+        "direct_execution_guard_added": 1,
+        "private_path_or_host_substitutions": 5,
+        "sha256_substitutions": 12
+      }
+    },
+    {
+      "exact_original_bytes": false,
+      "original_source_bytes": 51032,
+      "original_source_sha256": "cb6bd4afb6010c68e2ef1c633dabe1aec61a72a627b85f5ca4c0847c704d2336",
+      "path": "source/run_component_root_once.r4.transport_fixed.PUBLIC.py",
+      "published_bytes": 50194,
+      "published_sha256": "cd1b372cb5ccd058d32fa870fe418b05f2c138ba41ca23de6f7f4a45fa853478",
+      "role": "r4_transport_fixed",
+      "transformation": "explicit_noninstallable_public_projection",
+      "transformations": {
+        "binding_assignments_replaced": 6,
+        "boot_id_substitutions": 1,
+        "direct_execution_guard_added": 1,
+        "private_path_or_host_substitutions": 5,
+        "sha256_substitutions": 12
+      }
+    },
+    {
+      "exact_original_bytes": false,
+      "original_source_bytes": 18590,
+      "original_source_sha256": "e57d5df7d77b2742e5b0bb610d89c82b1cd3466d774d475f5d003ab4125d45ec",
+      "path": "reference/run_runtime_properties_policy_once.BASELINE.PUBLIC.py",
+      "published_bytes": 18459,
+      "published_sha256": "7b8c32c8092b34528b44dd15e214703a52cdf47a82b18546b2ed9e3946961c27",
+      "role": "policy_driver_baseline",
+      "transformation": "explicit_noninstallable_public_projection",
+      "transformations": {
+        "binding_assignments_replaced": 6,
+        "boot_id_substitutions": 1,
+        "direct_execution_guard_added": 1,
+        "nonce_substitutions": 1,
+        "private_path_or_host_substitutions": 2,
+        "sha256_substitutions": 2
+      }
+    },
+    {
+      "exact_original_bytes": false,
+      "original_source_bytes": 20328,
+      "original_source_sha256": "7711a81150f445d7b6fcc1a57633d7e6d5aaad3a60d98b150dad6fef2f20c7d1",
+      "path": "source/run_runtime_properties_policy_once.PUBLIC.py",
+      "published_bytes": 20150,
+      "published_sha256": "358c5541b4717c6cc02d2f500b4c274c0a4d3cae647ccdbf7a780636160229fb",
+      "role": "policy_driver_fixed",
+      "transformation": "explicit_noninstallable_public_projection",
+      "transformations": {
+        "binding_assignments_replaced": 7,
+        "boot_id_substitutions": 1,
+        "direct_execution_guard_added": 1,
+        "nonce_substitutions": 1,
+        "private_path_or_host_substitutions": 2,
+        "sha256_substitutions": 3
+      }
+    }
+  ],
+  "transport_definition_binding": [
+    {
+      "ast_sha256": "8c602ea28a0b43641ef688ca9eaaa4fea2dbeee6b8b734efd74aa1f31cc9c545",
+      "definition": "original_stream",
+      "private_and_public_ast_equal": true
+    },
+    {
+      "ast_sha256": "12ff45b1a3110ba65648526e5771bdef0014423d00a7632b97b4c872a7cb00ad",
+      "definition": "close_streams_owned",
+      "private_and_public_ast_equal": true
+    },
+    {
+      "ast_sha256": "08a95e866325cbc970310dfff33c98c85bffe045439699f421a162a8e9f2e3e5",
+      "definition": "finish_stream",
+      "private_and_public_ast_equal": true
+    },
+    {
+      "ast_sha256": "c8cb6f0aa4f083ac40848491ceff222fc2ee675dba139ef4b1091a4428446adf",
+      "definition": "Chain.execute_process",
+      "private_and_public_ast_equal": true
+    },
+    {
+      "ast_sha256": "37a03f222147fec45b8ee594be2f8ba738570ca94c6ab0342f5811773472d197",
+      "definition": "Chain.close_owned_host_outputs",
+      "private_and_public_ast_equal": true
+    }
+  ]
+}

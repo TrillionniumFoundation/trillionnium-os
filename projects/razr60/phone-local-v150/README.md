@@ -146,3 +146,7 @@ Build/operator corrections are retained as versioned history. Root rejected the 
 The five physical fault layers, E2E-03/E2E-04, COMP-01 and NEG-01/NEG-02 still require their original evidence under unchanged limits. Visual and Unicode require fresh complete tasks on a separately frozen candidate if a correction is adopted; old tasks and effects must not be replayed.
 
 A trustworthy daily-use claim also needs repeated representative business outcomes and measured latency/resource behavior. This checkpoint establishes phone-local inference, a fresh bounded health pass, two successful individual application opens and the preserved failures of the two complete business requests.
+
+## Separate host transport source candidate — 2026-11-05
+
+The [host transport source candidate](operators/transport-source-candidate-r1/README.md) publishes review-only projections of a later coordinator/policy-driver repair, with explicit original-source/public-source hash mappings, synthetic local fault reproductions and public delta patches. It is separate from the measured r7-r3 checkpoint above. Its placeholders are not an installable package, and its host tests and read-only historical-plan compatibility check add **zero** phone, fixed-nineteen, component or business qualification. The historical measurements and failures above are unchanged.
