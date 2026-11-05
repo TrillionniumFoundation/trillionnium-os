@@ -1,0 +1,111 @@
+{
+  "actual_adoption_inputs_created": false,
+  "actual_live_capture_verified": false,
+  "actual_post_stage_created": false,
+  "artifacts": [
+    {
+      "bytes": 24245,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_runtime_properties_post_v2.py",
+      "sha256": "f909ee61dbd9a227933f2061047950c650027974e89575eede6c39a303c292bc"
+    },
+    {
+      "bytes": 2584,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/adoption_inputs_prior_v2_increment.py",
+      "sha256": "0dde0a5de98187e29d46ea24d632d5730586cfeb67d2f1cbc329456c83697530"
+    },
+    {
+      "bytes": 7056,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/POST-V2-CONSUMPTION.patch",
+      "sha256": "a160fc203e63cbbc8db6121dcfee037bf7e9f0cc7c54791015ec2f5b7d986e52"
+    },
+    {
+      "bytes": 844,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/ADOPTION-INPUTS-PRIOR-V2.patch",
+      "sha256": "16c5c1bcfce2339d6e41f667d350f644a319caf6c2812b0b07825c2f5ffed765"
+    },
+    {
+      "bytes": 621,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-live02-capture-r6-1ad3-candidate02/SOURCE-MANIFEST.json",
+      "sha256": "9cb8f7bc7ea82de7cd20f744c7112746f0d11086821eba54409ec7ef0e3de904"
+    },
+    {
+      "bytes": 20913,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-live02-capture-r6-1ad3-candidate02/source/run_runtime_properties_policy_once.py",
+      "sha256": "4b1ae865a7266c26c3f2a862e202ec0d09fc6fb94b0831e53e807a6f0c90addd"
+    }
+  ],
+  "checks": [
+    {
+      "fixture_only_not_actual_qualification": true,
+      "name": "valid_transitive",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_qualification": true,
+      "name": "execution_v1",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_qualification": true,
+      "name": "plan_other_prior",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_qualification": true,
+      "name": "intent_other_prior",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_qualification": true,
+      "name": "verifier_other_prior",
+      "passed": true
+    },
+    {
+      "name": "both_Mac_and_P4_routes_require_v2_prior_and_stage_the_new_helper",
+      "passed": true
+    },
+    {
+      "name": "adoption_transitive_callback_exact_inverse_and_filled_pin_only_admission",
+      "passed": true
+    },
+    {
+      "name": "exact3_transport_originals_and_unchanged_three_prior_calls",
+      "passed": true
+    },
+    {
+      "name": "separate_true_source_loaders_and_outer_owner_cleanup_before_v2_failure",
+      "passed": true
+    }
+  ],
+  "findings": [],
+  "fixed_capture_source_0374_suite_reexecuted": false,
+  "mac_calls": 0,
+  "main_calls": 0,
+  "phone_calls": 0,
+  "policy_parser_calls": 0,
+  "policy_writes": 0,
+  "remaining_required_integration": [
+    "The final captured verifier must itself enforce v2 and the exact fixed failed predecessor inside verify_root_transaction.",
+    "Apply the independent adoption-input source increment inside the final nine-source generation and rebind its support/source hashes.",
+    "Freeze actual final live02 source pins and retain the unchanged stage/verifier resource caps; do not reuse live01 staging as live02 evidence.",
+    "Root remains the single device owner and must reconcile the other existing chain before any phone operation."
+  ],
+  "reviewed_failed_predecessor_fragment": {
+    "bytes": 16660,
+    "path": "/workspace/scratch/1ad3d6f55439/recovery_source_cache/prior_failed_transaction.fragment.py",
+    "sha256": "399648dac4e309e8e030e93b91914b6aa14feeb1d58573e89f83020220dab180"
+  },
+  "reviewed_original_r2_driver": {
+    "bytes": 19616,
+    "path": "/workspace/scratch/1ad3d6f55439/recovery_source_cache/r2-run_runtime_properties_policy_once.py",
+    "sha256": "574e639f52a3b99dc2ea6d6f82a7455d445fdb4d758bc486cf877df316921ebb"
+  },
+  "schema": "hepta.runtime-properties.live02-consumption-independent-review.v1",
+  "state": "LOCAL_SOURCE_AND_INTERFACE_REVIEW_PASSED_PENDING_ACTUAL_LIVE02_OPERATOR_BINDINGS",
+  "transport_loaders_executed_by_this_review": false,
+  "unchanged_staged_helper": {
+    "bytes": 22144,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_runtime_properties_post.py",
+    "sha256": "8fbbf6a0da8d12dcef7ae911654efbb2f09bb5d379dc41c18f36bba05c4a75b7"
+  }
+}

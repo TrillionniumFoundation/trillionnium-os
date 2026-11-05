@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "bytes": 20913,
+      "path": "source/run_runtime_properties_policy_once.py",
+      "sha256": "4b1ae865a7266c26c3f2a862e202ec0d09fc6fb94b0831e53e807a6f0c90addd"
+    },
+    {
+      "bytes": 68481,
+      "path": "source/run_component_root_once.py",
+      "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+    },
+    {
+      "bytes": 43438,
+      "path": "reference/run_component_root_once.r4.original.py",
+      "sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22"
+    }
+  ],
+  "schema": "hepta.root.runtime-properties-live-source-package.v1"
+}

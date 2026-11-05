@@ -1,0 +1,22 @@
+{
+  "actual_finalization_executed": false,
+  "case_runs": 0,
+  "checked": [
+    "plan_from_delivery agrees with actual cascade519611 DELIVERY fields and source paths",
+    "FC manifest schema v8, actual runtime revision and32 members, policy adoption actual_export and Root decision consistency",
+    "Only seven component context RHS expressions and four shared active RHS expressions change",
+    "Component INTERFACE two CLI source paths and runtime pin, original package manifest metadata relationships",
+    "Actor/fixture results are not case PASS; host lifecycle and physical closure gaps remain explicit"
+  ],
+  "method": "Independent read-only local source inspection; no remote or phone call",
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "result": "PASS_NO_BLOCKING_FINDINGS",
+  "reviewer_agent": "/root/property_diagnostic",
+  "schema": "hepta.r8.downstream-independent-source-review.v1",
+  "source": {
+    "bytes": 42940,
+    "path": "/workspace/scratch/1ad3d6f55439/downstream_finalizer/source/finalize_component_cancel_fault.py",
+    "sha256": "97f3a15283dba35b4f7dd9deb75a1f4d37a93e430b4d8573b81feb9a9a8994bb"
+  }
+}

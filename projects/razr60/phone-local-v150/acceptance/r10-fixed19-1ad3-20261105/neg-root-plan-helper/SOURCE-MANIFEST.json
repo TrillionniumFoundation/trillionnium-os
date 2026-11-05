@@ -1,0 +1,50 @@
+{
+  "actual_plan_created": false,
+  "actual_validate_plan_called": false,
+  "component_qualified": false,
+  "files": [
+    {
+      "bytes": 1213,
+      "path": "INTERFACE.json",
+      "sha256": "bdac4aa7d13227dbc50b77803699e74e43d4b65dc27374242d0482d4b2749ddf"
+    },
+    {
+      "bytes": 488,
+      "path": "PREPARE-NEG01.template.json",
+      "sha256": "7d5c601c2bf1fd81df9c987eb7841c9f642e422ac072e65915367d70f3f09406"
+    },
+    {
+      "bytes": 488,
+      "path": "PREPARE-NEG02.template.json",
+      "sha256": "4786db47c0b99d00adb6b4bdf3b928ca8a868d928ed6ea3bb3d10d0b43c3f3ba"
+    },
+    {
+      "bytes": 4759,
+      "path": "README.md",
+      "sha256": "8ec606267bb7848ef4a5673a3f645f1d8d7da3f0591b8c557d762b47e80e2323"
+    },
+    {
+      "bytes": 24237,
+      "path": "source/prepare_native_guard_root_plan.py",
+      "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+    },
+    {
+      "bytes": 1263,
+      "path": "validation/HOST-RESULT.json",
+      "sha256": "514fda0ab0e7ad526fd7a3eeabbbe79e9b2aa3779e829f358542d7982fcb7920"
+    },
+    {
+      "bytes": 10248,
+      "path": "validation/test_prepare_only.py",
+      "sha256": "6f1b71396301ed34b343330ee8052eb7b1719e5e60dcefcdcd34029d899b4234"
+    }
+  ],
+  "future_adoption_and_freeze_pins_supplied_as_exact_actual_input_descriptors": true,
+  "native_submissions": 0,
+  "phone_calls": 0,
+  "random_identities_generated": 0,
+  "reviewed_freezer_template_sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509",
+  "reviewed_root_template_sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649",
+  "schema": "hepta.native-guard.r8-root-plan-preparation-source-package.v1",
+  "state": "SOURCE_REVIEWED_HOST_PREPARATION_ONLY_NOT_ACTUAL_VALIDATION"
+}

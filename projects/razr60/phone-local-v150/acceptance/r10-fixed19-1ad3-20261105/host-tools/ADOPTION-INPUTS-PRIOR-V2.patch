@@ -1,0 +1,14 @@
+--- retained/make_runtime_properties_adoption_inputs.py
++++ reviewed/make_runtime_properties_adoption_inputs.py
+@@ -43,6 +43,11 @@
+     for row in V.strict(add(prepared['stage_request_provenance'])):
+         add(row['source']);add(row['request'])
+     root=V.strict(add(live['root_plan']))
++    H.need(root['schema']=='hepta.root.runtime-properties-live-plan.v2'
++        and root['prior_failed_transaction']==V.PRIOR_FAILED_TRANSACTION,
++        'exact live02 plan and failed live01 predecessor required')
++    prior_raw=add(root['prior_failed_transaction'])
++    V.verify_prior_failed_transaction(prior_raw,read_pinned=add)
+     for key in ('driver_source','source_package','capture_source','transport_root_plan'):
+         add(root[key])
+     package=V.strict(add(root['source_package']));parent=Path(root['source_package']['path']).parent

@@ -1,0 +1,139 @@
+{
+  "case_runs": 0,
+  "cases": [
+    {
+      "detail": {
+        "actual_inputs_required": [
+          "runtime_manifest",
+          "consumer",
+          "readiness",
+          "final_consumer_manifest",
+          "policy",
+          "adoption",
+          "materializer"
+        ],
+        "case_runs": 0,
+        "phone_calls": 0,
+        "physical_case_pass": false,
+        "state": "SOURCE_ONLY_NO_INPUTS_READ"
+      },
+      "name": "default_does_not_read_even_named_nonexistent_plan",
+      "passed": true
+    },
+    {
+      "detail": {
+        "manifest_pins": {
+          "cancel": {
+            "bytes": 4262,
+            "path": "/workspace/scratch/1ad3d6f55439/downstream_review_cache/cancel-native-r10-r1-host-candidate05/MANIFEST.json",
+            "sha256": "65720e417594205b45172fe509f3419d607d3dbf1e579b2a17faa8b40315ca10"
+          },
+          "component": {
+            "bytes": 1469,
+            "path": "/workspace/scratch/1ad3d6f55439/downstream_review_cache/fixed19-comp01-neg03-r7-source-candidate01/MANIFEST.json",
+            "sha256": "669b344d40cda3412f0eae806b1db53585342d07eee154fd766913ae889b59ce"
+          },
+          "fault": {
+            "bytes": 2517,
+            "path": "/workspace/scratch/1ad3d6f55439/downstream_review_cache/fault-signal-r10-r1-operator-final05/MANIFEST.json",
+            "sha256": "fff728422175cc90a9e818b3b32da873c70c95de269994ebe9c097b770cfc619"
+          }
+        },
+        "members": {
+          "cancel": 8,
+          "component": 8,
+          "fault": 8
+        }
+      },
+      "name": "all_exact_reviewed_baseline_members_loaded",
+      "passed": true
+    },
+    {
+      "detail": {
+        "full_actual_adoption_verification_claimed": false,
+        "mismatches_rejected": {
+          "actual_export_not_offline_candidate": "actual exported policy adoption differs",
+          "consumer_to_runtime": "consumer runtime/policy/adoption literal differs",
+          "final_consumer_member": "final-consumer source member differs: consumer",
+          "readiness_to_consumer": "readiness does not bind actual consumer",
+          "source_finalization_does_not_admit_service": "explicit Root actual-export decision missing",
+          "unreviewed_materializer_blocked_by_full_validator": "materializer logic must remain byte-identical b251"
+        },
+        "synthetic_relationship_positive": true
+      },
+      "name": "synthetic_crosslinks_and_real_materializer_rejection_gate",
+      "passed": true
+    },
+    {
+      "detail": {
+        "mismatched_delivery_to_adoption_rejected": "cascade actual policy is not adoption actual_export",
+        "seven_descriptors_resolved_without_future_pin_invention": true,
+        "synthetic_only_full_prepare_still_rejects_materializer": true
+      },
+      "name": "actual_delivery_shape_resolves_exact_source_paths_and_pins",
+      "passed": true
+    },
+    {
+      "detail": {
+        "cancel": {
+          "changed": [
+            "source/active_runtime_r10.py"
+          ],
+          "preserved": 7
+        },
+        "component": {
+          "changed": [
+            "INTERFACE.json",
+            "source/component_source_context.py"
+          ],
+          "preserved": 6
+        },
+        "fault": {
+          "changed": [
+            "source/active_runtime_r10.py"
+          ],
+          "preserved": 7
+        }
+      },
+      "name": "only_allowlisted_context_interface_active_bytes_change",
+      "passed": true
+    },
+    {
+      "detail": {
+        "existing_component_verifier_accepts_exact_nine_files": true,
+        "reuse_rejected": "[Errno 17] File exists: '/workspace/scratch/1ad3d6f55439/downstream_finalizer/evidence/source-check02/SYNTHETIC-DERIVATION-NOT-ACTUAL'",
+        "source_only_no_case_execution": true,
+        "wrapper_metadata_stays_outside_component": true
+      },
+      "name": "actual_existing_component_verifier_and_create_only_output",
+      "passed": true
+    },
+    {
+      "detail": {
+        "same_byte_replacement_rejected": "held output file replaced"
+      },
+      "name": "held_output_inode_replacement_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "same_byte_original_replacement_rejected": "original replaced across reads"
+      },
+      "name": "original_identity_rechecked_before_publication",
+      "passed": true
+    }
+  ],
+  "full_actual_production_finalization_run": false,
+  "model_requests": 0,
+  "passed": true,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "schema": "hepta.r8.downstream-source-check.v1",
+  "signals": 0,
+  "source": {
+    "bytes": 42940,
+    "path": "/workspace/scratch/1ad3d6f55439/downstream_finalizer/source/finalize_component_cancel_fault.py",
+    "sha256": "97f3a15283dba35b4f7dd9deb75a1f4d37a93e430b4d8573b81feb9a9a8994bb"
+  },
+  "synthetic_relationship_fixtures_not_physical_evidence": true
+}

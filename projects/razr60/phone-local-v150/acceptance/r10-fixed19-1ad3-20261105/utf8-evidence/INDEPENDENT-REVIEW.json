@@ -1,0 +1,135 @@
+{
+  "cases": [
+    {
+      "case": "fourteen_named_unicode_originals_exact_roundtrip_both_real_decoder_segments",
+      "passed": true
+    },
+    {
+      "case": "duplicate-key",
+      "decoder_error_types": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "non-string-value",
+      "decoder_error_types": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "non-object-envelope",
+      "decoder_error_types": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "non-utf8-envelope",
+      "decoder_error_types": [
+        "UnicodeDecodeError",
+        "UnicodeDecodeError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "unpaired-surrogate",
+      "decoder_error_types": [
+        "UnicodeEncodeError",
+        "UnicodeEncodeError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "file-pin-mismatch",
+      "decoder_error_types": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "wrong-encoding-marker",
+      "decoder_error_types": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "extra-gzip-member",
+      "decoder_error_types": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "compressed-over-cap",
+      "decoder_error_types": [
+        "ValueError",
+        "ValueError"
+      ],
+      "passed": true
+    },
+    {
+      "case": "host-non-utf8-rejected",
+      "detail": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte",
+      "error_type": "UnicodeDecodeError",
+      "passed": true
+    },
+    {
+      "case": "host-plain-over-cap-rejected",
+      "detail": "bounded plain stage envelope",
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "case": "host-compressed-over-cap-rejected",
+      "detail": "bounded compressed stage envelope",
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "case": "modified-stage-file-check-rejected-by-exact-AST-verifier",
+      "passed": true
+    }
+  ],
+  "complete_actual_root_transaction_not_executed": true,
+  "failed": 0,
+  "file_put_calls": 0,
+  "fixed19_qualification": false,
+  "fixture_file_count": 14,
+  "fixture_is_actual_policy_payload": false,
+  "main_calls": 0,
+  "original_budgets_preserved": true,
+  "passed": 14,
+  "phone_calls": 0,
+  "prepare_and_verifier_stage_final_bytes_equal": true,
+  "root_guard_calls": 0,
+  "same_original_nine_source_admission_pins": true,
+  "schema": "hepta.runtime-properties.utf8-codec-independent-review.v1",
+  "source": {
+    "freezer": {
+      "bytes": 24474,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/utf8-codec-independent01/freeze_runtime_properties_live_utf8.py",
+      "sha256": "f0f3899a98c789021d570d7164dbbd6ae03a698e9e6d96ace9a5aa6a0d027048"
+    },
+    "prepare": {
+      "bytes": 19499,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/utf8-codec-independent01/source/prepare_live_runtime_properties.py",
+      "sha256": "85c9f7db8f09fc40a3573ac774fcd92458fea28e061b4dcf33f53758ab207a08"
+    },
+    "verifier": {
+      "bytes": 103931,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/utf8-codec-independent01/source/policy_runtime_properties_verifier.py",
+      "sha256": "026d1509cb0f3758c2b51c66b716a2ba584931ee2855ef643d933d77c1d2e01f"
+    }
+  },
+  "unchanged_other_functions": true,
+  "unchanged_stage_base_and_part": true
+}

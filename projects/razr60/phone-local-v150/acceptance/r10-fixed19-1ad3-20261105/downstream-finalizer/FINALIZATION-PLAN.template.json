@@ -1,0 +1,31 @@
+{
+  "actual": {
+    "adoption": null,
+    "consumer": null,
+    "final_consumer_manifest": null,
+    "materializer": null,
+    "policy": null,
+    "readiness": null,
+    "runtime_manifest": null
+  },
+  "base_packages": {
+    "cancel": {
+      "bytes": 4262,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cancel-native-r10-r1-host-candidate05/MANIFEST.json",
+      "sha256": "65720e417594205b45172fe509f3419d607d3dbf1e579b2a17faa8b40315ca10"
+    },
+    "component": {
+      "bytes": 1469,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-comp01-neg03-r7-source-candidate01/MANIFEST.json",
+      "sha256": "669b344d40cda3412f0eae806b1db53585342d07eee154fd766913ae889b59ce"
+    },
+    "fault": {
+      "bytes": 2517,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fault-signal-r10-r1-operator-final05/MANIFEST.json",
+      "sha256": "fff728422175cc90a9e818b3b32da873c70c95de269994ebe9c097b770cfc619"
+    }
+  },
+  "expected_final_consumer_schema": "hepta.r10.final-boundary-consumers.v8",
+  "output_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-downstream-source-r8-1ad3-final01",
+  "schema": "hepta.r8.downstream-source-finalization-plan.v1"
+}

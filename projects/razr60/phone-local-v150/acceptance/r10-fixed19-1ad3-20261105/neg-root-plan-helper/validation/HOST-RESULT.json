@@ -1,0 +1,42 @@
+{
+  "actual_freeze_read": false,
+  "actual_plan_created": false,
+  "actual_validate_plan_called": false,
+  "checks": [
+    {
+      "name": "reviewed_freezer_root_bridge_literal_roundtrip_exact",
+      "passed": true
+    },
+    {
+      "name": "NEG01_uses08_and_current_generation_preserves_stable_materials",
+      "passed": true
+    },
+    {
+      "name": "historical_nonce_replay_and_wrong_request_nonce_rejected",
+      "passed": true
+    },
+    {
+      "name": "NEG02_uses_only_qualified_current_NEG01_result",
+      "passed": true
+    },
+    {
+      "name": "failed_or_foreign_generation_NEG01_rejected_for_NEG02",
+      "passed": true
+    },
+    {
+      "name": "helper_has_no_process_phone_identity_generation_endpoint",
+      "passed": true
+    }
+  ],
+  "component_qualified": false,
+  "new_random_identities_generated": 0,
+  "phone_calls": 0,
+  "remote_operations": 0,
+  "schema": "hepta.native-guard.r8-root-plan-helper-local-review.v1",
+  "source": {
+    "bytes": 24237,
+    "path": "/workspace/scratch/1ad3d6f55439/neg_root_plan_helper_r8/source/prepare_native_guard_root_plan.py",
+    "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+  },
+  "state": "SIX_LOCAL_SYNTHETIC_SOURCE_CHECKS_PASSED_NOT_ACTUAL_PLAN_VALIDATION"
+}

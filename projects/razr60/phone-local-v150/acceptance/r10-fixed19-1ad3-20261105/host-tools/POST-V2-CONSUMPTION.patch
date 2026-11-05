@@ -1,0 +1,100 @@
+--- retained/prepare_runtime_properties_post.py
++++ reviewed/prepare_runtime_properties_post_v2.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Prepare a real captured live policy for the independent P4 comparison.
++"""Prepare an exact live02 capture and its failed live01 predecessor for P4.
+ 
+ mac-stage validates the actual captured transaction and creates an exact transfer
+ archive. unpack and p4-plan are create-only host operations. No phase contacts a
+@@ -27,6 +27,7 @@
+  'post_live_compare_runtime_properties.py': (64188,'151a1d724a82d611202054eb0dd5326fe4f4311ff78599b61c6bf58d68a2cf8f'),
+  'policy_runtime_properties_image.c': (22838,'da60ee90209a26216f053064a7ca47ebcb73c4730b4e00378886b5d653de09aa'),
+ }
++PRIOR_FAILED_TRANSACTION = {'bytes': 3715, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-01/FAILED-PREFLIGHT-RECONCILIATION-01/RESULT.json', 'sha256': 'c52efc070658e5f05f47e3e5f57acf4272f5556a8ab32c6bc615b8f57c4f0cb4'}
+ POST_FIELDS = {'schema','root_scope_decision','parent_adoption','parent','candidate','image_build_result',
+  'live_provenance_inputs','live_verifier_source','input_original_map','delta_rule','full_rule','parent_rule',
+  'tool_inventory','image_comparator','image_comparator_source','parent_av_originals','parent_set_av_originals',
+@@ -115,6 +116,30 @@
+     need(len(packed)<=128*1024*1024,'bounded transfer archive');return packed
+ 
+ 
++def verify_v2_prior_inputs(V,live,get):
++    plan=strict(get(live['root_plan']));intent=strict(get(live['root_intent']))
++    execution=strict(get(live['root_execution']))
++    need(plan['schema']=='hepta.root.runtime-properties-live-plan.v2'
++         and intent['schema']=='hepta.root.runtime-properties-live-intent.v2'
++         and execution['schema']=='hepta.root.runtime-properties-live-execution.v2'
++         and all(value.get('prior_failed_transaction')==PRIOR_FAILED_TRANSACTION
++                 for value in (plan,intent,execution)),
++         'exact live02 plan/intent/execution and fixed failed live01 predecessor required')
++    need(intent['plan_sha256']==live['root_plan']['sha256']
++         and execution['root_plan']==live['root_plan'] and execution['root_intent']==live['root_intent']
++         and execution['state']=='ORIGINAL_POLICY_APPLY_CAPTURED_PENDING_INDEPENDENT_COMPARISON'
++         and execution['policy_apply_calls']==1 and execution['known_apply_error'] is None
++         and V.PRIOR_FAILED_TRANSACTION==PRIOR_FAILED_TRANSACTION,
++         'completed live02 transaction or captured predecessor verifier differs')
++    result=V.verify_prior_failed_transaction(get(PRIOR_FAILED_TRANSACTION),read_pinned=get)
++    need(result['schema']=='hepta.runtime-properties-r10.failed-predecessor-verification.v1'
++         and result['state']=='ACTUAL_LIVE01_FAILED_BEFORE_POLICY_INVOCATION'
++         and result['actual_magiskpolicy_invocations']==0 and result['old_stage_preserved'] is True
++         and result['old_output_absent'] is True and result['automatic_retry'] is False
++         and result['replayed_apply'] is False,'fixed predecessor proof did not pass')
++    return result
++
++
+ def mac_stage(a):
+     out=a.out;p4_destination(a.p4_root)
+     need(out.is_absolute() and out.parent.resolve(strict=True)==out.parent
+@@ -122,7 +147,7 @@
+     o=Originals();freeze_desc=strict(a.freeze_result_desc);execution_desc=strict(a.root_execution_desc)
+     freeze=strict(o.read(freeze_desc));execution=strict(o.read(execution_desc))
+     need(freeze['state']=='EXACT_LITERAL_SOURCE_FREEZE_AND_PREPARATION_INPUTS_WRITTEN_HOST_ONLY'
+-         and execution['schema']=='hepta.root.runtime-properties-live-execution.v1'
++         and execution['schema']=='hepta.root.runtime-properties-live-execution.v2'
+          and execution['state']=='ORIGINAL_POLICY_APPLY_CAPTURED_PENDING_INDEPENDENT_COMPARISON'
+          and execution['policy_apply_calls']==1 and execution['known_apply_error'] is None,
+          'completed exact one-apply Root capture required')
+@@ -151,6 +176,7 @@
+     used={}
+     def get(row):
+         raw=o.read(row);used[key(row)]=(row,raw);return raw
++    verify_v2_prior_inputs(V,live,get)
+     summary=V.verify_live_capture(live,read_pinned=get)
+     need(summary['actual_after_policy']==host['actual_live_policy'] and summary['policy_adoption_authorized'] is False,
+          'actual export relationship differs')
+@@ -165,7 +191,7 @@
+     source_root=B/'policy-runtime-properties-r10-r1-source-final02/source'
+     for name,pin in SOURCES.items():
+         files['source/'+name]=o.read({'path':str(source_root/name),'bytes':pin[0],'sha256':pin[1]})
+-    self_row=o.known(Path(__file__).resolve());files['source/prepare_runtime_properties_post.py']=o.read(self_row)
++    self_row=o.known(Path(__file__).resolve());files['source/prepare_runtime_properties_post_v2.py']=o.read(self_row)
+     offline_exec_raw=o.read(freeze['offline_execution']);offline_exec=strict(offline_exec_raw)
+     need(offline_exec['state']=='ACTUAL_HOST_CONSTRUCTION_AND_COMPLETE_COMPARISON_FINISHED'
+          and offline_exec['check_count']==offline_exec['passed_count']==16,'actual offline execution required')
+@@ -203,7 +229,7 @@
+         live_provenance=live_desc,root_execution=execution_desc,freeze_result=freeze_desc,
+         original_bookends=list(o.seen.values()),
+         p4_plan_entry={'executable':'/usr/bin/python3','argv':['-I','-B',
+-            str(a.p4_root/'source/prepare_runtime_properties_post.py'),'p4-plan',
++            str(a.p4_root/'source/prepare_runtime_properties_post_v2.py'),'p4-plan',
+             '--stage-manifest-desc',json.dumps(desc(a.p4_root/'STAGE-MANIFEST.json',stage_raw),sort_keys=True),
+             '--execute-host-plan']})
+     result_desc=put(out/'POST-STAGE-RESULT.json',enc(result))
+@@ -253,7 +279,7 @@
+     for row in stage['files']:
+         relative(row['path']);need(row['path'] not in staged,'duplicate stage row')
+         staged[row['path']]=o.read({'path':str(root/row['path']),**bp(row)})
+-    need(staged['source/prepare_runtime_properties_post.py']==Path(__file__).resolve().read_bytes(),
++    need(staged['source/prepare_runtime_properties_post_v2.py']==Path(__file__).resolve().read_bytes(),
+          'actual stage preparer differs')
+     for name,pin in SOURCES.items():need(desc(root/'source'/name,staged['source/'+name])==
+         {'path':str(root/'source'/name),'bytes':pin[0],'sha256':pin[1]},'reviewed comparator source differs')
+@@ -267,6 +293,7 @@
+     def get(row):need(key(row) in index,'unmapped live original');return o.read(index[key(row)])
+     V=load_verifier(seed['live_verifier_source'],o.read(seed['live_verifier_source']))
+     live_raw=o.read(seed['live_provenance_inputs']);live=strict(live_raw)
++    verify_v2_prior_inputs(V,live,get)
+     summary=V.verify_live_capture(live,read_pinned=get)
+     for name,field in (('parent','parent'),('candidate','candidate'),('root_scope_decision','root_scope_decision'),
+                        ('parent_adoption_history','parent_adoption')):

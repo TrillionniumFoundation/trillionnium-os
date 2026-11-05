@@ -1,0 +1,48 @@
+{
+  "driver": {
+    "bytes": 20913,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-live02-capture-r6-1ad3-candidate02/source/run_runtime_properties_policy_once.py",
+    "sha256": "4b1ae865a7266c26c3f2a862e202ec0d09fc6fb94b0831e53e807a6f0c90addd"
+  },
+  "driver_loader_checks": {
+    "case": "driver-explicit-source-separation",
+    "execution_module_actual_file": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-live02-capture-r6-1ad3-candidate02/source/run_component_root_once.py",
+    "full_actual_mac_plan_not_executed": true,
+    "historical_plan_validator_call_is_explicit": true,
+    "historical_validator_actual_file": "/workspace/scratch/1ad3d6f55439/transport_fix/root-runtime-properties-live02-capture-r6-1ad3-candidate02/reference/run_component_root_once.r4.original.py",
+    "manifest_exact_three_files_verified": true,
+    "modified_execution_source_rejected": true,
+    "modified_historical_source_rejected": true,
+    "passed": true,
+    "phone_calls": 0
+  },
+  "final_failure_cleanup_precedes_publication_and_preserves_prior": true,
+  "fixed19_qualified": 0,
+  "manifest": {
+    "bytes": 621,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-runtime-properties-live02-capture-r6-1ad3-candidate02/SOURCE-MANIFEST.json",
+    "sha256": "9cb8f7bc7ea82de7cd20f744c7112746f0d11086821eba54409ec7ef0e3de904"
+  },
+  "old_transaction_and_new_live02_namespaces_unchanged": true,
+  "parent": {
+    "bytes": 19616,
+    "sha256": "574e639f52a3b99dc2ea6d6f82a7455d445fdb4d758bc486cf877df316921ebb"
+  },
+  "phone_calls": 0,
+  "policy_apply_calls": 0,
+  "prior_failure_three_calls_AST_identical": true,
+  "required_integration": [
+    "Future actual verifier root-transaction check must bind these exact three manifest members.",
+    "Regenerate host prepared binding, expectation and Root plan from final source bytes.",
+    "Keep failed-live01 proof and live02 v2 schemas; never replay old427f.",
+    "This source candidate is not an execution or replacement for actual adoption."
+  ],
+  "schema": "hepta.root.live02-r2-capture-port.v1",
+  "state": "HOST_SOURCE_CANDIDATE_NOT_EXECUTED_ON_PHONE",
+  "unchanged_capture_source_existing_Linux_and_Mac_tests": [
+    33,
+    6,
+    7
+  ],
+  "whole_inverse_equals_r2": true
+}

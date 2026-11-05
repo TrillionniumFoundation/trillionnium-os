@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.root.fixed19.integration-checkpoint.v1",
+  "state": "HOST_REPAIRS_AND_LIVE02_CONSUMPTION_READY_DEVICE_ACCEPTANCE_PENDING",
+  "qualified_cases": 0,
+  "required_cases": 19,
+  "root_session_phone_calls": 0,
+  "root_session_policy_apply_calls": 0,
+  "existing_external_transaction": {
+    "name": "policy-runtime-properties-r10-live-01",
+    "job_id": "1a1aa66baf5-fc05-427f",
+    "state": "KNOWN_PREFLIGHT_TIMEOUT_ZERO_POLICY_INVOCATIONS_OUTPUT_NAMESPACE_ABSENT",
+    "reconciliation_sha256": "c52efc070658e5f05f47e3e5f57acf4272f5556a8ab32c6bc615b8f57c4f0cb4",
+    "policy_sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7",
+    "staging_writes_did_occur": true,
+    "replayed_by_this_session": false
+  },
+  "host_transport": {
+    "capture_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+    "original_validator_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+    "linux_suite_counts": [33, 6, 7],
+    "mac_suite_counts": [33, 6, 7],
+    "live02_driver_sha256": "4b1ae865a7266c26c3f2a862e202ec0d09fc6fb94b0831e53e807a6f0c90addd",
+    "live02_source_manifest_sha256": "9cb8f7bc7ea82de7cd20f744c7112746f0d11086821eba54409ec7ef0e3de904",
+    "live02_prior_failure_calls_unchanged": 3,
+    "outer_failure_capture_cleanup_retained": true,
+    "device_execution_qualified": false
+  },
+  "utf8_staging": {
+    "encoding": "strict-utf8-json-v1",
+    "plain_bytes": 826420,
+    "gzip_bytes": 111997,
+    "parts": 7,
+    "requests_including_final": 8,
+    "largest_service_bytes": 33895,
+    "caps_unchanged": true,
+    "actual_host_prepared": true,
+    "actual_root_plan_created": false,
+    "root_plan_stop": "fixed live01 output namespace already consumed by a separately running transaction",
+    "phone_stage_executed_by_this_session": false
+  },
+  "existing_phone_cache_measurement": {
+    "result_sha256": "7afad033e85fb9198a832367218d6d01990ff135b8e33f06b3c30767428883a7",
+    "guard_sha256": "0ae55887962f475f19915efa0d702ba7ec02f8e65ad75f98d83b7ee5c9868905",
+    "preserved_calls": 2,
+    "combined_wall_seconds": 53.47296560497489,
+    "deadline_seconds": 70,
+    "preflight_calls": 0,
+    "policy_writes": 0,
+    "complete_preflight_proven": false
+  },
+  "next_required_evidence": [
+    "one reconciled and reviewed live02 transaction with complete original capture",
+    "actual post-live sixteen-family policy comparison and adoption",
+    "current R8 runtime and exact downstream source finalization",
+    "actual qualified NEG01 and NEG02 followed by sealed release and READY",
+    "four fresh business cases and direct COMP01/NEG03 device observations",
+    "five host isolated lifecycle cases plus required physical cases",
+    "six host cases covering model timeout and identity/resource boundaries under exact current generation"
+  ],
+  "no_previous_generation_PASS_carried_forward": true
+}

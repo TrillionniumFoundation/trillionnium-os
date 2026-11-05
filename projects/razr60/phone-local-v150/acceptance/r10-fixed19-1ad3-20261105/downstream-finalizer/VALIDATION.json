@@ -1,0 +1,39 @@
+{
+  "case_runs": 0,
+  "checks_failed": 0,
+  "checks_passed": 8,
+  "full_actual_production_finalization_run": false,
+  "harness": {
+    "bytes": 17216,
+    "path": "/workspace/scratch/1ad3d6f55439/downstream_finalizer/test_source_finalizer.py",
+    "sha256": "60cba1ccdb787dce2a5c2b5891e3fe7f3b9fb6fca48f84e71ebeeceb794bbf5f"
+  },
+  "independent_code_review_status": "PASS_NO_BLOCKING_FINDINGS",
+  "independent_review": {
+    "bytes": 1140,
+    "path": "/workspace/scratch/1ad3d6f55439/downstream_finalizer/INDEPENDENT-REVIEW.json",
+    "sha256": "e0eb798fae96e0a4bc9ecbac0f449ccbabec0e3a2671551c96ebabfbbffef184"
+  },
+  "known_gaps": [
+    "COMP01 Root once-dispatch/transport/restoration/final closure entry not in this package",
+    "NEG03 actual external-display/rotation physical entry missing",
+    "NEG04/05/07/08/09 original host lifecycle runner not in reviewed three-package inventory",
+    "NEG08/09 actual task/host assembler and independent late/global closure not included",
+    "Fault actor final counters/full transport/cleanup/physical closure not included"
+  ],
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "runtime_or_policy_adoption_qualified": false,
+  "schema": "hepta.r8.downstream-source-validation.v1",
+  "source": {
+    "bytes": 42940,
+    "path": "/workspace/scratch/1ad3d6f55439/downstream_finalizer/source/finalize_component_cancel_fault.py",
+    "sha256": "97f3a15283dba35b4f7dd9deb75a1f4d37a93e430b4d8573b81feb9a9a8994bb"
+  },
+  "state": "LOCAL_SOURCE_AND_FD_CHECKS_PASSED_ACTUAL_FINALIZATION_NOT_RUN",
+  "test_result": {
+    "bytes": 4823,
+    "path": "/workspace/scratch/1ad3d6f55439/downstream_finalizer/evidence/source-check02/TEST-RESULT.json",
+    "sha256": "ab739b569f7a07de3f182d7d16e63e38174103d35a07a16f7f374795a53cd894"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "case_runs": 0,
+  "entry": "source/finalize_component_cancel_fault.py",
+  "files": [
+    {
+      "bytes": 42940,
+      "path": "source/finalize_component_cancel_fault.py",
+      "sha256": "97f3a15283dba35b4f7dd9deb75a1f4d37a93e430b4d8573b81feb9a9a8994bb"
+    },
+    {
+      "bytes": 17216,
+      "path": "test_source_finalizer.py",
+      "sha256": "60cba1ccdb787dce2a5c2b5891e3fe7f3b9fb6fca48f84e71ebeeceb794bbf5f"
+    },
+    {
+      "bytes": 1434,
+      "path": "FINALIZATION-PLAN.template.json",
+      "sha256": "2da82c0a055df08ea5db57d1b8416a6af1280384be41db33fc4533db5a0bafce"
+    },
+    {
+      "bytes": 10082,
+      "path": "README.md",
+      "sha256": "6e234b21f9856b05a7eeb493e434ea2c017da7d5d20d1faafb72d6f7144734f5"
+    },
+    {
+      "bytes": 1775,
+      "path": "VALIDATION.json",
+      "sha256": "565f580b594a6c77b8d440094bf9de39a1728d5ca4bf439cf1cfd8d1bdd1f2c3"
+    },
+    {
+      "bytes": 4823,
+      "path": "evidence/source-check02/TEST-RESULT.json",
+      "sha256": "ab739b569f7a07de3f182d7d16e63e38174103d35a07a16f7f374795a53cd894"
+    },
+    {
+      "bytes": 1140,
+      "path": "INDEPENDENT-REVIEW.json",
+      "sha256": "e0eb798fae96e0a4bc9ecbac0f449ccbabec0e3a2671551c96ebabfbbffef184"
+    }
+  ],
+  "full_actual_production_finalization_run": false,
+  "independent_code_review": "PASS_NO_BLOCKING_FINDINGS",
+  "old_three_package_manifests": [
+    "669b344d40cda3412f0eae806b1db53585342d07eee154fd766913ae889b59ce",
+    "65720e417594205b45172fe509f3419d607d3dbf1e579b2a17faa8b40315ca10",
+    "fff728422175cc90a9e818b3b32da873c70c95de269994ebe9c097b770cfc619"
+  ],
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "schema": "hepta.r8.downstream-source-finalizer-package.v1",
+  "state": "SOURCE_HELPER_READY_WAITING_ACTUAL_CASCADE_INPUTS"
+}
