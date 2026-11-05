@@ -1,0 +1,14 @@
+--- a/audit_policy_history_once.py
++++ b/audit_policy_history_once.py
+@@ -325,7 +325,10 @@
+         self.budget.check()
+         current = metadata(os.fstat(self.fd))
+         named = metadata(os.stat(OUT.name, dir_fd=self.parent_fds[-1], follow_symlinks=False))
+-        need(current == named and current[:6] == self.identity[:6]
++        # Own member creation can change directory nlink, size and timestamps.
++        # Keep device/inode/type+permissions/uid/gid fixed; current held/named
++        # full9, the exact member set and every leaf's full9/nlink checks remain.
++        need(current == named and current[:5] == self.identity[:5]
+              and sorted(os.listdir(self.fd)) == sorted(self.members), 'owned output directory changed')
+         reopened, chain = parent_chain(OUT, self.budget)
+         try:

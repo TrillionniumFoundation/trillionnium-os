@@ -1,0 +1,295 @@
+{
+  "actual_mac_candidate_execution": false,
+  "cases": [
+    {
+      "name": "actual_create_write_readback",
+      "observation": {
+        "actual_complete_readback": true,
+        "actual_files_created": 2,
+        "physical_read_bytes": 103
+      },
+      "passed": true
+    },
+    {
+      "name": "recorded_mac_counter_actual_class",
+      "observation": {
+        "actual_files_created": 2,
+        "actual_mac_candidate_execution": false,
+        "mac_probe_key": "hepta-cp09-owned-dir-probe-acceptanceaudit-01-4b572de398a74ce0",
+        "observations": [
+          {
+            "physical_members": [],
+            "projected_nlink": 2
+          },
+          {
+            "physical_members": [],
+            "projected_nlink": 2
+          },
+          {
+            "physical_members": [],
+            "projected_nlink": 2
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          }
+        ],
+        "scope": "actual class and filesystem writes with recorded-platform counter projection"
+      },
+      "passed": true
+    },
+    {
+      "name": "directory_replacement",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "directory_symlink",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "directory_permissions",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "unexpected_member",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "missing_member",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "leaf_hardlink",
+      "observation": {
+        "message": "already written output member changed identity",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "leaf_same_bytes_replacement",
+      "observation": {
+        "message": "already written output member changed identity",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "leaf_symlink",
+      "observation": {
+        "message": "already written output member changed identity",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "parent_full9_change",
+      "observation": {
+        "message": "owned output canonical path differs",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "held_named_full9_mismatch",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "fixed_field_st_dev",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "fixed_field_st_ino",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "fixed_field_st_mode",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "fixed_field_st_uid",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "fixed_field_st_gid",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    }
+  ],
+  "complete_auditor_imported": true,
+  "elapsed_seconds": 0.04907530400669202,
+  "failed": 0,
+  "fixture_binding": "module.OUT temporarily points at a new synthetic private directory; restored after each case",
+  "historical_output_modified": false,
+  "historical_verifier_called": false,
+  "passed": 17,
+  "phone_calls": 0,
+  "production_main_called": false,
+  "real_class_constructor_write_check_readback_exercised": true,
+  "schema": "hepta.owned-output-directory.guard-regression.v1",
+  "separate_actual_mac_probe_key": "hepta-cp09-owned-dir-probe-acceptanceaudit-01-4b572de398a74ce0",
+  "source_sha256": "88d441ff38197993e4b0b08812f68c8729bd61f5a4c53027f5617a1187cbadf6",
+  "source_unchanged": true,
+  "status": "PASS"
+}

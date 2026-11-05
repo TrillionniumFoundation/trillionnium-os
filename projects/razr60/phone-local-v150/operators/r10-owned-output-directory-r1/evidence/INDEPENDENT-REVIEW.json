@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.cp09.owned-output-independent-review.v1",
+  "candidate_source_sha256": "88d441ff38197993e4b0b08812f68c8729bd61f5a4c53027f5617a1187cbadf6",
+  "source_seal_sha256": "683d57671d8a13cfaa187ebcd881a657c773be9ed70d0f825bed60f72709d91e",
+  "baseline_commit": "a87b2fc4b99880e3820d2fffd285943777ac4057",
+  "baseline_source_sha256": "039f442f855ce27dc8c6f517785a4ca763b7729f1a5f17151f6a3deb2a99ef21",
+  "exact_byte_comparison": "One OwnedOutput.check guard changes fixed prefix from 6 to 5 metadata fields; three explanation comments are added; all remaining bytes equal the verified baseline.",
+  "unchanged_guards": [
+    "held and named current full9 equality",
+    "fixed device/inode/mode/uid/gid",
+    "exact owned member set",
+    "leaf full9 and single-link checks",
+    "parent-chain full9 and canonical path binding",
+    "FD, read, output and time budgets"
+  ],
+  "test_review": {
+    "complete_candidate_module_imported": true,
+    "actual_OwnedOutput_constructor_put_check_readback": true,
+    "physical_directory_entries_drive_nlink_projection": true,
+    "self_members_do_not_drive_projection": true,
+    "all_original_constant_bindings_restored": true,
+    "only_production_path_constant_rebound_is_OUT": true,
+    "synthetic_fault_helpers_temporarily_patch_metadata_or_stat": true
+  },
+  "independent_run": {
+    "reviewed_implementation_agent_runner": "/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/cp09-owned-output-review/candidate/tests/run_regressions.py",
+    "tests": 17,
+    "passed": 17,
+    "failed": 0,
+    "report": "/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/cp09-owned-output-review/independent-regression-results.json",
+    "report_sha256": "f17d37f106eb40ca4bba74d9b61464b053ffd4bcb883974cd4f8eec6e030e495"
+  },
+  "candidate_source_seal_and_runner_unchanged_after_run": true,
+  "blocking_findings": [],
+  "limits": {
+    "actual_mac_candidate_audit_executed": false,
+    "historical_audit01_unique_cause_proven": false,
+    "historical_output_modified": false,
+    "phone_calls": 0,
+    "whole_case_credit_added": 0
+  }
+}

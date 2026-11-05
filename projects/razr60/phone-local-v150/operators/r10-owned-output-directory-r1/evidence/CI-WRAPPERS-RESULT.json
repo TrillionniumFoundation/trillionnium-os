@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.razr60.targeted-g1-wrapper-results.v1",
+  "recorded_at": "2026-11-05T23:29:05.089654+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-p",
+    "test*.py",
+    "-v"
+  ],
+  "cwd_scope": "overlay with the two newly added tools/tests wrappers only",
+  "full_repository_test_run": false,
+  "returncode": 0,
+  "stdout": "test_pinned_candidate_regressions (test_razr60_native_result_capacity.Razr60NativeResultCapacity.test_pinned_candidate_regressions) ... ok\ntest_complete_auditor_owned_directory_regressions (test_razr60_owned_output_directory.Razr60OwnedOutputDirectory.test_complete_auditor_owned_directory_regressions) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 2.222s\n\nOK\n",
+  "elapsed_seconds": 2.3260244530101772,
+  "input_files": 45,
+  "tree_byte_unchanged": true,
+  "bytecode_files": [],
+  "fixed19_qualification": false,
+  "phone_calls": 0,
+  "source_seals": {
+    "projects/razr60/phone-local-v150/operators/r10-owned-output-directory-r1/SOURCE-SEAL.json": "683d57671d8a13cfaa187ebcd881a657c773be9ed70d0f825bed60f72709d91e",
+    "projects/razr60/phone-local-v150/provider/r10-native-result-capacity-r1/SOURCE-SEAL.json": "0ad8930fdf767832d56d52a3f7e9a61c1f6c979d6f6067b57456c8207cae50fa"
+  }
+}
