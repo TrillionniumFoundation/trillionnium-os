@@ -1,6 +1,6 @@
 {
-  "base_commit": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
-  "branch": "codex/razr60-transport-source-candidate-20261105",
+  "base_commit": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+  "branch": "codex/razr60-http-deadline-failure-drain-20261105",
   "business_checkpoint": {
     "complete_success": 0,
     "failed": 2,
@@ -11,18 +11,18 @@
   "executor_current": "r6",
   "files": [
     {
-      "bytes": 480589,
+      "bytes": 495801,
       "exact_original_bytes": false,
-      "git_blob_sha": "ef1b7408226c82d5f7478368663e3c4f992e5de4",
+      "git_blob_sha": "66512f658d79eec5e6ec8fa7ebc2265794d83e6a",
       "mode": "100644",
-      "origin": "generated-c3-inheriting-cumulative-public-projection-index",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "PUBLIC-PROJECTION-INDEX.json",
-      "sha256": "2ef10e54fccf26a06eb6012f473893f02f380f902cd359bceab510cdccf245e8",
+      "sha256": "c4d44e30d5d1d0cb8d7d6cddb3ca92aff838314b11eaf6118d4a1d521ecad6bf",
       "transformations": [
         {
-          "rule": "explicit-source-only-public-projection-or-generated-safe-fixture"
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
         }
       ]
     },
@@ -41,18 +41,18 @@
       ]
     },
     {
-      "bytes": 15684,
+      "bytes": 16961,
       "exact_original_bytes": false,
-      "git_blob_sha": "495fd866528eee43f678ba4ae74ed6387213de88",
+      "git_blob_sha": "8030830dcf795b39a115b048cb8723cef7f5818d",
       "mode": "100644",
-      "origin": "generated-measured-checkpoint-preserving-source-candidate-navigation",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "README.md",
-      "sha256": "eb3eaa049acfa158a9452633790b853770b22c3ff338f69058f5135006fbb366",
+      "sha256": "14bdce018f0989fba791f547549797b0c3a7e6b7af37d2ea175e0e2f1d062c54",
       "transformations": [
         {
-          "rule": "append-separate-host-source-candidate-scope-without-changing-measured-checkpoint-bytes"
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
         }
       ]
     },
@@ -8201,6 +8201,134 @@
       ]
     },
     {
+      "bytes": 13529,
+      "exact_original_bytes": false,
+      "git_blob_sha": "4602e142f9383218f2a632debcf69660984fd85c",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/HOST-FIXTURES.PUBLIC.json",
+      "sha256": "cbeec21c13bf2e5a07cb5fa54fc0a0f088983d3a7aa4d313581b9ee57abe7186",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 16864,
+      "exact_original_bytes": false,
+      "git_blob_sha": "8605f25954d6ccbc815b84293dd6b7b40a55d3bb",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/PROJECTION.json",
+      "sha256": "a20105985d02c24da73996cd02d4780834eade48fc7abc44f54d0d712933af6c",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 6224,
+      "exact_original_bytes": false,
+      "git_blob_sha": "532b6ea5d277ea6971e5fb81cfc8518689a8801b",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/README.md",
+      "sha256": "98373ebce11c58b4cf7c5e4c38870024c4b31ea51552d50284659b1a2bcd2919",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 5835,
+      "exact_original_bytes": false,
+      "git_blob_sha": "8a06ce73081b8a5fb89ff43286ec0fff0e268315",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/apply_source_candidate.py",
+      "sha256": "cb37c71e0403f262437bcb17d1fca2315d530c1550d1e03823b76a85b3babba8",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 6474,
+      "exact_original_bytes": false,
+      "git_blob_sha": "c9729b58dde832acb2886c044434a302cf5440c4",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/changes/public.patch",
+      "sha256": "b325589a69d9fa0b04556932bebdd877f11724f65b3f98564d5b5a6cfbc9836d",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 30142,
+      "exact_original_bytes": false,
+      "git_blob_sha": "a562f4ee6c7ce7a3d7c1188ad9dec02121d36a48",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/reference/host_transport.py",
+      "sha256": "f37c5b11a0d29bfac82665f4297facf968c887ec285efe061a5f0db299f428fd",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 33717,
+      "exact_original_bytes": false,
+      "git_blob_sha": "793c7484b2d8f982529f110e9467f5fc9dca8aa7",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/source/host_transport.py",
+      "sha256": "b4940660de4ef6639cd4fdbf947ea46dd5d21daa2817c498adb2d1a19ae6610e",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 13752,
+      "exact_original_bytes": false,
+      "git_blob_sha": "537c52d832129319bfd5773e7d0c5989e9188150",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/failure-sender-drain-20261105-r1/tests/test_control_exit.py",
+      "sha256": "0060862fa89b2c277e80b8134d574ef3c9504e6d5711e54f9651ada2b4c99891",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
       "bytes": 5613,
       "exact_original_bytes": false,
       "git_blob_sha": "c5b60cf26ff5cfaf4d677b9d68adbac0a7346786",
@@ -13173,6 +13301,230 @@
       "origin": "byte_identical",
       "path": "runtime/provenance/llama-server.r2.readelf.txt",
       "sha256": "a29950e3fc9130cd73b2816442958212005766bea47893d5bec1e5bfdaa87c65"
+    },
+    {
+      "bytes": 7202,
+      "exact_original_bytes": false,
+      "git_blob_sha": "a8f8dc649a629d1c145085a10752608eaaa291e9",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/HOST-FIXTURES.PUBLIC.json",
+      "sha256": "e0eb8f94b7190bc9da6764c8cdb53ab4563f226466628dbc4bfda5ad3a73288b",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 20529,
+      "exact_original_bytes": false,
+      "git_blob_sha": "4886055db6085f5243d7c2d4865f12525d543498",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/PROJECTION.json",
+      "sha256": "fc036271a2c3d4b4e1a596dc4d29c4396406dad3ff392cece2afcb4c38c862fb",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 6798,
+      "exact_original_bytes": false,
+      "git_blob_sha": "9d9774881ed08f35f888fb0e803b7b386f4d3795",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/README.md",
+      "sha256": "47ae6c9ac8bb8bd54b4b59042f872858e0907a7b013b4a0bc0b42184eacb7d8c",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 1275,
+      "exact_original_bytes": false,
+      "git_blob_sha": "650473b0a1cb2e3bb98380bdc4c9bfbedc26af2b",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/SOURCE-APPLICATION-CHECKS.PUBLIC.json",
+      "sha256": "6ec0e7a396627daea0ba1f828c90e3463daee10fbeb16e2ac79e4626190316bc",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 13748,
+      "exact_original_bytes": false,
+      "git_blob_sha": "12217eae14f0948fc11b024e77b447a5243fd4e8",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/apply_source_candidate.py",
+      "sha256": "4323ea3aefdd39bf1cdc238da417a3aa565b93a660c5b0a373e4f6fe830c1396",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 1579,
+      "exact_original_bytes": false,
+      "git_blob_sha": "f827507b172e1e71dc77b67246a94d01d8d598b3",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/changes/http-worker.PUBLIC.patch",
+      "sha256": "56a275292270ba38cca71025f0b09a1cd339aad7b515d09d645127c2cd3bd61b",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 3516,
+      "exact_original_bytes": false,
+      "git_blob_sha": "4989e1979f4315e1d786a7990a5d3babb67c0520",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/changes/slot-observation.PUBLIC.patch",
+      "sha256": "9b0cdb26d4d87c7b397de5b01b1b043790d8ca7a07811dfe7a1a2342be0cef75",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 5551,
+      "exact_original_bytes": false,
+      "git_blob_sha": "abbdde2d1eb618f4839b296e32bcb439a9b336e5",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/reference/http_worker.BASELINE.PUBLIC.py",
+      "sha256": "b7a8ddddb27c480450847cd15ac07a76d4a1aaef4cfca9b66596b905923dcba2",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 1714,
+      "exact_original_bytes": false,
+      "git_blob_sha": "34e402424fd287d9e0a25bc7f610c868c7172f28",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/reference/slot_observation.BASELINE.PUBLIC.py",
+      "sha256": "1c320fc358e4a616b0aba48b6c2dc84f0cbe7d45283c932c1ed0ee6c06762893",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 5983,
+      "exact_original_bytes": false,
+      "git_blob_sha": "3a34847d9b4ae586f3e4c1cde12147098de5d671",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/source/http_worker.CANDIDATE.PUBLIC.py",
+      "sha256": "51247ea72cb0e3444941185c6189eb8faea877e475706941de4831ff565be81a",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 3862,
+      "exact_original_bytes": false,
+      "git_blob_sha": "f6473e362f179b8102ac1f78b87dffeef0e678eb",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/source/slot_observation.CANDIDATE.PUBLIC.py",
+      "sha256": "d898434fd99c482ba1b6db558817e0289d5332e5ecf5f325c479ce0a9b928c5b",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 4565,
+      "exact_original_bytes": false,
+      "git_blob_sha": "e18760087bd63eb550ffd57ee2d4e56492bbaf34",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/tests/fixture_support.py",
+      "sha256": "0b661b4f8c54b9adaae1a199ea6658706e9edddd9024673fb54b7145d9ae4a93",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 14452,
+      "exact_original_bytes": false,
+      "git_blob_sha": "3237da086107b5cf94d24fa8a8f6bf1de48af303",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/tests/test_slot_deadline_projection.py",
+      "sha256": "fefa5c53ab6f4d3612f8c36d81823668575304a524eb20068150251e3957121f",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
+    },
+    {
+      "bytes": 6265,
+      "exact_original_bytes": false,
+      "git_blob_sha": "f01722903831a7ead7fad38270876ba1356e1a95",
+      "mode": "100644",
+      "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "slot-observation-deadline-20261105-r1/tests/test_source_application.py",
+      "sha256": "aa06c2c6123825c42d5d9d5ef4a0d9960fb29e2cc463b33b804b0371f2cdeca5",
+      "transformations": [
+        {
+          "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
+        }
+      ]
     }
   ],
   "fixed19": {
@@ -13182,7 +13534,8 @@
   },
   "full_combination_original_sha256": "e42e6cb00112be91ac9414b04786ad2693b86a9af413b8f90a0e0e42543c81d1",
   "future_policy_changes_included": false,
-  "future_prompt_or_cancellation_changes_included": false,
+  "future_prompt_or_cancellation_changes_included": true,
+  "future_prompt_or_cancellation_changes_scope": "Selected review-only observation/cleanup source candidates; no phone adoption, task replay or new measured checkpoint.",
   "health_checkpoint": {
     "business_credit": false,
     "passed": 1,
@@ -13202,16 +13555,51 @@
     },
     "source_commit": "c3f10ff04485b4d365572ef0fff8495d2daf4d16"
   },
+  "http_observation_and_sender_failure_source_update": {
+    "base_commit": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+    "existing_transport_and_documentation_candidates_preserved": true,
+    "historical_runtime_files_modified": false,
+    "packages": [
+      {
+        "complete_private_sources_published": false,
+        "deployed": false,
+        "path": "slot-observation-deadline-20261105-r1",
+        "phone_or_model_requests": 0,
+        "physical_qualification_credits_added": 0,
+        "projection": {
+          "path": "slot-observation-deadline-20261105-r1/PROJECTION.json",
+          "sha256": "fc036271a2c3d4b4e1a596dc4d29c4396406dad3ff392cece2afcb4c38c862fb"
+        },
+        "published_files": 14
+      },
+      {
+        "complete_private_sources_published": false,
+        "deployed": false,
+        "path": "operators/failure-sender-drain-20261105-r1",
+        "phone_or_model_requests": 0,
+        "physical_qualification_credits_added": 0,
+        "projection": {
+          "path": "operators/failure-sender-drain-20261105-r1/PROJECTION.json",
+          "sha256": "a20105985d02c24da73996cd02d4780834eade48fc7abc44f54d0d712933af6c"
+        },
+        "published_files": 8
+      }
+    ],
+    "phone_or_model_requests": 0,
+    "phone_runtime_modified": false,
+    "physical_qualification_credits_added": 0,
+    "source_only": true
+  },
   "inherited_measurement_fields_scope": "The r7-r3 checkpoint retained in the parent publication; not a claim about the current phone or this later source candidate.",
   "manifest_self_binding": "The manifest cannot include its own content hash. Its commit/tree/blob identity is independently verified after publication.",
   "module_current": "r7-r3",
   "no_secret_keys_weights_executables_or_private_user_text": true,
   "prefix": "projects/razr60/phone-local-v150/",
-  "previous_publication": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+  "previous_publication": "8cccf753229eb53d666a6eae5a330552a2d110cc",
   "provider_current": "r7",
   "public_projection_index": {
     "path": "PUBLIC-PROJECTION-INDEX.json",
-    "sha256": "2ef10e54fccf26a06eb6012f473893f02f380f902cd359bceab510cdccf245e8"
+    "sha256": "c4d44e30d5d1d0cb8d7d6cddb3ca92aff838314b11eaf6118d4a1d521ecad6bf"
   },
   "quality_public_sha256": "27781648eb66e7cb6b9a36d9a5f37ef936dadd41ea7e23d86ed189cec5017d3f",
   "repository": "TrillionniumFoundation/trillionnium-os",
