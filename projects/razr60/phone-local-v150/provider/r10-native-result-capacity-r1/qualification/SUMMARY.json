@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.native-result-capacity.publication-summary.v1",
+  "generated_at": "2026-11-05T23:03:43.669389+00:00",
+  "source_provenance_commit": "cd156bebb6b883497877f17821738d0a9bf3e774",
+  "publication_parent": "a87b2fc4b99880e3820d2fffd285943777ac4057",
+  "source_seal_sha256": "0ad8930fdf767832d56d52a3f7e9a61c1f6c979d6f6067b57456c8207cae50fa",
+  "host_cases": {
+    "NEG10": 16,
+    "NEG11": 251,
+    "NEG12": 28,
+    "NEG13": 17,
+    "NEG14": 71
+  },
+  "host_assertions": 383,
+  "host_cases_passed": 5,
+  "host_cases_failed": 0,
+  "independent_review": {
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "formal_github_review": false
+  },
+  "targeted_ci_discovery": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tools/tests -p 'test*.py' -v",
+    "cwd": "staging overlay containing the new wrapper only",
+    "tests": 1,
+    "elapsed_seconds": 2.316,
+    "status": "PASS",
+    "returncode": 0,
+    "candidate_matches_frozen_source_after_test": true,
+    "python_bytecode_files": 0,
+    "full_repository_test_run": false,
+    "python": "3.12.14"
+  },
+  "phone_calls": 0,
+  "real_model_requests": 0,
+  "native_dispatches": 0,
+  "deployment_config_loader_exercised": false,
+  "fixed19_qualification": false,
+  "artifacts": {
+    "host-regression-result.json": {
+      "bytes": 106588,
+      "sha256": "c4a0aa9d334c09ad09333135cace209f6ed8efe1d8c6eced12a510b9d8e28887"
+    },
+    "independent-review-final-results.json": {
+      "bytes": 3048,
+      "sha256": "2cd75c6c6a92a8c9e301fcabaafc2c3ea3d06c33cf5270ecd06111233fd23c18"
+    },
+    "review_candidate_final.py": {
+      "bytes": 15509,
+      "sha256": "496d0ea5db783f2e073f48ff0919f3220d8f1be25ae3f2d2029945891f0a0ed2"
+    },
+    "source-changes.patch": {
+      "bytes": 20699,
+      "sha256": "5f06e438c20df5947deaf1b06ed7f7f46e69d0377803ed56acfe676d7499171e"
+    },
+    "temporary-rename-baseline-proof.json": {
+      "bytes": 1666,
+      "sha256": "c5a54d04b5ea16daf0fb705115d03e593d9c024fceec8259c900f8f9c3715457"
+    }
+  }
+}

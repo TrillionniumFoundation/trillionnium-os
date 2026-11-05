@@ -1,0 +1,8 @@
+{
+  "scope": "expected baseline failure, previous candidate only",
+  "daily_sha256": "d0982b62ffa557780585c4db8a62e594550bc54b9f0e1406e7585d26bae810a5",
+  "test": "test_temporary_count_then_rename_then_canonical_count",
+  "expected_error": "evidence identity appeared at distinct paths",
+  "expected_failure_observed": true,
+  "output": "test_temporary_count_then_rename_then_canonical_count (independent_baseline.IndependentReview.test_temporary_count_then_rename_then_canonical_count) ... ERROR\n\n======================================================================\nERROR: test_temporary_count_then_rename_then_canonical_count (independent_baseline.IndependentReview.test_temporary_count_then_rename_then_canonical_count)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/independent-review/review_candidate_final.py\", line 197, in test_temporary_count_then_rename_then_canonical_count\n    actual = D.evidence_totals(self.root)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/independent-review/source-snapshot/daily_phone_local.py\", line 438, in evidence_totals\n    require(prior is None or prior[0] == resolved,\n  File \"/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/independent-review/source-snapshot/daily_phone_local.py\", line 43, in require\n    raise RuntimeError(message)\nRuntimeError: evidence identity appeared at distinct paths\n\n----------------------------------------------------------------------\nRan 1 test in 0.006s\n\nFAILED (errors=1)\n"
+}
