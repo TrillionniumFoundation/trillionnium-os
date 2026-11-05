@@ -1,0 +1,68 @@
+{
+  "case_pass": false,
+  "files": [
+    {
+      "bytes": 1606,
+      "path": "BUDGET.json",
+      "sha256": "588d0396b508fa10cb5c6c7843b5023b02f103875720f187515b30b2bdb3621e"
+    },
+    {
+      "bytes": 2578,
+      "path": "INTERFACE.json",
+      "sha256": "6220723c1de37763e6f63c9022f094bfe157573adb76ae59bfb8bd553eb8a829"
+    },
+    {
+      "bytes": 1859,
+      "path": "README.md",
+      "sha256": "d9102bde4dfdcbcde5734d2b62913d80cf686a83d1cf8756b1f1ee7ccee26edf"
+    },
+    {
+      "bytes": 1512,
+      "path": "reference/ACTION-RECEIPT.actual.original.json",
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a"
+    },
+    {
+      "bytes": 10846,
+      "path": "reference/HISTORY-AUDIT-SCOPE.original.json",
+      "sha256": "3eb56cb06bd363ffc42233ccb0154551962039362eb65f414f66e584a4c11d8e"
+    },
+    {
+      "bytes": 1335,
+      "path": "reference/LOCAL-FILTER-CHECKS.269ef.original.json",
+      "sha256": "c657f73765c0df2546df7a28cdc35182f6993de9b66d406a82516109bfef8107"
+    },
+    {
+      "bytes": 5973,
+      "path": "reference/LOGCAT-HELP.actual.original.txt",
+      "sha256": "c7ae77a8e575b64a2268c8a22a5612a55a3c4a9ef9d9a4b1a417f80789858adf"
+    },
+    {
+      "bytes": 5652,
+      "path": "reference/phone_once.179a.original.py",
+      "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+    },
+    {
+      "bytes": 17975,
+      "path": "reference/read_fixed_audit_window_once.269ef.original.py",
+      "sha256": "269ef5a5abd5b90c1c5bbf6c1203b13af0bca552e1d205738b473f498e2496c2"
+    },
+    {
+      "bytes": 18861,
+      "path": "source/read_fixed_audit_window_once.py",
+      "sha256": "35a7fca1bca4856214208222e1818922c9d9f057dd0406e7448f124e1f7d5972"
+    },
+    {
+      "bytes": 2816,
+      "path": "validation/OWNERSHIP-DECLARATION-INCREMENT.patch",
+      "sha256": "89bfd4b37540277737eb619d5b65bc7808517cf7525598c88138665feac8fa5d"
+    },
+    {
+      "bytes": 600,
+      "path": "validation/OWNERSHIP-INCREMENT-REVIEW.json",
+      "sha256": "60719e577b5047d22ee39719a1e3872d3065e0199ff2bbd88fe440714f418da4"
+    }
+  ],
+  "phone_calls": 0,
+  "schema": "hepta.codec72.fixed-kernel-audit-source-package.v1",
+  "state": "SOURCE_ONLY_UNEXECUTED"
+}

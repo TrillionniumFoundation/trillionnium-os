@@ -1,0 +1,74 @@
+{
+  "P4_originals_count": 12,
+  "P4_passive_wait_seconds": 240,
+  "P4_total_limit": 16777216,
+  "actual_ADB_request_with_protocol_prefix_bytes": 50818,
+  "all_manifest_rows_and_no_extra_files_checked": true,
+  "bootstrap_read_limit": 131073,
+  "caller": {
+    "bytes": 98832,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/delivery-final01/package/operator/P4-LAUNCHER.py",
+    "sha256": "ba51506b0e9d8659b3bb916b51e0a7bd38bcc394125748e4cb8eb3143d2ab3e4"
+  },
+  "caller_stdin_bytes": 98832,
+  "case_credit": 0,
+  "controller_request": {
+    "bytes": 103557,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/delivery-final01/CONTROLLER-REQUEST.json",
+    "sha256": "243cf591a6935e01c6a65cabe75f2cf96a46092fc895e826449469cda3195191"
+  },
+  "freeze_bytes_unchanged": true,
+  "initial_harness_failure_retained": {
+    "bytes": 321,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/reviews/existing902-current-head-caller-independent02/REVIEW-HARNESS-FAILURE01.json",
+    "sha256": "7a0387a6167336034ca082cb8e8775efc4a25a8c758063f86a8508e7178c6b10"
+  },
+  "native_and_report_complete_success_still_requires_actual_readback": true,
+  "native_per_original_limit": 8388608,
+  "new_case_or_lease_created": false,
+  "no_automatic_retry_or_explicit_nonzero_signals": true,
+  "no_dependency_on_pending_logcat_result": true,
+  "no_source_change_needed_for_wire_count_note": true,
+  "one_pinned179a_actor_start_only": true,
+  "outer_controller_timeout": null,
+  "package_regular_members": 41,
+  "parent": {
+    "bytes": 52781,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_private_observation_candidate01/caller-final01/P4-LAUNCHER.py",
+    "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+  },
+  "phone_report_limit": 1048576,
+  "phone_timeout_seconds": 210,
+  "put_enc_all_other_functions_unchanged": true,
+  "raw_command_bytes": 45026,
+  "remote_calls": 0,
+  "reviewer": "property_diagnostic",
+  "same_original_GNU_ENV_direct_stdin_envelope": true,
+  "schema": "hepta.existing902.current-head-caller-independent-review.v1",
+  "scope": "Caller only and41regular final package; source-body c8ab review not repeated",
+  "seven_AST_scoped_splices_whole_inverse": true,
+  "source": {
+    "bytes": 44561,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/delivery-final01/package/source/observe_existing902_current_head_once.py",
+    "sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5"
+  },
+  "source_case_nonce902_is_existing_head_identity_only": true,
+  "source_manifest": {
+    "bytes": 7856,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "9cbe8f0035df879d4ca9eca10b78a00bd84c55a37de5b7d4736105332980fc6b"
+  },
+  "splices": [
+    "scope state READ_ONLY_FIXED_EXTERNAL_PRIVATE_ROOTS_FAILED_OR_UNKNOWN",
+    "scope state READ_ONLY_FIXED_EXTERNAL_PRIVATE_ROOTS_COMPLETED",
+    "out path literal",
+    "exact source pin assert",
+    "LABEL",
+    "REQ",
+    "PROBE"
+  ],
+  "state": "PASS_SEVEN_SPLICES_AND_FINAL_CLOSED_SET",
+  "su_command_bytes": 50805,
+  "target_import_main_calls": 0,
+  "wire_limit": 65536
+}

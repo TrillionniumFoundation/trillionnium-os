@@ -1,0 +1,87 @@
+{
+  "archive": {
+    "bytes": 13040,
+    "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-kernel-audit-window02/FULL-ORIGINALS.tar.xz",
+    "sha256": "66ee9dab14e227e5a6cd08f48e43140ca607aea3e7618b8014ed4a89c57e132d"
+  },
+  "case_pass": false,
+  "command_sha256": "566395a9cb15b7301aa7976483814956f46f9b4f9c508a4ef3f47390cc4e39d9",
+  "complete_native_logcat_stdout_retained": false,
+  "files": [
+    {
+      "bytes": 72,
+      "path": "CHILD.json",
+      "sha256": "93ed8046cbdab4a3c3c309d7c6a30e2df3513871cd823abcb90d2f67703d3c9f"
+    },
+    {
+      "bytes": 971,
+      "path": "INTENT.json",
+      "sha256": "ffa5d3019b449ca40c7945c73637a3741c03ea9868273dbec8ea648bb337cdf3"
+    },
+    {
+      "bytes": 95,
+      "path": "JOINED.json",
+      "sha256": "cddc5cf65c92943347a4047cc85b43f8cd3a490f470b28351437c56f0332a7b0"
+    },
+    {
+      "bytes": 0,
+      "path": "PHONE-STDERR.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 4225,
+      "path": "PHONE-STDOUT.original",
+      "sha256": "1535a3be08d84d7680f4a686daefc7908b025b664367bddc0e6179c905933ea7"
+    },
+    {
+      "bytes": 18636,
+      "path": "PROBE-SOURCE.original.py",
+      "sha256": "652ad1b5a6d864134f461dc23f63a17498ff70074a9eb7d385179cd5edbdfce0"
+    },
+    {
+      "bytes": 19630,
+      "path": "REQUEST.original.json",
+      "sha256": "7e548d48115caaf8f196b56885a410bd59dee791b2cfc557ff7b4bffdd6fc93d"
+    },
+    {
+      "bytes": 3354,
+      "path": "RESULT.json",
+      "sha256": "ce3ed47abb52d113dc2ce06d9bfb87e401579283997ce2cddc32af2d28b3026d"
+    },
+    {
+      "bytes": 0,
+      "path": "actor.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 311,
+      "path": "actor.stdout.original",
+      "sha256": "f9594201756ef32bfe0fa33843dfd8286de06f0b40f3242afcb9859c509d9bff"
+    },
+    {
+      "bytes": 348,
+      "path": "phone-baseline.json.original",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    {
+      "bytes": 19947,
+      "path": "phone-intent.json.original",
+      "sha256": "1d64f946e404ccfeae4ac3cc22f09a16a6fa02e1c9c8375fe2a2bfe526d14937"
+    },
+    {
+      "bytes": 27791,
+      "path": "phone-result.json.original",
+      "sha256": "e8ad3bcc8366ed8363fdd5e8e7ceb6274d364e744fd160fbc1635e668b0c0260"
+    }
+  ],
+  "native_query_count_max": 1,
+  "originals_changed": false,
+  "phone_filter_discards_all_outside_fixed_scope_raw_lines": true,
+  "phone_request_count": 1,
+  "schema": "hepta.codec72.fixed-kernel-audit-originals.v1",
+  "source_sha256": "652ad1b5a6d864134f461dc23f63a17498ff70074a9eb7d385179cd5edbdfce0",
+  "tar": {
+    "bytes": 112640,
+    "sha256": "a4d40f0d7b84e1fc1a508cada0bdd4f1e08e0facc2c369ffa77b6ee074659d4a"
+  }
+}

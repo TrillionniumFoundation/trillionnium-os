@@ -1,0 +1,41 @@
+{
+  "actual_executions": 0,
+  "archive": {
+    "bytes": 173017,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/HOST-AUDIT-SOURCE-ONLY.tar.gz",
+    "sha256": "42976ab8351fedf0eddd953f258b45dff523a0f8cf7f1d633faa1fa847ad91a9"
+  },
+  "caller": {
+    "bytes": 49502,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/package/operator/stage_and_audit_once.py",
+    "sha256": "e2455108f95f54868703c523119835ac1288ea232d180968b174b0263b2ad256"
+  },
+  "controller_request": {
+    "bytes": 50358,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/CONTROLLER-REQUEST.json",
+    "sha256": "0c2f516cbeeb827adf959d0fd733058617725b0a46eba9a4a2c1b7e517bc5c4a"
+  },
+  "driver": {
+    "bytes": 26038,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/package/source/audit_existing_closure.py",
+    "sha256": "8e6bab425940cae081f0684e61b20b6dbf5f9568c20ddecc3e1ee8f907536d29"
+  },
+  "manifest": {
+    "bytes": 4937,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "39b3fe622eeda1beffdaba392e602275979421daa05d1ec732b3c7c8bb99a2da"
+  },
+  "new_case_or_nonce": false,
+  "old_case_and_outputs_modified": false,
+  "phone_calls": 0,
+  "regular_files_including_manifest": 25,
+  "root_only_actual_execution": true,
+  "schema": "hepta.existing-failed-closure.host-audit-freeze.v1",
+  "source_only": true,
+  "state": "SOURCE_ONLY_FROZEN_NOT_EXECUTED",
+  "tar_plaintext": {
+    "bytes": 798720,
+    "sha256": "d3e968c60ccf0df84139facaa596d587f1557f89b7cffa77220ae914e34bfa21"
+  },
+  "total_package_bytes": 771215
+}

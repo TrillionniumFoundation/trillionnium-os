@@ -1,0 +1,30 @@
+{
+  "capsule_source": {
+    "bytes": 22936,
+    "sha256": "da9e285f3d8bcedfd363b0479b66d30bc51c2a04911f5864d0ef75de24e16d1a"
+  },
+  "capsule_source_bytes_saved": 22100,
+  "fixed_operations": 15,
+  "historical_data_input": {
+    "bytes": 74287,
+    "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+  },
+  "historical_data_output": {
+    "bytes": 66996,
+    "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+  },
+  "historical_source_execution": 0,
+  "integration": "Exact replacement of one BASE67 literal and base-late function, plus one explicit parent_files late-source argument after the unchanged full actual32/shared17 restoration. Existing public four-argument API unchanged.",
+  "new_epoch_runtime_or_consumer_generation_bound": false,
+  "old_7245_and_e7a_preserved": true,
+  "old_literal_bytes": 192,
+  "phone_calls": 0,
+  "pure_source": {
+    "bytes": 62430,
+    "sha256": "5fdcc65f3d3d8d77624cdc8cf8e8f6ad8426f632ea7f3605c7eee0b270ebc9f7"
+  },
+  "pure_source_bytes_saved": 19143,
+  "remote_calls": 0,
+  "schema": "hepta.source-only.codec72-historical-inverse-interface.v1",
+  "state": "CURRENT_PURE_SOURCE_OPTIMIZATION_NOT_EPOCH_INTEGRATED"
+}

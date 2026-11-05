@@ -1,0 +1,144 @@
+{
+  "actual_executions": 0,
+  "caller": {
+    "bytes": 49502,
+    "path": "operator/stage_and_audit_once.py",
+    "sha256": "e2455108f95f54868703c523119835ac1288ea232d180968b174b0263b2ad256"
+  },
+  "case_pass": false,
+  "driver": {
+    "bytes": 26038,
+    "path": "source/audit_existing_closure.py",
+    "sha256": "8e6bab425940cae081f0684e61b20b6dbf5f9568c20ddecc3e1ee8f907536d29"
+  },
+  "files": [
+    {
+      "bytes": 7521,
+      "path": "DERIVATION.json",
+      "sha256": "ec7d1d71e453a1c621951319755f987a2567f5b340dde75faec154dfcd5f63cc"
+    },
+    {
+      "bytes": 4744,
+      "path": "INTERFACE.json",
+      "sha256": "8501b3a45da9358572cb10e945633148f9a39affac53d5f1108eb82a4a7e211a"
+    },
+    {
+      "bytes": 49502,
+      "path": "operator/stage_and_audit_once.py",
+      "sha256": "e2455108f95f54868703c523119835ac1288ea232d180968b174b0263b2ad256"
+    },
+    {
+      "bytes": 144079,
+      "path": "reference/CAPTURE.b6df.original.json",
+      "sha256": "b6dffc54291f7a35486cab4b677c5ff5ea3fe4fb4fa2bad4a28d3094ddbca04d"
+    },
+    {
+      "bytes": 2601,
+      "path": "reference/CLOSURE-PLAN.77e7.original.json",
+      "sha256": "77e77c83002b355692a1ca184992668409dc27136e58936520ccf55f419dc2a4"
+    },
+    {
+      "bytes": 7012,
+      "path": "reference/DRIVER-SOURCE-INDEPENDENT-REVIEW.json",
+      "sha256": "0f3a735e6ffb4bc10a6d92150bffa9d357297cd1d6263d0d3518329e1957b031"
+    },
+    {
+      "bytes": 11614,
+      "path": "reference/FINAL-RHS-INDEPENDENT-REVIEW.json",
+      "sha256": "3615791ada5a1ab59cc7fec808da5b48c0e9f6b5aa2abbc9e34e0f21d0de7101"
+    },
+    {
+      "bytes": 4171,
+      "path": "reference/NEW-OUT-INDEPENDENT-REVIEW.json",
+      "sha256": "e6b36f8244de359e60ba4e2010347d890096e5939e5d82c3b692566bfd71d295"
+    },
+    {
+      "bytes": 147912,
+      "path": "reference/P4-ORIGINALS-MANIFEST.original.json",
+      "sha256": "99b413337849ebe3c2b89dece5c65dacd396d05d2d39abee5cde84d71c1e6e6e"
+    },
+    {
+      "bytes": 512,
+      "path": "reference/actual-CLOSURE-INTENT.original.json",
+      "sha256": "c29d0799526219f1b0bb22bf46f4319934c11d637416a4c9bc723a01d40fc601"
+    },
+    {
+      "bytes": 55124,
+      "path": "reference/actual-CLOSURE.original.json",
+      "sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+    },
+    {
+      "bytes": 1283,
+      "path": "reference/actual-PACKED-READ-VERIFICATION.json",
+      "sha256": "2828ca739727d403e8f4cd30ffe91da8ef74a7e6dad57bb42debd6a22498bd1f"
+    },
+    {
+      "bytes": 349,
+      "path": "reference/actual-RESULT.json",
+      "sha256": "690dfba67c6c54d35cf0ffd4a5302bb5da81d655070d9cdc668ba99b33f9197a"
+    },
+    {
+      "bytes": 25725,
+      "path": "reference/audit_existing_closure.9f4.unbound.original.py",
+      "sha256": "9f4ba85615498cf49347d9e90521aeaf07d03a11b39654bb653c7af6f9975202"
+    },
+    {
+      "bytes": 99120,
+      "path": "reference/close_component.9025.original.py",
+      "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+    },
+    {
+      "bytes": 19138,
+      "path": "reference/component_common.1e2d.original.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 74287,
+      "path": "reference/late_boundary.396d.original.py",
+      "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+    },
+    {
+      "bytes": 39149,
+      "path": "reference/root_fixture_originals.original.py",
+      "sha256": "c1cd1402888de5bc4176255269014995e9d39dc658912d3c28a117ec51010f9e"
+    },
+    {
+      "bytes": 16808,
+      "path": "reference/runtime-MANIFEST.31da.original.json",
+      "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+    },
+    {
+      "bytes": 26038,
+      "path": "source/audit_existing_closure.py",
+      "sha256": "8e6bab425940cae081f0684e61b20b6dbf5f9568c20ddecc3e1ee8f907536d29"
+    },
+    {
+      "bytes": 26883,
+      "path": "validation/ACTUAL-CLOSURE-INPUT-CHECKS.json",
+      "sha256": "8b33d2314b1156c0a0331708222c6d8b15ed635b748ea7bcfcb6240b14585ee9"
+    },
+    {
+      "bytes": 950,
+      "path": "validation/FINAL-INPUTS-BINDING.json",
+      "sha256": "762ed0c8c142edebd1a725879dd12c0a29f01af6aab9dd3e2b3a98f4ea8a17b9"
+    },
+    {
+      "bytes": 641,
+      "path": "validation/FINAL-INPUTS-INCREMENT.patch",
+      "sha256": "85712fee442780bf2c25176aadd4f3054f825348292b12774c67bf0da1eba290"
+    },
+    {
+      "bytes": 1115,
+      "path": "validation/FINAL-SOURCE-STATIC-CHECKS.json",
+      "sha256": "ebf5d764fc02def75910a3b4ad042d73919495e01643ab440aee7d4b1474039d"
+    }
+  ],
+  "native_dispatches": 0,
+  "new_native_closure": false,
+  "original_label": "root-r10-neg01-7c907661-01",
+  "original_nonce": "902e851c3ca1f90deab3d880ab993774",
+  "phone_calls": 0,
+  "schema": "hepta.existing-failed-closure.independent-host-audit-source-package.v1",
+  "source_files": 24,
+  "state": "SOURCE_ONLY_FINAL_INPUTS_BOUND_NOT_EXECUTED"
+}

@@ -1,0 +1,137 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 126692,
+    "sha256": "536c7c53f0b9287e187b449a9dcf6a5e15c2585c4f2db0fd3ad4aea2e159c5d3"
+  },
+  "controller_request": {
+    "bytes": 131130,
+    "sha256": "02ca2db8c876a5fece9c92691dca4a1dc515b1a8108e3b4e26102ec99d5911a4"
+  },
+  "files": [
+    {
+      "bytes": 3658,
+      "path": "INTERFACE.json",
+      "sha256": "f40eaf1d19dfd63b205c5ed018c6a98466a44e217c6dc9ea0af8b0e89e31d5ea"
+    },
+    {
+      "bytes": 2800,
+      "path": "README.md",
+      "sha256": "3b741728dd174f177b9cf6dc861676125cb7e62b12d32aa50a7325aa38feef82"
+    },
+    {
+      "bytes": 131130,
+      "path": "operator/CONTROLLER-REQUEST.json",
+      "sha256": "02ca2db8c876a5fece9c92691dca4a1dc515b1a8108e3b4e26102ec99d5911a4"
+    },
+    {
+      "bytes": 126692,
+      "path": "operator/P4-LAUNCHER.py",
+      "sha256": "536c7c53f0b9287e187b449a9dcf6a5e15c2585c4f2db0fd3ad4aea2e159c5d3"
+    },
+    {
+      "bytes": 59952,
+      "path": "operator/PHONE-REQUEST.original.json",
+      "sha256": "81abb54029fbc2ea7b7df0114213fe976ba980cf84475bd77dcaa4608581688e"
+    },
+    {
+      "bytes": 176976,
+      "path": "reference/FOOTPRINT.original.json",
+      "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+    },
+    {
+      "bytes": 123662,
+      "path": "reference/PARENT-CALLER-380b.original.py",
+      "sha256": "380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63"
+    },
+    {
+      "bytes": 57213,
+      "path": "reference/PARENT-OBSERVER-2a3e.original.py",
+      "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+    },
+    {
+      "bytes": 2426,
+      "path": "reference/READ01-ARCHIVE-MANIFEST.json",
+      "sha256": "3379cd7629dea175bfbfd5619a928845a5e022b8cc6dfc8dd7d6552bc6b1e3f2"
+    },
+    {
+      "bytes": 1572,
+      "path": "reference/READ01-LOCAL-COMPLETE-VERIFICATION.json",
+      "sha256": "107657e1e15b645abe42ae8f55134b2075b6e37e98590aa7293828771ddc5772"
+    },
+    {
+      "bytes": 702,
+      "path": "reference/READ01-PHONE-STDOUT.original",
+      "sha256": "455146afcfa5038f73078385e979cb8d9cdc4cd19526653a68aed2cc6fc67de6"
+    },
+    {
+      "bytes": 58657,
+      "path": "source/observe_fixed_epoch_footprint_once.py",
+      "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+    },
+    {
+      "bytes": 7718,
+      "path": "validation/CACHED-METADATA-MEASUREMENT.json",
+      "sha256": "a0544797112b048fe3494b4e88cc5e813c9ff58349acbfd9d721ddbeb92b292a"
+    },
+    {
+      "bytes": 241393,
+      "path": "validation/CALLER-INCREMENT.patch",
+      "sha256": "d02f9650a7f1960e775c6f3851fcae3563ed49efb2863f3cf650b621a338fb1c"
+    },
+    {
+      "bytes": 3882,
+      "path": "validation/INDEPENDENT-SOURCE-REVIEW.json",
+      "sha256": "7fd37b223a1d9d638cf544a945c69de8cb02b98da6ecd938ede1f2466d36a8a6"
+    },
+    {
+      "bytes": 11224,
+      "path": "validation/KNOWN-PARENTS.original-projection.json",
+      "sha256": "9751c554a8195e00fe65d3b79ac3e0c1592688e1fac408bf4a094e630b078cbc"
+    },
+    {
+      "bytes": 45528,
+      "path": "validation/NEW-KNOWN-PARENT-REPRESENTATION.json",
+      "sha256": "ece37997df5e735c56b9aa12c3d1ef9fdd2387682e4fba9220c09091fbee3c35"
+    },
+    {
+      "bytes": 67350,
+      "path": "validation/OLD-KNOWN-PARENT-REPRESENTATION.json",
+      "sha256": "a0c4af1bc5e224700a6fb276aaf6e773df7a09df1621df2a712db1ffa39adf2a"
+    },
+    {
+      "bytes": 1301,
+      "path": "validation/PURE-REFERENCE-CHECKS.json",
+      "sha256": "945883d2ee24afb33547337cbed4e9de78d869000a677f23ed0dcb24fc08be51"
+    },
+    {
+      "bytes": 4524,
+      "path": "validation/SOURCE-CALLER-REVIEW.json",
+      "sha256": "92d43f733883b2acf84d1b927301a35b1b9aa3c99ede2cbcddc6b62799383466"
+    },
+    {
+      "bytes": 27053,
+      "path": "validation/SOURCE-INCREMENT.patch",
+      "sha256": "71c640cba549d5e069e19812d404a17538e7577042a002a5af7a1fec52600bb5"
+    },
+    {
+      "bytes": 7337,
+      "path": "validation/build_caller.py.original",
+      "sha256": "04c0b5648cfb8c32001f074297958504529c5fadf19914bb4361351f06602248"
+    },
+    {
+      "bytes": 8825,
+      "path": "validation/check_reference_and_measure.py.original",
+      "sha256": "fcd1b40addc18e791341908386b668a9b3b0fbdf24e1965ba58d4f904fca7702"
+    }
+  ],
+  "new_nonce_or_lease": false,
+  "observer": {
+    "bytes": 58657,
+    "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+  },
+  "phone_executed": false,
+  "remote_executed": false,
+  "schema": "hepta.fixed-epoch-retained-footprint-source-package.v2",
+  "state": "SOURCE_ONLY_FROZEN_UNEXECUTED"
+}

@@ -1,0 +1,11 @@
+{
+  "at_utc": "2026-11-05T14:26:00.942701+00:00",
+  "detail": "Original CLOSURE has no native_result_state key. Complete original receipt bodies and tool responses were retained before this local reporting error.",
+  "error_type": "KeyError",
+  "missing_field": "native_result_state",
+  "originals_changed": false,
+  "phase": "local derived verification summary construction after complete byte/hash/full9 checks",
+  "remote_operations": 0,
+  "report_completed": false,
+  "schema": "hepta.local-receipt-summary-failure.v1"
+}

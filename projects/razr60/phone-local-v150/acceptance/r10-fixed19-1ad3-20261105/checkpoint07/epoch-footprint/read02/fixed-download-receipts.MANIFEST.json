@@ -1,0 +1,2355 @@
+{
+  "archive": {
+    "bytes": 4588892,
+    "sha256": "0a0610c1911f6ffed720b314845344e70cc0fcdbc5667ae9c624e561e2360243"
+  },
+  "files": [
+    {
+      "member": "DOWNLOAD-END.json",
+      "original": {
+        "bytes": 164,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/DOWNLOAD-END.json",
+        "sha256": "2ef027d40f60026aca173a076c72059cfd0ed3e91aef4218040753c55d151b91"
+      }
+    },
+    {
+      "member": "DOWNLOAD-END02.json",
+      "original": {
+        "bytes": 285,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/DOWNLOAD-END02.json",
+        "sha256": "3970de02a8812fb039726c112cbe83ac49579e1030fc6e127cd7b2b1753a69a5"
+      }
+    },
+    {
+      "member": "DOWNLOAD-START.json",
+      "original": {
+        "bytes": 364,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/DOWNLOAD-START.json",
+        "sha256": "d8dee900880fe77a488646080a7b26ac8e2e6641c4d9fdbaff3deefdb679e560"
+      }
+    },
+    {
+      "member": "EXPECTED.json",
+      "original": {
+        "bytes": 447,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/EXPECTED.json",
+        "sha256": "71f2ae19f1d67f3e77e830571555299f152468eb2dc39aca02cf6189e9f56c4b"
+      }
+    },
+    {
+      "member": "LOCAL-YIELD-RECONCILIATION.json",
+      "original": {
+        "bytes": 907,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/LOCAL-YIELD-RECONCILIATION.json",
+        "sha256": "95304eb105efacbfe5ee38aa84bcf6d604dedebfca5b28cadab31328c1dc942c"
+      }
+    },
+    {
+      "member": "chunk-00000000.verified.json",
+      "original": {
+        "bytes": 302,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00000000.verified.json",
+        "sha256": "fa482b2202d7adef3a265ed670d8794bc7bcbf70a283ba9d9a17d0929e153a56"
+      }
+    },
+    {
+      "member": "chunk-00065536.raw-tool.json",
+      "original": {
+        "bytes": 87885,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00065536.raw-tool.json",
+        "sha256": "c3460020f8728d8e573a75d5990d02c8029e306464bc639ce59aa2fe1ac3f789"
+      }
+    },
+    {
+      "member": "chunk-00065536.request.json",
+      "original": {
+        "bytes": 269,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00065536.request.json",
+        "sha256": "622fe26596032084dd78353aad6d4f3e94c75491e39940340cdd04eef0b7cceb"
+      }
+    },
+    {
+      "member": "chunk-00065536.tool-text.original",
+      "original": {
+        "bytes": 87738,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00065536.tool-text.original",
+        "sha256": "bfdc99b1f1803b09fe5553420b5dbf7ba9609c12cf74b207c20f47d1d5d75023"
+      }
+    },
+    {
+      "member": "chunk-00065536.verified.json",
+      "original": {
+        "bytes": 563,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00065536.verified.json",
+        "sha256": "4bd49965c9714a85838bf882fc28bb67ea878108882fb474c22c3d140264f51a"
+      }
+    },
+    {
+      "member": "chunk-00131072.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00131072.raw-tool.json",
+        "sha256": "2e7ddf952dd9b3e2181aa098884ba73ef48b44276b0494f197f91072e0a8f2c6"
+      }
+    },
+    {
+      "member": "chunk-00131072.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00131072.request.json",
+        "sha256": "150d2b5f0cb84967f6b98683101f95bf6a0b6df9525583903fe6a533156c140e"
+      }
+    },
+    {
+      "member": "chunk-00131072.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00131072.tool-text.original",
+        "sha256": "c2691578231acf000ad197e46134db4d19d89677aeb85809b9b17625888ee5c6"
+      }
+    },
+    {
+      "member": "chunk-00131072.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00131072.verified.json",
+        "sha256": "add0fba95ead1e4c2802bea10b7caa148f8ae34a076a5ef4cea39f1ada6da2aa"
+      }
+    },
+    {
+      "member": "chunk-00196608.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00196608.raw-tool.json",
+        "sha256": "e80019b242b6c24e29cdd67e16677a41da33c11f7c38261a6ded8ec005ae979f"
+      }
+    },
+    {
+      "member": "chunk-00196608.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00196608.request.json",
+        "sha256": "cf7f9a2136f9a4ef7463ca218a080af6c7913a3b6195adc0d9bf08ff5cb71219"
+      }
+    },
+    {
+      "member": "chunk-00196608.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00196608.tool-text.original",
+        "sha256": "3c939bf5fa69dc3570bc3ae3352d781f400d9afb3122e7d27f0e09d42777c796"
+      }
+    },
+    {
+      "member": "chunk-00196608.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00196608.verified.json",
+        "sha256": "826e65144333a60c144cd921dcff468ccd3a38972ecb4d89314438cdfeabe7fa"
+      }
+    },
+    {
+      "member": "chunk-00262144.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00262144.raw-tool.json",
+        "sha256": "b988f3e830957781f83373c4c265515eebae4332c74d7ea8bd23617f6b261525"
+      }
+    },
+    {
+      "member": "chunk-00262144.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00262144.request.json",
+        "sha256": "b5679675a5e65bbca51dea42a84833da0b5bb836af802fe30897e668b436517a"
+      }
+    },
+    {
+      "member": "chunk-00262144.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00262144.tool-text.original",
+        "sha256": "2065a309a3d9e4e4ca0e7fc20c374665b327bebed5e246f3883c88b84d9cf0b0"
+      }
+    },
+    {
+      "member": "chunk-00262144.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00262144.verified.json",
+        "sha256": "3ee29131d778599698f7d54594a145b0696f61af3d98c579ea7ba1f669ae5e06"
+      }
+    },
+    {
+      "member": "chunk-00327680.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00327680.raw-tool.json",
+        "sha256": "4ef896394fe4e772b2114fd414623058e9f48fd56262437af3b080d98f2afb74"
+      }
+    },
+    {
+      "member": "chunk-00327680.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00327680.request.json",
+        "sha256": "ba292c577f6db42035bb96a5591630f5fbfce4611f258fa83fd73b2e53c69d72"
+      }
+    },
+    {
+      "member": "chunk-00327680.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00327680.tool-text.original",
+        "sha256": "7f87a1168e5f23e7c2777ce72fbafddb91d39f5c8ce11ed4e76296d7dddddb20"
+      }
+    },
+    {
+      "member": "chunk-00327680.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00327680.verified.json",
+        "sha256": "d5f87749d58aa016becd65948181667d0614f7ee1ec1a60fb50be377ef804230"
+      }
+    },
+    {
+      "member": "chunk-00393216.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00393216.raw-tool.json",
+        "sha256": "d0af509ed7ef0be103038aa759cc35efa63572ce0782d2ab9fea6c010b301d8d"
+      }
+    },
+    {
+      "member": "chunk-00393216.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00393216.request.json",
+        "sha256": "4ea6276a9f4705c0963e480402b931e201a1a0eef2a19c919583445b6ddf23dc"
+      }
+    },
+    {
+      "member": "chunk-00393216.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00393216.tool-text.original",
+        "sha256": "7860035ee978d157df2a9f666e4bf653c5c51a66a82791557c6860c21cb1fa50"
+      }
+    },
+    {
+      "member": "chunk-00393216.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00393216.verified.json",
+        "sha256": "90047287cad22ce2d11062df2d126bdaa810bc3bfed1f92f91e7812321266f17"
+      }
+    },
+    {
+      "member": "chunk-00458752.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00458752.raw-tool.json",
+        "sha256": "f92f553bcb5904562cd5d5ad9079105ba5f850079eaa78e25b8a0e90b6ddcab6"
+      }
+    },
+    {
+      "member": "chunk-00458752.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00458752.request.json",
+        "sha256": "95a77f46a630f8292a909be1198caf45e5dd4e239e26057bf237158bba74594d"
+      }
+    },
+    {
+      "member": "chunk-00458752.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00458752.tool-text.original",
+        "sha256": "228ea514c1033ad017d0d0edbdf2edfb3f9cbeb370e49aae7a27e13c76bb94f3"
+      }
+    },
+    {
+      "member": "chunk-00458752.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00458752.verified.json",
+        "sha256": "873a7f3906f4a8f75eff491fa7335b18a3ad4a02469bbebe99c33f280fd8eb73"
+      }
+    },
+    {
+      "member": "chunk-00524288.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00524288.raw-tool.json",
+        "sha256": "7ce38a195cf9cc8afce23ac4cbe1ffc63578c4ae4b9b0fa6bdd6be3343982827"
+      }
+    },
+    {
+      "member": "chunk-00524288.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00524288.request.json",
+        "sha256": "b95ebd5ce1d286da3e8f65a4205e6d431e7d4912d906a5510cad43134ce470cd"
+      }
+    },
+    {
+      "member": "chunk-00524288.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00524288.tool-text.original",
+        "sha256": "03056ddfa6ed8c37d526dd9d6f0fd50c8cc19645bdb2fd9ac2804710ec6c75fb"
+      }
+    },
+    {
+      "member": "chunk-00524288.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00524288.verified.json",
+        "sha256": "6327acc6d93b146bada875f3194d75ac05c1720a08cddee4242bfe03e1b22d56"
+      }
+    },
+    {
+      "member": "chunk-00589824.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00589824.raw-tool.json",
+        "sha256": "c4731cb97b3b78ab12cf29f7502cbf0e83b9c47b110dd24a0dd830fd602dabe6"
+      }
+    },
+    {
+      "member": "chunk-00589824.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00589824.request.json",
+        "sha256": "59a347ba950c931258695d3e5b4714e133331d26a1d5da84484d1c70e4549daa"
+      }
+    },
+    {
+      "member": "chunk-00589824.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00589824.tool-text.original",
+        "sha256": "fed0b8b9d49298391daa7b7799d84c45ab69e2cb2ba22580cde2328cfc188ffe"
+      }
+    },
+    {
+      "member": "chunk-00589824.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00589824.verified.json",
+        "sha256": "1266181b185c4d5caf0ff5c70cbd3bae30713a1faacb3d5f053877dc1dcdff83"
+      }
+    },
+    {
+      "member": "chunk-00655360.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00655360.raw-tool.json",
+        "sha256": "28e09cef83c608d51cf540460aac89df7dff329e91479b8a5f0305d3d1b34077"
+      }
+    },
+    {
+      "member": "chunk-00655360.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00655360.request.json",
+        "sha256": "370f908964219d3c85cee30032c4ea0b3e1d12ad003fbfb33a4deb1065306cb5"
+      }
+    },
+    {
+      "member": "chunk-00655360.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00655360.tool-text.original",
+        "sha256": "81e0e828cb36f70476e867f9bdabb4227a00e9dfe7d8644861733d25e929741c"
+      }
+    },
+    {
+      "member": "chunk-00655360.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00655360.verified.json",
+        "sha256": "31c7287e1564bcf45a6224c18612eb6c9730a90d1946014574ce836ecdb8d77d"
+      }
+    },
+    {
+      "member": "chunk-00720896.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00720896.raw-tool.json",
+        "sha256": "722fd28434a30bde5af948567aa78aa2cd1d980eb9acc0c8742fff9d289b6a6c"
+      }
+    },
+    {
+      "member": "chunk-00720896.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00720896.request.json",
+        "sha256": "d4fbd7b2c1ff4adad472c0e3a9895bb3fc0fb36d4ce87f8eae4395fd3b1f3597"
+      }
+    },
+    {
+      "member": "chunk-00720896.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00720896.tool-text.original",
+        "sha256": "0c2332c7bd0c7fbebdd11af8e1c7b80849c94114881bfe2ead2e15ee08286a18"
+      }
+    },
+    {
+      "member": "chunk-00720896.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00720896.verified.json",
+        "sha256": "5e6578906e7acc95e1c91f5a8cf35c5e4a81af3f83842b70f109752b197bcee1"
+      }
+    },
+    {
+      "member": "chunk-00786432.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00786432.raw-tool.json",
+        "sha256": "d7d4abf84f853565e31f4b323427e53e1f7cd058eae456013ba3f80f2d95a332"
+      }
+    },
+    {
+      "member": "chunk-00786432.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00786432.request.json",
+        "sha256": "534cfc4306be717693c5b9d702553d5effd7649784581f9987808de9bc9958dd"
+      }
+    },
+    {
+      "member": "chunk-00786432.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00786432.tool-text.original",
+        "sha256": "31b10835868d554134e8519ceaa0983b98f71d05d3038be85718038667ceb8ef"
+      }
+    },
+    {
+      "member": "chunk-00786432.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00786432.verified.json",
+        "sha256": "c4aa1caf1ed99b7d24a52f7b21a99862a52c0774feeb664ed4ca2717318691e0"
+      }
+    },
+    {
+      "member": "chunk-00851968.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00851968.raw-tool.json",
+        "sha256": "0f686f1eeece7dbc7e53619d2585cbb616bb401c22c26ab18b2b86e476f90545"
+      }
+    },
+    {
+      "member": "chunk-00851968.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00851968.request.json",
+        "sha256": "854dd927120ba3aeb94b10137e3f0cc06ef79fab564a2e64e06ef5eb2c6cc789"
+      }
+    },
+    {
+      "member": "chunk-00851968.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00851968.tool-text.original",
+        "sha256": "7b39e76448ffd494ce80cc1b69821346bfa691a574b785998b93c618b3d0ffa1"
+      }
+    },
+    {
+      "member": "chunk-00851968.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00851968.verified.json",
+        "sha256": "66d1393433d07ad93e6380ea89e7ba6ef5182d9005df4f2d12f8c10dcf36beff"
+      }
+    },
+    {
+      "member": "chunk-00917504.raw-tool.json",
+      "original": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00917504.raw-tool.json",
+        "sha256": "d1b5e9923a0d1700d79b73ebe931f3e99168eb700bdd6b9e9d2047c75cf07c9d"
+      }
+    },
+    {
+      "member": "chunk-00917504.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00917504.request.json",
+        "sha256": "b7b6512be4b9706557ce127b7d45c7cc2cc52d2fdfccc18babb5b8892b560799"
+      }
+    },
+    {
+      "member": "chunk-00917504.tool-text.original",
+      "original": {
+        "bytes": 87739,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00917504.tool-text.original",
+        "sha256": "79680fbe4c6f0b64e1aca4ad9792d8f86f6bcd01614a01423f883e49851cb443"
+      }
+    },
+    {
+      "member": "chunk-00917504.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00917504.verified.json",
+        "sha256": "929fdf27c073294808deb6079916916276e17b8b9e8c94dd00a6119e62ed28d8"
+      }
+    },
+    {
+      "member": "chunk-00983040.raw-tool.json",
+      "original": {
+        "bytes": 87887,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00983040.raw-tool.json",
+        "sha256": "63a0ddbd2b0a5fbd6fee2b1995940f580feac044cdfedfdc194bfdcd1f9af522"
+      }
+    },
+    {
+      "member": "chunk-00983040.request.json",
+      "original": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00983040.request.json",
+        "sha256": "259adb2fe80ffc4b06a57c168fc47ffc1d1a6e9185737eda21ea5aeb1e5957b5"
+      }
+    },
+    {
+      "member": "chunk-00983040.tool-text.original",
+      "original": {
+        "bytes": 87740,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00983040.tool-text.original",
+        "sha256": "d427145e1c86be16c31f4aba5406c35d491d2517db1a380a780403acb39a242f"
+      }
+    },
+    {
+      "member": "chunk-00983040.verified.json",
+      "original": {
+        "bytes": 565,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00983040.verified.json",
+        "sha256": "f0bf82da6083f31cd57592318f203f61118290949045f216319412031fab8f43"
+      }
+    },
+    {
+      "member": "chunk-01048576.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01048576.raw-tool.json",
+        "sha256": "5cf4386c90e3c64665d387136ad89a9ac3cbb89e29c2c5ea5334e880ba78e6b7"
+      }
+    },
+    {
+      "member": "chunk-01048576.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01048576.request.json",
+        "sha256": "fe02926997dc1cf1b80120df0b7db91ad6e64a85298e208bd417fc511289faab"
+      }
+    },
+    {
+      "member": "chunk-01048576.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01048576.tool-text.original",
+        "sha256": "493224a0df1ec3f72e9c53b3258a43baf640ec33c4d808ce744ec8c7720bd3f5"
+      }
+    },
+    {
+      "member": "chunk-01048576.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01048576.verified.json",
+        "sha256": "6a609ea84ebcdfc0f6fc4cd311de722a67ec3f941c73e6168ab97abe67ca0567"
+      }
+    },
+    {
+      "member": "chunk-01114112.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01114112.raw-tool.json",
+        "sha256": "638b3f14d149df609d45ee0200f7a91406a6f3d49260c19ad27ac00b2a42a979"
+      }
+    },
+    {
+      "member": "chunk-01114112.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01114112.request.json",
+        "sha256": "9baef107bd05c3df216e40387b96033322171df911a47b1bdf670e1d4a71a4b0"
+      }
+    },
+    {
+      "member": "chunk-01114112.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01114112.tool-text.original",
+        "sha256": "73051ee9370867458b675c8610da36a9beb5f870769466b6ee276a4157a1ae91"
+      }
+    },
+    {
+      "member": "chunk-01114112.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01114112.verified.json",
+        "sha256": "e5047878006826601483b8ce847b25bfde0ecacb9d7298e70510335f72227733"
+      }
+    },
+    {
+      "member": "chunk-01179648.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01179648.raw-tool.json",
+        "sha256": "1d2923bd8bb71b34b1b208ac6bb79d9a4f8841ba65907c138ac2c9fbf6206146"
+      }
+    },
+    {
+      "member": "chunk-01179648.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01179648.request.json",
+        "sha256": "55516f24515d7d0b0071b5e55dd3fdc899737c48c9222d7a1bc9c092abcd8050"
+      }
+    },
+    {
+      "member": "chunk-01179648.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01179648.tool-text.original",
+        "sha256": "5b012016626fb136ece4242595d5afbfdc37a3d32709762b00786b0a5e3b0fbf"
+      }
+    },
+    {
+      "member": "chunk-01179648.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01179648.verified.json",
+        "sha256": "15a0ef5f237af99dd963f3d524070315d96c25f89077d31608b2f1a01774fa9f"
+      }
+    },
+    {
+      "member": "chunk-01245184.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01245184.raw-tool.json",
+        "sha256": "da69fd9f6294e7d1172df4e3fd09cf2c53ddc2eb426a140acc6d26f8ca5d7bd3"
+      }
+    },
+    {
+      "member": "chunk-01245184.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01245184.request.json",
+        "sha256": "d7743d5145e25f164142915dac8126bacbb42cad00ee6f8bdf9f75b30ba96bc6"
+      }
+    },
+    {
+      "member": "chunk-01245184.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01245184.tool-text.original",
+        "sha256": "9457c79d4c3b162612a92b6134eba463eb3b0a13d615df56e3616666ed095703"
+      }
+    },
+    {
+      "member": "chunk-01245184.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01245184.verified.json",
+        "sha256": "5a4c7f1aacd6d897d05131c6226a2d4b42e16b26891ab1ddf2cf72038e8bec2a"
+      }
+    },
+    {
+      "member": "chunk-01310720.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01310720.raw-tool.json",
+        "sha256": "85bafab6254bea8b62f1cdd0d83fc5075e3972261b2b5f47f054f320fc67116f"
+      }
+    },
+    {
+      "member": "chunk-01310720.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01310720.request.json",
+        "sha256": "0d748d9385f8cd52b0b83f6cdec38c9091971a4ad54c5e68a0a9e20312c85794"
+      }
+    },
+    {
+      "member": "chunk-01310720.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01310720.tool-text.original",
+        "sha256": "3800ea00f59dcc7d4580ff9603e22308e1b7eb210f0f6bc702d5a74c66527ff5"
+      }
+    },
+    {
+      "member": "chunk-01310720.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01310720.verified.json",
+        "sha256": "373d4ac83382d4a0a878eb98b18ce23499165780ae4d0fb0f75c5bcdd5281e3c"
+      }
+    },
+    {
+      "member": "chunk-01376256.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01376256.raw-tool.json",
+        "sha256": "3cd62e6b07ff0b73ef6954b20edb6a8cf76c6bce7efce1173391f07bfabcc572"
+      }
+    },
+    {
+      "member": "chunk-01376256.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01376256.request.json",
+        "sha256": "1fa6194661a85ae169d662a975e5b16cd5bd7602e7f237684a79c49b28dbc5bf"
+      }
+    },
+    {
+      "member": "chunk-01376256.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01376256.tool-text.original",
+        "sha256": "0c4e8ebcedbffa5bb560b5aaf9dfbabafb0ac9e4e59ab41b64a2b57924063ab6"
+      }
+    },
+    {
+      "member": "chunk-01376256.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01376256.verified.json",
+        "sha256": "ab34231ce4f968cdbf9fcf8ffeabef450491025836fd293bec79ce5ea8ab6bce"
+      }
+    },
+    {
+      "member": "chunk-01441792.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01441792.raw-tool.json",
+        "sha256": "3b4785aa5580f82966116fd4bb496ecd5064710408552c85d46640ff4b1a62ac"
+      }
+    },
+    {
+      "member": "chunk-01441792.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01441792.request.json",
+        "sha256": "2cdad9f3d8962c4f2eeadaba8d3aa8554d9afa1e233a99864748969894f583cb"
+      }
+    },
+    {
+      "member": "chunk-01441792.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01441792.tool-text.original",
+        "sha256": "f58b3c045dff7ef1516dd9cd1d3b42fad23586c563fecb14d585f41026be2022"
+      }
+    },
+    {
+      "member": "chunk-01441792.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01441792.verified.json",
+        "sha256": "2a785af9cd9cfb2c2d41b270ed5d100d0b1395b59160ea6c5c286e94d9eec09a"
+      }
+    },
+    {
+      "member": "chunk-01507328.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01507328.raw-tool.json",
+        "sha256": "bc798ecfa84b9cf7e944a5a0628bbf565b09f894d67b7da483a25abcb1042ed8"
+      }
+    },
+    {
+      "member": "chunk-01507328.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01507328.request.json",
+        "sha256": "4c10024a3390b13f3a346b532cf73e736e504980538d89396df8a35359c5ce9a"
+      }
+    },
+    {
+      "member": "chunk-01507328.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01507328.tool-text.original",
+        "sha256": "ec52f7d4e6b50a41838dc810f1d0000f105757393c5070a17e84e0c8914b165e"
+      }
+    },
+    {
+      "member": "chunk-01507328.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01507328.verified.json",
+        "sha256": "df2dd64f1e18564c28af651ae7e354cd71044a6e103d05c397106e7cc5d2123d"
+      }
+    },
+    {
+      "member": "chunk-01572864.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01572864.raw-tool.json",
+        "sha256": "2f50157776ac4ecbeca024a37bbb15f1679b250a448e06a71effb273f290affa"
+      }
+    },
+    {
+      "member": "chunk-01572864.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01572864.request.json",
+        "sha256": "5898774cca427d847d3c9565330f2fc7ae5551668bec35f96ffa08a0590c2c18"
+      }
+    },
+    {
+      "member": "chunk-01572864.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01572864.tool-text.original",
+        "sha256": "551e0b4074d92c9aad383b89dbf7148c2b00c533263ae5b8774bd989e4d3efb4"
+      }
+    },
+    {
+      "member": "chunk-01572864.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01572864.verified.json",
+        "sha256": "450e05b6c405136f7f2b239d663e975d096d41e134454cb9bee21193499982d4"
+      }
+    },
+    {
+      "member": "chunk-01638400.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01638400.raw-tool.json",
+        "sha256": "5f4beb45fd1b599f73dd134afe92e9fb608d2c859599017aa7e998077c97eab3"
+      }
+    },
+    {
+      "member": "chunk-01638400.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01638400.request.json",
+        "sha256": "26a8b9cb77c028f76aae73ea18549430136e2475b78e2f739dfc845cf5af4c4f"
+      }
+    },
+    {
+      "member": "chunk-01638400.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01638400.tool-text.original",
+        "sha256": "004c99143e03f6cc27194e82657f24adbb750cf6a4d26eb926c757b8727b80d7"
+      }
+    },
+    {
+      "member": "chunk-01638400.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01638400.verified.json",
+        "sha256": "f7981cbc3e0193548fa4053fcb84277a95176467b0cbe81537f122338906f93c"
+      }
+    },
+    {
+      "member": "chunk-01703936.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01703936.raw-tool.json",
+        "sha256": "1925aada9655374b6b75b393d4613994eb8fb37ea74b68736e6741ec5b08f447"
+      }
+    },
+    {
+      "member": "chunk-01703936.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01703936.request.json",
+        "sha256": "489fa48357d6505d717fd721ef884e033ebbf1c1ecdccb8c255899049128102e"
+      }
+    },
+    {
+      "member": "chunk-01703936.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01703936.tool-text.original",
+        "sha256": "2dc826c09bcb1450c176b73bf2e01d6b3285120399ef25d84645b2b559622aaa"
+      }
+    },
+    {
+      "member": "chunk-01703936.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01703936.verified.json",
+        "sha256": "a38b65e27b3da753cb409b387582d2b0705e86a40179325925140cb43899b878"
+      }
+    },
+    {
+      "member": "chunk-01769472.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01769472.raw-tool.json",
+        "sha256": "1760ac04e671658978eec06246d1d09fd4cf029c97cc6cf5b3d4afdf6c294df1"
+      }
+    },
+    {
+      "member": "chunk-01769472.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01769472.request.json",
+        "sha256": "760f6719ac9f5d3348ff142d7a0aecec4f90a738dc4636cc3cd2cd03afb514ba"
+      }
+    },
+    {
+      "member": "chunk-01769472.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01769472.tool-text.original",
+        "sha256": "f46cf5cd3ff6235e8bada9f842e0aa1bb76c8411c48cccd3a2c0490896d7c79e"
+      }
+    },
+    {
+      "member": "chunk-01769472.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01769472.verified.json",
+        "sha256": "a2f28ef77b87258cd936ec6a3151c9ac79336ceb507144d8571c4b344587a405"
+      }
+    },
+    {
+      "member": "chunk-01835008.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01835008.raw-tool.json",
+        "sha256": "c07dd06bad78d8e1f8d6140deea6ce78f22827d4cee8478ee47c6cb1b7bf835e"
+      }
+    },
+    {
+      "member": "chunk-01835008.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01835008.request.json",
+        "sha256": "1a5a8e32d39dc6ecf49268294d89c4ec5d8385d51192241e5d37fb20473801ee"
+      }
+    },
+    {
+      "member": "chunk-01835008.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01835008.tool-text.original",
+        "sha256": "4095842063110c993ed5b7726e2ac4ecab03466be0dfc89eddd2b97e17b00481"
+      }
+    },
+    {
+      "member": "chunk-01835008.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01835008.verified.json",
+        "sha256": "2f9254d911f210ecbc16388bf6b84d4f0d1a75aa4e9114cfb4cc29b2b2e8e987"
+      }
+    },
+    {
+      "member": "chunk-01900544.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01900544.raw-tool.json",
+        "sha256": "57ad86b804bfb8f256bd89f74d27d9967d52f6bc1cc69f5f17c413ca824027f5"
+      }
+    },
+    {
+      "member": "chunk-01900544.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01900544.request.json",
+        "sha256": "236821a252b8acaf99e5c0c2a70fe526794876d319b9ae280d76fff1c3a27d9c"
+      }
+    },
+    {
+      "member": "chunk-01900544.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01900544.tool-text.original",
+        "sha256": "fef71c38946708a1ae22d63b6bcb03f0fdc21ccd8fd3422563a70778b932da29"
+      }
+    },
+    {
+      "member": "chunk-01900544.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01900544.verified.json",
+        "sha256": "cd85c369b7793f2a4c54f61ada7c57523407c577a1812fe56f7bdbc0e336e14d"
+      }
+    },
+    {
+      "member": "chunk-01966080.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01966080.raw-tool.json",
+        "sha256": "0bd64baada34faba5015da9ba3cbdd84ecc5b6e299fb7abaad01f5a25da5617d"
+      }
+    },
+    {
+      "member": "chunk-01966080.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01966080.request.json",
+        "sha256": "0664e381ffe8022641556bb2bf4cc7b6cf2a58091b425ad858b602fec7cec70d"
+      }
+    },
+    {
+      "member": "chunk-01966080.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01966080.tool-text.original",
+        "sha256": "c32b55cb35ce7fb6c39d16884915fbb053a22f2941ba1caaa044d52ff148159a"
+      }
+    },
+    {
+      "member": "chunk-01966080.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01966080.verified.json",
+        "sha256": "823058fd6a1e091ede0fd19ee424a4ea982c3be0c18031e72dc0592c1c86c28d"
+      }
+    },
+    {
+      "member": "chunk-02031616.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02031616.raw-tool.json",
+        "sha256": "cc18365707a0195a9755dd823ce891a9716d113379241545eeaf9a9406309ee9"
+      }
+    },
+    {
+      "member": "chunk-02031616.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02031616.request.json",
+        "sha256": "f524adaddb1467b10113fed76e3fe5c292b36a87a0140a35bf5a23d2fcdf4140"
+      }
+    },
+    {
+      "member": "chunk-02031616.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02031616.tool-text.original",
+        "sha256": "ab8128b807284e8fc7479cd56f0604f2c7609bf1320f1125ed0123c9ae81381e"
+      }
+    },
+    {
+      "member": "chunk-02031616.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02031616.verified.json",
+        "sha256": "55d468488ec074cada002dd1d066da532028063c798ee7a55b4fe295c4e6a435"
+      }
+    },
+    {
+      "member": "chunk-02097152.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02097152.raw-tool.json",
+        "sha256": "3fcc00894064bfec4cc4cade7ede0a649af9f22011ab84f88a890ec5cd972459"
+      }
+    },
+    {
+      "member": "chunk-02097152.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02097152.request.json",
+        "sha256": "5c12d6f4621343ff9704664b7688fe3e0f423e020048667257563c9f5c2ffb6f"
+      }
+    },
+    {
+      "member": "chunk-02097152.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02097152.tool-text.original",
+        "sha256": "42fb86b42e9f2339b0e3db1ba3299cb2933cb7ba079c4c2cf77b43b6e8e75f43"
+      }
+    },
+    {
+      "member": "chunk-02097152.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02097152.verified.json",
+        "sha256": "bdf671fa12edb16465d42e72a09a2a5245999e9e94dd4561ead8f160bf568b41"
+      }
+    },
+    {
+      "member": "chunk-02162688.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02162688.raw-tool.json",
+        "sha256": "c83189593614b3034a41013cd5c28e7850a7afc0484f1f0f87d5490ca7767a37"
+      }
+    },
+    {
+      "member": "chunk-02162688.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02162688.request.json",
+        "sha256": "cd0d9bf0ff8e341453089daf2f33ee3f76b07c2cc7e084430a76f93fbed5ca33"
+      }
+    },
+    {
+      "member": "chunk-02162688.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02162688.tool-text.original",
+        "sha256": "8b5afa7eb9c80829fb3092cab98ce3de02bb8370de67d2670cce561783e3cc21"
+      }
+    },
+    {
+      "member": "chunk-02162688.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02162688.verified.json",
+        "sha256": "38b20a0794a5bed9d86387a87b833c697e4e7315744a629146d23f180d0a5f28"
+      }
+    },
+    {
+      "member": "chunk-02228224.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02228224.raw-tool.json",
+        "sha256": "3f1f1c133816c56c0db91da864cac33ed99af879bc2e73dfb717e6d949ba1d8c"
+      }
+    },
+    {
+      "member": "chunk-02228224.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02228224.request.json",
+        "sha256": "bebafabc1ad19a41121f9d04fafc53a291b4a385c33cb46662c747a6ee30dfee"
+      }
+    },
+    {
+      "member": "chunk-02228224.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02228224.tool-text.original",
+        "sha256": "481db313b932603c1ef2b8666b8966e0ad96cc1d33bb0786f629b3228fde1688"
+      }
+    },
+    {
+      "member": "chunk-02228224.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02228224.verified.json",
+        "sha256": "f65be87a8926f224fdba42a38bd24c31e623fe84c9db53bdd6314da528fc7bc0"
+      }
+    },
+    {
+      "member": "chunk-02293760.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02293760.raw-tool.json",
+        "sha256": "48cdb1acf085901481f5ca7dcd49e8c7ba0d024003a7620c4538292849d32a39"
+      }
+    },
+    {
+      "member": "chunk-02293760.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02293760.request.json",
+        "sha256": "7ec3efee62878c0afd7d1cf9011a2fcc2d87e52da75ffaa8c09fee7ed57ef2c7"
+      }
+    },
+    {
+      "member": "chunk-02293760.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02293760.tool-text.original",
+        "sha256": "5b2dd5db3a3bb624ae6a016e307c59d28388c5893b57298c4adeb9093c2bea8c"
+      }
+    },
+    {
+      "member": "chunk-02293760.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02293760.verified.json",
+        "sha256": "a0599b8f298c55f732e04a41dbcec245f5126d7e56d2b0f0b340d200ecf21983"
+      }
+    },
+    {
+      "member": "chunk-02359296.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02359296.raw-tool.json",
+        "sha256": "1d4eb8f7f3cd32048cdb937351321fc0c4d376034d18da5a25426c908d4aed48"
+      }
+    },
+    {
+      "member": "chunk-02359296.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02359296.request.json",
+        "sha256": "bd2ab5c9513b67ce8096e667b75e88c5a104a30d9a1c69fa625b2d1ca9310425"
+      }
+    },
+    {
+      "member": "chunk-02359296.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02359296.tool-text.original",
+        "sha256": "cd5599e72836d15ae98271673ac518fcb4b288bf15cda3c876b00f0a056d60e4"
+      }
+    },
+    {
+      "member": "chunk-02359296.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02359296.verified.json",
+        "sha256": "835e25a2f224d432b07a3d957bb61916b1d623ca6dae7789f4949ac3f9c16da4"
+      }
+    },
+    {
+      "member": "chunk-02424832.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02424832.raw-tool.json",
+        "sha256": "2232bdc4a8cf0a470d5def88e656defc1d11f0bea3639f8d6ba095cedd2e31dd"
+      }
+    },
+    {
+      "member": "chunk-02424832.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02424832.request.json",
+        "sha256": "3ccd2b90d4be2f30fef916dfdf419146d4aeba98db83e3ca354ff1365414bc66"
+      }
+    },
+    {
+      "member": "chunk-02424832.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02424832.tool-text.original",
+        "sha256": "b7b6f9ba1aa17f97829d4c40d335f2a87fcda0ae9161f1a5f0e03c59571107a8"
+      }
+    },
+    {
+      "member": "chunk-02424832.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02424832.verified.json",
+        "sha256": "abe300f2f835de0884d9da6a6597b6a64a29897f3492cfb6ccba6c2e3abda77d"
+      }
+    },
+    {
+      "member": "chunk-02490368.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02490368.raw-tool.json",
+        "sha256": "6064ef4afe3add80406c01b6a05063e9f2f95f7d14989291b460f01587c659ff"
+      }
+    },
+    {
+      "member": "chunk-02490368.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02490368.request.json",
+        "sha256": "b9699eb3f5624ea9aaab2bea74305b3fcf1d68c09b7cd380db8c108311803b45"
+      }
+    },
+    {
+      "member": "chunk-02490368.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02490368.tool-text.original",
+        "sha256": "dca75216aa1ac6953373e5d0aaa3ac6c4bdea26d5e84eaeff68a3aeb414ad3cd"
+      }
+    },
+    {
+      "member": "chunk-02490368.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02490368.verified.json",
+        "sha256": "0721336d690672042912b29860944dc2971029af9af13daa43ac883a874a68cd"
+      }
+    },
+    {
+      "member": "chunk-02555904.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02555904.raw-tool.json",
+        "sha256": "e7963ef5750ca289802dba1bb49d893edce1c4d8e5455076dc9dda3545d8226a"
+      }
+    },
+    {
+      "member": "chunk-02555904.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02555904.request.json",
+        "sha256": "75dab8c7f949e325e1192687835ac9c624b3b5bf179ddddcfab748848b256c8e"
+      }
+    },
+    {
+      "member": "chunk-02555904.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02555904.tool-text.original",
+        "sha256": "07bfbd71e1bf8ffcb2d3c447b226665ba27a20b7a226875514f38f6552681b3c"
+      }
+    },
+    {
+      "member": "chunk-02555904.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02555904.verified.json",
+        "sha256": "8cdd81f29c71e2e846d598147406a546408fbb19e8e8e765b1dc466a0dcf1588"
+      }
+    },
+    {
+      "member": "chunk-02621440.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02621440.raw-tool.json",
+        "sha256": "489895d51b765732d20dee84722d70e2e1fa7a399ca05cb83a422ab974f9d2cb"
+      }
+    },
+    {
+      "member": "chunk-02621440.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02621440.request.json",
+        "sha256": "dfa95876390d235010be00203dc393cc72fa0a2126133b899552ae5b39dd1ef5"
+      }
+    },
+    {
+      "member": "chunk-02621440.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02621440.tool-text.original",
+        "sha256": "a5a811f97d69f0fff510aece1ae3a934d828c96ec9c095e1b7f89a89ab5035b8"
+      }
+    },
+    {
+      "member": "chunk-02621440.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02621440.verified.json",
+        "sha256": "76d19873a8688ef6bc06ab76db62863d1807373a726b4dd06bdaa389d8f669f7"
+      }
+    },
+    {
+      "member": "chunk-02686976.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02686976.raw-tool.json",
+        "sha256": "a1afa54a9bb29c526fb4ba039fed143e896628468f71781688c6ac1ca473c652"
+      }
+    },
+    {
+      "member": "chunk-02686976.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02686976.request.json",
+        "sha256": "dff0345a2bf6392b17e00dce860fa2af5bf4ddb553b9731de4a4774caeecc49d"
+      }
+    },
+    {
+      "member": "chunk-02686976.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02686976.tool-text.original",
+        "sha256": "0c57b44aa9a1505b316f8eba968c722214825b26c961fc97bd0e3bc875d12d19"
+      }
+    },
+    {
+      "member": "chunk-02686976.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02686976.verified.json",
+        "sha256": "e14a98ec07079c0f4a0947030c16876cd85d3f0fe5bf690ab6921c12efc075a3"
+      }
+    },
+    {
+      "member": "chunk-02752512.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02752512.raw-tool.json",
+        "sha256": "d1d060127abf2c8aaa600f00aaff8c2c8e062b0f6a83b899f1ee1fd5af14524d"
+      }
+    },
+    {
+      "member": "chunk-02752512.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02752512.request.json",
+        "sha256": "260744f9601773715e0c2729ebf92a3f6b464a7a9917e7a7d24c4f834a5729de"
+      }
+    },
+    {
+      "member": "chunk-02752512.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02752512.tool-text.original",
+        "sha256": "9f824963e48acad481914c42bd2c3cb23e4b000ad74dddc999125993e6938c7d"
+      }
+    },
+    {
+      "member": "chunk-02752512.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02752512.verified.json",
+        "sha256": "9267d4848b2c9ac045177f28c2d3e0bcfa81c6fa19219f92e90071f432ef1420"
+      }
+    },
+    {
+      "member": "chunk-02818048.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02818048.raw-tool.json",
+        "sha256": "de323612bcf9253d8656c36264f005d5e26651312244dc16c6eb4e0038c0f11d"
+      }
+    },
+    {
+      "member": "chunk-02818048.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02818048.request.json",
+        "sha256": "f41409507db89b53646ac2fc2b217b1686b12444fb2cfac7dca0b70167af97d2"
+      }
+    },
+    {
+      "member": "chunk-02818048.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02818048.tool-text.original",
+        "sha256": "2514eafa6e75fb1e6ef034acdc985e62fd4a7caac5adfed2e936d62e04870f11"
+      }
+    },
+    {
+      "member": "chunk-02818048.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02818048.verified.json",
+        "sha256": "63052d355783be2b1731b6ea6f6faa5a8972003e43b77abffe8843957ad681e3"
+      }
+    },
+    {
+      "member": "chunk-02883584.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02883584.raw-tool.json",
+        "sha256": "525c9b757342fa090e48364c2240f12ad0fe1a2b185d40ba826cb0a56d96ea2b"
+      }
+    },
+    {
+      "member": "chunk-02883584.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02883584.request.json",
+        "sha256": "900f25ae0c525a2588ddfd4b90e8f417dc982f027d7aa58b75d7c7352e16df4e"
+      }
+    },
+    {
+      "member": "chunk-02883584.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02883584.tool-text.original",
+        "sha256": "af6facefe7788fda7b76d451051d9dc44a5d1980006d1416f3093bd36a5f77bf"
+      }
+    },
+    {
+      "member": "chunk-02883584.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02883584.verified.json",
+        "sha256": "9461d04e581b80d5095c7de8de7833e631e1a9858d3e543aa041d51de8bd0224"
+      }
+    },
+    {
+      "member": "chunk-02949120.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02949120.raw-tool.json",
+        "sha256": "8b4c7809ea586300bebe3ecc14db61841c24d2eaa5c40a265230c0796d947800"
+      }
+    },
+    {
+      "member": "chunk-02949120.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02949120.request.json",
+        "sha256": "ffca06791fbf2ba689a5ce9f2cdedc3b5432df53c970be5aecd4a8f206711fdb"
+      }
+    },
+    {
+      "member": "chunk-02949120.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02949120.tool-text.original",
+        "sha256": "15d0d5cfa75c0606173a566e7aebfc0161afd107cb308fc2d71c7a7e3b39645d"
+      }
+    },
+    {
+      "member": "chunk-02949120.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02949120.verified.json",
+        "sha256": "bc465cf58f35336606e7ba58388592c384bbf089018f22b5508b7fb257f34dd8"
+      }
+    },
+    {
+      "member": "chunk-03014656.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03014656.raw-tool.json",
+        "sha256": "9c5a376912cb3e21c3a9a3ff5773fe95d5634edde1c1e9f76d2593ccb72f8466"
+      }
+    },
+    {
+      "member": "chunk-03014656.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03014656.request.json",
+        "sha256": "92055f56fa90a184b28418b8362c3d9503c1a854417211ca527b4dc1db5d854a"
+      }
+    },
+    {
+      "member": "chunk-03014656.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03014656.tool-text.original",
+        "sha256": "a3d7628e6b715a6359f11a76b3665077231bda665991483537587efd13812400"
+      }
+    },
+    {
+      "member": "chunk-03014656.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03014656.verified.json",
+        "sha256": "4c0510ddfe841ff2b8a8fb6ffbddb85d6147e4890d7dfe217bf7b6ce32699714"
+      }
+    },
+    {
+      "member": "chunk-03080192.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03080192.raw-tool.json",
+        "sha256": "86c4fdd74670f0a23acee5ecec103482198406eeb87fd6c3852220c97ab25289"
+      }
+    },
+    {
+      "member": "chunk-03080192.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03080192.request.json",
+        "sha256": "a75d752b9ac2a4461f863d3497afb588cc5693a306248164d8482ed216374e72"
+      }
+    },
+    {
+      "member": "chunk-03080192.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03080192.tool-text.original",
+        "sha256": "d7748d0f9ada83f2d93e5847c433633ccb64e568272af15302f7a8e904cad2e1"
+      }
+    },
+    {
+      "member": "chunk-03080192.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03080192.verified.json",
+        "sha256": "26a582088399ebfe9a8402f2654cae37c326b5a9315727e88ac0a8a575dfad57"
+      }
+    },
+    {
+      "member": "chunk-03145728.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03145728.raw-tool.json",
+        "sha256": "708035afd23043613a1ff76ba157f514807de11fa22ab1e69972c4aa065e1f28"
+      }
+    },
+    {
+      "member": "chunk-03145728.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03145728.request.json",
+        "sha256": "8c4399a9531d3f88ecc62d3c4acd02f6bb5e2d0762912bd5dbde40e98852d692"
+      }
+    },
+    {
+      "member": "chunk-03145728.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03145728.tool-text.original",
+        "sha256": "cba6497081cecf5a1d4abb5825362da8e65854503c8552622b1ccc58d3a11c94"
+      }
+    },
+    {
+      "member": "chunk-03145728.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03145728.verified.json",
+        "sha256": "b6979415d9b65f070de947db5cde98f3ec04aa46ead026cd292006a9f5fb744c"
+      }
+    },
+    {
+      "member": "chunk-03211264.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03211264.raw-tool.json",
+        "sha256": "ae1e60024d9b670522b4a2239e2fee1a4684c50d2e5d26864c44db77510b30be"
+      }
+    },
+    {
+      "member": "chunk-03211264.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03211264.request.json",
+        "sha256": "c23b09dee52eef7392b61c4b7ddbd65815653532f3b9dac753865ea5f05293ae"
+      }
+    },
+    {
+      "member": "chunk-03211264.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03211264.tool-text.original",
+        "sha256": "4d49417b5c2c5881ba4be38bb9a9f083489c57927a2ae864443b18a4d52f87d2"
+      }
+    },
+    {
+      "member": "chunk-03211264.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03211264.verified.json",
+        "sha256": "d9a2e8548db423bf434c0de8cf2e15d4f99051d386ddab434893495c8e700da8"
+      }
+    },
+    {
+      "member": "chunk-03276800.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03276800.raw-tool.json",
+        "sha256": "47f9bf8a0a686135058f134c2e28ecb6705d75911511f486034ef76ac0b830a0"
+      }
+    },
+    {
+      "member": "chunk-03276800.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03276800.request.json",
+        "sha256": "01fd460bc18181bf7619b4f879687e54a12a56a6974af0b39a366463f2cfbf98"
+      }
+    },
+    {
+      "member": "chunk-03276800.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03276800.tool-text.original",
+        "sha256": "c1e5c04a41190134953fa65b91b7c39bb1239c25d0b8e3467f311311d1870a9c"
+      }
+    },
+    {
+      "member": "chunk-03276800.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03276800.verified.json",
+        "sha256": "02658aacf1fcdf680bffbfdd08cd3b6a413e4745f18fa23886249197e58f0b28"
+      }
+    },
+    {
+      "member": "chunk-03342336.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03342336.raw-tool.json",
+        "sha256": "69b9f408d328755f593a6925c4c8221b511607fe80410246a81c945cea90d79c"
+      }
+    },
+    {
+      "member": "chunk-03342336.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03342336.request.json",
+        "sha256": "d332d94931fbcce623a5f1ad55b3c9d194dccea77331e7d30034eda4bbbf8ada"
+      }
+    },
+    {
+      "member": "chunk-03342336.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03342336.tool-text.original",
+        "sha256": "22ea53f4f893e14230fc183ece4075ec764634da4cd998f4ae52c1b0846ad515"
+      }
+    },
+    {
+      "member": "chunk-03342336.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03342336.verified.json",
+        "sha256": "10ea022b4d3627274352573b67133a9fa3fc51b3f8776497a224371796d55870"
+      }
+    },
+    {
+      "member": "chunk-03407872.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03407872.raw-tool.json",
+        "sha256": "18f08387a56abd71cd3de0a21bc7c38a0b90788ae631e823bceef5c9f363ec44"
+      }
+    },
+    {
+      "member": "chunk-03407872.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03407872.request.json",
+        "sha256": "9cd6ffe422d059d10ed7651f57a9513de2f60a94bf6741b829ec09308ffa2365"
+      }
+    },
+    {
+      "member": "chunk-03407872.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03407872.tool-text.original",
+        "sha256": "ab95c07aca0c47f861c0bc23379bc283b2070f04b14461a93525e256d9769b47"
+      }
+    },
+    {
+      "member": "chunk-03407872.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03407872.verified.json",
+        "sha256": "861ab525817e6d7fbd2c0d3be44d71dead7aaf59f840c4f21a6156bd33a1932f"
+      }
+    },
+    {
+      "member": "chunk-03473408.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03473408.raw-tool.json",
+        "sha256": "6dec4c014071ebc8b231af1ede8605ce763b32d55eaa1fef8fc44e4a91733c7e"
+      }
+    },
+    {
+      "member": "chunk-03473408.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03473408.request.json",
+        "sha256": "9c03cfbbb3b6edbb94e03a2de0bb9ac549d221d2d55f8bced4f3dd03148560ae"
+      }
+    },
+    {
+      "member": "chunk-03473408.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03473408.tool-text.original",
+        "sha256": "ea4d4e3c298e06dd71cf6218ef66e8982252f4507e2817be91414da13e24adc4"
+      }
+    },
+    {
+      "member": "chunk-03473408.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03473408.verified.json",
+        "sha256": "ed122bbbb5e8a932411b1b236d9200da67cfc3187913c1247b7911f125750bc4"
+      }
+    },
+    {
+      "member": "chunk-03538944.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03538944.raw-tool.json",
+        "sha256": "ee4cb29bf848b91f0019ac525fed6385068dcbb046d6bd4a480fd123462cfef0"
+      }
+    },
+    {
+      "member": "chunk-03538944.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03538944.request.json",
+        "sha256": "6bc376666e009e70c1b6d902ebc81a186c72d587c791da6b5610c2ac81a91eb8"
+      }
+    },
+    {
+      "member": "chunk-03538944.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03538944.tool-text.original",
+        "sha256": "3472bb79ccebca3b3abf7b913376ef14edce4e8c2a09eb93824f7ed95331e2b0"
+      }
+    },
+    {
+      "member": "chunk-03538944.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03538944.verified.json",
+        "sha256": "6fdccd0b3f28ef439fee212cbdbfc4029a225cda1b0a93c5acd68fb0e926b3a5"
+      }
+    },
+    {
+      "member": "chunk-03604480.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03604480.raw-tool.json",
+        "sha256": "0cdf21d3ec95412dc8a8df96414c074bab50bcc60c52f7f15f5b36cc9216306f"
+      }
+    },
+    {
+      "member": "chunk-03604480.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03604480.request.json",
+        "sha256": "855dee23ac811eee1a316343ccb7542e6d78798b46a80b0f764482cd0b0209bf"
+      }
+    },
+    {
+      "member": "chunk-03604480.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03604480.tool-text.original",
+        "sha256": "72ccd7101df68ff6864f059ec31d36ddbf1b42c668d75ad00af11d69350fe5ca"
+      }
+    },
+    {
+      "member": "chunk-03604480.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03604480.verified.json",
+        "sha256": "0d9b6cbb0c2951410eb188cb391f600a7bcda7d65835f446628e772261cfb709"
+      }
+    },
+    {
+      "member": "chunk-03670016.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03670016.raw-tool.json",
+        "sha256": "b8060ecae59b30a40a23ea7428d2b47e36e7c039e37316768519c9b14db6947b"
+      }
+    },
+    {
+      "member": "chunk-03670016.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03670016.request.json",
+        "sha256": "900c8488e34da407dffae4169792bdc7c890350ebeb23cdb7b2cb18a21fee99d"
+      }
+    },
+    {
+      "member": "chunk-03670016.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03670016.tool-text.original",
+        "sha256": "1765f2230fdce23e9f2dcd4e8b2e60d18e1f129470e1e54792ba1dd0a0af1ed4"
+      }
+    },
+    {
+      "member": "chunk-03670016.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03670016.verified.json",
+        "sha256": "487fb5007b3eba5f28797dcc5a914c7f8760df1f6450e0b415b3a5e58a788a65"
+      }
+    },
+    {
+      "member": "chunk-03735552.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03735552.raw-tool.json",
+        "sha256": "5dd66ac7fca8cd860aac585b9c1f671a97e754d1d2f5d03b6597bd070d3c99b0"
+      }
+    },
+    {
+      "member": "chunk-03735552.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03735552.request.json",
+        "sha256": "68ae60b92f522888200d361ad79cae130ec65aad9637dfc325c9921f51710d8e"
+      }
+    },
+    {
+      "member": "chunk-03735552.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03735552.tool-text.original",
+        "sha256": "9d708074e9730a3db45405ccf5cf00a5059a72cef9f62aaecfba5d0be103273d"
+      }
+    },
+    {
+      "member": "chunk-03735552.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03735552.verified.json",
+        "sha256": "4fca1bf70fd0706262643cfb9970bc02aa92f29ebb9a9ca10a871e0ffc07046c"
+      }
+    },
+    {
+      "member": "chunk-03801088.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03801088.raw-tool.json",
+        "sha256": "2ecb235b63e5c34f1ce5d6d77dcc1c81d6d367c4a5b50dce3f29343080a1f747"
+      }
+    },
+    {
+      "member": "chunk-03801088.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03801088.request.json",
+        "sha256": "739ac50c43d0f5c15f819f7a31b9080f64d447d3f8b91979311ce6a31107f74b"
+      }
+    },
+    {
+      "member": "chunk-03801088.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03801088.tool-text.original",
+        "sha256": "4ad2631b8adc81b956f1ddc52c1c6b06ed74a4ca948ab7f6a3b64c88f218d327"
+      }
+    },
+    {
+      "member": "chunk-03801088.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03801088.verified.json",
+        "sha256": "e7b70df7f81937e5181cb6dec4a72851a747402dc7c8b74597945b82e654f7e4"
+      }
+    },
+    {
+      "member": "chunk-03866624.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03866624.raw-tool.json",
+        "sha256": "d752997b60b478430460a5fe24d2f7df1d0302cd82fac90d8c2d7455e9cf7f24"
+      }
+    },
+    {
+      "member": "chunk-03866624.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03866624.request.json",
+        "sha256": "bc30e5b28b7aeb8f98800fc8f2344451f1ff48a5e3707c537320bde577054a3a"
+      }
+    },
+    {
+      "member": "chunk-03866624.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03866624.tool-text.original",
+        "sha256": "a87a916ac908ed61c38cf1b6228ca14a149c8ae7aede3ac1296454a5677c59d6"
+      }
+    },
+    {
+      "member": "chunk-03866624.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03866624.verified.json",
+        "sha256": "8b257dfae978cca425d9462c479fcf877a6c251411fd0b3f7325e594a9928d68"
+      }
+    },
+    {
+      "member": "chunk-03932160.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03932160.raw-tool.json",
+        "sha256": "22f0c5e197b08b6db6a696e7141c00f73a400726d3b44dc4e05db9f8a25821ee"
+      }
+    },
+    {
+      "member": "chunk-03932160.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03932160.request.json",
+        "sha256": "a8d5061e151e7471b6dcbe1e61129ae648524483c9fc2ef429598d6284576a68"
+      }
+    },
+    {
+      "member": "chunk-03932160.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03932160.tool-text.original",
+        "sha256": "4448325d42eeba8511383e5b8ab9a34719f659129d4e553ce52f68d7360847b6"
+      }
+    },
+    {
+      "member": "chunk-03932160.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03932160.verified.json",
+        "sha256": "cfb86a3978a0857b2231c2da1a8cbe7bb7f885a3d1b6adc09038eb86b9fe4cc4"
+      }
+    },
+    {
+      "member": "chunk-03997696.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03997696.raw-tool.json",
+        "sha256": "d0d25cdd76333b7eac836f04103b0c40b119cdb9bc254894b693bb445b3fcfb2"
+      }
+    },
+    {
+      "member": "chunk-03997696.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03997696.request.json",
+        "sha256": "4d8c463b5daea7f38d13efdc901637d328f5f6992df6743bbd3eafbc1c2454b4"
+      }
+    },
+    {
+      "member": "chunk-03997696.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03997696.tool-text.original",
+        "sha256": "7c876a10bd1e10a53cfa873f437f539f24ab65bcb1ebb4f773639edb75c3f306"
+      }
+    },
+    {
+      "member": "chunk-03997696.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03997696.verified.json",
+        "sha256": "7b09492a7030d693a32b7b0691691e0fc72c94bbb06c8cf9bc27408b446cb71d"
+      }
+    },
+    {
+      "member": "chunk-04063232.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04063232.raw-tool.json",
+        "sha256": "f3d42b0ffb3866ff154aa29928c17f67632bee9c936442ab77b7f8903b5ae4ac"
+      }
+    },
+    {
+      "member": "chunk-04063232.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04063232.request.json",
+        "sha256": "fba6d9f066c70f62ef17d176551e92c3f1ddb4960f85cd62268cf613b6c3b25c"
+      }
+    },
+    {
+      "member": "chunk-04063232.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04063232.tool-text.original",
+        "sha256": "be42f216688bb6162ddae2bd3143c3134242f60ace5ff4379d6140988e9171e6"
+      }
+    },
+    {
+      "member": "chunk-04063232.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04063232.verified.json",
+        "sha256": "130006df1b7f4a997740eed7518917e02e2117c8c31eefdb58f50ced41171b63"
+      }
+    },
+    {
+      "member": "chunk-04128768.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04128768.raw-tool.json",
+        "sha256": "b1c460dad62c9d0f5c47c100ce4a7257a2e0be24793c1eb514709c10aa1f05ec"
+      }
+    },
+    {
+      "member": "chunk-04128768.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04128768.request.json",
+        "sha256": "51dff1344d7d78951104b7cd8743d583ae18cb8ccca478099828992be51a4eb8"
+      }
+    },
+    {
+      "member": "chunk-04128768.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04128768.tool-text.original",
+        "sha256": "ea91453bc8b08468918cd8740b91287f98375170a4b109b7e01fb15cc72a3cb5"
+      }
+    },
+    {
+      "member": "chunk-04128768.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04128768.verified.json",
+        "sha256": "aad81719e7eb52cfc716dbc1d5e1e6cd9929017d145c78dc78d327355e9bdb5c"
+      }
+    },
+    {
+      "member": "chunk-04194304.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04194304.raw-tool.json",
+        "sha256": "0d4387471ea0c86725b8e8e6843f49b3bb78a29650ab14c1ffd98534d29a20d3"
+      }
+    },
+    {
+      "member": "chunk-04194304.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04194304.request.json",
+        "sha256": "6fbdb6860d6dbf698f6512769396daef100595cf2566eb365aa1539ea8c42472"
+      }
+    },
+    {
+      "member": "chunk-04194304.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04194304.tool-text.original",
+        "sha256": "f850460f64005a26eb24d6f7dd097aa29646f10505d45f0201bc0ce9573e9648"
+      }
+    },
+    {
+      "member": "chunk-04194304.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04194304.verified.json",
+        "sha256": "5c9514380c4f324246ea8cc6d5871243ea0b9f807efb81e8fe606289c1b18b02"
+      }
+    },
+    {
+      "member": "chunk-04259840.local-verifier-final.json",
+      "original": {
+        "bytes": 204,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.local-verifier-final.json",
+        "sha256": "439d5e393cfebeab9f79abed105b80e5f80bd4191559649199040ee016f5e701"
+      }
+    },
+    {
+      "member": "chunk-04259840.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.raw-tool.json",
+        "sha256": "4b8a68f71f80d022667a555ec9b2194c6661ea633dc00bf5aae4fe94e9ae1e4e"
+      }
+    },
+    {
+      "member": "chunk-04259840.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.request.json",
+        "sha256": "b468bac081c701f69bfc43a3526ccc03f43a433be3e90e7cfc01448db524f0e4"
+      }
+    },
+    {
+      "member": "chunk-04259840.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.tool-text.original",
+        "sha256": "bd297a2f91b81594900b426454d18a9463b4bd8c97c636011a8ae8d3bf5dbbf2"
+      }
+    },
+    {
+      "member": "chunk-04259840.verification-failure.json",
+      "original": {
+        "bytes": 132,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.verification-failure.json",
+        "sha256": "e050d5ca5a9b7d45f823e0ec9643761bd0a3b118891054a49cb6ea426b3490a2"
+      }
+    },
+    {
+      "member": "chunk-04259840.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.verified.json",
+        "sha256": "62f1df8ef26b53536d14a206b9f4c9ae01ebe2cce3a29e358a7d0d42b3880229"
+      }
+    },
+    {
+      "member": "chunk-04325376.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04325376.raw-tool.json",
+        "sha256": "2398632ee446cf8b1ccbfae28f438ebc01d05387228364161cedee1441788c3e"
+      }
+    },
+    {
+      "member": "chunk-04325376.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04325376.request.json",
+        "sha256": "3e4454d409e597d579638a228ab31a10f9526f4d6e70b7a6e515a621aa4d4438"
+      }
+    },
+    {
+      "member": "chunk-04325376.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04325376.tool-text.original",
+        "sha256": "ad922fdd6eef4b44f52a23d1c2232913d87f11eb8d8e341febd346a194d3f66c"
+      }
+    },
+    {
+      "member": "chunk-04325376.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04325376.verified.json",
+        "sha256": "fc8ae5698bb54cdfc1695df9df1df4b3b5d28f5691d707c9da7a33393827b910"
+      }
+    },
+    {
+      "member": "chunk-04390912.local-verifier-final.json",
+      "original": {
+        "bytes": 204,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.local-verifier-final.json",
+        "sha256": "4b3ce59fc031342970f54a10ac0414f4c291ac3bb62975678f2cdf9e93ae768e"
+      }
+    },
+    {
+      "member": "chunk-04390912.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.raw-tool.json",
+        "sha256": "f3033d7f974ce889a1ee254cb33fd248d6be246fbd9c940745011894a7777127"
+      }
+    },
+    {
+      "member": "chunk-04390912.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.request.json",
+        "sha256": "859f5959e9cee44216c2936239046e57445cda4c3cfedac9c603deee960127cf"
+      }
+    },
+    {
+      "member": "chunk-04390912.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.tool-text.original",
+        "sha256": "e3b263326c633d9771a9afb767bff397744c309acb7bdb06367ea4398a0bae1c"
+      }
+    },
+    {
+      "member": "chunk-04390912.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.verified.json",
+        "sha256": "80f3bb2b0662bf0d65845dab8b1fb2cacb3f54ea2224c9f9a95f3065a6c949ac"
+      }
+    },
+    {
+      "member": "chunk-04456448.local-verifier-final.json",
+      "original": {
+        "bytes": 204,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.local-verifier-final.json",
+        "sha256": "696dead8e4d237cf04019c6abda5c4c0a210139598740d62894df1b4ffd1c6ee"
+      }
+    },
+    {
+      "member": "chunk-04456448.raw-tool.json",
+      "original": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.raw-tool.json",
+        "sha256": "6ea897eec31c1069a8025bd4e0b33a549f9de162d1019612188032d93593f027"
+      }
+    },
+    {
+      "member": "chunk-04456448.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.request.json",
+        "sha256": "b637aab2ee6e78f89e95468357972833c46c0293b27d647699760be2291f826d"
+      }
+    },
+    {
+      "member": "chunk-04456448.tool-text.original",
+      "original": {
+        "bytes": 87741,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.tool-text.original",
+        "sha256": "fa29708970e796edea31d2ab81de2107129014509cdf0e1427b1cb7549dc569c"
+      }
+    },
+    {
+      "member": "chunk-04456448.verified.json",
+      "original": {
+        "bytes": 566,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.verified.json",
+        "sha256": "11ac51c148022c32609a8991d3fb49d976683b5a3cd58aaa1739a83d7b7e2501"
+      }
+    },
+    {
+      "member": "chunk-04521984.local-verifier-final.json",
+      "original": {
+        "bytes": 202,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.local-verifier-final.json",
+        "sha256": "d3cefc11560e6a0cc78847bd48622547c4b02fda7155d2eda116c48659319a27"
+      }
+    },
+    {
+      "member": "chunk-04521984.raw-tool.json",
+      "original": {
+        "bytes": 13043,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.raw-tool.json",
+        "sha256": "7c8a4f5db17ceb2f6687988c5f6eb31cc6f0d7f8a862738f558a497bae371e60"
+      }
+    },
+    {
+      "member": "chunk-04521984.request.json",
+      "original": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.request.json",
+        "sha256": "10b5c2d9dbcf9fef600286ea95fd262e24891f4d5bca1995b50e25cb476c2180"
+      }
+    },
+    {
+      "member": "chunk-04521984.tool-text.original",
+      "original": {
+        "bytes": 12896,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.tool-text.original",
+        "sha256": "d6bb6b84b05eacff77b97bfbd91315ec0c6e322da6faf81508249300cb1d5584"
+      }
+    },
+    {
+      "member": "chunk-04521984.verified.json",
+      "original": {
+        "bytes": 564,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.verified.json",
+        "sha256": "6870e6deab7b1d1d748c6151fbfbe5ae742f9b7a2373187a3f353e97143f5b24"
+      }
+    },
+    {
+      "member": "local-verification-run01.stderr",
+      "original": {
+        "bytes": 0,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/local-verification-run01.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "member": "local-verification-run01.stdout",
+      "original": {
+        "bytes": 821,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/local-verification-run01.stdout",
+        "sha256": "a11ee9b31d7b6be418255be4bc71848ee24c42bf9c7a3cdd3970054a875b6f23"
+      }
+    },
+    {
+      "member": "local-verification-run01.terminal.json",
+      "original": {
+        "bytes": 126,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/local-verification-run01.terminal.json",
+        "sha256": "9b392e93a970b4161413e58b8129ec7d13a6cdb5e7c3f8ed79d3a10b8dbb84fa"
+      }
+    },
+    {
+      "member": "verify_chunk_locally.py",
+      "original": {
+        "bytes": 2723,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/verify_chunk_locally.py",
+        "sha256": "e5f0c5ba56c2fc4e360d74d9ec50d395c016dcb77a12fd6410d640b4842c6c28"
+      }
+    },
+    {
+      "member": "verify_reconstruct_and_decode.py",
+      "original": {
+        "bytes": 24224,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/verify_reconstruct_and_decode.py",
+        "sha256": "32504f1dea4edc5ccc2d0b2c40c0559cd03b0334d3365638208179c615c4f542"
+      }
+    }
+  ],
+  "members": 292,
+  "original_filesystem_metadata_reproduced": false,
+  "raw_chunk_bins_omitted": true,
+  "raw_chunk_bytes_available_in_original_receipts_and_full_archive": true,
+  "remote_collection_performed_by_packaging": false,
+  "schema": "hepta.checkpoint07.local-receipt-carrier.v1",
+  "state": "LOCAL_REPACK_OF_EXACT_EXISTING_RECEIPTS",
+  "tar": {
+    "bytes": 12298240,
+    "sha256": "20a4f7f078e51d395573db574526b12da91dea9f3fa74a2a6bfdde0b6aecd209"
+  }
+}

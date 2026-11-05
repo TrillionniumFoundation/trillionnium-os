@@ -1,0 +1,34 @@
+{
+  "already_executed": false,
+  "caller": {
+    "bytes": 123662,
+    "sha256": "380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63"
+  },
+  "caller_seven_splice_whole_inverse": true,
+  "case_credit": false,
+  "complete_footprint_body_exact": true,
+  "independent_review": {
+    "bytes": 5490,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/reviews/epoch-footprint-observer-independent01/REVIEW.json",
+    "sha256": "d8dff521a84e4f3113a3d3885b850794dfa700037606e625b5499c8c49589c36"
+  },
+  "new_case_nonce_or_lease": false,
+  "original_helpers_whole_equal": 11,
+  "outer_timeout": false,
+  "owned_child_passive_wait_seconds": 240,
+  "phone_readonly_observations_max": 1,
+  "phone_source_exact_heredoc_including_trailing_LF": true,
+  "phone_timeout_seconds": 210,
+  "request": {
+    "bytes": 127964,
+    "sha256": "ab2a3bc86f3ef7e3d8233fbbed31a78a870d1d681d091f708cbbca54f6dac818"
+  },
+  "schema": "hepta.epoch.footprint-root-source-admission.v1",
+  "shared_observer_seconds": 30,
+  "source": {
+    "bytes": 57213,
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "source_members": 24,
+  "state": "EXACT_FIXED_READONLY_OBSERVER_AND_CALLER_REVIEWED_FOR_ONE_INVOCATION"
+}

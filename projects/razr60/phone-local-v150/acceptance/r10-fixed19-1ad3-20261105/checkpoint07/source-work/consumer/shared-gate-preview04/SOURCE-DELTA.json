@@ -1,0 +1,122 @@
+{
+  "all_whole_source_inverses_verified": true,
+  "cascade_four_argument_gate_integration_pending": true,
+  "case_credit": false,
+  "files": [
+    {
+      "bytes": 91611,
+      "inverse_byte_splices": [
+        {
+          "new_utf8": "SHARED_MATERIALS_SHA = 'af0d3e6b15a4eab40a52573db1ba5a24f1f1051f3965cad1b78039d889c0b8a5'\n",
+          "old_utf8": "SHARED_MATERIALS_SHA = '121416839ffdac15485270cda0e95445e376b0a24801fa283659a3da084ae45f'\n",
+          "start": 1811
+        }
+      ],
+      "parent": {
+        "bytes": 91611,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/release_boundaries.py",
+        "sha256": "c2027adeebb55662deb97e4f7fa7ddde5f3b21098ae0e0de1fc768f723549ed0"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/release_boundaries.py",
+      "sha256": "352fdabf9c6bfb57cfab8ab1e2727f1223fe2a388f55e9819e703404b264732b"
+    },
+    {
+      "bytes": 36456,
+      "inverse_byte_splices": [
+        {
+          "new_utf8": "SHARED_SHA = 'af0d3e6b15a4eab40a52573db1ba5a24f1f1051f3965cad1b78039d889c0b8a5'\n",
+          "old_utf8": "SHARED_SHA = '121416839ffdac15485270cda0e95445e376b0a24801fa283659a3da084ae45f'\n",
+          "start": 970
+        }
+      ],
+      "parent": {
+        "bytes": 36456,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/make_component_boundary_inputs.py",
+        "sha256": "ee0c7c672d947f97913bde2da5c64a80f587aee5d99832606f25a2088f45a314"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/make_component_boundary_inputs.py",
+      "sha256": "526d30c63a55025ba4ba9d1b07680c62ef4704466618f6b08448921ed51acde8"
+    },
+    {
+      "bytes": 66415,
+      "inverse_byte_splices": [],
+      "parent": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/source/derive_final_cascade_property_r8.py",
+        "sha256": "10a464a67b555ae6193b8003809150dcafd0e7938b6feb2f13bbc6572328a32e"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/source/derive_final_cascade_property_r8.py",
+      "sha256": "10a464a67b555ae6193b8003809150dcafd0e7938b6feb2f13bbc6572328a32e"
+    },
+    {
+      "bytes": 40936,
+      "inverse_byte_splices": [],
+      "parent": {
+        "bytes": 40936,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ba28c9cb9e40af944062838eab8be26d9109a42f54eec091ae866f1b01a75302"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/source/write_final_seal_interface_property_r8.py",
+      "sha256": "ba28c9cb9e40af944062838eab8be26d9109a42f54eec091ae866f1b01a75302"
+    },
+    {
+      "bytes": 16055,
+      "inverse_byte_splices": [],
+      "parent": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/preparer/prepare_final_cascade.py",
+      "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+    },
+    {
+      "bytes": 40844,
+      "inverse_byte_splices": [],
+      "parent": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/build_release_r10.py",
+      "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+    },
+    {
+      "bytes": 15746,
+      "inverse_byte_splices": [],
+      "parent": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/downstream/component_source_context.py",
+      "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+    },
+    {
+      "bytes": 29537,
+      "inverse_byte_splices": [],
+      "parent": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/downstream/prepare_fixed19_host_r10.py",
+      "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+    }
+  ],
+  "final_epoch_source_generation_bound": false,
+  "final_four_argument_verifier_inserted": false,
+  "old_parent_manifest_sha256": "121416839ffdac15485270cda0e95445e376b0a24801fa283659a3da084ae45f",
+  "phone_calls": 0,
+  "reason": "The old manifest describes parent production/configuration/service bytes; exact shared-byte checking refused it against codec72 material bytes.",
+  "remote_calls": 0,
+  "schema": "hepta.epoch.shared17-manifest-binding-source-preview.v1",
+  "shared_manifest": {
+    "bytes": 3519,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-shared-preview02/materials/SHARED-MATERIALS.json",
+    "sha256": "af0d3e6b15a4eab40a52573db1ba5a24f1f1051f3965cad1b78039d889c0b8a5"
+  },
+  "source_only_manifest_not_deployed_generation": true,
+  "state": "SOURCE_ONLY_PENDING_FINAL_EPOCH_VERIFIER_AND_TWO_DOMAIN_CONSUMPTION",
+  "target_source_executed": false
+}

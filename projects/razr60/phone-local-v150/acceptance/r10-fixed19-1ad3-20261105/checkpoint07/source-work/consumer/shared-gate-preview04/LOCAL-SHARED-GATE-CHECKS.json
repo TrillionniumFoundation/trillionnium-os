@@ -1,0 +1,98 @@
+{
+  "actual_cached_combination": {
+    "bytes": 4702,
+    "sha256": "7616a1995a9bc346924db48560ff5b2d5de3b6b7836817c1674bedd1e723cfd0"
+  },
+  "actual_cached_runtime": {
+    "bytes": 21785,
+    "sha256": "de1201545e8d6c04379b938ede3e0f2e73649addbd3ff68bf938bef038b207f6"
+  },
+  "actual_shared_manifest": {
+    "bytes": 3519,
+    "sha256": "af0d3e6b15a4eab40a52573db1ba5a24f1f1051f3965cad1b78039d889c0b8a5"
+  },
+  "check_count": 10,
+  "checks": [
+    {
+      "events": [
+        "all_four_original_inputs_received_before_runtime"
+      ],
+      "name": "consumer_phone_complete32_plus17_and_combo_before_first_exec",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [
+        "all_four_original_inputs_received_before_runtime"
+      ],
+      "name": "consumer_mac_complete32_plus17_and_combo_before_first_exec",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [
+        "all_four_original_inputs_received_before_runtime"
+      ],
+      "name": "consumer_p4_complete32_plus17_and_combo_before_first_exec",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [],
+      "name": "actual_old_parent_shared_manifest_refused_for_codec72_generation",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [],
+      "name": "missing_shared_original_refused_before_epoch_gate",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [],
+      "name": "duplicate_shared_original_refused_before_epoch_gate",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [],
+      "name": "same_length_changed_shared_bytes_refused_before_epoch_gate",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [],
+      "name": "different_combination_refused_before_epoch_gate",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [],
+      "name": "old_input_schema_cannot_omit_new_source_gate_materials",
+      "result": "observed_expected_gate"
+    },
+    {
+      "events": [
+        "all_four_original_inputs_received_before_runtime"
+      ],
+      "name": "constructor_collects_complete_sources_and_explicit_combo_before_any_ancestor_exec",
+      "result": "observed_expected_gate"
+    }
+  ],
+  "constructor": {
+    "bytes": 36456,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/make_component_boundary_inputs.py",
+    "sha256": "526d30c63a55025ba4ba9d1b07680c62ef4704466618f6b08448921ed51acde8"
+  },
+  "consumer": {
+    "bytes": 91611,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/release_boundaries.py",
+    "sha256": "352fdabf9c6bfb57cfab8ab1e2727f1223fe2a388f55e9819e703404b264732b"
+  },
+  "fixed19_case_credit": false,
+  "full_epoch_integration_verified": false,
+  "new_epoch_verifier_executed": false,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "runtime_source_executed": false,
+  "schema": "hepta.epoch.shared-gate-local-checks.v1",
+  "state": "PRE_EXEC_SHARED_ORIGINAL_GATES_CHECKED_NOT_EPOCH_RUNTIME_QUALIFIED",
+  "test_only_overrides": [
+    "pre-epoch package/combination trust pins in isolated local namespace",
+    "epoch gate validates all four complete inputs then raises a local sentinel",
+    "component module loader is a trap and must never be reached"
+  ]
+}

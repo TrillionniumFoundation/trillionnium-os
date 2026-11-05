@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "root-1ad3-existing902-head-original-controller-read01-20261105",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "pocket4",
+      "job_id": "1a1ac3235b3-fc05-52cc",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 1024
+    }
+  }
+}

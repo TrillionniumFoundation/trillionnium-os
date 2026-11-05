@@ -1,0 +1,28 @@
+{
+  "extra_binding_is_none": true,
+  "fragment": {
+    "bytes": 66024,
+    "sha256": "5569328e15cac5909b38429a63160e0ce7adda4cc6e7dc46bb4552f24487bb55"
+  },
+  "modified_functions": [
+    "_epoch_inventory_observation_value",
+    "inventory_epoch_spec_value",
+    "verify_epoch_inventory_observation"
+  ],
+  "original_single_domain_functions_byte_equal": 15,
+  "parent": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.failed-fixture-v2.freeze-static-checks.v1",
+  "source": {
+    "bytes": 106287,
+    "sha256": "8efadfa585529c538da263de75c2bff6f4995def9f8e4061f9e43e52f4d4b928"
+  },
+  "target_imports_or_functions": 0,
+  "tests_rerun": 0,
+  "unchanged_parent_functions_and_classes": 24,
+  "whole_inverse": true
+}

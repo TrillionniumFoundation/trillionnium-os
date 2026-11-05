@@ -1,0 +1,33 @@
+{
+  "archive_modified": false,
+  "extractions": [
+    {
+      "archive": {
+        "bytes": 469829,
+        "local_path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/reference/component-inputs.original.tar.gz",
+        "sha256": "9aacc5789a65dd875ab9fe7456e2258e0bf4e54575d3be71a50d5542a489b288"
+      },
+      "bytes": 2488,
+      "local_path": "/workspace/scratch/1ad3d6f55439/epoch_footprint_observer_candidate01/body-cache01/2f47f823ef1484852c5dc1b91f27020d6f56685b3024dc320d5925a3dac92d59.original",
+      "member": "LEASE.json",
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/LEASE.json",
+      "sha256": "2f47f823ef1484852c5dc1b91f27020d6f56685b3024dc320d5925a3dac92d59"
+    },
+    {
+      "archive": {
+        "bytes": 469829,
+        "local_path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/reference/component-inputs.original.tar.gz",
+        "sha256": "9aacc5789a65dd875ab9fe7456e2258e0bf4e54575d3be71a50d5542a489b288"
+      },
+      "bytes": 675,
+      "local_path": "/workspace/scratch/1ad3d6f55439/epoch_footprint_observer_candidate01/body-cache01/d44c17956cff7c94f4cf3527b591908c70cc5d8df66049f385a068bab6174b66.original",
+      "member": "sender-contract.json",
+      "original_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/sender-contract.json",
+      "sha256": "d44c17956cff7c94f4cf3527b591908c70cc5d8df66049f385a068bab6174b66"
+    }
+  ],
+  "original_body_synthesized": false,
+  "schema": "hepta.actual-original-archive-body-extraction.v1",
+  "state": "EXACT_MEMBER_BYTES_MATCH_HISTORICAL_FULL9_BODY_PINS",
+  "target_code_executed": 0
+}

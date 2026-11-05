@@ -1,0 +1,25 @@
+{
+  "case_credit": false,
+  "controller_exit": 0,
+  "controller_job": "1a1ac6e6bb5-fc05-543e",
+  "double_eof": true,
+  "host_proof_not_yet_run": true,
+  "packages": [
+    {
+      "all_tar_member_descriptors_equal": true,
+      "bytes": 137881,
+      "files": 10,
+      "kind": "source"
+    },
+    {
+      "all_tar_member_descriptors_equal": true,
+      "bytes": 1151329,
+      "files": 29,
+      "kind": "evidence"
+    }
+  ],
+  "per_member_full9_table_present_in_staged_files": false,
+  "phone_calls": 0,
+  "readback_full9_checks_executed_in_reviewed_stager": true,
+  "state": "ACTUAL_HOST_STAGE_COMPLETE_ALL39_MEMBER_DESCRIPTORS_EQUAL"
+}

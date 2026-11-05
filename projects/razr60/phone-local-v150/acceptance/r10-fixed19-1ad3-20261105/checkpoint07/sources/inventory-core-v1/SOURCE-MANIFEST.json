@@ -1,0 +1,143 @@
+{
+  "binding_is_none": true,
+  "candidate": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "files": [
+    {
+      "bytes": 6011,
+      "path": "INTERFACE.json",
+      "sha256": "e2a370fbe392de48a737bdce0dc3b8676df9cffe85278f0082bb50e4f1da5b0a"
+    },
+    {
+      "bytes": 5289,
+      "path": "README.md",
+      "sha256": "56df9d602370758ac5721a097613a1de133913808f0c30dc71e84e78eefce3a5"
+    },
+    {
+      "bytes": 70590,
+      "path": "reference/ACTUAL902-ALIAS-ROWS.json",
+      "sha256": "207d7e47f4a8e1359d082749d1420259744824eb3a58dba4c906bd53ab1caeec"
+    },
+    {
+      "bytes": 16676,
+      "path": "reference/DESIGN02.original.json",
+      "sha256": "b8dfce16a397713cfcd3a294f6063050e7610692b5959ac5e5133a45d29e12c8"
+    },
+    {
+      "bytes": 20963,
+      "path": "reference/DESIGN02.original.md",
+      "sha256": "6b0efe6b243af5550e3bc527dee16fc252c71c31e29b9cfedbc49284a0b8c913"
+    },
+    {
+      "bytes": 176976,
+      "path": "reference/FOOTPRINT.historical-request.original.json",
+      "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+    },
+    {
+      "bytes": 19138,
+      "path": "reference/component_common.original.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 40261,
+      "path": "reference/component_lifecycle.original.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 20344,
+      "path": "reference/failed-external09-stage-PHONE-STDOUT.original.json",
+      "sha256": "672d29dd81e6daec854eced00aea238bb787c8bf5ddef9bc9a765d754d7c1a46"
+    },
+    {
+      "bytes": 20324,
+      "path": "reference/failed-own01-stage-PHONE-STDOUT.original.json",
+      "sha256": "6c1ec237f163a1474ba74613f01d720400f5fd666ed8a4c8cd6349744d51c163"
+    },
+    {
+      "bytes": 21785,
+      "path": "reference/runtime-preview02-MANIFEST.original.json",
+      "sha256": "de1201545e8d6c04379b938ede3e0f2e73649addbd3ff68bf938bef038b207f6"
+    },
+    {
+      "bytes": 102896,
+      "path": "source/component_lifecycle.py",
+      "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+    },
+    {
+      "bytes": 62633,
+      "path": "source/epoch_inventory.fragment.py",
+      "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+    },
+    {
+      "bytes": 2793,
+      "path": "validation/CAPACITY-KNOWN-SUBTOTAL.json",
+      "sha256": "26164bc8ea1d54672f7e59b5da2ac01ad42ab5340149468a4d55984d78611825"
+    },
+    {
+      "bytes": 63731,
+      "path": "validation/COMPONENT-LIFECYCLE-INCREMENT.patch",
+      "sha256": "1a2ed9c559ea4c15f277b43ced9ec8f5a1dc30907b2aa4490f8b198985a97bce"
+    },
+    {
+      "bytes": 653,
+      "path": "validation/DERIVATION.json",
+      "sha256": "9f16af9090179a50814a1b4faca18e695d4e0d824dfacd98b35addff6e9bb4a5"
+    },
+    {
+      "bytes": 1803,
+      "path": "validation/FAILED-RETAINED-ALIAS-REVIEW.json",
+      "sha256": "1208b50a1cd008bae1eec188722f74c5d84d5cc909fa025c6b90fc41f00547f3"
+    },
+    {
+      "bytes": 5267,
+      "path": "validation/WHOLE-SOURCE-STATIC-REVIEW.json",
+      "sha256": "20b2acd50861d2fca22a501d2980a2964113b5e3e783524f60bb832ff79f5651"
+    },
+    {
+      "bytes": 12746,
+      "path": "validation/local-checks-run01/RESULT.json",
+      "sha256": "115e585543a7a8c6ca2cf4c70f14f8456fb80f81bacfde39be8dce847815752d"
+    },
+    {
+      "bytes": 18356,
+      "path": "validation/local-checks-run01/check_core_locally.py.original",
+      "sha256": "be825a6088e5bb927aaa774c31790135280f7f91d06ea28da5fa1d27f464f8e9"
+    },
+    {
+      "bytes": 55405,
+      "path": "validation/local-checks-run01/epoch_inventory.fragment.py.original",
+      "sha256": "8423ed76d41e127c3c696b83dc0a5d5c0c28f1e8512aef4a0e3a0e8e80b7f85e"
+    },
+    {
+      "bytes": 10420,
+      "path": "validation/local-checks-run02/RESULT.json",
+      "sha256": "e951e976e419dfdcfbfb5a1a66dca16f8d484925f3bfe1ba2af4229b623e2b9d"
+    },
+    {
+      "bytes": 22336,
+      "path": "validation/local-checks-run02/check_core_revision02_locally.py.original",
+      "sha256": "c5cc05b960a5abcc5ad815ca35f41459f4287a3cf4ba947d61a9fe1b593155d8"
+    },
+    {
+      "bytes": 62633,
+      "path": "validation/local-checks-run02/epoch_inventory.fragment.py.original",
+      "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+    }
+  ],
+  "fragment": {
+    "bytes": 62633,
+    "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+  },
+  "parent": {
+    "bytes": 40261,
+    "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+  },
+  "phone_calls": 0,
+  "physical_NEG14_claimed": false,
+  "remote_calls": 0,
+  "runtime_entrypoint_integration_performed": false,
+  "schema": "hepta.source-only.epoch-inventory-core-package.v1",
+  "state": "UNBOUND_SOURCE_CANDIDATE_NOT_EXECUTION_READY"
+}

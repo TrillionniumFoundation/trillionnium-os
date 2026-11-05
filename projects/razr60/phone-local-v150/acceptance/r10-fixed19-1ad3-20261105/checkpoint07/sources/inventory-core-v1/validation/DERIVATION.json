@@ -1,0 +1,22 @@
+{
+  "candidate": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "fragment": {
+    "bytes": 62633,
+    "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+  },
+  "parent": {
+    "bytes": 40261,
+    "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.source-only.epoch-inventory-derivation.v1",
+  "single_domain_inventory_exact_original_bytes": true,
+  "target_calls": 0,
+  "target_imports": 0,
+  "unchanged_original_function_count": 15,
+  "whole_byte_inverse_passed": true
+}

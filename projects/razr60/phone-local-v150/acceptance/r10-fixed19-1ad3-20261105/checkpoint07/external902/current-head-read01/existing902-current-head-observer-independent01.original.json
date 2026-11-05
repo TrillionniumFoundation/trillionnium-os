@@ -1,0 +1,139 @@
+{
+  "actual_CAPTURE_33source_lease_owner_retirement_descriptors_exact": true,
+  "actual_head9686_6e1d_and_inventory_b9da_exact": true,
+  "actual_host_prerequisite": {
+    "binding_matches_actual_records": true,
+    "byte_equality": {
+      "bytes": 52142,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/independent-host-audit01/BYTE-EQUALITY.original.json",
+      "sha256": "6bb0cb5179850cce2adc53982796bde4dd6bb2f0269968df33e91ff4b4dc8461"
+    },
+    "caller_result": {
+      "bytes": 2125,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/independent-host-audit01/CALLER-RESULT.original.json",
+      "sha256": "0aba002433726ab64629cbdb78b9ffd2b9295af86c2a34865c90dbffae51fb1d"
+    },
+    "complete_durable_zero_and_full_EOF": true,
+    "controller_job": "1a1ac11fdf1-fc05-5216",
+    "guard_count": 160,
+    "guard_unique_bytes": 5141376,
+    "trust_boundary": "Retained actual controller tool receipts and pinned actual driver/caller outputs; phone does not read P4 records; no controller stdin digest fabricated"
+  },
+  "all_function_class_bytes_bound_unchanged": true,
+  "bound_source": {
+    "bytes": 44561,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/package/source/observe_existing902_current_head_once.bound.py",
+    "sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5"
+  },
+  "caller_review_not_duplicated_Root_owner": true,
+  "composition": {
+    "census": "Two all25 original absent_groups calls, one original endpoint_absence call (three raw proc/net tables), original rechecks, then two original retired4 calls",
+    "current_inventory": "One original current_inventory/effective_prior_inventory of current902 exact27roots, all full9/name/bytes/hash gates retained",
+    "lease_usage": "Exact expired902 historical owner only; no next-lease/nonce admission and neither original verify_current nor verify_retired is invoked",
+    "lock": "Existing server.lock opens O_RDONLY|NOFOLLOW|CLOEXEC, exact full9, nonblocking EX flock, held through originals/bootstrap/boot bookends; finally only returned-own/new-exact lock FDs closed with EBADF and unexpected FD census",
+    "retirement_source_top_level": "Exact d1fe pin, separately prior-reviewed non-main definitions; only BOUND/GROUPS read, no preflight/retire/stop/retained_state",
+    "signals": "At most58 signal-zero existence queries on successful path; no explicit nonzero signals. Failed entered calls retain unknown count.",
+    "source_and_role_gates": "All original33 source identities + original load_lease/native_root + six closed native heads + fixed non-native05 + retirement proof/preflight/bound/disabled flag + exact d1fe BOUND/GROUPS"
+  },
+  "copied_helpers_exact": [
+    {
+      "bytes": 54,
+      "name": "need",
+      "sha256": "fe4d16245f8a34ea2d18c2c03fef2d90f80efd5ae1db5f2f114e3d96a367b55a"
+    },
+    {
+      "bytes": 57,
+      "name": "sha",
+      "sha256": "2f1541faf4c4ebe2f74c17d4b666982327a0f1e144708a531c92f08669705d57"
+    },
+    {
+      "bytes": 302,
+      "name": "strict",
+      "sha256": "12ff421558bba88148c703dcb68dd5ae3330af2c1d12113ce974c53f5886ff72"
+    },
+    {
+      "bytes": 57,
+      "name": "metadata",
+      "sha256": "f0ce46834a6dd6eaf9ad7d8af1f976ae34c618bc930b14b0d029810f69ce49b9"
+    },
+    {
+      "bytes": 673,
+      "name": "parent_fd",
+      "sha256": "a9d0950da6531982dc9cfb3cd1d4940a94997db41931ebb031337ad9bda09f25"
+    },
+    {
+      "bytes": 901,
+      "name": "read_directory",
+      "sha256": "cc26359968063084192ea788528d92f84f24dd326a7879f31117a67cab4ebf6a"
+    },
+    {
+      "bytes": 1694,
+      "name": "source_package",
+      "sha256": "c350370efbaf643f802366ac37fc00365b156b0a1ab9a03f7b98b84aaeba1be8"
+    },
+    {
+      "bytes": 341,
+      "name": "load_module",
+      "sha256": "d6f210804ce3e67afdbf2400586caa44829899ea3dbd753c46bc2aec9d6fe802"
+    },
+    {
+      "bytes": 167,
+      "name": "boot",
+      "sha256": "26bfa9cbf5d4914b80aa6de5114322a3caf8136043b8c2924547f348553dd39d"
+    },
+    {
+      "bytes": 234,
+      "name": "recheck_bootstrap",
+      "sha256": "f7c1ce59831ffa454f183ed4d13a5d43b2e2c873a6e91d7d7da8fe2874f0e32e"
+    },
+    {
+      "bytes": 418,
+      "name": "own_fds",
+      "sha256": "0ee0ab01c34a0c9f094fd8a4634ddf062ed0a6356e38e2b35236560f963c4948"
+    },
+    {
+      "bytes": 2487,
+      "name": "release_owned_verifier_lock",
+      "sha256": "90a8c6b018022d411f2e50390a4433c1386ffcd7b7938b7acd336618117e3946"
+    }
+  ],
+  "deadline": "25s bootstrap and180s post-return checks only; no hard whole-operation preemption, no tracing/profiling/signals timer.",
+  "exact_fixed_packet": {
+    "bytes": 13832,
+    "sha256": "3f50f6f782d9f0d8e1ee7d475a3c082b29e0867230309eec0c0c5ed677a628ee"
+  },
+  "harness_note": "A preliminary metadata-shape inspection assumed structuredContent object; actual controller receipt has structuredContent null and text JSON. Its TypeError affected no artifact; independent checks above parse the observed actual content shape explicitly.",
+  "local_review_only": "AST/function byte extraction, constant bounded decompression, retained JSON/raw/pin comparisons; no target execution.",
+  "new_reader_increment": "No-follow/O_NONBLOCK after regular+nlink1+mode600+size preflight; wholefd/named/parent/canonical full9 and re-read set. All fixed retirement leaf modes were independently inspected, including empty disable flag600.",
+  "no_future_authorization_or_case_credit": true,
+  "old_mac_sender_unknown_unchanged": true,
+  "output": "Whole observation JSON (inventory values and exact endpoint raw bytes) uses strict single bounded zlib roundtrip; original descriptors/readset remain explicit. 16MiB raw/1MiB final enforced; overflow is failure, no truncated success.",
+  "parent118d": {
+    "bytes": 17039,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/package/reference/verify_actual_retired_once.118d.original.py",
+    "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba"
+  },
+  "remote_or_phone_calls": 0,
+  "reviewed_functions": [
+    "main",
+    "observe_current_head",
+    "historical_binding",
+    "lifecycle_retirement_binding",
+    "fixed_source_bootstrap",
+    "read_original",
+    "release_owned_verifier_lock",
+    "host_prerequisite",
+    "strict_unpack",
+    "pack_original"
+  ],
+  "schema": "hepta.existing902.current-head-observer-independent-review.v1",
+  "sole_bound_RHS_full_inverse": true,
+  "source": {
+    "bytes": 41213,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/package/source/observe_existing902_current_head_once.py",
+    "sha256": "f6b544b5239f47598d7f90ec9c57b7fe2228725c27e82bbea7436f648b404c5a"
+  },
+  "state": "PASS_NO_SCOPE_OR_OWNERSHIP_BLOCKER_FOUND",
+  "target_functions_or_main_calls": 0,
+  "target_imports": 0
+}

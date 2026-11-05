@@ -1,0 +1,12 @@
+{
+  "all_package_members_verified": 25,
+  "caller_independent_review_still_required_before_execution": true,
+  "caller_sha256": "e2455108f95f54868703c523119835ac1288ea232d180968b174b0263b2ad256",
+  "case_pass": false,
+  "controller_request_sha256": "0c2f516cbeeb827adf959d0fd733058617725b0a46eba9a4a2c1b7e517bc5c4a",
+  "driver_sha256": "8e6bab425940cae081f0684e61b20b6dbf5f9568c20ddecc3e1ee8f907536d29",
+  "reviewed": "Complete driver and caller read, original complete49field expression and true original globals retained; original137 metadata guarded; new source/output create-only; same-process runpy; no phone calls, native dispatch or boundary publication; complete caller/controller termination still required.",
+  "schema": "hepta.root-host-audit-source-review.v1",
+  "source_manifest_sha256": "39b3fe622eeda1beffdaba392e602275979421daa05d1ec732b3c7c8bb99a2da",
+  "time_utc": "2026-11-05T14:16:03.250864+00:00"
+}

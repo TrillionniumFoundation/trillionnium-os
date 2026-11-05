@@ -1,0 +1,616 @@
+{
+  "call_count": 18,
+  "explicit_call_sites": [
+    {
+      "actual_context": "actual_context",
+      "function": "prepare_bundle",
+      "line": 242,
+      "path": "templates/release_boundaries.py",
+      "target": "validate_bundle"
+    },
+    {
+      "actual_context": "state['actual_context']",
+      "function": "validate_component",
+      "line": 814,
+      "path": "templates/release_boundaries.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "state['actual_context']",
+      "function": "validate_shared_materials",
+      "line": 940,
+      "path": "templates/release_boundaries.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "state['actual_context']",
+      "function": "external_artifact_bindings",
+      "line": 965,
+      "path": "templates/release_boundaries.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "state['actual_context']",
+      "function": "current_external_artifacts",
+      "line": 1038,
+      "path": "templates/release_boundaries.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "actual_context",
+      "function": "validate_bundle",
+      "line": 1193,
+      "path": "templates/release_boundaries.py",
+      "target": "validate_component"
+    },
+    {
+      "actual_context": "state['actual_context']",
+      "function": "inventory_value",
+      "line": 1201,
+      "path": "templates/release_boundaries.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "state['actual_context']",
+      "function": "current_preservation",
+      "line": 1207,
+      "path": "templates/release_boundaries.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "collect_pre_policy_ancestor",
+      "line": 98,
+      "path": "templates/make_component_boundary_inputs.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "collect_environment_parent_ancestor",
+      "line": 180,
+      "path": "templates/make_component_boundary_inputs.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "collect_property_parent_ancestors",
+      "line": 237,
+      "path": "templates/make_component_boundary_inputs.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "build",
+      "line": 403,
+      "path": "templates/make_component_boundary_inputs.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "build",
+      "line": 478,
+      "path": "templates/make_component_boundary_inputs.py",
+      "target": "validate_bundle"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "actual_tail_check",
+      "line": 301,
+      "path": "source/derive_final_cascade_property_r8.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "main",
+      "line": 373,
+      "path": "source/write_final_seal_interface_property_r8.py",
+      "target": "component_modules"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "main",
+      "line": 272,
+      "path": "templates/build_release_r10.py",
+      "target": "prepare_bundle"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "sealed_sources",
+      "line": 192,
+      "path": "downstream/component_source_context.py",
+      "target": "validate_bundle"
+    },
+    {
+      "actual_context": "'mac'",
+      "function": "prepare",
+      "line": 256,
+      "path": "downstream/prepare_fixed19_host_r10.py",
+      "target": "validate_bundle"
+    }
+  ],
+  "findings": [
+    {
+      "result": "No default or ambient runtime=False host selection; exact phone/mac/p4 strings required and injected before pinned-module execution. State context cannot change. Actual phone is additionally required for runtime modules and fresh external-artifact reads.",
+      "topic": "context"
+    },
+    {
+      "result": "O_NONBLOCK is added without dropping NOFOLLOW/CLOEXEC; regular/nlink1/exact size is checked before bounded read; full9 fd/named bookends and finally close remain.",
+      "topic": "reader"
+    },
+    {
+      "result": "Both input payloads and each digest-keyed original body are charged before input decode or pinned source execution, under unchanged 32MiB total/16MiB per original. Strict complete one-stream zlib and exact bytes/hash remain.",
+      "topic": "decoded pool"
+    },
+    {
+      "result": "prepare_bundle precharges its two input descriptors and each newly declared digest before reading. make_component constructor precharges every collected original digest, including later shared17 materials, before read; size disagreement under the same digest refuses. Final preview validate_bundle separately includes generated component/policy payloads and all original bodies.",
+      "topic": "constructors"
+    }
+  ],
+  "full_epoch_integration_verified": false,
+  "inherited_15_guard_checks_not_rerun": true,
+  "inherited_local_guard_report": {
+    "bytes": 2296,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/LOCAL-GUARD-CHECKS.json",
+    "sha256": "83dc20f681a1047ff46ce37eb379d53e0c9a0edc9aeb0832d54f62aaee76bfff"
+  },
+  "inputs": [
+    {
+      "bytes": 22079,
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/SOURCE-DELTA.json",
+      "sha256": "8e568d7b55996dba86fc20fb85f6e8ccd78420efb76f25d5a60dd063251c6c69"
+    },
+    {
+      "bytes": 7414,
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/SOURCE-DELTA.json",
+      "sha256": "6e8f15515c516d5b80f36205e5f464d9978a4e7b1aa5b2264b8f988fd973ae57"
+    }
+  ],
+  "limitations": [
+    "These are encoded-bundle/retained-original pool budgets, not a resident-memory peak bound or global I/O-byte budget; a repeatedly referenced digest can be reread while stored once.",
+    "The derived publish body is obtained from an already charged original wrapper and receives independent bundle-pool accounting in final validate_bundle; this increment does not claim every intermediate allocation is prospectively reserved.",
+    "actual_context is a mandatory trusted source-call-site selector, not independent hardware authentication; it cannot be taken from untrusted bundle fields.",
+    "Only the eight selected preview sources and their eighteen calls are covered. Phone installer/readiness/activation and every eventual generated caller must be explicitly adapted and rechecked during final integration; the source manifest itself lists this remaining requirement.",
+    "Full epoch/current-head/Root02 admission and final consumer size are not established by this review."
+  ],
+  "main_calls": 0,
+  "new_nonce_or_lease": false,
+  "phone_calls": 0,
+  "physical_case_credit": false,
+  "remote_calls": 0,
+  "required_keyword_functions": [
+    "prepare_bundle",
+    "component_modules",
+    "validate_component",
+    "validate_bundle"
+  ],
+  "schema": "hepta.epoch.consumer-context-budget-independent-source-review.v1",
+  "scope": "Complete two-level source inverse plus static actual-context propagation/read/decode/constructor-budget checks; no target import, function call, main or remote execution.",
+  "state": "NO_BLOCKER_IDENTIFIED_IN_THE_EXPLICIT_EIGHT_SOURCE_INCREMENT",
+  "target_calls": 0,
+  "target_imports": 0,
+  "whole_source_inverses": [
+    {
+      "generation": 1,
+      "hunks": 17,
+      "parent": {
+        "bytes": 84972,
+        "calls": [
+          {
+            "containing_function": "prepare_bundle",
+            "line": 200,
+            "source": "validate_bundle(raw, sha(raw))",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "validate_component",
+            "line": 766,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "validate_shared_materials",
+            "line": 892,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "external_artifact_bindings",
+            "line": 917,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "current_external_artifacts",
+            "line": 988,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "validate_bundle",
+            "line": 1141,
+            "source": "validate_component(bundle, component_value)",
+            "target": "validate_component"
+          },
+          {
+            "containing_function": "inventory_value",
+            "line": 1149,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "current_preservation",
+            "line": 1155,
+            "source": "component_modules(state, runtime=True)",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/release_boundaries.py",
+        "sha256": "57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0"
+      },
+      "source": {
+        "bytes": 87547,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/release_boundaries.py",
+        "sha256": "b409a9da583e5645260a57ea94675cb7f3fcaedacf88bdb7bea8cb56f30ea433"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 1,
+      "hunks": 5,
+      "parent": {
+        "bytes": 34843,
+        "calls": [
+          {
+            "containing_function": "collect_pre_policy_ancestor",
+            "line": 98,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "collect_environment_parent_ancestor",
+            "line": 180,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "collect_property_parent_ancestors",
+            "line": 237,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "build",
+            "line": 378,
+            "source": "collect_property_parent_ancestors(\n        h, plan['property_parent_ancestors'], collect, originals, package_state)",
+            "target": "collect_property_parent_ancestors"
+          },
+          {
+            "containing_function": "build",
+            "line": 380,
+            "source": "collect_environment_parent_ancestor(\n        h, plan['environment_parent_ancestor'], collect, originals, package_state, sha(combination_raw))",
+            "target": "collect_environment_parent_ancestor"
+          },
+          {
+            "containing_function": "build",
+            "line": 382,
+            "source": "collect_pre_policy_ancestor(\n        h, plan['pre_policy_ancestor'], collect, originals, package_state, sha(combination_raw))",
+            "target": "collect_pre_policy_ancestor"
+          },
+          {
+            "containing_function": "build",
+            "line": 470,
+            "source": "h.validate_bundle(bundle_raw, sha(bundle_raw))",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "build",
+            "line": 486,
+            "source": "h.validate_shared_materials(state, sources, config, service)",
+            "target": "validate_shared_materials"
+          },
+          {
+            "containing_function": "build",
+            "line": 395,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/make_component_boundary_inputs.py",
+        "sha256": "41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5"
+      },
+      "source": {
+        "bytes": 34953,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/make_component_boundary_inputs.py",
+        "sha256": "dca3614a942a173fdff8527b9390bf9604cedc028fb2093a11c0aef5c5410f6b"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 1,
+      "hunks": 1,
+      "parent": {
+        "bytes": 66393,
+        "calls": [
+          {
+            "containing_function": "actual_tail_check",
+            "line": 275,
+            "source": "constructor.collect_pre_policy_ancestor(helper, prior_input,\n        original, retained_originals, {'package_sources':runtime_files}, combination_sha)",
+            "target": "collect_pre_policy_ancestor"
+          },
+          {
+            "containing_function": "actual_tail_check",
+            "line": 290,
+            "source": "constructor.collect_environment_parent_ancestor(\n        helper,environment_input,collect_environment,environment_originals,\n        {'package_sources':runtime_files},combination_sha)",
+            "target": "collect_environment_parent_ancestor"
+          },
+          {
+            "containing_function": "actual_tail_check",
+            "line": 298,
+            "source": "constructor.collect_property_parent_ancestors(\n        helper, property_inputs, collect_environment, property_originals,\n        {'package_sources':runtime_files})",
+            "target": "collect_property_parent_ancestors"
+          },
+          {
+            "containing_function": "actual_tail_check",
+            "line": 301,
+            "source": "helper.component_modules({'package_sources': runtime_files})",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/source/derive_final_cascade_property_r8.py",
+        "sha256": "843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54"
+      },
+      "source": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/derive_final_cascade_property_r8.py",
+        "sha256": "af5f5934e65346261bae55dc745c3bcf0dbb6dbe8835c20a1c091fb44c261772"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 1,
+      "hunks": 1,
+      "parent": {
+        "bytes": 40887,
+        "calls": [
+          {
+            "containing_function": "main",
+            "line": 373,
+            "source": "module.component_modules({'package_sources':runtime_files})",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/source/write_final_seal_interface_property_r8.py",
+        "sha256": "1d88947679e6bb01a24762aa0b86e9875928f836b97eb9a4aff216ee6de0b500"
+      },
+      "source": {
+        "bytes": 40909,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ce1aef01730ba039d48a9e8f6a2cc06832078271ddd1f30ba749ce3cd6987954"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 1,
+      "hunks": 0,
+      "parent": {
+        "bytes": 16055,
+        "calls": [],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "source": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 1,
+      "hunks": 1,
+      "parent": {
+        "bytes": 40822,
+        "calls": [
+          {
+            "containing_function": "main",
+            "line": 272,
+            "source": "consumer['prepare_bundle'](\n            input_row(args.component_boundary_inputs,args.component_boundary_inputs_sha256),\n            input_row(args.policy_adoption_inputs,args.policy_adoption_inputs_sha256))",
+            "target": "prepare_bundle"
+          },
+          {
+            "containing_function": "main",
+            "line": 377,
+            "source": "consumer['validate_shared_materials'](boundary,source,config_raw,service_raw)",
+            "target": "validate_shared_materials"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/templates/build_release_r10.py",
+        "sha256": "f1c2a099554475c328256a09d48b0e9ec7bbc85af0881881f174de872e7f81d1"
+      },
+      "source": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 1,
+      "hunks": 1,
+      "parent": {
+        "bytes": 15724,
+        "calls": [
+          {
+            "containing_function": "sealed_sources",
+            "line": 192,
+            "source": "h.validate_bundle(bundle,binding['release_boundary_bundle_sha256'])",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "sealed_sources",
+            "line": 196,
+            "source": "h.validate_shared_materials(state,source,result['config_raw'],result['service_raw'])",
+            "target": "validate_shared_materials"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/downstream_review_cache/fixed19-comp01-neg03-r7-source-candidate01/source/component_source_context.py",
+        "sha256": "2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d"
+      },
+      "source": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 1,
+      "hunks": 1,
+      "parent": {
+        "bytes": 29515,
+        "calls": [
+          {
+            "containing_function": "prepare",
+            "line": 256,
+            "source": "helper.validate_bundle(bundle, binding['release_boundary_bundle_sha256'])",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "prepare",
+            "line": 277,
+            "source": "helper.validate_shared_materials(state, source, result['config_raw'], result['service_raw'])",
+            "target": "validate_shared_materials"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/six_host_source_cache/prepare_fixed19_host_r10.py",
+        "sha256": "40a0beee0c53e138fd1f06d45450d444ca701cabb826ab243adfedcd270add6b"
+      },
+      "source": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 4,
+      "parent": {
+        "bytes": 87547,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/release_boundaries.py",
+        "sha256": "b409a9da583e5645260a57ea94675cb7f3fcaedacf88bdb7bea8cb56f30ea433"
+      },
+      "source": {
+        "bytes": 88368,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/release_boundaries.py",
+        "sha256": "2ecf748b34b3e1806715a7c0b52672cf3936f850ae6dcf67a94c0daf9ae5946d"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 2,
+      "parent": {
+        "bytes": 34953,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/make_component_boundary_inputs.py",
+        "sha256": "dca3614a942a173fdff8527b9390bf9604cedc028fb2093a11c0aef5c5410f6b"
+      },
+      "source": {
+        "bytes": 35441,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/make_component_boundary_inputs.py",
+        "sha256": "1359624235de73f1b9f2e71e2af5a0754350b2e939b13459aebcbe36557de496"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 0,
+      "parent": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/derive_final_cascade_property_r8.py",
+        "sha256": "af5f5934e65346261bae55dc745c3bcf0dbb6dbe8835c20a1c091fb44c261772"
+      },
+      "source": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/source/derive_final_cascade_property_r8.py",
+        "sha256": "af5f5934e65346261bae55dc745c3bcf0dbb6dbe8835c20a1c091fb44c261772"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 0,
+      "parent": {
+        "bytes": 40909,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ce1aef01730ba039d48a9e8f6a2cc06832078271ddd1f30ba749ce3cd6987954"
+      },
+      "source": {
+        "bytes": 40909,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ce1aef01730ba039d48a9e8f6a2cc06832078271ddd1f30ba749ce3cd6987954"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 0,
+      "parent": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "source": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 0,
+      "parent": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "source": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 0,
+      "parent": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "source": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "whole_inverse": true
+    },
+    {
+      "generation": 2,
+      "hunks": 0,
+      "parent": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "source": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "whole_inverse": true
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "business_qualified": false,
+  "codec_parent_boundary": {
+    "bytes": 9686,
+    "metadata": [
+      65086,
+      156280,
+      33152,
+      0,
+      0,
+      1,
+      9686,
+      1793882486435914270,
+      1793882486435914270
+    ],
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774.json",
+    "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+  },
+  "combination": {
+    "bytes": 4702,
+    "sha256": "7616a1995a9bc346924db48560ff5b2d5de3b6b7836817c1674bedd1e723cfd0"
+  },
+  "component_qualified": false,
+  "current_head_admission_verified_here": false,
+  "live_originals_read": false,
+  "nonces_generated": 0,
+  "parent_combination": {
+    "bytes": 4702,
+    "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+  },
+  "parent_runtime": {
+    "bytes": 16808,
+    "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+  },
+  "phone_calls": 0,
+  "production_source_count": 15,
+  "root02_prelaunch_admission_verified_here": false,
+  "runtime": {
+    "bytes": 21785,
+    "sha256": "de1201545e8d6c04379b938ede3e0f2e73649addbd3ff68bf938bef038b207f6"
+  },
+  "runtime_source_count": 32,
+  "schema": "hepta.native-guard.codec72-runtime-increment-verification.v1",
+  "shared_material_count": 17,
+  "source_execution_performed": false,
+  "state": "EXACT_SOURCE_INCREMENT_VERIFIED_NO_CASE_OR_LIVE_ADMISSION",
+  "unchanged_parent_runtime_members": 29,
+  "whole_manifest_and_source_inverses_verified": true,
+  "whole_production_service_config_combination_inverses_verified": true
+}

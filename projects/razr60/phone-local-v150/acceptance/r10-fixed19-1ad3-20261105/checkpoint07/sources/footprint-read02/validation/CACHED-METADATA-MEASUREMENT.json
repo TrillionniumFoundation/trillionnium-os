@@ -1,0 +1,114 @@
+{
+  "cached_complete_immediate_parent_paths": [
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/claims",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/inputs",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/inputs/production",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/package",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/package/reference",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/package/source",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/claims",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/inputs",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/inputs/production",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/package",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/package/reference",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/package/source"
+  ],
+  "cached_parent_rows_with_complete_real_names": 20,
+  "complete_cached_name_count": 130,
+  "current_complete_metadata_measurement": false,
+  "failed_read01_body": {
+    "bytes": 702,
+    "sha256": "455146afcfa5038f73078385e979cb8d9cdc4cd19526653a68aed2cc6fc67de6"
+  },
+  "failed_read01_phase_reconstructed": false,
+  "footprint_original": {
+    "bytes": 176976,
+    "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+  },
+  "fresh_query_must_still_refuse_if_total_exceeds_limit": true,
+  "known_absence_parent_rows": 58,
+  "known_byte_reduction": 21822,
+  "known_parent_table": {
+    "bytes": 11224,
+    "sha256": "9751c554a8195e00fe65d3b79ac3e0c1592688e1fac408bf4a094e630b078cbc"
+  },
+  "measurement_scope": "Complete actual cached directory names/full9/SELinux and both replaced parent-representation copies only. Dynamic times, unobserved parent names and unknown fresh metadata excluded and explicitly unknown; this is not a full-current-budget proof.",
+  "new_exact_reference_encoding": {
+    "bytes": 45528,
+    "sha256": "ece37997df5e735c56b9aa12c3d1ef9fdd2387682e4fba9220c09091fbee3c35"
+  },
+  "old_repeated_parent_encoding": {
+    "bytes": 67350,
+    "sha256": "a0c4af1bc5e224700a6fb276aaf6e773df7a09df1621df2a712db1ffa39adf2a"
+  },
+  "required_immediate_parent_paths": [
+    "/proc/1/root/data/local/tmp",
+    "/proc/1/root/data/local/tmp/hepta-phone-local-v150-r1",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09",
+    "/var/lib/trillionnium/owner-open/phone-local-v150",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/claims",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/inputs",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/inputs/production",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/package",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/package/reference",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/package/source",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/claims",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/inputs",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/inputs/production",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/package",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/package/reference",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/package/source",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-staging-r10-r1"
+  ],
+  "schema": "hepta.footprint-cached-directory-metadata-measurement.v1",
+  "uncached_immediate_parent_paths": [
+    "/proc/1/root/data/local/tmp",
+    "/proc/1/root/data/local/tmp/hepta-phone-local-v150-r1",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09",
+    "/var/lib/trillionnium/owner-open/phone-local-v150",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-staging-r10-r1"
+  ],
+  "unchanged_metadata_limit_bytes": 524288,
+  "unknown_absence_parent_coverage": [
+    {
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c74b84aefb177d15f746fa7eae29d54",
+      "unavailable_parent": "/proc/1/root/data/local/tmp"
+    },
+    {
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c79195945d64e569a191166ac122a08",
+      "unavailable_parent": "/proc/1/root/data/local/tmp"
+    },
+    {
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-bc0573ad459cecae9884d6a46568621b",
+      "unavailable_parent": "/proc/1/root/data/local/tmp"
+    },
+    {
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-02",
+      "unavailable_parent": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1"
+    },
+    {
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-02",
+      "unavailable_parent": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1"
+    },
+    {
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-epoch-legacy902-r10-r1",
+      "unavailable_parent": "/var/lib/trillionnium/owner-open/phone-local-v150"
+    },
+    {
+      "path": "/proc/1/root/data/local/tmp/hepta-phone-local-v150-r1/native-guard-epoch-legacy902-r10-r1",
+      "unavailable_parent": "/proc/1/root/data/local/tmp/hepta-phone-local-v150-r1"
+    }
+  ],
+  "unknown_absence_parent_rows": 7,
+  "why_current_total_unknown": "Actual read01 retained only the702-byte serialization refusal. It contains no parent table or original failure phase. Cached20 complete historical directory observations cover the stated paths; external immediate-parent names and fresh proc/metadata are not synthesized."
+}

@@ -1,0 +1,9 @@
+{
+  "state": "LOCAL_VERIFICATION_ASSERTION_FAILED_BEFORE_ANY_REMOTE_CALL",
+  "observed_error": "AssertionError at local verification line 27",
+  "cause": "The local heredoc verification subtracted the delimiter plus two LF bytes, removing the original source trailing LF. The frozen request retains that LF.",
+  "source_or_request_modified": false,
+  "phone_calls": 0,
+  "controller_start_calls": 0,
+  "next_check": "Compare the complete heredoc body after removing only the delimiter and its following LF."
+}

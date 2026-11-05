@@ -1,0 +1,1650 @@
+{
+  "all_member_bytes_sha256_verified": true,
+  "archive": {
+    "bytes": 4531388,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/FULL-ORIGINALS.tar.xz",
+    "sha256": "d5982a434a6317ddf7b2503127d1581b0aa55d828096ed42e1a7b276af8f21ed"
+  },
+  "case_pass": false,
+  "chunk_count": 70,
+  "chunks": [
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00000000.bin",
+        "sha256": "ca88a0ae158309880fd3ecbdad87d64b2ca8f5ea87e99caf31174447604013b2"
+      },
+      "eof": false,
+      "first_chunk_reused": true,
+      "next_offset": 65536,
+      "offset": 0,
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87880,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/CONTROLLER-ARCHIVE-FIRST01.raw-tool.json",
+        "sha256": "35ba6777eb523d29959c12be256a9269cc98f70e15ab93a582c4c23b42e51f8b"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00065536.bin",
+        "sha256": "92e8121c69562cea01dd272e8d51fc7bd83f585ef6e80781aec9f25c1b34ccbd"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 131072,
+      "offset": 65536,
+      "request": {
+        "bytes": 269,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00065536.request.json",
+        "sha256": "622fe26596032084dd78353aad6d4f3e94c75491e39940340cdd04eef0b7cceb"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87885,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00065536.raw-tool.json",
+        "sha256": "c3460020f8728d8e573a75d5990d02c8029e306464bc639ce59aa2fe1ac3f789"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00131072.bin",
+        "sha256": "4b98d8546c59b43c300858709605141e8bcab663061d6acd364daab9eb36eb32"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 196608,
+      "offset": 131072,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00131072.request.json",
+        "sha256": "150d2b5f0cb84967f6b98683101f95bf6a0b6df9525583903fe6a533156c140e"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00131072.raw-tool.json",
+        "sha256": "2e7ddf952dd9b3e2181aa098884ba73ef48b44276b0494f197f91072e0a8f2c6"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00196608.bin",
+        "sha256": "cc5f998fb0d42c92b9b5888fb485667c2378b3ae7dd96fd91779c84511022345"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 262144,
+      "offset": 196608,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00196608.request.json",
+        "sha256": "cf7f9a2136f9a4ef7463ca218a080af6c7913a3b6195adc0d9bf08ff5cb71219"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00196608.raw-tool.json",
+        "sha256": "e80019b242b6c24e29cdd67e16677a41da33c11f7c38261a6ded8ec005ae979f"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00262144.bin",
+        "sha256": "5d2c586ef8edbb6c25884254a936298d886d4dd261a0d1cf90fbc7ed763abdae"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 327680,
+      "offset": 262144,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00262144.request.json",
+        "sha256": "b5679675a5e65bbca51dea42a84833da0b5bb836af802fe30897e668b436517a"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00262144.raw-tool.json",
+        "sha256": "b988f3e830957781f83373c4c265515eebae4332c74d7ea8bd23617f6b261525"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00327680.bin",
+        "sha256": "d2cde8cbb80e4392e55c42568075b8b06d82e3381cc748acfa514fa3b18ec1a8"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 393216,
+      "offset": 327680,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00327680.request.json",
+        "sha256": "ba292c577f6db42035bb96a5591630f5fbfce4611f258fa83fd73b2e53c69d72"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00327680.raw-tool.json",
+        "sha256": "4ef896394fe4e772b2114fd414623058e9f48fd56262437af3b080d98f2afb74"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00393216.bin",
+        "sha256": "f4422c4b9216ebb05f6fdec0c1cd9e523e5d1de4c0512c7f6c2fdda43d8184cf"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 458752,
+      "offset": 393216,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00393216.request.json",
+        "sha256": "4ea6276a9f4705c0963e480402b931e201a1a0eef2a19c919583445b6ddf23dc"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00393216.raw-tool.json",
+        "sha256": "d0af509ed7ef0be103038aa759cc35efa63572ce0782d2ab9fea6c010b301d8d"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00458752.bin",
+        "sha256": "40df7a136e1c4d1ea8b839ff84f600658e1dd655a4eb8398dfc36def828fa093"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 524288,
+      "offset": 458752,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00458752.request.json",
+        "sha256": "95a77f46a630f8292a909be1198caf45e5dd4e239e26057bf237158bba74594d"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00458752.raw-tool.json",
+        "sha256": "f92f553bcb5904562cd5d5ad9079105ba5f850079eaa78e25b8a0e90b6ddcab6"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00524288.bin",
+        "sha256": "97a6753380919000a2f910ca48f0830034325b8c40fe58ed46390592de5434c8"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 589824,
+      "offset": 524288,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00524288.request.json",
+        "sha256": "b95ebd5ce1d286da3e8f65a4205e6d431e7d4912d906a5510cad43134ce470cd"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00524288.raw-tool.json",
+        "sha256": "7ce38a195cf9cc8afce23ac4cbe1ffc63578c4ae4b9b0fa6bdd6be3343982827"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00589824.bin",
+        "sha256": "e96f3c4171613ef20ab58dfb2958a0aae490c0a9cd160bf5508b7598cb786e31"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 655360,
+      "offset": 589824,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00589824.request.json",
+        "sha256": "59a347ba950c931258695d3e5b4714e133331d26a1d5da84484d1c70e4549daa"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00589824.raw-tool.json",
+        "sha256": "c4731cb97b3b78ab12cf29f7502cbf0e83b9c47b110dd24a0dd830fd602dabe6"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00655360.bin",
+        "sha256": "775cfb99012cb4d5fb106de34f6a39c1806c760f077ee66593378d2b3ffda332"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 720896,
+      "offset": 655360,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00655360.request.json",
+        "sha256": "370f908964219d3c85cee30032c4ea0b3e1d12ad003fbfb33a4deb1065306cb5"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00655360.raw-tool.json",
+        "sha256": "28e09cef83c608d51cf540460aac89df7dff329e91479b8a5f0305d3d1b34077"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00720896.bin",
+        "sha256": "d26f66a2d0beee0603bab4aafffd753fab7636d3bd021b3a7c5a919e561fc426"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 786432,
+      "offset": 720896,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00720896.request.json",
+        "sha256": "d4fbd7b2c1ff4adad472c0e3a9895bb3fc0fb36d4ce87f8eae4395fd3b1f3597"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00720896.raw-tool.json",
+        "sha256": "722fd28434a30bde5af948567aa78aa2cd1d980eb9acc0c8742fff9d289b6a6c"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00786432.bin",
+        "sha256": "c5fe865f6b4202b7b05494e015ff8be85e6fbd91a5b5f3d1766d9f645ee432e9"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 851968,
+      "offset": 786432,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00786432.request.json",
+        "sha256": "534cfc4306be717693c5b9d702553d5effd7649784581f9987808de9bc9958dd"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00786432.raw-tool.json",
+        "sha256": "d7d4abf84f853565e31f4b323427e53e1f7cd058eae456013ba3f80f2d95a332"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00851968.bin",
+        "sha256": "0dedb2bcdbe3622f6666e79ce74128e3fc4ccd6b0a5008a129c1c222a17430e9"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 917504,
+      "offset": 851968,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00851968.request.json",
+        "sha256": "854dd927120ba3aeb94b10137e3f0cc06ef79fab564a2e64e06ef5eb2c6cc789"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00851968.raw-tool.json",
+        "sha256": "0f686f1eeece7dbc7e53619d2585cbb616bb401c22c26ab18b2b86e476f90545"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00917504.bin",
+        "sha256": "7dc69e82c123df7b82355bddce3ef22bb636a1230316d91b1be7cf9a7e8b8aa3"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 983040,
+      "offset": 917504,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00917504.request.json",
+        "sha256": "b7b6512be4b9706557ce127b7d45c7cc2cc52d2fdfccc18babb5b8892b560799"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87886,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00917504.raw-tool.json",
+        "sha256": "d1b5e9923a0d1700d79b73ebe931f3e99168eb700bdd6b9e9d2047c75cf07c9d"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00983040.bin",
+        "sha256": "47a84e8dfc26af20ecbc18e661ad097eb4b00ddb594fdaea12b388391ca18770"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1048576,
+      "offset": 983040,
+      "request": {
+        "bytes": 270,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00983040.request.json",
+        "sha256": "259adb2fe80ffc4b06a57c168fc47ffc1d1a6e9185737eda21ea5aeb1e5957b5"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87887,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-00983040.raw-tool.json",
+        "sha256": "63a0ddbd2b0a5fbd6fee2b1995940f580feac044cdfedfdc194bfdcd1f9af522"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01048576.bin",
+        "sha256": "30c987a79e48e920f27c89053ab1a234391ab6aab0f96b89450349acefcf169d"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1114112,
+      "offset": 1048576,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01048576.request.json",
+        "sha256": "fe02926997dc1cf1b80120df0b7db91ad6e64a85298e208bd417fc511289faab"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01048576.raw-tool.json",
+        "sha256": "5cf4386c90e3c64665d387136ad89a9ac3cbb89e29c2c5ea5334e880ba78e6b7"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01114112.bin",
+        "sha256": "f22943259a5bb6c80c68743c2319be09a2047371d060d4b9c7c8bd00e31c29cc"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1179648,
+      "offset": 1114112,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01114112.request.json",
+        "sha256": "9baef107bd05c3df216e40387b96033322171df911a47b1bdf670e1d4a71a4b0"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01114112.raw-tool.json",
+        "sha256": "638b3f14d149df609d45ee0200f7a91406a6f3d49260c19ad27ac00b2a42a979"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01179648.bin",
+        "sha256": "61562b8f6a2f4823ed36a4eaf607bb9a4913d74b574cd02a31951f99480bf75c"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1245184,
+      "offset": 1179648,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01179648.request.json",
+        "sha256": "55516f24515d7d0b0071b5e55dd3fdc899737c48c9222d7a1bc9c092abcd8050"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01179648.raw-tool.json",
+        "sha256": "1d2923bd8bb71b34b1b208ac6bb79d9a4f8841ba65907c138ac2c9fbf6206146"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01245184.bin",
+        "sha256": "2a3f9ee0f6374b39a5d027d3be7e1da8754d3e1435097af4eb55673c8eb0191b"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1310720,
+      "offset": 1245184,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01245184.request.json",
+        "sha256": "d7743d5145e25f164142915dac8126bacbb42cad00ee6f8bdf9f75b30ba96bc6"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01245184.raw-tool.json",
+        "sha256": "da69fd9f6294e7d1172df4e3fd09cf2c53ddc2eb426a140acc6d26f8ca5d7bd3"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01310720.bin",
+        "sha256": "7224941d0b678400df8311773fac5c60dfff19325b7ad869b7d4dfdf3c71d4e6"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1376256,
+      "offset": 1310720,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01310720.request.json",
+        "sha256": "0d748d9385f8cd52b0b83f6cdec38c9091971a4ad54c5e68a0a9e20312c85794"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01310720.raw-tool.json",
+        "sha256": "85bafab6254bea8b62f1cdd0d83fc5075e3972261b2b5f47f054f320fc67116f"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01376256.bin",
+        "sha256": "fb2adcff7bddaba4c79cd9a66d401898530d375658ab1b2d08bea5fc3ffc78ce"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1441792,
+      "offset": 1376256,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01376256.request.json",
+        "sha256": "1fa6194661a85ae169d662a975e5b16cd5bd7602e7f237684a79c49b28dbc5bf"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01376256.raw-tool.json",
+        "sha256": "3cd62e6b07ff0b73ef6954b20edb6a8cf76c6bce7efce1173391f07bfabcc572"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01441792.bin",
+        "sha256": "becb57948afbf652de45bb8adee9284cd2b71bd262979380c6523ae9c2d07295"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1507328,
+      "offset": 1441792,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01441792.request.json",
+        "sha256": "2cdad9f3d8962c4f2eeadaba8d3aa8554d9afa1e233a99864748969894f583cb"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01441792.raw-tool.json",
+        "sha256": "3b4785aa5580f82966116fd4bb496ecd5064710408552c85d46640ff4b1a62ac"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01507328.bin",
+        "sha256": "8ed740457178fca2b8794fc3b29b0f75c5a02fe63c1e729ada189fc5a81799d2"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1572864,
+      "offset": 1507328,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01507328.request.json",
+        "sha256": "4c10024a3390b13f3a346b532cf73e736e504980538d89396df8a35359c5ce9a"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01507328.raw-tool.json",
+        "sha256": "bc798ecfa84b9cf7e944a5a0628bbf565b09f894d67b7da483a25abcb1042ed8"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01572864.bin",
+        "sha256": "36c37d5a412ac790dd08587584e269570707b1a4a44687502b0c92c48f656522"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1638400,
+      "offset": 1572864,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01572864.request.json",
+        "sha256": "5898774cca427d847d3c9565330f2fc7ae5551668bec35f96ffa08a0590c2c18"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01572864.raw-tool.json",
+        "sha256": "2f50157776ac4ecbeca024a37bbb15f1679b250a448e06a71effb273f290affa"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01638400.bin",
+        "sha256": "f2cfc28e1ccabb78e339eaf0fbbc097872a72c8df606bd6d0648bda0b71cedae"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1703936,
+      "offset": 1638400,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01638400.request.json",
+        "sha256": "26a8b9cb77c028f76aae73ea18549430136e2475b78e2f739dfc845cf5af4c4f"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01638400.raw-tool.json",
+        "sha256": "5f4beb45fd1b599f73dd134afe92e9fb608d2c859599017aa7e998077c97eab3"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01703936.bin",
+        "sha256": "5a5c222d3e0185449f021d52253a18563914709f721e9683f1e0face2a06f63a"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1769472,
+      "offset": 1703936,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01703936.request.json",
+        "sha256": "489fa48357d6505d717fd721ef884e033ebbf1c1ecdccb8c255899049128102e"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01703936.raw-tool.json",
+        "sha256": "1925aada9655374b6b75b393d4613994eb8fb37ea74b68736e6741ec5b08f447"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01769472.bin",
+        "sha256": "4928773d54fb5eb3da5faa8c0e3f65c9a605eda0197aa634415f9b96732e3fb4"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1835008,
+      "offset": 1769472,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01769472.request.json",
+        "sha256": "760f6719ac9f5d3348ff142d7a0aecec4f90a738dc4636cc3cd2cd03afb514ba"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01769472.raw-tool.json",
+        "sha256": "1760ac04e671658978eec06246d1d09fd4cf029c97cc6cf5b3d4afdf6c294df1"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01835008.bin",
+        "sha256": "830ed8acd33e94869c1e2f4c4785959eb67eef844cdd15194ca4c0bc37994888"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1900544,
+      "offset": 1835008,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01835008.request.json",
+        "sha256": "1a5a8e32d39dc6ecf49268294d89c4ec5d8385d51192241e5d37fb20473801ee"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01835008.raw-tool.json",
+        "sha256": "c07dd06bad78d8e1f8d6140deea6ce78f22827d4cee8478ee47c6cb1b7bf835e"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01900544.bin",
+        "sha256": "20696db0f50f675da470f40706183bbe6a9f76a6e2b0aa3487a14a3f1b1b1446"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 1966080,
+      "offset": 1900544,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01900544.request.json",
+        "sha256": "236821a252b8acaf99e5c0c2a70fe526794876d319b9ae280d76fff1c3a27d9c"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01900544.raw-tool.json",
+        "sha256": "57ad86b804bfb8f256bd89f74d27d9967d52f6bc1cc69f5f17c413ca824027f5"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01966080.bin",
+        "sha256": "92764dc788acedccae635853b6665ffe3fa2edb61d9f20cb8d86561b46dc6009"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2031616,
+      "offset": 1966080,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01966080.request.json",
+        "sha256": "0664e381ffe8022641556bb2bf4cc7b6cf2a58091b425ad858b602fec7cec70d"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-01966080.raw-tool.json",
+        "sha256": "0bd64baada34faba5015da9ba3cbdd84ecc5b6e299fb7abaad01f5a25da5617d"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02031616.bin",
+        "sha256": "3cc0c61fe0171b0398d87871cbc595db22f7681fd6b6a51ac87e34addfc77c8c"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2097152,
+      "offset": 2031616,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02031616.request.json",
+        "sha256": "f524adaddb1467b10113fed76e3fe5c292b36a87a0140a35bf5a23d2fcdf4140"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02031616.raw-tool.json",
+        "sha256": "cc18365707a0195a9755dd823ce891a9716d113379241545eeaf9a9406309ee9"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02097152.bin",
+        "sha256": "1ddc8353fbcf45498d2d3237c3cc12ce2597c212e7355bfa71311dce75a50734"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2162688,
+      "offset": 2097152,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02097152.request.json",
+        "sha256": "5c12d6f4621343ff9704664b7688fe3e0f423e020048667257563c9f5c2ffb6f"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02097152.raw-tool.json",
+        "sha256": "3fcc00894064bfec4cc4cade7ede0a649af9f22011ab84f88a890ec5cd972459"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02162688.bin",
+        "sha256": "5bf92e5f97c72627d0c32d587af8fa6faea5e7eae965dc1b39491d3adc3c9786"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2228224,
+      "offset": 2162688,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02162688.request.json",
+        "sha256": "cd0d9bf0ff8e341453089daf2f33ee3f76b07c2cc7e084430a76f93fbed5ca33"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02162688.raw-tool.json",
+        "sha256": "c83189593614b3034a41013cd5c28e7850a7afc0484f1f0f87d5490ca7767a37"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02228224.bin",
+        "sha256": "ebbe7954cb1ed85237c4dc9016cb0a0ef53b4455c04336bd1584658375c478a5"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2293760,
+      "offset": 2228224,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02228224.request.json",
+        "sha256": "bebafabc1ad19a41121f9d04fafc53a291b4a385c33cb46662c747a6ee30dfee"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02228224.raw-tool.json",
+        "sha256": "3f1f1c133816c56c0db91da864cac33ed99af879bc2e73dfb717e6d949ba1d8c"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02293760.bin",
+        "sha256": "d8edf163576e8cdf2a3bbc056c4239c0b986327d250c2559477896b2d21a70d4"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2359296,
+      "offset": 2293760,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02293760.request.json",
+        "sha256": "7ec3efee62878c0afd7d1cf9011a2fcc2d87e52da75ffaa8c09fee7ed57ef2c7"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02293760.raw-tool.json",
+        "sha256": "48cdb1acf085901481f5ca7dcd49e8c7ba0d024003a7620c4538292849d32a39"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02359296.bin",
+        "sha256": "5ab82fb999b3947512f6e652ece75494d328108e007a88866727ceeb6e7fbda3"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2424832,
+      "offset": 2359296,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02359296.request.json",
+        "sha256": "bd2ab5c9513b67ce8096e667b75e88c5a104a30d9a1c69fa625b2d1ca9310425"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02359296.raw-tool.json",
+        "sha256": "1d4eb8f7f3cd32048cdb937351321fc0c4d376034d18da5a25426c908d4aed48"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02424832.bin",
+        "sha256": "934e310aa320fdf7ff5acc39e12f3bf0a678aa17ed5a12c18cff74e3d0b2aaff"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2490368,
+      "offset": 2424832,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02424832.request.json",
+        "sha256": "3ccd2b90d4be2f30fef916dfdf419146d4aeba98db83e3ca354ff1365414bc66"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02424832.raw-tool.json",
+        "sha256": "2232bdc4a8cf0a470d5def88e656defc1d11f0bea3639f8d6ba095cedd2e31dd"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02490368.bin",
+        "sha256": "ffbb3df1bc449a33ccb3c10eefc7d45eb1e6b113daae76c4be729488dcca1c16"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2555904,
+      "offset": 2490368,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02490368.request.json",
+        "sha256": "b9699eb3f5624ea9aaab2bea74305b3fcf1d68c09b7cd380db8c108311803b45"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02490368.raw-tool.json",
+        "sha256": "6064ef4afe3add80406c01b6a05063e9f2f95f7d14989291b460f01587c659ff"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02555904.bin",
+        "sha256": "faca6b1dff4f8c7e2c6c76797724418b3474862d1d451e3a1cec0d092248fdd2"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2621440,
+      "offset": 2555904,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02555904.request.json",
+        "sha256": "75dab8c7f949e325e1192687835ac9c624b3b5bf179ddddcfab748848b256c8e"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02555904.raw-tool.json",
+        "sha256": "e7963ef5750ca289802dba1bb49d893edce1c4d8e5455076dc9dda3545d8226a"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02621440.bin",
+        "sha256": "f4e48501f88bb080920cb2e2b7b249f58b62087282bd0122c3cf4c99a556099e"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2686976,
+      "offset": 2621440,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02621440.request.json",
+        "sha256": "dfa95876390d235010be00203dc393cc72fa0a2126133b899552ae5b39dd1ef5"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02621440.raw-tool.json",
+        "sha256": "489895d51b765732d20dee84722d70e2e1fa7a399ca05cb83a422ab974f9d2cb"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02686976.bin",
+        "sha256": "3cb98d01f666695c2b0d5ab2c58e04cd4e1953b20eb7353c388c708030eddad6"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2752512,
+      "offset": 2686976,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02686976.request.json",
+        "sha256": "dff0345a2bf6392b17e00dce860fa2af5bf4ddb553b9731de4a4774caeecc49d"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02686976.raw-tool.json",
+        "sha256": "a1afa54a9bb29c526fb4ba039fed143e896628468f71781688c6ac1ca473c652"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02752512.bin",
+        "sha256": "c7d71032fadb23705624196b6c68292165925eb91938f74757532f7cbd2ed673"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2818048,
+      "offset": 2752512,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02752512.request.json",
+        "sha256": "260744f9601773715e0c2729ebf92a3f6b464a7a9917e7a7d24c4f834a5729de"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02752512.raw-tool.json",
+        "sha256": "d1d060127abf2c8aaa600f00aaff8c2c8e062b0f6a83b899f1ee1fd5af14524d"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02818048.bin",
+        "sha256": "50c1ba244c13a9aabd50856c86023de7ecdd7c60bd55be5934e8553c6530318c"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2883584,
+      "offset": 2818048,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02818048.request.json",
+        "sha256": "f41409507db89b53646ac2fc2b217b1686b12444fb2cfac7dca0b70167af97d2"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02818048.raw-tool.json",
+        "sha256": "de323612bcf9253d8656c36264f005d5e26651312244dc16c6eb4e0038c0f11d"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02883584.bin",
+        "sha256": "d676251030e7445fca6acf00fe2357a4e886f72cd7bcf6f39c4599d2b214ff58"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 2949120,
+      "offset": 2883584,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02883584.request.json",
+        "sha256": "900f25ae0c525a2588ddfd4b90e8f417dc982f027d7aa58b75d7c7352e16df4e"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02883584.raw-tool.json",
+        "sha256": "525c9b757342fa090e48364c2240f12ad0fe1a2b185d40ba826cb0a56d96ea2b"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02949120.bin",
+        "sha256": "139817e4d517478e1eb57877741824764628945df8c76367a6b9f0a4751b469c"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3014656,
+      "offset": 2949120,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02949120.request.json",
+        "sha256": "ffca06791fbf2ba689a5ce9f2cdedc3b5432df53c970be5aecd4a8f206711fdb"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-02949120.raw-tool.json",
+        "sha256": "8b4c7809ea586300bebe3ecc14db61841c24d2eaa5c40a265230c0796d947800"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03014656.bin",
+        "sha256": "3d5c16ee300df74c5eebf8c37449deab0d8610bc0bde34b0ef48d0e258967151"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3080192,
+      "offset": 3014656,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03014656.request.json",
+        "sha256": "92055f56fa90a184b28418b8362c3d9503c1a854417211ca527b4dc1db5d854a"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03014656.raw-tool.json",
+        "sha256": "9c5a376912cb3e21c3a9a3ff5773fe95d5634edde1c1e9f76d2593ccb72f8466"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03080192.bin",
+        "sha256": "05a3fcf058a858a90034f7deff41aac92918e2acb9804531f32cc41c33b93581"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3145728,
+      "offset": 3080192,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03080192.request.json",
+        "sha256": "a75d752b9ac2a4461f863d3497afb588cc5693a306248164d8482ed216374e72"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03080192.raw-tool.json",
+        "sha256": "86c4fdd74670f0a23acee5ecec103482198406eeb87fd6c3852220c97ab25289"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03145728.bin",
+        "sha256": "8bd07d64e61bc7f07e78765a230811e38082b6d654befaa2d7fbdd7306027b05"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3211264,
+      "offset": 3145728,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03145728.request.json",
+        "sha256": "8c4399a9531d3f88ecc62d3c4acd02f6bb5e2d0762912bd5dbde40e98852d692"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03145728.raw-tool.json",
+        "sha256": "708035afd23043613a1ff76ba157f514807de11fa22ab1e69972c4aa065e1f28"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03211264.bin",
+        "sha256": "29a5d28dfcf69df82e17cc7b32a259bd16bd7df0154badd44f138eec2d6b83d4"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3276800,
+      "offset": 3211264,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03211264.request.json",
+        "sha256": "c23b09dee52eef7392b61c4b7ddbd65815653532f3b9dac753865ea5f05293ae"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03211264.raw-tool.json",
+        "sha256": "ae1e60024d9b670522b4a2239e2fee1a4684c50d2e5d26864c44db77510b30be"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03276800.bin",
+        "sha256": "de01558008b394011a1cfcc1a7b9c36bac09dcfdba876bfde52129150d498e05"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3342336,
+      "offset": 3276800,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03276800.request.json",
+        "sha256": "01fd460bc18181bf7619b4f879687e54a12a56a6974af0b39a366463f2cfbf98"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03276800.raw-tool.json",
+        "sha256": "47f9bf8a0a686135058f134c2e28ecb6705d75911511f486034ef76ac0b830a0"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03342336.bin",
+        "sha256": "abc78e5bbb64a4fff3ddce21d605fc1c0187875e5753c05ad1f6001e57d084b3"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3407872,
+      "offset": 3342336,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03342336.request.json",
+        "sha256": "d332d94931fbcce623a5f1ad55b3c9d194dccea77331e7d30034eda4bbbf8ada"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03342336.raw-tool.json",
+        "sha256": "69b9f408d328755f593a6925c4c8221b511607fe80410246a81c945cea90d79c"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03407872.bin",
+        "sha256": "e4ca1d0b7270a10b1ce692f641af1d4e4707082eee144040c0baf1a58d15d55c"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3473408,
+      "offset": 3407872,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03407872.request.json",
+        "sha256": "9cd6ffe422d059d10ed7651f57a9513de2f60a94bf6741b829ec09308ffa2365"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03407872.raw-tool.json",
+        "sha256": "18f08387a56abd71cd3de0a21bc7c38a0b90788ae631e823bceef5c9f363ec44"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03473408.bin",
+        "sha256": "be11e7f6c7aee0b032af6e394f0b77c5649403e9a7a1721a5ff02f18665b71fe"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3538944,
+      "offset": 3473408,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03473408.request.json",
+        "sha256": "9c03cfbbb3b6edbb94e03a2de0bb9ac549d221d2d55f8bced4f3dd03148560ae"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03473408.raw-tool.json",
+        "sha256": "6dec4c014071ebc8b231af1ede8605ce763b32d55eaa1fef8fc44e4a91733c7e"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03538944.bin",
+        "sha256": "1fc406d1d0c9aabc4cb10487d3d32f7338d5bc8de122c66a27bb3127f59922fb"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3604480,
+      "offset": 3538944,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03538944.request.json",
+        "sha256": "6bc376666e009e70c1b6d902ebc81a186c72d587c791da6b5610c2ac81a91eb8"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03538944.raw-tool.json",
+        "sha256": "ee4cb29bf848b91f0019ac525fed6385068dcbb046d6bd4a480fd123462cfef0"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03604480.bin",
+        "sha256": "c091bdb8a65162fe5104c4c9047a61f46a5cc51031ac3e673d592e7c45995cfd"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3670016,
+      "offset": 3604480,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03604480.request.json",
+        "sha256": "855dee23ac811eee1a316343ccb7542e6d78798b46a80b0f764482cd0b0209bf"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03604480.raw-tool.json",
+        "sha256": "0cdf21d3ec95412dc8a8df96414c074bab50bcc60c52f7f15f5b36cc9216306f"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03670016.bin",
+        "sha256": "694688d5909d5c29da530e7b31988bea14fbbda69104547eee656ad59643ae59"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3735552,
+      "offset": 3670016,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03670016.request.json",
+        "sha256": "900c8488e34da407dffae4169792bdc7c890350ebeb23cdb7b2cb18a21fee99d"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03670016.raw-tool.json",
+        "sha256": "b8060ecae59b30a40a23ea7428d2b47e36e7c039e37316768519c9b14db6947b"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03735552.bin",
+        "sha256": "a9a93cbc6c6421164409005f691046357f7b4e5f0480d1b64275d417e24747e6"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3801088,
+      "offset": 3735552,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03735552.request.json",
+        "sha256": "68ae60b92f522888200d361ad79cae130ec65aad9637dfc325c9921f51710d8e"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03735552.raw-tool.json",
+        "sha256": "5dd66ac7fca8cd860aac585b9c1f671a97e754d1d2f5d03b6597bd070d3c99b0"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03801088.bin",
+        "sha256": "222a5e47fc817c8deea4e9d8635acf84215e25eda30881d01e04b0879c3f568e"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3866624,
+      "offset": 3801088,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03801088.request.json",
+        "sha256": "739ac50c43d0f5c15f819f7a31b9080f64d447d3f8b91979311ce6a31107f74b"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03801088.raw-tool.json",
+        "sha256": "2ecb235b63e5c34f1ce5d6d77dcc1c81d6d367c4a5b50dce3f29343080a1f747"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03866624.bin",
+        "sha256": "81b5095ef54f0f2a95e689b5d2d52b117de216f3daa86436771482646a7eacdf"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3932160,
+      "offset": 3866624,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03866624.request.json",
+        "sha256": "bc30e5b28b7aeb8f98800fc8f2344451f1ff48a5e3707c537320bde577054a3a"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03866624.raw-tool.json",
+        "sha256": "d752997b60b478430460a5fe24d2f7df1d0302cd82fac90d8c2d7455e9cf7f24"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03932160.bin",
+        "sha256": "9a0c98dd1bc4b69eb15ea8b5c43ef0592ed35cfd89ab50225701c522a4dcdaa0"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 3997696,
+      "offset": 3932160,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03932160.request.json",
+        "sha256": "a8d5061e151e7471b6dcbe1e61129ae648524483c9fc2ef429598d6284576a68"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03932160.raw-tool.json",
+        "sha256": "22f0c5e197b08b6db6a696e7141c00f73a400726d3b44dc4e05db9f8a25821ee"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03997696.bin",
+        "sha256": "2d384184dc2c70744770f030dfe4623b0bc33972904d29d57e54709e1bfd5be6"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4063232,
+      "offset": 3997696,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03997696.request.json",
+        "sha256": "4d8c463b5daea7f38d13efdc901637d328f5f6992df6743bbd3eafbc1c2454b4"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-03997696.raw-tool.json",
+        "sha256": "d0d25cdd76333b7eac836f04103b0c40b119cdb9bc254894b693bb445b3fcfb2"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04063232.bin",
+        "sha256": "9ca5896d172dbf7f55daf3e9ef418c9d3ced633f7d16ea6b339ca107565c6eb3"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4128768,
+      "offset": 4063232,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04063232.request.json",
+        "sha256": "fba6d9f066c70f62ef17d176551e92c3f1ddb4960f85cd62268cf613b6c3b25c"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04063232.raw-tool.json",
+        "sha256": "f3d42b0ffb3866ff154aa29928c17f67632bee9c936442ab77b7f8903b5ae4ac"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04128768.bin",
+        "sha256": "c80e20a355baa19a8ebb2719d61ee3ef3f3a1078b3ff5b6b4e1fa38621bcb903"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4194304,
+      "offset": 4128768,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04128768.request.json",
+        "sha256": "51dff1344d7d78951104b7cd8743d583ae18cb8ccca478099828992be51a4eb8"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04128768.raw-tool.json",
+        "sha256": "b1c460dad62c9d0f5c47c100ce4a7257a2e0be24793c1eb514709c10aa1f05ec"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04194304.bin",
+        "sha256": "bdf4c5b7404fe6cdd6c07cf64949899ed4ef954e9d0c01ed91047b9968251c41"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4259840,
+      "offset": 4194304,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04194304.request.json",
+        "sha256": "6fbdb6860d6dbf698f6512769396daef100595cf2566eb365aa1539ea8c42472"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04194304.raw-tool.json",
+        "sha256": "0d4387471ea0c86725b8e8e6843f49b3bb78a29650ab14c1ffd98534d29a20d3"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.bin",
+        "sha256": "71cb2a7931853e53dec902f4228a3f04aeb951d1451399bcd418d5b6e7a8b457"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4325376,
+      "offset": 4259840,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.request.json",
+        "sha256": "b468bac081c701f69bfc43a3526ccc03f43a433be3e90e7cfc01448db524f0e4"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04259840.raw-tool.json",
+        "sha256": "4b8a68f71f80d022667a555ec9b2194c6661ea633dc00bf5aae4fe94e9ae1e4e"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04325376.bin",
+        "sha256": "cebfbea9e2ee5b945e3a078079e3c8e852ea056eaf49f16b305541625ac15690"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4390912,
+      "offset": 4325376,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04325376.request.json",
+        "sha256": "3e4454d409e597d579638a228ab31a10f9526f4d6e70b7a6e515a621aa4d4438"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04325376.raw-tool.json",
+        "sha256": "2398632ee446cf8b1ccbfae28f438ebc01d05387228364161cedee1441788c3e"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.bin",
+        "sha256": "8db63f0ff8fc0c5d586b149d076865c760dd05dbcc303987513c747d8948aedc"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4456448,
+      "offset": 4390912,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.request.json",
+        "sha256": "859f5959e9cee44216c2936239046e57445cda4c3cfedac9c603deee960127cf"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04390912.raw-tool.json",
+        "sha256": "f3033d7f974ce889a1ee254cb33fd248d6be246fbd9c940745011894a7777127"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 65536,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.bin",
+        "sha256": "d88d0e0c9abd149e67fa88821ef6cdffe92aa8772555684e14f1d3433a4cdc00"
+      },
+      "eof": false,
+      "first_chunk_reused": false,
+      "next_offset": 4521984,
+      "offset": 4456448,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.request.json",
+        "sha256": "b637aab2ee6e78f89e95468357972833c46c0293b27d647699760be2291f826d"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 87888,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04456448.raw-tool.json",
+        "sha256": "6ea897eec31c1069a8025bd4e0b33a549f9de162d1019612188032d93593f027"
+      }
+    },
+    {
+      "chunk": {
+        "bytes": 9404,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.bin",
+        "sha256": "95b2c2f2d399d7924b1083248bffbf036aebe5e65afb1dd9a932373565498200"
+      },
+      "eof": true,
+      "first_chunk_reused": false,
+      "next_offset": 4531388,
+      "offset": 4521984,
+      "request": {
+        "bytes": 271,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.request.json",
+        "sha256": "10b5c2d9dbcf9fef600286ea95fd262e24891f4d5bca1995b50e25cb476c2180"
+      },
+      "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+      "tool_receipt": {
+        "bytes": 13043,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/chunk-04521984.raw-tool.json",
+        "sha256": "7c8a4f5db17ceb2f6687988c5f6eb31cc6f0d7f8a862738f558a497bae371e60"
+      }
+    }
+  ],
+  "complete_download_record": {
+    "bytes": 285,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/DOWNLOAD-END02.json",
+    "sha256": "3970de02a8812fb039726c112cbe83ac49579e1030fc6e127cd7b2b1753a69a5"
+  },
+  "download_does_not_change_observation_time_or_create_atomic_snapshot": true,
+  "exact_member_count": 12,
+  "first_chunk_remotely_repeated": false,
+  "initial_local_nonterminal_stop_preserved": {
+    "bytes": 164,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/DOWNLOAD-END.json",
+    "sha256": "2ef027d40f60026aca173a076c72059cfd0ed3e91aef4218040753c55d151b91"
+  },
+  "local_verifier_yield_reconciliation": {
+    "bytes": 907,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/LOCAL-YIELD-RECONCILIATION.json",
+    "sha256": "95304eb105efacbfe5ee38aa84bcf6d604dedebfca5b28cadab31328c1dc942c"
+  },
+  "manifest": {
+    "bytes": 2436,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/ARCHIVE-MANIFEST.json",
+    "sha256": "f72805b724317aa4a8a60389e217cfc1c4f9aa6c54900bc8603c25d481da7251"
+  },
+  "observer_reexecuted": false,
+  "originals": [
+    {
+      "bytes": 72,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/CHILD.json",
+      "sha256": "55e38b82410e1929c8b407e96874fb753ae13f9071c0c280ae6d5f078ab0cdce"
+    },
+    {
+      "bytes": 578,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/INTENT.json",
+      "sha256": "89b7246d859f87f5befdb49869013f725094125b0d6c9e22aefbd3a178d761c1"
+    },
+    {
+      "bytes": 86,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/JOINED.json",
+      "sha256": "30caefeee00e58cbc4140408ba92ae45d68f0c6e1a4cf024696357c7c7d6454e"
+    },
+    {
+      "bytes": 5908972,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/PHONE-STDOUT.original",
+      "sha256": "24c53a4c345d27cbbb2ba18852633eadc5c6a640b170c037d01b9e8e1f1c3e8c"
+    },
+    {
+      "bytes": 58657,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/PROBE-SOURCE.original.py",
+      "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+    },
+    {
+      "bytes": 59952,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/REQUEST.original.json",
+      "sha256": "81abb54029fbc2ea7b7df0114213fe976ba980cf84475bd77dcaa4608581688e"
+    },
+    {
+      "bytes": 1377,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/RESULT.json",
+      "sha256": "c36d2f82eadf66d0c985c46a6fa5e56801af85d4770801692aa5e8635209c7ed"
+    },
+    {
+      "bytes": 0,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/actor.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 293,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/actor.stdout.original",
+      "sha256": "69d45ff7529b27a4336a3dd0af057e335d171d244332cfe33a33042d2faa4519"
+    },
+    {
+      "bytes": 348,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/phone-baseline.json.original",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    {
+      "bytes": 60251,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/phone-intent.json.original",
+      "sha256": "57a61339f6f9751f3c3efcc62c689960c46000ae1049950a9f086a9c1d36520e"
+    },
+    {
+      "bytes": 5976519,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/extracted/phone-result.json.original",
+      "sha256": "380a7046079f68c9e61c6d0089b060cf8e218a249c249f29fddc164d5cf2f253"
+    }
+  ],
+  "other_remote_paths_read": false,
+  "phone_operations": 0,
+  "process_starts": 0,
+  "schema": "hepta.fixed19.originals-download-verification.v1",
+  "source_changed": false,
+  "source_version": "66306:44336387:4531388:1793897324452756243:1793897324452756243",
+  "state": "COMPLETE_PINNED_VERSION_ARCHIVE_AND_TWELVE_ORIGINALS_VERIFIED",
+  "uncompressed_tar": {
+    "bytes": 12083200,
+    "sha256": "713258173719a40d998ffdb6b5a4b632f5c0e68a880e1595933f9485dbd0d1c2"
+  },
+  "verifier_source": {
+    "bytes": 24224,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_epoch_retained_footprint_read02/binary-download02/verify_reconstruct_and_decode.py",
+    "sha256": "32504f1dea4edc5ccc2d0b2c40c0559cd03b0334d3365638208179c615c4f542"
+  },
+  "xz_stream_complete_and_checksum_verified": true
+}

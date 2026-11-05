@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.root.kernel-query02-complete-originals.v1",
+  "job_id": "1a1ac44dc29-fc05-5323",
+  "state": "COMPLETE_ORIGINALS_VERIFIED",
+  "controller_exit_code": 0,
+  "controller_stdout": 863,
+  "controller_stderr": 0,
+  "both_eof": true,
+  "archive": {
+    "bytes": 13040,
+    "sha256": "66ee9dab14e227e5a6cd08f48e43140ca607aea3e7618b8014ed4a89c57e132d",
+    "version": "66306:44323704:13040:1793891566480323005:1793891566480323005"
+  },
+  "all_original_members": 13,
+  "native_query_state": "NO_MATCHING_FIXED_WINDOW_AVC_RETAINED_AVAILABILITY_UNKNOWN",
+  "actor_returncode": 0,
+  "phone_returncode": 0,
+  "native_read_complete": true,
+  "case_pass": false,
+  "original_Java_failure_reason_proven": false,
+  "absence_of_AVC_proven": false,
+  "historical_retention_proven": false
+}

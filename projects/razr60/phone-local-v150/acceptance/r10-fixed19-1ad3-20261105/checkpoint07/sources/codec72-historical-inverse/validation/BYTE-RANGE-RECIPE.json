@@ -1,0 +1,95 @@
+{
+  "operations": [
+    {
+      "bytes": 4336,
+      "kind": "copy",
+      "start": 0
+    },
+    {
+      "bytes": 115,
+      "kind": "replace",
+      "literal_utf8": "",
+      "start": 4336
+    },
+    {
+      "bytes": 277,
+      "kind": "copy",
+      "start": 4451
+    },
+    {
+      "bytes": 133,
+      "kind": "replace",
+      "literal_utf8": "               and sum(p == q or q in p.parents for q in paths) == 1,\n",
+      "start": 4728
+    },
+    {
+      "bytes": 25182,
+      "kind": "copy",
+      "start": 4861
+    },
+    {
+      "bytes": 6990,
+      "kind": "replace",
+      "literal_utf8": "",
+      "start": 30043
+    },
+    {
+      "bytes": 30,
+      "kind": "copy",
+      "start": 37033
+    },
+    {
+      "bytes": 85,
+      "kind": "replace",
+      "literal_utf8": "    \"\"\"Raw-load the exact R7 reader and common under the old combination.\"\"\"\n",
+      "start": 37063
+    },
+    {
+      "bytes": 854,
+      "kind": "copy",
+      "start": 37148
+    },
+    {
+      "bytes": 48,
+      "kind": "replace",
+      "literal_utf8": "",
+      "start": 38002
+    },
+    {
+      "bytes": 1485,
+      "kind": "copy",
+      "start": 38050
+    },
+    {
+      "bytes": 88,
+      "kind": "replace",
+      "literal_utf8": "        return old\n",
+      "start": 39535
+    },
+    {
+      "bytes": 96,
+      "kind": "copy",
+      "start": 39623
+    },
+    {
+      "bytes": 24,
+      "kind": "replace",
+      "literal_utf8": "        if saved is None:\n",
+      "start": 39719
+    },
+    {
+      "bytes": 34544,
+      "kind": "copy",
+      "start": 39743
+    }
+  ],
+  "parent": {
+    "bytes": 74287,
+    "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+  },
+  "result": {
+    "bytes": 66996,
+    "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+  },
+  "schema": "hepta.codec72.exact-historical-byte-inverse.v1"
+}

@@ -1,0 +1,321 @@
+{
+  "case_nonces_generated": 0,
+  "cross_operation_preservation_is_separate_upper_gate": true,
+  "fixture_scope": "Local temporary real FD trees and isolated synthetic namespaces only. Public extra None was overridden only in pure fixture namespace; no target constants or deployed source were changed.",
+  "fragment": {
+    "bytes": 55405,
+    "sha256": "8423ed76d41e127c3c696b83dc0a5d5c0c28f1e8512aef4a0e3a0e8e80b7f85e"
+  },
+  "leases_created": 0,
+  "new_runtime_qualified": false,
+  "passed": 25,
+  "phone_calls": 0,
+  "physical_NEG14_claimed": false,
+  "remote_calls": 0,
+  "results": [
+    {
+      "detail": {
+        "reason": "exact failed-attempt/control inventory roots remain unbound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0001412190031260252,
+      "name": "unbound_extra_roots_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "bounded unique cumulative fixture roots required",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0021948089997749776,
+      "name": "unchanged_old_ninth_fixture_rejected_before_io",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "at most eight consumed active reservations are supported",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 3.8112004403956234e-05,
+      "name": "ninth_active_reservation_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "epoch inventory spec differs",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 4.465000529307872e-06,
+      "name": "third_epoch_field_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "only the fixed complete actual902 legacy anchor is supported",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 1.4174998796079308e-05,
+      "name": "legacy_anchor_bool_int_substitution_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "fixed legacy/retained aliases were omitted or reordered",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.002716481998504605,
+      "name": "omitted_legacy_alias_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "alias path repeats, is a third view, or leaves the exact root union",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0022939050031709485,
+      "name": "third_reused_alias_path_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "active reservations must retain every unique consecutive consumed ordinal",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 3.4427001082804054e-05,
+      "name": "active_ordinal_gap_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "one complete unique union must fit the original 64-root bound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0003464109977358021,
+      "name": "global_root65_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "undeclared fixture cannot be hidden as a generic root",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0007479990017600358,
+      "name": "fixture_cannot_be_hidden_in_generic_extra",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_retained_row_structure": {
+          "active_reservation_count": 0,
+          "alias_pairs": 55,
+          "case_or_lease_authorized": false,
+          "cross_operation_preservation_verified_by_this_function": false,
+          "entries": 2623,
+          "file_bytes_hashed": 19424531,
+          "original_provenance_verified_by_this_function": false,
+          "roots": 27,
+          "schema": "hepta.native-guard.two-epoch-inventory-verification.v1",
+          "spec_sha256": "64ad22dcaabc81d573ae0681bd65434532c128a784bf3196f962921d204caa8c",
+          "whole_union_structurally_verified": true
+        },
+        "bool_int_refusal": {
+          "reason": "explicit shared-budget/alias observation differs",
+          "refused": "ValueError"
+        },
+        "new_actual_observation_claimed": false,
+        "synthetic_absence_envelope": true
+      },
+      "elapsed_seconds": 1.6083433230014634,
+      "name": "actual_legacy_rows_and_exact_proof_types",
+      "passed": true
+    },
+    {
+      "detail": {
+        "entries": 4,
+        "file_bytes": 9,
+        "single_budget_instance": true
+      },
+      "elapsed_seconds": 0.025563007999153342,
+      "name": "shared_union_temporary_regular_trees",
+      "passed": true
+    },
+    {
+      "elapsed_seconds": 0.025038357998710126,
+      "error": "PermissionError: [Errno 13] Permission denied: '/proc/1/root/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run01/epoch-core-x2v6hnxw/view'",
+      "name": "real_local_declared_alias_two_views_charged",
+      "passed": false,
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 61, in check\n    detail = function()\n             ^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 317, in <lambda>\n    check('real_local_declared_alias_two_views_charged',lambda:temp_case(aliases))\n                                                               ^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 93, in temp_case\n    return function(Path(name), namespace())\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 167, in aliases\n    assert os.stat(a).st_dev==os.stat(b).st_dev and os.stat(a).st_ino==os.stat(b).st_ino\n                              ^^^^^^^^^^\nPermissionError: [Errno 13] Permission denied: '/proc/1/root/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run01/epoch-core-x2v6hnxw/view'\n"
+    },
+    {
+      "detail": {
+        "global_entry_charge": 1,
+        "phone_observation": false,
+        "positive_parent_full9": {
+          "absence": "ENOENT",
+          "canonical_parent_reopened": true,
+          "final_parent_metadata": [
+            27,
+            3949474,
+            16832,
+            0,
+            0,
+            2,
+            4096,
+            1793894127259966201,
+            1793894127259966201
+          ],
+          "final_reopened_enoent_checks": 1,
+          "first_elapsed_seconds": 0.0002369819994783029,
+          "initial_held_enoent_checks": 2,
+          "initial_parent_metadata": [
+            27,
+            3949474,
+            16832,
+            0,
+            0,
+            2,
+            4096,
+            1793894127259966201,
+            1793894127259966201
+          ],
+          "initial_reopened_enoent_checks": 1,
+          "last_elapsed_seconds": 0.0002708989995880984,
+          "parent_path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run01/epoch-core-s22hkqz8",
+          "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run01/epoch-core-s22hkqz8/absent",
+          "schema": "hepta.native-guard.epoch-positive-root-absence.v1"
+        }
+      },
+      "elapsed_seconds": 0.023207805999845732,
+      "name": "positive_absence_parent_full9_and_global_charge",
+      "passed": true
+    },
+    {
+      "detail": {
+        "business_entries": 2,
+        "control_entries": 2,
+        "control_omission_rejected": true,
+        "global_bytes": 11,
+        "global_entries": 5,
+        "nonfixture_absence_separate": true
+      },
+      "elapsed_seconds": 0.025881998000841122,
+      "name": "business_control_absence_exact_projection",
+      "passed": true
+    },
+    {
+      "elapsed_seconds": 0.025186767998093273,
+      "error": "OSError: [Errno 22] Invalid argument: '/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run01/epoch-core-k9xum2n8/fixture'",
+      "name": "uid2000_and_mode_gate",
+      "passed": false,
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 61, in check\n    detail = function()\n             ^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 320, in <lambda>\n    check('uid2000_and_mode_gate',lambda:temp_case(shell_fixture))\n                                         ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 93, in temp_case\n    return function(Path(name), namespace())\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/check_core_locally.py\", line 199, in shell_fixture\n    a=p/'fixture';file(a/'body',b'shell');os.chown(a,2000,2000);os.chown(a/'body',2000,2000);os.chmod(a/'body',0o400)\n                                          ^^^^^^^^^^^^^^^^^^^^^\nOSError: [Errno 22] Invalid argument: '/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run01/epoch-core-k9xum2n8/fixture'\n"
+    },
+    {
+      "detail": {
+        "reason": "symlink in retained private inventory",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0251423900044756,
+      "name": "symlink_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "non-regular/hardlinked/oversized inventory original",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0253377740009455,
+      "name": "hardlink_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "non-regular/hardlinked/oversized inventory original",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.029844345997844357,
+      "name": "fifo_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory original raced",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.023072157993738074,
+      "name": "same_bytes_different_inode_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory original changed before global bookend",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.02749284300080035,
+      "name": "old_leaf_changed_during_later_domain_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory original raced",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.023703120998106897,
+      "name": "parent_rename_replacement_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory path replaced before open",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.026061112999741454,
+      "name": "fifo_substitution_does_not_block_open",
+      "passed": true
+    },
+    {
+      "detail": {
+        "clock_not_reset_for_active": true,
+        "controlled_monotonic_test_only": true,
+        "reason": "shared full inventory time bound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.025001857000461314,
+      "name": "one_clock_not_reset_between_domains",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "non-regular/hardlinked/oversized inventory original",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.02521904799505137,
+      "name": "single_file_64MiB_plus1_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_logical_sparse_bytes_read": 536870912,
+        "budget_not_reset": true,
+        "domains": 2,
+        "reason": "shared remaining inventory byte bound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 1.6571663299982902,
+      "name": "shared_512MiB_across_domains_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_entry_charge": 30001,
+        "actual_temporary_files": 30000,
+        "reason": "shared full inventory entry bound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 6.318593314994359,
+      "name": "shared_30001_entries_across_domains_rejected",
+      "passed": true
+    }
+  ],
+  "schema": "hepta.source-only.epoch-inventory-local-checks.v1",
+  "total": 27
+}

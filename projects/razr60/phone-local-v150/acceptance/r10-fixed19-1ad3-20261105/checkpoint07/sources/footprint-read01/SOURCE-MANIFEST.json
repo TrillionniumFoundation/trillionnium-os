@@ -1,0 +1,137 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 123662,
+    "sha256": "380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63"
+  },
+  "controller_request": {
+    "bytes": 127964,
+    "sha256": "ab2a3bc86f3ef7e3d8233fbbed31a78a870d1d681d091f708cbbca54f6dac818"
+  },
+  "files": [
+    {
+      "bytes": 4070,
+      "path": "INTERFACE.json",
+      "sha256": "99672f0cfe631184a26c4a227a3b6d513462d37d502f7cd522fc527bcbde9a77"
+    },
+    {
+      "bytes": 3963,
+      "path": "README.md",
+      "sha256": "ba13039aabd9bf449d71d98032cd9e469b4e89993f1fa223c233db54d42e694a"
+    },
+    {
+      "bytes": 123398,
+      "path": "history/draft01-caller-b83c.original.py",
+      "sha256": "b83cabaca3200eadd2918969e05fcf66995eebcc5b29ac5a0f531f5dd2b2e7d5"
+    },
+    {
+      "bytes": 50799,
+      "path": "history/draft01-observer-90ec.original.py",
+      "sha256": "90ec0b16dfb76d617089b9682d2e4db2434c519c3bc5b07f599bea1f704d5da9"
+    },
+    {
+      "bytes": 57093,
+      "path": "history/draft02-observer-a724.original.py",
+      "sha256": "a72472085e8c0a12ae42993c8b46e76fbaa45ebb3cdd98e12c038a53e1d6fb67"
+    },
+    {
+      "bytes": 127964,
+      "path": "operator/CONTROLLER-REQUEST.json",
+      "sha256": "ab2a3bc86f3ef7e3d8233fbbed31a78a870d1d681d091f708cbbca54f6dac818"
+    },
+    {
+      "bytes": 123662,
+      "path": "operator/P4-LAUNCHER.py",
+      "sha256": "380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63"
+    },
+    {
+      "bytes": 58477,
+      "path": "operator/PHONE-REQUEST.original.json",
+      "sha256": "94ca0cd714a9c80e75372d31583c1c195444a9a7902b8334b92e396a5863a2c0"
+    },
+    {
+      "bytes": 176976,
+      "path": "reference/FOOTPRINT.original.json",
+      "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+    },
+    {
+      "bytes": 98832,
+      "path": "reference/PARENT-CALLER.original.py",
+      "sha256": "ba51506b0e9d8659b3bb916b51e0a7bd38bcc394125748e4cb8eb3143d2ab3e4"
+    },
+    {
+      "bytes": 44561,
+      "path": "reference/PARENT-OBSERVER.original.py",
+      "sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5"
+    },
+    {
+      "bytes": 40261,
+      "path": "reference/component_lifecycle.original.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 4633,
+      "path": "reference/native_proc_profile.original.py",
+      "sha256": "12719e58d2e3e1a1e86b8a6a9dc9587e37bfcb36c4c3b26b023138752bb3e67b"
+    },
+    {
+      "bytes": 57213,
+      "path": "source/observe_fixed_epoch_footprint_once.py",
+      "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+    },
+    {
+      "bytes": 215269,
+      "path": "validation/CALLER-INCREMENT.patch",
+      "sha256": "db45e467b0fd71cf0561e75ab453dca179e9ae0918510bd057aeb5e3cfb11a66"
+    },
+    {
+      "bytes": 5171,
+      "path": "validation/CALLER-SOURCE-REVIEW.json",
+      "sha256": "01c97cfd30ade7beea69643888b9b5eea4d90661366fc53b2c2f3ee2cd0cf525"
+    },
+    {
+      "bytes": 16880,
+      "path": "validation/LOCAL-BODY-AVAILABILITY.json",
+      "sha256": "c07cf57bece77ee687b20fd82d28bdad0882c2913393612c1b7bd33725bbfdc2"
+    },
+    {
+      "bytes": 95923,
+      "path": "validation/OBSERVER-INCREMENT.patch",
+      "sha256": "5256069ea8fa4e04f775f3eb9bb136204043da13c396cb20a13dc521a53c662c"
+    },
+    {
+      "bytes": 1733,
+      "path": "validation/ORIGINAL-ARCHIVE-BODY-EXTRACTION.json",
+      "sha256": "8032df2a8f7a33cb3ffdc0b7e9520fa07f64712b781b2261278588e10f9d703d"
+    },
+    {
+      "bytes": 29531,
+      "path": "validation/PROC-ROOT-BRIDGE-INCREMENT.patch",
+      "sha256": "6bdb7f0d515a619b1d0c1f13d0c20030a426b521ba58da387203595f96f80377"
+    },
+    {
+      "bytes": 620,
+      "path": "validation/REAL-BODY-COMPRESSION.json",
+      "sha256": "c72922c81628648a02f52eddbf2bae013d0011ba413911645bc620f8b342c74e"
+    },
+    {
+      "bytes": 3134,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "e3699b4dc389a0a911a3e15d3c6e50c5f85f004a9b279dae177b173133fefc56"
+    },
+    {
+      "bytes": 2216,
+      "path": "validation/SOURCE-DRAFT03-INCREMENT.patch",
+      "sha256": "e0398816575a04b76de6116592b6da6f7218d15342869a7527d3288219652971"
+    }
+  ],
+  "new_nonce_or_lease": false,
+  "observer": {
+    "bytes": 57213,
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "p4_executed": false,
+  "phone_executed": false,
+  "schema": "hepta.fixed-epoch-retained-footprint-source-package.v1",
+  "state": "SOURCE_ONLY_FROZEN_UNEXECUTED"
+}

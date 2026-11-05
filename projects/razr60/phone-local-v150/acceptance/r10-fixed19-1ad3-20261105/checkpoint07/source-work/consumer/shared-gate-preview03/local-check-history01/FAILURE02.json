@@ -1,0 +1,9 @@
+{
+  "detail": "complete shared original bytes or hash differ",
+  "old_manifest_sha256": "121416839ffdac15485270cda0e95445e376b0a24801fa283659a3da084ae45f",
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "runtime_modules_executed": false,
+  "state": "LOCAL_GATE_CORRECTLY_REFUSED_MIXED_PARENT_MANIFEST_AND_CODEC72_SHARED_BYTES",
+  "type": "ValueError"
+}

@@ -1,0 +1,223 @@
+{
+  "actual_executions": 0,
+  "caller": {
+    "bytes": 98832,
+    "path": "operator/P4-LAUNCHER.py",
+    "sha256": "ba51506b0e9d8659b3bb916b51e0a7bd38bcc394125748e4cb8eb3143d2ab3e4"
+  },
+  "case_pass": false,
+  "current_head_sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831",
+  "current_runtime_sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb",
+  "file_count": 40,
+  "files": [
+    {
+      "bytes": 2177,
+      "path": "DERIVATION.json",
+      "sha256": "731198cfcb5f8fa6469ef3f161cff72d05a965b9fe64b3f4ce12e483feada902"
+    },
+    {
+      "bytes": 4349,
+      "path": "INTERFACE.json",
+      "sha256": "a30f6409534a5305b5d4e19208f24b98243b249ba744f7205df097064e174e76"
+    },
+    {
+      "bytes": 98832,
+      "path": "operator/P4-LAUNCHER.py",
+      "sha256": "ba51506b0e9d8659b3bb916b51e0a7bd38bcc394125748e4cb8eb3143d2ab3e4"
+    },
+    {
+      "bytes": 45746,
+      "path": "operator/PHONE-REQUEST.json",
+      "sha256": "5d16e8e5bc65148ff40ff267b920aeaa0b65d62f43e84e1ee0d5b805c8977351"
+    },
+    {
+      "bytes": 55124,
+      "path": "reference/CLOSURE.ffe4.original.json",
+      "sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+    },
+    {
+      "bytes": 6732,
+      "path": "reference/COMPOSITION-INDEPENDENT-REVIEW.original.json",
+      "sha256": "5c2ae28389c3bcb74c07faa9a41bb11bf5d04166ac1e6d77883c0126ecbe2df8"
+    },
+    {
+      "bytes": 13832,
+      "path": "reference/FIXED-DESCRIPTOR-TABLE.json",
+      "sha256": "3f50f6f782d9f0d8e1ee7d475a3c082b29e0867230309eec0c0c5ed677a628ee"
+    },
+    {
+      "bytes": 6889,
+      "path": "reference/OBSERVER-INDEPENDENT-REVIEW.json",
+      "sha256": "c8ab694a2dea9dc56c651f3238e078541f56d0461920c9cbfc4ca2b3598ad457"
+    },
+    {
+      "bytes": 52781,
+      "path": "reference/P4-LAUNCHER.6ee7.original.py",
+      "sha256": "6ee7f59e8d9a3fb79458ac772a3203db0197fda35ccc447125b489d44cb2fc69"
+    },
+    {
+      "bytes": 43516,
+      "path": "reference/SOURCE-COMPOSITION.original.json",
+      "sha256": "e6d5876bde06019ab9207bde44d1d56cf2149c42a8cfa7246ade3dcd2d16841b"
+    },
+    {
+      "bytes": 19138,
+      "path": "reference/common.original.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 52142,
+      "path": "reference/host-audit-BYTE-EQUALITY.original.json",
+      "sha256": "6bb0cb5179850cce2adc53982796bde4dd6bb2f0269968df33e91ff4b4dc8461"
+    },
+    {
+      "bytes": 2125,
+      "path": "reference/host-audit-CALLER-RESULT.original.json",
+      "sha256": "0aba002433726ab64629cbdb78b9ffd2b9295af86c2a34865c90dbffae51fb1d"
+    },
+    {
+      "bytes": 3850,
+      "path": "reference/host-audit-CONTROLLER-READ.tool.json",
+      "sha256": "8100cb0abe3817baaa1ec786d44af1a5baf947aaf57c0e339f3cb4aae847e114"
+    },
+    {
+      "bytes": 1528,
+      "path": "reference/host-audit-CONTROLLER-START.tool.json",
+      "sha256": "05e6c7acc2e8435327c5a44897f15a799d52f63233be4c010d84e58411608b37"
+    },
+    {
+      "bytes": 954,
+      "path": "reference/host-audit-CONTROLLER-STATUS.tool.json",
+      "sha256": "3e4b1685ef84efeba90ebc17994b5161eb688618c93fc246c1a443324bb3c8ee"
+    },
+    {
+      "bytes": 0,
+      "path": "reference/host-audit-CONTROLLER-STDERR.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1053,
+      "path": "reference/host-audit-CONTROLLER-STDOUT.original",
+      "sha256": "24e997f7479a0107c9f4b89b8a3b1b1cd1d2515a55647a66341385e8ec1e050e"
+    },
+    {
+      "bytes": 1816,
+      "path": "reference/host-audit-LOCAL-COMPLETE-VERIFICATION.json",
+      "sha256": "726af07777c55fb075568984c58c17d65c5ae0b2a605fd657e7846c78830ee91"
+    },
+    {
+      "bytes": 74287,
+      "path": "reference/late.original.py",
+      "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+    },
+    {
+      "bytes": 40261,
+      "path": "reference/lifecycle.original.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 4633,
+      "path": "reference/native_proc.original.py",
+      "sha256": "12719e58d2e3e1a1e86b8a6a9dc9587e37bfcb36c4c3b26b023138752bb3e67b"
+    },
+    {
+      "bytes": 41213,
+      "path": "reference/observe_existing902_current_head_once.unbound.original.py",
+      "sha256": "f6b544b5239f47598d7f90ec9c57b7fe2228725c27e82bbea7436f648b404c5a"
+    },
+    {
+      "bytes": 766658,
+      "path": "reference/retirement_probe.d1fe.original.py",
+      "sha256": "d1fe1478ee9699b5a1199aa4c2b96a2a405f7cafd0b5707071cfd2238dbe5df4"
+    },
+    {
+      "bytes": 16808,
+      "path": "reference/runtime-MANIFEST.31da.original.json",
+      "sha256": "31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb"
+    },
+    {
+      "bytes": 24187,
+      "path": "reference/snapshot.original.py",
+      "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+    },
+    {
+      "bytes": 17039,
+      "path": "reference/verify_actual_retired_once.118d.original.py",
+      "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba"
+    },
+    {
+      "bytes": 44561,
+      "path": "source/observe_existing902_current_head_once.py",
+      "sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5"
+    },
+    {
+      "bytes": 3747,
+      "path": "validation/ACTUAL-HOST-AUDIT-BINDING.json",
+      "sha256": "8ca46c6df7db0c927c4b89a5cd9c6a6777d4d403551899b1d91f214174914509"
+    },
+    {
+      "bytes": 9389,
+      "path": "validation/ACTUAL-HOST-AUDIT-BINDING.patch",
+      "sha256": "abc6c33b3b49901029691c2b9bbc4d3c1ecb16b937ecd34684b7aabb001cdd75"
+    },
+    {
+      "bytes": 3354,
+      "path": "validation/ACTUAL-HOST-AUDIT-PREREQUISITE-VERIFICATION.json",
+      "sha256": "90e8317116b70f1b3bc7d0732a1fc8cd0e1909e8546583d87c23d62bbea0e643"
+    },
+    {
+      "bytes": 435,
+      "path": "validation/ACTUAL-HOST-VERIFICATION-ATTEMPT01-ERROR.json",
+      "sha256": "8726d5f065ae1504d8cbed3d90b016a1ba101e5cad2743826bdddb94042f4bbc"
+    },
+    {
+      "bytes": 2795,
+      "path": "validation/BOOTSTRAP-READER-INCREMENT.patch",
+      "sha256": "440475bd8c804dd1276abb02db70ee594495e6a248c92895e07dc1b621d11270"
+    },
+    {
+      "bytes": 144411,
+      "path": "validation/CALLER-INCREMENT.patch",
+      "sha256": "229fefdb676ff68fa459d0ae25ad0111bc8bf5232a5a65ebb9a75279ed0687aa"
+    },
+    {
+      "bytes": 4542,
+      "path": "validation/CALLER-SOURCE-REVIEW.json",
+      "sha256": "9c70939e23ce7ba64ca974033937243bf5339f0fc113bc304417709a2678ed6d"
+    },
+    {
+      "bytes": 2660,
+      "path": "validation/LOCAL-FOCUSED-CHECKS.initial.json",
+      "sha256": "8157b2277a3a7bbd7cc05d2879cc692c33f65b16d23df6006b1ed64f10297b63"
+    },
+    {
+      "bytes": 2664,
+      "path": "validation/LOCAL-FOCUSED-CHECKS.json",
+      "sha256": "76efe833de9caf44ab90ca97b23b9ff2c256264e4c8b8df00a3acb4f89080a16"
+    },
+    {
+      "bytes": 4550,
+      "path": "validation/ORIGINAL-PATH-TO-MEMBER.json",
+      "sha256": "8a40c782bc76bfa3a802e87d2af676137822eaa9b80cca9aef39311ceecb219c"
+    },
+    {
+      "bytes": 2081,
+      "path": "validation/OUTPUT-AND-WIRE-BUDGET.json",
+      "sha256": "80dea118c7253de45b57134ea398d9a559a05094ceba3702ee646a87ab4091f4"
+    },
+    {
+      "bytes": 2183,
+      "path": "validation/REUSED-HELPERS.json",
+      "sha256": "a37f4c1847959f5ffa8148fcfc7ef509027c250891dcd996d7292c1a7d0baf97"
+    }
+  ],
+  "new_nonce_or_lease": false,
+  "observer": {
+    "bytes": 44561,
+    "path": "source/observe_existing902_current_head_once.py",
+    "sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5"
+  },
+  "phone_content_writes": 0,
+  "schema": "hepta.existing902.current-head-readonly-source-package.v1",
+  "state": "SOURCE_ONLY_ACTUAL_HOST_PREREQUISITE_BOUND_NOT_PHONE_EXECUTED"
+}

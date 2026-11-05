@@ -1,0 +1,78 @@
+{
+  "explicit_unchanged_boundaries": [
+    "ReadBudget",
+    "read_fixed_node",
+    "retain_parent",
+    "observe_proc_bridge",
+    "pid1_generation",
+    "observe_ancestor",
+    "fixed_footprint",
+    "verify_actual_aliases",
+    "parent_fd",
+    "strict_unpack",
+    "pack_original"
+  ],
+  "findings": [
+    {
+      "name": "unique_actual_parent_table",
+      "result": "PARENTS remains the actual observed complete full9/names/SELinux table, populated only by unchanged retain_parent. Insertion order is append-only during the observation; each path is unique and repeat reads compare exact canonical bytes."
+    },
+    {
+      "name": "reference_expansion",
+      "result": "Exact {table,index,serialized_observation} reference has int-only bounded index and exact canonical serialized bytes/SHA identity. Every emitted positive-absence reference expands immediately to exactly the just-read parent row. The descriptor names a JSON observation, not a file or substitute metadata."
+    },
+    {
+      "name": "actual_reads_unchanged",
+      "result": "read_fixed_absence whole-byte reverses using exactly three representation splices. All held/reopened ENOENT syscalls, full9/names/label comparisons, first/final comparisons, and both complete rounds remain. read_fixed_node/PID1/ancestor/alias/whole-body capture are byte-identical."
+    },
+    {
+      "name": "unchanged_budgets",
+      "result": "512KiB metadata remains a strict refusal; one 30s cooperative clock,16MiB physical reads,16MiB rawpacket,8MiB report unchanged. Saving duplicate parent representations does not remove physical reads, path rows, source scope or charged bytes."
+    },
+    {
+      "name": "failure_retention",
+      "result": "LAST_METADATA_BYTES, actual progress counters, original_failure and observation_phase survive the compact serialization-refused record. Serialization refusal remains observation_complete=false; no partial data are promoted."
+    },
+    {
+      "name": "explicit_version",
+      "result": "Outer report schema upgrades from v1 to v2. Consumers must explicitly expand the new references from immediate_parent_observations with index/type/bytes/SHA checks; old absence field consumers cannot silently treat reference objects as expanded parents."
+    }
+  ],
+  "limits": [
+    "No actual read02 has been run by this reviewer. No source review guarantees the future live names/metadata fit the cap.",
+    "No scope expansion or evidence upgrade is inferred from actual read01 metadata refusal. Its failure remains immutable.",
+    "Root or author still owns caller/full final-package review; this report is the fixed 779546 source increment only.",
+    "No target function or reader was executed; the checks are AST/byte comparisons and manual control/data-flow review."
+  ],
+  "modified_parent_functions": [
+    "main",
+    "metadata_budget",
+    "read_fixed_absence"
+  ],
+  "new_pure_functions": [
+    "expand_parent_observation_reference",
+    "parent_observation_reference"
+  ],
+  "parent": {
+    "bytes": 57213,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_footprint_observer_candidate02/PARENT.observer.original.py",
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "schema": "hepta.independent-source-review.v1",
+  "scope": {
+    "caller_reviewed": false,
+    "new_actual_footprint_claimed": false,
+    "phone_calls": 0,
+    "remote_calls": 0,
+    "target_functions_called": false,
+    "target_source_imported_or_executed": false
+  },
+  "source": {
+    "bytes": 58657,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_footprint_observer_candidate02/source-draft01/observe_fixed_epoch_footprint_once.py",
+    "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+  },
+  "state": "NO_BLOCKER_FOUND_IN_REVIEWED_INCREMENT",
+  "unchanged_parent_functions_and_classes": 23,
+  "whole_byte_inverse": true
+}

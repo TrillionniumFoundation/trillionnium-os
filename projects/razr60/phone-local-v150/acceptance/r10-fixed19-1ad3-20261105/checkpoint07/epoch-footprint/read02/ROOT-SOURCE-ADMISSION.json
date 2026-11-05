@@ -1,0 +1,48 @@
+{
+  "already_executed": false,
+  "caller": {
+    "bytes": 126692,
+    "sha256": "536c7c53f0b9287e187b449a9dcf6a5e15c2585c4f2db0fd3ad4aea2e159c5d3"
+  },
+  "caller_five_splice_whole_inverse_to_actual_read01": true,
+  "canonical_reference_digest_and_index_exactly_expandable": true,
+  "case_credit": false,
+  "complete_footprint_literal_and_read_scope_unchanged": true,
+  "controller_stdin_bytes": 126692,
+  "failed_read01_original_outcome_preserved": true,
+  "fixed_metadata_limit_bytes": 524288,
+  "fresh_total_metadata_bytes_unknown_before_observation": true,
+  "full_parent_rows_retained_in_unique_table": true,
+  "independent_review": {
+    "bytes": 3882,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/reviews/epoch-footprint-reference-codec-independent02/REVIEW.json",
+    "sha256": "7fd37b223a1d9d638cf544a945c69de8cb02b98da6ecd938ede1f2466d36a8a6"
+  },
+  "new_case_nonce_or_lease": false,
+  "new_failure_report_retains_original_failure_phase_and_counts": true,
+  "outer_timeout": false,
+  "owned_child_passive_wait_seconds": 240,
+  "phone_readonly_observations_max": 1,
+  "phone_source_exact_heredoc_including_trailing_LF": true,
+  "phone_timeout_seconds": 210,
+  "phone_wire_bytes": 63904,
+  "physical_absence_reads_and_parent_bookends_unchanged": true,
+  "request": {
+    "bytes": 131130,
+    "sha256": "02ca2db8c876a5fece9c92691dca4a1dc515b1a8108e3b4e26102ec99d5911a4"
+  },
+  "schema": "hepta.epoch.footprint-root-source-admission.v2",
+  "shared_observer_seconds": 30,
+  "source": {
+    "bytes": 58657,
+    "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+  },
+  "source_manifest": {
+    "bytes": 4594,
+    "sha256": "cdbc7163b3367c42d0f251ef7321d4d224ba4bd8a879a036f6c7c0ef9b71fe28"
+  },
+  "source_members": 24,
+  "source_whole_inverse_to_actual_read01": true,
+  "state": "EXACT_FIXED_READ02_FORMAT_FIX_REVIEWED_FOR_ONE_READONLY_INVOCATION",
+  "unchanged_physical_reader_functions_and_classes": 23
+}

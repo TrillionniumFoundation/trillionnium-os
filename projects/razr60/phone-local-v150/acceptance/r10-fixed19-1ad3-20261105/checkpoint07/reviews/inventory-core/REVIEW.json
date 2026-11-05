@@ -1,0 +1,45 @@
+{
+  "candidate": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "final_runtime_ready": false,
+  "fragment": {
+    "bytes": 62633,
+    "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+  },
+  "known_limits": [
+    "Thirty seconds is a cooperative observation deadline, not a claim to interrupt a blocked kernel call",
+    "Fixed transport parent metadata/names observations do not claim inventory of unrelated sibling subtrees",
+    "Pure verification alone proves neither observation provenance nor cross-operation preservation"
+  ],
+  "original_functions_whole_byte_unchanged": 15,
+  "phone_calls": 0,
+  "physical_NEG14_credit": false,
+  "reviewed_new_guards": [
+    "One internal budget clock from spec validation through final pure verification",
+    "One union traversal, original64 roots/30000 entries/512MiB/30sec,64MiB one file and20000 names",
+    "Separate business/control/positive-absence/control-leaf projections remain bound to one exact observation",
+    "All listed aliases read and charged twice; unseen or third views refused",
+    "Exact fixed twelve transport leaf full9/bytes/hash exception; no generic UID2000 exception",
+    "Reopened canonical full9/names bookends, real ENOENT observations, no invented fixture success",
+    "Old eight-fixture API unchanged; new fixed7 plus active<=8 only under explicit new schema"
+  ],
+  "schema": "hepta.epoch.inventory-core-independent-root-review.v1",
+  "source_package_closed_regular_files": 25,
+  "state": "UNBOUND_SOURCE_SNAPSHOT_COMPLETE_REVIEW_NO_TARGET_ADMISSION",
+  "still_required": [
+    "EPOCH_INVENTORY_EXTRA_ROOTS source binding to actual fresh footprint including fixed two extra aliases",
+    "Registry/phase derivation must determine complete spec, no caller-selected omissions",
+    "Final runtime and pure source gate whole inverse",
+    "Actual producer/copy/bundle bounds for remaining qualifications",
+    "Global phone execution and physical negative case evidence"
+  ],
+  "target_source_executed": false,
+  "whole_original_inverse": {
+    "bytes": 40261,
+    "exact_removed_fragment_offset": 18513,
+    "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2",
+    "two_separator_lf_offset_after_removal": 18511
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 70022,
+    "sha256": "5497e828168f399dd54b27df1a6a76f927b628cdc393341da9d9c83be65638b7"
+  },
+  "case_pass": false,
+  "controller_request": {
+    "bytes": 73904,
+    "sha256": "40b49dce2e827762796664a4029a49c1cbdcdc9d21f6ba49f7ee45ea9670375b"
+  },
+  "files": [
+    {
+      "bytes": 841,
+      "path": "BUDGET.json",
+      "sha256": "a16c3513f62528af11c56ea4cb05cbc781c44ab725e3ad224697f995ab080be2"
+    },
+    {
+      "bytes": 1969,
+      "path": "DERIVATION.json",
+      "sha256": "406a78c82f2a149eb199fe8eee251d83b2db6186e52941245c2edac515988439"
+    },
+    {
+      "bytes": 1347,
+      "path": "INTERFACE.json",
+      "sha256": "5a556514042131d3d6e760a51ccd4907ff7c84f5838c5c6cfc32d3cde626ae3b"
+    },
+    {
+      "bytes": 19630,
+      "path": "PHONE-REQUEST.preview.json",
+      "sha256": "7e548d48115caaf8f196b56885a410bd59dee791b2cfc557ff7b4bffdd6fc93d"
+    },
+    {
+      "bytes": 1370,
+      "path": "README.md",
+      "sha256": "c96b423aa19267e6b00b7e7d9b3c0caeadf9a6911063166633049c76d3bc3240"
+    },
+    {
+      "bytes": 70022,
+      "path": "operator/P4-LAUNCHER.py",
+      "sha256": "5497e828168f399dd54b27df1a6a76f927b628cdc393341da9d9c83be65638b7"
+    },
+    {
+      "bytes": 1512,
+      "path": "reference/ACTION-RECEIPT.actual.original.json",
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a"
+    },
+    {
+      "bytes": 74494,
+      "path": "reference/CONTROLLER-REQUEST.query01.original.json",
+      "sha256": "20b002de6b4dcf105124e4410d319936eaf24534252e11e884765278c5df4962"
+    },
+    {
+      "bytes": 10846,
+      "path": "reference/HISTORY-AUDIT-SCOPE.original.json",
+      "sha256": "3eb56cb06bd363ffc42233ccb0154551962039362eb65f414f66e584a4c11d8e"
+    },
+    {
+      "bytes": 5973,
+      "path": "reference/LOGCAT-HELP.actual.original.txt",
+      "sha256": "c7ae77a8e575b64a2268c8a22a5612a55a3c4a9ef9d9a4b1a417f80789858adf"
+    },
+    {
+      "bytes": 70596,
+      "path": "reference/P4-LAUNCHER.61b916.original.py",
+      "sha256": "61b916a48b998cf613a95e2ce4160094047e80397d2d4f62c1c9a5e2558d42c9"
+    },
+    {
+      "bytes": 2220,
+      "path": "reference/PARENT-SOURCE-MANIFEST.original.json",
+      "sha256": "60b6887737a6622997cadac2e61573a8103857a04991a0040eb34745c5564566"
+    },
+    {
+      "bytes": 2834,
+      "path": "reference/QUERY01-ARCHIVE-MANIFEST.json",
+      "sha256": "cae54ace79b167a16657f0b52572f5014cf4dd59e26d17f517be3e5a49a236db"
+    },
+    {
+      "bytes": 3242,
+      "path": "reference/QUERY01-CONTROLLER-READ.tool.json",
+      "sha256": "2de1222ad29be5213809cceeb3f868afb60455c27188ab2805edc1f1fa5c2199"
+    },
+    {
+      "bytes": 952,
+      "path": "reference/QUERY01-CONTROLLER-STATUS.tool.json",
+      "sha256": "34e4472ac31a55f6d5e1d8be12100f79d42a713f0e2c30d75f7e171895782ac9"
+    },
+    {
+      "bytes": 1160,
+      "path": "reference/QUERY01-LOCAL-COMPLETE-VERIFICATION.json",
+      "sha256": "6b3b1cf37df4f95518f8bf91a016473404022dd16c856d4228cb6433f546f040"
+    },
+    {
+      "bytes": 53,
+      "path": "reference/QUERY01-NATIVE-STDERR.original",
+      "sha256": "c898b61a26d371ef497fa3e3651e8ffef4144fc5ea23fc5ee7c909b86df66ae0"
+    },
+    {
+      "bytes": 4294,
+      "path": "reference/QUERY01-PHONE-STDOUT.original",
+      "sha256": "9ccebdc16120a431401f7c471ca895e6481a8f31e3a8b5abc1077e7940177521"
+    },
+    {
+      "bytes": 28113,
+      "path": "reference/QUERY01-phone-result.original.json",
+      "sha256": "010d6bf4a42b91ad1fa1206a814b6446b7eb2bf0e651d2ea1454154aa90f7fbd"
+    },
+    {
+      "bytes": 5652,
+      "path": "reference/phone_once.179a.original.py",
+      "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+    },
+    {
+      "bytes": 18861,
+      "path": "reference/read_fixed_audit_window_once.35a7.original.py",
+      "sha256": "35a7fca1bca4856214208222e1818922c9d9f057dd0406e7448f124e1f7d5972"
+    },
+    {
+      "bytes": 18636,
+      "path": "source/read_fixed_audit_window_once.py",
+      "sha256": "652ad1b5a6d864134f461dc23f63a17498ff70074a9eb7d385179cd5edbdfce0"
+    },
+    {
+      "bytes": 2076,
+      "path": "validation/LOCAL-CHECKS.json",
+      "sha256": "3aadfa9c8d9ae0dae186fe1968c1ea1af50d955093241eaacee3ff994186a708"
+    },
+    {
+      "bytes": 122730,
+      "path": "validation/QUERY02-CALLER-INCREMENT.patch",
+      "sha256": "1e4c554d4b30c152cbf0f8962f60d4b73aadfb16b2fb4d3c321e88a2ac0cb265"
+    },
+    {
+      "bytes": 2552,
+      "path": "validation/REMOVE-NATIVE-COUNT-LIMIT.patch",
+      "sha256": "3301f670e3f04120c0475d12cbb46276e319ac9c76e4e110c0099e5511f5c8d6"
+    }
+  ],
+  "phone_operations": 0,
+  "schema": "hepta.codec72.logcat-query02-source-package.v1",
+  "source": {
+    "bytes": 18636,
+    "sha256": "652ad1b5a6d864134f461dc23f63a17498ff70074a9eb7d385179cd5edbdfce0"
+  },
+  "state": "SOURCE_ONLY_NOT_EXECUTED"
+}

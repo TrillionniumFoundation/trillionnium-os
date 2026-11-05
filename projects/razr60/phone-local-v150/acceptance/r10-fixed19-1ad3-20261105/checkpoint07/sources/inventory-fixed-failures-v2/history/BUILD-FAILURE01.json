@@ -1,0 +1,18 @@
+{
+  "builder": {
+    "bytes": 14886,
+    "sha256": "2381f668164459b7d098b99a7d40e4d3be7d8af1e5d61a37ff0b6b29cb0745c7"
+  },
+  "cause": "Historical FOOTPRINT Root02 identity row has no fixture field; its exact fixture absence path is in absence_checks. Builder incorrectly assumed all three records had identical shape.",
+  "error": "KeyError: fixture",
+  "outputs_written": [
+    "reference/external09-CHAIN-INTENT.original.json",
+    "reference/own01-CHAIN-INTENT.original.json",
+    "reference/own02-CHAIN-INTENT.original.json"
+  ],
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.local-source-builder-failure.v1",
+  "state": "SOURCE_BUILDER_REJECTED_BEFORE_TARGET_SOURCES_WRITTEN",
+  "target_source_executed": false
+}

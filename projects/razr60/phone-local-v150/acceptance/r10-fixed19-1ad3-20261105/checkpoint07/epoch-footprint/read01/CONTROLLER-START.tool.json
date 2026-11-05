@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-c\",\n      \"import hashlib,sys\\nbody=sys.stdin.buffer.read(131073)\\nassert len(body)==123662 and hashlib.sha256(body).hexdigest()=='380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63'\\nexec(compile(body,'<fixed-epoch-retained-footprint-readonly-caller>','exec'),{'__name__':'__main__'})\\n\"\n    ],\n    \"created_unix_ms\": 1793896363659,\n    \"cwd\": \"/home/alex\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1ac8e368b-fc05-553f\",\n    \"idempotency_key\": \"root-1ad3-epoch-retained-footprint-read01-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1ac8e368b-fc05-553f\",\n    \"request_digest\": \"3ab4680b97d3baf85eaee329f54bb6c30da36ab73725a960f9912d46fca7eca6\",\n    \"request_fingerprint\": 4230120349008902904,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ac8e368b-fc05-553f\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ac8e368b-fc05-553f\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

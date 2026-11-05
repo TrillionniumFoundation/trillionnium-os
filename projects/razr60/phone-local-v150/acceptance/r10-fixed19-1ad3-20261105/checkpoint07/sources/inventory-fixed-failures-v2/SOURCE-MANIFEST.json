@@ -1,0 +1,138 @@
+{
+  "case_nonces_generated": 0,
+  "extra_binding_is_none": true,
+  "files": [
+    {
+      "bytes": 8246,
+      "path": "INTERFACE.json",
+      "sha256": "4c51f157ac7445846b5f0bb0e1dda614e42b1e2b61075153c254b9858b0914e3"
+    },
+    {
+      "bytes": 3185,
+      "path": "README.md",
+      "sha256": "e36c73d646276acb4d3b4f8998a0291cb55a64d46d5823faecda8feaf1cd33a7"
+    },
+    {
+      "bytes": 732,
+      "path": "history/BUILD-FAILURE01.json",
+      "sha256": "2ad240967d53ccdf761922e8afb782a115b8f864f699feac2874904898f42d22"
+    },
+    {
+      "bytes": 14886,
+      "path": "history/build_candidate.failed01.original.py",
+      "sha256": "2381f668164459b7d098b99a7d40e4d3be7d8af1e5d61a37ff0b6b29cb0745c7"
+    },
+    {
+      "bytes": 176976,
+      "path": "reference/FOOTPRINT.original.json",
+      "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+    },
+    {
+      "bytes": 40261,
+      "path": "reference/ORIGINAL-component_lifecycle.144836.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 4946,
+      "path": "reference/PARENT-SOURCE-MANIFEST.original.json",
+      "sha256": "d066dc4308417201963d65d3feb130fd8dbffe52353d17b8b1b4f79db1b2f04a"
+    },
+    {
+      "bytes": 102896,
+      "path": "reference/PARENT-component_lifecycle.bace77.original.py",
+      "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+    },
+    {
+      "bytes": 62633,
+      "path": "reference/PARENT-epoch_inventory.fragment.0d278.original.py",
+      "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+    },
+    {
+      "bytes": 19138,
+      "path": "reference/component_common.original.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 363,
+      "path": "reference/external09-CHAIN-INTENT.original.json",
+      "sha256": "008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4"
+    },
+    {
+      "bytes": 359,
+      "path": "reference/own01-CHAIN-INTENT.original.json",
+      "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88"
+    },
+    {
+      "bytes": 359,
+      "path": "reference/own02-CHAIN-INTENT.original.json",
+      "sha256": "3e800888b72860f3b29efbf8b2550c8c8e345fb650b4956bb9df9725b3b3cef1"
+    },
+    {
+      "bytes": 106287,
+      "path": "source/component_lifecycle.py",
+      "sha256": "8efadfa585529c538da263de75c2bff6f4995def9f8e4061f9e43e52f4d4b928"
+    },
+    {
+      "bytes": 66024,
+      "path": "source/epoch_inventory.fragment.py",
+      "sha256": "5569328e15cac5909b38429a63160e0ce7adda4cc6e7dc46bb4552f24487bb55"
+    },
+    {
+      "bytes": 10757,
+      "path": "validation/FAILED-FIXTURE-INCREMENT.patch",
+      "sha256": "c078fba093153b68a043105a37945033e4961e5b78fa15eceb0533ec4167f2fb"
+    },
+    {
+      "bytes": 834,
+      "path": "validation/FREEZE-STATIC-CHECKS.json",
+      "sha256": "f9a242b953491d131362ab27c1667f967509fee6158055dc963a6902f5c2fa0b"
+    },
+    {
+      "bytes": 4169,
+      "path": "validation/ROOT-INDEPENDENT-REVIEW.json",
+      "sha256": "e15d7ff2c810dc2d5767fa2b82b8da64c5f8e82bb62b1ce53c2ffcc1e69a02a4"
+    },
+    {
+      "bytes": 3146,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "0d85066ae23780090d2bdaa8f8e168b69af94cd86e2cf484a8bc1fc61c7fe6f0"
+    },
+    {
+      "bytes": 6176,
+      "path": "validation/TRANSPORT-INDEPENDENT-REVIEW.json",
+      "sha256": "fb721e03126fc9766afceca9cae52c79fb1f9a272650c787b5a65e8dca7e8fd2"
+    },
+    {
+      "bytes": 15024,
+      "path": "validation/build_candidate.py.original",
+      "sha256": "517cbd90c8e8c0fbd5a8bf4cfded0d460ac433e86f042e0910766858ec91d12c"
+    },
+    {
+      "bytes": 15227,
+      "path": "validation/check_increment_locally.py.original",
+      "sha256": "ab950d08e3940977066a98d304a2d8f7448a55427200108837d0e7b93e5b5bb5"
+    },
+    {
+      "bytes": 12391,
+      "path": "validation/local-checks-run01/RESULT.json",
+      "sha256": "6dc9a0602bb537d5c852022bb5305b3c74735c52a1d1d7f3d6bddec0f2cb82be"
+    }
+  ],
+  "fragment": {
+    "bytes": 66024,
+    "sha256": "5569328e15cac5909b38429a63160e0ce7adda4cc6e7dc46bb4552f24487bb55"
+  },
+  "parent": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "phone_calls": 0,
+  "physical_NEG14_claimed": false,
+  "remote_calls": 0,
+  "schema": "hepta.source-only.epoch-inventory-failed-fixture-package.v2",
+  "source": {
+    "bytes": 106287,
+    "sha256": "8efadfa585529c538da263de75c2bff6f4995def9f8e4061f9e43e52f4d4b928"
+  },
+  "state": "UNBOUND_SOURCE_CANDIDATE_NOT_EXECUTION_READY"
+}

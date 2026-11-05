@@ -1,0 +1,194 @@
+{
+  "do_not_execute_this_source_only_unbound_candidate": true,
+  "extra_roots_literal_is_none": true,
+  "fragment": {
+    "bytes": 62633,
+    "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+  },
+  "full_lifecycle_retains_its_original_executable_entrypoint": true,
+  "new_api_refuses_before_traversal_while_unbound": true,
+  "new_api_uses_one_internal_budget": true,
+  "new_fragment_call_targets": [
+    "Path",
+    "_EpochInventoryBudget",
+    "_epoch_inventory_extra_rows",
+    "_epoch_inventory_fixture",
+    "_epoch_inventory_join_views",
+    "_epoch_inventory_names",
+    "_epoch_inventory_observation_value",
+    "_epoch_inventory_observe_roots",
+    "_epoch_inventory_path",
+    "_epoch_inventory_split_views",
+    "absences[path].update",
+    "absent.append",
+    "active_domains.append",
+    "aliases.get",
+    "all",
+    "any",
+    "bool",
+    "budget.check",
+    "budget.chunk",
+    "budget.entry",
+    "children.get",
+    "children.setdefault",
+    "children.setdefault(str(p.parent), []).append",
+    "covered",
+    "descriptor",
+    "digest.hexdigest",
+    "digest.update",
+    "encoded",
+    "entries.values",
+    "enumerate",
+    "epoch_hashlib.sha256",
+    "fixtures.append",
+    "guard_type",
+    "identities.append",
+    "identities.get",
+    "inode_paths.get",
+    "inventory['entries'].items",
+    "inventory_epoch_spec_value",
+    "item['entry'].get",
+    "labels.add",
+    "leaf_parents[path].update",
+    "len",
+    "list",
+    "metadata",
+    "min",
+    "names.append",
+    "need",
+    "nonces.add",
+    "observation.get",
+    "observe",
+    "os.close",
+    "os.fstat",
+    "os.open",
+    "os.read",
+    "os.scandir",
+    "os.stat",
+    "p.rsplit",
+    "pair_tuples.append",
+    "parent_fd",
+    "path.is_absolute",
+    "paths.append",
+    "project",
+    "re.fullmatch",
+    "result.items",
+    "root_parents.items",
+    "roots.extend",
+    "row.get",
+    "row.update",
+    "rows.items",
+    "seen.add",
+    "self.check",
+    "set",
+    "sha",
+    "sorted",
+    "stat.S_IMODE",
+    "stat.S_ISDIR",
+    "stat.S_ISLNK",
+    "stat.S_ISREG",
+    "str",
+    "str(ANDROID_BASE / 'native-guard-r10-r1' / label / 'executor').lstrip",
+    "sum",
+    "time.monotonic",
+    "tuple",
+    "type",
+    "value.encode",
+    "verify_epoch_inventory_observation",
+    "view['entries'].items",
+    "zip"
+  ],
+  "new_global_entrypoint_wiring_performed": false,
+  "no_forbidden_new_write_process_signal_exec_call": true,
+  "old_functions": [
+    {
+      "bytes": 1329,
+      "name": "_reviewed_classpath_values",
+      "sha256": "307faa64d7f138d6cc940f2f523d655a11ccff2abf8fb0d458b6fa2c55096b0a"
+    },
+    {
+      "bytes": 2694,
+      "name": "reviewed_android_sidecar_environment",
+      "sha256": "3d97f3a01421c3d16bf2f32896c0fa196f50f79c77dd44ee126c72b4b9e00938"
+    },
+    {
+      "bytes": 2191,
+      "name": "load_lease",
+      "sha256": "c0f8e7e0b7561fa35bcd3b4e220e3092450880d1d42bda8c7ff119f08bf08b1d"
+    },
+    {
+      "bytes": 1192,
+      "name": "native_root",
+      "sha256": "a26b3041650395b84354775a9db9ddde3f8863f5fba44928f17bb34d2dd14952"
+    },
+    {
+      "bytes": 4496,
+      "name": "verify_retired",
+      "sha256": "f9b2c4f26485bf4ee75d6eef5a54b4156ddadae5fcb9f5944b25cd9be567548d"
+    },
+    {
+      "bytes": 1929,
+      "name": "fixture_absence",
+      "sha256": "c425e3a45b8dd5f02bf035c769ac0cd92819e4ac3d0ca368260a75bb06e51bde"
+    },
+    {
+      "bytes": 3040,
+      "name": "inventory",
+      "sha256": "66951413061825802994d13dae0f32f51b4707651fd1615983ef77e01e187074"
+    },
+    {
+      "bytes": 356,
+      "name": "baseline_roots",
+      "sha256": "dc21dd31217897b1baafcc32c6a7cd54935b6ace50ee8ef2f71dc614bb7b2dc1"
+    },
+    {
+      "bytes": 1719,
+      "name": "stop_owned",
+      "sha256": "d92fb4964d84802e6d2b506228d01fc441ac2aeb957bbbf5842abee0075dbc10"
+    },
+    {
+      "bytes": 2224,
+      "name": "child_role",
+      "sha256": "3328c7ffea04e8edec387be964ea9340c0f42c6c9bbb26effd1b1ffb84a34868"
+    },
+    {
+      "bytes": 2446,
+      "name": "launch_role",
+      "sha256": "3c8ccb01362ffe3207dd441a1ef019ec09c123186cc2704d359dc8abb34d9fc2"
+    },
+    {
+      "bytes": 769,
+      "name": "await_init_parent",
+      "sha256": "45f5fc0a33f14fcaa6ea0eebcb08edc9408886cc2c8c6d73f93d744dfd155bdf"
+    },
+    {
+      "bytes": 3683,
+      "name": "detached_launch",
+      "sha256": "5626fcc6aaca2e206ea3a9c9ecfffb2e82dc7ee5177344ba1888e431e0805359"
+    },
+    {
+      "bytes": 9018,
+      "name": "supervise",
+      "sha256": "50217684de8d1b7642a4e4d369d8f202a9d2be9f86ab64058e38d9f9b0cd6d65"
+    },
+    {
+      "bytes": 1455,
+      "name": "main",
+      "sha256": "52c09d95e6f04f2ffcaf89c7967fb01fc47271f755f90a2061f9ff3c16e9f1b1"
+    }
+  ],
+  "old_imports_constants_main_and_all_remaining_bytes_equal": true,
+  "old_top_level_classes": 0,
+  "parent": {
+    "bytes": 40261,
+    "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+  },
+  "schema": "hepta.source-only.epoch-inventory-whole-source-static-review.v1",
+  "source": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "source_review_is_not_a_physical_NEG14_result": true,
+  "unchanged_old_functions_count": 15,
+  "whole_insertion_inverse_equal": true
+}

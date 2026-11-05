@@ -1,0 +1,140 @@
+{
+  "all_previous_source_inverses_verified": true,
+  "case_credit": false,
+  "constructor_and_bundle_pool_charged_before_new_original_read": true,
+  "files": [
+    {
+      "bytes": 88368,
+      "inverse": [
+        {
+          "new_end_line": 116,
+          "new_start_line": 115,
+          "new_utf8": "    fd = os.open(p, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)\n",
+          "old_utf8": "    fd = os.open(p, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)\n"
+        },
+        {
+          "new_end_line": 216,
+          "new_start_line": 213,
+          "new_utf8": "    inputs = {}; originals = {}; observed = {}; declared = {}\n    decoded_total = sum(file_descriptor(row)['bytes'] for row in (component_input, policy_input))\n    need(decoded_total <= MAX_BUNDLE, 'input originals exceed fixed shared decoded budget')\n",
+          "old_utf8": "    inputs = {}; originals = {}; observed = {}\n"
+        },
+        {
+          "new_end_line": 229,
+          "new_start_line": 222,
+          "new_utf8": "            previous_size = declared.get(source['sha256'])\n            need(previous_size is None or previous_size == source['bytes'],\n                 'same original digest has different declared size')\n            if previous_size is None:\n                decoded_total += source['bytes']\n                need(decoded_total <= MAX_BUNDLE, 'originals exceed one shared decoded budget before reading')\n                declared[source['sha256']] = source['bytes']\n",
+          "old_utf8": ""
+        },
+        {
+          "new_end_line": 1037,
+          "new_start_line": 1035,
+          "new_utf8": "    need(checked_actual_context(state['actual_context']) == 'phone',\n         'current external artifacts require actual phone context')\n",
+          "old_utf8": ""
+        }
+      ],
+      "parent": {
+        "bytes": 87547,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/release_boundaries.py",
+        "sha256": "b409a9da583e5645260a57ea94675cb7f3fcaedacf88bdb7bea8cb56f30ea433"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/release_boundaries.py",
+      "sha256": "2ecf748b34b3e1806715a7c0b52672cf3936f850ae6dcf67a94c0daf9ae5946d"
+    },
+    {
+      "bytes": 35441,
+      "inverse": [
+        {
+          "new_end_line": 285,
+          "new_start_line": 284,
+          "new_utf8": "    observed = {}; bodies = {}; declared = {}; decoded_total = 0\n",
+          "old_utf8": "    observed = {}; bodies = {}\n"
+        },
+        {
+          "new_end_line": 295,
+          "new_start_line": 287,
+          "new_utf8": "        nonlocal decoded_total\n        h.file_descriptor(row)\n        old_size = declared.get(row['sha256'])\n        need(old_size is None or old_size == row['bytes'], 'original digest declared with different sizes')\n        if old_size is None:\n            decoded_total += row['bytes']\n            need(decoded_total <= h.MAX_BUNDLE, 'complete constructor original pool exceeds fixed decoded budget')\n            declared[row['sha256']] = row['bytes']\n",
+          "old_utf8": ""
+        }
+      ],
+      "parent": {
+        "bytes": 34953,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/make_component_boundary_inputs.py",
+        "sha256": "dca3614a942a173fdff8527b9390bf9604cedc028fb2093a11c0aef5c5410f6b"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/make_component_boundary_inputs.py",
+      "sha256": "1359624235de73f1b9f2e71e2af5a0754350b2e939b13459aebcbe36557de496"
+    },
+    {
+      "bytes": 66415,
+      "inverse": [],
+      "parent": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/derive_final_cascade_property_r8.py",
+        "sha256": "af5f5934e65346261bae55dc745c3bcf0dbb6dbe8835c20a1c091fb44c261772"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/source/derive_final_cascade_property_r8.py",
+      "sha256": "af5f5934e65346261bae55dc745c3bcf0dbb6dbe8835c20a1c091fb44c261772"
+    },
+    {
+      "bytes": 40909,
+      "inverse": [],
+      "parent": {
+        "bytes": 40909,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ce1aef01730ba039d48a9e8f6a2cc06832078271ddd1f30ba749ce3cd6987954"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/source/write_final_seal_interface_property_r8.py",
+      "sha256": "ce1aef01730ba039d48a9e8f6a2cc06832078271ddd1f30ba749ce3cd6987954"
+    },
+    {
+      "bytes": 16055,
+      "inverse": [],
+      "parent": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/preparer/prepare_final_cascade.py",
+      "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+    },
+    {
+      "bytes": 40844,
+      "inverse": [],
+      "parent": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/build_release_r10.py",
+      "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+    },
+    {
+      "bytes": 15746,
+      "inverse": [],
+      "parent": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/downstream/component_source_context.py",
+      "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+    },
+    {
+      "bytes": 29537,
+      "inverse": [],
+      "parent": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/downstream/prepare_fixed19_host_r10.py",
+      "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+    }
+  ],
+  "phone_calls": 0,
+  "phone_context_required_for_live_artifact_reads": true,
+  "regular_file_type_checked_after_nonblocking_open": true,
+  "runtime_generation_bound": false,
+  "schema": "hepta.epoch.consumer-owned-read-budget-source-preview.v1",
+  "state": "SOURCE_ONLY_FULL_EPOCH_INTEGRATION_STILL_REQUIRED",
+  "target_modules_executed": false
+}

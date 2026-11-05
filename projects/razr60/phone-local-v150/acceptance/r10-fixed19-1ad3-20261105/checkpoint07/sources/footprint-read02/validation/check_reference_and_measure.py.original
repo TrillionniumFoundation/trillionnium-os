@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""Only exact pure reference helpers and cached historical data; no target reads."""
+import ast
+import copy
+import hashlib
+import json
+from pathlib import Path
+
+HERE=Path(__file__).resolve().parent
+ROOT=HERE.parent
+
+
+def pin(raw):return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+
+def enc(value):return (json.dumps(value,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
+
+
+def put(path,raw):
+    with path.open('xb') as stream:stream.write(raw)
+
+
+def main():
+    source=(HERE/'source-draft01/observe_fixed_epoch_footprint_once.py').read_bytes()
+    parent=(HERE/'PARENT.observer.original.py').read_bytes()
+    assert pin(source)=={'bytes':58657,'sha256':'779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34'}
+    st=source.decode();ot=parent.decode()
+    new={n.name:n for n in ast.parse(st).body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}
+    old={n.name:n for n in ast.parse(ot).body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}
+    changed=['metadata_budget','read_fixed_absence','main'];added=['parent_observation_reference','expand_parent_observation_reference']
+    inverse=st
+    for name in changed:inverse=inverse.replace(ast.get_source_segment(st,new[name]),ast.get_source_segment(ot,old[name]),1)
+    for name in added:
+        removal=ast.get_source_segment(st,new[name])+'\n\n\n'
+        assert inverse.count(removal)==1;inverse=inverse.replace(removal,'',1)
+    assert inverse.count('LAST_METADATA_BYTES = 0\n')==1
+    inverse=inverse.replace('LAST_METADATA_BYTES = 0\n','',1)
+    assert inverse.encode()==parent
+    keep={'need','sha','encoded','descriptor',*added}
+    nodes=[n for n in ast.parse(st).body if isinstance(n,ast.FunctionDef) and n.name in keep]
+    scope={'hashlib':hashlib,'json':json,'PARENTS':{}}
+    exec(compile(ast.Module(body=nodes,type_ignores=[]),'<pure-parent-observation-reference-only>','exec'),scope)
+    fp_path=ROOT/'epoch_native_candidate01/footprint01/FOOTPRINT.json';fp_raw=fp_path.read_bytes();fp=json.loads(fp_raw)
+    assert pin(fp_raw)=={'bytes':176976,'sha256':'6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f'}
+    directories=[r for r in fp['retained_directory_member_originals'] if r['kind']=='directory']
+    assert len(directories)==20
+    for item in directories:
+        row={k:item[k] for k in ('path','metadata','names','selinux_raw_hex')}
+        row['scope']='IMMEDIATE_PARENT_NAMES_METADATA_ONLY_NOT_COMPLETE_SUBTREE'
+        scope['PARENTS'][row['path']]=row
+    encoded=scope['encoded'];make=scope[added[0]];expand=scope[added[1]]
+    references=[make(row) for row in scope['PARENTS'].values()]
+    assert all(encoded(expand(ref))==encoded(row) for ref,row in zip(references,scope['PARENTS'].values()))
+    untouched=list(scope['PARENTS'])
+    first=references[0];cases=[]
+    for title,ref in [('bool_index',{**first,'index':True}),
+                      ('out_of_table',{**first,'index':20}),
+                      ('wrong_observation_sha',{**first,'serialized_observation':{**first['serialized_observation'],'sha256':'0'*64}}),
+                      ('wrong_observation_bytes',{**first,'serialized_observation':{**first['serialized_observation'],'bytes':first['serialized_observation']['bytes']+1}}),
+                      ('extra_key',{**first,'file_path':'/not/a/file-reference'})]:
+        try:expand(ref)
+        except ValueError:cases.append({'case':title,'rejected':True})
+        else:raise AssertionError(title+' admitted')
+    path=untouched[0];saved=copy.deepcopy(scope['PARENTS'][path]);scope['PARENTS'][path]['names'].append('changed-name')
+    try:expand(first)
+    except ValueError:cases.append({'case':'changed_parent_table_row','rejected':True})
+    else:raise AssertionError('changed parent observation admitted')
+    scope['PARENTS'][path]=saved
+    absences=[r['path'] for r in fp['absence_checks']]+[r['path'] for r in fp['new_control_roots']]
+    required_parents=sorted({str(Path(p).parent) for p in
+       [r['path'] for r in fp['retained_directory_member_originals']]+[r['path'] for r in fp['fixed_control_leaves']]+absences})
+    known=[];unknown=[];old_repeated=[];new_references=[]
+    for path in absences:
+        key=str(Path(path).parent)
+        if key not in scope['PARENTS']:unknown.append({'path':path,'unavailable_parent':key});continue
+        row=scope['PARENTS'][key]
+        inline={'canonical_parent_metadata':row['metadata'],'canonical_parent_names':row['names'],
+                'canonical_parent_selinux_raw_hex':row['selinux_raw_hex']}
+        ref={'canonical_parent_observation':make(row)}
+        restored=expand(ref['canonical_parent_observation'])
+        reconstructed={'canonical_parent_metadata':restored['metadata'],'canonical_parent_names':restored['names'],
+                       'canonical_parent_selinux_raw_hex':restored['selinux_raw_hex']}
+        assert encoded(inline)==encoded(reconstructed)
+        # Only the replaced representation is sized; no future timestamps or
+        # newly observed ENOENT values are invented to fill an output example.
+        old_repeated.append({'path':path,'first_parent_representation':inline,'final_parent_representation':inline})
+        new_references.append({'path':path,'first_parent_representation':ref,'final_parent_representation':ref})
+        known.append(path)
+    old_payload={'immediate_parent_observations':list(scope['PARENTS'].values()),'historical_parent_representations':old_repeated}
+    new_payload={'immediate_parent_observations':list(scope['PARENTS'].values()),'historical_parent_representations':new_references}
+    known_names=sum(len(r['names']) for r in scope['PARENTS'].values())
+    report={'schema':'hepta.footprint-observation-reference-local-check.v1','state':'SOURCE_ONLY_PURE_REFERENCE_CHECKS_COMPLETE',
+      'source':pin(source),'parent':pin(parent),'source_whole_byte_inverse':True,
+      'pure_functions_executed':sorted(keep),'actual_cached_parent_rows_roundtripped':20,
+      'actual_parent_names_retained':known_names,'parent_refs_not_file_descriptors':True,
+      'reference_rejections':cases,'historical_only':True,'current_observer_executed':False,
+      'reader_functions_executed':0,'remote_calls':0,'phone_calls':0}
+    measurement={'schema':'hepta.footprint-cached-directory-metadata-measurement.v1',
+      'footprint_original':pin(fp_raw),'cached_parent_rows_with_complete_real_names':20,
+      'complete_cached_name_count':known_names,'known_absence_parent_rows':len(known),
+      'unknown_absence_parent_rows':len(unknown),
+      'known_parent_table':pin(encoded(list(scope['PARENTS'].values()))),
+      'old_repeated_parent_encoding':pin(encoded(old_payload)),
+      'new_exact_reference_encoding':pin(encoded(new_payload)),
+      'known_byte_reduction':len(encoded(old_payload))-len(encoded(new_payload)),
+      'required_immediate_parent_paths':required_parents,
+      'cached_complete_immediate_parent_paths':[p for p in required_parents if p in scope['PARENTS']],
+      'uncached_immediate_parent_paths':[p for p in required_parents if p not in scope['PARENTS']],
+      'unknown_absence_parent_coverage':unknown,
+      'current_complete_metadata_measurement':False,
+      'failed_read01_phase_reconstructed':False,
+      'failed_read01_body':pin((ROOT/'actual_epoch_retained_footprint_read01/extracted/PHONE-STDOUT.original').read_bytes()),
+      'why_current_total_unknown':'Actual read01 retained only the702-byte serialization refusal. It contains no parent table or original failure phase. Cached20 complete historical directory observations cover the stated paths; external immediate-parent names and fresh proc/metadata are not synthesized.',
+      'measurement_scope':'Complete actual cached directory names/full9/SELinux and both replaced parent-representation copies only. Dynamic times, unobserved parent names and unknown fresh metadata excluded and explicitly unknown; this is not a full-current-budget proof.',
+      'unchanged_metadata_limit_bytes':524288,'fresh_query_must_still_refuse_if_total_exceeds_limit':True}
+    out=HERE/'validation';out.mkdir()
+    put(out/'PURE-REFERENCE-CHECKS.json',enc(report));put(out/'CACHED-METADATA-MEASUREMENT.json',enc(measurement))
+    put(out/'KNOWN-PARENTS.original-projection.json',encoded(list(scope['PARENTS'].values())))
+    put(out/'OLD-KNOWN-PARENT-REPRESENTATION.json',encoded(old_payload))
+    put(out/'NEW-KNOWN-PARENT-REPRESENTATION.json',encoded(new_payload))
+    print(json.dumps({'checks':pin(enc(report)),'measurement':pin(enc(measurement)),
+       'old_known_bytes':len(encoded(old_payload)),'new_known_bytes':len(encoded(new_payload)),
+       'known_absence_rows':len(known),'unknown_absence_rows':len(unknown),
+       'uncached_parent_paths':measurement['uncached_immediate_parent_paths']},sort_keys=True))
+
+
+if __name__=='__main__':main()

@@ -1,0 +1,54 @@
+{
+  "all_package_members_verified": 13,
+  "at_utc": "2026-11-05T14:40:44.372029+00:00",
+  "blockers": [],
+  "caller_sha256": "61b916a48b998cf613a95e2ce4160094047e80397d2d4f62c1c9a5e2558d42c9",
+  "case_pass": false,
+  "documentation_erratum": "Frozen BUDGET.command_wire_bytes=19332 is raw command length; actual shlex-quoted ADB service wire independently measured21560 and is within bound. Frozen source/report bytes retained unchanged.",
+  "full_source_and_caller_reviewed": true,
+  "new_case_or_nonce": false,
+  "ownership": {
+    "creation_registration_uncertainty_not_hidden": true,
+    "no_explicit_signals": true,
+    "no_old_worker_or_app_process": true,
+    "one_new_owned_logcat_child": true,
+    "passive_wait_25_seconds": true,
+    "pipe_close_EPIPE_SIGPIPE_possible_explicit": true,
+    "unknown_not_replayed": true
+  },
+  "package_manifest_sha256": "60b6887737a6622997cadac2e61573a8103857a04991a0040eb34745c5564566",
+  "request_sha256": "20b002de6b4dcf105124e4410d319936eaf24534252e11e884765278c5df4962",
+  "reviewer": "/root",
+  "schema": "hepta.root-independent-fixed-kernel-window-review.v1",
+  "scope": {
+    "buffer": "kernel",
+    "comm": [
+      "app_process",
+      "app_process32",
+      "app_process64"
+    ],
+    "empty_or_limit_is_unknown_not_absence": true,
+    "epoch_interval_half_open": [
+      1793879034,
+      1793879040
+    ],
+    "exact_worker_context": "u:r:trillionnium_owner_open_phone_worker:s0",
+    "max_count": 128,
+    "only_complete_selected_original_lines_exported": true,
+    "outside_window_lines_not_retained": true
+  },
+  "source_sha256": "35a7fca1bca4856214208222e1818922c9d9f057dd0406e7448f124e1f7d5972",
+  "transport": {
+    "actual_ADB_wire_bytes": 21560,
+    "exact_179a_actor": true,
+    "host_passive_wait_seconds": 90,
+    "limit_exclusive": 65536,
+    "native_per_file_limit": 8388608,
+    "one_Popen": true,
+    "originals_count": 13,
+    "outer_controller_timeout": null,
+    "phone_timeout_seconds": 60,
+    "raw_command_bytes": 19332,
+    "total_archive_input_limit": 16777216
+  }
+}

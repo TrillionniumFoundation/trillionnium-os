@@ -1,0 +1,17 @@
+{
+  "body_envelope": {
+    "bytes": 9529515,
+    "sha256": "0dea640d45883ca4a95d2e95260e81f1d9447ec0ac61a4703054d25987c5f0f5"
+  },
+  "compressed": {
+    "bytes": 4412802,
+    "sha256": "dd0bf88b306354e146aacca91be1ac02c584a1a971ebc7f029e0a9008753d841"
+  },
+  "encoded_compressed_bytes": 5883736,
+  "file_rows": 126,
+  "fresh_observer_output_measurement": false,
+  "future_metadata_and_directory_names_excluded": true,
+  "raw_file_bytes": 7114062,
+  "schema": "hepta.epoch.footprint-real-body-compression.v1",
+  "scope": "all actual126body rows, original metadata where known only; no fresh phone metadata synthesized"
+}

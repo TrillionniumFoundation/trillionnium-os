@@ -1,0 +1,102 @@
+{
+  "changed_functions_read_in_full_diff": [
+    "_epoch_inventory_observation_value",
+    "inventory_epoch_spec_value",
+    "verify_epoch_inventory_observation"
+  ],
+  "existing_necessary_local_checks_reviewed": {
+    "passed": 9,
+    "rerun": false,
+    "total": 9
+  },
+  "fixed19_case_credit": 0,
+  "fixed_identities_independently_matched_to_three_original_intents": [
+    {
+      "chain_intent": {
+        "bytes": 363,
+        "sha256": "008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4"
+      },
+      "label": "root-r10-neg01-20261105-09",
+      "nonce": "7c79195945d64e569a191166ac122a08",
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c79195945d64e569a191166ac122a08",
+      "presence": "absent"
+    },
+    {
+      "chain_intent": {
+        "bytes": 359,
+        "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88"
+      },
+      "label": "root-r10-neg01-1ad3-01",
+      "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c74b84aefb177d15f746fa7eae29d54",
+      "presence": "absent"
+    },
+    {
+      "chain_intent": {
+        "bytes": 359,
+        "sha256": "3e800888b72860f3b29efbf8b2550c8c8e345fb650b4956bb9df9725b3b3cef1"
+      },
+      "label": "root-r10-neg01-1ad3-02",
+      "nonce": "bc0573ad459cecae9884d6a46568621b",
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-bc0573ad459cecae9884d6a46568621b",
+      "presence": "absent"
+    }
+  ],
+  "fresh_phone_absence_proved_by_this_review": false,
+  "parent": {
+    "bytes": 102896,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/delivery-final01/package/source/component_lifecycle.py",
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "review_findings": [
+    "All three exact historical nonces are permanently forbidden for active reservations.",
+    "The v2 domain is fixed and forced absent; a fourth arbitrary namespace and generic reclassification are refused.",
+    "Required absence reaches the unchanged physical walker; any present type is refused before traversal.",
+    "Positive ENOENT requires actual canonical-parent observations and full metadata bookends; intent bytes do not establish current absence.",
+    "The three namespaces are charged to the same root/entry/byte/time pool and omitted from both directory-root v1 projections.",
+    "Seven legacy plus at most eight active potentially present fixtures retain the 15 limit; 18 named namespaces explicitly include three forced absences.",
+    "All old single-domain functions and the epoch physical walker, budget, split/join and main entrypoint remain byte-identical.",
+    "EPOCH_INVENTORY_EXTRA_ROOTS remains None and rejects production use before actual binding."
+  ],
+  "schema": "hepta.root-independent-failed-fixture-v2-source-review.v1",
+  "source": {
+    "bytes": 106287,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_failed_fixture_candidate01/draft02/source/component_lifecycle.py",
+    "sha256": "8efadfa585529c538da263de75c2bff6f4995def9f8e4061f9e43e52f4d4b928"
+  },
+  "state": "NARROW_SOURCE_INCREMENT_REVIEWED_UNBOUND_NOT_RUNTIME_READY",
+  "target_source_executed": false,
+  "unchanged_functions_and_classes": [
+    "_EpochInventoryBudget",
+    "_epoch_inventory_extra_rows",
+    "_epoch_inventory_fixture",
+    "_epoch_inventory_join_views",
+    "_epoch_inventory_names",
+    "_epoch_inventory_observe_roots",
+    "_epoch_inventory_path",
+    "_epoch_inventory_split_views",
+    "_reviewed_classpath_values",
+    "await_init_parent",
+    "baseline_roots",
+    "child_role",
+    "detached_launch",
+    "fixture_absence",
+    "inventory",
+    "inventory_epoch",
+    "launch_role",
+    "load_lease",
+    "main",
+    "native_root",
+    "reviewed_android_sidecar_environment",
+    "stop_owned",
+    "supervise",
+    "verify_retired"
+  ],
+  "whole_source_inverse": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "whole_source_inverse_equals_actual_parent": true
+}

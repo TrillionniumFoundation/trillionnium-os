@@ -1,0 +1,331 @@
+{
+  "case_nonces_generated": 0,
+  "cross_operation_preservation_is_separate_upper_gate": true,
+  "fixture_scope": "Local temporary real FD trees and isolated synthetic namespaces only. Public extra None was overridden only in pure fixture namespace; no target constants or deployed source were changed.",
+  "fragment": {
+    "bytes": 62633,
+    "sha256": "0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f"
+  },
+  "large_boundary_reruns_omitted_because_budget_class_unchanged": true,
+  "leases_created": 0,
+  "new_runtime_qualified": false,
+  "parent_environment_blocked_tests": [
+    "proc1_root_real_alias_EACCES",
+    "chown_2000_EINVAL"
+  ],
+  "passed": 27,
+  "phone_calls": 0,
+  "physical_NEG14_claimed": false,
+  "remote_calls": 0,
+  "results": [
+    {
+      "detail": {
+        "reason": "exact failed-attempt/control inventory roots remain unbound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 7.106099656084552e-05,
+      "name": "unbound_extra_roots_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "bounded unique cumulative fixture roots required",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0025878460000967607,
+      "name": "unchanged_old_ninth_fixture_rejected_before_io",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "at most eight consumed active reservations are supported",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 3.991799894720316e-05,
+      "name": "ninth_active_reservation_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "epoch inventory spec differs",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 5.306996172294021e-06,
+      "name": "third_epoch_field_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "only the fixed complete actual902 legacy anchor is supported",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 2.246400254080072e-05,
+      "name": "legacy_anchor_bool_int_substitution_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "fixed legacy/retained aliases were omitted or reordered",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.002713673995458521,
+      "name": "omitted_legacy_alias_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "alias path repeats, is a third view, or leaves the exact root union",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.004888486000709236,
+      "name": "third_reused_alias_path_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "active reservations must retain every unique consecutive consumed ordinal",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 7.7702003181912e-05,
+      "name": "active_ordinal_gap_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "one complete unique union must fit the original 64-root bound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.00041160699765896425,
+      "name": "global_root65_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "undeclared fixture cannot be hidden as a generic root",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.0007658900067326613,
+      "name": "fixture_cannot_be_hidden_in_generic_extra",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_retained_row_structure": {
+          "active_reservation_count": 0,
+          "alias_pairs": 55,
+          "case_or_lease_authorized": false,
+          "cross_operation_preservation_verified_by_this_function": false,
+          "entries": 2623,
+          "file_bytes_hashed": 19424531,
+          "original_provenance_verified_by_this_function": false,
+          "roots": 27,
+          "schema": "hepta.native-guard.two-epoch-inventory-verification.v1",
+          "spec_sha256": "98213c08424adbf85f8e1c906484ad2182c29358cda439cfb1c5ec40abb523ef",
+          "whole_union_structurally_verified": true
+        },
+        "bool_int_refusal": {
+          "reason": "explicit shared-budget/alias observation differs",
+          "refused": "ValueError"
+        },
+        "new_actual_observation_claimed": false,
+        "synthetic_absence_envelope": true
+      },
+      "elapsed_seconds": 1.7476458989985986,
+      "name": "actual_legacy_rows_and_exact_proof_types",
+      "passed": true
+    },
+    {
+      "detail": {
+        "entries": 4,
+        "file_bytes": 9,
+        "single_budget_instance": true
+      },
+      "elapsed_seconds": 0.027666866000799928,
+      "name": "shared_union_temporary_regular_trees",
+      "passed": true
+    },
+    {
+      "detail": {
+        "global_entry_charge": 1,
+        "phone_observation": false,
+        "positive_parent_full9": {
+          "absence": "ENOENT",
+          "canonical_parent_reopened": true,
+          "final_parent_metadata": [
+            27,
+            3950294,
+            16832,
+            0,
+            0,
+            2,
+            4096,
+            1793894706287202910,
+            1793894706287202910
+          ],
+          "final_reopened_enoent_checks": 1,
+          "first_elapsed_seconds": 0.00019631200120784342,
+          "initial_held_enoent_checks": 2,
+          "initial_parent_metadata": [
+            27,
+            3950294,
+            16832,
+            0,
+            0,
+            2,
+            4096,
+            1793894706287202910,
+            1793894706287202910
+          ],
+          "initial_reopened_enoent_checks": 1,
+          "last_elapsed_seconds": 0.00022903300123289227,
+          "parent_path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run02/epoch-core-9go52tr4",
+          "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_core_candidate01/validation/local-checks-run02/epoch-core-9go52tr4/absent",
+          "schema": "hepta.native-guard.epoch-positive-root-absence.v1"
+        }
+      },
+      "elapsed_seconds": 0.02497769799811067,
+      "name": "positive_absence_parent_full9_and_global_charge",
+      "passed": true
+    },
+    {
+      "detail": {
+        "business_entries": 2,
+        "control_entries": 2,
+        "control_omission_rejected": true,
+        "global_bytes": 11,
+        "global_entries": 5,
+        "nonfixture_absence_separate": true
+      },
+      "elapsed_seconds": 0.024829321999277454,
+      "name": "business_control_absence_exact_projection",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "symlink in retained private inventory",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.026598389995342586,
+      "name": "symlink_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "non-regular/hardlinked/oversized inventory original",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.024492137003107928,
+      "name": "hardlink_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "non-regular/hardlinked/oversized inventory original",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.03792922999855364,
+      "name": "fifo_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory original raced",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.027711805996659677,
+      "name": "same_bytes_different_inode_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory original changed before global bookend",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.059275603998685256,
+      "name": "old_leaf_changed_during_later_domain_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory original raced",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.04428895399905741,
+      "name": "parent_rename_replacement_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "inventory path replaced before open",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.029066421004245058,
+      "name": "fifo_substitution_does_not_block_open",
+      "passed": true
+    },
+    {
+      "detail": {
+        "clock_not_reset_for_active": true,
+        "controlled_monotonic_test_only": true,
+        "reason": "shared full inventory time bound",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.037653134000720456,
+      "name": "one_clock_not_reset_between_domains",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "non-regular/hardlinked/oversized inventory original",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.05326855499879457,
+      "name": "single_file_64MiB_plus1_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "global_bytes": 11,
+        "global_entries": 3,
+        "old_leaf_change_rejected": true,
+        "omitted_leaf_rejected": true,
+        "parent_names_only_no_unrelated_body": true,
+        "two_file_reads": true
+      },
+      "elapsed_seconds": 0.035330281003552955,
+      "name": "fixed_control_leaf_hash_full9_count_and_parent_bookends",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "only exact original private/ADB transport leaf metadata is admitted",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.026962550000462215,
+      "name": "control_leaf_unknown_metadata_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "complete inventory roots must be directories; control leaves are separate exact files",
+        "refused": "ValueError"
+      },
+      "elapsed_seconds": 0.02905445500073256,
+      "name": "file_cannot_masquerade_as_v1_directory_root",
+      "passed": true
+    },
+    {
+      "detail": {
+        "all_original_functions_unchanged": 15,
+        "no_old_single_domain_gate_changed": true,
+        "shared_budget_class_exactly_same_as_actual_large_boundary_tests": true
+      },
+      "elapsed_seconds": 0.10854909600311657,
+      "name": "original_functions_and_actual_large_budget_tests_unchanged",
+      "passed": true
+    }
+  ],
+  "retained_parent_run": "local-checks-run01/RESULT.json",
+  "schema": "hepta.source-only.epoch-inventory-local-checks.v1",
+  "total": 27
+}

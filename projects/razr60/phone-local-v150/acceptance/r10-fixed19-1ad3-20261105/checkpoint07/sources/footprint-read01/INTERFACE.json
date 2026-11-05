@@ -1,0 +1,106 @@
+{
+  "actor_label": "ng-epoch-retained-footprint-1ad3-read01",
+  "caller": {
+    "bytes": 123662,
+    "relative_path": "operator/P4-LAUNCHER.py",
+    "sha256": "380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63"
+  },
+  "complete_state": "EXACT_FIXED_RETAINED_ORIGINALS_AND_CURRENT_ABSENCES_OBSERVED",
+  "controller_request": {
+    "bytes": 127964,
+    "relative_path": "operator/CONTROLLER-REQUEST.json",
+    "sha256": "ab2a3bc86f3ef7e3d8233fbbed31a78a870d1d681d091f708cbbca54f6dac818"
+  },
+  "failure": "retain the one attempt and partial originals; do not repeat, change label, close old operations or treat unknown as absence",
+  "fixed_scope": {
+    "body_bytes_per_round": 7114062,
+    "complete_members": 134,
+    "complete_trees": 4,
+    "directories": 20,
+    "files": 114,
+    "fixed_transfer_leaves": 12,
+    "fresh_empty_executor_alias_pairs": 2,
+    "original_file_bodies": 126,
+    "positive_absence_paths": 65,
+    "whole_body_read_rounds": 2
+  },
+  "idempotency_key": "root-1ad3-epoch-retained-footprint-read01-20261105",
+  "limits": {
+    "actual_controller_stdin": 123662,
+    "actual_shell_service_bytes": 62288,
+    "caller_each_phone_operation_file": 8388608,
+    "caller_twelve_original_file_sum": 16777216,
+    "controller_stdin": 131072,
+    "directory_names": 20000,
+    "metadata_bytes": 524288,
+    "operations": 4096,
+    "outer_timeout": null,
+    "packet_raw_bytes": 16777216,
+    "passive_actor_wait_seconds": 240,
+    "phone_stdout_stderr_sum": 8388608,
+    "phone_timeout_seconds": 210,
+    "physical_read_bytes": 16777216,
+    "single_cooperative_seconds": 30
+  },
+  "new_proc_bridge": {
+    "bookends": [
+      "first",
+      "final"
+    ],
+    "boot_key": "boot_originals; separate first/final complete raw bytes",
+    "fixed_native_init_start_ticks": 0,
+    "group_and_session": "parsed actual values, not guessed",
+    "identity_keys": [
+      "pid1_directory_path",
+      "pid1_directory_metadata",
+      "pid1_stat_metadata",
+      "generation_fields",
+      "pid1_generation",
+      "magic_link_path",
+      "magic_link_lstat_metadata",
+      "magic_link_text",
+      "followed_android_root",
+      "gnu_root",
+      "only_magic_link_exception",
+      "other_path_components_nofollow"
+    ],
+    "packet_key": "fixed_proc_root_bridge",
+    "paths": [
+      "/proc/sys/kernel/random/boot_id",
+      "/proc/1/stat",
+      "/proc/1/root",
+      "/"
+    ],
+    "pid1_stat": "separate complete raw descriptor/base64 per round; dynamic fields are not compared",
+    "root_rows_contain": "path, dev_ino_mode and actual full9 metadata; UID/GID never inferred"
+  },
+  "not_admission": [
+    "no global clearance",
+    "no epoch initialization",
+    "no new nonce or lease",
+    "no source generation or case permission",
+    "no original native fixture operation",
+    "no boundary publication"
+  ],
+  "observer": {
+    "bytes": 57213,
+    "relative_path": "source/observe_fixed_epoch_footprint_once.py",
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-epoch-retained-footprint-read01",
+  "phone_operations_at_freeze": 0,
+  "remote_operations_at_freeze": 0,
+  "report_packet": "observations is exact bounded zlib+base64 packet; file_originals retains all complete body bytes",
+  "report_schema": "hepta.native-guard.fixed-epoch-retained-footprint-observation.v1",
+  "schema": "hepta.source-only.fixed-epoch-footprint-observer.interface.v1",
+  "state": "SOURCE_ONLY_FIXED_READ_REQUEST_NOT_EXECUTED",
+  "success_requirements": [
+    "one completed controller receipt, complete stdout/stderr and exit0",
+    "actual179a actor return0 and phone return0",
+    "full12 original archive exactmanifest",
+    "observer complete state and observation_complete true with complete_raw_observation_retained true",
+    "packet exact SHA/bytes/decompression EOF with no trailing/second stream",
+    "all fixed body/full9/names/labels/absence/alias/proc bridge bookends and no new readFD"
+  ],
+  "target_execution_at_freeze": false
+}

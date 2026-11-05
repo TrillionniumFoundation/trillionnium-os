@@ -1,0 +1,9 @@
+{
+  "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/MANIFEST.json",
+  "phone_calls": 0,
+  "reason": "Cached runtime manifest root incorrectly inferred from top-level retained reference path",
+  "remote_calls": 0,
+  "runtime_sources_executed": false,
+  "state": "LOCAL_CHECK_SETUP_FAILED_BEFORE_GATE_CHECKS",
+  "type": "FileNotFoundError"
+}

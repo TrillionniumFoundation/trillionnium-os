@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-c\",\n      \"import sys,hashlib\\nbody=sys.stdin.buffer.read(65537)\\nif len(body)!=17220 or hashlib.sha256(body).hexdigest()!='bf614fa0ef2f96d99079714c1b753289c6c058a55efe721d98f8e9e38123effd': raise SystemExit('exact reviewed stager source required')\\nexec(compile(body,'<fixed-root02-source-evidence-stage01>','exec'),{'__name__':'__main__','STAGE_SOURCE':body})\\n\"\n    ],\n    \"created_unix_ms\": 1793894280117,\n    \"cwd\": \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1ac6e6bb5-fc05-543e\",\n    \"idempotency_key\": \"root-1ad3-root02-prelaunch-source-evidence-stage01-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1ac6e6bb5-fc05-543e\",\n    \"request_digest\": \"c90914d02d16aadc59c6ee3c7050a1d3cb4e88a4b35907e5b79f2af4654cfd71\",\n    \"request_fingerprint\": 14486132560756124380,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ac6e6bb5-fc05-543e\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 57472,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1ac6e6bb5-fc05-543e\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

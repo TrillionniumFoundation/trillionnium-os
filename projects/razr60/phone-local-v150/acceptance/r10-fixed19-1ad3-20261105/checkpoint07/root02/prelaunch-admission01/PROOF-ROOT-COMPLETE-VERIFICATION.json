@@ -1,0 +1,32 @@
+{
+  "actual_admission": {
+    "bytes": 26459,
+    "metadata": [
+      16777233,
+      588905281,
+      33152,
+      501,
+      20,
+      1,
+      26459,
+      1793894520728630473,
+      1793894520728630473
+    ],
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-admission01/ROOT02-PRELAUNCH-ADMISSION.json",
+    "sha256": "09af0bd18020aaf31432187aa0f24ddec5cba8227b64a859e68294eeab94a10d"
+  },
+  "case_credit": false,
+  "controller_exit_code": 0,
+  "double_eof": true,
+  "exact_originals_consumed": 32,
+  "job_id": "1a1ac7215c3-fc05-5463",
+  "new_nonce_or_lease_authorized": false,
+  "old_mac_sender_unknown_preserved": true,
+  "output_complete": true,
+  "output_durable": true,
+  "phone_calls": 0,
+  "schema": "hepta.root02.actual-mac-proof-local-verification.v1",
+  "state": "ACTUAL_HOST_RECOMPUTATION_COMPLETE_AND_BYTES_EQUAL_LOCAL_EXPECTATION",
+  "stderr_bytes": 0,
+  "stdout_bytes": 2150
+}

@@ -1,0 +1,10 @@
+{
+  "at_utc": "2026-11-05T14:16:37.373717+00:00",
+  "case_pass": false,
+  "execution_owner": "/root",
+  "independent_review_sha256": "f64ba830a4e187f473199980a725dedf6feae7dce74b57018f120012e4c06acc",
+  "phone_calls": 0,
+  "request_sha256": "0c2f516cbeeb827adf959d0fd733058617725b0a46eba9a4a2c1b7e517bc5c4a",
+  "schema": "hepta.root-host-audit-final-admission.v1",
+  "source_review_complete": true
+}

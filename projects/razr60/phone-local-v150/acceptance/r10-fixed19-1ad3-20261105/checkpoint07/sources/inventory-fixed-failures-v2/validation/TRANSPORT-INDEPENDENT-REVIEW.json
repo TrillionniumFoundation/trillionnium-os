@@ -1,0 +1,129 @@
+{
+  "findings": [
+    {
+      "detail": "The three fixed label/nonce/path records and original CHAIN-INTENT bytes/SHA match independently read local originals. This binds identities only, not current absence; spec must supply the exact canonical encoded constant list.",
+      "id": "FF-EXACT-THREE",
+      "result": "PASS_SOURCE"
+    },
+    {
+      "detail": "The three failed namespaces cannot be generic extra roots or active nonce reuses. They have their own mandatory domain and contribute three entries/roots to the same global union. fixture_roots remains exactly the seven historical plus allocated active fixtures; the snapshot old FIXTURE-ABSENCE list is unaffected.",
+      "id": "FF-DOMAIN",
+      "result": "PASS_SOURCE"
+    },
+    {
+      "detail": "All three paths are added to required_absence_roots. The unchanged actual walker can admit them only at its initial root ENOENT branch with two held/one reopened checks, then final canonical parent full9+ENOENT bookend. An existing file/directory/symlink fails the explicit-absence check before classification or descent.",
+      "id": "FF-ABSENCE",
+      "result": "PASS_SOURCE"
+    },
+    {
+      "detail": "Failed fixture absences are excluded from business/control v1 projections. The unchanged join reconstructs only their internal explicit-absence rows; observation.v2 binds each fixed identity to its corresponding actual absence_observation. No inventory row or fresh ENOENT is derived from the historical intent alone.",
+      "id": "FF-PROJECTION",
+      "result": "PASS_SOURCE"
+    },
+    {
+      "detail": "The potentially-present limit stays15, comprising legacy7+active8. Exactly3 source-bound absent namespaces raise only the explicit namespace count to18. Global roots64/entries30000/bytes512MiB/time30s do not change; no helper budget is restarted.",
+      "id": "FF-COUNTS",
+      "result": "PASS_SOURCE"
+    },
+    {
+      "detail": "The final observation equality still compares canonical encoded bytes. Proof schema and pure verification schema change explicitly to v2, with count3 and non-reuse assertions. Caller-supplied omitted, altered or bool-substituted identities/proofs cannot equal the fixed typed objects.",
+      "id": "FF-TYPES",
+      "result": "PASS_SOURCE"
+    },
+    {
+      "detail": "Independent AST/source-span and whole-source inverse checks preserve the original15 functions plus all other parent helpers, including walker,budget,split,join and inventory_epoch. EPOCH_INVENTORY_EXTRA_ROOTS remains None and refuses any actual use while unbound.",
+      "id": "FF-UNCHANGED",
+      "result": "PASS_SOURCE"
+    }
+  ],
+  "fixed_three_original_identity_inputs": [
+    {
+      "bytes": 363,
+      "label": "root-r10-neg01-20261105-09",
+      "nonce": "7c79195945d64e569a191166ac122a08",
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_failed_fixture_candidate01/draft02/reference/external09-CHAIN-INTENT.original.json",
+      "sha256": "008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4"
+    },
+    {
+      "bytes": 359,
+      "label": "root-r10-neg01-1ad3-01",
+      "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_failed_fixture_candidate01/draft02/reference/own01-CHAIN-INTENT.original.json",
+      "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88"
+    },
+    {
+      "bytes": 359,
+      "label": "root-r10-neg01-1ad3-02",
+      "nonce": "bc0573ad459cecae9884d6a46568621b",
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_failed_fixture_candidate01/draft02/reference/own02-CHAIN-INTENT.original.json",
+      "sha256": "3e800888b72860f3b29efbf8b2550c8c8e345fb650b4956bb9df9725b3b3cef1"
+    }
+  ],
+  "fragment": {
+    "bytes": 66024,
+    "sha256": "5569328e15cac5909b38429a63160e0ce7adda4cc6e7dc46bb4552f24487bb55"
+  },
+  "interface": {
+    "bytes": 8246,
+    "sha256": "4c51f157ac7445846b5f0bb0e1dda614e42b1e2b61075153c254b9858b0914e3"
+  },
+  "limitations": [
+    "This is a narrow source/increment review, not evidence of the three current absences.",
+    "No target module/import/reader, main or namespace test was executed; author nine local checks and prior27 were not rerun.",
+    "Actual full footprint and exact extra source binding, epoch registry provenance and whole generation integration remain independent gates.",
+    "A later fixed-query success cannot retroactively turn failed read01 into complete evidence."
+  ],
+  "modified_functions": [
+    "_epoch_inventory_observation_value",
+    "inventory_epoch_spec_value",
+    "verify_epoch_inventory_observation"
+  ],
+  "parent": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "reviewer": "root/transport_review",
+  "reviewer_actions": {
+    "phone_calls": 0,
+    "remote_calls": 0,
+    "reviewed_source_writes": 0,
+    "target_function_calls": 0,
+    "target_imports": 0,
+    "tests_rerun": 0
+  },
+  "schema": "hepta.independent.epoch-failed-fixture-increment-review.v1",
+  "source": {
+    "bytes": 106287,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/epoch_inventory_failed_fixture_candidate01/draft02/source/component_lifecycle.py",
+    "sha256": "8efadfa585529c538da263de75c2bff6f4995def9f8e4061f9e43e52f4d4b928"
+  },
+  "state": "NO_BLOCKER_FOUND_IN_REQUESTED_SOURCE_INCREMENT_UNBOUND",
+  "unchanged_function_or_class_count": 24,
+  "unchanged_functions_or_classes": [
+    "_EpochInventoryBudget",
+    "_epoch_inventory_extra_rows",
+    "_epoch_inventory_fixture",
+    "_epoch_inventory_join_views",
+    "_epoch_inventory_names",
+    "_epoch_inventory_observe_roots",
+    "_epoch_inventory_path",
+    "_epoch_inventory_split_views",
+    "_reviewed_classpath_values",
+    "await_init_parent",
+    "baseline_roots",
+    "child_role",
+    "detached_launch",
+    "fixture_absence",
+    "inventory",
+    "inventory_epoch",
+    "launch_role",
+    "load_lease",
+    "main",
+    "native_root",
+    "reviewed_android_sidecar_environment",
+    "stop_owned",
+    "supervise",
+    "verify_retired"
+  ],
+  "whole_byte_inverse_to_bace77": true
+}

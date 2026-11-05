@@ -1,0 +1,244 @@
+{
+  "capsule_source_bytes_saved": 22100,
+  "changed_functions": [
+    "_codec72_base_late_bytes",
+    "codec72_historical_runtime_view"
+  ],
+  "compressed_pure_source": {
+    "bytes": 16300,
+    "sha256": "d88c5db679998dba0bd0c8e7e7acbf9d1e657e234437c4314a39231c582b1fcf"
+  },
+  "derived_capsule_source": {
+    "bytes": 22936,
+    "sha256": "da9e285f3d8bcedfd363b0479b66d30bc51c2a04911f5864d0ef75de24e16d1a"
+  },
+  "derived_pure_source": {
+    "bytes": 62430,
+    "sha256": "5fdcc65f3d3d8d77624cdc8cf8e8f6ad8426f632ea7f3605c7eee0b270ebc9f7"
+  },
+  "final_consumer_size_verified": false,
+  "historical_source_executions": 0,
+  "historical_view_only_one_call_argument_changed": true,
+  "new_epoch_integration_performed": false,
+  "nonces_generated": 0,
+  "parents": {
+    "base": {
+      "bytes": 66996,
+      "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+    },
+    "capsule": {
+      "bytes": 45036,
+      "sha256": "e7a6707393773ae2e76b1d54e228ed18a25e82cb7549a926296d30a75f15a592"
+    },
+    "parent": {
+      "bytes": 74287,
+      "sha256": "396da713d4b7cab45d0eda80b65df82d7b570440a9c9ea1f74f342b81031ec97"
+    },
+    "pure": {
+      "bytes": 81573,
+      "sha256": "724507280b8180874e43dc11f93f313a712aa23cf410d0e3c49774d2a757fef5"
+    }
+  },
+  "passed": 20,
+  "phone_calls": 0,
+  "recipe_generation": "offline difflib.SequenceMatcher on original whole LF-retaining byte lines, autojunk=False; fixed byte ranges at runtime; no dynamic diff or textual normalization",
+  "recipe_operations": 15,
+  "remote_calls": 0,
+  "retained_old_literal_bytes": 192,
+  "schema": "hepta.codec72.exact-historical-inverse-local-review.v1",
+  "source_bytes_saved": 19143,
+  "source_execution_scope": "Only this current pure validator and its current exact capsule; runtime, production and historical source files are bytes only, never compiled/executed.",
+  "source_inverse_to_7245_complete": true,
+  "state": "SOURCE_ONLY_EXACT_HISTORICAL_BYTE_RECOVERY_NO_RUNTIME_EXECUTION_ADMISSION",
+  "target_runtime_imports": 0,
+  "tests": [
+    {
+      "detail": {
+        "equal": true,
+        "result": {
+          "bytes": 66996,
+          "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+        }
+      },
+      "name": "actual396d_to_exact_complete_c50",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 exact pin differs: actual396d complete source before historical inverse",
+        "type": "ValueError"
+      },
+      "name": "changed_parent_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 exact pin differs: actual396d complete source before historical inverse",
+        "type": "ValueError"
+      },
+      "name": "truncated_parent_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 exact pin differs: actual396d complete source before historical inverse",
+        "type": "ValueError"
+      },
+      "name": "appended_parent_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical ranges are incomplete, overlapping, reordered or malformed",
+        "type": "ValueError"
+      },
+      "name": "bool_start_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical ranges are incomplete, overlapping, reordered or malformed",
+        "type": "ValueError"
+      },
+      "name": "bool_length_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical ranges are incomplete, overlapping, reordered or malformed",
+        "type": "ValueError"
+      },
+      "name": "negative_length_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical ranges are incomplete, overlapping, reordered or malformed",
+        "type": "ValueError"
+      },
+      "name": "gap_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 exact historical operation count differs",
+        "type": "ValueError"
+      },
+      "name": "omitted_operation_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical ranges are incomplete, overlapping, reordered or malformed",
+        "type": "ValueError"
+      },
+      "name": "reordered_operation_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical reconstruction exceeds exact original size",
+        "type": "ValueError"
+      },
+      "name": "changed_literal_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical literal exceeds fixed recipe budget",
+        "type": "ValueError"
+      },
+      "name": "oversized_literal_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 historical inverse did not consume the complete source",
+        "type": "ValueError"
+      },
+      "name": "short_complete_coverage_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 fixed historical input/output identity differs",
+        "type": "ValueError"
+      },
+      "name": "altered_output_pin_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 1625,
+        "sha256": "15eca6e5e603a2c1b4c56ea7ae5cfc2afcb8be6b53eeedaf6c15e02b1f471b94"
+      },
+      "name": "existing_four_argument_full_runtime32_shared17_proof_unchanged",
+      "passed": true
+    },
+    {
+      "detail": {
+        "combination": {
+          "bytes": 4702,
+          "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+        },
+        "late": {
+          "bytes": 66996,
+          "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+        },
+        "runtime": {
+          "bytes": 16808,
+          "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+        }
+      },
+      "name": "historical67dc_c50_and54b1_exact_bytes",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 22936,
+        "sha256": "da9e285f3d8bcedfd363b0479b66d30bc51c2a04911f5864d0ef75de24e16d1a"
+      },
+      "name": "exact_new_capsule_decode_and_both_public_functions",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 fixed capsule encoded length differs",
+        "type": "ValueError"
+      },
+      "name": "capsule_short_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 fixed capsule encoded length differs",
+        "type": "ValueError"
+      },
+      "name": "capsule_suffix_refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "reason": "codec72 exact canonical compressed source differs",
+        "type": "ValueError"
+      },
+      "name": "capsule_byte_refused",
+      "passed": true
+    }
+  ],
+  "total": 20,
+  "unchanged_old_function_count": 11,
+  "unchanged_old_functions": [
+    "_codec72_need",
+    "_codec72_sha",
+    "_codec72_bare",
+    "_codec72_pretty",
+    "_codec72_compact",
+    "_codec72_strict",
+    "_codec72_pin",
+    "_codec72_inverse",
+    "_codec72_restore_shared",
+    "_codec72_verify_and_restore",
+    "verify_codec72_runtime_increment"
+  ]
+}

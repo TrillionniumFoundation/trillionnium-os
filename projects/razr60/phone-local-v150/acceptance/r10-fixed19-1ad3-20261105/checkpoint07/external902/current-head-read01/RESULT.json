@@ -1,0 +1,33 @@
+{
+  "actor_returncode": 0,
+  "automatic_retry": false,
+  "case_pass": false,
+  "native_boundary_created": false,
+  "phone_originals": {
+    "baseline.json": {
+      "bytes": 348,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-902e851c3ca1f90deab3d880ab993774-head-read01/baseline.json",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    "intent.json": {
+      "bytes": 46053,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-902e851c3ca1f90deab3d880ab993774-head-read01/intent.json",
+      "sha256": "1c542231cc6d2cc2a53ec62120203608966f3c216302d050e3f2f9180d708ab5"
+    },
+    "result.json": {
+      "bytes": 359425,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-902e851c3ca1f90deab3d880ab993774-head-read01/result.json",
+      "sha256": "bc525f15ac4686aac8cdfb6bbef22dd3df7ed9737508949d5c8349f311ce5eb8"
+    }
+  },
+  "phone_returncode": 0,
+  "phone_status": "command_exited",
+  "phone_stdout": {
+    "bytes": 303134,
+    "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-current-head-read01/PHONE-STDOUT.original",
+    "sha256": "a69cd802c7ea5ddc81d9b9513b0ca27ab4ca2beaa041983243a872f375356957"
+  },
+  "signals_sent": 0,
+  "source_sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5",
+  "state": "EXISTING902_CURRENT_HEAD_READONLY_OBSERVATION_RETURNED"
+}

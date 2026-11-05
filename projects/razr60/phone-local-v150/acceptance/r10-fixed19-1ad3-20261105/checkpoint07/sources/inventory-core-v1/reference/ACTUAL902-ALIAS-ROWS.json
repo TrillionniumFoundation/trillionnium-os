@@ -1,0 +1,2130 @@
+{
+  "alias_pairs": [
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/actions",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/actions"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/server.lock",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/server.lock"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stderr",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stderr"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stdout",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stdout"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/intent.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/intent.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/receipt.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/receipt.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stderr.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stderr.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stdout.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stdout.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/server.lock",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/server.lock"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stderr",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stderr"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stdout",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stdout"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/actions",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/actions"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/server.lock",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/server.lock"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stderr",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stderr"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stdout",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stdout"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/intent.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/intent.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/receipt.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/receipt.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stderr.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stderr.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stdout.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stdout.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/server.lock",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/server.lock"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stderr",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stderr"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stdout",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stdout"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/actions",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/actions"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/server.lock",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/server.lock"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stderr",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stderr"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stdout",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stdout"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/intent.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/intent.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/receipt.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/receipt.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stderr.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stderr.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stdout.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stdout.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/server.lock",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/server.lock"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stderr",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stderr"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stdout",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stdout"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/receipt.json",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/receipt.json"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stderr.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stderr.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stdout.bin",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stdout.bin"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/server.lock",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/server.lock"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stderr",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stderr"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stdout",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stdout"
+    ]
+  ],
+  "alias_rows": {
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        150205,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        152053,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "names": []
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153469,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        148521,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793820772535937812,
+        1793820772535937812
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153428,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "sha256": "563c23f8ae93800177b99c95ad26999e7f7721632fee409126efe215935f9cee"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        153837,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793827851931935111,
+        1793827851931935111
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        149748,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793827865115935106,
+        1793827865115935106
+      ],
+      "names": [
+        "6ae95b55331656002d7dd82e9662224e"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        153537,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793827865487935106,
+        1793827865487935106
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        151809,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793827865115935106,
+        1793827865115935106
+      ],
+      "sha256": "e5b713ea0e80ab42840d04c2a76e89e2bbe70dc7037b649437f7961571fa0f60"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/receipt.json": {
+      "bytes": 1513,
+      "kind": "file",
+      "metadata": [
+        65086,
+        149362,
+        33152,
+        0,
+        0,
+        1,
+        1513,
+        1793827865487935106,
+        1793827865487935106
+      ],
+      "sha256": "7a944554140f448cac62a7055c380729c9b66c10c2b4bf455fc22d20267616fb"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stderr.bin": {
+      "bytes": 298,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154002,
+        33152,
+        0,
+        0,
+        1,
+        298,
+        1793827865467935106,
+        1793827865467935106
+      ],
+      "sha256": "994b783679168f448458addd002f3c79d743dcdb362beaa732dc36f4f44f9b8d"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stdout.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154068,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793827865119935106,
+        1793827865119935106
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154176,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793827851931935111,
+        1793827851931935111
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        151344,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793827851547935111,
+        1793827851547935111
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153939,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793827851931935111,
+        1793827851931935111
+      ],
+      "sha256": "d566a2418715ebb5d6c68880b51fab0843bffa54bf8b6fcf8d823bcc921d486e"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151624,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151286,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "names": []
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154155,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153441,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793839079119930828,
+        1793839079119930828
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153688,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "sha256": "234580e89657a76c337ab36a12121c236f9bdc479237afab0c3462831e4aa896"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        153366,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793844549055928742,
+        1793844549055928742
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151864,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793844562591928736,
+        1793844562591928736
+      ],
+      "names": [
+        "ff66f499606bccd37a388a8663d19ddf"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        150631,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793844563523928736,
+        1793844563523928736
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153448,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793844562591928736,
+        1793844562591928736
+      ],
+      "sha256": "171fbfef55a3dba66a01b1e00637180c7cfee9886133c8d11f0f529e7839e644"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/receipt.json": {
+      "bytes": 1513,
+      "kind": "file",
+      "metadata": [
+        65086,
+        151074,
+        33152,
+        0,
+        0,
+        1,
+        1513,
+        1793844563523928736,
+        1793844563523928736
+      ],
+      "sha256": "5635db2124847ba05c155a09794b44ce5731a9ec64b8e50a923663790e256cf5"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stderr.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        152549,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793844562595928736,
+        1793844562595928736
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stdout.bin": {
+      "bytes": 1623,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153207,
+        33152,
+        0,
+        0,
+        1,
+        1623,
+        1793844563507928736,
+        1793844563507928736
+      ],
+      "sha256": "e426970460d921e83b1a0aa4fffca8c447a7fa0b536d4f784356a5de8bdcfa6c"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        150641,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793844549055928742,
+        1793844549055928742
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        152156,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793844548779928742,
+        1793844548779928742
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        150052,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793844549059928742,
+        1793844549059928742
+      ],
+      "sha256": "19544abd6f973d391669d3a3bea03d8fbd2fc3a60249991148d8d53e03dae754"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        155509,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        156131,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "names": []
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156130,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156117,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793849520655926845,
+        1793849520655926845
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156116,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "sha256": "6716d503a26c746bc0ea54000748ef157ae1489eeaf65ab361dba856f3353378"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        155837,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793851352927926146,
+        1793851352927926146
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        156189,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793851571123926063,
+        1793851571123926063
+      ],
+      "names": [
+        "9e8c0fd0cd26f29ecfd80d0364e55225"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        157426,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793851572679926062,
+        1793851572679926062
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154631,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793851571123926063,
+        1793851571123926063
+      ],
+      "sha256": "ad9df29800f0b5055785372c1728922f41d884b6bd1b0ddb3e708a1ec36d7249"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/receipt.json": {
+      "bytes": 1515,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154518,
+        33152,
+        0,
+        0,
+        1,
+        1515,
+        1793851572679926062,
+        1793851572679926062
+      ],
+      "sha256": "5b467ac979fba6b0b20d94713d4d8af0a073b4c68d79d655b5529bd88abf2b22"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stderr.bin": {
+      "bytes": 5547,
+      "kind": "file",
+      "metadata": [
+        65086,
+        157368,
+        33152,
+        0,
+        0,
+        1,
+        5547,
+        1793851572651926062,
+        1793851572651926062
+      ],
+      "sha256": "9dedb056222c6f42359a0c30359d4163ca52e687b4d086c033ce720b81d8690f"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stdout.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        155074,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793851571123926063,
+        1793851571123926063
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        150887,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793851352927926146,
+        1793851352927926146
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156138,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793851352635926146,
+        1793851352635926146
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156139,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793851352931926146,
+        1793851352931926146
+      ],
+      "sha256": "adbc3adad9fa4626651d8ad28ab56915f2f02085f9ac984d11a4aa5aacb86a6e"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151608,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793879022687915591,
+        1793879022687915591
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        156937,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793879035983915586,
+        1793879035983915586
+      ],
+      "names": [
+        "5a952602788122f47ff1370cfa38dffe"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        154308,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793879037455915585,
+        1793879037455915585
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154878,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793879035983915586,
+        1793879035983915586
+      ],
+      "sha256": "6b03da94090459e47dedc5bb8f27d86429f62e08cd479354266b21855e9d9f2a"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/receipt.json": {
+      "bytes": 1512,
+      "kind": "file",
+      "metadata": [
+        65086,
+        147691,
+        33152,
+        0,
+        0,
+        1,
+        1512,
+        1793879037451915585,
+        1793879037455915585
+      ],
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stderr.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154570,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stdout.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154328,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154960,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879022687915591,
+        1793879022687915591
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154697,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879022319915591,
+        1793879022319915591
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        155276,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793879022691915591,
+        1793879022691915591
+      ],
+      "sha256": "0f9f3a02fc4d8b96e752b6a50b6f1625b33e8f9343cc85f189a2fb1e78d7a8e1"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        150205,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        152053,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "names": []
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153469,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        148521,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793820772535937812,
+        1793820772535937812
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153428,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793820772847937811,
+        1793820772847937811
+      ],
+      "sha256": "563c23f8ae93800177b99c95ad26999e7f7721632fee409126efe215935f9cee"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        153837,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793827851931935111,
+        1793827851931935111
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        149748,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793827865115935106,
+        1793827865115935106
+      ],
+      "names": [
+        "6ae95b55331656002d7dd82e9662224e"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        153537,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793827865487935106,
+        1793827865487935106
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        151809,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793827865115935106,
+        1793827865115935106
+      ],
+      "sha256": "e5b713ea0e80ab42840d04c2a76e89e2bbe70dc7037b649437f7961571fa0f60"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/receipt.json": {
+      "bytes": 1513,
+      "kind": "file",
+      "metadata": [
+        65086,
+        149362,
+        33152,
+        0,
+        0,
+        1,
+        1513,
+        1793827865487935106,
+        1793827865487935106
+      ],
+      "sha256": "7a944554140f448cac62a7055c380729c9b66c10c2b4bf455fc22d20267616fb"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stderr.bin": {
+      "bytes": 298,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154002,
+        33152,
+        0,
+        0,
+        1,
+        298,
+        1793827865467935106,
+        1793827865467935106
+      ],
+      "sha256": "994b783679168f448458addd002f3c79d743dcdb362beaa732dc36f4f44f9b8d"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/actions/6ae95b55331656002d7dd82e9662224e/stdout.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154068,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793827865119935106,
+        1793827865119935106
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154176,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793827851931935111,
+        1793827851931935111
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        151344,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793827851547935111,
+        1793827851547935111
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153939,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793827851931935111,
+        1793827851931935111
+      ],
+      "sha256": "d566a2418715ebb5d6c68880b51fab0843bffa54bf8b6fcf8d823bcc921d486e"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151624,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151286,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "names": []
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154155,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153441,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793839079119930828,
+        1793839079119930828
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153688,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793839079431930828,
+        1793839079431930828
+      ],
+      "sha256": "234580e89657a76c337ab36a12121c236f9bdc479237afab0c3462831e4aa896"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        153366,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793844549055928742,
+        1793844549055928742
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151864,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793844562591928736,
+        1793844562591928736
+      ],
+      "names": [
+        "ff66f499606bccd37a388a8663d19ddf"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        150631,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793844563523928736,
+        1793844563523928736
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153448,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793844562591928736,
+        1793844562591928736
+      ],
+      "sha256": "171fbfef55a3dba66a01b1e00637180c7cfee9886133c8d11f0f529e7839e644"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/receipt.json": {
+      "bytes": 1513,
+      "kind": "file",
+      "metadata": [
+        65086,
+        151074,
+        33152,
+        0,
+        0,
+        1,
+        1513,
+        1793844563523928736,
+        1793844563523928736
+      ],
+      "sha256": "5635db2124847ba05c155a09794b44ce5731a9ec64b8e50a923663790e256cf5"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stderr.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        152549,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793844562595928736,
+        1793844562595928736
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/actions/ff66f499606bccd37a388a8663d19ddf/stdout.bin": {
+      "bytes": 1623,
+      "kind": "file",
+      "metadata": [
+        65086,
+        153207,
+        33152,
+        0,
+        0,
+        1,
+        1623,
+        1793844563507928736,
+        1793844563507928736
+      ],
+      "sha256": "e426970460d921e83b1a0aa4fffca8c447a7fa0b536d4f784356a5de8bdcfa6c"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        150641,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793844549055928742,
+        1793844549055928742
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        152156,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793844548779928742,
+        1793844548779928742
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        150052,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793844549059928742,
+        1793844549059928742
+      ],
+      "sha256": "19544abd6f973d391669d3a3bea03d8fbd2fc3a60249991148d8d53e03dae754"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        155509,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        156131,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "names": []
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156130,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156117,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793849520655926845,
+        1793849520655926845
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156116,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793849521011926845,
+        1793849521011926845
+      ],
+      "sha256": "6716d503a26c746bc0ea54000748ef157ae1489eeaf65ab361dba856f3353378"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        155837,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793851352927926146,
+        1793851352927926146
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        156189,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793851571123926063,
+        1793851571123926063
+      ],
+      "names": [
+        "9e8c0fd0cd26f29ecfd80d0364e55225"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        157426,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793851572679926062,
+        1793851572679926062
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154631,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793851571123926063,
+        1793851571123926063
+      ],
+      "sha256": "ad9df29800f0b5055785372c1728922f41d884b6bd1b0ddb3e708a1ec36d7249"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/receipt.json": {
+      "bytes": 1515,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154518,
+        33152,
+        0,
+        0,
+        1,
+        1515,
+        1793851572679926062,
+        1793851572679926062
+      ],
+      "sha256": "5b467ac979fba6b0b20d94713d4d8af0a073b4c68d79d655b5529bd88abf2b22"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stderr.bin": {
+      "bytes": 5547,
+      "kind": "file",
+      "metadata": [
+        65086,
+        157368,
+        33152,
+        0,
+        0,
+        1,
+        5547,
+        1793851572651926062,
+        1793851572651926062
+      ],
+      "sha256": "9dedb056222c6f42359a0c30359d4163ca52e687b4d086c033ce720b81d8690f"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/actions/9e8c0fd0cd26f29ecfd80d0364e55225/stdout.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        155074,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793851571123926063,
+        1793851571123926063
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        150887,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793851352927926146,
+        1793851352927926146
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156138,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793851352635926146,
+        1793851352635926146
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        156139,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793851352931926146,
+        1793851352931926146
+      ],
+      "sha256": "adbc3adad9fa4626651d8ad28ab56915f2f02085f9ac984d11a4aa5aacb86a6e"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        151608,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793879022687915591,
+        1793879022687915591
+      ],
+      "names": [
+        "actions",
+        "server.lock",
+        "sidecar.stderr",
+        "sidecar.stdout"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        156937,
+        16832,
+        0,
+        0,
+        3,
+        3452,
+        1793879035983915586,
+        1793879035983915586
+      ],
+      "names": [
+        "5a952602788122f47ff1370cfa38dffe"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe": {
+      "kind": "directory",
+      "metadata": [
+        65086,
+        154308,
+        16832,
+        0,
+        0,
+        2,
+        3452,
+        1793879037455915585,
+        1793879037455915585
+      ],
+      "names": [
+        "intent.json",
+        "receipt.json",
+        "stderr.bin",
+        "stdout.bin"
+      ]
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/intent.json": {
+      "bytes": 936,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154878,
+        33152,
+        0,
+        0,
+        1,
+        936,
+        1793879035983915586,
+        1793879035983915586
+      ],
+      "sha256": "6b03da94090459e47dedc5bb8f27d86429f62e08cd479354266b21855e9d9f2a"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/receipt.json": {
+      "bytes": 1512,
+      "kind": "file",
+      "metadata": [
+        65086,
+        147691,
+        33152,
+        0,
+        0,
+        1,
+        1512,
+        1793879037451915585,
+        1793879037455915585
+      ],
+      "sha256": "997f41e4992c2d604e2be2a8c3aaaac9a4f4b94dd0c9304aa4664ae44c79a01a"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stderr.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154570,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/actions/5a952602788122f47ff1370cfa38dffe/stdout.bin": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154328,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879035987915586,
+        1793879035987915586
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/server.lock": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154960,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879022687915591,
+        1793879022687915591
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stderr": {
+      "bytes": 0,
+      "kind": "file",
+      "metadata": [
+        65086,
+        154697,
+        33152,
+        0,
+        0,
+        1,
+        0,
+        1793879022319915591,
+        1793879022319915591
+      ],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor/sidecar.stdout": {
+      "bytes": 196,
+      "kind": "file",
+      "metadata": [
+        65086,
+        155276,
+        33152,
+        0,
+        0,
+        1,
+        196,
+        1793879022691915591,
+        1793879022691915591
+      ],
+      "sha256": "0f9f3a02fc4d8b96e752b6a50b6f1625b33e8f9343cc85f189a2fb1e78d7a8e1"
+    }
+  },
+  "anchor": {
+    "bytes": 9686,
+    "metadata": [
+      65086,
+      156280,
+      33152,
+      0,
+      0,
+      1,
+      9686,
+      1793882486435914270,
+      1793882486435914270
+    ],
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774.json",
+    "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+  },
+  "fixture_roots": [
+    "/proc/1/root/data/local/tmp/hepta-native-guard-88d68d88130d3c74e6c950a6346357c1",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-c705647dd4ebb5d421be1041a9c41ca6",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-e4c3ccb0b2d706be3b7bf105ae772405",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-154588e3a15591a21ec18950d18e3ecd",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-16805e43f9787c44c262d5b6c6d8ed95",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-2b0b103ee6de7a422064b9571266bf5d",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-902e851c3ca1f90deab3d880ab993774"
+  ],
+  "roots": [
+    "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/evidence",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/client-receipts",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/executor-r6",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/health-contracts/bindings",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/task-contracts/bindings",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03/executor",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-03",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-88d68d88130d3c74e6c950a6346357c1",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04/executor",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261104-04",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-c705647dd4ebb5d421be1041a9c41ca6",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05/executor",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-05",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-e4c3ccb0b2d706be3b7bf105ae772405",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06/executor",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-06",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-154588e3a15591a21ec18950d18e3ecd",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07/executor",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-07",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-16805e43f9787c44c262d5b6c6d8ed95",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08/executor",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-08",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-2b0b103ee6de7a422064b9571266bf5d",
+    "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01/executor",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-7c907661-01",
+    "/proc/1/root/data/local/tmp/hepta-native-guard-902e851c3ca1f90deab3d880ab993774"
+  ]
+}

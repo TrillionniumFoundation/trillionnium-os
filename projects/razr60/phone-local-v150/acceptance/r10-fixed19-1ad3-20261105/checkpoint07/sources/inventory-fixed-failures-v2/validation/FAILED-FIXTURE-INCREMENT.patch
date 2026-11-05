@@ -1,0 +1,150 @@
+--- bace77-component_lifecycle.py
++++ failed-fixture-v2-component_lifecycle.py
+@@ -316,6 +316,10 @@
+ # Required exact retained/control/absence/alias binding is owned by epoch admission.
+ # None is a deliberate production refusal, never an implicit empty inventory.
+ EPOCH_INVENTORY_EXTRA_ROOTS = None
++# These exact failed identities can never become an active fixture.
++# Historical intents bind names only; every operation must obtain fresh
++# positive ENOENT with the original canonical-parent observations.
++EPOCH_INVENTORY_RETAINED_FAILED_FIXTURE_ABSENCES = [{'label': 'root-r10-neg01-20261105-09', 'nonce': '7c79195945d64e569a191166ac122a08', 'path': '/proc/1/root/data/local/tmp/hepta-native-guard-7c79195945d64e569a191166ac122a08', 'presence': 'absent', 'chain_intent': {'bytes': 363, 'sha256': '008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4'}}, {'label': 'root-r10-neg01-1ad3-01', 'nonce': '7c74b84aefb177d15f746fa7eae29d54', 'path': '/proc/1/root/data/local/tmp/hepta-native-guard-7c74b84aefb177d15f746fa7eae29d54', 'presence': 'absent', 'chain_intent': {'bytes': 359, 'sha256': '7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88'}}, {'label': 'root-r10-neg01-1ad3-02', 'nonce': 'bc0573ad459cecae9884d6a46568621b', 'path': '/proc/1/root/data/local/tmp/hepta-native-guard-bc0573ad459cecae9884d6a46568621b', 'presence': 'absent', 'chain_intent': {'bytes': 359, 'sha256': '3e800888b72860f3b29efbf8b2550c8c8e345fb650b4956bb9df9725b3b3cef1'}}]
+ 
+ # This fragment is inserted after the unchanged single-domain inventory().
+ # The public two-epoch entrypoint is observation only, never an admission,
+@@ -357,10 +361,18 @@
+     """
+     need(type(spec) is dict and set(spec) == {
+         'schema', 'legacy_anchor', 'active_reservations', 'retained_roots',
+-        'control_roots', 'control_leaves', 'alias_pairs'} and spec['schema'] ==
+-        'hepta.native-guard.two-epoch-inventory-spec.v1', 'epoch inventory spec differs')
++        'control_roots', 'control_leaves', 'alias_pairs',
++        'retained_failed_fixture_absences'} and spec['schema'] ==
++        'hepta.native-guard.two-epoch-inventory-spec.v2', 'epoch inventory spec differs')
+     need(encoded(spec['legacy_anchor']) == encoded(EPOCH_INVENTORY_LEGACY_ANCHOR),
+          'only the fixed complete actual902 legacy anchor is supported')
++    failed = EPOCH_INVENTORY_RETAINED_FAILED_FIXTURE_ABSENCES
++    need(encoded(spec['retained_failed_fixture_absences']) == encoded(failed),
++         'all three exact retained failed fixture absences are mandatory')
++    failed_paths = [row['path'] for row in failed]
++    failed_nonces = {row['nonce'] for row in failed}
++    need(len(failed_paths) == len(set(failed_paths)) == len(failed_nonces) == 3,
++         'fixed failed fixture identities differ')
+     extra = EPOCH_INVENTORY_EXTRA_ROOTS
+     need(type(extra) is dict and set(extra) == {
+         'retained_roots', 'control_roots', 'control_leaves', 'absence_roots', 'alias_pairs'},
+@@ -386,6 +398,8 @@
+         leaf_map[path] = pin
+     leaf_paths = list(leaf_map)
+     extra_paths = extra['retained_roots'] + extra['control_roots'] + leaf_paths
++    need(not set(failed_paths) & set(extra_paths),
++         'fixed failed fixture absences cannot be reclassified as generic roots')
+     need(len(extra_paths) == len(set(extra_paths))
+          and set(extra['absence_roots']) <= set(extra_paths),
+          'extra roots repeat or absence is not an explicit extra root')
+@@ -401,7 +415,7 @@
+     roots = list(EPOCH_INVENTORY_LEGACY_ROOTS)
+     fixtures = list(EPOCH_INVENTORY_LEGACY_FIXTURES)
+     active_domains = []; identities = []; nonces = set(); labels = set()
+-    old_nonces = {p.rsplit('-', 1)[-1] for p in EPOCH_INVENTORY_LEGACY_FIXTURES}
++    old_nonces = {p.rsplit('-', 1)[-1] for p in EPOCH_INVENTORY_LEGACY_FIXTURES} | failed_nonces
+     for ordinal, row in enumerate(active, 1):
+         need(type(row) is dict and set(row) == {'ordinal', 'identity', 'inventory_roots'}
+              and type(row['ordinal']) is int and row['ordinal'] == ordinal
+@@ -435,7 +449,7 @@
+             identities.append((home, journal))
+         roots.extend(selected)
+         active_domains.append({'ordinal': ordinal, 'roots': list(selected)})
+-    roots.extend(retained); roots.extend(control); roots.extend(control_leaves)
++    roots.extend(retained); roots.extend(failed_paths); roots.extend(control); roots.extend(control_leaves)
+     need(0 < len(roots) <= 64 and len(roots) == len(set(roots)),
+          'one complete unique union must fit the original 64-root bound')
+     paths = [_epoch_inventory_path(p) for p in roots]
+@@ -445,10 +459,12 @@
+     need(len(fixtures) <= 15 and len(fixtures) == len(set(fixtures))
+          and fixtures[:7] == list(EPOCH_INVENTORY_LEGACY_FIXTURES),
+          'fixed seven legacy plus at most eight active fixtures required')
++    need(not set(fixtures) & set(failed_paths) and len(fixtures) + len(failed_paths) <= 18,
++         'only fifteen potentially present plus three strictly absent fixture namespaces allowed')
+     for path in paths:
+         for ancestor in (path,) + tuple(path.parents):
+             if re.fullmatch(r'/proc/1/root/data/local/tmp/hepta-native-guard-[0-9a-f]{32}', str(ancestor)):
+-                need(str(ancestor) in fixtures and path == ancestor,
++                need((str(ancestor) in fixtures or str(ancestor) in failed_paths) and path == ancestor,
+                      'undeclared fixture cannot be hidden as a generic root')
+     pairs = spec['alias_pairs']
+     need(type(pairs) is list and len(pairs) <= 15000,
+@@ -487,7 +503,8 @@
+             need(matched, 'only this active identity exact same-relative executor views may alias')
+     need(pair_tuples == sorted(pair_tuples) and len(pair_tuples) == len(set(pair_tuples))
+          and fixed <= set(pair_tuples), 'fixed legacy/retained aliases were omitted or reordered')
+-    business_roots = [p for p in roots if p not in control and p not in control_leaves and p not in absent_retained]
++    business_roots = [p for p in roots if p not in control and p not in control_leaves
++                      and p not in absent_retained and p not in failed_paths]
+     control_roots = [p for p in control if p not in absent_control]
+     for a, b in pairs:
+         in_control = [p in control_leaves or any(Path(p).parts[:len(Path(r).parts)] == Path(r).parts
+@@ -496,7 +513,9 @@
+     raw = encoded(spec)
+     need(len(raw) <= 16 * 1024 * 1024, 'epoch inventory spec exceeds the original bounded input pool')
+     return {'roots': roots, 'fixture_roots': fixtures,
+-            'required_absence_roots': absent_retained + absent_control + absent_leaves,
++            'required_absence_roots': absent_retained + failed_paths + absent_control + absent_leaves,
++            'retained_failed_fixture_absences': failed,
++            'retained_failed_fixture_absence_roots': failed_paths,
+             'alias_pairs': [list(pair) for pair in pairs], 'active_reservation_count': len(active),
+             'active_fixture_count': len(fixtures) - 7,
+             'business_inventory_roots': business_roots,
+@@ -504,7 +523,8 @@
+             'control_leaf_paths': control_leaves,
+             'control_leaf_pins': leaf_map,
+             'domain_roots': {'legacy': list(EPOCH_INVENTORY_LEGACY_ROOTS),
+-                             'active': active_domains, 'retained': retained, 'control': control,
++                             'active': active_domains, 'retained': retained,
++                             'retained_failed_fixture_absences': failed_paths, 'control': control,
+                              'control_leaves': control_leaves},
+             'spec_sha256': sha(raw)}
+ 
+@@ -800,8 +820,12 @@
+ 
+ def _epoch_inventory_observation_value(value, inventory, absence_observations, business, control, leaf_parents):
+     entries = inventory['entries']; pairs = value['alias_pairs']
++    absence_by_path = {row['path']: row for row in absence_observations}
++    need(all(path in absence_by_path and entries[path] == {'kind': 'absent', 'absence': 'ENOENT'}
++             for path in value['retained_failed_fixture_absence_roots']),
++         'actual positive parent evidence for all three failed fixture absences is required')
+     return {
+-        'schema': 'hepta.native-guard.two-epoch-inventory-observation.v1',
++        'schema': 'hepta.native-guard.two-epoch-inventory-observation.v2',
+         'state': 'COMPLETE_UNION_OBSERVED_ONE_SHARED_BUDGET',
+         'spec_sha256': value['spec_sha256'], 'legacy_anchor': EPOCH_INVENTORY_LEGACY_ANCHOR,
+         'domain_roots': value['domain_roots'],
+@@ -813,6 +837,14 @@
+         'control_leaf_parent_observations': leaf_parents,
+         'active_reservation_count': value['active_reservation_count'],
+         'legacy_fixture_count': 7, 'active_fixture_count': value['active_fixture_count'],
++        'retained_failed_fixture_absence_count': 3,
++        'potentially_present_fixture_count': len(value['fixture_roots']),
++        'fixture_namespace_count': len(value['fixture_roots']) + 3,
++        'fixture_namespace_limit': 18, 'potentially_present_fixture_limit': 15,
++        'failed_fixture_nonces_reuse_forbidden': True,
++        'retained_failed_fixture_absences': [
++            dict(row, positive_absence_observation=absence_by_path[row['path']])
++            for row in value['retained_failed_fixture_absences']],
+         'shared_budget': {'root_limit': 64, 'entry_limit': 30000,
+                          'byte_limit': 512 * 1024 * 1024, 'seconds_limit': 30,
+                          'file_byte_limit': 64 * 1024 * 1024, 'directory_child_limit': 20000,
+@@ -973,10 +1005,13 @@
+     expected = _epoch_inventory_observation_value(value, inventory, absences, business, control_inventory, parents)
+     need(type(observation) is dict and encoded(observation) == encoded(expected),
+          'explicit shared-budget/alias observation differs')
+-    return {'schema': 'hepta.native-guard.two-epoch-inventory-verification.v1',
++    return {'schema': 'hepta.native-guard.two-epoch-inventory-verification.v2',
+             'spec_sha256': value['spec_sha256'], 'roots': len(value['roots']),
+             'entries': len(rows), 'file_bytes_hashed': total, 'alias_pairs': len(value['alias_pairs']),
+             'active_reservation_count': value['active_reservation_count'],
++            'retained_failed_fixture_absence_count': 3,
++            'fixture_namespace_count': len(value['fixture_roots']) + 3,
++            'failed_fixture_nonces_reuse_forbidden': True,
+             'whole_union_structurally_verified': True, 'case_or_lease_authorized': False,
+             'original_provenance_verified_by_this_function': False,
+             'cross_operation_preservation_verified_by_this_function': False}

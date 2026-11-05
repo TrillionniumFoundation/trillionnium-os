@@ -1,0 +1,12 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root02-prelaunch-admission-1ad3-candidate01/operator/verify_root02_host_once.py"
+  ],
+  "cwd": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1",
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "root-1ad3-root02-prelaunch-host-proof01-20261105",
+  "timeout_seconds": 90
+}

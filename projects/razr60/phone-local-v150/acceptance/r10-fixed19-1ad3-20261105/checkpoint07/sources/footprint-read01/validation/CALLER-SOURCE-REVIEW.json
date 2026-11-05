@@ -1,0 +1,177 @@
+{
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 123662,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_footprint_observer_candidate01/caller-draft02/P4-LAUNCHER.py",
+    "sha256": "380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63"
+  },
+  "caller_run": false,
+  "exact_seven_splices": [
+    {
+      "end": 46746,
+      "label": "PROBE literal",
+      "new": {
+        "bytes": 59052,
+        "sha256": "3766f9bcc9b2965fa3119879ba73d8c44eadf3f40d1f0e4b7e3a5e75a11375f4"
+      },
+      "new_end": 59166,
+      "new_start": 114,
+      "old": {
+        "bytes": 46632,
+        "sha256": "9981ea6c1955908a295f9e4271c3ac8467c0ca1d11169d119139e6d4e8faa631"
+      },
+      "start": 114
+    },
+    {
+      "end": 93919,
+      "label": "REQ literal",
+      "new": {
+        "bytes": 59586,
+        "sha256": "5b03a39aa67abd5dbb39cef728a8f14cdd77e5c250e7579ce768a9ce02c2c509"
+      },
+      "new_end": 118757,
+      "new_start": 59171,
+      "old": {
+        "bytes": 47168,
+        "sha256": "72f35a9490a1c2b8567e4cc7b9bec2aa162206efabf33bd16edfab8d5a114bd5"
+      },
+      "start": 46751
+    },
+    {
+      "end": 93975,
+      "label": "LABEL literal",
+      "new": {
+        "bytes": 41,
+        "sha256": "8a92638fb151ae4f0d9dac49e5816f4a99af4b015501a487ef53191a789786eb"
+      },
+      "new_end": 118805,
+      "new_start": 118764,
+      "old": {
+        "bytes": 49,
+        "sha256": "4ea3965d4270690cb208159e2eb4ec7cb6d3e43a0c519ba7d270e8014db929a6"
+      },
+      "start": 93926
+    },
+    {
+      "end": 94106,
+      "label": "PROBE assertion",
+      "new": {
+        "bytes": 130,
+        "sha256": "af50f8de9451b1a97ba47a48207bbd9b21f9a31deae37b0eb0f7cb920ebf14c7"
+      },
+      "new_end": 118936,
+      "new_start": 118806,
+      "old": {
+        "bytes": 130,
+        "sha256": "7b13bba7cff87e63e46bb6df9d087276ef45a764a14f08d228a55a4ba662a3f9"
+      },
+      "start": 93976
+    },
+    {
+      "end": 94364,
+      "label": "out literal Path",
+      "new": {
+        "bytes": 100,
+        "sha256": "37c47363ab5f9bf62b61a269ba2d92aea8d0a8694af918f80b869cf49577981d"
+      },
+      "new_end": 119194,
+      "new_start": 119094,
+      "old": {
+        "bytes": 100,
+        "sha256": "b634061e43273b00e2dd1ec1511c5798f307eb5f3b1dd1c9810a4585c6b6c82a"
+      },
+      "start": 94264
+    },
+    {
+      "end": 96728,
+      "label": "RESULT state EXISTING902_CURRENT_HEAD_READONLY_OBSERVATION_RETURNED",
+      "new": {
+        "bytes": 56,
+        "sha256": "85ef57a499a7bb83991bf839f5ff47b8c05201fb569e3f933fac487b6c8c5dc3"
+      },
+      "new_end": 121558,
+      "new_start": 121502,
+      "old": {
+        "bytes": 56,
+        "sha256": "f7474d198318855310c8aaba8b3cc4069a092667dbf989e5f05827a1644b4844"
+      },
+      "start": 96672
+    },
+    {
+      "end": 96831,
+      "label": "RESULT state EXISTING902_CURRENT_HEAD_READONLY_OBSERVATION_FAILED_OR_UNKNOWN",
+      "new": {
+        "bytes": 65,
+        "sha256": "2069a272336dcd778df59e6c050fdcba1687d8033be263b165acac9650693d4b"
+      },
+      "new_end": 121661,
+      "new_start": 121596,
+      "old": {
+        "bytes": 65,
+        "sha256": "fc1345599ec025844ad08fdbd791f8b23ad63bea997f6b4cdd35c32368c7c2e7"
+      },
+      "start": 96766
+    }
+  ],
+  "idempotency_key": "root-1ad3-epoch-retained-footprint-read01-20261105",
+  "limits": {
+    "controller_stdin": 131072,
+    "phone_operation_file": 8388608,
+    "phone_stdout_stderr_sum": 8388608,
+    "twelve_original_file_sum": 16777216
+  },
+  "local_pure_checks": {
+    "fixed_scope_counts": [
+      4,
+      134,
+      12,
+      65
+    ],
+    "malformed_stat_refused": 4,
+    "pid1_fields_use_actual_group_session": [
+      1,
+      37,
+      41,
+      0
+    ]
+  },
+  "new_nonce_or_lease": false,
+  "observer_readers_run": 0,
+  "original_179a_phone_actor_retained": true,
+  "outer_timeout_present": false,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-epoch-retained-footprint-read01",
+  "parent": {
+    "bytes": 98832,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/delivery-final01/package/operator/P4-LAUNCHER.py",
+    "sha256": "ba51506b0e9d8659b3bb916b51e0a7bd38bcc394125748e4cb8eb3143d2ab3e4"
+  },
+  "passive_actor_wait_seconds": 240,
+  "phone_calls": 0,
+  "phone_timeout_seconds": 210,
+  "remote_calls": 0,
+  "request": {
+    "bytes": 127964,
+    "sha256": "ab2a3bc86f3ef7e3d8233fbbed31a78a870d1d681d091f708cbbca54f6dac818"
+  },
+  "request_label": "ng-epoch-retained-footprint-1ad3-read01",
+  "schema": "hepta.epoch.footprint-caller-source-review.v1",
+  "signals_added": false,
+  "source": {
+    "bytes": 57213,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_footprint_observer_candidate01/source-draft03/observe_fixed_epoch_footprint_once.py",
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "starts_at_most": 1,
+  "state": "SOURCE_ONLY_NOT_EXECUTED",
+  "whole_byte_inverse_parent": true,
+  "whole_functions_unchanged": [
+    "enc",
+    "put"
+  ],
+  "wire": {
+    "actual_shell_v2_service_bytes": 62288,
+    "phone_command_bytes": 57676,
+    "root_su_command_bytes": 62275,
+    "strict_service_limit": 65536
+  }
+}

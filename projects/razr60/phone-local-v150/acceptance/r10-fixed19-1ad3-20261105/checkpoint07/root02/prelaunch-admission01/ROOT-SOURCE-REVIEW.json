@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.root.root02-host-proof-source-review.v1",
+  "state": "REVIEWED_FOR_SOURCE_STAGING_THEN_ONE_HOST_ONLY_PROOF",
+  "source": {
+    "bytes": 51581,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root02-prelaunch-admission-1ad3-candidate01/source/verify_root02_prelaunch.py",
+    "sha256": "ea25d9a882b3b4e671749e8dc4617dd8d776d26d9fb5018f3fedba9d71bc0101"
+  },
+  "caller": {
+    "bytes": 4851,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root02-prelaunch-admission-1ad3-candidate01/operator/verify_root02_host_once.py",
+    "sha256": "73f0f8c2d0250a407b3079e0539b36591bbab9a9774b35cb7bf9816f894153a6"
+  },
+  "fixed_inputs": {
+    "bytes": 10398,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-admission01/INPUTS.json",
+    "sha256": "01135332e91734026e2b5f56400ef46fd0b0b69ca567e623cc30a5e0e3914f93"
+  },
+  "expected_complete_output": {
+    "bytes": 26459,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-admission01/ROOT02-PRELAUNCH-ADMISSION.json",
+    "sha256": "09af0bd18020aaf31432187aa0f24ddec5cba8227b64a859e68294eeab94a10d"
+  },
+  "all_delivery_file_hashes_verified": 43,
+  "all_two_archive_member_bodies_exact": [
+    {
+      "archive": "source-package.tar.gz",
+      "members": 10,
+      "bytes": 40597,
+      "sha256": "52a5d1c83707702a4483d182249f2b2730f95bb8313420dcc3ee66078fcc7047"
+    },
+    {
+      "archive": "evidence-package.tar.gz",
+      "members": 29,
+      "bytes": 581422,
+      "sha256": "666d5df2c507dbff86bf827f74bdf3100d3097fd075e6b7601e70ca1edb46eb0"
+    }
+  ],
+  "full_source_functions_reviewed": true,
+  "full_caller_reviewed": true,
+  "original_target_runtime_execution": false,
+  "source_and_inputs_whole_before_after_bookends": true,
+  "source_is_compiled_from_exact_actual_Mac_source_path": true,
+  "new_output_exclusive_nofollow_fsync_readback": true,
+  "existing_Mac_originals_reused": 6,
+  "mirrors": 26,
+  "mirror_metadata_not_relabelled_as_origin_metadata": true,
+  "case_pass": false,
+  "phone_calls": 0,
+  "nonce_or_lease": false,
+  "future_input_authorization": false,
+  "dependent_order": [
+    "both archives create-only upload",
+    "source-only stage and exact readback",
+    "fixed508-byte controller request once",
+    "actual controller complete/eof and26459-byte original output readback"
+  ]
+}

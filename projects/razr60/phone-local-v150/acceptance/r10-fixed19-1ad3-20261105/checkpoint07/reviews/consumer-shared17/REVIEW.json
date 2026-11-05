@@ -1,0 +1,407 @@
+{
+  "all_seventeen_actual_local_bodies_match": [
+    {
+      "exact_body": {
+        "bytes": 15587,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/action_ledger.py",
+        "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+      },
+      "manifest_name": "provider/source/action_ledger.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 22059,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/daily_phone_local.py",
+        "sha256": "52b6f5a3c3743e36bf0d8a064d2b8735babed1ff1ad0b8e3692ab775cc2f5f3c"
+      },
+      "manifest_name": "provider/source/daily_phone_local.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 11439,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/health_contracts.py",
+        "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+      },
+      "manifest_name": "provider/source/health_contracts.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 15135,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/ledger_round_evidence.py",
+        "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+      },
+      "manifest_name": "provider/source/ledger_round_evidence.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 8251,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/model_health.py",
+        "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+      },
+      "manifest_name": "provider/source/model_health.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 37375,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/model_slot_cleanup.py",
+        "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+      },
+      "manifest_name": "provider/source/model_slot_cleanup.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 10453,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/phone_local_http_worker.py",
+        "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+      },
+      "manifest_name": "provider/source/phone_local_http_worker.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 13813,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/phone_local_tools.py",
+        "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+      },
+      "manifest_name": "provider/source/phone_local_tools.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 39093,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/phone_observation_tools.py",
+        "sha256": "8f60cfd359ccfa269fabb05b616371268a2b86938fc41da37a2111c10066b792"
+      },
+      "manifest_name": "provider/source/phone_observation_tools.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 22825,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/phone_task_guards.py",
+        "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+      },
+      "manifest_name": "provider/source/phone_task_guards.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 41510,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/provider_codex_host.py",
+        "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+      },
+      "manifest_name": "provider/source/provider_codex_host.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 17730,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/provider_openai_compatible.py",
+        "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+      },
+      "manifest_name": "provider/source/provider_openai_compatible.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 70237,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/provider_phone_local.py",
+        "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+      },
+      "manifest_name": "provider/source/provider_phone_local.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 9802,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/retirement_recovery.py",
+        "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+      },
+      "manifest_name": "provider/source/retirement_recovery.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 23211,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/provider/source/task_postconditions.py",
+        "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+      },
+      "manifest_name": "provider/source/task_postconditions.py"
+    },
+    {
+      "exact_body": {
+        "bytes": 1493,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/local-config-r10-r1.json",
+        "sha256": "30f4613da5074775a5539920696be6be6990876d55b9bafaadb017e363bd096e"
+      },
+      "manifest_name": "local-config-r10-r1.json"
+    },
+    {
+      "exact_body": {
+        "bytes": 10635,
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/materials/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+        "sha256": "c51fcbbc608a298f419c846bf8f28a1996e954b9955e86e477c8348a6b2d3f4e"
+      },
+      "manifest_name": "PHONE-SERVICE-INPUTS-v150-r10-r1.json"
+    }
+  ],
+  "author_checks_report": {
+    "bytes": 3313,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/LOCAL-SHARED-GATE-CHECKS.json",
+    "sha256": "548e6ccc4720281e1b38a7c9999214bc64e3fd15de92d00c128b304999c470cf"
+  },
+  "author_failures_preserved": [
+    {
+      "bytes": 388,
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/local-check-history01/FAILURE01.json",
+      "sha256": "6a4b413e997f2dd9575f9d7bd894b7060465dd567682c0b8e0e37079df659af5"
+    },
+    {
+      "bytes": 349,
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/local-check-history01/FAILURE02.json",
+      "sha256": "345db5441131e2ddcb4cdd9950cbfcd588b4f361efd3b0d7db12c5124fb950b0"
+    }
+  ],
+  "author_tests_independently_rerun": false,
+  "component_case_pass": false,
+  "final_epoch_verifier_integrated": false,
+  "final_generation_bound": false,
+  "findings": [
+    "Preview04 only changes the consumer SHARED_MATERIALS_SHA and constructor SHARED_SHA from old121416 to the exact3519/af0d successor manifest. Its remaining six sources are identical to preview03; all eight preview03 sources independently reverse to their declared context-budget-preview02 parents.",
+    "The pure shared helper enforces the fixed manifest hash, exactly17 unique names, complete bytes/hash for every member and exactly15 production names against the reviewed runtime pin map. Configuration and service originals remain separately named exact members.",
+    "Consumer validate_component retrieves and pins the complete runtime map, explicit combination bytes, shared manifest and all17 originals before calling the required four-argument epoch verifier. The first component_modules execution remains below this gate; explicit actual_context still passes through unchanged.",
+    "Constructor requires explicit plan.combination, verifies its current combination digest, gathers runtime32 and all17 shared bodies through the existing bounded collect/read-pinned bookends, then calls the same four-argument gate before any retained ancestor module execution.",
+    "Every current case COMBINATION raw body must equal the earlier explicit combination bytes, including the first case. The first case no longer selects the current combination after runtime loading.",
+    "The new component_shared_material_manifest and17 named copy descriptors are present in the strict component input field set and recursively enter the original body pool. Original16MiB per-body,32MiB decoded union and encoded bundle limits, lossless codec and actual file rechecks are unchanged.",
+    "Inputs advance to v6, construction plan to v7 and result to v6; both cascade/interface declarations and the interface template explicit combination are consistent for this prewiring scope.",
+    "No single-domain ancestry check is represented as complete epoch support. The current first-exec gate identifier requires the final independently bound epoch verifier; it is not defined by this preview. Actual two-domain consumer/cascade logic and final runtime/source pins remain pending and prevent runtime qualification."
+  ],
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "reviewer_local_index_correction": "The first independent inversion attempt interpreted new_start_line/new_end_line as one-based and stopped at release_boundaries line864. Inspection established these are zero-based Python sequence indices; using the declared ranges gave all eight exact03 inverses. No source or author evidence changed.",
+  "runtime_ready": false,
+  "schema": "hepta.independent-source-review.v1",
+  "scope": "Static exact-byte/AST reading of preview04 two literal bindings and preview03 shared17, explicit combination and schema increments over context-budget-preview02. No runtime or production source import, target function, author harness or remote execution.",
+  "shared_manifest": {
+    "bytes": 3519,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-shared-preview02/materials/SHARED-MATERIALS.json",
+    "sha256": "af0d3e6b15a4eab40a52573db1ba5a24f1f1051f3965cad1b78039d889c0b8a5"
+  },
+  "sixteen_whole_source_inverse_checks": [
+    {
+      "parent": {
+        "bytes": 91611,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/release_boundaries.py",
+        "sha256": "c2027adeebb55662deb97e4f7fa7ddde5f3b21098ae0e0de1fc768f723549ed0"
+      },
+      "source": {
+        "bytes": 91611,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/release_boundaries.py",
+        "sha256": "352fdabf9c6bfb57cfab8ab1e2727f1223fe2a388f55e9819e703404b264732b"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 36456,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/make_component_boundary_inputs.py",
+        "sha256": "ee0c7c672d947f97913bde2da5c64a80f587aee5d99832606f25a2088f45a314"
+      },
+      "source": {
+        "bytes": 36456,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/make_component_boundary_inputs.py",
+        "sha256": "526d30c63a55025ba4ba9d1b07680c62ef4704466618f6b08448921ed51acde8"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/source/derive_final_cascade_property_r8.py",
+        "sha256": "10a464a67b555ae6193b8003809150dcafd0e7938b6feb2f13bbc6572328a32e"
+      },
+      "source": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/source/derive_final_cascade_property_r8.py",
+        "sha256": "10a464a67b555ae6193b8003809150dcafd0e7938b6feb2f13bbc6572328a32e"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 40936,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ba28c9cb9e40af944062838eab8be26d9109a42f54eec091ae866f1b01a75302"
+      },
+      "source": {
+        "bytes": 40936,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ba28c9cb9e40af944062838eab8be26d9109a42f54eec091ae866f1b01a75302"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "source": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "source": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "source": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "source": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 88368,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/release_boundaries.py",
+        "sha256": "2ecf748b34b3e1806715a7c0b52672cf3936f850ae6dcf67a94c0daf9ae5946d"
+      },
+      "source": {
+        "bytes": 91611,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/release_boundaries.py",
+        "sha256": "c2027adeebb55662deb97e4f7fa7ddde5f3b21098ae0e0de1fc768f723549ed0"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 35441,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/make_component_boundary_inputs.py",
+        "sha256": "1359624235de73f1b9f2e71e2af5a0754350b2e939b13459aebcbe36557de496"
+      },
+      "source": {
+        "bytes": 36456,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/make_component_boundary_inputs.py",
+        "sha256": "ee0c7c672d947f97913bde2da5c64a80f587aee5d99832606f25a2088f45a314"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/source/derive_final_cascade_property_r8.py",
+        "sha256": "af5f5934e65346261bae55dc745c3bcf0dbb6dbe8835c20a1c091fb44c261772"
+      },
+      "source": {
+        "bytes": 66415,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/source/derive_final_cascade_property_r8.py",
+        "sha256": "10a464a67b555ae6193b8003809150dcafd0e7938b6feb2f13bbc6572328a32e"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 40909,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ce1aef01730ba039d48a9e8f6a2cc06832078271ddd1f30ba749ce3cd6987954"
+      },
+      "source": {
+        "bytes": 40936,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/source/write_final_seal_interface_property_r8.py",
+        "sha256": "ba28c9cb9e40af944062838eab8be26d9109a42f54eec091ae866f1b01a75302"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "source": {
+        "bytes": 16055,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "source": {
+        "bytes": 40844,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/templates/build_release_r10.py",
+        "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "source": {
+        "bytes": 15746,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/downstream/component_source_context.py",
+        "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+      },
+      "whole_byte_inverse": true
+    },
+    {
+      "parent": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "source": {
+        "bytes": 29537,
+        "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/downstream/prepare_fixed19_host_r10.py",
+        "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+      },
+      "whole_byte_inverse": true
+    }
+  ],
+  "source_delta03": {
+    "bytes": 18576,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview03/SOURCE-DELTA.json",
+    "sha256": "4e9f91b5e28dcd0767eaa7a875a27dd7b5e2e7e5de6d3888e8191ecc8d707ee1"
+  },
+  "source_delta04": {
+    "bytes": 6118,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/shared-gate-preview04/SOURCE-DELTA.json",
+    "sha256": "9df61be2c85d7555d43a8007b9ce6cb3027a789af21d40db8159e23481a7589f"
+  },
+  "source_modified": false,
+  "state": "NO_BLOCKER_IN_SHARED17_COLLECTION_AND_PRE_EXEC_ORDERING_INCREMENT",
+  "target_functions": 0,
+  "target_source_imports": 0,
+  "two_domain_consumption_integrated": false
+}

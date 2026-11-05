@@ -1,0 +1,96 @@
+{
+  "actual_fixture_absence_observed_by_builder": false,
+  "actual_identity_originals": [
+    {
+      "bytes": 363,
+      "path": "actual_external_r8_cascade_and_09/external09-small-originals/CHAIN-INTENT.json",
+      "sha256": "008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4"
+    },
+    {
+      "bytes": 359,
+      "path": "actual_neg01_1ad3_01/reconciliation/CHAIN-INTENT.json",
+      "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88"
+    },
+    {
+      "bytes": 359,
+      "path": "actual_neg01_1ad3_02/reconciliation/mac-full-archive01/root-originals/CHAIN-INTENT.json",
+      "sha256": "3e800888b72860f3b29efbf8b2550c8c8e345fb650b4956bb9df9725b3b3cef1"
+    }
+  ],
+  "all_original_single_domain_functions_unchanged": [
+    "_reviewed_classpath_values",
+    "await_init_parent",
+    "baseline_roots",
+    "child_role",
+    "detached_launch",
+    "fixture_absence",
+    "inventory",
+    "launch_role",
+    "load_lease",
+    "main",
+    "native_root",
+    "reviewed_android_sidecar_environment",
+    "stop_owned",
+    "supervise",
+    "verify_retired"
+  ],
+  "fixed_failed_fixture_absences": [
+    {
+      "chain_intent": {
+        "bytes": 363,
+        "sha256": "008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4"
+      },
+      "label": "root-r10-neg01-20261105-09",
+      "nonce": "7c79195945d64e569a191166ac122a08",
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c79195945d64e569a191166ac122a08",
+      "presence": "absent"
+    },
+    {
+      "chain_intent": {
+        "bytes": 359,
+        "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88"
+      },
+      "label": "root-r10-neg01-1ad3-01",
+      "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c74b84aefb177d15f746fa7eae29d54",
+      "presence": "absent"
+    },
+    {
+      "chain_intent": {
+        "bytes": 359,
+        "sha256": "3e800888b72860f3b29efbf8b2550c8c8e345fb650b4956bb9df9725b3b3cef1"
+      },
+      "label": "root-r10-neg01-1ad3-02",
+      "nonce": "bc0573ad459cecae9884d6a46568621b",
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-bc0573ad459cecae9884d6a46568621b",
+      "presence": "absent"
+    }
+  ],
+  "fixture_or_case_created": false,
+  "fragment": {
+    "bytes": 66024,
+    "sha256": "5569328e15cac5909b38429a63160e0ce7adda4cc6e7dc46bb4552f24487bb55"
+  },
+  "increment_splices": 16,
+  "modified_functions": [
+    "_epoch_inventory_observation_value",
+    "inventory_epoch_spec_value",
+    "verify_epoch_inventory_observation"
+  ],
+  "parent": {
+    "bytes": 102896,
+    "sha256": "bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.two-epoch-failed-fixture-source-derivation.v1",
+  "source": {
+    "bytes": 106287,
+    "sha256": "8efadfa585529c538da263de75c2bff6f4995def9f8e4061f9e43e52f4d4b928"
+  },
+  "state": "SOURCE_ONLY_UNBOUND_EXTRA_ROOTS",
+  "target_source_executed": false,
+  "unchanged_parent_functions_and_classes": 24,
+  "walker_budget_split_join_unchanged": true,
+  "whole_source_inverse": true
+}

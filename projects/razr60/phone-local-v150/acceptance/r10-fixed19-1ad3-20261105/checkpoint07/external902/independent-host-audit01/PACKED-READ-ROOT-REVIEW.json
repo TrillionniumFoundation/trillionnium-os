@@ -1,0 +1,43 @@
+{
+  "actual_completed_controller_receipt_binding": {
+    "bytes": 52142,
+    "metadata": [
+      66306,
+      37116535,
+      33152,
+      1000,
+      1000,
+      1,
+      52142,
+      1793888235526283464,
+      1793888235526283464
+    ],
+    "path": "/home/alex/codex-hepta-external902-independent-closure-audit-1ad3-01/BYTE-EQUALITY.json",
+    "sha256": "6bb0cb5179850cce2adc53982796bde4dd6bb2f0269968df33e91ff4b4dc8461"
+  },
+  "all_functions_unchanged": true,
+  "at_utc": "2026-11-05T14:21:56.291023+00:00",
+  "case_pass": false,
+  "changed_assignments": [
+    "TARGET",
+    "EXPECTED_BYTES",
+    "EXPECTED_SHA256",
+    "EXPECTED_VERSION"
+  ],
+  "docstring_only_other_change": true,
+  "exact_source_reverse_equal": true,
+  "new_source": {
+    "bytes": 4432,
+    "sha256": "e815b17a32a2bb8f790e6d94030176131a774a2f044053f89742ab05fab68d10"
+  },
+  "original_audit_reruns": 0,
+  "parent_source_sha256": "32716a96953be5d96e67c5de770316a09b4244e7c321bbe80885941f6cbf2fa3",
+  "phone_calls": 0,
+  "request": {
+    "bytes": 5174,
+    "sha256": "439c63e3ee7f12be6b6d1ddb6d4baa2ece11f101dd3da3940e39d2f673b35e76"
+  },
+  "schema": "hepta.root-packed-read-input-delta-review.v1",
+  "source_or_original_writes": 0,
+  "version": "66306:37116535:52142:1793888235526283464:1793888235526283464"
+}

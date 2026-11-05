@@ -1,0 +1,98 @@
+{
+  "both_whole_physical_reads_and_final_raw_body_hash_and_lossless_pack_unchanged": true,
+  "case_or_epoch_permission": false,
+  "changed_budget_semantics": {
+    "all_raw_file_bodies_per_round": 7114062,
+    "caller_twelve_original_sum_limit": 16777216,
+    "lossless_raw_packet_bytes": 16777216,
+    "metadata_bytes": 524288,
+    "new_report_bytes": 8388608,
+    "new_report_uses_existing_phone_once_and_caller_eight_MiB_limit": true,
+    "parent_report_bytes": 1048576,
+    "physical_file_read_rounds": 2,
+    "physical_read_pool_bytes": 16777216,
+    "single_cooperative_clock_seconds": 30
+  },
+  "explicit_proc_root_bridge": {
+    "android_and_gnu_root_full9_retained": true,
+    "boot_and_pid1_stat_complete_raw_retained": true,
+    "dynamic_pid1_stat_fields_not_claimed_equal": true,
+    "fixed_paths": [
+      "/proc/sys/kernel/random/boot_id",
+      "/proc/1/stat",
+      "/proc/1/root",
+      "/"
+    ],
+    "generation": [
+      "pid",
+      "pgrp",
+      "session",
+      "start_ticks"
+    ],
+    "init_start_ticks_exact_native_profile": 0,
+    "magic_link_lstat_readlink_target": true,
+    "no_other_pid_reads_or_signals": true,
+    "pid1_directory_full9_bookends": true,
+    "pid1_stat_max_bytes": 8192,
+    "two_rounds_actual_identity_equality": true
+  },
+  "fixed_footprint": {
+    "bytes": 176976,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_native_candidate01/footprint01/FOOTPRINT.json",
+    "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+  },
+  "imports": [
+    "Path",
+    "base64",
+    "errno",
+    "hashlib",
+    "json",
+    "os",
+    "re",
+    "stat",
+    "sys",
+    "time",
+    "zlib"
+  ],
+  "metadata_size_estimation_uses_already_observed_body_descriptors": true,
+  "new_reader": "exact12 fixed leaves only may retain observed Android UID/mode; all paths/types/full9/labels/pins remain bound, no future permission",
+  "nonce_or_lease_created": false,
+  "parent": {
+    "bytes": 44561,
+    "path": "/workspace/scratch/1ad3d6f55439/existing902_current_head_observer_candidate01/delivery-final01/package/source/observe_existing902_current_head_once.py",
+    "sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "runtime_modules_imported": 0,
+  "schema": "hepta.epoch.retained-footprint-observer-source-derivation.v1",
+  "scope": {
+    "actual_alias_pairs_to_reobserve": 2,
+    "fixed_leaves": 12,
+    "positive_absence_paths": 65,
+    "retained_directories": 20,
+    "retained_files": 114,
+    "retained_members": 134,
+    "retained_trees": 4
+  },
+  "source": {
+    "bytes": 57213,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_footprint_observer_candidate01/source-draft03/observe_fixed_epoch_footprint_once.py",
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "state": "SOURCE_ONLY_UNEXECUTED_FIXED_READ_OBSERVER",
+  "target_functions_run": 0,
+  "unchanged_whole_functions": [
+    "need",
+    "sha",
+    "strict",
+    "metadata",
+    "parent_fd",
+    "boot",
+    "own_fds",
+    "encoded",
+    "descriptor",
+    "strict_unpack",
+    "pack_original"
+  ]
+}

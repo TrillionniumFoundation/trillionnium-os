@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Create-only read02 source/caller derivation. No target execution."""
+import ast
+import difflib
+import hashlib
+import json
+from pathlib import Path
+import shlex
+
+HERE=Path(__file__).resolve().parent
+ROOT=HERE.parent
+PARENT=ROOT/'epoch_footprint_observer_candidate01/delivery-final01/package/operator/P4-LAUNCHER.py'
+SOURCE=HERE/'source-draft01/observe_fixed_epoch_footprint_once.py'
+
+
+def pin(raw): return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+
+def enc(value): return (json.dumps(value,ensure_ascii=False,sort_keys=True,indent=2)+'\n').encode()
+
+
+def put(path,raw):
+    with path.open('xb') as stream:stream.write(raw)
+
+
+def span(raw,node):
+    lines=raw.splitlines(keepends=True)
+    return sum(map(len,lines[:node.lineno-1]))+node.col_offset, sum(map(len,lines[:node.end_lineno-1]))+node.end_col_offset
+
+
+def main():
+    source=SOURCE.read_bytes();parent=PARENT.read_bytes();oldsource=(HERE/'PARENT.observer.original.py').read_bytes()
+    assert pin(source)=={'bytes':58657,'sha256':'779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34'}
+    assert pin(parent)=={'bytes':123662,'sha256':'380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63'}
+    assert pin(oldsource)=={'bytes':57213,'sha256':'2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98'}
+    compile(source,str(SOURCE),'exec')
+    tree=ast.parse(parent); assignments={n.targets[0].id:n for n in tree.body if isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name)}
+    previous_request=ast.literal_eval(assignments['REQ'].value)
+    assert ast.literal_eval(assignments['PROBE'].value)==oldsource
+    prefix=previous_request['command'].split("<<'",1)[0]
+    marker='FIXED_EPOCH_FOOTPRINT_READ02'
+    command=prefix+"<<'"+marker+"'\n"+source.decode()+marker+'\n'
+    phone_request={**previous_request,'command':command}
+    wire=('shell,v2,raw:/debug_ramdisk/su -c '+shlex.quote(command)).encode()
+    assert len(wire)<65536
+    label='ng-epoch-retained-footprint-1ad3-read02'
+    output='/home/alex/razr60-local-model-v150/fixed19-root-1ad3-epoch-retained-footprint-read02'
+    assertion=[n for n in tree.body if isinstance(n,ast.Assert) and 'len(PROBE)' in ast.get_source_segment(parent.decode(),n)]
+    assert len(assertion)==1
+    choices=[(assignments['PROBE'].value,repr(source),'PROBE'),
+             (assignments['REQ'].value,repr(phone_request),'REQ'),
+             (assignments['LABEL'].value,repr(label),'LABEL'),
+             (assignments['out'].value,'pathlib.Path('+repr(output)+')','OUT'),
+             (assertion[0],f"assert len(PROBE)=={len(source)} and hashlib.sha256(PROBE).hexdigest()=={pin(source)['sha256']!r}",'PROBE assertion')]
+    edits=[]
+    for node,text,label_edit in choices:
+        start,end=span(parent,node);edits.append({'start':start,'end':end,'old':parent[start:end],'new':text.encode(),'label':label_edit})
+    edits.sort(key=lambda r:r['start']);pieces=[];last=0;position=0;records=[]
+    for row in edits:
+        before=parent[last:row['start']];pieces.extend((before,row['new']));position+=len(before)
+        records.append({**row,'new_start':position,'new_end':position+len(row['new'])});position+=len(row['new']);last=row['end']
+    pieces.append(parent[last:]);caller=b''.join(pieces);inverse=caller
+    for row in reversed(records):
+        assert inverse[row['new_start']:row['new_end']]==row['new']
+        inverse=inverse[:row['new_start']]+row['old']+inverse[row['new_end']:]
+    assert inverse==parent and len(caller)<=131072
+    compile(caller,'<fixed-footprint-read02-caller>','exec')
+    def functions(raw):return {n.name:ast.get_source_segment(raw.decode(),n) for n in ast.parse(raw).body if isinstance(n,(ast.FunctionDef,ast.ClassDef))}
+    assert functions(caller)==functions(parent)
+    oldfunctions=functions(oldsource);newfunctions=functions(source)
+    changed={name for name in oldfunctions if oldfunctions[name]!=newfunctions.get(name)}
+    assert changed=={'metadata_budget','read_fixed_absence','main'}
+    assert set(newfunctions)-set(oldfunctions)=={'parent_observation_reference','expand_parent_observation_reference'}
+    request=json.loads((PARENT.parent/'CONTROLLER-REQUEST.json').read_bytes())
+    assert set(request)=={'args','cwd','executable','host','idempotency_key','stdin'}
+    assert request['stdin'].encode()==parent
+    request['args']=['-I','-B','-c',"import hashlib,sys\nbody=sys.stdin.buffer.read(131073)\nassert len(body)=="+str(len(caller))+" and hashlib.sha256(body).hexdigest()=="+repr(pin(caller)['sha256'])+"\nexec(compile(body,'<fixed-epoch-retained-footprint-read02-caller>','exec'),{'__name__':'__main__'})\n"]
+    request['stdin']=caller.decode();request['idempotency_key']='root-1ad3-epoch-retained-footprint-read02-20261105'
+    assert request['host']=='pocket4' and request['executable']=='/usr/bin/python3' and request['cwd']=='/home/alex'
+    out=HERE/'caller-final01';out.mkdir()
+    for name,raw in [('P4-LAUNCHER.py',caller),('CONTROLLER-REQUEST.json',enc(request)),('PHONE-REQUEST.original.json',enc(phone_request)),('PARENT-CALLER.original.py',parent)]:put(out/name,raw)
+    put(out/'CALLER-INCREMENT.patch',''.join(difflib.unified_diff(parent.decode().splitlines(True),caller.decode().splitlines(True),fromfile='actual-read01-380b.py',tofile='read02-caller.py')).encode())
+    put(out/'SOURCE-INCREMENT.patch',''.join(difflib.unified_diff(oldsource.decode().splitlines(True),source.decode().splitlines(True),fromfile='actual-read01-2a3e.py',tofile='read02-observer.py')).encode())
+    report={'schema':'hepta.fixed-footprint-read02-source-caller-derivation.v1','state':'SOURCE_ONLY_UNEXECUTED',
+       'parent_observer':pin(oldsource),'observer':pin(source),'parent_caller':pin(parent),'caller':pin(caller),'request':pin(enc(request)),
+       'caller_exact_five_splices':[{k:v for k,v in r.items() if k not in ('old','new')}|{'old':pin(r['old']),'new':pin(r['new'])} for r in records],
+       'caller_whole_byte_inverse':True,'caller_whole_functions_unchanged':sorted(functions(parent)),
+       'observer_changed_functions':sorted(changed),'observer_new_pure_functions':sorted(set(newfunctions)-set(oldfunctions)),
+       'observer_unchanged_functions_or_classes':sorted(set(oldfunctions)-changed),
+       'physical_readers_and_bounds_changed':False,'metadata_limit_bytes':524288,
+       'observation_references':'exact table/index plus descriptor of canonical serialized in-memory parent observation; not a file descriptor or extra read',
+       'wire':{'actual_shell_v2_service_bytes':len(wire),'limit_exclusive':65536,'command_bytes':len(command.encode())},
+       'controller_stdin_bytes':len(caller),'controller_stdin_limit':131072,
+       'phone_timeout_seconds':210,'passive_actor_wait_seconds':240,'outer_timeout':None,
+       'actor179a_unchanged':True,'starts_at_most':1,'automatic_retry':False,
+       'operation_label':label,'p4_output':output,'idempotency_key':request['idempotency_key'],
+       'target_functions_called':0,'remote_calls':0,'phone_calls':0,'new_nonce_or_lease':False}
+    put(out/'SOURCE-CALLER-REVIEW.json',enc(report))
+    print(json.dumps({'source':report['observer'],'caller':report['caller'],'request':report['request'],'wire':report['wire'],'review':pin(enc(report))},sort_keys=True))
+
+
+if __name__=='__main__':main()

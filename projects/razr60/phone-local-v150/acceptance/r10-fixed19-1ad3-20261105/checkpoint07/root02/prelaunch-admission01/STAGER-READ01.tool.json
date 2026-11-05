@@ -1,0 +1,13 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1ac6e6bb5-fc05-543e\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22636173655f70617373223a2066616c73652c2022686f73745f70726f6f665f63616c6c73223a20302c202270686f6e655f63616c6c73223a20302c2022726567756c61725f7461726765745f66696c6573223a2033392c2022726573756c74223a207b226279746573223a20333735312c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f726f6f742d666978656431392d316164332d32303236313130352d72312f726f6f7430322d7072656c61756e63682d736f757263652d65766964656e63652d737461676530312f524553554c542e6a736f6e222c2022736861323536223a202236333963353234343634326464653861633431386430386661343566633531616130353663373031653332353364616466363435383530643438376235623833227d2c20227374617465223a202245584143545f534f555243455f414e445f4f524947494e414c5f43415252494552535f5354414745445f4e4f5f454e545259504f494e545f4558454355544544227d0a\",\n    \"eof\": true,\n    \"next_offset\": 469,\n    \"offset\": 0,\n    \"size\": 469,\n    \"text\": \"{\\\"case_pass\\\": false, \\\"host_proof_calls\\\": 0, \\\"phone_calls\\\": 0, \\\"regular_target_files\\\": 39, \\\"result\\\": {\\\"bytes\\\": 3751, \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-source-evidence-stage01/RESULT.json\\\", \\\"sha256\\\": \\\"639c5244642dde8ac418d08fa45fc51aa056c701e3253dadf645850d487b5b83\\\"}, \\\"state\\\": \\\"EXACT_SOURCE_AND_ORIGINAL_CARRIERS_STAGED_NO_ENTRYPOINT_EXECUTED\\\"}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

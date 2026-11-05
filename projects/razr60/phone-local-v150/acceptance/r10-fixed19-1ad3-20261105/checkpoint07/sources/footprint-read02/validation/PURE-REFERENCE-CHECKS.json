@@ -1,0 +1,55 @@
+{
+  "actual_cached_parent_rows_roundtripped": 20,
+  "actual_parent_names_retained": 130,
+  "current_observer_executed": false,
+  "historical_only": true,
+  "parent": {
+    "bytes": 57213,
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "parent_refs_not_file_descriptors": true,
+  "phone_calls": 0,
+  "pure_functions_executed": [
+    "descriptor",
+    "encoded",
+    "expand_parent_observation_reference",
+    "need",
+    "parent_observation_reference",
+    "sha"
+  ],
+  "reader_functions_executed": 0,
+  "reference_rejections": [
+    {
+      "case": "bool_index",
+      "rejected": true
+    },
+    {
+      "case": "out_of_table",
+      "rejected": true
+    },
+    {
+      "case": "wrong_observation_sha",
+      "rejected": true
+    },
+    {
+      "case": "wrong_observation_bytes",
+      "rejected": true
+    },
+    {
+      "case": "extra_key",
+      "rejected": true
+    },
+    {
+      "case": "changed_parent_table_row",
+      "rejected": true
+    }
+  ],
+  "remote_calls": 0,
+  "schema": "hepta.footprint-observation-reference-local-check.v1",
+  "source": {
+    "bytes": 58657,
+    "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+  },
+  "source_whole_byte_inverse": true,
+  "state": "SOURCE_ONLY_PURE_REFERENCE_CHECKS_COMPLETE"
+}

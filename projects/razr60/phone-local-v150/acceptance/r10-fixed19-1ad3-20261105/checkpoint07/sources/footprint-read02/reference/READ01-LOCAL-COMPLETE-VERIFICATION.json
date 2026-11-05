@@ -1,0 +1,46 @@
+{
+  "actor_returncode": 0,
+  "all_member_bytes_verified": true,
+  "archive": {
+    "bytes": 32668,
+    "sha256": "bdb348c53e10da942981133bfe52ca3e474d7f1603066492c260a7421045ae44",
+    "version": "66306:44330747:32668:1793896366095945809:1793896366095945809"
+  },
+  "case_credit": false,
+  "controller_returncode": 0,
+  "controller_stderr_bytes": 0,
+  "controller_stdout_bytes": 835,
+  "double_eof": true,
+  "job_id": "1a1ac8e368b-fc05-553f",
+  "members": 12,
+  "new_nonce_or_lease": false,
+  "phone_report": {
+    "automatic_retry": false,
+    "case_pass": false,
+    "complete_raw_observation_retained": false,
+    "detail": "whole footprint metadata observation bound",
+    "epoch_initialized": false,
+    "footprint_original": {
+      "bytes": 176976,
+      "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+    },
+    "future_input_authorization": false,
+    "global_clearance_proof": false,
+    "new_nonce_or_lease": false,
+    "observation_complete": false,
+    "owned_read_fd_observation": {
+      "complete": true,
+      "locks_acquired": 0,
+      "new_read_FDs_remaining": [],
+      "unknown_or_foreign_FDs_closed": false
+    },
+    "phone_content_writes": 0,
+    "schema": "hepta.native-guard.fixed-epoch-retained-footprint-observation.v1",
+    "state": "FIXED_FOOTPRINT_SERIALIZATION_REFUSED",
+    "type": "ValueError"
+  },
+  "phone_returncode": 1,
+  "reexecuted": false,
+  "schema": "hepta.epoch.footprint-complete-failed-observation-verification.v1",
+  "state": "CONTROLLER_AND_ALL12_ORIGINALS_COMPLETE_PHONE_OBSERVATION_FAILED"
+}

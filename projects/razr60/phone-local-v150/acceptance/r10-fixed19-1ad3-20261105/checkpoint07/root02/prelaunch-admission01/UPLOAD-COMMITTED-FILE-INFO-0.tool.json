@@ -1,0 +1,13 @@
+{
+  "status": "fulfilled",
+  "value": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-source-package01.tar.gz\",\"sha256\":\"52a5d1c83707702a4483d182249f2b2730f95bb8313420dcc3ee66078fcc7047\",\"size\":40597,\"version\":\"16777233:588838055:40597:1793892442373475836:1793892442373913261\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

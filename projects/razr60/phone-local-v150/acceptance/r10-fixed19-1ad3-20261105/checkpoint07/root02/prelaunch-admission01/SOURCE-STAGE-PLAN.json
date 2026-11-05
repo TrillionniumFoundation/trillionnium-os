@@ -1,0 +1,64 @@
+{
+  "caller": {
+    "bytes": 4851,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root02-prelaunch-admission-1ad3-candidate01/operator/verify_root02_host_once.py",
+    "sha256": "73f0f8c2d0250a407b3079e0539b36591bbab9a9774b35cb7bf9816f894153a6"
+  },
+  "controller_request": {
+    "bytes": 508,
+    "sha256": "dff75d9395fec7fb80ec78403ae1d81ce109e412e202edd7b561077d97df0bca"
+  },
+  "create_only_target_roots": true,
+  "evidence_archive": {
+    "bytes": 581422,
+    "member_bytes": 1151329,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/root02_prelaunch_admission_candidate01/delivery-final01/evidence-package.tar.gz",
+    "regular_members": 29,
+    "sha256": "666d5df2c507dbff86bf827f74bdf3100d3097fd075e6b7601e70ca1edb46eb0"
+  },
+  "evidence_manifest": {
+    "bytes": 5737,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-admission01/SOURCE-MANIFEST.json",
+    "sha256": "33b74a790d6cd0d0de0d1d08a175965b9b0725f7a55218f7373d206104cfca98"
+  },
+  "evidence_target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-admission01",
+  "expected_host_output": {
+    "bytes": 26459,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-admission01/ROOT02-PRELAUNCH-ADMISSION.json",
+    "sha256": "09af0bd18020aaf31432187aa0f24ddec5cba8227b64a859e68294eeab94a10d"
+  },
+  "inputs": {
+    "bytes": 10398,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/root02-prelaunch-admission01/INPUTS.json",
+    "sha256": "01135332e91734026e2b5f56400ef46fd0b0b69ca567e623cc30a5e0e3914f93"
+  },
+  "local_actual_proof": {
+    "bytes": 26459,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/root02_prelaunch_admission_candidate01/actual-local-assembly01/ROOT02-PRELAUNCH-ADMISSION.local-derived.json",
+    "sha256": "09af0bd18020aaf31432187aa0f24ddec5cba8227b64a859e68294eeab94a10d"
+  },
+  "old_originals_or_outputs_modified": false,
+  "phone_calls": 0,
+  "regular_exact_member_sets_required": true,
+  "schema": "hepta.root02.source-and-evidence-stage-plan.v1",
+  "source": {
+    "bytes": 51581,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root02-prelaunch-admission-1ad3-candidate01/source/verify_root02_prelaunch.py",
+    "sha256": "ea25d9a882b3b4e671749e8dc4617dd8d776d26d9fb5018f3fedba9d71bc0101"
+  },
+  "source_archive": {
+    "bytes": 40597,
+    "member_bytes": 137881,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/root02_prelaunch_admission_candidate01/delivery-final01/source-package.tar.gz",
+    "regular_members": 10,
+    "sha256": "52a5d1c83707702a4483d182249f2b2730f95bb8313420dcc3ee66078fcc7047"
+  },
+  "source_manifest": {
+    "bytes": 2367,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root02-prelaunch-admission-1ad3-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "4e403d05b5eadf2ac7eb467ad75973b26dc41f77ce77f6e4b6646c8bfe03c4ab"
+  },
+  "source_target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root02-prelaunch-admission-1ad3-candidate01",
+  "staged_programs_executed_during_stage": false,
+  "state": "LOCAL_PREPARED_NO_REMOTE_CALLS"
+}

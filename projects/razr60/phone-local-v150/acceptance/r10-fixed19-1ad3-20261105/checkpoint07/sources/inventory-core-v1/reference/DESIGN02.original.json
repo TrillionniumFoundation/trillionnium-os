@@ -1,0 +1,386 @@
+{
+  "actions": {
+    "nonces_generated": 0,
+    "phone_calls": 0,
+    "remote_calls": 0,
+    "runtime_source_mutations": 0,
+    "target_programs_executed": 0
+  },
+  "actual_anchor_nonce": "902e851c3ca1f90deab3d880ab993774",
+  "actual_fixed_counts": {
+    "complete_entries": 2623,
+    "complete_inventory_file_bytes": 19424531,
+    "complete_roots": 27,
+    "fixture_roots": 7,
+    "inventory_elapsed_seconds": 0.8677734369994141,
+    "native_boundaries": 6,
+    "non_native_sidebranches": 1
+  },
+  "authorization_effect": {
+    "new_epoch_target_write": false,
+    "new_lease": false,
+    "new_nonce": false,
+    "new_phone_case": false,
+    "runtime_ready": false
+  },
+  "budget_accounting_rules": [
+    "No counters or clocks are reset between legacy/active/control domains or pagination.",
+    "All extra retained failed-attempt/control roots must be enumerated and fit global64; 51 is a projection, not an accepted actual root count.",
+    "All physically retained snapshot copies, including duplicate original bodies and new epoch proof files, count toward8192/64MiB.",
+    "A source-only size estimate does not establish future runtime timing or evidence size.",
+    "Before dispatch, exact current footprint plus a reviewed upper-bound reservation for required remaining qualification scopes must fit; otherwise refuse."
+  ],
+  "document": {
+    "bytes": 20963,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/bounded-epoch-design02/DESIGN.md",
+    "sha256": "6b0efe6b243af5550e3bc527dee16fc252c71c31e29b9cfedbc49284a0b8c913"
+  },
+  "global_budgets": {
+    "census_deadline_seconds": 2,
+    "complete_entry_limit": 30000,
+    "complete_inventory_byte_limit": 536870912,
+    "complete_root_limit": 64,
+    "consumer_bundle_byte_limit": 33554432,
+    "consumer_original_byte_limit": 16777216,
+    "consumer_source_byte_limit": 131072,
+    "directory_child_limit": 20000,
+    "inventory_file_byte_limit": 67108864,
+    "lease_seconds": 600,
+    "listener_seconds": 420,
+    "native_scan_byte_limit": 134217728,
+    "native_scan_line_byte_limit": 4194304,
+    "normal_full_native_root_projection_at_eight_active_slots": 51,
+    "numeric_pid_limit": 4096,
+    "prelaunch_remaining_strictly_greater_than": 510,
+    "role_identity_limit": 64,
+    "root_source_member_limit": 3,
+    "runtime_member_limit": 32,
+    "single_inventory_deadline_seconds": 30,
+    "snapshot_depth_limit": 12,
+    "snapshot_hard_deadline_seconds": 75,
+    "snapshot_retained_byte_limit": 67108864,
+    "snapshot_retained_file_limit": 8192,
+    "snapshot_single_file_byte_limit": 16777216,
+    "snapshot_soft_deadline_seconds": 55
+  },
+  "open_implementation_gates": [
+    "Exact phone retained failed-attempt original/root set must be bound and globally accounted.",
+    "The active reservation/terminal schemas and concurrency protocol require source implementation and independent review.",
+    "Operation-local legacy proof reuse must preserve all real-path/full9/source/byte bookends and never cache live observations across operations.",
+    "The original global time/bytes/count budgets must be enforced by one shared implementation; two old inventory calls with fresh budgets are prohibited.",
+    "All final consumers, snapshots and publishers must consume both explicit domains and reject a flattened/omitted history.",
+    "All downstream active-runtime derivations must explicitly admit the new configuration/service identities; the old four-dependency literal whitelist is insufficient.",
+    "No new registry is assumed to serialize unmodified old writers; complete frontier and current-original checks must reject any concurrent foreign change."
+  ],
+  "parent_design": {
+    "bytes": 14624,
+    "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/bounded-epoch-design01/DESIGN.json",
+    "sha256": "9bc320cd1d375e14eeb784f09d1a6c72e2272b4149401e99c056a5c2d9f22b75"
+  },
+  "preservation": {
+    "added_shared_entries_require_verified_scope_and_complete_closed_set": true,
+    "manifest_only_live_preservation": false,
+    "old_preserve_inventory_primitive_retained": true,
+    "old_shared_file_rows_immutable": true,
+    "private_complete_subtrees_immutable": true,
+    "private_historical_root_count": 21,
+    "shared_root_count": 6,
+    "unchanged_directory_rows_immutable": true
+  },
+  "readiness_handoff": {
+    "repeated_business_ready_calls_whole_retired_current_inventory": false,
+    "repeated_business_ready_rechecks_active_roles_and_external_artifacts": true,
+    "repeated_business_ready_revalidates_sealed_bundle_originals": true,
+    "whole_current_preservation_is_separate_install_start_gate": true,
+    "zero_slot_case_has_no_effects_claimed": false
+  },
+  "required_negative_checks": [
+    "old_ninth_fixture_still_refused",
+    "active_ninth_reservation_refused_before_case_effect",
+    "third_epoch_refused",
+    "global_root65_refused",
+    "global_entries30001_refused",
+    "global_bytes_over512MiB_refused",
+    "shared30second_clock_not_reset",
+    "old_leaf_mutation_or_disappearance_refused",
+    "unauthorized_shared_addition_refused",
+    "omitted_legacy_chain_or_sidebranch_refused",
+    "reused_historical_or_failed_nonce_refused",
+    "unlisted_source_generation_refused",
+    "concurrent_ordinal_claim_exactly_one_winner",
+    "parent_rename_or_inode_substitution_refused",
+    "preexisting_terminal_target_not_overwritten",
+    "crash_after_fsync_retains_unknown_claim",
+    "decoded_bundle_over32MiB_refused",
+    "actual_production_NEG14_capacity_and_rename_originals_remain_required",
+    "fresh_external_untracked_nonce_rejected",
+    "allocation_loser_does_not_generate_nonce",
+    "crash_before_identity_still_consumes_slot",
+    "invented_pre_send_native_scope_rejected",
+    "second_scope_binding_rejected",
+    "foreign_legacy_publication_not_absorbed"
+  ],
+  "reservation_protocol": {
+    "allocate_before_case_nonce_generation": true,
+    "failed_reservation_remains_consumed": true,
+    "fresh_external_case_nonce_allowed": false,
+    "global_scope": true,
+    "identity_record_create_only_after_allocation": true,
+    "linearization": "exclusive create of the unique next ordinal under held canonical parent directory FD",
+    "mutable_replaceable_head_pointer": false,
+    "native_scope_bound_only_from_real_accepted_original": true,
+    "ordinal_range": [
+      1,
+      8
+    ],
+    "ordinary_rename_overwrite_fallback": false,
+    "original_nonce_only_O_EXCL_sufficient": false,
+    "pre_identity_crash_consumes_slot_and_blocks": true,
+    "proposed_not_implemented": true,
+    "scope_binding_record_create_only": true,
+    "terminal_commit": "create-only last record after all bodies and directories fsynced",
+    "unbounded_rejected_nonce_registry": false,
+    "unknown_reservation_blocks_next": true,
+    "unmodified_legacy_writer_serialization_claimed": false
+  },
+  "schema": "hepta.native-guard.bounded-two-epoch-design.v1",
+  "semantic_changes": {
+    "active_reservation_limit": 8,
+    "all_existing_gates_unchanged_claimed": false,
+    "automatic_rollover": false,
+    "new_global_fixture_limit": 15,
+    "new_global_native_boundary_limit": 14,
+    "new_total_epoch_limit": 2,
+    "old_history_pruned": false,
+    "old_single_chain_fixture_limit_remains": 8,
+    "old_single_chain_native_limit_remains": 8,
+    "third_epoch_accepted": false
+  },
+  "slot_mapping": [
+    {
+      "cases": [
+        "NEG01",
+        "NEG02"
+      ],
+      "domain": "native_component_epoch",
+      "failure_rule": "Every allocated ordinal remains consumed even before identity or fixture creation; preflight creates no nonce. Unknown blocks later work until independently reconciled.",
+      "maximum_qualification_successes_required": 2,
+      "slot_charge": "one per reserved attempt, including failed and unknown",
+      "sources": [
+        "lifecycle",
+        "snapshot",
+        "closer"
+      ]
+    },
+    {
+      "boundary_publication": false,
+      "cases": [
+        "COMP01",
+        "NEG03"
+      ],
+      "domain": "sealed_release_physical_component",
+      "slot_charge": 0,
+      "sources": [
+        "component_common",
+        "component_root",
+        "active_runtime"
+      ]
+    },
+    {
+      "boundary_publication": false,
+      "cases": [
+        "E2E01",
+        "E2E02",
+        "E2E03",
+        "E2E04"
+      ],
+      "domain": "sealed_release_business_task",
+      "slot_charge": 0,
+      "sources": [
+        "business_root",
+        "business_materializer",
+        "business_registration",
+        "business_capture",
+        "business_closer"
+      ]
+    },
+    {
+      "boundary_publication": false,
+      "cases": [
+        "NEG04",
+        "NEG05",
+        "NEG07",
+        "NEG08",
+        "NEG09"
+      ],
+      "domain": "sealed_release_task_fault_or_cancel",
+      "slot_charge": 0,
+      "sources": [
+        "physical_and_cancel_slot_review"
+      ]
+    },
+    {
+      "boundary_publication": false,
+      "cases": [
+        "NEG06",
+        "NEG10",
+        "NEG11",
+        "NEG12",
+        "NEG13",
+        "NEG14"
+      ],
+      "domain": "host_isolated_fixed_generation",
+      "slot_charge": 0,
+      "sources": [
+        "six_host_preparer",
+        "six_host_importer"
+      ]
+    }
+  ],
+  "source_boundary_changes_required": [
+    "prepare/admit",
+    "lifecycle inventory",
+    "snapshot capture and chain structure",
+    "independent close",
+    "late boundary schema and publication",
+    "Root/plan helper",
+    "constructor/consumer/seal/install/READY"
+  ],
+  "source_revision_rules": {
+    "actual_closed_failure_required_before_revision": true,
+    "codec_output_preservation_claimed_to_fix_original_exit72": false,
+    "dynamic_package_acceptance": false,
+    "finite_exact_generation_admissions_required": true,
+    "maximum_active_generation_records": 8,
+    "old_source_real_path_and_identity_required": true,
+    "unreviewed_future_fix_filled": false
+  },
+  "sources": {
+    "active_runtime": {
+      "bytes": 31813,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/package/reference/active_runtime_r10.original.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    "actual_boundary": {
+      "bytes": 9686,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/external902_existing_capture_parser_candidate01/actual-run01/retained-bodies/boundary/902e851c3ca1f90deab3d880ab993774.json",
+      "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+    },
+    "actual_current_observation": {
+      "bytes": 1413595,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/OBSERVATIONS.decoded-original.json",
+      "sha256": "ae3ced37e0fc1f8cb71c2dfe37ba1522366d3a159ec7dacef7d0d4162beea265"
+    },
+    "actual_host_byte_equality": {
+      "bytes": 52142,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/independent-host-audit01/BYTE-EQUALITY.original.json",
+      "sha256": "6bb0cb5179850cce2adc53982796bde4dd6bb2f0269968df33e91ff4b4dc8461"
+    },
+    "actual_host_caller": {
+      "bytes": 2125,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/independent-host-audit01/CALLER-RESULT.original.json",
+      "sha256": "0aba002433726ab64629cbdb78b9ffd2b9295af86c2a34865c90dbffae51fb1d"
+    },
+    "actual_old_closure": {
+      "bytes": 55124,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/p4-published-closure-read01/CLOSURE.original.json",
+      "sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+    },
+    "business_capture": {
+      "bytes": 25550,
+      "path": "/workspace/scratch/1ad3d6f55439/business_source_cache/operator-chain/capture_originals_r10.py",
+      "sha256": "7e8b3920f9fa1345e8e2906f9cc05afb9db8b9c70c05577d5e5ad2202243d10c"
+    },
+    "business_closer": {
+      "bytes": 41173,
+      "path": "/workspace/scratch/1ad3d6f55439/business_source_cache/operator-chain/close_original_r10.py",
+      "sha256": "19af371cb5271ea6b3f8c2929ab969357aee07d14d498dcf50f57e9b3bbc9e75"
+    },
+    "business_materializer": {
+      "bytes": 24834,
+      "path": "/workspace/scratch/1ad3d6f55439/cascade_source_cache/templates/materialize_case_r10.py",
+      "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+    },
+    "business_registration": {
+      "bytes": 10669,
+      "path": "/workspace/scratch/1ad3d6f55439/business_source_cache/operator-chain/registration_phone_r10.py",
+      "sha256": "0922878919264a7af3c10db6db960392955654c1e7dbb09716f8a980754546f5"
+    },
+    "business_root": {
+      "bytes": 27535,
+      "path": "/workspace/scratch/1ad3d6f55439/business_source_cache/root_acceptance_r10.py",
+      "sha256": "1725978fb68e3846b01f3a16d047c279fce45cbab2c316bbfe563d54e7101286"
+    },
+    "capacity_precondition": {
+      "bytes": 12542,
+      "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/capacity-review01/CAPACITY-PRECONDITION.json",
+      "sha256": "3cde82e8826b03cb46e5911506dd31baba995255e4508e73ca395f2629bc5d18"
+    },
+    "closer": {
+      "bytes": 99120,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/close_component.py",
+      "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+    },
+    "component_common": {
+      "bytes": 29295,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/package/source/physical_component_common.py",
+      "sha256": "9a722bc807bc6a3bd2c084b3f308ec1cea5656407da25faeeb95284ba9c9747f"
+    },
+    "component_root": {
+      "bytes": 24645,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/package/source/run_physical_component_once.py",
+      "sha256": "bd5cbd63e0a04b4697244e49c2a70fa528adb74f1ee4ffddab5fd07eb83adce8"
+    },
+    "constructor": {
+      "bytes": 34843,
+      "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/make_component_boundary_inputs.py",
+      "sha256": "41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5"
+    },
+    "consumer": {
+      "bytes": 84972,
+      "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/release_boundaries.py",
+      "sha256": "57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0"
+    },
+    "consumer_capacity_review": {
+      "bytes": 6512,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/consumer-capacity-rollover-scope01/REVIEW.json",
+      "sha256": "ee141a23023bbe9d7c4ad0f2fb89a753034081b9174a74abb6f85b408915309c"
+    },
+    "e2e_slot_review": {
+      "bytes": 27479,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/reviews/e2e-native-slot-map01/REPORT.json",
+      "sha256": "1024c4987d19ac5a3c7a273d9448626dc103c7572013088c379fa2454839d160"
+    },
+    "epoch_budget_source_points": {
+      "bytes": 8362,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/epoch-budget-source-points01/SOURCE-POINTS.json",
+      "sha256": "ba39fd34d281a9205e0e6dcb5fc36b02b27af54cb3aa1483188f03d88a6407a1"
+    },
+    "lifecycle": {
+      "bytes": 40261,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_lifecycle.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    "physical_and_cancel_slot_review": {
+      "bytes": 9385,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/negative-runner-native-fixture-slot-review01/REVIEW.json",
+      "sha256": "5b0deecd7dd04857863484b9d2e35966454a92744d85ef19e5b2ee4e4231bc52"
+    },
+    "six_host_importer": {
+      "bytes": 44478,
+      "path": "/workspace/scratch/1ad3d6f55439/six_host_source_cache/import_six_host_results.py",
+      "sha256": "996c1fe01688d1394013498b095051243af689beb6a29a14aff18821ab3e20f8"
+    },
+    "six_host_preparer": {
+      "bytes": 29515,
+      "path": "/workspace/scratch/1ad3d6f55439/six_host_source_cache/prepare_fixed19_host_r10.py",
+      "sha256": "40a0beee0c53e138fd1f06d45450d444ca701cabb826ab243adfedcd270add6b"
+    },
+    "snapshot": {
+      "bytes": 24187,
+      "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/runtime/source/component_snapshot.py",
+      "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+    }
+  },
+  "state": "DESIGN_ONLY_CAPACITY_PROTOCOL_NOT_IMPLEMENTED_NOT_EXECUTION_READY"
+}

@@ -1,0 +1,43 @@
+{
+  "actual_retained_sources": [
+    {
+      "bytes": 20324,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/PHONE-STDOUT.original",
+      "sha256": "6c1ec237f163a1474ba74613f01d720400f5fd666ed8a4c8cd6349744d51c163"
+    },
+    {
+      "bytes": 20344,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/originals/PHONE-STDOUT.original",
+      "sha256": "672d29dd81e6daec854eced00aea238bb787c8bf5ddef9bc9a765d754d7c1a46"
+    }
+  ],
+  "all134_rows_reconstructed_from_actual_stage_phone_outputs": true,
+  "all_extra_aliases_empty_directories": true,
+  "complete9_names_and_xattr_original_rows_equal": true,
+  "directories": 20,
+  "extra_alias_count": 2,
+  "extra_alias_pairs": [
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/executor"
+    ],
+    [
+      "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/executor",
+      "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-20261105-09/executor"
+    ]
+  ],
+  "extra_binding_remains_none": true,
+  "file_bytes_charged_without_alias_deduplication": 4179162,
+  "files": 114,
+  "footprint": {
+    "bytes": 176976,
+    "sha256": "6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f"
+  },
+  "fresh_observation_still_required": true,
+  "legacy_alias_pairs": 55,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "required_fixed_total_after_actual_binding": 57,
+  "schema": "hepta.source-only.failed-retained-alias-reconstruction.v1",
+  "third_inode_view_observed": false
+}

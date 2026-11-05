@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.root.logcat-query02-source-admission.v1",
+  "state": "REVIEWED_FOR_ONE_FIXED_READONLY_QUERY",
+  "source": {
+    "bytes": 18636,
+    "sha256": "652ad1b5a6d864134f461dc23f63a17498ff70074a9eb7d385179cd5edbdfce0"
+  },
+  "caller": {
+    "bytes": 70022,
+    "sha256": "5497e828168f399dd54b27df1a6a76f927b628cdc393341da9d9c83be65638b7"
+  },
+  "request": {
+    "bytes": 73904,
+    "sha256": "40b49dce2e827762796664a4029a49c1cbdcdc9d21f6ba49f7ee45ea9670375b"
+  },
+  "manifest": {
+    "bytes": 4853,
+    "sha256": "2cf909c8336476d6bc36616ac1baa0a501ac49b1959189cbc99513fad8f0034a"
+  },
+  "all_package_regular_files_verified": 26,
+  "review_basis": "Complete reviewed35a7 parent with six source and seven caller anchored changes; source patch and full non-embedded caller read; embedded source and request exact bytes checked. Only native --max-count/128 removed plus truthful count-limit reporting and unique diagnostic labels.",
+  "fork_pipe_wait_ownership_cleanup_byte_unchanged": true,
+  "original_query01_failure_preserved": true,
+  "native_count_limit": null,
+  "selected_original_limit": 128,
+  "selected_byte_limit": 262144,
+  "stdout_byte_limit": 2097152,
+  "stderr_byte_limit": 16384,
+  "report_byte_limit": 524288,
+  "phone_shell_timeout_seconds": 60,
+  "p4_passive_wait_seconds": 90,
+  "outer_timeout": null,
+  "full_adb_service_wire_bytes": 21319,
+  "command_wire_limit": 65536,
+  "new_case_or_nonce": false,
+  "phone_file_writes": 0,
+  "old_action_replayed": false,
+  "case_pass": false,
+  "one_query_only": true,
+  "idempotency_key": "root-1ad3-kernel-audit-window02-20261105"
+}

@@ -1,0 +1,33 @@
+{
+  "actor_returncode": 0,
+  "automatic_retry": false,
+  "case_pass": false,
+  "native_boundary_created": false,
+  "phone_originals": {
+    "baseline.json": {
+      "bytes": 348,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-epoch-retained-footprint-1ad3-read01/baseline.json",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    "intent.json": {
+      "bytes": 58776,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-epoch-retained-footprint-1ad3-read01/intent.json",
+      "sha256": "505a814e52e659dc6363ee00a17d5311eb178c2e98cd052397f874423940fd1d"
+    },
+    "result.json": {
+      "bytes": 66410,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-epoch-retained-footprint-1ad3-read01/result.json",
+      "sha256": "9ac2247ed898c0022b220735259f131be67791f76c1076b0b03e90e582842424"
+    }
+  },
+  "phone_returncode": 1,
+  "phone_status": "command_exited",
+  "phone_stdout": {
+    "bytes": 702,
+    "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-epoch-retained-footprint-read01/PHONE-STDOUT.original",
+    "sha256": "455146afcfa5038f73078385e979cb8d9cdc4cd19526653a68aed2cc6fc67de6"
+  },
+  "signals_sent": 0,
+  "source_sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98",
+  "state": "EPOCH_RETAINED_FOOTPRINT_READONLY_OBSERVATION_FAILED_OR_UNKNOWN"
+}

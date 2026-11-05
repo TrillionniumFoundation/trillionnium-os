@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.root.current-head-complete-consumption.v1",
+  "state": "ACTUAL_CURRENT_HEAD_READ_COMPLETE_WITH_ORIGINAL_BYTES",
+  "controller_job": "1a1ac3235b3-fc05-52cc",
+  "controller_complete_durable_terminal": true,
+  "controller_both_eof": true,
+  "phone_stdout": {
+    "bytes": 303134,
+    "sha256": "a69cd802c7ea5ddc81d9b9513b0ca27ab4ca2beaa041983243a872f375356957"
+  },
+  "observations_raw": {
+    "bytes": 1413595,
+    "sha256": "ae3ced37e0fc1f8cb71c2dfe37ba1522366d3a159ec7dacef7d0d4162beea265"
+  },
+  "original_constituent_calls": 17,
+  "original_full9_readset": 63,
+  "native_chain_descriptors": 18,
+  "inventory_roots": 27,
+  "inventory_entries": 2623,
+  "inventory_hashed_bytes": 19424531,
+  "four_group_censuses": [
+    25,
+    25,
+    4,
+    4
+  ],
+  "signal_zero_queries": 58,
+  "nonzero_signals": 0,
+  "endpoint_originals_verified": {
+    "tcp": {
+      "bytes": 750,
+      "sha256": "87076bad3bb03ec681913abaa41eb4b429f588d176148ab6f8f49a84ba3a8d5d"
+    },
+    "tcp6": {
+      "bytes": 861,
+      "sha256": "75c383df9c6c0ab46aeedb3f2726c183517890986d9d554a724705a82823b9d7"
+    },
+    "unix": {
+      "bytes": 358075,
+      "sha256": "c6f05df6da6055ec5efb6a11c8867cafdb9c7cc927079aebb653e503f42a391e"
+    }
+  },
+  "owned_readonly_lock_observed_closed": true,
+  "observation_wall_seconds": 24.649081814015517,
+  "historical_sender_unknown_preserved": true,
+  "no_atomic_global_snapshot_claim": true,
+  "historical_expired_lease_not_renewed": true,
+  "case_pass": false,
+  "whole_cases_passed": 0,
+  "future_input_authorization": false,
+  "phone_source_writes": 0,
+  "new_nonce_or_boundary": false,
+  "local_root02_assembler_and_independent_review": "property_diagnostic/root02_prelaunch_admission_candidate01/actual-local-assembly01; transport_fix/root02-current-head-verifier-independent01/REVIEW.json"
+}

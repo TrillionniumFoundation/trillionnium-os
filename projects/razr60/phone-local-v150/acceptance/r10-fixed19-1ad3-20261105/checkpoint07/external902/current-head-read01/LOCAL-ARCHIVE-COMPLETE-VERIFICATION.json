@@ -1,0 +1,266 @@
+{
+  "schema": "hepta.fixed19.originals-download-verification.v1",
+  "state": "COMPLETE_PINNED_VERSION_ARCHIVE_AND_TWELVE_ORIGINALS_VERIFIED",
+  "authority": "Only existing P4 archive binary_read; no process, observer, phone, or source execution.",
+  "host": "pocket4",
+  "remote_path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-external902-current-head-read01/FULL-ORIGINALS.tar.xz",
+  "source_version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+  "manifest": {
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/ARCHIVE-MANIFEST.json",
+    "bytes": 2431,
+    "sha256": "b4f14e0705af4621982e67a09ebdb457c38007b350e1232e6cc794e82c6f2dc2"
+  },
+  "archive": {
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/FULL-ORIGINALS.tar.xz",
+    "bytes": 237552,
+    "sha256": "5d3a7d5faff31e70244f809ba5fc232fdafb4472c63b84cc6fbe6e73ecbf63b8"
+  },
+  "uncompressed_tar": {
+    "bytes": 819200,
+    "sha256": "27ce38ce2ffdf7b8338c5147c84b40f3d424e28327b1b4919e65a2c73a8fecb8"
+  },
+  "chunk_count": 8,
+  "chunks": [
+    {
+      "offset": 0,
+      "next_offset": 32768,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-000000.request.json",
+        "bytes": 177,
+        "sha256": "3a07c35e28a8f949747f123e41cdad9af1968bde01077d17b4b7b83a0885f3ea"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-000000.tool.json",
+        "bytes": 44186,
+        "sha256": "4ccb9a5885bbd348771122ca6b17a9277ce9cc0e6ef05bb6952b1f594060f7e3"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-000000.bin",
+        "bytes": 32768,
+        "sha256": "e4874b1643387948037a9ece339997dfeb21dfbbbef617bda6ea0586448e2e94"
+      }
+    },
+    {
+      "offset": 32768,
+      "next_offset": 65536,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-032768.request.json",
+        "bytes": 268,
+        "sha256": "409e9f3710155de0fb74506951885b5b7c5d9a3b133575aefd317182dc105541"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-032768.tool.json",
+        "bytes": 44190,
+        "sha256": "0d49b1372e9c59c07e7690a40358c4cebea78fcdbb497ea74aa3225cf6671cee"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-032768.bin",
+        "bytes": 32768,
+        "sha256": "9022540051477ca064c4dbc005de146e8e0be0aa3ad0956ea657ad816d48c5d5"
+      }
+    },
+    {
+      "offset": 65536,
+      "next_offset": 98304,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-065536.request.json",
+        "bytes": 268,
+        "sha256": "808026120da257f2a026bc58e8ad3897e32daceba8392c7efe155bee0f433dd9"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-065536.tool.json",
+        "bytes": 44190,
+        "sha256": "dbfcf964d1fa9e3e278cc6a2e25569ce4311aefc08bbe9d11eddf2d259d00f59"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-065536.bin",
+        "bytes": 32768,
+        "sha256": "105dabec83bbf8c34c3ba25124d51636d82814a19e54ed8f9826a5017482a745"
+      }
+    },
+    {
+      "offset": 98304,
+      "next_offset": 131072,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-098304.request.json",
+        "bytes": 268,
+        "sha256": "eae17e4c6207df5287b0e128b06a5ea7e97534c33e115705803e897468ae7df5"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-098304.tool.json",
+        "bytes": 44191,
+        "sha256": "38b1ea211ebbec57c7a16a968771dcd2329c4c760d788cac37afa1e803a929e1"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-098304.bin",
+        "bytes": 32768,
+        "sha256": "d848179fe2ad2111e07b82e33e5b2dc690b15447e14dfd7248dab9d7ba565bd9"
+      }
+    },
+    {
+      "offset": 131072,
+      "next_offset": 163840,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-131072.request.json",
+        "bytes": 269,
+        "sha256": "52d48866186e7d3e92c3a88428db19356589e19c7e75c46faf987fd0e20d3ff3"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-131072.tool.json",
+        "bytes": 44192,
+        "sha256": "f8ecd0871b8808048572de784a674b0efe762448e69530d543feecc490105d6c"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-131072.bin",
+        "bytes": 32768,
+        "sha256": "e3ca0480a32e7a7bdd8580cebdcec571273d0e603a2672326c79490ca595027d"
+      }
+    },
+    {
+      "offset": 163840,
+      "next_offset": 196608,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-163840.request.json",
+        "bytes": 269,
+        "sha256": "cea03d502a16de7bb0d348ece33ac9bb18469a9d15d6fa557a878f9dfcca93e0"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-163840.tool.json",
+        "bytes": 44192,
+        "sha256": "d0d17f0d61c71a867a839600cc455e83e321276c9ab13439a89e756f593373c1"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-163840.bin",
+        "bytes": 32768,
+        "sha256": "5dccb95d642bca54b7cf692e9532c1960cb1ff34fe4fbadcd040d8cc3db4ce6a"
+      }
+    },
+    {
+      "offset": 196608,
+      "next_offset": 229376,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-196608.request.json",
+        "bytes": 269,
+        "sha256": "346c0175d062c72d1bfd200b19ac080e5e08b54619652ca62c7186631f98f17a"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-196608.tool.json",
+        "bytes": 44192,
+        "sha256": "56da85e70bd1170acf98d23f540a2197d921c4b70723240605d9136c9213ef8d"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-196608.bin",
+        "bytes": 32768,
+        "sha256": "d01bd3aec93b9180fe9d8565c6edaa100d0d0838100d429a07a5ba5d962c45a7"
+      }
+    },
+    {
+      "offset": 229376,
+      "next_offset": 237552,
+      "version": "66306:44320825:237552:1793890361262120823:1793890361262120823",
+      "request": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-229376.request.json",
+        "bytes": 269,
+        "sha256": "e9b797d30c6e62aa242585c32e6dc5b6b37e04d6193a73ada0a10392af8496e4"
+      },
+      "tool_receipt": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-229376.tool.json",
+        "bytes": 11403,
+        "sha256": "18575ce8896edd17ca04f004de9febb117c0538b78ee25da2ace101c313cebca"
+      },
+      "chunk": {
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/chunk-229376.bin",
+        "bytes": 8176,
+        "sha256": "ebe423e221725e74a4413d7b57807763ee71633dcefc820ed4608544356d7b3b"
+      }
+    }
+  ],
+  "exact_member_count": 12,
+  "originals": [
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/CHILD.json",
+      "bytes": 72,
+      "sha256": "121e29adbc190473803a34d2de17e89fa3cd22964825ec5a8ec9c13cff0bf960"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/INTENT.json",
+      "bytes": 594,
+      "sha256": "769e8ad8a442c6921fbb0af4e06ad67e073001d6a7d3202addf5eff3bcf17582"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/JOINED.json",
+      "bytes": 86,
+      "sha256": "75ddcdf5de3006d38b54698fb5f05213a65c47b9168868c86fd01224bed642b9"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/PHONE-STDOUT.original",
+      "bytes": 303134,
+      "sha256": "a69cd802c7ea5ddc81d9b9513b0ca27ab4ca2beaa041983243a872f375356957"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/PROBE-SOURCE.original.py",
+      "bytes": 44561,
+      "sha256": "582a4b9891b1f1d5c75b03488d70d2dd47916a4a863620c07e30105ee81537f5"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/REQUEST.original.json",
+      "bytes": 45746,
+      "sha256": "5d16e8e5bc65148ff40ff267b920aeaa0b65d62f43e84e1ee0d5b805c8977351"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/RESULT.json",
+      "bytes": 1399,
+      "sha256": "9011fe67b60f193d174967e578cff5829d5136ca4ff926c98b238f15ec2c1397"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/actor.stderr.original",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/actor.stdout.original",
+      "bytes": 301,
+      "sha256": "74f88231b134208ba95be5886a7224d0f08fece28bd62c06c627481a81b88a85"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/phone-baseline.json.original",
+      "bytes": 348,
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/phone-intent.json.original",
+      "bytes": 46053,
+      "sha256": "1c542231cc6d2cc2a53ec62120203608966f3c216302d050e3f2f9180d708ab5"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/phone-result.json.original",
+      "bytes": 359425,
+      "sha256": "bc525f15ac4686aac8cdfb6bbef22dd3df7ed9737508949d5c8349f311ce5eb8"
+    }
+  ],
+  "phone_stdout": {
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/extracted/PHONE-STDOUT.original",
+    "bytes": 303134,
+    "sha256": "a69cd802c7ea5ddc81d9b9513b0ca27ab4ca2beaa041983243a872f375356957"
+  },
+  "all_member_bytes_sha256_verified": true,
+  "xz_stream_complete_and_checksum_verified": true,
+  "source_changed": false,
+  "observer_reexecuted": false,
+  "phone_operations": 0,
+  "process_starts": 0,
+  "case_pass": false,
+  "download_does_not_change_original_observation_time_or_claim_atomic_snapshot": true,
+  "verifier_source": {
+    "path": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/binary-download01/verify_and_extract_locally.py",
+    "bytes": 7532,
+    "sha256": "f0d0effe12541b81a9a03efb9a460e46cfdd31ecd243676769a6601dc1437b7f"
+  }
+}

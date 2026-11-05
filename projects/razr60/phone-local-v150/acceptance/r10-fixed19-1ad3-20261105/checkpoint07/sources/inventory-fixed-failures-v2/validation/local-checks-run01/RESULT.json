@@ -1,0 +1,367 @@
+{
+  "actual_case_nonce_generated": false,
+  "checks": [
+    {
+      "detail": {
+        "error": "ValueError",
+        "reason": "exact failed-attempt/control inventory roots remain unbound"
+      },
+      "elapsed_seconds": 0.029381585998635273,
+      "name": "None_extra_remains_fail_closed",
+      "passed": true
+    },
+    {
+      "detail": {
+        "absent_only_fixture_roots": 3,
+        "old_55_aliases_retained": 55,
+        "potentially_present_fixture_roots": 7,
+        "roots": 30
+      },
+      "elapsed_seconds": 0.030362100005731918,
+      "name": "three_fixed_absences_separate_from_old_fixture_roots_and_v1_views",
+      "passed": true
+    },
+    {
+      "detail": [
+        {
+          "case": "v1",
+          "error": "ValueError",
+          "reason": "epoch inventory spec differs"
+        },
+        {
+          "case": "missing_domain",
+          "error": "ValueError",
+          "reason": "epoch inventory spec differs"
+        },
+        {
+          "case": "omitted_identity",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        },
+        {
+          "case": "duplicate_identity",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        },
+        {
+          "case": "reordered",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        },
+        {
+          "case": "present_requested",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        },
+        {
+          "case": "changed_nonce",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        },
+        {
+          "case": "changed_path",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        },
+        {
+          "case": "changed_original_pin",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        },
+        {
+          "case": "bool_original_size",
+          "error": "ValueError",
+          "reason": "all three exact retained failed fixture absences are mandatory"
+        }
+      ],
+      "elapsed_seconds": 0.028461035995860584,
+      "name": "explicit_v2_exact_three_identity_and_original_pins",
+      "passed": true
+    },
+    {
+      "detail": {
+        "checks": [
+          {
+            "error": "ValueError",
+            "nonce": "7c79195945d64e569a191166ac122a08",
+            "reason": "active identity reuses a historical or active identity"
+          },
+          {
+            "error": "ValueError",
+            "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+            "reason": "active identity reuses a historical or active identity"
+          },
+          {
+            "error": "ValueError",
+            "nonce": "bc0573ad459cecae9884d6a46568621b",
+            "reason": "active identity reuses a historical or active identity"
+          }
+        ],
+        "no_new_case_nonce_generated": true
+      },
+      "elapsed_seconds": 0.025885617003950756,
+      "name": "all_three_failed_nonces_forbidden_even_without_created_roots",
+      "passed": true
+    },
+    {
+      "detail": {
+        "fixed_as_generic": {
+          "error": "ValueError",
+          "reason": "fixed failed fixture absences cannot be reclassified as generic roots"
+        },
+        "fourth_absent_fixture": {
+          "error": "ValueError",
+          "reason": "undeclared fixture cannot be hidden as a generic root"
+        }
+      },
+      "elapsed_seconds": 0.09270010399632156,
+      "name": "generic_reclassification_and_fourth_fixture_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "global64_including_absent3_accepted": true,
+        "global65_rejected": {
+          "error": "ValueError",
+          "reason": "one complete unique union must fit the original 64-root bound"
+        },
+        "legacy7_active8_maximum": 15,
+        "ninth_active_rejected": {
+          "error": "ValueError",
+          "reason": "at most eight consumed active reservations are supported"
+        },
+        "total_named_fixture_domains": 18
+      },
+      "elapsed_seconds": 0.1444567860016832,
+      "name": "shared_root64_and_positive_fixture15_limits",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_local_positive_parent_observations": [
+          {
+            "absence": "ENOENT",
+            "canonical_parent_reopened": true,
+            "final_parent_metadata": [
+              27,
+              3956748,
+              16832,
+              0,
+              0,
+              2,
+              4096,
+              1793896575722082352,
+              1793896575722082352
+            ],
+            "final_reopened_enoent_checks": 1,
+            "first_elapsed_seconds": 0.0002705650040297769,
+            "initial_held_enoent_checks": 2,
+            "initial_parent_metadata": [
+              27,
+              3956748,
+              16832,
+              0,
+              0,
+              2,
+              4096,
+              1793896575722082352,
+              1793896575722082352
+            ],
+            "initial_reopened_enoent_checks": 1,
+            "last_elapsed_seconds": 0.0005588060012087226,
+            "parent_path": "/proc/1/root/data/local/tmp",
+            "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c79195945d64e569a191166ac122a08",
+            "schema": "hepta.native-guard.epoch-positive-root-absence.v1"
+          },
+          {
+            "absence": "ENOENT",
+            "canonical_parent_reopened": true,
+            "final_parent_metadata": [
+              27,
+              3956748,
+              16832,
+              0,
+              0,
+              2,
+              4096,
+              1793896575722082352,
+              1793896575722082352
+            ],
+            "final_reopened_enoent_checks": 1,
+            "first_elapsed_seconds": 0.00039612900582142174,
+            "initial_held_enoent_checks": 2,
+            "initial_parent_metadata": [
+              27,
+              3956748,
+              16832,
+              0,
+              0,
+              2,
+              4096,
+              1793896575722082352,
+              1793896575722082352
+            ],
+            "initial_reopened_enoent_checks": 1,
+            "last_elapsed_seconds": 0.0006100640021031722,
+            "parent_path": "/proc/1/root/data/local/tmp",
+            "path": "/proc/1/root/data/local/tmp/hepta-native-guard-7c74b84aefb177d15f746fa7eae29d54",
+            "schema": "hepta.native-guard.epoch-positive-root-absence.v1"
+          },
+          {
+            "absence": "ENOENT",
+            "canonical_parent_reopened": true,
+            "final_parent_metadata": [
+              27,
+              3956748,
+              16832,
+              0,
+              0,
+              2,
+              4096,
+              1793896575722082352,
+              1793896575722082352
+            ],
+            "final_reopened_enoent_checks": 1,
+            "first_elapsed_seconds": 0.0005055370056652464,
+            "initial_held_enoent_checks": 2,
+            "initial_parent_metadata": [
+              27,
+              3956748,
+              16832,
+              0,
+              0,
+              2,
+              4096,
+              1793896575722082352,
+              1793896575722082352
+            ],
+            "initial_reopened_enoent_checks": 1,
+            "last_elapsed_seconds": 0.0006559290050063282,
+            "parent_path": "/proc/1/root/data/local/tmp",
+            "path": "/proc/1/root/data/local/tmp/hepta-native-guard-bc0573ad459cecae9884d6a46568621b",
+            "schema": "hepta.native-guard.epoch-positive-root-absence.v1"
+          }
+        ],
+        "file_bytes": 0,
+        "fixed_phone_paths_mapped_to_temporary_local_leaves": true,
+        "global_entries_charged": 3,
+        "phone_observed": false
+      },
+      "elapsed_seconds": 0.029340759996557608,
+      "name": "three_real_local_ENOENTs_share_clock_entries_and_parent_bookends",
+      "passed": true
+    },
+    {
+      "detail": [
+        {
+          "error": "ValueError",
+          "kind": "directory",
+          "reason": "an explicitly absent retained/control root appeared"
+        },
+        {
+          "error": "ValueError",
+          "kind": "regular",
+          "reason": "an explicitly absent retained/control root appeared"
+        },
+        {
+          "error": "ValueError",
+          "kind": "symlink",
+          "reason": "an explicitly absent retained/control root appeared"
+        },
+        {
+          "error": "ValueError",
+          "kind": "fifo",
+          "reason": "an explicitly absent retained/control root appeared"
+        }
+      ],
+      "elapsed_seconds": 0.12450379399524536,
+      "name": "all_present_object_types_rejected_before_read_or_traversal",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_legacy_inventory_body_used_as_readonly_fixture": "/workspace/scratch/1ad3d6f55439/actual_external_902e_7c907661_01/current-head-read01/OBSERVATIONS.decoded-original.json",
+        "refusals": [
+          {
+            "case": "missing_failed_parent",
+            "error": "ValueError",
+            "reason": "every positive absence needs its complete independent parent observation"
+          },
+          {
+            "case": "changed_parent",
+            "error": "ValueError",
+            "reason": "absence canonical parent full identity changed or incomplete"
+          },
+          {
+            "case": "missing_explicit_domain",
+            "error": "ValueError",
+            "reason": "explicit shared-budget/alias observation differs"
+          },
+          {
+            "case": "false_present_claim",
+            "error": "ValueError",
+            "reason": "explicit shared-budget/alias observation differs"
+          },
+          {
+            "case": "wrong_count",
+            "error": "ValueError",
+            "reason": "explicit shared-budget/alias observation differs"
+          },
+          {
+            "case": "bool_int_substitution",
+            "error": "ValueError",
+            "reason": "explicit shared-budget/alias observation differs"
+          },
+          {
+            "case": "old_observation_schema",
+            "error": "ValueError",
+            "reason": "explicit shared-budget/alias observation differs"
+          }
+        ],
+        "synthetic_absence_envelopes_not_actual_phone": true,
+        "verification": {
+          "active_reservation_count": 0,
+          "alias_pairs": 55,
+          "case_or_lease_authorized": false,
+          "cross_operation_preservation_verified_by_this_function": false,
+          "entries": 2626,
+          "failed_fixture_nonces_reuse_forbidden": true,
+          "file_bytes_hashed": 19424531,
+          "fixture_namespace_count": 10,
+          "original_provenance_verified_by_this_function": false,
+          "retained_failed_fixture_absence_count": 3,
+          "roots": 30,
+          "schema": "hepta.native-guard.two-epoch-inventory-verification.v2",
+          "spec_sha256": "d81933428fc5c21a0dd1ee6cc97e3a518756fc4cbc049ec91524813a4be53338",
+          "whole_union_structurally_verified": true
+        }
+      },
+      "elapsed_seconds": 6.523239738002303,
+      "name": "full_pure_proof_requires_three_actual_parent_envelopes",
+      "passed": true
+    }
+  ],
+  "common": {
+    "bytes": 19138,
+    "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+  },
+  "fragment": {
+    "bytes": 66024,
+    "sha256": "5569328e15cac5909b38429a63160e0ce7adda4cc6e7dc46bb4552f24487bb55"
+  },
+  "historical_full_lifecycle_imported": false,
+  "passed": 9,
+  "phone_calls": 0,
+  "physical_NEG14_or_epoch_generation_qualification": false,
+  "production_None_binding_changed": false,
+  "remote_calls": 0,
+  "runtime_main_called": false,
+  "schema": "hepta.local-fixed-failed-fixture-increment-checks.v1",
+  "state": "PASS",
+  "test_only_overrides": [
+    "EPOCH_INVENTORY_EXTRA_ROOTS only in isolated test namespaces",
+    "Private walker parent_fd maps fixed absent fixture leaves into temporary local directory for ENOENT and existing-object checks"
+  ],
+  "total": 9,
+  "unchanged_27_checks_rerun": false
+}

@@ -1,0 +1,33 @@
+--- draft02-a724.py
++++ draft03-2a3e.py
+@@ -238,8 +238,8 @@
+              'positive_absence_observations': list(ABSENCES.values()),
+              'read_bookends': READ_BOOKENDS, 'actual_alias_checks': ALIAS_CHECKS,
+              'fixed_proc_root_bridge': PROC_BRIDGE, 'boot_originals': BOOT_ORIGINALS,
+-             'file_originals': [{**descriptor(raw), 'path': path, 'encoding': 'base64', 'data_base64': ''}
+-                                for path, raw in RAW_FILES.items()]}
++             'file_originals': [{'bytes': ENTRIES[path]['bytes'], 'sha256': ENTRIES[path]['sha256'],
++                                'path': path, 'encoding': 'base64', 'data_base64': ''} for path in RAW_FILES]}
+     need(len(encoded(value)) <= 512*1024, 'whole footprint metadata observation bound')
+ 
+ 
+@@ -253,7 +253,7 @@
+          and all(re.fullmatch(rb'[0-9]+', fields[i]) for i in (2, 3, 19)),
+          'actual PID1 group/session/start fields malformed')
+     value = [1, int(fields[2]), int(fields[3]), int(fields[19])]
+-    need(value[3] > 0, 'actual PID1 start ticks absent')
++    need(value[3] == 0, 'actual PID1 start ticks differ from the fixed native init profile')
+     return value
+ 
+ 
+@@ -311,8 +311,8 @@
+                   'pid1_generation': generation, 'magic_link_path': '/proc/1/root',
+                   'magic_link_lstat_metadata': root_meta, 'magic_link_text': {
+                       **descriptor(root_text), 'encoding': 'base64', 'data_base64': base64.b64encode(root_text).decode('ascii')},
+-                  'followed_android_root': {'path': '/proc/1/root', 'dev_ino_mode': android_meta[:3]},
+-                  'gnu_root': {'path': '/', 'dev_ino_mode': gnu_meta[:3]},
++                  'followed_android_root': {'path': '/proc/1/root', 'dev_ino_mode': android_meta[:3], 'metadata': android_meta},
++                  'gnu_root': {'path': '/', 'dev_ino_mode': gnu_meta[:3], 'metadata': gnu_meta},
+                   'only_magic_link_exception': '/proc/1/root', 'other_path_components_nofollow': True}
+         row = {'identity': stable, 'pid1_stat_original': {'path': '/proc/1/stat', **descriptor(raw),
+                        'encoding': 'base64', 'data_base64': base64.b64encode(raw).decode('ascii')},

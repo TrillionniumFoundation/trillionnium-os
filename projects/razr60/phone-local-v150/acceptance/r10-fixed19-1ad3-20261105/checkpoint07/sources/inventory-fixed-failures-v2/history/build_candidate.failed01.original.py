@@ -1,0 +1,206 @@
+#!/usr/bin/env python3
+"""Source-only exact increment; never imports the lifecycle target."""
+import ast
+import difflib
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+OUT = Path(__file__).resolve().parent
+PARENT = ROOT / 'property_diagnostic/epoch_inventory_core_candidate01/delivery-final01/package'
+
+
+def descriptor(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def enc(value):
+    return (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + '\n').encode()
+
+
+def put(path, raw):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('xb') as handle:
+        handle.write(raw)
+
+
+def main():
+    lifecycle = (PARENT / 'source/component_lifecycle.py').read_bytes()
+    fragment = (PARENT / 'source/epoch_inventory.fragment.py').read_bytes()
+    original = (PARENT / 'reference/component_lifecycle.original.py').read_bytes()
+    assert descriptor(lifecycle) == {'bytes': 102896, 'sha256': 'bace77b9bfc6550f2a9ea29b102fc7d20b917ff11994ba30007a6affae167048'}
+    assert descriptor(fragment) == {'bytes': 62633, 'sha256': '0d278c6e38c613330f742b679addcbbaf6ea9d9e9bbd72abcda8d12edea4137f'}
+    assert lifecycle.count(fragment) == 1
+    inputs = [
+        ('external09', 'actual_external_r8_cascade_and_09/external09-small-originals/CHAIN-INTENT.json',
+         363, '008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4'),
+        ('own01', 'actual_neg01_1ad3_01/reconciliation/CHAIN-INTENT.json',
+         359, '7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88'),
+        ('own02', 'actual_neg01_1ad3_02/reconciliation/mac-full-archive01/root-originals/CHAIN-INTENT.json',
+         359, '3e800888b72860f3b29efbf8b2550c8c8e345fb650b4956bb9df9725b3b3cef1')]
+    fixed = []; references = []
+    for name, rel, size, digest in inputs:
+        raw = (ROOT / rel).read_bytes()
+        assert descriptor(raw) == {'bytes': size, 'sha256': digest}
+        item = json.loads(raw)
+        assert item['schema'] == 'hepta.native-guard.root-chain-intent.v1'
+        fixed.append({'label': item['label'], 'nonce': item['nonce'],
+                      'path': '/proc/1/root/data/local/tmp/hepta-native-guard-' + item['nonce'],
+                      'presence': 'absent', 'chain_intent': descriptor(raw)})
+        put(OUT / 'reference' / (name + '-CHAIN-INTENT.original.json'), raw)
+        references.append({'path': rel, **descriptor(raw)})
+    footprint_raw = (ROOT / 'epoch_native_candidate01/footprint01/FOOTPRINT.json').read_bytes()
+    footprint = json.loads(footprint_raw)
+    assert descriptor(footprint_raw) == {'bytes': 176976, 'sha256': '6bb6a8466bd8bcb2d7bb2aa6e376113d481dab27ca919a5f419fa19c07d0d40f'}
+    assert [(x['label'], x['nonce'], x['fixture']) for x in footprint['failed_attempts']] == [
+        (x['label'], x['nonce'], x['path']) for x in fixed]
+    assert {x['path'] for x in fixed} <= {x['path'] for x in footprint['absence_checks'] if x['additional_root_charge']}
+
+    changes = []
+    def change(before, after, count=1):
+        nonlocal fragment
+        a, b = before.encode(), after.encode()
+        assert fragment.count(a) == count, before[:120]
+        fragment = fragment.replace(a, b)
+        changes.append({'before': a, 'after': b, 'count': count})
+
+    change('EPOCH_INVENTORY_EXTRA_ROOTS = None\n',
+           'EPOCH_INVENTORY_EXTRA_ROOTS = None\n'
+           '# These exact failed identities can never become an active fixture.\n'
+           '# Historical intents bind names only; every operation must obtain fresh\n'
+           '# positive ENOENT with the original canonical-parent observations.\n'
+           'EPOCH_INVENTORY_RETAINED_FAILED_FIXTURE_ABSENCES = ' + repr(fixed) + '\n')
+    change("        'control_roots', 'control_leaves', 'alias_pairs'} and spec['schema'] ==\n        'hepta.native-guard.two-epoch-inventory-spec.v1', 'epoch inventory spec differs')",
+           "        'control_roots', 'control_leaves', 'alias_pairs',\n        'retained_failed_fixture_absences'} and spec['schema'] ==\n        'hepta.native-guard.two-epoch-inventory-spec.v2', 'epoch inventory spec differs')")
+    change("    extra = EPOCH_INVENTORY_EXTRA_ROOTS\n",
+           "    failed = EPOCH_INVENTORY_RETAINED_FAILED_FIXTURE_ABSENCES\n"
+           "    need(encoded(spec['retained_failed_fixture_absences']) == encoded(failed),\n"
+           "         'all three exact retained failed fixture absences are mandatory')\n"
+           "    failed_paths = [row['path'] for row in failed]\n"
+           "    failed_nonces = {row['nonce'] for row in failed}\n"
+           "    need(len(failed_paths) == len(set(failed_paths)) == len(failed_nonces) == 3,\n"
+           "         'fixed failed fixture identities differ')\n"
+           "    extra = EPOCH_INVENTORY_EXTRA_ROOTS\n")
+    change("    need(len(extra_paths) == len(set(extra_paths))\n",
+           "    need(not set(failed_paths) & set(extra_paths),\n"
+           "         'fixed failed fixture absences cannot be reclassified as generic roots')\n"
+           "    need(len(extra_paths) == len(set(extra_paths))\n")
+    change("    old_nonces = {p.rsplit('-', 1)[-1] for p in EPOCH_INVENTORY_LEGACY_FIXTURES}\n",
+           "    old_nonces = {p.rsplit('-', 1)[-1] for p in EPOCH_INVENTORY_LEGACY_FIXTURES} | failed_nonces\n")
+    change("    roots.extend(retained); roots.extend(control); roots.extend(control_leaves)\n",
+           "    roots.extend(retained); roots.extend(failed_paths); roots.extend(control); roots.extend(control_leaves)\n")
+    change("         'fixed seven legacy plus at most eight active fixtures required')\n    for path in paths:\n",
+           "         'fixed seven legacy plus at most eight active fixtures required')\n"
+           "    need(not set(fixtures) & set(failed_paths) and len(fixtures) + len(failed_paths) <= 18,\n"
+           "         'only fifteen potentially present plus three strictly absent fixture namespaces allowed')\n"
+           "    for path in paths:\n")
+    change("                need(str(ancestor) in fixtures and path == ancestor,\n",
+           "                need((str(ancestor) in fixtures or str(ancestor) in failed_paths) and path == ancestor,\n")
+    change("    business_roots = [p for p in roots if p not in control and p not in control_leaves and p not in absent_retained]\n",
+           "    business_roots = [p for p in roots if p not in control and p not in control_leaves\n"
+           "                      and p not in absent_retained and p not in failed_paths]\n")
+    change("            'required_absence_roots': absent_retained + absent_control + absent_leaves,\n",
+           "            'required_absence_roots': absent_retained + failed_paths + absent_control + absent_leaves,\n"
+           "            'retained_failed_fixture_absences': failed,\n"
+           "            'retained_failed_fixture_absence_roots': failed_paths,\n")
+    change("                             'active': active_domains, 'retained': retained, 'control': control,\n",
+           "                             'active': active_domains, 'retained': retained,\n"
+           "                             'retained_failed_fixture_absences': failed_paths, 'control': control,\n")
+    change("    entries = inventory['entries']; pairs = value['alias_pairs']\n    return {\n",
+           "    entries = inventory['entries']; pairs = value['alias_pairs']\n"
+           "    absence_by_path = {row['path']: row for row in absence_observations}\n"
+           "    need(all(path in absence_by_path and entries[path] == {'kind': 'absent', 'absence': 'ENOENT'}\n"
+           "             for path in value['retained_failed_fixture_absence_roots']),\n"
+           "         'actual positive parent evidence for all three failed fixture absences is required')\n"
+           "    return {\n")
+    change("'hepta.native-guard.two-epoch-inventory-observation.v1'",
+           "'hepta.native-guard.two-epoch-inventory-observation.v2'")
+    change("        'legacy_fixture_count': 7, 'active_fixture_count': value['active_fixture_count'],\n",
+           "        'legacy_fixture_count': 7, 'active_fixture_count': value['active_fixture_count'],\n"
+           "        'retained_failed_fixture_absence_count': 3,\n"
+           "        'potentially_present_fixture_count': len(value['fixture_roots']),\n"
+           "        'fixture_namespace_count': len(value['fixture_roots']) + 3,\n"
+           "        'fixture_namespace_limit': 18, 'potentially_present_fixture_limit': 15,\n"
+           "        'failed_fixture_nonces_reuse_forbidden': True,\n"
+           "        'retained_failed_fixture_absences': [\n"
+           "            dict(row, positive_absence_observation=absence_by_path[row['path']])\n"
+           "            for row in value['retained_failed_fixture_absences']],\n")
+    change("'hepta.native-guard.two-epoch-inventory-verification.v1'",
+           "'hepta.native-guard.two-epoch-inventory-verification.v2'")
+    change("            'active_reservation_count': value['active_reservation_count'],\n            'whole_union_structurally_verified': True,",
+           "            'active_reservation_count': value['active_reservation_count'],\n"
+           "            'retained_failed_fixture_absence_count': 3,\n"
+           "            'fixture_namespace_count': len(value['fixture_roots']) + 3,\n"
+           "            'failed_fixture_nonces_reuse_forbidden': True,\n"
+           "            'whole_union_structurally_verified': True,")
+
+    old_fragment = (PARENT / 'source/epoch_inventory.fragment.py').read_bytes()
+    final = lifecycle.replace(old_fragment, fragment, 1)
+    restored = fragment
+    for change_row in reversed(changes):
+        assert restored.count(change_row['after']) == change_row['count']
+        restored = restored.replace(change_row['after'], change_row['before'])
+    assert restored == old_fragment and final.replace(fragment, restored, 1) == lifecycle
+    ast.parse(final); ast.parse(fragment)
+    def function_rows(raw):
+        lines = raw.splitlines(keepends=True)
+        return {node.name: b''.join(lines[node.lineno-1:node.end_lineno])
+                for node in ast.parse(raw).body if isinstance(node, (ast.FunctionDef, ast.ClassDef))}
+    old_functions, new_functions = function_rows(lifecycle), function_rows(final)
+    modified = sorted(name for name in old_functions if old_functions[name] != new_functions[name])
+    assert modified == ['_epoch_inventory_observation_value', 'inventory_epoch_spec_value', 'verify_epoch_inventory_observation']
+    original_functions = function_rows(original)
+    assert all(new_functions[name] == raw for name, raw in original_functions.items())
+    assert final.replace(fragment, b'', 1) == lifecycle.replace(old_fragment, b'', 1)
+
+    put(OUT / 'source/component_lifecycle.py', final)
+    put(OUT / 'source/epoch_inventory.fragment.py', fragment)
+    put(OUT / 'reference/PARENT-component_lifecycle.bace77.original.py', lifecycle)
+    put(OUT / 'reference/PARENT-epoch_inventory.fragment.0d278.original.py', old_fragment)
+    put(OUT / 'reference/ORIGINAL-component_lifecycle.144836.py', original)
+    put(OUT / 'reference/component_common.original.py', (PARENT / 'reference/component_common.original.py').read_bytes())
+    put(OUT / 'reference/FOOTPRINT.original.json', footprint_raw)
+    patch = ''.join(difflib.unified_diff(lifecycle.decode().splitlines(keepends=True), final.decode().splitlines(keepends=True),
+                 fromfile='bace77-component_lifecycle.py', tofile='failed-fixture-v2-component_lifecycle.py'))
+    put(OUT / 'validation/FAILED-FIXTURE-INCREMENT.patch', patch.encode())
+    report = {'schema': 'hepta.two-epoch-failed-fixture-source-derivation.v1',
+              'state': 'SOURCE_ONLY_UNBOUND_EXTRA_ROOTS', 'parent': descriptor(lifecycle),
+              'source': descriptor(final), 'fragment': descriptor(fragment),
+              'fixed_failed_fixture_absences': fixed, 'actual_identity_originals': references,
+              'whole_source_inverse': True, 'increment_splices': len(changes),
+              'modified_functions': modified, 'unchanged_parent_functions_and_classes': len(old_functions)-len(modified),
+              'all_original_single_domain_functions_unchanged': sorted(original_functions),
+              'walker_budget_split_join_unchanged': all(old_functions[name] == new_functions[name] for name in [
+                  '_EpochInventoryBudget', '_epoch_inventory_fixture', '_epoch_inventory_observe_roots',
+                  '_epoch_inventory_split_views', '_epoch_inventory_join_views', 'inventory_epoch']),
+              'actual_fixture_absence_observed_by_builder': False,
+              'target_source_executed': False, 'remote_calls': 0, 'phone_calls': 0,
+              'fixture_or_case_created': False}
+    put(OUT / 'validation/SOURCE-DERIVATION.json', enc(report))
+    interface = json.loads((PARENT / 'INTERFACE.json').read_bytes())
+    interface['schema'] = 'hepta.source-only.two-epoch-inventory-core.interface.v2'
+    interface['spec']['schema'] = 'hepta.native-guard.two-epoch-inventory-spec.v2'
+    interface['spec']['retained_failed_fixture_absences'] = fixed
+    interface['state'] = 'SOURCE_ONLY_UNBOUND_FIXED_FAILED_FIXTURES_MUST_REMAIN_ABSENT'
+    interface['retained_failed_fixture_domain'] = {
+        'count': 3, 'fixture_roots_still_only_legacy_and_active': True,
+        'removed_from_generic_extra_roots': True, 'additional_global_root_and_entry_charges': 3,
+        'fixed_intents_prove_identity_not_current_absence': True,
+        'all_three_nonces_permanently_rejected_for_active_identity': True,
+        'any_present_object_rejected_before_open_or_traversal': True,
+        'actual_parent_enoent_observations_required_every_operation': True,
+        'business_and_control_v1_inventory_views_exclude_this_domain': True,
+        'namespace_limits': {'legacy_potentially_present': 7, 'active_potentially_present': 8,
+                             'potentially_present_total': 15, 'always_absent': 3, 'named_total': 18}}
+    interface['observation_schema'] = 'hepta.native-guard.two-epoch-inventory-observation.v2'
+    interface['verification_schema'] = 'hepta.native-guard.two-epoch-inventory-verification.v2'
+    interface['public_functions']['inventory_epoch_spec_value'] += '; adds exact retained_failed_fixture_absences and retained_failed_fixture_absence_roots'
+    interface['public_functions']['verify_epoch_inventory_observation'] = interface['public_functions']['verify_epoch_inventory_observation'].replace('verification.v1','verification.v2')
+    put(OUT / 'INTERFACE.json', enc(interface))
+    print(json.dumps({'source': descriptor(final), 'fragment': descriptor(fragment),
+                      'modified_functions': modified, 'directory': str(OUT)}, sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

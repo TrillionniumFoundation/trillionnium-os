@@ -1,0 +1,77 @@
+{
+  "check_count": 15,
+  "checks": [
+    {
+      "name": "explicit_phone_propagates_before_exec_and_restores_import_state",
+      "result": "passed"
+    },
+    {
+      "name": "explicit_mac_propagates_before_exec_and_restores_import_state",
+      "result": "passed"
+    },
+    {
+      "name": "explicit_p4_propagates_before_exec_and_restores_import_state",
+      "result": "passed"
+    },
+    {
+      "name": "missing_actual_context_has_no_default",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "state_context_cannot_change",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "runtime_true_on_mac_is_rejected_before_module_loading",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "boolean_context_is_rejected",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "current_artifact_read_on_host_is_rejected_before_module_loading",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "exact_combined_decoded_budget_includes_both_input_payloads",
+      "result": "passed"
+    },
+    {
+      "name": "compressed_headers_cannot_hide_decoded_pool_overflow",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "one_original_over16MiB_is_rejected",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "bool_is_not_an_original_byte_count",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "actual_regular_file_bytes_and_full9_bookends",
+      "result": "passed"
+    },
+    {
+      "name": "actual_fifo_replacement_is_nonblocking_and_rejected",
+      "result": "rejected_as_required"
+    },
+    {
+      "name": "all18_current_preview_call_sites_have_explicit_context",
+      "result": "passed"
+    }
+  ],
+  "fixed19_case_credit": false,
+  "full_epoch_integration_verified": false,
+  "only_local_mock_module_sources_and_selected_consumer_functions_executed": true,
+  "phone_calls": 0,
+  "runtime_sources_executed": false,
+  "schema": "hepta.epoch.consumer-local-guard-checks.v1",
+  "source": {
+    "bytes": 88368,
+    "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview02/templates/release_boundaries.py",
+    "sha256": "2ecf748b34b3e1806715a7c0b52672cf3936f850ae6dcf67a94c0daf9ae5946d"
+  },
+  "state": "LOCAL_SOURCE_GUARD_CHECKS_ONLY"
+}

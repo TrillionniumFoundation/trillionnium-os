@@ -1,0 +1,267 @@
+#!/usr/bin/env python3
+"""Narrow local checks of the new fixed absent-only domain, never physical credit."""
+import ast
+import copy
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
+import tempfile
+import time
+import traceback
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[1]
+DRAFT = HERE / 'draft02'
+OUT = HERE / 'validation/local-checks-run01'
+OUT.mkdir(parents=True, exist_ok=False)
+FRAGMENT = DRAFT / 'source/epoch_inventory.fragment.py'
+COMMON = DRAFT / 'reference/component_common.original.py'
+RESULTS = []
+
+
+def desc(raw):
+    return {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def namespace():
+    ns = {'__name__': 'local_failed_fixture_absence_check', '__file__': str(COMMON)}
+    exec(compile(COMMON.read_bytes(), str(COMMON), 'exec', optimize=0), ns)
+    ns['__file__'] = str(FRAGMENT)
+    exec(compile(FRAGMENT.read_bytes(), str(FRAGMENT), 'exec', optimize=0), ns)
+    return ns
+
+
+def good(ns, bound=True):
+    if bound:
+        ns['EPOCH_INVENTORY_EXTRA_ROOTS'] = {'retained_roots': [], 'control_roots': [],
+            'control_leaves': [], 'absence_roots': [], 'alias_pairs': []}
+    return {'schema': 'hepta.native-guard.two-epoch-inventory-spec.v2',
+        'legacy_anchor': copy.deepcopy(ns['EPOCH_INVENTORY_LEGACY_ANCHOR']),
+        'active_reservations': [], 'retained_roots': [], 'control_roots': [], 'control_leaves': [],
+        'alias_pairs': [list(pair) for pair in ns['EPOCH_INVENTORY_LEGACY_ALIAS_PAIRS']],
+        'retained_failed_fixture_absences': copy.deepcopy(ns['EPOCH_INVENTORY_RETAINED_FAILED_FIXTURE_ABSENCES'])}
+
+
+def rejected(fn, expected=None):
+    try:
+        fn()
+    except (ValueError, OSError) as exc:
+        if expected is not None:
+            assert expected in str(exc), (expected, str(exc))
+        return {'error': type(exc).__name__, 'reason': str(exc)}
+    raise AssertionError('invalid input was accepted')
+
+
+def check(name, fn):
+    started = time.monotonic()
+    try:
+        detail = fn()
+        result = {'name': name, 'passed': True, 'detail': detail}
+    except BaseException as exc:
+        result = {'name': name, 'passed': False, 'error': type(exc).__name__ + ': ' + str(exc),
+                  'traceback': traceback.format_exc()}
+    result['elapsed_seconds'] = time.monotonic() - started
+    RESULTS.append(result)
+    print(json.dumps({'name': name, 'passed': result['passed']}, sort_keys=True), flush=True)
+
+
+def none_rejected():
+    ns = namespace(); spec = good(ns, False)
+    return rejected(lambda: ns['inventory_epoch_spec_value'](spec), 'remain unbound')
+
+
+def exact_domain():
+    ns = namespace(); spec = good(ns); value = ns['inventory_epoch_spec_value'](spec)
+    failed = [row['path'] for row in spec['retained_failed_fixture_absences']]
+    assert len(value['roots']) == 30 and len(value['fixture_roots']) == 7
+    assert value['retained_failed_fixture_absence_roots'] == failed
+    assert value['required_absence_roots'] == failed
+    assert set(failed).isdisjoint(value['business_inventory_roots'])
+    assert set(failed).isdisjoint(value['control_inventory_roots'])
+    assert value['business_inventory_roots'] == list(ns['EPOCH_INVENTORY_LEGACY_ROOTS'])
+    return {'roots': 30, 'potentially_present_fixture_roots': 7,
+            'absent_only_fixture_roots': 3, 'old_55_aliases_retained': len(value['alias_pairs'])}
+
+
+def schema_and_binding_refusals():
+    ns = namespace(); spec = good(ns); cases = []
+    for name, mutate in [
+        ('v1', lambda x: x.update(schema='hepta.native-guard.two-epoch-inventory-spec.v1')),
+        ('missing_domain', lambda x: x.pop('retained_failed_fixture_absences')),
+        ('omitted_identity', lambda x: x['retained_failed_fixture_absences'].pop()),
+        ('duplicate_identity', lambda x: x['retained_failed_fixture_absences'].append(x['retained_failed_fixture_absences'][0])),
+        ('reordered', lambda x: x['retained_failed_fixture_absences'].reverse()),
+        ('present_requested', lambda x: x['retained_failed_fixture_absences'][0].update(presence='present')),
+        ('changed_nonce', lambda x: x['retained_failed_fixture_absences'][0].update(nonce='0'*32)),
+        ('changed_path', lambda x: x['retained_failed_fixture_absences'][0].update(path='/tmp/other-fixture')),
+        ('changed_original_pin', lambda x: x['retained_failed_fixture_absences'][0]['chain_intent'].update(sha256='0'*64)),
+        ('bool_original_size', lambda x: x['retained_failed_fixture_absences'][0]['chain_intent'].update(bytes=True))]:
+        bad = copy.deepcopy(spec); mutate(bad)
+        cases.append({'case': name, **rejected(lambda: ns['inventory_epoch_spec_value'](bad))})
+    return cases
+
+
+def nonce_reuse():
+    ns = namespace(); spec = good(ns); cases = []
+    for row in spec['retained_failed_fixture_absences']:
+        bad = copy.deepcopy(spec)
+        bad['active_reservations'] = [{'ordinal': 1, 'identity': {
+            'label': 'local-synthetic-identity-test', 'nonce': row['nonce']}, 'inventory_roots': []}]
+        cases.append({'nonce': row['nonce'], **rejected(lambda: ns['inventory_epoch_spec_value'](bad), 'reuses')})
+    return {'no_new_case_nonce_generated': True, 'checks': cases}
+
+
+def reclassification_refused():
+    ns = namespace(); spec = good(ns); fixed = spec['retained_failed_fixture_absences'][0]['path']
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']['retained_roots'] = [fixed]
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']['absence_roots'] = [fixed]
+    spec['retained_roots'] = [{'path': fixed, 'presence': 'absent'}]
+    a = rejected(lambda: ns['inventory_epoch_spec_value'](spec), 'reclassified')
+    alien = '/proc/1/root/data/local/tmp/hepta-native-guard-' + 'f'*32
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']['retained_roots'] = [alien]
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']['absence_roots'] = [alien]
+    spec['retained_roots'] = [{'path': alien, 'presence': 'absent'}]
+    b = rejected(lambda: ns['inventory_epoch_spec_value'](spec), 'undeclared fixture')
+    return {'fixed_as_generic': a, 'fourth_absent_fixture': b}
+
+
+def root_and_active_limits():
+    ns = namespace(); spec = good(ns)
+    paths = ['/tmp/local-epoch-root-%02d' % i for i in range(35)]
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']['retained_roots'] = paths[:34]
+    spec['retained_roots'] = [{'path': p, 'presence': 'present'} for p in paths[:34]]
+    assert len(ns['inventory_epoch_spec_value'](spec)['roots']) == 64
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']['retained_roots'] = paths
+    spec['retained_roots'] = [{'path': p, 'presence': 'present'} for p in paths]
+    r = rejected(lambda: ns['inventory_epoch_spec_value'](spec), '64-root')
+    ns = namespace(); spec = good(ns)
+    # Deliberately static synthetic values, not assigned production identities.
+    for index, char in enumerate('12345678', 1):
+        nonce = char * 32
+        fixture = '/proc/1/root/data/local/tmp/hepta-native-guard-' + nonce
+        spec['active_reservations'].append({'ordinal': index,
+            'identity': {'label': 'local-synthetic-case-%d' % index, 'nonce': nonce},
+            'inventory_roots': [fixture]})
+    value = ns['inventory_epoch_spec_value'](spec)
+    assert len(value['fixture_roots']) == 15 and len(value['roots']) == 38
+    spec['active_reservations'].append({'ordinal': 9, 'identity': None, 'inventory_roots': []})
+    a = rejected(lambda: ns['inventory_epoch_spec_value'](spec), 'eight consumed')
+    return {'global64_including_absent3_accepted': True, 'global65_rejected': r,
+            'legacy7_active8_maximum': 15, 'total_named_fixture_domains': 18, 'ninth_active_rejected': a}
+
+
+def with_three_local_paths(fn):
+    ns = namespace(); spec = good(ns)
+    fixed_paths = [row['path'] for row in spec['retained_failed_fixture_absences']]
+    with tempfile.TemporaryDirectory(prefix='fixed-absence-', dir=OUT) as directory:
+        local = Path(directory)
+        mapping = {p: local / Path(p).name for p in fixed_paths}
+        common_parent = ns['parent_fd']
+        fixed_parent = Path(fixed_paths[0]).parent
+        ns['parent_fd'] = lambda path: common_parent(mapping[str(path)] if str(path) in mapping
+            else local / path.name if path.parent == fixed_parent else path)
+        value = {'roots': fixed_paths, 'fixture_roots': [], 'required_absence_roots': fixed_paths,
+                 'alias_pairs': [], 'control_leaf_paths': [], 'control_leaf_pins': {}}
+        return fn(ns, value, mapping, common_parent)
+
+
+def real_positive_parent_checks():
+    def run(ns, value, mapping, common_parent):
+        budget = ns['_EpochInventoryBudget']()
+        inventory, absences, parents = ns['_epoch_inventory_observe_roots'](value, budget)
+        assert budget.entries == 3 and budget.bytes_read == 0 and budget.file_reads == 0
+        assert len(inventory['entries']) == len(absences) == 3 and parents == []
+        for item in absences:
+            assert item['initial_parent_metadata'] == item['final_parent_metadata']
+            assert item['initial_held_enoent_checks'] == 2 and item['initial_reopened_enoent_checks'] == 1
+            assert item['final_reopened_enoent_checks'] == 1
+        return {'global_entries_charged': 3, 'file_bytes': 0, 'actual_local_positive_parent_observations': absences,
+                'fixed_phone_paths_mapped_to_temporary_local_leaves': True, 'phone_observed': False}
+    return with_three_local_paths(run)
+
+
+def existing_objects_rejected():
+    result = []
+    for kind in ('directory', 'regular', 'symlink', 'fifo'):
+        def run(ns, value, mapping, common_parent):
+            first = value['roots'][0]; path = mapping[first]
+            if kind == 'directory': path.mkdir()
+            elif kind == 'regular': path.write_bytes(b'reject without consuming contents')
+            elif kind == 'symlink': path.symlink_to(path.parent / 'not-followed')
+            else: os.mkfifo(path)
+            return rejected(lambda: ns['_epoch_inventory_observe_roots'](value, ns['_EpochInventoryBudget']()), 'explicitly absent')
+        result.append({'kind': kind, **with_three_local_paths(run)})
+    return result
+
+
+def synthetic_complete_proof():
+    ns = namespace(); spec = good(ns); value = ns['inventory_epoch_spec_value'](spec)
+    actual = ROOT / 'actual_external_902e_7c907661_01/current-head-read01/OBSERVATIONS.decoded-original.json'
+    business = json.loads(actual.read_bytes())['full_observed_inventory']
+    union = copy.deepcopy(business)
+    union['roots'] = value['roots']
+    for path in value['retained_failed_fixture_absence_roots']:
+        union['entries'][path] = {'kind': 'absent', 'absence': 'ENOENT'}
+    absences = []
+    for path in value['roots']:
+        if union['entries'][path]['kind'] == 'absent':
+            metadata = [1, 2, stat.S_IFDIR | 0o700, 0, 0, 2, 0, 0, 0]
+            absences.append({'schema': 'hepta.native-guard.epoch-positive-root-absence.v1',
+                'path': path, 'absence': 'ENOENT', 'parent_path': str(Path(path).parent),
+                'initial_parent_metadata': metadata, 'final_parent_metadata': metadata[:],
+                'initial_held_enoent_checks': 2, 'initial_reopened_enoent_checks': 1,
+                'final_reopened_enoent_checks': 1, 'canonical_parent_reopened': True,
+                'first_elapsed_seconds': 0.0, 'last_elapsed_seconds': 0.0})
+    proof = ns['_epoch_inventory_observation_value'](value, union, absences, business, None, [])
+    verified = ns['verify_epoch_inventory_observation'](spec, business, None, proof)
+    assert verified['entries'] == 2626 and verified['file_bytes_hashed'] == 19424531
+    assert proof['shared_budget']['roots_observed'] == 30 and proof['shared_budget']['entries_observed'] == 2626
+    assert proof['retained_failed_fixture_absence_count'] == 3 and proof['fixture_namespace_count'] == 10
+    assert len(proof['retained_failed_fixture_absences']) == 3
+    assert proof['case_or_lease_authorized'] is False and verified['original_provenance_verified_by_this_function'] is False
+    cases = []
+    for name, mutate in [
+        ('missing_failed_parent', lambda p: p['absence_observations'].pop()),
+        ('changed_parent', lambda p: p['absence_observations'][-1]['final_parent_metadata'].__setitem__(1, 3)),
+        ('missing_explicit_domain', lambda p: p.pop('retained_failed_fixture_absences')),
+        ('false_present_claim', lambda p: p['retained_failed_fixture_absences'][0].update(presence='present')),
+        ('wrong_count', lambda p: p.update(retained_failed_fixture_absence_count=2)),
+        ('bool_int_substitution', lambda p: p.update(failed_fixture_nonces_reuse_forbidden=1)),
+        ('old_observation_schema', lambda p: p.update(schema='hepta.native-guard.two-epoch-inventory-observation.v1'))]:
+        bad = copy.deepcopy(proof); mutate(bad)
+        cases.append({'case': name, **rejected(lambda: ns['verify_epoch_inventory_observation'](spec, business, None, bad))})
+    missing = absences[:-1]
+    rejected(lambda: ns['_epoch_inventory_observation_value'](value, union, missing, business, None, []), 'actual positive parent')
+    return {'actual_legacy_inventory_body_used_as_readonly_fixture': str(actual),
+            'synthetic_absence_envelopes_not_actual_phone': True, 'verification': verified, 'refusals': cases}
+
+
+for name, fn in [
+    ('None_extra_remains_fail_closed', none_rejected),
+    ('three_fixed_absences_separate_from_old_fixture_roots_and_v1_views', exact_domain),
+    ('explicit_v2_exact_three_identity_and_original_pins', schema_and_binding_refusals),
+    ('all_three_failed_nonces_forbidden_even_without_created_roots', nonce_reuse),
+    ('generic_reclassification_and_fourth_fixture_rejected', reclassification_refused),
+    ('shared_root64_and_positive_fixture15_limits', root_and_active_limits),
+    ('three_real_local_ENOENTs_share_clock_entries_and_parent_bookends', real_positive_parent_checks),
+    ('all_present_object_types_rejected_before_read_or_traversal', existing_objects_rejected),
+    ('full_pure_proof_requires_three_actual_parent_envelopes', synthetic_complete_proof)]:
+    check(name, fn)
+
+summary = {'schema': 'hepta.local-fixed-failed-fixture-increment-checks.v1',
+    'state': 'PASS' if all(x['passed'] for x in RESULTS) else 'LOCAL_CHECK_FAILURE',
+    'passed': sum(x['passed'] for x in RESULTS), 'total': len(RESULTS), 'checks': RESULTS,
+    'fragment': desc(FRAGMENT.read_bytes()), 'common': desc(COMMON.read_bytes()),
+    'production_None_binding_changed': False,
+    'test_only_overrides': ['EPOCH_INVENTORY_EXTRA_ROOTS only in isolated test namespaces',
+                           'Private walker parent_fd maps fixed absent fixture leaves into temporary local directory for ENOENT and existing-object checks'],
+    'historical_full_lifecycle_imported': False, 'runtime_main_called': False,
+    'actual_case_nonce_generated': False, 'remote_calls': 0, 'phone_calls': 0,
+    'physical_NEG14_or_epoch_generation_qualification': False,
+    'unchanged_27_checks_rerun': False}
+raw = (json.dumps(summary, sort_keys=True, indent=2, ensure_ascii=False) + '\n').encode()
+with (OUT / 'RESULT.json').open('xb') as handle: handle.write(raw)
+print(json.dumps({'result': str(OUT / 'RESULT.json'), **desc(raw), 'passed': summary['passed'], 'total': summary['total']}), flush=True)
+raise SystemExit(0 if summary['state'] == 'PASS' else 1)

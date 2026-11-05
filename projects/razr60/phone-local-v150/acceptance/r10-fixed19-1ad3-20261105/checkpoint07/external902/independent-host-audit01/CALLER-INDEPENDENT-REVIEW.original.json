@@ -1,0 +1,105 @@
+{
+  "blockers": [],
+  "caller": {
+    "bytes": 49502,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/package/operator/stage_and_audit_once.py",
+    "sha256": "e2455108f95f54868703c523119835ac1288ea232d180968b174b0263b2ad256"
+  },
+  "controller_binding": {
+    "bounded_exact_hash_bootstrap": true,
+    "controller_directly_owns_only_python": true,
+    "driver_payload_canonical_base64_exact_8e6b": true,
+    "executable": "/usr/bin/python3",
+    "fixed_key": "root-1ad3-external902-independent-host-audit01-20261105",
+    "flags": [
+      "-I",
+      "-B"
+    ],
+    "host": "pocket4",
+    "outer_timeout_field_absent": true,
+    "stdin_byte_equal_caller": true
+  },
+  "controller_request": {
+    "bytes": 50358,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/CONTROLLER-REQUEST.json",
+    "sha256": "0c2f516cbeeb827adf959d0fd733058617725b0a46eba9a4a2c1b7e517bc5c4a"
+  },
+  "driver": {
+    "bytes": 26038,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/package/source/audit_existing_closure.py",
+    "sha256": "8e6bab425940cae081f0684e61b20b6dbf5f9568c20ddecc3e1ee8f907536d29"
+  },
+  "failure_conditions": {
+    "nonzero_or_no_SystemExit_rejected": true,
+    "remaining_stage_FDs_finally_closed": true,
+    "retained_failure_when_possible": true,
+    "unknown_not_retried_or_new_suffix": true
+  },
+  "interface": {
+    "bytes": 4744,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/package/INTERFACE.json",
+    "sha256": "8501b3a45da9358572cb10e945633148f9a39affac53d5f1108eb82a4a7e211a"
+  },
+  "limits": [
+    "Static source/AST/data/manifest inspection only. No caller, driver or original validator function was imported or executed.",
+    "Parent must retain actual controller terminal status/full stdout/full stderr; source review alone cannot establish byte equality or completed host audit."
+  ],
+  "no_effects": {
+    "package_modified": false,
+    "phone_calls": 0,
+    "remote_calls": 0,
+    "target_functions": 0,
+    "target_imports": 0
+  },
+  "resource_and_actuality": {
+    "case_pass": false,
+    "fresh_phone_clearance": false,
+    "hard_preemptive_timeout_claimed": false,
+    "new_native_closure": false,
+    "planned_guard_bytes": 5141376,
+    "planned_guard_rows": 160,
+    "scope": "Static union from actual descriptors;not a physical P4 read or completed audit.137 historical inputs contain129 prior manifest matches and8 rows requiring actualGuard read."
+  },
+  "reviewed_at_utc": "2026-11-05T14:16:21.911080+00:00",
+  "schema": "hepta.existing902.hostaudit-caller-independent-review.v1",
+  "source_closed_set": {
+    "all_member_bytes_and_sha256_exact": true,
+    "all_reviewed_bytes_bookended": true,
+    "manifest_rows": 24,
+    "no_symlinks_or_extra_files": true,
+    "regular_files_including_manifest": 25
+  },
+  "source_manifest": {
+    "bytes": 4937,
+    "path": "/workspace/scratch/1ad3d6f55439/external902_host_recompute_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "39b3fe622eeda1beffdaba392e602275979421daa05d1ec732b3c7c8bb99a2da"
+  },
+  "source_stage_and_entry": {
+    "SystemExit_accepts_only_int_zero": true,
+    "audit_root": "/home/alex/codex-hepta-external902-independent-closure-audit-1ad3-01",
+    "both_namespaces_must_be_absent": true,
+    "exact_sys_argv_restored_finally": true,
+    "file_and_directory_fsync_readback": true,
+    "no_extra_child_or_phone_route_or_process_signal": true,
+    "no_original_close_main_or_snapshot_or_publish_invocation": true,
+    "pinned_real_driver___file___kept": true,
+    "real_source_readback_before_once_runpy": true,
+    "runpy_callsite_count": 1,
+    "source_and_intent_create_only": true,
+    "source_parent_and_file_NOFOLLOW_full9_canonical_bookends": true,
+    "source_root": "/home/alex/codex-hepta-external902-independent-closure-audit-source-1ad3-01",
+    "stage_fds_closed_before_driver_entry": true
+  },
+  "state": "FROZEN_CALLER_AND_PACKAGE_SOURCE_REVIEW_PASSED_NOT_EXECUTED",
+  "success_conditions": {
+    "action_counts_zero_and_scope_flags_false_type_checked": true,
+    "actual_BYTE_EQUALITY_schema_state_driver_and_plan_closure_pins": true,
+    "actual_RECOMPUTED_closure_whole_ffe4_required": true,
+    "caller_and_driver_exact_file_bytes_and_full9": true,
+    "caller_receipt_create_only_and_final_names": true,
+    "controller_terminal_and_full_stdout_stderr_still_required": true,
+    "equality_receipt_re_read_after_full_body_check": true,
+    "original_host_inputs_exact_and_owned_FDs_and_old_unknowns_required": true,
+    "root_source_full9_and_names_after_driver": true
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "budgets": {
+    "bytes": 536870912,
+    "directory_children": 20000,
+    "entries": 30000,
+    "one_file": 67108864,
+    "roots": 64,
+    "seconds": 30
+  },
+  "control_accounting": "Control state and any current COMMIT are separate from business preservation. Complete serialized business/control descriptors, exact projections, all roots/entries/bytes/time and absence rows remain bound in the one epoch observation. Empty present-control domain is explicit None.",
+  "control_leaf_accounting": "Every flat original transfer leaf is one global root/object and entry with all bytes/time charged. Exact pinned UID2000/0666 incoming originals are a specific path+full9+bytes/hash exception; generic nonfixture files remain root0/0600. Fixed leaves stay exclusively in epoch_observation.control_leaves, never in a v1 directory-root inventory. Parent names/full9 are observed twice, no parent subtree is claimed.",
+  "control_leaf_proof": "epoch_observation.control_leaves is ordered [{path,entry: original full file row or explicit allowed ENOENT}]; control_leaf_parent_observations records each exact parent initial/final metadata+names and first/last elapsed in the one clock. New active transfer material must reside in explicitly reviewed control subtrees, not arbitrary new flat leaf templates.",
+  "legacy_counts": {
+    "alias_pairs": 55,
+    "fixtures": 7,
+    "roots": 27
+  },
+  "nonfixture_absence": "Explicit required absent retained/control roots are charged to global root and entry budgets and retained only in epoch_observation.absence_observations; they never enter either original v1 inventory view.",
+  "not_proved_here": [
+    "reservation provenance or phase completeness",
+    "cross-operation preservation or exact allowed shared additions",
+    "new source generation readiness",
+    "any physical NEG14 or target case result"
+  ],
+  "positive_absence_original": "Each fixture or nonfixture root actual ENOENT has independent canonical-parent initial/final full9, two held + one reopened initial checks, one global reopened check and first/last elapsed inside the one operation clock. None are invented from spec alone.",
+  "public_functions": {
+    "inventory_epoch": "(spec) -> {inventory: business+present-retained original complete-inventory.v1, control_inventory: present-control complete-inventory.v1 or None, epoch_observation}; single internal union traversal/budget then projections",
+    "inventory_epoch_spec_value": "(spec) -> exact roots, fixture_roots, required_absence_roots, alias_pairs, active_reservation_count, active_fixture_count, business_inventory_roots, control_inventory_roots, control_leaf_paths, control_leaf_pins, domain_roots, spec_sha256; pure structural union validation",
+    "verify_epoch_inventory_observation": "(spec, inventory, control_inventory, observation) -> hepta.native-guard.two-epoch-inventory-verification.v1; pure structural proof, never original-provenance/cross-operation preservation qualification"
+  },
+  "required_extra_source_binding": {
+    "assignment": "EPOCH_INVENTORY_EXTRA_ROOTS",
+    "current_value": null,
+    "value_shape": {
+      "absence_roots": "explicit subset of extra paths permitted to have requested positive ENOENT",
+      "alias_pairs": "explicit fixed retained complete per-leaf pair list",
+      "control_leaves": "ordered exact4 descriptors {path,bytes,sha256,metadata}; all full9 must be known before source binding; no future wildcard phase leaves",
+      "control_roots": "unique ordered exact absolute paths",
+      "retained_roots": "unique ordered exact absolute paths"
+    }
+  },
+  "reviewer_actions": {
+    "leases_created": 0,
+    "nonces_generated": 0,
+    "phone_calls": 0,
+    "remote_calls": 0
+  },
+  "schema": "hepta.source-only.two-epoch-inventory-core.interface.v1",
+  "serialization": "Inventory descriptor bytes are component_common.encoded(value): UTF-8, ensure_ascii=False, sorted keys, compact separators, allow_nan=False, trailing LF. None control has descriptor None, never fabricated empty v1.",
+  "spec": {
+    "active_reservations": [
+      {
+        "identity": "None before actual IDENTITY or exact {label,nonce}",
+        "inventory_roots": "exact ordered subset of [Android journal, GNU home, UID2000 fixture], derived by late from actual phase originals, never self-selected",
+        "ordinal": "consecutive int1..N <=8, every consumed reservation retained"
+      }
+    ],
+    "alias_pairs": "lex-sorted list of sorted two-element exact path lists, <=15000; old55 plus fixed retained aliases mandatory, active aliases only same-relative GNU home/executor <-> exact Android journal; each view fully charged",
+    "control_leaves": [
+      {
+        "path": "exact source-bound retained flat transfer leaf path",
+        "presence": "present|absent; absence only for explicitly allowed fixed path"
+      }
+    ],
+    "control_roots": [
+      {
+        "path": "exact source-bound control path",
+        "presence": "present|absent; absence only for explicitly allowed fixed path"
+      }
+    ],
+    "legacy_anchor": {
+      "bytes": 9686,
+      "metadata": [
+        65086,
+        156280,
+        33152,
+        0,
+        0,
+        1,
+        9686,
+        1793882486435914270,
+        1793882486435914270
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774.json",
+      "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+    },
+    "retained_roots": [
+      {
+        "path": "exact source-bound retained path",
+        "presence": "present|absent; absence only for explicitly allowed fixed path"
+      }
+    ],
+    "schema": "hepta.native-guard.two-epoch-inventory-spec.v1"
+  },
+  "state": "CANDIDATE_UNBOUND_EXTRA_ROOTS_NO_RUNTIME_EXECUTION",
+  "time_semantics": "single cooperative observation clock including spec validation/traversal/bookends/pure proof; no timer or signal can interrupt a blocking kernel call",
+  "unchanged_single_domain_inventory": true
+}

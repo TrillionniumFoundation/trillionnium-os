@@ -1,0 +1,467 @@
+{
+  "actual_context_keyword_required": true,
+  "case_credit": false,
+  "files": [
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 87547,
+      "inverse": [
+        {
+          "new_end_line": 210,
+          "new_start_line": 178,
+          "new_utf8": "def checked_actual_context(value):\n    need(type(value) is str and value in ('phone', 'mac', 'p4'),\n         'explicit actual phone/mac/p4 execution context required')\n    return value\n\n\ndef decoded_bundle_budget(bundle):\n    \"\"\"Charge all decoded payloads before any body decode or source execution.\"\"\"\n    need(type(bundle['originals']) is dict, 'exact original byte pool required')\n    total = 0\n    for name in ('component', 'policy'):\n        row = bundle['inputs'][name]\n        need(type(row) is dict and set(row) == {'descriptor', 'raw_b64'},\n             'input payload fields differ')\n        descriptor = file_descriptor(row['descriptor'])\n        need(type(row['raw_b64']) is str\n             and len(row['raw_b64']) <= 4 * ((descriptor['bytes'] + 2) // 3),\n             'input payload exceeds its exact decoded bound')\n        total += descriptor['bytes']\n    need(total <= MAX_BUNDLE, 'decoded input payloads exceed fixed shared bundle budget')\n    for digest, item in bundle['originals'].items():\n        need(type(digest) is str and HASH.fullmatch(digest)\n             and type(item) is dict\n             and set(item) in ({'bytes', 'raw_b64'}, {'bytes', 'zlib_b64'})\n             and type(item['bytes']) is int and 0 <= item['bytes'] <= MAX_ORIGINAL,\n             'bounded decoded original pool entry required')\n        total += item['bytes']\n        need(total <= MAX_BUNDLE, 'decoded originals exceed one fixed shared bundle budget')\n    return total\n\n\ndef prepare_bundle(component_input, policy_input, *, actual_context):\n",
+          "old_utf8": "def prepare_bundle(component_input, policy_input):\n"
+        },
+        {
+          "new_end_line": 213,
+          "new_start_line": 211,
+          "new_utf8": "    actual_context = checked_actual_context(actual_context)\n    need(actual_context == 'mac', 'this fixed host constructor requires actual Mac context')\n",
+          "old_utf8": ""
+        },
+        {
+          "new_end_line": 233,
+          "new_start_line": 232,
+          "new_utf8": "    state = validate_bundle(raw, sha(raw), actual_context=actual_context)\n",
+          "old_utf8": "    state = validate_bundle(raw, sha(raw))\n"
+        },
+        {
+          "new_end_line": 252,
+          "new_start_line": 251,
+          "new_utf8": "def component_modules(state, *, actual_context, runtime=False):\n",
+          "old_utf8": "def component_modules(state, *, runtime=False):\n"
+        },
+        {
+          "new_end_line": 257,
+          "new_start_line": 253,
+          "new_utf8": "    actual_context = checked_actual_context(actual_context)\n    need('actual_context' not in state or state['actual_context'] == actual_context,\n         'actual execution context changed between validation and module loading')\n    need(not runtime or actual_context == 'phone', 'live runtime modules require actual phone context')\n",
+          "old_utf8": ""
+        },
+        {
+          "new_end_line": 270,
+          "new_start_line": 269,
+          "new_utf8": "            module.__actual_context__ = actual_context\n",
+          "old_utf8": ""
+        },
+        {
+          "new_end_line": 740,
+          "new_start_line": 738,
+          "new_utf8": "def validate_component(bundle, value, *, actual_context):\n    actual_context = checked_actual_context(actual_context)\n",
+          "old_utf8": "def validate_component(bundle, value):\n"
+        },
+        {
+          "new_end_line": 802,
+          "new_start_line": 801,
+          "new_utf8": "    state = {'actual_context': actual_context, 'package_sources': source, 'component_input': value,\n",
+          "old_utf8": "    state = {'package_sources': source, 'component_input': value,\n"
+        },
+        {
+          "new_end_line": 805,
+          "new_start_line": 804,
+          "new_utf8": "    with component_modules(state, actual_context=state['actual_context']) as modules:\n",
+          "old_utf8": "    with component_modules(state) as modules:\n"
+        },
+        {
+          "new_end_line": 931,
+          "new_start_line": 930,
+          "new_utf8": "    with component_modules(state, actual_context=state['actual_context']) as modules:\n",
+          "old_utf8": "    with component_modules(state) as modules:\n"
+        },
+        {
+          "new_end_line": 956,
+          "new_start_line": 955,
+          "new_utf8": "    with component_modules(state, actual_context=state['actual_context']) as modules:\n",
+          "old_utf8": "    with component_modules(state) as modules:\n"
+        },
+        {
+          "new_end_line": 1027,
+          "new_start_line": 1026,
+          "new_utf8": "    with component_modules(state, actual_context=state['actual_context']) as modules:\n",
+          "old_utf8": "    with component_modules(state) as modules:\n"
+        },
+        {
+          "new_end_line": 1171,
+          "new_start_line": 1169,
+          "new_utf8": "def validate_bundle(raw, expected_sha256, *, actual_context):\n    actual_context = checked_actual_context(actual_context)\n",
+          "old_utf8": "def validate_bundle(raw, expected_sha256):\n"
+        },
+        {
+          "new_end_line": 1178,
+          "new_start_line": 1177,
+          "new_utf8": "    decoded_bundle_budget(bundle)\n",
+          "old_utf8": ""
+        },
+        {
+          "new_end_line": 1182,
+          "new_start_line": 1181,
+          "new_utf8": "    state = validate_component(bundle, component_value, actual_context=actual_context)\n",
+          "old_utf8": "    state = validate_component(bundle, component_value)\n"
+        },
+        {
+          "new_end_line": 1190,
+          "new_start_line": 1189,
+          "new_utf8": "    with component_modules(state, actual_context=state['actual_context']) as modules:\n",
+          "old_utf8": "    with component_modules(state) as modules:\n"
+        },
+        {
+          "new_end_line": 1196,
+          "new_start_line": 1195,
+          "new_utf8": "    with component_modules(state, runtime=True, actual_context=state['actual_context']) as modules:\n",
+          "old_utf8": "    with component_modules(state, runtime=True) as modules:\n"
+        }
+      ],
+      "original": {
+        "bytes": 84972,
+        "calls": [
+          {
+            "containing_function": "prepare_bundle",
+            "line": 200,
+            "source": "validate_bundle(raw, sha(raw))",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "validate_component",
+            "line": 766,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "validate_shared_materials",
+            "line": 892,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "external_artifact_bindings",
+            "line": 917,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "current_external_artifacts",
+            "line": 988,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "validate_bundle",
+            "line": 1141,
+            "source": "validate_component(bundle, component_value)",
+            "target": "validate_component"
+          },
+          {
+            "containing_function": "inventory_value",
+            "line": 1149,
+            "source": "component_modules(state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "current_preservation",
+            "line": 1155,
+            "source": "component_modules(state, runtime=True)",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/release_boundaries.py",
+        "sha256": "57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/release_boundaries.py",
+      "sha256": "b409a9da583e5645260a57ea94675cb7f3fcaedacf88bdb7bea8cb56f30ea433"
+    },
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 34953,
+      "inverse": [
+        {
+          "new_end_line": 98,
+          "new_start_line": 97,
+          "new_utf8": "    with h.component_modules(package_state, actual_context='mac') as modules:\n",
+          "old_utf8": "    with h.component_modules(package_state) as modules:\n"
+        },
+        {
+          "new_end_line": 180,
+          "new_start_line": 179,
+          "new_utf8": "    with h.component_modules(package_state, actual_context='mac') as modules:\n",
+          "old_utf8": "    with h.component_modules(package_state) as modules:\n"
+        },
+        {
+          "new_end_line": 237,
+          "new_start_line": 236,
+          "new_utf8": "    with h.component_modules(package_state, actual_context='mac') as modules:\n",
+          "old_utf8": "    with h.component_modules(package_state) as modules:\n"
+        },
+        {
+          "new_end_line": 395,
+          "new_start_line": 394,
+          "new_utf8": "    with h.component_modules(package_state, actual_context='mac') as modules:\n",
+          "old_utf8": "    with h.component_modules(package_state) as modules:\n"
+        },
+        {
+          "new_end_line": 470,
+          "new_start_line": 469,
+          "new_utf8": "    state = h.validate_bundle(bundle_raw, sha(bundle_raw), actual_context='mac')\n",
+          "old_utf8": "    state = h.validate_bundle(bundle_raw, sha(bundle_raw))\n"
+        }
+      ],
+      "original": {
+        "bytes": 34843,
+        "calls": [
+          {
+            "containing_function": "collect_pre_policy_ancestor",
+            "line": 98,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "collect_environment_parent_ancestor",
+            "line": 180,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "collect_property_parent_ancestors",
+            "line": 237,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          },
+          {
+            "containing_function": "build",
+            "line": 378,
+            "source": "collect_property_parent_ancestors(\n        h, plan['property_parent_ancestors'], collect, originals, package_state)",
+            "target": "collect_property_parent_ancestors"
+          },
+          {
+            "containing_function": "build",
+            "line": 380,
+            "source": "collect_environment_parent_ancestor(\n        h, plan['environment_parent_ancestor'], collect, originals, package_state, sha(combination_raw))",
+            "target": "collect_environment_parent_ancestor"
+          },
+          {
+            "containing_function": "build",
+            "line": 382,
+            "source": "collect_pre_policy_ancestor(\n        h, plan['pre_policy_ancestor'], collect, originals, package_state, sha(combination_raw))",
+            "target": "collect_pre_policy_ancestor"
+          },
+          {
+            "containing_function": "build",
+            "line": 470,
+            "source": "h.validate_bundle(bundle_raw, sha(bundle_raw))",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "build",
+            "line": 486,
+            "source": "h.validate_shared_materials(state, sources, config, service)",
+            "target": "validate_shared_materials"
+          },
+          {
+            "containing_function": "build",
+            "line": 395,
+            "source": "h.component_modules(package_state)",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/templates/make_component_boundary_inputs.py",
+        "sha256": "41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/make_component_boundary_inputs.py",
+      "sha256": "dca3614a942a173fdff8527b9390bf9604cedc028fb2093a11c0aef5c5410f6b"
+    },
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 66415,
+      "inverse": [
+        {
+          "new_end_line": 301,
+          "new_start_line": 300,
+          "new_utf8": "    with helper.component_modules({'package_sources': runtime_files}, actual_context='mac') as modules:\n",
+          "old_utf8": "    with helper.component_modules({'package_sources': runtime_files}) as modules:\n"
+        }
+      ],
+      "original": {
+        "bytes": 66393,
+        "calls": [
+          {
+            "containing_function": "actual_tail_check",
+            "line": 275,
+            "source": "constructor.collect_pre_policy_ancestor(helper, prior_input,\n        original, retained_originals, {'package_sources':runtime_files}, combination_sha)",
+            "target": "collect_pre_policy_ancestor"
+          },
+          {
+            "containing_function": "actual_tail_check",
+            "line": 290,
+            "source": "constructor.collect_environment_parent_ancestor(\n        helper,environment_input,collect_environment,environment_originals,\n        {'package_sources':runtime_files},combination_sha)",
+            "target": "collect_environment_parent_ancestor"
+          },
+          {
+            "containing_function": "actual_tail_check",
+            "line": 298,
+            "source": "constructor.collect_property_parent_ancestors(\n        helper, property_inputs, collect_environment, property_originals,\n        {'package_sources':runtime_files})",
+            "target": "collect_property_parent_ancestors"
+          },
+          {
+            "containing_function": "actual_tail_check",
+            "line": 301,
+            "source": "helper.component_modules({'package_sources': runtime_files})",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/source/derive_final_cascade_property_r8.py",
+        "sha256": "843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/derive_final_cascade_property_r8.py",
+      "sha256": "af5f5934e65346261bae55dc745c3bcf0dbb6dbe8835c20a1c091fb44c261772"
+    },
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 40909,
+      "inverse": [
+        {
+          "new_end_line": 373,
+          "new_start_line": 372,
+          "new_utf8": "    with module.component_modules({'package_sources':runtime_files}, actual_context='mac') as modules:\n",
+          "old_utf8": "    with module.component_modules({'package_sources':runtime_files}) as modules:\n"
+        }
+      ],
+      "original": {
+        "bytes": 40887,
+        "calls": [
+          {
+            "containing_function": "main",
+            "line": 373,
+            "source": "module.component_modules({'package_sources':runtime_files})",
+            "target": "component_modules"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/source/write_final_seal_interface_property_r8.py",
+        "sha256": "1d88947679e6bb01a24762aa0b86e9875928f836b97eb9a4aff216ee6de0b500"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/source/write_final_seal_interface_property_r8.py",
+      "sha256": "ce1aef01730ba039d48a9e8f6a2cc06832078271ddd1f30ba749ce3cd6987954"
+    },
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 16055,
+      "inverse": [],
+      "original": {
+        "bytes": 16055,
+        "calls": [],
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/preparer/prepare_final_cascade.py",
+        "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/preparer/prepare_final_cascade.py",
+      "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+    },
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 40844,
+      "inverse": [
+        {
+          "new_end_line": 274,
+          "new_start_line": 273,
+          "new_utf8": "            input_row(args.policy_adoption_inputs,args.policy_adoption_inputs_sha256), actual_context='mac')\n",
+          "old_utf8": "            input_row(args.policy_adoption_inputs,args.policy_adoption_inputs_sha256))\n"
+        }
+      ],
+      "original": {
+        "bytes": 40822,
+        "calls": [
+          {
+            "containing_function": "main",
+            "line": 272,
+            "source": "consumer['prepare_bundle'](\n            input_row(args.component_boundary_inputs,args.component_boundary_inputs_sha256),\n            input_row(args.policy_adoption_inputs,args.policy_adoption_inputs_sha256))",
+            "target": "prepare_bundle"
+          },
+          {
+            "containing_function": "main",
+            "line": 377,
+            "source": "consumer['validate_shared_materials'](boundary,source,config_raw,service_raw)",
+            "target": "validate_shared_materials"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/codec72_generation_candidate01/deterministic-preview01/templates/build_release_r10.py",
+        "sha256": "f1c2a099554475c328256a09d48b0e9ec7bbc85af0881881f174de872e7f81d1"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/templates/build_release_r10.py",
+      "sha256": "ecb2f815b2f4bd2a8473e0a68c1708524d1c628fbaa1ef2e1fdb596ac1d3a17c"
+    },
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 15746,
+      "inverse": [
+        {
+          "new_end_line": 192,
+          "new_start_line": 191,
+          "new_utf8": " state=h.validate_bundle(bundle,binding['release_boundary_bundle_sha256'], actual_context='mac')\n",
+          "old_utf8": " state=h.validate_bundle(bundle,binding['release_boundary_bundle_sha256'])\n"
+        }
+      ],
+      "original": {
+        "bytes": 15724,
+        "calls": [
+          {
+            "containing_function": "sealed_sources",
+            "line": 192,
+            "source": "h.validate_bundle(bundle,binding['release_boundary_bundle_sha256'])",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "sealed_sources",
+            "line": 196,
+            "source": "h.validate_shared_materials(state,source,result['config_raw'],result['service_raw'])",
+            "target": "validate_shared_materials"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/downstream_review_cache/fixed19-comp01-neg03-r7-source-candidate01/source/component_source_context.py",
+        "sha256": "2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/component_source_context.py",
+      "sha256": "f2768698797d43d2a3cb5077fef432fa15d7e745192794cb69b7771e45e38b85"
+    },
+    {
+      "all_other_source_bytes_unchanged": true,
+      "bytes": 29537,
+      "inverse": [
+        {
+          "new_end_line": 256,
+          "new_start_line": 255,
+          "new_utf8": "    state = helper.validate_bundle(bundle, binding['release_boundary_bundle_sha256'], actual_context='mac')\n",
+          "old_utf8": "    state = helper.validate_bundle(bundle, binding['release_boundary_bundle_sha256'])\n"
+        }
+      ],
+      "original": {
+        "bytes": 29515,
+        "calls": [
+          {
+            "containing_function": "prepare",
+            "line": 256,
+            "source": "helper.validate_bundle(bundle, binding['release_boundary_bundle_sha256'])",
+            "target": "validate_bundle"
+          },
+          {
+            "containing_function": "prepare",
+            "line": 277,
+            "source": "helper.validate_shared_materials(state, source, result['config_raw'], result['service_raw'])",
+            "target": "validate_shared_materials"
+          }
+        ],
+        "path": "/workspace/scratch/1ad3d6f55439/six_host_source_cache/prepare_fixed19_host_r10.py",
+        "sha256": "40a0beee0c53e138fd1f06d45450d444ca701cabb826ab243adfedcd270add6b"
+      },
+      "path": "/workspace/scratch/1ad3d6f55439/epoch_consumer_candidate01/context-budget-preview01/downstream/prepare_fixed19_host_r10.py",
+      "sha256": "43a32b6e184b378a9396ac1c5e9bc98dd58937aa90caeec077a172a59d3f3b58"
+    }
+  ],
+  "new_nonce_or_lease": false,
+  "old_source_inverse_complete": true,
+  "phone_calls": 0,
+  "runtime_false_never_selects_a_host": true,
+  "schema": "hepta.epoch.consumer-context-budget-source-preview.v1",
+  "state": "EXPLICIT_CONTEXT_AND_DECODED_POOL_SOURCE_ONLY_NOT_EPOCH_READY",
+  "still_required": [
+    "Final epoch four-argument pure gate and source freeze",
+    "Two-domain epoch originals/constructor/current preservation integration",
+    "Phone caller source updates and final all-caller compatibility",
+    "Actual full decoded bundle size and final consumer131072 cap"
+  ],
+  "target_modules_executed": false
+}

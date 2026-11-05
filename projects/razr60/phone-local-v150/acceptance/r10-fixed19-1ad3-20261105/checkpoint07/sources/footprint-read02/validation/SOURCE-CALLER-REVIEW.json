@@ -1,0 +1,163 @@
+{
+  "actor179a_unchanged": true,
+  "automatic_retry": false,
+  "caller": {
+    "bytes": 126692,
+    "sha256": "536c7c53f0b9287e187b449a9dcf6a5e15c2585c4f2db0fd3ad4aea2e159c5d3"
+  },
+  "caller_exact_five_splices": [
+    {
+      "end": 59166,
+      "label": "PROBE",
+      "new": {
+        "bytes": 60565,
+        "sha256": "e657ecc00e5b042ba16ce94d000c12e51008f9c41a576ebe460b4f250a6471af"
+      },
+      "new_end": 60679,
+      "new_start": 114,
+      "old": {
+        "bytes": 59052,
+        "sha256": "3766f9bcc9b2965fa3119879ba73d8c44eadf3f40d1f0e4b7e3a5e75a11375f4"
+      },
+      "start": 114
+    },
+    {
+      "end": 118757,
+      "label": "REQ",
+      "new": {
+        "bytes": 61103,
+        "sha256": "3991e26fac6142d38ae32c598e6ae350544279477525b2fd74cc1e974d00c7c8"
+      },
+      "new_end": 121787,
+      "new_start": 60684,
+      "old": {
+        "bytes": 59586,
+        "sha256": "5b03a39aa67abd5dbb39cef728a8f14cdd77e5c250e7579ce768a9ce02c2c509"
+      },
+      "start": 59171
+    },
+    {
+      "end": 118805,
+      "label": "LABEL",
+      "new": {
+        "bytes": 41,
+        "sha256": "d333450851072856e31d3f6b8acf273a3293ca4a656246c047a3e754ec461ea9"
+      },
+      "new_end": 121835,
+      "new_start": 121794,
+      "old": {
+        "bytes": 41,
+        "sha256": "8a92638fb151ae4f0d9dac49e5816f4a99af4b015501a487ef53191a789786eb"
+      },
+      "start": 118764
+    },
+    {
+      "end": 118936,
+      "label": "PROBE assertion",
+      "new": {
+        "bytes": 130,
+        "sha256": "83a8367e5fc1c6c04298f8aec98bb181cabe692b6d415968875ce5f26bb40de6"
+      },
+      "new_end": 121966,
+      "new_start": 121836,
+      "old": {
+        "bytes": 130,
+        "sha256": "af50f8de9451b1a97ba47a48207bbd9b21f9a31deae37b0eb0f7cb920ebf14c7"
+      },
+      "start": 118806
+    },
+    {
+      "end": 119194,
+      "label": "OUT",
+      "new": {
+        "bytes": 100,
+        "sha256": "fb7dadbd7af8d8e9237f5b5a23b7acb8c86d97edd80fdb43fa3f5d643f16bf1f"
+      },
+      "new_end": 122224,
+      "new_start": 122124,
+      "old": {
+        "bytes": 100,
+        "sha256": "37c47363ab5f9bf62b61a269ba2d92aea8d0a8694af918f80b869cf49577981d"
+      },
+      "start": 119094
+    }
+  ],
+  "caller_whole_byte_inverse": true,
+  "caller_whole_functions_unchanged": [
+    "enc",
+    "put"
+  ],
+  "controller_stdin_bytes": 126692,
+  "controller_stdin_limit": 131072,
+  "idempotency_key": "root-1ad3-epoch-retained-footprint-read02-20261105",
+  "metadata_limit_bytes": 524288,
+  "new_nonce_or_lease": false,
+  "observation_references": "exact table/index plus descriptor of canonical serialized in-memory parent observation; not a file descriptor or extra read",
+  "observer": {
+    "bytes": 58657,
+    "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+  },
+  "observer_changed_functions": [
+    "main",
+    "metadata_budget",
+    "read_fixed_absence"
+  ],
+  "observer_new_pure_functions": [
+    "expand_parent_observation_reference",
+    "parent_observation_reference"
+  ],
+  "observer_unchanged_functions_or_classes": [
+    "ReadBudget",
+    "boot",
+    "descriptor",
+    "encoded",
+    "final_parent_bookends",
+    "fixed_ancestor_paths",
+    "fixed_footprint",
+    "metadata",
+    "names_from_fd",
+    "need",
+    "observe_ancestor",
+    "observe_proc_bridge",
+    "own_fds",
+    "pack_original",
+    "parent_fd",
+    "pid1_generation",
+    "read_fixed_node",
+    "retain_parent",
+    "selinux_from_fd",
+    "sha",
+    "strict",
+    "strict_unpack",
+    "verify_actual_aliases"
+  ],
+  "operation_label": "ng-epoch-retained-footprint-1ad3-read02",
+  "outer_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-epoch-retained-footprint-read02",
+  "parent_caller": {
+    "bytes": 123662,
+    "sha256": "380baa2c9d3547e9b48dbc2d5939b0a28340f497080de8e9fca4b9a477aa6a63"
+  },
+  "parent_observer": {
+    "bytes": 57213,
+    "sha256": "2a3e0b1d40afdf8ce535975e5fdb7068bd0d4c56429f2d6492f755f441719b98"
+  },
+  "passive_actor_wait_seconds": 240,
+  "phone_calls": 0,
+  "phone_timeout_seconds": 210,
+  "physical_readers_and_bounds_changed": false,
+  "remote_calls": 0,
+  "request": {
+    "bytes": 131130,
+    "sha256": "02ca2db8c876a5fece9c92691dca4a1dc515b1a8108e3b4e26102ec99d5911a4"
+  },
+  "schema": "hepta.fixed-footprint-read02-source-caller-derivation.v1",
+  "starts_at_most": 1,
+  "state": "SOURCE_ONLY_UNEXECUTED",
+  "target_functions_called": 0,
+  "wire": {
+    "actual_shell_v2_service_bytes": 63904,
+    "command_bytes": 59124,
+    "limit_exclusive": 65536
+  }
+}

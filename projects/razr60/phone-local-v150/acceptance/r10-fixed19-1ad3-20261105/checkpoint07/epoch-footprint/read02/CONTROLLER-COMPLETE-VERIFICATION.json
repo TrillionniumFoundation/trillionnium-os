@@ -1,0 +1,20 @@
+{
+  "actor_returncode": 0,
+  "case_credit": false,
+  "controller_complete_durable_terminal_and_both_EOF": true,
+  "controller_exit_code": 0,
+  "full_archive_consumption_pending": true,
+  "job_id": "1a1ac9cc481-fc05-55db",
+  "phone_returncode": 0,
+  "schema": "hepta.footprint-read02-controller-complete.v1",
+  "streams": {
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 828,
+      "sha256": "637b4b751fbde15953786b5ac98db5de6d1516f46ec9cbdcc322ec8902e20b01"
+    }
+  }
+}

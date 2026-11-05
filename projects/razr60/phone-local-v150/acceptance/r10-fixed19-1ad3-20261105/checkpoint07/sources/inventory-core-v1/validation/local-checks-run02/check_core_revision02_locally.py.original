@@ -1,0 +1,395 @@
+#!/usr/bin/env python3
+"""Candidate-core tests on local temporary trees; never a phone qualification.
+
+No lifecycle main or production runtime is imported. Exact new fragment and
+selected unchanged common/inventory functions execute only against temporary
+local paths or explicitly synthetic proof fixtures. Public constant overrides
+exist only in the isolated fixture namespace and are recorded below.
+"""
+from pathlib import Path
+import ast
+import copy
+import errno
+import hashlib
+import json
+import os
+import shutil
+import stat
+import sys
+import tempfile
+import time
+import traceback
+import types
+
+HERE = Path(__file__).resolve().parent
+BASE = HERE.parents[1]
+OUT = HERE / 'validation/local-checks-run02'
+OUT.mkdir(mode=0o700)
+RESULTS = []
+COMMON = HERE / 'reference/component_common.original.py'
+OLD = HERE / 'reference/component_lifecycle.original.py'
+FRAGMENT = HERE / 'source/epoch_inventory.fragment.py'
+
+
+def namespace():
+    ns = {'__name__': 'local_epoch_inventory_core_fixture', '__file__': str(COMMON)}
+    exec(compile(COMMON.read_bytes(), str(COMMON), 'exec', optimize=0), ns)
+    old = OLD.read_text(); tree = ast.parse(old)
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef) and node.name in ('fixture_absence', 'inventory'):
+            exec(compile(ast.get_source_segment(old, node) + '\n', str(OLD), 'exec', optimize=0), ns)
+    ns['__file__'] = str(FRAGMENT)
+    exec(compile(FRAGMENT.read_bytes(), str(FRAGMENT), 'exec', optimize=0), ns)
+    return ns
+
+
+def good_spec(ns):
+    return {'schema': 'hepta.native-guard.two-epoch-inventory-spec.v1',
+            'legacy_anchor': copy.deepcopy(ns['EPOCH_INVENTORY_LEGACY_ANCHOR']),
+            'active_reservations': [], 'retained_roots': [], 'control_roots': [], 'control_leaves': [],
+            'alias_pairs': [list(p) for p in ns['EPOCH_INVENTORY_LEGACY_ALIAS_PAIRS']]}
+
+
+def bind_empty_fixture(ns):
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS'] = {'retained_roots': [], 'control_roots': [], 'control_leaves': [],
+                                       'absence_roots': [], 'alias_pairs': []}
+
+
+def check(name, function):
+    start = time.monotonic()
+    try:
+        detail = function()
+        RESULTS.append({'name': name, 'passed': True, 'elapsed_seconds': time.monotonic() - start,
+                        'detail': detail})
+        print(json.dumps({'name': name, 'passed': True}), flush=True)
+    except BaseException as exc:
+        RESULTS.append({'name': name, 'passed': False, 'elapsed_seconds': time.monotonic() - start,
+                        'error': type(exc).__name__ + ': ' + str(exc), 'traceback': traceback.format_exc()})
+        print(json.dumps({'name': name, 'passed': False, 'error': str(exc)}), flush=True)
+
+
+def rejected(function, phrase):
+    try: function()
+    except (ValueError, OSError) as exc:
+        if phrase and phrase not in str(exc): raise AssertionError('wrong refusal: ' + str(exc))
+        return {'refused': type(exc).__name__, 'reason': str(exc)}
+    raise AssertionError('invalid fixture was accepted')
+
+
+def val(roots, *, fixtures=(), absent=(), pairs=()):
+    return {'roots': list(map(str, roots)), 'fixture_roots': list(map(str, fixtures)),
+            'required_absence_roots': list(map(str, absent)), 'alias_pairs': [list(p) for p in pairs], 'control_leaf_paths': [], 'control_leaf_pins': {}}
+
+
+def file(path, data=b'original'):
+    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try: os.write(fd, data)
+    finally: os.close(fd)
+
+
+def temp_case(function):
+    with tempfile.TemporaryDirectory(prefix='epoch-core-', dir=str(OUT)) as name:
+        return function(Path(name), namespace())
+
+
+def basic(p, ns):
+    a=p/'legacy';b=p/'active';file(a/'a',b'left');file(b/'b',b'right')
+    budget=ns['_EpochInventoryBudget']()
+    observed,absences,parents=ns['_epoch_inventory_observe_roots'](val([a,b]),budget)
+    assert observed['file_bytes_hashed']==9 and len(observed['entries'])==4
+    assert budget.bytes_read==9 and budget.entries==4 and budget.file_reads==2 and not absences
+    return {'entries':4,'file_bytes':9,'single_budget_instance':True}
+
+
+def actual_legacy_pure():
+    ns=namespace();bind_empty_fixture(ns);spec=good_spec(ns)
+    inv=json.loads((BASE/'actual_external_902e_7c907661_01/current-head-read01/OBSERVATIONS.decoded-original.json').read_text())['full_observed_inventory']
+    value=ns['inventory_epoch_spec_value'](spec)
+    # These are synthetic absence-envelope fixtures, not new actual phone facts.
+    absences=[]
+    for p in inv['roots']:
+        if inv['entries'][p]['kind']=='absent':
+            m=[1,2,stat.S_IFDIR|0o700,0,0,2,0,0,0]
+            absences.append({'schema':'hepta.native-guard.epoch-positive-root-absence.v1',
+                'path':p,'absence':'ENOENT','parent_path':str(Path(p).parent),
+                'initial_parent_metadata':m,'final_parent_metadata':m[:],
+                'initial_held_enoent_checks':2,'initial_reopened_enoent_checks':1,
+                'final_reopened_enoent_checks':1,'canonical_parent_reopened':True,
+                'first_elapsed_seconds':0.0,'last_elapsed_seconds':0.0})
+    proof=ns['_epoch_inventory_observation_value'](value,inv,absences,inv,None,[])
+    result=ns['verify_epoch_inventory_observation'](spec,inv,None,proof)
+    assert result['entries']==2623 and result['file_bytes_hashed']==19424531 and result['alias_pairs']==55
+    bad=copy.deepcopy(proof);bad['shared_budget']['full_union_traversals']=True
+    refused=rejected(lambda:ns['verify_epoch_inventory_observation'](spec,inv,None,bad),'observation differs')
+    bad=copy.deepcopy(proof);bad['shared_budget']['file_bytes_hashed']-=1
+    rejected(lambda:ns['verify_epoch_inventory_observation'](spec,inv,None,bad),'observation differs')
+    bad=copy.deepcopy(proof);bad['absence_observations'][0]['final_parent_metadata'][1]+=1
+    rejected(lambda:ns['verify_epoch_inventory_observation'](spec,inv,None,bad),'parent full identity')
+    return {'actual_retained_row_structure':result,'synthetic_absence_envelope':True,
+            'new_actual_observation_claimed':False,'bool_int_refusal':refused}
+
+
+def spec_tests():
+    ns=namespace();spec=good_spec(ns)
+    check('unbound_extra_roots_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](spec),'remain unbound'))
+    bind_empty_fixture(ns)
+    old_fixtures=list(ns['EPOCH_INVENTORY_LEGACY_FIXTURES'])+[
+        '/proc/1/root/data/local/tmp/hepta-native-guard-bc0573ad459cecae9884d6a46568621b',
+        '/proc/1/root/data/local/tmp/hepta-native-guard-7c74b84aefb177d15f746fa7eae29d54']
+    check('unchanged_old_ninth_fixture_rejected_before_io',lambda:rejected(
+        lambda:ns['inventory'](old_fixtures,fixture_roots=old_fixtures),'bounded unique cumulative fixture'))
+    nine=copy.deepcopy(spec);nine['active_reservations']=[{'ordinal':i,'identity':None,'inventory_roots':[]} for i in range(1,10)]
+    check('ninth_active_reservation_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](nine),'eight consumed'))
+    third=copy.deepcopy(spec);third['third_epoch']={}
+    check('third_epoch_field_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](third),'spec differs'))
+    typed=copy.deepcopy(spec);typed['legacy_anchor']['metadata'][3]=False
+    check('legacy_anchor_bool_int_substitution_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](typed),'fixed complete'))
+    missing=copy.deepcopy(spec);missing['alias_pairs']=missing['alias_pairs'][1:]
+    check('omitted_legacy_alias_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](missing),'aliases were omitted'))
+    repeated=copy.deepcopy(spec);repeated['alias_pairs'].append(repeated['alias_pairs'][0])
+    check('third_reused_alias_path_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](repeated),'alias path repeats'))
+    wrong=copy.deepcopy(spec);wrong['active_reservations']=[{'ordinal':2,'identity':None,'inventory_roots':[]}]
+    check('active_ordinal_gap_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](wrong),'consecutive'))
+    roots=['/tmp/epoch-core-pure-root-'+str(i) for i in range(38)]
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']={'retained_roots':roots,'control_roots':[],'control_leaves':[],'absence_roots':[],'alias_pairs':[]}
+    extra=copy.deepcopy(spec);extra['retained_roots']=[{'path':p,'presence':'present'} for p in roots]
+    check('global_root65_rejected',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](extra),'64-root'))
+    alien='/proc/1/root/data/local/tmp/hepta-native-guard-bc0573ad459cecae9884d6a46568621b'
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']={'retained_roots':[alien],'control_roots':[],'control_leaves':[],'absence_roots':[],'alias_pairs':[]}
+    extra=copy.deepcopy(spec);extra['retained_roots']=[{'path':alien,'presence':'present'}]
+    check('fixture_cannot_be_hidden_in_generic_extra',lambda:rejected(lambda:ns['inventory_epoch_spec_value'](extra),'undeclared fixture'))
+
+
+def aliases(p,ns):
+    a=p/'view';file(a/'body',b'count both')
+    b=Path('/proc/1/root')/str(a).lstrip('/')
+    assert os.stat(a).st_dev==os.stat(b).st_dev and os.stat(a).st_ino==os.stat(b).st_ino
+    pairs=sorted([sorted([str(a),str(b)]),sorted([str(a/'body'),str(b/'body')])])
+    budget=ns['_EpochInventoryBudget']();inv,absence,parents=ns['_epoch_inventory_observe_roots'](val([a,b],pairs=pairs),budget)
+    assert len(inv['entries'])==4 and inv['file_bytes_hashed']==20 and budget.file_reads==2
+    refused=rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a,b]),ns['_EpochInventoryBudget']()),'unlisted inode alias')
+    return {'actual_local_proc1_root_alias_rows':4,'both_view_bytes':20,'no_deduplication':True,'unlisted_alias':refused}
+
+
+def absence(p,ns):
+    missing=p/'absent';budget=ns['_EpochInventoryBudget']()
+    inv,proof,parents=ns['_epoch_inventory_observe_roots'](val([missing],absent=[missing]),budget)
+    assert budget.entries==1 and len(proof)==1 and inv['entries'][str(missing)]=={'kind':'absent','absence':'ENOENT'}
+    assert proof[0]['initial_parent_metadata']==proof[0]['final_parent_metadata']
+    return {'global_entry_charge':1,'positive_parent_full9':proof[0],'phone_observation':False}
+
+
+def domain_projection(p,ns):
+    a=p/'business';b=p/'control';file(a/'old',b'base');file(b/'COMMIT',b'control')
+    missing=p/'not-created';v=val([a,b,missing],absent=[missing]);v.update(
+        business_inventory_roots=[str(a)],control_inventory_roots=[str(b)])
+    budget=ns['_EpochInventoryBudget']();inv,proof,parents=ns['_epoch_inventory_observe_roots'](v,budget)
+    business,control=ns['_epoch_inventory_split_views'](v,inv)
+    joined=ns['_epoch_inventory_join_views'](v,business,control,[])
+    assert joined==inv and len(business['entries'])==2 and len(control['entries'])==2
+    assert str(missing) not in business['entries'] and str(missing) not in control['entries']
+    assert budget.entries==5 and budget.bytes_read==11 and proof[0]['path']==str(missing)
+    rejected(lambda:ns['_epoch_inventory_join_views'](v,business,None,[]),'view differs')
+    return {'global_entries':5,'global_bytes':11,'business_entries':2,'control_entries':2,
+            'nonfixture_absence_separate':True,'control_omission_rejected':True}
+
+
+def shell_fixture(p,ns):
+    a=p/'fixture';file(a/'body',b'shell');os.chown(a,2000,2000);os.chown(a/'body',2000,2000);os.chmod(a/'body',0o400)
+    inv,_,parents=ns['_epoch_inventory_observe_roots'](val([a],fixtures=[a]),ns['_EpochInventoryBudget']())
+    assert inv['entries'][str(a/'body')]['metadata'][3:5]==[2000,2000]
+    os.chown(a/'body',0,0)
+    return rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a],fixtures=[a]),ns['_EpochInventoryBudget']()),'ownership/mode')
+
+
+class OSProxy:
+    def __init__(self,**overrides):self.overrides=overrides
+    def __getattr__(self,name):return self.overrides.get(name,getattr(os,name))
+
+
+def leaf_replacement(p,ns):
+    a=p/'root';file(a/'body',b'same bytes');done=[False]
+    def read(fd,n):
+        data=os.read(fd,n)
+        if not done[0] and data:
+            done[0]=True;os.rename(a/'body',a/'retained-old');file(a/'body',b'same bytes')
+        return data
+    ns['os']=OSProxy(read=read)
+    return rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a]),ns['_EpochInventoryBudget']()),'inventory original raced')
+
+
+def old_leaf_after_other_domain(p,ns):
+    a=p/'legacy';b=p/'active';file(a/'body',b'old');file(b/'body',b'new')
+    seen=[False]
+    def read(fd,n):
+        data=os.read(fd,n)
+        if data==b'new' and not seen[0]:
+            seen[0]=True
+            with (a/'body').open('wb') as stream:stream.write(b'bad')
+        return data
+    ns['os']=OSProxy(read=read)
+    return rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a,b]),ns['_EpochInventoryBudget']()),'changed before global bookend')
+
+
+def parent_rename(p,ns):
+    a=p/'root';file(a/'body',b'original');done=[False]
+    def read(fd,n):
+        data=os.read(fd,n)
+        if data and not done[0]:
+            done[0]=True;os.rename(a,p/'old-root');file(a/'body',b'original')
+        return data
+    ns['os']=OSProxy(read=read)
+    return rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a]),ns['_EpochInventoryBudget']()),'inventory original raced')
+
+
+def fifo_race(p,ns):
+    a=p/'root';file(a/'body');done=[False]
+    def opened(path,flags,*args,**kwargs):
+        if path=='body' and not done[0]:
+            done[0]=True;os.unlink(a/'body');os.mkfifo(a/'body',0o600)
+        return os.open(path,flags,*args,**kwargs)
+    ns['os']=OSProxy(open=opened)
+    return rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a]),ns['_EpochInventoryBudget']()),'replaced before open')
+
+
+def static_bad(p,ns,kind):
+    a=p/'root';a.mkdir(mode=0o700)
+    if kind=='symlink':os.symlink('/etc/passwd',a/'bad')
+    elif kind=='hardlink':file(a/'body');os.link(a/'body',a/'bad')
+    elif kind=='fifo':os.mkfifo(a/'bad',0o600)
+    return rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a]),ns['_EpochInventoryBudget']()),
+                    'symlink' if kind=='symlink' else 'non-regular/hardlinked')
+
+
+def shared_clock(p,ns):
+    a=p/'legacy';b=p/'active';file(a/'body',b'old');file(b/'body',b'new')
+    clock=[0.0]
+    def opened(path,flags,*args,**kwargs):
+        fd=os.open(path,flags,*args,**kwargs)
+        if path=='active':clock[0]=30.01
+        return fd
+    ns['time']=types.SimpleNamespace(monotonic=lambda:clock[0])
+    ns['os']=OSProxy(open=opened)
+    budget=ns['_EpochInventoryBudget']()
+    answer=rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a,b]),budget),'shared full inventory time')
+    assert budget.started==0.0 and budget.file_reads==1 and budget.bytes_read==3
+    return {**answer,'controlled_monotonic_test_only':True,'clock_not_reset_for_active':True}
+
+
+def entries_bound(p,ns):
+    roots=[]
+    for domain in ('legacy','active'):
+        d=p/domain;d.mkdir(mode=0o700);roots.append(d)
+        for i in range(15000):
+            fd=os.open(d/str(i),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600);os.close(fd)
+    budget=ns['_EpochInventoryBudget']()
+    result=rejected(lambda:ns['_epoch_inventory_observe_roots'](val(roots),budget),'entry bound')
+    assert budget.entries==30001
+    return {**result,'actual_temporary_files':30000,'actual_entry_charge':budget.entries}
+
+
+def bytes_bound(p,ns):
+    a=p/'legacy';b=p/'active';a.mkdir(mode=0o700);b.mkdir(mode=0o700)
+    for i in range(9):
+        path=(a if i<4 else b)/str(i);fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+        try:os.ftruncate(fd,64*1024*1024)
+        finally:os.close(fd)
+    budget=ns['_EpochInventoryBudget']()
+    result=rejected(lambda:ns['_epoch_inventory_observe_roots'](val([a,b]),budget),'shared remaining inventory byte')
+    assert budget.bytes_read==512*1024*1024 and budget.file_reads==8
+    return {**result,'actual_logical_sparse_bytes_read':budget.bytes_read,'domains':2,'budget_not_reset':True}
+
+
+def one_file_bound(p,ns):
+    path=p/'too-large';fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    try:os.ftruncate(fd,64*1024*1024+1)
+    finally:os.close(fd)
+    budget=ns['_EpochInventoryBudget']()
+    result=rejected(lambda:ns['_epoch_inventory_observe_roots'](val([path]),budget),'oversized inventory')
+    assert budget.bytes_read==0
+    return result
+
+
+def fixed_control_leaf(p,ns):
+    business=p/'business';file(business/'old',b'base')
+    staging=p/'staging';file(staging/'leaf',b'control');file(staging/'unrelated',b'not scanned')
+    path=staging/'leaf';raw=path.read_bytes();pin={'path':str(path),'bytes':len(raw),
+        'sha256':hashlib.sha256(raw).hexdigest(),'metadata':ns['metadata'](path.stat())}
+    v=val([business,path]);v.update(control_leaf_paths=[str(path)],control_leaf_pins={str(path):pin},
+        business_inventory_roots=[str(business)],control_inventory_roots=[])
+    budget=ns['_EpochInventoryBudget']();inv,absence,parents=ns['_epoch_inventory_observe_roots'](v,budget)
+    assert budget.entries==3 and budget.bytes_read==11 and budget.file_reads==2 and len(parents)==1
+    assert parents[0]['initial_names']==parents[0]['final_names']==['leaf','unrelated']
+    assert parents[0]['metadata_and_names_only'] is True and parents[0]['subtree_inventory_claimed'] is False
+    assert str(staging/'unrelated') not in inv['entries']
+    b,c=ns['_epoch_inventory_split_views'](v,inv);assert c is None and str(path) not in b['entries']
+    leaves=[{'path':str(path),'entry':inv['entries'][str(path)]}]
+    assert ns['_epoch_inventory_join_views'](v,b,c,leaves)==inv
+    rejected(lambda:ns['_epoch_inventory_join_views'](v,b,c,[]),'every declared control leaf')
+    with path.open('wb') as stream:stream.write(b'changed')
+    rejected(lambda:ns['_epoch_inventory_observe_roots'](v,ns['_EpochInventoryBudget']()),'fixed control leaf identity')
+    return {'global_entries':3,'global_bytes':11,'two_file_reads':True,
+            'parent_names_only_no_unrelated_body':True,'omitted_leaf_rejected':True,'old_leaf_change_rejected':True}
+
+
+def unbound_leaf_metadata():
+    ns=namespace();bind_empty_fixture(ns);spec=good_spec(ns)
+    pin={'path':'/tmp/epoch-known-leaf','bytes':1,'sha256':'a'*64,'metadata':None}
+    ns['EPOCH_INVENTORY_EXTRA_ROOTS']['control_leaves']=[pin]
+    spec['control_leaves']=[{'path':pin['path'],'presence':'present'}]
+    return rejected(lambda:ns['inventory_epoch_spec_value'](spec),'original private/ADB transport')
+
+
+def generic_regular_root_rejected(p,ns):
+    path=p/'untyped-file';file(path,b'not a tree')
+    return rejected(lambda:ns['_epoch_inventory_observe_roots'](val([path]),ns['_EpochInventoryBudget']()),
+                    'roots must be directories')
+
+
+def source_byte_regression():
+    parent=(HERE/'review-snapshot03/source/epoch_inventory.fragment.py').read_text()
+    new=FRAGMENT.read_text()
+    def items(source):return {n.name:ast.get_source_segment(source,n) for n in ast.parse(source).body
+                             if isinstance(n,(ast.FunctionDef,ast.ClassDef))}
+    a,b=items(parent),items(new)
+    assert a['_EpochInventoryBudget']==b['_EpochInventoryBudget']
+    old=OLD.read_text();cur=(HERE/'source/component_lifecycle.py').read_text()
+    af,bf=items(old),items(cur)
+    assert all(bf[k]==value for k,value in af.items())
+    return {'shared_budget_class_exactly_same_as_actual_large_boundary_tests':True,
+            'all_original_functions_unchanged':len(af),'no_old_single_domain_gate_changed':True}
+
+
+spec_tests()
+check('actual_legacy_rows_and_exact_proof_types',actual_legacy_pure)
+check('shared_union_temporary_regular_trees',lambda:temp_case(basic))
+# Prior physical alias fixture unavailable: /proc/1/root returns EACCES; original run01 retained.
+check('positive_absence_parent_full9_and_global_charge',lambda:temp_case(absence))
+check('business_control_absence_exact_projection',lambda:temp_case(domain_projection))
+# Prior chown(2000) fixture unavailable: EINVAL; original run01 retained; pure actual-row checks cover schema.
+for kind in ('symlink','hardlink','fifo'):
+    check(kind+'_rejected',lambda kind=kind:temp_case(lambda p,ns:static_bad(p,ns,kind)))
+check('same_bytes_different_inode_rejected',lambda:temp_case(leaf_replacement))
+check('old_leaf_changed_during_later_domain_rejected',lambda:temp_case(old_leaf_after_other_domain))
+check('parent_rename_replacement_rejected',lambda:temp_case(parent_rename))
+check('fifo_substitution_does_not_block_open',lambda:temp_case(fifo_race))
+check('one_clock_not_reset_between_domains',lambda:temp_case(shared_clock))
+check('single_file_64MiB_plus1_rejected',lambda:temp_case(one_file_bound))
+check('fixed_control_leaf_hash_full9_count_and_parent_bookends',lambda:temp_case(fixed_control_leaf))
+check('control_leaf_unknown_metadata_rejected',unbound_leaf_metadata)
+check('file_cannot_masquerade_as_v1_directory_root',lambda:temp_case(generic_regular_root_rejected))
+check('original_functions_and_actual_large_budget_tests_unchanged',source_byte_regression)
+# 512MiB physical-read boundary already exercised in run01; budget class remains byte-identical.
+# 30001-entry boundary already exercised in run01; budget class remains byte-identical.
+raw=FRAGMENT.read_bytes()
+report={'schema':'hepta.source-only.epoch-inventory-local-checks.v1',
+        'fragment':{'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()},
+        'results':RESULTS,'passed':sum(r['passed'] for r in RESULTS),'total':len(RESULTS),
+        'fixture_scope':'Local temporary real FD trees and isolated synthetic namespaces only. Public extra None was overridden only in pure fixture namespace; no target constants or deployed source were changed.',
+        'physical_NEG14_claimed':False,'new_runtime_qualified':False,
+        'phone_calls':0,'remote_calls':0,'case_nonces_generated':0,'leases_created':0,
+        'cross_operation_preservation_is_separate_upper_gate':True, 'retained_parent_run':'local-checks-run01/RESULT.json', 'parent_environment_blocked_tests':['proc1_root_real_alias_EACCES','chown_2000_EINVAL'], 'large_boundary_reruns_omitted_because_budget_class_unchanged':True}
+(OUT/'RESULT.json').write_text(json.dumps(report,sort_keys=True,indent=2,allow_nan=False)+'\n')
+print(json.dumps({'result':str(OUT/'RESULT.json'),'passed':report['passed'],'total':report['total']}),flush=True)
+sys.exit(0 if report['passed']==report['total'] else 1)

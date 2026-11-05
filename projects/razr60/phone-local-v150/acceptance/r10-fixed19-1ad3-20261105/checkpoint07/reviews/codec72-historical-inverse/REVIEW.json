@@ -1,0 +1,30 @@
+{
+  "capsule": {
+    "bytes": 22936,
+    "sha256": "da9e285f3d8bcedfd363b0479b66d30bc51c2a04911f5864d0ef75de24e16d1a"
+  },
+  "capsule_bytes_saved_from_e7a": 22100,
+  "case_credit": false,
+  "final_epoch_generation_verified": false,
+  "historical_source_execution": false,
+  "literal_bytes": 192,
+  "original_pure_whole_inverse": {
+    "bytes": 81573,
+    "sha256": "724507280b8180874e43dc11f93f313a712aa23cf410d0e3c49774d2a757fef5"
+  },
+  "phone_calls": 0,
+  "pure": {
+    "bytes": 62430,
+    "sha256": "5fdcc65f3d3d8d77624cdc8cf8e8f6ad8426f632ea7f3605c7eee0b270ebc9f7"
+  },
+  "range_operations": 15,
+  "schema": "hepta.codec72.historical-inverse-independent-root-review.v1",
+  "single_gzip_and_exact_complete_pure_source_verified": true,
+  "source_delta_closed_set": [
+    "CODEC72_BASE67_LATE",
+    "_codec72_base_late_bytes",
+    "codec72_historical_runtime_view single call"
+  ],
+  "state": "EXACT_DATA_ONLY_INVERSE_AND_COMPLETE_SOURCE_DELTA_VERIFIED",
+  "whole396d_to_c50_bytes_independently_equal": true
+}

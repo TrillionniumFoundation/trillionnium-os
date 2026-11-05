@@ -1,0 +1,99 @@
+{
+  "actor_label": "ng-epoch-retained-footprint-1ad3-read02",
+  "actual_controller_stdin_bytes": 126692,
+  "actual_shell_service_bytes": 63904,
+  "authority": "Only Root may submit this one separately reviewed request. No automatic retry or caller execution occurred in preparing the package.",
+  "caller": {
+    "bytes": 126692,
+    "sha256": "536c7c53f0b9287e187b449a9dcf6a5e15c2585c4f2db0fd3ad4aea2e159c5d3"
+  },
+  "case_pass": false,
+  "compact_failure_additions": [
+    "original_failure",
+    "observation_phase",
+    "observation_progress",
+    "last_metadata_bytes"
+  ],
+  "controller_request_file": {
+    "bytes": 131130,
+    "sha256": "02ca2db8c876a5fece9c92691dca4a1dc515b1a8108e3b4e26102ec99d5911a4"
+  },
+  "epoch_initialized": false,
+  "fresh_observation_completed_here": false,
+  "global_clearance": false,
+  "idempotency_key": "root-1ad3-epoch-retained-footprint-read02-20261105",
+  "known_metadata_measurement": {
+    "cached_parent_rows": 20,
+    "complete_known_absence_parent_rows": 58,
+    "current_complete_metadata_budget_proved": false,
+    "missing_absence_parent_rows": 7,
+    "new_known_bytes": 45528,
+    "old_known_bytes": 67350
+  },
+  "new_nonce_or_lease": false,
+  "observer": {
+    "bytes": 58657,
+    "sha256": "779546dde4ed021be8851c0c1410dfdabc7019533986530e78bd58e3924aaf34"
+  },
+  "original_failed_read01_preserved": true,
+  "outer_timeout": null,
+  "p4_output": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-epoch-retained-footprint-read02",
+  "parent_reference": {
+    "complete_parent_object_fields": [
+      "path",
+      "metadata",
+      "names",
+      "selinux_raw_hex",
+      "scope"
+    ],
+    "exact_keys": [
+      "table",
+      "index",
+      "serialized_observation"
+    ],
+    "expanded_rows_must_match_expected_parent_path": true,
+    "index": "exact int, not bool; zero-based in the retained complete parent observation array",
+    "missing_changed_out_of_range_bool_index_or_extra_key_refused": true,
+    "physical_before_after_checks_unchanged": true,
+    "reference_is_extra_read": false,
+    "reference_is_file_descriptor": false,
+    "reference_locations": [
+      "positive_absence_observations[*].first.canonical_parent_observation",
+      "positive_absence_observations[*].final.canonical_parent_observation",
+      "unexpected-present partial observation.parent_observation"
+    ],
+    "serialized_observation": "exact bytes/sha256 descriptor of the entire referenced in-memory parent object encoded by original encoded(): ASCII JSON, sorted keys, compact separators, allow_nan=False, LF",
+    "table_literal": "immediate_parent_observations"
+  },
+  "report_schema": "hepta.native-guard.fixed-epoch-retained-footprint-observation.v2",
+  "request_JSON_envelope_bytes": 131130,
+  "schema": "hepta.source-only.fixed-epoch-footprint-observer.interface.v2",
+  "shell_service_limit_exclusive": 65536,
+  "state": "SOURCE_ONLY_SECOND_FIXED_READ_REQUEST_UNEXECUTED",
+  "unchanged_limits": {
+    "controller_stdin_bytes": 131072,
+    "cooperative_seconds": 30,
+    "metadata_bytes": 524288,
+    "operation_file_bytes": 8388608,
+    "passive_wait_seconds": 240,
+    "phone_seconds": 210,
+    "phone_stdout_stderr_bytes": 8388608,
+    "physical_read_bytes": 16777216,
+    "raw_packet_bytes": 16777216,
+    "twelve_original_sum_bytes": 16777216
+  },
+  "unchanged_scope": {
+    "absence_paths": 65,
+    "body_bytes_per_round": 7114062,
+    "complete_trees": 4,
+    "directories": 20,
+    "files": 114,
+    "fixed_leaves": 12,
+    "fixed_proc_pid": 1,
+    "fresh_alias_pairs": 2,
+    "members": 134,
+    "only_magiclink": "/proc/1/root",
+    "original_file_bodies": 126,
+    "whole_read_rounds": 2
+  }
+}

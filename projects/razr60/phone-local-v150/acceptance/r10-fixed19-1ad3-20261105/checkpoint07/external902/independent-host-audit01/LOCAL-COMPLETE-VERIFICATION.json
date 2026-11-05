@@ -1,0 +1,48 @@
+{
+  "actual_derived_elapsed_seconds": 10.74054745491594,
+  "actual_driver_guard_rows": 160,
+  "actual_driver_guard_unique_bytes": 5141376,
+  "all_original_host_input_rows_bytes_sha_full9_exact": 137,
+  "at_utc": "2026-11-05T14:26:26.066083+00:00",
+  "both_streams_eof": true,
+  "byte_equality": {
+    "bytes": 52142,
+    "metadata": [
+      66306,
+      37116535,
+      33152,
+      1000,
+      1000,
+      1,
+      52142,
+      1793888235526283464,
+      1793888235526283464
+    ],
+    "path": "/home/alex/codex-hepta-external902-independent-closure-audit-1ad3-01/BYTE-EQUALITY.json",
+    "sha256": "6bb0cb5179850cce2adc53982796bde4dd6bb2f0269968df33e91ff4b4dc8461",
+    "version": "66306:37116535:52142:1793888235526283464:1793888235526283464"
+  },
+  "caller_result": {
+    "bytes": 2125,
+    "sha256": "0aba002433726ab64629cbdb78b9ffd2b9295af86c2a34865c90dbffae51fb1d"
+  },
+  "case_pass": false,
+  "closure_fields": 49,
+  "controller_exit_zero_full_durable_terminal": true,
+  "direct_receipt_read_error_retained": true,
+  "fresh_phone_clearance": false,
+  "native_component_state": "provider_failed",
+  "new_native_closure": false,
+  "old_mac_sender_unknown_and_original_eof_false_preserved": true,
+  "original_audit_job": "1a1ac11fdf1-fc05-5216",
+  "original_stderr_bytes": 0,
+  "original_stdout_bytes": 1053,
+  "owned_read_fd_bookend_complete": true,
+  "packed_transfer_job": "1a1ac17486e-fc05-5229",
+  "phone_calls": 0,
+  "prior_local_summary_KeyError_retained": "LOCAL-VERIFICATION-ATTEMPT01-ERROR.json",
+  "schema": "hepta.root-independent-host-audit-complete-verification.v1",
+  "state": "INDEPENDENT_HOST_RECOMPUTATION_COMPLETE_AND_ORIGINAL_RECEIPTS_VERIFIED",
+  "whole_original_closure_bytes": 55124,
+  "whole_original_closure_sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+}
