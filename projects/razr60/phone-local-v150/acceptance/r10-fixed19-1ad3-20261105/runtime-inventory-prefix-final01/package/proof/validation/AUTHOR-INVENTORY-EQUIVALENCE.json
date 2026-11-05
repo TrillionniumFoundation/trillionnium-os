@@ -1,0 +1,437 @@
+{
+  "actual_archive": {
+    "bytes": 469829,
+    "sha256": "9aacc5789a65dd875ab9fe7456e2258e0bf4e54575d3be71a50d5542a489b288"
+  },
+  "case_qualification": false,
+  "checks": [
+    {
+      "candidate": {
+        "accepted": true,
+        "output": {
+          "bytes": 664600,
+          "sha256": "ac4b947f3b0732c48cea0938ca4a3cd9058f54086c9250a10f5db8183d2de91f"
+        }
+      },
+      "case": "actual_1877_entry_retained_inventory",
+      "expected_accept": true,
+      "input_sha256": "608f0dd5a6c7484b28593b619177ab060f778f7b8af0b6e5040eae694d845b4b",
+      "original": {
+        "accepted": true,
+        "output": {
+          "bytes": 664600,
+          "sha256": "ac4b947f3b0732c48cea0938ca4a3cd9058f54086c9250a10f5db8183d2de91f"
+        }
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": true,
+        "output": {
+          "bytes": 746,
+          "sha256": "19df3b13635bbead001f813f1fd5d62950ee34829cf9037a435d0c31a936c93f"
+        }
+      },
+      "case": "shared_string_prefix_distinct_component_roots",
+      "expected_accept": true,
+      "input_sha256": "04b3682d075290581833e60ed804b4dfc4932ff555565db8e2087b5dd222c728",
+      "original": {
+        "accepted": true,
+        "output": {
+          "bytes": 746,
+          "sha256": "19df3b13635bbead001f813f1fd5d62950ee34829cf9037a435d0c31a936c93f"
+        }
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": true,
+        "output": {
+          "bytes": 528,
+          "sha256": "c7368293c42498fd6152e4f56ebd4adbbfd199cd8b2ee407a49c70be9991f0e3"
+        }
+      },
+      "case": "unicode_emoji_components",
+      "expected_accept": true,
+      "input_sha256": "f9a383fd623feca6b86dea8cc7203784470ae0983e7eb14a8a5739ac108e76c6",
+      "original": {
+        "accepted": true,
+        "output": {
+          "bytes": 528,
+          "sha256": "c7368293c42498fd6152e4f56ebd4adbbfd199cd8b2ee407a49c70be9991f0e3"
+        }
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": true,
+        "output": {
+          "bytes": 647,
+          "sha256": "d7b44648bdba3951f99eb080ac838e9de86246ff12977bba3f26c9b825155bcc"
+        }
+      },
+      "case": "double_slash_anchor_kept_lexically_distinct",
+      "expected_accept": true,
+      "input_sha256": "fc6ba1da1dbf2dc232aebe29248b6050cac5600bdfafc9843bea1a97778b4546",
+      "original": {
+        "accepted": true,
+        "output": {
+          "bytes": 647,
+          "sha256": "d7b44648bdba3951f99eb080ac838e9de86246ff12977bba3f26c9b825155bcc"
+        }
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": true,
+        "output": {
+          "bytes": 70208,
+          "sha256": "3911e01de53a43402bd5d603eac54537374c76bd4b4a88d6235ebeb44f72aa05"
+        }
+      },
+      "case": "deep_150_component_tree",
+      "expected_accept": true,
+      "input_sha256": "89125e81ce5c624cb29ac7da9c2e18b9a5844fd60a60afc73f25fdcb5587fe77",
+      "original": {
+        "accepted": true,
+        "output": {
+          "bytes": 70208,
+          "sha256": "3911e01de53a43402bd5d603eac54537374c76bd4b4a88d6235ebeb44f72aa05"
+        }
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory entry left its unique complete root",
+        "error_type": "ValueError"
+      },
+      "case": "substring_sibling_outside_root",
+      "expected_accept": false,
+      "input_sha256": "6a9e165c328518d2e630545523434a474fc46bc73982c250572ac719c769caec",
+      "original": {
+        "accepted": false,
+        "detail": "inventory entry left its unique complete root",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory entry left its unique complete root",
+        "error_type": "ValueError"
+      },
+      "case": "relative_entry",
+      "expected_accept": false,
+      "input_sha256": "9daf3b11dd3b48fc7826a5c0aefaf13ec5e784daa6a32c2e81ad9168b06eab2d",
+      "original": {
+        "accepted": false,
+        "detail": "inventory entry left its unique complete root",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "case": "dot_entry_noncanonical",
+      "expected_accept": false,
+      "input_sha256": "c5d3bef37669cde5919a3837ec805a402ade09dcdb2b2508651af2fdf8292bfc",
+      "original": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory entry left its unique complete root",
+        "error_type": "ValueError"
+      },
+      "case": "dotdot_entry",
+      "expected_accept": false,
+      "input_sha256": "03be2fd0598abf959e340c316abbd99fc99e73d2d4d387f11d67ad131f7be6ed",
+      "original": {
+        "accepted": false,
+        "detail": "inventory entry left its unique complete root",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "bounded complete inventory required",
+        "error_type": "ValueError"
+      },
+      "case": "duplicate_root",
+      "expected_accept": false,
+      "input_sha256": "751f3a9112d6d8c32130d3c312a9c9ea08eeb8e597227e6958f03f67e3e9cb3e",
+      "original": {
+        "accepted": false,
+        "detail": "bounded complete inventory required",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory roots overlap",
+        "error_type": "ValueError"
+      },
+      "case": "overlapping_root",
+      "expected_accept": false,
+      "input_sha256": "86b269b37c2c760a0175db12450a5627a7fd9f37cfd91a595f3889d67845798b",
+      "original": {
+        "accepted": false,
+        "detail": "inventory roots overlap",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory root is absent or not a directory",
+        "error_type": "ValueError"
+      },
+      "case": "missing_root_record",
+      "expected_accept": false,
+      "input_sha256": "1a37d389f0a22719d0864213a1d0754504623827b54cddbfb64302f25ebe786c",
+      "original": {
+        "accepted": false,
+        "detail": "inventory root is absent or not a directory",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "case": "unlisted_child",
+      "expected_accept": false,
+      "input_sha256": "4daa0c424bb4cc12172021543bc79408ec9ce2eafdc2aad4f771cf18b8e03cca",
+      "original": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "case": "fabricated_child_name",
+      "expected_accept": false,
+      "input_sha256": "339d6cf6eaae8203d9f7d75e87590a75266423f7954d27aa43bd6d65ca2a1599",
+      "original": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "case": "orphan_entry_parent_missing",
+      "expected_accept": false,
+      "input_sha256": "e057e3ef3c171d182fcdb394bfa8e1b9e6dc38308674c9ee7be995a2cfee823d",
+      "original": {
+        "accepted": false,
+        "detail": "inventory omitted or fabricated a directory child",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory original file differs",
+        "error_type": "ValueError"
+      },
+      "case": "hardlinked_original_file",
+      "expected_accept": false,
+      "input_sha256": "710408d8291ed573203f84a7cb38b63f43962ffec1b7fd44fa50f9b4591dbb99",
+      "original": {
+        "accepted": false,
+        "detail": "inventory original file differs",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory original file differs",
+        "error_type": "ValueError"
+      },
+      "case": "file_metadata_size_differs",
+      "expected_accept": false,
+      "input_sha256": "aff086dbca09ee2b6131c2cf0b4de1563b9b0d31a17d6e2e1eac77742efc2d62",
+      "original": {
+        "accepted": false,
+        "detail": "inventory original file differs",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory byte accounting differs",
+        "error_type": "ValueError"
+      },
+      "case": "wrong_total_bytes",
+      "expected_accept": false,
+      "input_sha256": "50c2b4564a3e0d17bc5be150fb2755616ace1dfdab96999957cac6917bc30070",
+      "original": {
+        "accepted": false,
+        "detail": "inventory byte accounting differs",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory original file differs",
+        "error_type": "ValueError"
+      },
+      "case": "bad_file_digest",
+      "expected_accept": false,
+      "input_sha256": "8621a9ff8241cf9aad0a0c301a7945865af797aa8654c190c6ad73f6fbe9c4bd",
+      "original": {
+        "accepted": false,
+        "detail": "inventory original file differs",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "inventory original metadata differs",
+        "error_type": "ValueError"
+      },
+      "case": "metadata_bool_not_int",
+      "expected_accept": false,
+      "input_sha256": "4e68fcc5d374ab2e8150cd1d4692d860c51de95e63c20bef3025e0b9d5045457",
+      "original": {
+        "accepted": false,
+        "detail": "inventory original metadata differs",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "complete original inventory schema differs",
+        "error_type": "ValueError"
+      },
+      "case": "claimed_closure",
+      "expected_accept": false,
+      "input_sha256": "63b7e76288dd5828ddbc155773b06b7f5674ca04fd591cfc5fddce7f1d4c8a31",
+      "original": {
+        "accepted": false,
+        "detail": "complete original inventory schema differs",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "complete original inventory schema differs",
+        "error_type": "ValueError"
+      },
+      "case": "extra_schema_field",
+      "expected_accept": false,
+      "input_sha256": "e0a290e4bfecb8a935b803883590c69a85ae5d88400c297147e78ff4b1d00344",
+      "original": {
+        "accepted": false,
+        "detail": "complete original inventory schema differs",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": true,
+        "output": {
+          "bytes": 341,
+          "sha256": "fd18cdc3bd338d39b100e8a3fe0839c5ec65465410e35fb1781d079efe2c2038"
+        }
+      },
+      "case": "explicit_fixture_enoent",
+      "expected_accept": true,
+      "input_sha256": "242b6806f52e244b096ea987c8719deba7e77cce252ff598049af8f6b334ff95",
+      "original": {
+        "accepted": true,
+        "output": {
+          "bytes": 341,
+          "sha256": "fd18cdc3bd338d39b100e8a3fe0839c5ec65465410e35fb1781d079efe2c2038"
+        }
+      },
+      "passed": true
+    },
+    {
+      "candidate": {
+        "accepted": false,
+        "detail": "only an explicit fixture-root ENOENT may be retained",
+        "error_type": "ValueError"
+      },
+      "case": "permission_error_not_absence",
+      "expected_accept": false,
+      "input_sha256": "60597a5dd52da633ba56f68497ac497e25e3dc3a9aa658ec02928b78929b0a53",
+      "original": {
+        "accepted": false,
+        "detail": "only an explicit fixture-root ENOENT may be retained",
+        "error_type": "ValueError"
+      },
+      "passed": true
+    }
+  ],
+  "checks_passed": 24,
+  "checks_total": 24,
+  "live_current_admission_executed": false,
+  "only_changed_ast_function": [
+    "inventory_value"
+  ],
+  "p4_calls": 0,
+  "phone_calls": 0,
+  "process_starts": 0,
+  "schema": "hepta.inventory-parts-equivalence-checks.v1",
+  "source_candidate": {
+    "bytes": 67005,
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "source_parent": {
+    "bytes": 66996,
+    "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+  },
+  "state": "ALL_PURE_EQUIVALENCE_CHECKS_PASSED",
+  "whole_source_inverse_verified": true
+}

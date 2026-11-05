@@ -1,0 +1,141 @@
+{
+  "schema": "hepta.neg01.prelaunch-timing-diagnostic.v1",
+  "case_label": "root-r10-neg01-1ad3-01",
+  "scope": "read_only_retained_case_files_and_pinned_source_analysis_no_process_or_phone_operation",
+  "method": "phase start = original capture execution_deadline_monotonic minus original INTENT maximum_wait_seconds, all same coordinator; epoch lease comparison uses retained stdout mtime and lease issue millisecond",
+  "sequential_phases": [
+    {
+      "phase": "prepare-material",
+      "budget_s": 30,
+      "start_monotonic": "10.79667375",
+      "child_join_monotonic": "11.007694875",
+      "elapsed_s": "0.211021125",
+      "pid": 86061,
+      "stdout_bytes": 2837,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793871964746502348,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "host-stage-material",
+      "budget_s": 90,
+      "start_monotonic": "11.033678791",
+      "child_join_monotonic": "11.49667975",
+      "elapsed_s": "0.463000959",
+      "pid": 86074,
+      "stdout_bytes": 8036,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793871965235999004,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "phone-push-material",
+      "budget_s": 145,
+      "start_monotonic": "11.512906958",
+      "child_join_monotonic": "12.483903125",
+      "elapsed_s": "0.970996167",
+      "pid": 86089,
+      "stdout_bytes": 915,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793871966223234976,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "phone-copy-material",
+      "budget_s": 95,
+      "start_monotonic": "12.49368325",
+      "child_join_monotonic": "13.473327833",
+      "elapsed_s": "0.979644583",
+      "pid": 86106,
+      "stdout_bytes": 18833,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793871967212617540,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "phone-push-stage-source",
+      "budget_s": 145,
+      "start_monotonic": "13.482133041",
+      "child_join_monotonic": "14.528619541",
+      "elapsed_s": "1.046486500",
+      "pid": 86117,
+      "stdout_bytes": 923,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793871968267878085,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "phone-copy-stage-source",
+      "budget_s": 95,
+      "start_monotonic": "14.538075833",
+      "child_join_monotonic": "15.488294958",
+      "elapsed_s": "0.950219125",
+      "pid": 86141,
+      "stdout_bytes": 18841,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793871969227729651,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "phone-stage",
+      "budget_s": 145,
+      "start_monotonic": "15.499090166",
+      "child_join_monotonic": "73.112558166",
+      "elapsed_s": "57.613468000",
+      "pid": 86152,
+      "stdout_bytes": 17700,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793872026852103463,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "sender-preview",
+      "budget_s": 20,
+      "start_monotonic": "73.120162125",
+      "child_join_monotonic": "73.277316833",
+      "elapsed_s": "0.157154708",
+      "pid": 87140,
+      "stdout_bytes": 450,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793872027016326394,
+      "successful_host_child_and_capture": true
+    },
+    {
+      "phase": "sender-prepared",
+      "budget_s": 120,
+      "start_monotonic": "73.281188041",
+      "child_join_monotonic": "101.087759166",
+      "elapsed_s": "27.806571125",
+      "pid": 87158,
+      "stdout_bytes": 1653,
+      "stderr_bytes": 0,
+      "stdout_mtime_ns": 1793872054827360750,
+      "successful_host_child_and_capture": true
+    }
+  ],
+  "async_sender": {
+    "phase": "sender-execute",
+    "start_monotonic": "73.278392625",
+    "status": "UNKNOWN_NO_JOIN_NO_EOF_CAPTURE_STOP_REQUESTED",
+    "not_added_to_sequential_elapsed": true,
+    "no_send_not_proven_by_empty_capture": true
+  },
+  "first_child_start_to_marker_child_join_s": "90.291085416",
+  "sum_sequential_child_elapsed_s": "90.198562292",
+  "interphase_and_local_gap_s": "0.092523124",
+  "lease_expires_unix_ms": 1793872564534,
+  "derived_lease_issue_unix_ms": 1793871964534,
+  "sender_prepared_persisted_stdout_mtime_ns": 1793872054827360750,
+  "recorded_marker_persistence_minus_recorded_issue_s": "90.29336075",
+  "recorded_lease_remaining_at_marker_persistence_s": "509.70663925",
+  "strict_prelaunch_remaining_threshold_s": 510,
+  "strict_prepare_window_s": 90,
+  "threshold_miss_already_at_marker_persistence_s": "0.29336075",
+  "limitations": [
+    "recorded issue is floored to milliseconds, so submillisecond source issue rounding applies",
+    "filesystem epoch mtime and coordinator monotonic are different clocks and not subtracted from each other",
+    "failed remaining() call timestamp not recorded; marker persistence precedes marker validation and remaining() call",
+    "host child success and local capture closure do not prove remote process termination or no Send",
+    "async sender overlaps sender-prepared and has no joined terminal result"
+  ]
+}

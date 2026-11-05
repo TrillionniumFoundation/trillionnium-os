@@ -1,0 +1,85 @@
+{
+  "actual_cases": 0,
+  "capture_compatibility_parent": {
+    "bytes": 5017,
+    "sha256": "0e36fd00be0436bf0dcbd6babc7c8d1a2c268f05d72e51ab109646bac7851098"
+  },
+  "cases": [
+    "NEG-08",
+    "NEG-09"
+  ],
+  "files": [
+    {
+      "bytes": 3496,
+      "path": "CLOSURE-SOURCE-INPUTS.json",
+      "sha256": "7ca45049f2738336f3368e282d4f6f9ca16e4ff71776093aa4ce95f6256cae21"
+    },
+    {
+      "bytes": 1674,
+      "path": "FINAL-DEPENDENCIES.json",
+      "sha256": "f2b35d75c76b7d3026cde32ffaa232958d005bad954d258597cee4f16821cb71"
+    },
+    {
+      "bytes": 1572,
+      "path": "HOST-CAPTURE-INPUT-CONTRACT.json",
+      "sha256": "537f11ea430192b25b218383c25a2a266cffe3d86fb112132bd68503efa6275f"
+    },
+    {
+      "bytes": 1078,
+      "path": "HOST-PHASE.template.json",
+      "sha256": "00a1ff87bd21f177fbe4cff397a5e095c9145210e5b11f751a5419ba5cc78246"
+    },
+    {
+      "bytes": 43958,
+      "path": "source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 45738,
+      "path": "source/negative_originals.py",
+      "sha256": "490b6c82d0a38a03fd359cfa644f0b95bd2f2908db487604a32360430026ce6d"
+    },
+    {
+      "bytes": 15256,
+      "path": "source/root_cpu_negative.py",
+      "sha256": "311fea065e72d4e928b03504f970b5d95607531bc8b940dcc21f3e3212863055"
+    }
+  ],
+  "future_dependencies_frozen": true,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "root_capture_manifest": {
+    "bytes": 953,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "e05c1dfdb32a860448145fa2953f3940aa81f5ebd58b1a435b587ef5a26a13e8"
+  },
+  "runtime_sources": [
+    {
+      "bytes": 43958,
+      "path": "source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 45738,
+      "path": "source/negative_originals.py",
+      "sha256": "490b6c82d0a38a03fd359cfa644f0b95bd2f2908db487604a32360430026ce6d"
+    },
+    {
+      "bytes": 15256,
+      "path": "source/root_cpu_negative.py",
+      "sha256": "311fea065e72d4e928b03504f970b5d95607531bc8b940dcc21f3e3212863055"
+    }
+  ],
+  "schema": "hepta.r10.cpu-negative-host-closure-source-package.v1",
+  "state": "SOURCE_PINS_BOUND_ACTUAL_CASE_AND_CAPTURE_NOT_EXECUTED"
+}

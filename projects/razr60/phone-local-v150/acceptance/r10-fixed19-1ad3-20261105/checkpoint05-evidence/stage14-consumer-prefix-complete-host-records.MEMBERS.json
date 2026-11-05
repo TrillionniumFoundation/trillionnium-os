@@ -1,0 +1,111 @@
+{
+  "file_bytes": 552016,
+  "file_count": 14,
+  "files": [
+    {
+      "bytes": 27818,
+      "git_blob_sha": "415034c9d97cd2ca7123c9452868db276338f8a5",
+      "path": "CONTROLLER-FILE-READ.original.json",
+      "sha256": "d9334e30553bf8526be2ae06ab46d9385643bc7e96d3c33eae1b899f78dfaa41",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/CONTROLLER-FILE-READ.original.json"
+    },
+    {
+      "bytes": 2868,
+      "git_blob_sha": "ea68efc3158e94794ea985f8d745b3b015753c55",
+      "path": "CONTROLLER-READ.original.json",
+      "sha256": "41d4f8e0fc8ad6ac8dcf9e3c2fbd37eb4efaabdd5e7d7c05fc123c6cebe35ac8",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/CONTROLLER-READ.original.json"
+    },
+    {
+      "bytes": 238307,
+      "git_blob_sha": "97dce40a448979e0e3c679df5183d24de22df18e",
+      "path": "CONTROLLER-REQUEST.json",
+      "sha256": "d695d79c42c141db92038fc7cfbbf81dfdeef229e51b9c550982fe3269079176",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/CONTROLLER-REQUEST.json"
+    },
+    {
+      "bytes": 2057,
+      "git_blob_sha": "4cccef4281bf6ae8ed2ba17bfd03adc0eeb4542f",
+      "path": "CONTROLLER-START.original.json",
+      "sha256": "fecdd57c9089882c31625c451b570b6763e52a2b7427477f54110c14cc8a1574",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/CONTROLLER-START.original.json"
+    },
+    {
+      "bytes": 952,
+      "git_blob_sha": "34b9ab4a9809d68c03c767c451bfa87a56a17535",
+      "path": "CONTROLLER-STATUS.original.json",
+      "sha256": "9f0d5f5824634dd6f8f82fe12a89222864954164eaed26f7c00111a296cb01cc",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/CONTROLLER-STATUS.original.json"
+    },
+    {
+      "bytes": 4174,
+      "git_blob_sha": "27046c83522be62a5e304e37c2bde86397afea32",
+      "path": "LOCAL-STAGE-ADMISSION.json",
+      "sha256": "9be36cf401590bb40f44de82ae6b9bb528098708be035ce9254a6cdb7a696d47",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/LOCAL-STAGE-ADMISSION.json"
+    },
+    {
+      "bytes": 2395,
+      "git_blob_sha": "60133784777ddfbf7906f4162edd4340304ca8f2",
+      "path": "RESULT.original.json",
+      "sha256": "affa9304718e1dff12b82a0d7a47588c7416a65f78022400f84109d06cb71366",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/RESULT.original.json"
+    },
+    {
+      "bytes": 7262,
+      "git_blob_sha": "ac4e288f85f2f86bddf85a1451506c7865ed9ef4",
+      "path": "SOURCE-MANIFEST.original.json",
+      "sha256": "949b1ea1d83ed745c035022bddcc4ace1dd5db57a23a07fd8b9b1c96e55cb22d",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/SOURCE-MANIFEST.original.json"
+    },
+    {
+      "bytes": 1947,
+      "git_blob_sha": "2b65f58f11a4c4f44528252d2ceeba4ea25bb987",
+      "path": "STAGE-VERIFICATION.json",
+      "sha256": "404cd8ad4def3de9ce0dc0a2bc9da01257a605c03c789e3867ba5d62ae8ec491",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/STAGE-VERIFICATION.json"
+    },
+    {
+      "bytes": 13184,
+      "git_blob_sha": "3ce9c5e0960d30f66ebdb32a59526da3f94c26b1",
+      "path": "STAGED-FILES.original.json",
+      "sha256": "e7737df51b996f22b247ff7190f0245785b93b20c83541fc9119f77cf4f9cdea",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/STAGED-FILES.original.json"
+    },
+    {
+      "bytes": 237039,
+      "git_blob_sha": "4dd1ebcb0041485545fc27c46dd0474ab38cbcb5",
+      "path": "stage_mac_source14.py",
+      "sha256": "2ed9470588928c62848fcdb78ff06078e2361d59dee977218116820e1ba589c0",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/stage_mac_source14.py"
+    },
+    {
+      "bytes": 13264,
+      "git_blob_sha": "d0b73afeb9fb4d05d581fb6fb7c64a7e96e2b8b6",
+      "path": "stage_mac_source14.template.py",
+      "sha256": "cfb5ad64b265bbcadc589af89503cf4f6c44de9f9d70bf7d1d3a47476468d2f9",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/stage_mac_source14.template.py"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/stderr.original"
+    },
+    {
+      "bytes": 749,
+      "git_blob_sha": "8226af1bbf280d6d994286e04e771eb851128ce7",
+      "path": "stdout.original",
+      "sha256": "8a76d378e8f8d81255678da00f8bb918d822738e222ff7c20f0fa94e512b8d0d",
+      "source": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/stdout.original"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "Complete existing source-stage host records, including exact stdin source, request, controller terminal/read, file readback and verification. No staged entrypoint was executed.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

@@ -1,0 +1,19 @@
+{
+  "bridge_one_pkg_inverse04f6": true,
+  "bridge_one_pkg_inverse6694": true,
+  "case_qualification": false,
+  "coordinator_one_pkg_inverse_c1b03": true,
+  "coordinator_seven_slot_inverse50a5": true,
+  "new_case_nonces": 0,
+  "old_generation_pins_unchanged_except_execution_pkg": true,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "root_manifest_exact_four_field_derivation_from7315": true,
+  "runtime_count": 32,
+  "schema": "hepta.runtime-root-increment.local-source-checks.v1",
+  "source_count": 3,
+  "source_modules_executed": 0,
+  "state": "WHOLE_SOURCE_AND_MANIFEST_INVERSES_PASSED_NO_TARGET_EXECUTION",
+  "verifier_limit": 131072,
+  "verifier_original74f4_unchanged": true
+}

@@ -1,0 +1,237 @@
+{
+  "file_bytes": 721791,
+  "file_count": 32,
+  "files": [
+    {
+      "bytes": 9602,
+      "git_blob_sha": "c067f2569b4c18c19ec5ed7979c7e6ce0f643fb7",
+      "path": "COLLECTION-DELIVERY.json",
+      "sha256": "292f9bf205638fc4d5e51ebda8e2fc5ee5b96fe58d0349732637f422f58e3e59",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/COLLECTION-DELIVERY.json"
+    },
+    {
+      "bytes": 807,
+      "git_blob_sha": "28959259271893d68ffaf3b1774ea0c0e3f0aa08",
+      "path": "COLLECTOR-SOURCE-REVIEW.json",
+      "sha256": "1391dfea862d1bf3f7defc624573caa51dccccbfa3082ebd8764e4ee1abf011d",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/COLLECTOR-SOURCE-REVIEW.json"
+    },
+    {
+      "bytes": 33862,
+      "git_blob_sha": "84265d608f0860eca353bf7e113bd19795129720",
+      "path": "P4-SENDER-ARCHIVE-MANIFEST.original.json",
+      "sha256": "7369ac34a8f16ced6cb2f54736aacd3de809edd18a1e1f6679970d137e106bbc",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/P4-SENDER-ARCHIVE-MANIFEST.original.json"
+    },
+    {
+      "bytes": 88259,
+      "git_blob_sha": "24308b6c7b83fe01eb307ccfa17a8b102a7dc1dc",
+      "path": "downloads/mac-component/CONTROLLER-CHUNK00.original.json",
+      "sha256": "5452963b2190b2298c0eff2a0e4a5a315a3936a3e699b1091f3d4711669cb5a1",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/mac-component/CONTROLLER-CHUNK00.original.json"
+    },
+    {
+      "bytes": 88361,
+      "git_blob_sha": "63a10adf79999f9dc1e48fda6616b81793ca0958",
+      "path": "downloads/mac-component/CONTROLLER-CHUNK01.original.json",
+      "sha256": "92e3b0ef6da56527acae8bd50ac02171fa133907109bf0e8b4bbbc489758f453",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/mac-component/CONTROLLER-CHUNK01.original.json"
+    },
+    {
+      "bytes": 88363,
+      "git_blob_sha": "a79cb3a01ccfd4a391b52d78dea13a8b4e5175ba",
+      "path": "downloads/mac-component/CONTROLLER-CHUNK02.original.json",
+      "sha256": "74d3e4a28c0f8cda09cd23a1b67e9547dbe40dde1766aced5d89c9a8745e121d",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/mac-component/CONTROLLER-CHUNK02.original.json"
+    },
+    {
+      "bytes": 88363,
+      "git_blob_sha": "060808385d4081ab69fecbe485b2521721788226",
+      "path": "downloads/mac-component/CONTROLLER-CHUNK03.original.json",
+      "sha256": "4299b8b7d7fe46b7db62d0787a7b5a59de1a8ba256fc8cfa37ed1794c5b19e36",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/mac-component/CONTROLLER-CHUNK03.original.json"
+    },
+    {
+      "bytes": 47106,
+      "git_blob_sha": "46ec58872d4389d0c6974e0b19124a9ad158c6f6",
+      "path": "downloads/mac-component/CONTROLLER-CHUNK04.original.json",
+      "sha256": "d2414daf5d17c36b2e05535fda224035c37408094211470ddab2c73114426563",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/mac-component/CONTROLLER-CHUNK04.original.json"
+    },
+    {
+      "bytes": 80366,
+      "git_blob_sha": "151ea805837f7fa38bf3a5a71b91f7f0dee25596",
+      "path": "downloads/mac-evidence/CONTROLLER-CHUNK00.original.json",
+      "sha256": "ef9db3d69c1769753fbf25f05924809abb51b95585eb825a7a8a6c8d2034f254",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/mac-evidence/CONTROLLER-CHUNK00.original.json"
+    },
+    {
+      "bytes": 45850,
+      "git_blob_sha": "e8c58e532622e157292fb6f357850bdb8420985a",
+      "path": "downloads/p4-manifest/CONTROLLER-CHUNK00.original.json",
+      "sha256": "18be0e0dce36adf4744640a3f743d78f9d3f990ccc41a9d646c99e22c6d6ee3c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/p4-manifest/CONTROLLER-CHUNK00.original.json"
+    },
+    {
+      "bytes": 51738,
+      "git_blob_sha": "bffad58d55ee6e0da35f43cc4c524d9df329435b",
+      "path": "downloads/p4-sender/CONTROLLER-CHUNK00.original.json",
+      "sha256": "098c638139638f4ec3be2b78e945dac8435b6fdbea92bdfa9633afa60130f93c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/downloads/p4-sender/CONTROLLER-CHUNK00.original.json"
+    },
+    {
+      "bytes": 5209,
+      "git_blob_sha": "c6c6f5197a4c27170f2914ecd9625d44aaa07d3b",
+      "path": "mac-COLLECTION-RESULT.original.json",
+      "sha256": "ffd6c54b48df4e776ca05b681d403476058796bdcef7caeced8e2fe3e480d1ad",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-COLLECTION-RESULT.original.json"
+    },
+    {
+      "bytes": 17094,
+      "git_blob_sha": "80fab584f35aa57c4f7e822adbf13a13b7d17f45",
+      "path": "mac-controller/CONTROLLER-READ-01.original.json",
+      "sha256": "6797aef84bc08a0cbde99b56114fca8144dd330a563f6ac4b7615c9459684af0",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/CONTROLLER-READ-01.original.json"
+    },
+    {
+      "bytes": 1300,
+      "git_blob_sha": "a197b5287fce160de33cb7ea8bc1e1dbf34fdbd5",
+      "path": "mac-controller/CONTROLLER-START.original.json",
+      "sha256": "a6ed1636d9f2b5207232ef59a5ecad2c6dda767568299db34bfd42e939905d5f",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/CONTROLLER-START.original.json"
+    },
+    {
+      "bytes": 954,
+      "git_blob_sha": "8209a879c9e9b039067af6a06f2b4f6a93b85213",
+      "path": "mac-controller/CONTROLLER-STATUS-01.original.json",
+      "sha256": "ce078495e0166156c280432cff8f778c6faf70f71af512f4d0215dc35d0dfc47",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/CONTROLLER-STATUS-01.original.json"
+    },
+    {
+      "bytes": 13054,
+      "git_blob_sha": "dd731261bf4cf8bc445b94e6645ac4987cefc69d",
+      "path": "mac-controller/PROCESS-START-REQUEST.json",
+      "sha256": "0b846087056a52f50e203bf27e18a87ba1567a8c651d7c2171ff20f59b837e21",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/PROCESS-START-REQUEST.json"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "mac-controller/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/stderr.original"
+    },
+    {
+      "bytes": 5209,
+      "git_blob_sha": "c6c6f5197a4c27170f2914ecd9625d44aaa07d3b",
+      "path": "mac-controller/stdout.original",
+      "sha256": "ffd6c54b48df4e776ca05b681d403476058796bdcef7caeced8e2fe3e480d1ad",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/stdout.original"
+    },
+    {
+      "bytes": 1562,
+      "git_blob_sha": "5cbd8b6e25c8bed1917b28782d6757816db64f89",
+      "path": "p4-COLLECTION-RESULT.original.json",
+      "sha256": "0296e330f68876023076051fefa71e4a9e2ed5aa6652c167d79d56defa13fc7c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-COLLECTION-RESULT.original.json"
+    },
+    {
+      "bytes": 5519,
+      "git_blob_sha": "9a300bc7fd8d94bbc48de62029924d09cc39a7e1",
+      "path": "p4-controller/CONTROLLER-READ-01.original.json",
+      "sha256": "81369775aaeedd2093a379f304c1da1133abe5660eb86559c85454767bf9fbe1",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/CONTROLLER-READ-01.original.json"
+    },
+    {
+      "bytes": 1222,
+      "git_blob_sha": "3194e0a4d735f4aa7fffd3c917a5790401749b33",
+      "path": "p4-controller/CONTROLLER-START.original.json",
+      "sha256": "49ec65d7e9aff0808929ffb41e31b4817d934ff36812572259948188c7c8355f",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/CONTROLLER-START.original.json"
+    },
+    {
+      "bytes": 954,
+      "git_blob_sha": "8bf1102bbdc6c74e7b43b98f3570349f2755299f",
+      "path": "p4-controller/CONTROLLER-STATUS-01.original.json",
+      "sha256": "17cd81f4fd7dfcddf4c54369e43069b8fb6bc9fc6a749adb27e788b5a6ae2df6",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/CONTROLLER-STATUS-01.original.json"
+    },
+    {
+      "bytes": 10500,
+      "git_blob_sha": "5f80d046581140cee17c5b8a5980189bb5249a0c",
+      "path": "p4-controller/PROCESS-START-REQUEST.json",
+      "sha256": "6c3c8968bec16145dccffeee828eaaddfb634e9f7c20740e360935ae2b179dc1",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/PROCESS-START-REQUEST.json"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "p4-controller/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/stderr.original"
+    },
+    {
+      "bytes": 1562,
+      "git_blob_sha": "5cbd8b6e25c8bed1917b28782d6757816db64f89",
+      "path": "p4-controller/stdout.original",
+      "sha256": "0296e330f68876023076051fefa71e4a9e2ed5aa6652c167d79d56defa13fc7c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/stdout.original"
+    },
+    {
+      "bytes": 9498,
+      "git_blob_sha": "b81667eb6db222ddc14b64429f134478f5b070f4",
+      "path": "source/collect_mac_originals_and_absence.py",
+      "sha256": "85697ae603d99469b414025457a09bdc1052f1910410fbcd4641321de60ab740",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/source/collect_mac_originals_and_absence.py"
+    },
+    {
+      "bytes": 7577,
+      "git_blob_sha": "eeb7675f25ed9016bc53bbdf3e25518247a9374b",
+      "path": "source/collect_p4_sender_originals.py",
+      "sha256": "9ac943557ae8a06809488492eb2a7b45442bd9857fd24f9d6dcd1d189d77077e",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/source/collect_p4_sender_originals.py"
+    },
+    {
+      "bytes": 3592,
+      "git_blob_sha": "f5ea489c374bc6f2ba824186fd31174b59dd8065",
+      "path": "validation/mac-component.json",
+      "sha256": "9da07fca12b3211f9b2d340465acfde15e50b00112efb5be1b22697b22d124c0",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/mac-component.json"
+    },
+    {
+      "bytes": 1148,
+      "git_blob_sha": "86def20249ea095403a81f28d8d81588347ca0c6",
+      "path": "validation/mac-evidence.json",
+      "sha256": "b84e3c93fa63ff75a35d9de35071beb66e80b4c91fb0e35e5ba1ab8b0c38fe58",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/mac-evidence.json"
+    },
+    {
+      "bytes": 954,
+      "git_blob_sha": "460af7927ee1c19052fc9b72fa29304807bddd47",
+      "path": "validation/p4-manifest.json",
+      "sha256": "c36433a71ecd0c5d68ebea596e6c4ef11b033c7b540eabe652eeb535892b0b85",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/p4-manifest.json"
+    },
+    {
+      "bytes": 1007,
+      "git_blob_sha": "505f17d2eb8b24374f6e49818faf4f15d0f12cc8",
+      "path": "validation/p4-sender.json",
+      "sha256": "eb2a2354292cfbb51574817c1935eee9a84ec4fd9c24f8de95e02ce92258566c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/p4-sender.json"
+    },
+    {
+      "bytes": 11199,
+      "git_blob_sha": "01bf8c2e5558009d8e25353b4670c0e58cd2abf2",
+      "path": "verify_downloads.py",
+      "sha256": "7e5e6acca33ed7832dea0c8879af55602adc7917ec395a0c7accebf9200d54aa",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/verify_downloads.py"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "Collectors, exact raw controller/binary-read receipts, archive manifests and byte verification reports. Expanded sender/component/Mac members are omitted only because all are byte-checked against the three published exact XZ archives. Component XZ preserves tar plaintext, not the original gzip encoding.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

@@ -1,0 +1,128 @@
+{
+  "files": [
+    {
+      "bytes": 2116,
+      "path": "FINALIZATION.json",
+      "sha256": "eccf341d543144f3a96234e4744829d16890d81dbf29a78a21392131b901f6f7"
+    },
+    {
+      "bytes": 268,
+      "path": "RUNTIME-FREEZE-RESULT-DESCRIPTOR.json",
+      "sha256": "5c1a08519c2918de39e19c417b754b7d1c3bb8a2be461895b89e9fcbb69ceadb"
+    },
+    {
+      "bytes": 56374,
+      "path": "reference/derive_final_cascade_property_r8.original.py",
+      "sha256": "d21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26"
+    },
+    {
+      "bytes": 58359,
+      "path": "source/derive_final_cascade_property_r8.py",
+      "sha256": "e49cdbbb934127dc2989d4e33c7a4f5bc97079f4ee04dd915d5b62d55a084047"
+    },
+    {
+      "bytes": 33280,
+      "path": "source/write_final_seal_interface_property_r8.py",
+      "sha256": "4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f"
+    },
+    {
+      "bytes": 40822,
+      "path": "templates/build_release_r10.py",
+      "sha256": "79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9"
+    },
+    {
+      "bytes": 99120,
+      "path": "templates/close_component.py",
+      "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+    },
+    {
+      "bytes": 16343,
+      "path": "templates/collect_r10_readiness.py",
+      "sha256": "f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af"
+    },
+    {
+      "bytes": 4492,
+      "path": "templates/component_activation_gate.fragment.py",
+      "sha256": "140b7591781a3e487ef7b3ee5b7187fc95058a8b49c28eb3db0c7d8b630fa922"
+    },
+    {
+      "bytes": 19138,
+      "path": "templates/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 18133,
+      "path": "templates/component_common_r5.py",
+      "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02"
+    },
+    {
+      "bytes": 40261,
+      "path": "templates/component_lifecycle.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 24187,
+      "path": "templates/component_snapshot.py",
+      "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+    },
+    {
+      "bytes": 53502,
+      "path": "templates/environment_parent_late_boundary_r6.py",
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+    },
+    {
+      "bytes": 34038,
+      "path": "templates/install_phone_release_r10.py",
+      "sha256": "3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1"
+    },
+    {
+      "bytes": 66816,
+      "path": "templates/late_boundary.py",
+      "sha256": "f42cf7da63df8e3ecd31e984b2deac5d5fc7e1ee0f2bdbb095a8268243a133d4"
+    },
+    {
+      "bytes": 34626,
+      "path": "templates/make_component_boundary_inputs.py",
+      "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+    },
+    {
+      "bytes": 24834,
+      "path": "templates/materialize_case_r10.py",
+      "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+    },
+    {
+      "bytes": 19740,
+      "path": "templates/non_native_attempt05.py",
+      "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4"
+    },
+    {
+      "bytes": 35730,
+      "path": "templates/policy_parent_late_boundary_r4.py",
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+    },
+    {
+      "bytes": 62434,
+      "path": "templates/property_parent_late_boundary_r7.py",
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+    },
+    {
+      "bytes": 77700,
+      "path": "templates/release_boundaries.py",
+      "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+    },
+    {
+      "bytes": 27473,
+      "path": "templates/root_acceptance_r10.py",
+      "sha256": "70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d"
+    },
+    {
+      "bytes": 19116,
+      "path": "templates/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    }
+  ],
+  "phone_calls": 0,
+  "policy_writes": 0,
+  "schema": "hepta.root.actual-property-cascade-source-package.v1",
+  "state": "ACTUAL_PINS_HOST_SOURCE_ONLY"
+}

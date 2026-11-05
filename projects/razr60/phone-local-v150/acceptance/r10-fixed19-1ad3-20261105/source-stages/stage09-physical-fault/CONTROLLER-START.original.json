@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1793870890055,
+    "cwd": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1ab098447-fc05-49a3",
+    "idempotency_key": "root-1ad3-physical-fault-final01-source-stage09-20261105",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1ab098447-fc05-49a3",
+    "request_digest": "db1d10752f75d828519380670477cd0692205f1290184840d28d97c6e38b5aaa",
+    "request_fingerprint": 15788793964124297256,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1ab098447-fc05-49a3"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 75326,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1ab098447-fc05-49a3"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

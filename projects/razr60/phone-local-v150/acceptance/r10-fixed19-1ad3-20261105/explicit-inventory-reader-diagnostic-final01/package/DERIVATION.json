@@ -1,0 +1,31 @@
+{
+  "candidate": {
+    "bytes": 67005,
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "changes": [
+    "Add one bounded fixed zlib/base64 source literal. Decode to exact67005/147cf and require complete single-expression inverse equal to the actually bootstrap-read stagedc50a bytes.",
+    "Add one independent in-memory current late module with a virtual compile filename. Keep __file__ at the original staged resource anchor; do not register it as late_boundary, inject a reviewed source map or override self-source identity.",
+    "Pass only that explicit module to the exact original L.verify_retired call. All original32-source/expired lease/native context/retirement/full9 reads and owned-lock cleanup helpers remain byte-identical118d.",
+    "Separate diagnostic success, source identities and resource anchor from original-global clearance. Main always emits original_verification_complete=False and original_global_clearance_evidence=False; actual original118d proof remains separate.",
+    "Keep180 seconds as a post-return observation only. No profiling, trace, memoization, timer, signals, source write, launch, policy action, boundary publication or automatic retry."
+  ],
+  "checks_passed": 8,
+  "history": "First local builder had an incorrect expected count for its renamed local bookkeeping identifier, and stopped before writing any source. Six actual occurrences were used; the refusal record is retained. fad04 source is retained;65aa only clarifies full9 resource-anchor and compiled/callsite/return states.",
+  "independent_review_status": "requested from property_diagnostic; pending when this exact source-only snapshot was frozen",
+  "parent": {
+    "bytes": 17039,
+    "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba"
+  },
+  "schema": "hepta.explicit-reader-diagnostic.derivation.v1",
+  "source": {
+    "bytes": 44926,
+    "sha256": "65aa1db1beb25aad324a1e7a027eb235f65392083a7fbdb0cae3362db7d44479"
+  },
+  "state": "EXPLICIT_DIAGNOSTIC_SOURCE_ONLY",
+  "validation": {
+    "bytes": 3016,
+    "sha256": "65bd141dfbfbca696cb1749d6e1a1fa29b4324e5ad15f6fd1d63b5aac487eab7"
+  },
+  "validation_scope": "AST/whole-byte helpers and pure decoder only. Candidate runtime body not compiled or executed; no original lifecycle or phone operation."
+}

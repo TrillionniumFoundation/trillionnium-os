@@ -1,0 +1,12 @@
+{
+  "actual_dependency_or_generation_calls": 0,
+  "candidate_manifest": {
+    "bytes": 10723,
+    "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6"
+  },
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "scope": "exact final candidate bootstrap and both unbound gates only",
+  "source_member_count": 52,
+  "state": "PASS"
+}

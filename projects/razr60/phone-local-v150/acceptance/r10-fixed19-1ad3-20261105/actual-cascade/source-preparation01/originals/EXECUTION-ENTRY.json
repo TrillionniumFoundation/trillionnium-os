@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-cascade-actual-1ad3-01/source/derive_final_cascade_property_r8.py",
+    "--execute-host-cascade-once"
+  ],
+  "executable": "/usr/bin/python3",
+  "phone_calls": 0,
+  "policy_writes": 0
+}

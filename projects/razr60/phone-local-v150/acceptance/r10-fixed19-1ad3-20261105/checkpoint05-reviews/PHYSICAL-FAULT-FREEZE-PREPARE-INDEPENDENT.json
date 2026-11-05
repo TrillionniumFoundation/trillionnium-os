@@ -1,0 +1,87 @@
+{
+  "actual_adoption_verified_by_this_review": false,
+  "actual_physical_cases_passed": 0,
+  "checks": [
+    {
+      "finding": "The exact final01 manifest and all 47 declared members match byte counts and SHA-256; the complete read set is unchanged at the final bookend. Ancillary wrapper documents are not misrepresented as manifest members.",
+      "id": "frozen_snapshot_identity",
+      "passed": true
+    },
+    {
+      "finding": "generation_inputs requires the actual r10-r1-operator-r8 runtime32 manifest, actual combination and export pins, consumer PACKAGE_SHA/CURRENT_POLICY_SHA/CURRENT_POLICY_ADOPTION_SHA, and readiness BOUNDARY_CONSUMER_SHA256. Actual adoption v1, decision v1, linked originals, boot, 44 unique permission atoms and explicit nonautomatic decision fields are checked. Independent adoption verification remains a prior obligation; these source relationships do not award adoption.",
+      "id": "explicit_actual_generation_inputs",
+      "passed": true
+    },
+    {
+      "finding": "The actual fault package must have the original eight members. Seven non-active members match immutable reference descriptors exactly. The active source must reverse byte-for-byte to the original after replacing only CONSUMER_SHA, READINESS_SHA, POLICY_SHA and ADOPTION_SHA; each actual value is checked.",
+      "id": "exact_operator_generation",
+      "passed": true
+    },
+    {
+      "finding": "derive fills one FINAL_DEPENDENCIES RHS in each of exactly common, watch, phone capture and P4 capture. Each template starts None and is checked by a whole-byte inverse. Watch and phone projections match their consumers; the phone verifier pin binds the unchanged independent closer, and P4 binds the original sender.",
+      "id": "four_literal_bindings",
+      "passed": true
+    },
+    {
+      "finding": "Freezing requires a fresh canonical direct-child namespace, preserves candidate and input originals, writes created inodes with fsync and identity bookends, rechecks input originals, and keeps the 32 MiB/128-member bounds. It invokes no phone, task, registration, model or fault actor entry.",
+      "id": "bounded_new_source_package",
+      "passed": true
+    },
+    {
+      "finding": "Preparation derives the nonce from the retained v150.3 task template, verifies the unchanged UTF-8 request hash and single nonce occurrence, matches previous session/profile, and validates the original template/app scope against the fixed configuration. No replacement nonce or owner text is generated.",
+      "id": "registered_owner_and_template",
+      "passed": true
+    },
+    {
+      "finding": "The actual READY bytes produce the runtime binding and four original role identities. The immutable active-runtime validators enforce the six release pins, adopted export, boot and transport-only READY semantics. NEG-04 has no probe/helper; NEG-05/07 require an original registered probe, canonicalized only for comparison, and the original shell/busybox pins as appropriate. Only NEG-04, NEG-05 and NEG-07 are admitted.",
+      "id": "actual_ready_and_case_whitelist",
+      "passed": true
+    },
+    {
+      "finding": "S.admit checks actual dependencies again, fixed original sender bytes/path, exact previous identity and terminal, nonempty preserved draft, retirement original, successful unconsumed registration readback, configuration/service pins, and watch/runtime/task expectations before emitting an execution plan.",
+      "id": "sender_prerequisites_revalidated",
+      "passed": true
+    },
+    {
+      "finding": "Preparation retains its inputs and watch/root plans in a new label namespace. It precompiles exact stage/watch recipes under the existing <65536-byte ADB and 131072-byte P4 packet bounds, then returns one argv with exact manifest and plan hashes. That argv matches the Root --execute-once parser. Preparation calls no sender, phone actor, subprocess or remote execution entry.",
+      "id": "single_effect_entry_interface",
+      "passed": true
+    },
+    {
+      "finding": "Freeze and prepare results explicitly report zero phone/Send/signal activity and false physical/whole-case qualification. A real independent adoption, final sealed runtime, original READY, registration and subsequent one-time physical execution are still required. The existing author 24+6 checks were read for scope and were not rerun or counted as physical evidence.",
+      "id": "honest_result_scope",
+      "passed": true
+    }
+  ],
+  "declared_member_byte_pins_verified": 47,
+  "freezer_or_preparer_function_calls": 0,
+  "frozen_package_changed": false,
+  "optional_regression_test_runs": 0,
+  "phone_calls": 0,
+  "production_or_case_executions": 0,
+  "remote_calls": 0,
+  "reviewed_package_imports": 0,
+  "reviewed_sources": [
+    {
+      "bytes": 10330,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/delivery-final01/package/source/freeze_physical_fault.py",
+      "sha256": "dc18471ec336b5ebb649d82cb9a58a2a6d66cf31fbca13f653d4b9e8da6b0466"
+    },
+    {
+      "bytes": 10280,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/delivery-final01/package/source/prepare_physical_fault.py",
+      "sha256": "8e1b686353eda8a45c86ed21c537f191208b982a901ab242090ca476718f6c37"
+    }
+  ],
+  "schema": "hepta.physical-fault.freeze-prepare-independent-source-review.v1",
+  "scope": "Two frozen source entry interfaces and their directly referenced pure admission contracts; not a full business audit or an actual source freeze/prepare result.",
+  "source_package": {
+    "bytes": 8432,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+  },
+  "source_review_checks": 10,
+  "state": "NO_BLOCKER_IN_NARROW_ACTUAL_DEPENDENCY_AND_ONCE_ENTRY_INTERFACE_REVIEW",
+  "whole_cases_passed": 0,
+  "whole_input_read_bookend_unchanged": true
+}

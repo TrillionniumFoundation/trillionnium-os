@@ -1,0 +1,76 @@
+{
+  "file_bytes": 92627,
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 21895,
+      "git_blob_sha": "f756775661bd00b0d5b7d190527b7ea9e5c5ff1f",
+      "path": "ARCHIVE-BINARY-READ.original.json",
+      "sha256": "65ecf6520549317fd153c48d5e9056d81d1c083e76486f6d5621c16143799893",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/ARCHIVE-BINARY-READ.original.json"
+    },
+    {
+      "bytes": 2417,
+      "git_blob_sha": "6f90cdfbfe5bff512c6f5fce2e09e4c55155296d",
+      "path": "ARCHIVE-MANIFEST.original.json",
+      "sha256": "a8feb83313d41a4eb5711b81139c56aa56a9c37b15b80bf95f849af11c83a15b",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/ARCHIVE-MANIFEST.original.json"
+    },
+    {
+      "bytes": 3017,
+      "git_blob_sha": "0dcbc77134d0e0d425fa930c80b16ac11353c52c",
+      "path": "CONTROLLER-READ.original.json",
+      "sha256": "0cb0b0e6d67a5ab0931300cacdef4d2555ba9db2039de307e9d95b62de79de07",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/CONTROLLER-READ.original.json"
+    },
+    {
+      "bytes": 1234,
+      "git_blob_sha": "fd32323099f44bae14fd6a159f479a2cfb524d3c",
+      "path": "CONTROLLER-START.original.json",
+      "sha256": "b131d918649eb005f2639ebd358688411998113a313f7b43b7c20ff79c3c67f4",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/CONTROLLER-START.original.json"
+    },
+    {
+      "bytes": 952,
+      "git_blob_sha": "a08a307eb00e8fa59e798270c17717b555209288",
+      "path": "CONTROLLER-STATUS.original.json",
+      "sha256": "d7dc9c2c69ae3605c5c58d819105672a033971d3d538ac2aa2da200fd73a72df",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/CONTROLLER-STATUS.original.json"
+    },
+    {
+      "bytes": 2827,
+      "git_blob_sha": "98c271878b74cf2604966e7687eb48a394e4f4b4",
+      "path": "INDEPENDENT-REVIEW.original.json",
+      "sha256": "25c0cc7979fc92768dcea20fb93908f34a8f5304f7a7f7c55a0bd72bc061a621",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/INDEPENDENT-REVIEW.original.json"
+    },
+    {
+      "bytes": 2033,
+      "git_blob_sha": "eed188382a9867129bc63bc0d241437316a59e0d",
+      "path": "LOCAL-ORIGINALS-VERIFICATION.json",
+      "sha256": "eb4037e22bb340c4fd67a9e356cb417859b4b54b8e89f7adb76dd2c4094e8dc3",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/LOCAL-ORIGINALS-VERIFICATION.json"
+    },
+    {
+      "bytes": 41213,
+      "git_blob_sha": "42161c1df5872898d0271007ee08fafbcbc3e2f8",
+      "path": "P4-LAUNCHER.original.py",
+      "sha256": "046e6ca126c5c5bb204301a9d44f833e3051d5844ec4d118495d30194202ab26",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/P4-LAUNCHER.original.py"
+    },
+    {
+      "bytes": 17039,
+      "git_blob_sha": "d8536f6c92a2c530396045e394d2c2ba8ebe43f2",
+      "path": "PROBE-SOURCE.original.py",
+      "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/PROBE-SOURCE.original.py"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

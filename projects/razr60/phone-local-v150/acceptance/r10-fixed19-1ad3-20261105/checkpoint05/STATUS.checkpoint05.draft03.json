@@ -1,0 +1,66 @@
+{
+  "actual_policy_comparison_layer": {
+    "actual_policy_sha256_prefix": "f8219f9c",
+    "elapsed_seconds": 339.780211539,
+    "passed": 16,
+    "returncode": 0,
+    "scope": "Previously published actual independent post report; separate from whole-case acceptance.",
+    "total": 16
+  },
+  "actual_retention_provenance": {
+    "executed": "d960 with original860a transport",
+    "ours6193_0374_executed": false
+  },
+  "explicit_derived_reader_diagnostic": {
+    "case_qualification_claimed": false,
+    "difference_seconds": 2.041703,
+    "new_runtime_phone_stage_claimed": false,
+    "original_global_clearance_claimed": false,
+    "original_reader_wall_seconds": 45.949364,
+    "production_deadline_fit_guaranteed": false,
+    "wall_seconds": 43.907661
+  },
+  "failed_attempts": [
+    {
+      "draft_restore_observed": true,
+      "label": "root-r10-neg01-20261105-09",
+      "nonce": "7c79195945d64e569a191166ac122a08",
+      "zero_send_observed": true
+    },
+    {
+      "draft_restore_observed": true,
+      "label": "root-r10-neg01-1ad3-01",
+      "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+      "zero_send_observed": true
+    }
+  ],
+  "formal_failed_prelaunch_admission_complete": false,
+  "git_writes": 0,
+  "host_isolated_lifecycle_layer": {
+    "passed": 5,
+    "scope": "Previously published checkpoint03 host originals; not five complete physical-case qualifications.",
+    "total": 5
+  },
+  "instrumented_d3f_profile_partial_preserved": true,
+  "last_real_native_boundary_sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10",
+  "new_case_nonce_generated": false,
+  "original_failed_parent_join_or_eof_retrofitted": false,
+  "pending": [
+    "Formal assembler re-read of both failed attempts and publication/global evidence.",
+    "Any missing actual prefix/GZIP original bytes remain explicitly outside this snapshot until supplied.",
+    "No new case may be inferred from source staging or this index; Root reviews publication separately."
+  ],
+  "phone_calls_by_this_builder": 0,
+  "prior_published_commit": "6a16a332baa4a09a6a8495673949db897821574b",
+  "readonly_external09_stage_a460_completed": true,
+  "readonly_original_global_118d_completed": true,
+  "readonly_publication_1956_completed": true,
+  "remote_calls_by_this_builder": 0,
+  "schema": "hepta.fixed19.checkpoint05.status.v1",
+  "source_stage13": "runtime and Root successor only",
+  "source_stage13_or_14_entrypoint_executions": 0,
+  "source_stage14": "consumer successor only",
+  "state": "LOCAL_DRAFT03_FAILED_PRELAUNCH_OBSERVATIONS_RETAINED_FORMAL_ADMISSION_PENDING",
+  "whole_case_qualified": 0,
+  "whole_case_total": 19
+}

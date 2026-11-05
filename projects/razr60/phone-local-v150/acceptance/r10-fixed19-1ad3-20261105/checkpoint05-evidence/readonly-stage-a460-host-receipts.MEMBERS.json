@@ -1,0 +1,76 @@
+{
+  "file_bytes": 103687,
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 24606,
+      "git_blob_sha": "dff69b36a75e4485b6a43e4cae9d698ae1823234",
+      "path": "ARCHIVE-BINARY-READ.original.json",
+      "sha256": "74befe1e67b929ea014d4cecab30cf2f8e6d2df30ef5a30249261fd3b8358271",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/ARCHIVE-BINARY-READ.original.json"
+    },
+    {
+      "bytes": 2420,
+      "git_blob_sha": "1e5592275e8d5c10151f76b3256a7d147cdcb7fa",
+      "path": "ARCHIVE-MANIFEST.original.json",
+      "sha256": "1470a2810ff3be39f35eee4a643a8d7f59a928a2c04525a2f597e3bf84707fde",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/ARCHIVE-MANIFEST.original.json"
+    },
+    {
+      "bytes": 3063,
+      "git_blob_sha": "687127c3efcefb6f3478a6dd53ef187eb643a02d",
+      "path": "CONTROLLER-READ.original.json",
+      "sha256": "7ca43abc7f1965c4002db75a144945bc473fa03276da08417b8cc55e5337bb89",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/CONTROLLER-READ.original.json"
+    },
+    {
+      "bytes": 1232,
+      "git_blob_sha": "9fcdc03783ee8f870b78596a33f1c15966a9c851",
+      "path": "CONTROLLER-START.original.json",
+      "sha256": "363c9223cbbac3ed035ac67b1c07ac388dca95370f84a7a69b1e646f7d685887",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/CONTROLLER-START.original.json"
+    },
+    {
+      "bytes": 1010,
+      "git_blob_sha": "3c6eb1bb9955a46fe029191bafe7232e59d51042",
+      "path": "CONTROLLER-STATUS.original.json",
+      "sha256": "325c09b5c6ae1c65cc7553379280b40372e4b7dc0d4800a4b71570532342a418",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/CONTROLLER-STATUS.original.json"
+    },
+    {
+      "bytes": 2089,
+      "git_blob_sha": "9167aed569f3223b844c0c5abdab59266d918ac4",
+      "path": "LOCAL-ORIGINALS-VERIFICATION.json",
+      "sha256": "605cbd97f0d0296a97ac068c450739aa318d330b3f8736b0f3f63b45d46a147c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/LOCAL-ORIGINALS-VERIFICATION.json"
+    },
+    {
+      "bytes": 646,
+      "git_blob_sha": "5b79529e6640e828f58c933073a071b6d4074c6b",
+      "path": "LOCAL-STAGE-READ-ADMISSION.json",
+      "sha256": "dddde9cc5e0b571f9d8dc190416dd6e967350ac7022ed714ee1de40b72f580ee",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/LOCAL-STAGE-READ-ADMISSION.json"
+    },
+    {
+      "bytes": 48346,
+      "git_blob_sha": "fdec399f412484d9e6bb8bc59c884cd3ec897922",
+      "path": "P4-LAUNCHER.original.py",
+      "sha256": "8c30eda635a93396d5e7ed46cf4a1ef6900d6f19c80a47b6a9c573622e9ea9b7",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/P4-LAUNCHER.original.py"
+    },
+    {
+      "bytes": 20275,
+      "git_blob_sha": "e7414dc5528e8b606087fdf01d2ac2c510cf948b",
+      "path": "PROBE-SOURCE.original.py",
+      "sha256": "a460562d2217bcbbd167ac6a4ae2e38d4713da05dee8b57337ff4ce3eceb37be",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/PROBE-SOURCE.original.py"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

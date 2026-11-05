@@ -1,0 +1,80 @@
+{
+  "changes": [
+    {
+      "label": "actual70e_finalization_inverse",
+      "new_utf8": "FREEZER_TEMPLATE_SHA = '0e09bd0efa7da0bb28496054e177bf22d6e35b0f70ae189743602389da791edf'",
+      "old_utf8": "FREEZER_TEMPLATE_SHA = '78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d'"
+    },
+    {
+      "label": "actual_provenance_and_successor_singleton_pins",
+      "new_utf8": "ROOT_CANDIDATE_MANIFEST = {'bytes': 2424, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-candidate02/SOURCE-MANIFEST.json', 'sha256': 'd44e275daa410c6c3bdd03b4d9577e52ca2af9f2dce875789f11f8969c8216e4'}\nACTUAL_FREEZE_RESULT = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json', 'bytes': 22392, 'sha256': 'f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67'}\nACTUAL_FREEZE_INPUTS = {'bytes': 9887, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/inputs/INPUTS.json', 'sha256': '5e0f0fc20da46743ecc196022e5387439b37c80abd50ab5a573b598ec727c0f6'}\nACTUAL_FREEZER_SOURCE = {'bytes': 36899, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/source/freeze_property_runtime.py', 'sha256': '70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d'}\nACTUAL_ROOT_TEMPLATE_SHA = '5263e9a19c8f6d2f7a60d560db7cce3a1c234ca79c77c04c3465323bc0bd9ca2'\nROOT_CAPTURE_HOME = B/'native-guard-property-root-r8-capture-successor01-1ad3'\nROOT_CAPTURE_PROOF_HOME = B/'native-guard-property-root-r8-capture-successor01-1ad3-proof'\nROOT_CAPTURE_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json', 'bytes': 13013, 'sha256': '52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e'}\nROOT_CAPTURE_INCREMENT = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json', 'bytes': 8100, 'sha256': 'd972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887'}",
+      "old_utf8": "ROOT_CANDIDATE_MANIFEST = {\n    'path':str(B/'native-guard-property-root-r8-transport-candidate03-1ad3/SOURCE-MANIFEST.json'),\n    'bytes':4450,'sha256':'077c86ee40a5e239ed7c46200d414624d4e8b76d8e936c101b1cabdaefac3aa8',\n}"
+    },
+    {
+      "label": "strict_actual_freeze_provenance",
+      "new_utf8": "    need(freeze_row==ACTUAL_FREEZE_RESULT,'only the exact retained actual R8 freeze is accepted')\n    freeze = strict(originals.read(freeze_row))\n    need(freeze['inputs']==ACTUAL_FREEZE_INPUTS and freeze['source']==ACTUAL_FREEZER_SOURCE,\n        'actual freezer source and input identities differ')\n    need(Path(freeze_row['path'])==R8/'FREEZE-RESULT.json'",
+      "old_utf8": "    freeze = strict(originals.read(freeze_row))\n    need(Path(freeze_row['path'])==R8/'FREEZE-RESULT.json'"
+    },
+    {
+      "label": "canonical_root_is_provenance_only",
+      "new_utf8": "need(sha(restored)==ACTUAL_ROOT_TEMPLATE_SHA,'canonical actual coordinator differs from its retained old capture template')",
+      "old_utf8": "need(sha(restored)==ROOT_TEMPLATE_SHA,'frozen coordinator is not the exact reviewed capture R8 plus seven pins')"
+    },
+    {
+      "label": "separate_capture_admission_and_only_new_module_loader",
+      "new_utf8": "    return freeze,inputs,{'manifest':root_manifest,'rows':root_rows,'raw':root_raw,'slots':slots}\n\n\ndef validate_capture_increment(originals, freeze, inputs, canonical, increment_row):\n    need(increment_row==ROOT_CAPTURE_INCREMENT,'one explicitly reviewed capture increment required')\n    increment = strict(originals.read(increment_row))\n    need(increment['schema']=='hepta.native-guard.actual-r8-root-capture-increment.v1'\n        and increment['state']=='ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY'\n        and increment['actual_freeze_result']==ACTUAL_FREEZE_RESULT\n        and increment['actual_freezer_source']==freeze['source']\n        and increment['actual_freeze_inputs']==freeze['inputs']\n        and increment['actual_runtime_manifest']==freeze['runtime_manifest']\n        and increment['actual_combination']==freeze['combination']\n        and increment['actual_policy_adoption']==freeze['policy_adoption']\n        and increment['actual_root_manifest']==freeze['root_chain_manifest']\n        and increment['actual_coordinator']==canonical['rows']['source/run_component_root_once.py']\n        and increment['execution_source_package']==ROOT_CAPTURE_MANIFEST\n        and increment['seven_actual_bindings']==canonical['slots']\n        and increment['actual_old_freeze_used_repaired_capture'] is False\n        and increment['actual_old_freeze_outputs_preserved'] is True\n        and all(increment[k]==0 for k in ('phone_calls','native_submissions','new_nonces_generated',\n            'runtime_freezes','root_executions')),\n        'actual freeze and separate capture provenance differ')\n    source_names = {'source/run_component_root_once.py','source/phone_chain_bridge.py',\n        'reference/policy_native5_verifier.py'}\n    manifest,rows,raw = member_map(originals,ROOT_CAPTURE_MANIFEST,source_names)\n    need(Path(ROOT_CAPTURE_MANIFEST['path'])==ROOT_CAPTURE_HOME/'SOURCE-MANIFEST.json'\n        and manifest['schema']=='hepta.native-guard.root-chain-source-package.v1'\n        and manifest['state']=='ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY'\n        and manifest['frozen_component_package_sha256']==freeze['runtime_manifest']['sha256']\n        and manifest['current_combination_sha256']==freeze['combination']['sha256']\n        and manifest['explicit_policy_adoption_sha256']==freeze['policy_adoption']['sha256'],\n        'only the independently reviewed exact capture source package is executable')\n    source_scope = {'schema':'hepta.native-guard.root-source-scope.v1',\n        'actual_r8_freeze_result':ACTUAL_FREEZE_RESULT,'actual_r8_root_chain_manifest':freeze['root_chain_manifest'],\n        'actual_freezer_source':freeze['source'],'execution_capture_template':increment['reviewed_capture_template'],\n        'replacement_scope':'root_host_transport_capture_only','canonical_runtime_bytes_unchanged':True,\n        'original_freeze_claimed_repaired_capture':False}\n    need(manifest['source_scope']==source_scope==increment['source_scope'],\n        'separate original and execution source identities required')\n    template = originals.read(increment['reviewed_capture_template'])\n    need(len(template)==71820 and sha(template)==ROOT_TEMPLATE_SHA,\n        'exact reviewed 50a5 transport template required')\n    coordinator = raw['source/run_component_root_once.py']\n    restored = coordinator\n    for name,value in canonical['slots'].items():\n        restored = set_literal(restored,name,value,None)\n    need(restored==template and sha(restored)==ROOT_TEMPLATE_SHA\n        and rows['source/run_component_root_once.py']==increment['execution_coordinator'],\n        'new capture coordinator differs beyond the seven exact actual bindings')\n    for name in ('source/phone_chain_bridge.py','reference/policy_native5_verifier.py'):\n        need(raw[name]==canonical['raw'][name],\n            'canonical bridge and actual independent verifier must be byte-identical: '+name)\n    need(sha(set_literal(raw['source/phone_chain_bridge.py'],'PKG',canonical['slots']['PKG'],None))==BRIDGE_TEMPLATE_SHA\n        and raw['reference/policy_native5_verifier.py']==originals.read(freeze['verifier'])\n        and len(raw['reference/policy_native5_verifier.py'])<=131072,\n        'unchanged bridge and bounded actual verifier required')\n    expected_manifest = copy.deepcopy(canonical['manifest'])\n    expected_manifest['state'] = 'ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY'\n    expected_manifest['source_scope'] = source_scope\n    expected_manifest['files'] = [descriptor(name,body) for name,body in sorted(raw.items())]\n    need(encoded(expected_manifest)==originals.read(ROOT_CAPTURE_MANIFEST),\n        'capture manifest changed historical metadata beyond files/state/source_scope')\n    return {'manifest':manifest,'rows':rows,'raw':raw,'source_scope':source_scope,\n        'source_package':ROOT_CAPTURE_MANIFEST,'increment':increment_row}\n\n\ndef load_capture_coordinator(capture):\n    row = capture['rows']['source/run_component_root_once.py']\n    mod = types.ModuleType('reviewed_actual_r8_capture_prepare_only_coordinator')\n    mod.__file__ = row['path']\n    mod.__reviewed_source_sha256__ = row['sha256']\n    exec(compile(capture['raw']['source/run_component_root_once.py'],mod.__file__,'exec'),mod.__dict__)\n    return mod\n\n\n",
+      "old_utf8": "    mod = types.ModuleType('reviewed_r8_prepare_only_coordinator')\n    mod.__file__ = root_rows['source/run_component_root_once.py']['path']\n    mod.__reviewed_source_sha256__ = root_rows['source/run_component_root_once.py']['sha256']\n    exec(compile(coordinator,mod.__file__,'exec'),mod.__dict__)\n    return freeze,inputs,mod\n\n\n"
+    },
+    {
+      "label": "explicit_successor_NEG02_predecessor_parameter",
+      "new_utf8": "def choose_prior(originals, inputs, freeze, case_id, result_row, execution_manifest):",
+      "old_utf8": "def choose_prior(originals, inputs, freeze, case_id, result_row):"
+    },
+    {
+      "label": "NEG02_requires_same_successor_generation",
+      "new_utf8": "and predecessor['source_package']==execution_manifest",
+      "old_utf8": "and predecessor['source_package']==freeze['root_chain_manifest']"
+    },
+    {
+      "label": "explicit_successor_plan_parameter",
+      "new_utf8": "def assemble(originals, inputs, freeze, base_row, case_id, label, nonce, request_row, prior, execution_manifest):",
+      "old_utf8": "def assemble(originals, inputs, freeze, base_row, case_id, label, nonce, request_row, prior):"
+    },
+    {
+      "label": "root_plan_binds_new_capture_manifest",
+      "new_utf8": "source_package=copy.deepcopy(execution_manifest),policy_adoption=copy.deepcopy(freeze['policy_adoption']),",
+      "old_utf8": "source_package=copy.deepcopy(freeze['root_chain_manifest']),policy_adoption=copy.deepcopy(freeze['policy_adoption']),"
+    },
+    {
+      "label": "new_source_namespaces_cannot_be_plan_outputs",
+      "new_utf8": "        and R8 not in host_out.parents and CHAINS not in host_out.parents\n        and ROOT_CAPTURE_HOME not in host_out.parents and ROOT_CAPTURE_PROOF_HOME not in host_out.parents\n        and host_out not in (ROOT_CAPTURE_HOME,ROOT_CAPTURE_PROOF_HOME)",
+      "old_utf8": "        and R8 not in host_out.parents and CHAINS not in host_out.parents"
+    },
+    {
+      "label": "mandatory_explicit_increment_input",
+      "new_utf8": "'request','qualified_neg01_result','host_out','root_capture_increment'}",
+      "old_utf8": "'request','qualified_neg01_result','host_out'}"
+    },
+    {
+      "label": "pure_actual_dual_source_sequence",
+      "new_utf8": "    freeze,freeze_inputs,canonical = validate_freeze(originals,value['freeze_result'])\n    capture = validate_capture_increment(originals,freeze,freeze_inputs,canonical,value['root_capture_increment'])\n    coordinator = load_capture_coordinator(capture)\n    prior = choose_prior(originals,freeze_inputs,freeze,value['case_id'],value['qualified_neg01_result'],capture['source_package'])\n    plan = assemble(originals,freeze_inputs,freeze,value['base_plan'],value['case_id'],value['label'],\n        value['nonce'],value['request'],prior,capture['source_package'])",
+      "old_utf8": "    freeze,freeze_inputs,coordinator = validate_freeze(originals,value['freeze_result'])\n    prior = choose_prior(originals,freeze_inputs,freeze,value['case_id'],value['qualified_neg01_result'])\n    plan = assemble(originals,freeze_inputs,freeze,value['base_plan'],value['case_id'],value['label'],\n        value['nonce'],value['request'],prior)"
+    },
+    {
+      "label": "receipt_preserves_actual_freeze_and_new_execution_source",
+      "new_utf8": "'coordinator':capture['rows']['source/run_component_root_once.py'],\n        'runtime_manifest':freeze['runtime_manifest'],'root_chain_manifest':capture['source_package'],\n        'source_scope':dict(capture['source_scope'],root_capture_increment=capture['increment']),",
+      "old_utf8": "'coordinator':descriptor(Path(coordinator.__file__),originals.read(\n            freeze['files']['root-chain/source/run_component_root_once.py'])),\n        'runtime_manifest':freeze['runtime_manifest'],'root_chain_manifest':freeze['root_chain_manifest'],"
+    }
+  ],
+  "derived": {
+    "bytes": 31714,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+  },
+  "parent": {
+    "bytes": 24237,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/neg-root-plan/source/prepare_native_guard_root_plan.py",
+    "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+  },
+  "whole_byte_inverse": true
+}

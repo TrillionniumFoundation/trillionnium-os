@@ -1,0 +1,17 @@
+{
+  "archive_regular_files": 48,
+  "case_runs": 0,
+  "declared_member_count": 47,
+  "freezes": 0,
+  "idempotency_key": "root-1ad3-physical-fault-final01-source-stage09-20261105",
+  "phone_calls": 0,
+  "pure_archive_verification": true,
+  "request_bytes": 421831,
+  "request_sha256": "0f2e12950e3f7dfdfc02700a57a8c636191b3a3bb9c357b01febc8e9375b4639",
+  "source_imports": 0,
+  "staging_main_executed_locally": false,
+  "state": "EXACT_CREATE_ONLY_SOURCE_STAGE_REQUEST_PREPARED",
+  "stdin_bytes": 421248,
+  "stdin_sha256": "0fc759da23ba5c2c3e8b99f3a4c45542ba038c630251cb60e0549584016983c1",
+  "uncompressed_file_bytes": 1162604
+}

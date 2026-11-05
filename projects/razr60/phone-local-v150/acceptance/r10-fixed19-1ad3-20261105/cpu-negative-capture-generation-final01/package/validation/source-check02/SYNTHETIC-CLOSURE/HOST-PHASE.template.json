@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.cpu-negative.capture-host-phase-template.v1",
+  "executable_case_plan": false,
+  "future_dependencies_frozen": false,
+  "phase_directory": "<actual-existing-Root-output>/<exact-phase>",
+  "records": {
+    "intent": {"path": "<phase-directory>/INTENT.json", "bytes": null, "sha256": null},
+    "child": {"path": "<phase-directory>/CHILD.json", "bytes": null, "sha256": null},
+    "result": {"path": "<phase-directory>/RESULT.json", "bytes": null, "sha256": null},
+    "stdout": {"path": "<phase-directory>/stdout.original", "bytes": null, "sha256": null},
+    "stderr": {"path": "<phase-directory>/stderr.original", "bytes": null, "sha256": null},
+    "stdin": null,
+    "output_capture": {"path": "<phase-directory>/OUTPUT-CAPTURE.json", "bytes": null, "sha256": null}
+  },
+  "stdin_rule": "Exact stdin.original descriptor for phases with actual stdin; null only for the original no-input phase.",
+  "success_RESULT_fields": ["state", "phase", "pid", "returncode", "stdout", "stderr", "automatic_retry"],
+  "phone_calls": 0,
+  "physical_case_pass": false
+}

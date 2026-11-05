@@ -1,0 +1,83 @@
+{
+  "actual_bundle_fit_claimed": false,
+  "actual_union_checked": false,
+  "actual_verify_adoption_calls": 0,
+  "codec_review": {
+    "aggregate_decoded_byte_cap_added": false,
+    "base64_canonical_required": true,
+    "budget_meaning": "32 MiB remains the serialized bundle admission cap; individual decoded originals remain at most16 MiB. Full actual union and serialized size must still be measured and validated.",
+    "decoded_raw_length_and_sha256_verified": true,
+    "decompress_output_limit": "declared raw bytes + 1",
+    "full9_read_identity_and_recheck_unchanged": true,
+    "full_component_and_adoption_validation_unchanged": true,
+    "malformed_rejections": 10,
+    "per_original_raw_byte_cap": 16777216,
+    "roundtrip_fixtures": 5,
+    "serialized_bundle_byte_cap": 33554432,
+    "single_complete_zlib_stream_required": true,
+    "unused_data_or_unconsumed_tail_rejected": true
+  },
+  "compact_combination_check": {
+    "bytes": 4702,
+    "inverse_exact_original_parent": true,
+    "only_field_changed": "live_policy_sha256",
+    "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+  },
+  "generator_change": {
+    "cascade_calls": 3,
+    "interface_calls": 3,
+    "new_encoders": 2,
+    "other_ast_nodes_unchanged": true,
+    "whole_source_inverses_exact": true
+  },
+  "main_calls": 0,
+  "new_cascade": {
+    "bytes": 56374,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/derive_final_cascade_property_r8.py",
+    "sha256": "d21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26"
+  },
+  "new_generator_manifest": {
+    "bytes": 1845,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/GENERATOR-SOURCE-MANIFEST.json",
+    "sha256": "5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a"
+  },
+  "new_interface": {
+    "bytes": 33280,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/write_final_seal_interface_property_r8.py",
+    "sha256": "4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f"
+  },
+  "new_nonces": 0,
+  "new_preparer": {
+    "bytes": 12443,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/preparer/prepare_final_cascade.py",
+    "sha256": "18d716a503ff470093b7d8fcadd043be66a829b3696a1aa82239b15932d9962c"
+  },
+  "parent_encoding_rejection": {
+    "actual_adoption_check_run": false,
+    "actual_bytes": 4702,
+    "actual_sha256": "ba5c590860bb7502910617e84d90329a191c5a91e6ace84fb7f8e45b1a556837",
+    "actual_source_functions_run": [
+      "encode"
+    ],
+    "old_pretty_bytes": 5832,
+    "old_pretty_sha256": "96f142cab329ae8ce0af1318133503dbececb3002f7eecbc51b8de9a13f1e6ec"
+  },
+  "phone_calls": 0,
+  "preparer_change": {
+    "actual_r8_and_adoption_gate_bytes_unchanged": true,
+    "exact_template_count": 19,
+    "finalization_exact_field_count": 8,
+    "source_manifest_validation_added": true,
+    "whole_source_inverse_to_72c3": true
+  },
+  "qualified_cases": 0,
+  "remote_process_starts": 0,
+  "retained_external_manifest": {
+    "bytes": 24857,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54"
+  },
+  "runtime_freezes": 0,
+  "schema": "hepta.property-r8.lossless-compact-local-review.v1",
+  "state": "NARROW_SOURCE_AND_PURE_CODEC_CHECKS_PASSED_NO_ACTUAL_CASCADE"
+}

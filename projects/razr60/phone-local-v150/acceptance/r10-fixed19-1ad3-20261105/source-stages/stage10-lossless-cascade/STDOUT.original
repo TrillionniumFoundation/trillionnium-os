@@ -1,0 +1,17 @@
+{
+  "cascade_main_calls": 0,
+  "file_count": 17,
+  "manifest": {
+    "bytes": 4337,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/SOURCE-MANIFEST.json",
+    "sha256": "e948ad1bc932337aeaf85dfff9496b9e86c56200d6b6e4c6c4e7713c53c4a321"
+  },
+  "phone_calls": 0,
+  "result": {
+    "bytes": 7338,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage10/RESULT.json",
+    "sha256": "2a9198c090e0cdb760eed77530bdad167a4b340e3a8bbfc76909be6e462bfc03"
+  },
+  "state": "EXACT_SOURCE_ONLY_PACKAGE_STAGED_AND_READ_BACK",
+  "target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02"
+}

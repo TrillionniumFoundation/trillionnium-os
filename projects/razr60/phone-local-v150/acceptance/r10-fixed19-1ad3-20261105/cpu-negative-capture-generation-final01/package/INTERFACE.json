@@ -1,0 +1,72 @@
+{
+  "CPU_cases": [
+    "NEG-08",
+    "NEG-09"
+  ],
+  "actual_case_plan_created": false,
+  "actual_generations": 0,
+  "dependency_SHA_fields": [
+    "ui_package_sha256",
+    "active_sha256",
+    "runtime_package_sha256",
+    "consumer_sha256",
+    "readiness_sha256",
+    "policy_adoption_sha256",
+    "configuration_sha256",
+    "service_inputs_sha256",
+    "combination_sha256"
+  ],
+  "dependency_sources": [
+    "cpu",
+    "phone",
+    "p4",
+    "sender",
+    "root_transport"
+  ],
+  "generation_argv": "Use the returned RESULT.execute_argv exactly once. All original six output paths plus closure and generation receipt directory must be absent.",
+  "mac_candidate_directory": "B/property-r8-negative-capture-generation-candidate01-1ad3",
+  "new_package": "B/cpu-cancel-host-closure-property-r8-operator-r1",
+  "original_generator": {
+    "bytes": 41788,
+    "path": "reference/derive_negative_operator_sources.6adb.original.py",
+    "sha256": "6adbfa234b88c1f9d6ab247e97fa40e98115c584a3d67c41975b06cf0739da4d"
+  },
+  "original_six_packages_unchanged": true,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "prepare_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "CANDIDATE/source/prepare_negative_source_generation.py",
+    "--source-manifest-sha256",
+    "CANDIDATE_MF_SHA",
+    "--inputs",
+    "ACTUAL_INPUT.json",
+    "--inputs-sha256",
+    "ACTUAL_INPUT_SHA",
+    "--prepare-host-only"
+  ],
+  "preparer": {
+    "bytes": 9860,
+    "path": "source/prepare_negative_source_generation.py",
+    "sha256": "a7dfa4b865bd4babc3947fa92695cc2b773a1d4480e77d57c3f0a230bb172036"
+  },
+  "root_manifest_path": "B/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json",
+  "root_manifest_state": "ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY",
+  "root_template_inverse": {
+    "bytes": 71820,
+    "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+  },
+  "schema": "hepta.cpu-negative.capture-generator-interface.v1",
+  "source": {
+    "bytes": 53525,
+    "path": "source/derive_negative_operator_sources.py",
+    "sha256": "57f67089f6885b0e5bdcca96a4dc73c1821626854a51794964c0ce3f6c32cf09"
+  },
+  "state": "SOURCE_ONLY_BOTH_FINAL_BINDING_LITERALS_NONE",
+  "two_binding_literals": [
+    "FINALIZATION",
+    "ROOT_CAPTURE_MANIFEST"
+  ]
+}

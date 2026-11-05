@@ -1,0 +1,182 @@
+{
+  "both_later_pid_pgid_label_absence_observations_verified": true,
+  "canonical_runtime_members": 32,
+  "case_runs": 0,
+  "component_archive_regular_members": 56,
+  "formal_failed_prelaunch_admission_complete": false,
+  "jobs": {
+    "mac": {
+      "exit_code": 0,
+      "host": "mac",
+      "idempotency_key": "root-1ad3-external09-mac-evidence01-20261105",
+      "job_id": "1a1ab599957-fc05-4ce3",
+      "output_complete": true,
+      "output_durable": true,
+      "read": {
+        "bytes": 17094,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/CONTROLLER-READ-01.original.json",
+        "sha256": "6797aef84bc08a0cbde99b56114fca8144dd330a563f6ac4b7615c9459684af0"
+      },
+      "start": {
+        "bytes": 1300,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/CONTROLLER-START.original.json",
+        "sha256": "a6ed1636d9f2b5207232ef59a5ecad2c6dda767568299db34bfd42e939905d5f"
+      },
+      "status": {
+        "bytes": 954,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/CONTROLLER-STATUS-01.original.json",
+        "sha256": "ce078495e0166156c280432cff8f778c6faf70f71af512f4d0215dc35d0dfc47"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 5209,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-controller/stdout.original",
+        "sha256": "ffd6c54b48df4e776ca05b681d403476058796bdcef7caeced8e2fe3e480d1ad"
+      },
+      "stdout_bytes": 5209
+    },
+    "p4": {
+      "exit_code": 0,
+      "host": "pocket4",
+      "idempotency_key": "root-1ad3-external09-sender-archive01-20261105",
+      "job_id": "1a1ab59c91a-fc05-4ce7",
+      "output_complete": true,
+      "output_durable": true,
+      "read": {
+        "bytes": 5519,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/CONTROLLER-READ-01.original.json",
+        "sha256": "81369775aaeedd2093a379f304c1da1133abe5660eb86559c85454767bf9fbe1"
+      },
+      "start": {
+        "bytes": 1222,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/CONTROLLER-START.original.json",
+        "sha256": "49ec65d7e9aff0808929ffb41e31b4817d934ff36812572259948188c7c8355f"
+      },
+      "status": {
+        "bytes": 954,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/CONTROLLER-STATUS-01.original.json",
+        "sha256": "17cd81f4fd7dfcddf4c54369e43069b8fb6bc9fc6a749adb27e788b5a6ae2df6"
+      },
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 1562,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-controller/stdout.original",
+        "sha256": "0296e330f68876023076051fefa71e4a9e2ed5aa6652c167d79d56defa13fc7c"
+      },
+      "stdout_bytes": 1562
+    }
+  },
+  "label": "root-r10-neg01-20261105-09",
+  "mac_originals_and_observation_members": 9,
+  "nonce": "7c79195945d64e569a191166ac122a08",
+  "original_capture_eof_repaired": false,
+  "original_parent_join_proven": false,
+  "originals": {
+    "MAC-ORIGINALS-AND-OBSERVATIONS.tar.xz": {
+      "bytes": 59612,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/MAC-ORIGINALS-AND-OBSERVATIONS.tar.xz",
+      "sha256": "33fca8cae126efe91574ffc9d726355d1c0d83c178b7c8d497db184352b24cec"
+    },
+    "P4-SENDER-ARCHIVE-MANIFEST.original.json": {
+      "bytes": 33862,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/P4-SENDER-ARCHIVE-MANIFEST.original.json",
+      "sha256": "7369ac34a8f16ced6cb2f54736aacd3de809edd18a1e1f6679970d137e106bbc"
+    },
+    "SENDER-ORIGINALS.tar.xz": {
+      "bytes": 38264,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/SENDER-ORIGINALS.tar.xz",
+      "sha256": "136d4cffc2648a2675cf91890ec02fe43fbee419ebd47fe1adf019cae0b49229"
+    },
+    "component-inputs.original.tar.xz": {
+      "bytes": 296740,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/component-inputs.original.tar.xz",
+      "sha256": "3f7b5463bdd5fe4bac72bf2d77c4c14898b7b4372df8dfa79c9e232fa4191afa"
+    },
+    "mac-COLLECTION-RESULT.original.json": {
+      "bytes": 5209,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-COLLECTION-RESULT.original.json",
+      "sha256": "ffd6c54b48df4e776ca05b681d403476058796bdcef7caeced8e2fe3e480d1ad"
+    },
+    "mac-originals/COMPONENT-XZ-MIRROR-RESULT.original.json": {
+      "bytes": 12070,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-originals/COMPONENT-XZ-MIRROR-RESULT.original.json",
+      "sha256": "92f96e6d4c2e5e09d113c5bcfffa4c516b5741a79ef2f3e364ee70d5209d9cde"
+    },
+    "mac-originals/LEASE.original.json": {
+      "bytes": 2496,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-originals/LEASE.original.json",
+      "sha256": "02b64a4875aa432d3d0f890bb176d500b2eb3ce9faac7892bf51a2d427531745"
+    },
+    "mac-originals/MAC-SENDER-ABSENCE.original.json": {
+      "bytes": 2665,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-originals/MAC-SENDER-ABSENCE.original.json",
+      "sha256": "7bb689ae585b084a564047d163254168d06ce20e191811a5be2dca87943bff7f"
+    },
+    "mac-originals/SENDER-ACTOR.original.py": {
+      "bytes": 82909,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/mac-originals/SENDER-ACTOR.original.py",
+      "sha256": "34c1534d5985bd643c74361a5009b980e5684d6f1373b2e34eed7fcbde283e04"
+    },
+    "p4-COLLECTION-RESULT.original.json": {
+      "bytes": 1562,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-COLLECTION-RESULT.original.json",
+      "sha256": "0296e330f68876023076051fefa71e4a9e2ed5aa6652c167d79d56defa13fc7c"
+    },
+    "p4-originals/P4-SENDER-INVENTORY.original.json": {
+      "bytes": 84711,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/p4-originals/P4-SENDER-INVENTORY.original.json",
+      "sha256": "73473cba24df67139f10d26d209729b7852f52da39915e8ccfcc404f26b32998"
+    },
+    "source/collect_mac_originals_and_absence.py": {
+      "bytes": 9498,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/source/collect_mac_originals_and_absence.py",
+      "sha256": "85697ae603d99469b414025457a09bdc1052f1910410fbcd4641321de60ab740"
+    },
+    "source/collect_p4_sender_originals.py": {
+      "bytes": 7577,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/source/collect_p4_sender_originals.py",
+      "sha256": "9ac943557ae8a06809488492eb2a7b45442bd9857fd24f9d6dcd1d189d77077e"
+    }
+  },
+  "phone_calls": 0,
+  "schema": "hepta.fixed19.external09-originals-collection-delivery.v1",
+  "sender_archive_regular_members": 171,
+  "sender_original_bytes": 5366983,
+  "sender_original_file_count": 170,
+  "signals_sent": 0,
+  "source_gzip_bytes_retained_on_mac_not_local_xz_identity": true,
+  "state": "ALL_REQUESTED_HOST_ORIGINALS_RETAINED_AND_LOCALLY_VERIFIED_NOT_FORMAL_FAILED_CASE_ADMISSION",
+  "validation": {
+    "mac-component.json": {
+      "bytes": 3592,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/mac-component.json",
+      "sha256": "9da07fca12b3211f9b2d340465acfde15e50b00112efb5be1b22697b22d124c0"
+    },
+    "mac-evidence.json": {
+      "bytes": 1148,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/mac-evidence.json",
+      "sha256": "b84e3c93fa63ff75a35d9de35071beb66e80b4c91fb0e35e5ba1ab8b0c38fe58"
+    },
+    "p4-manifest.json": {
+      "bytes": 954,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/p4-manifest.json",
+      "sha256": "c36433a71ecd0c5d68ebea596e6c4ef11b033c7b540eabe652eeb535892b0b85"
+    },
+    "p4-sender.json": {
+      "bytes": 1007,
+      "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/validation/p4-sender.json",
+      "sha256": "eb2a2354292cfbb51574817c1935eee9a84ec4fd9c24f8de95e02ce92258566c"
+    }
+  },
+  "whole_cases_passed": 0
+}

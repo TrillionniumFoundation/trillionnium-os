@@ -1,0 +1,23 @@
+--- retained-parent/derive_final_cascade_property_r8.py
++++ candidate/derive_final_cascade_property_r8.py
+@@ -175,6 +175,9 @@
+ def encode(value):
+     return (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False,
+                        allow_nan=False)+'\n').encode()
++
++def combination_encode(value):
++    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\n').encode()
+ 
+ 
+ def strict(raw):
+@@ -594,8 +597,8 @@
+     parent_combo = strict(parent_raw)
+     reversed_combo = copy.deepcopy(combo)
+     reversed_combo['live_policy_sha256'] = POLICY_PARENT_SHA
+-    need(encode(parent_combo) == parent_raw and encode(combo) == combo_raw
+-         and encode(reversed_combo) == parent_raw
++    need(combination_encode(parent_combo) == parent_raw and combination_encode(combo) == combo_raw
++         and combination_encode(reversed_combo) == parent_raw
+          and combo['schema'] == 'hepta.native-guard.component-combination.v150.r10.1'
+          and sha(combo_raw) != POLICY_PARENT_COMBINATION_SHA
+          and combo['live_policy_sha256'] == frozen['actual_policy']['sha256']

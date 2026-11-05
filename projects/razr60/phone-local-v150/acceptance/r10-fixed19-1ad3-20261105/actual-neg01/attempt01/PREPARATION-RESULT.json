@@ -1,0 +1,98 @@
+{
+  "actual_phone_state_read": false,
+  "all_selected_originals_rechecked": true,
+  "automatic_retry": false,
+  "business_qualified": false,
+  "case_id": "NEG-01",
+  "combination": {
+    "bytes": 4702,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/COMBINATION.json",
+    "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+  },
+  "component_qualified": false,
+  "coordinator": {
+    "bytes": 72194,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/source/run_component_root_once.py",
+    "sha256": "c1b03c028359342a520372a7ddaa60ef38f3b9609ade3a133f32dfe3b6b372a9"
+  },
+  "freeze_result": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "helper": {
+    "bytes": 31714,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+  },
+  "host_out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-neg01-r8-plan-1ad3-01",
+  "inputs": {
+    "bytes": 1631,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/neg01-r8-plan01-inputs/PREPARE-INPUTS.json",
+    "sha256": "a02dcca32bfc8b33b29f36ae5470564c3385f30323cdadcec97d8dd202147e27"
+  },
+  "label": "root-r10-neg01-1ad3-01",
+  "lease_fixed": false,
+  "native_submissions": 0,
+  "new_nonces_generated": 0,
+  "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+  "phone_calls": 0,
+  "plan": {
+    "bytes": 4743,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-neg01-r8-plan-1ad3-01/ROOT-PLAN.json",
+    "sha256": "a4ab78086e0756fcafe5f05d03c236c3ad22cca741587ed970e2de53feeb060b"
+  },
+  "plan_sha256": "a4ab78086e0756fcafe5f05d03c236c3ad22cca741587ed970e2de53feeb060b",
+  "planned_execution_out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01",
+  "policy_adoption": {
+    "bytes": 208226,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json",
+    "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+  },
+  "process_starts": 0,
+  "pure_validate_plan_passed": true,
+  "remote_nonce_absence_proven": false,
+  "root_chain_manifest": {
+    "bytes": 13013,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+  },
+  "runtime_manifest": {
+    "bytes": 16808,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/runtime/MANIFEST.json",
+    "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+  },
+  "schema": "hepta.native-guard.r8-root-plan-preparation-result.v1",
+  "source_scope": {
+    "actual_freezer_source": {
+      "bytes": 36899,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/source/freeze_property_runtime.py",
+      "sha256": "70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d"
+    },
+    "actual_r8_freeze_result": {
+      "bytes": 22392,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+      "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+    },
+    "actual_r8_root_chain_manifest": {
+      "bytes": 11442,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "7315f6561e221fb59429f9daa8ec1a34a944681fd2a117773611c11fa82a81ca"
+    },
+    "canonical_runtime_bytes_unchanged": true,
+    "execution_capture_template": {
+      "bytes": 71820,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-transport-candidate03-1ad3/source/run_component_root_once.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    "original_freeze_claimed_repaired_capture": false,
+    "replacement_scope": "root_host_transport_capture_only",
+    "root_capture_increment": {
+      "bytes": 8100,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json",
+      "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+    },
+    "schema": "hepta.native-guard.root-source-scope.v1"
+  },
+  "state": "HOST_PLAN_CREATED_AND_PURE_ROOT_VALIDATION_PASSED_NOT_EXECUTED"
+}

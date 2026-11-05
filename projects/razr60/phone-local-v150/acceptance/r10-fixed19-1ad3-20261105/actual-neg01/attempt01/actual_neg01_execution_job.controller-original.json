@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/source/run_component_root_once.py\",\n      \"--plan\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-neg01-r8-plan-1ad3-01/ROOT-PLAN.json\",\n      \"--plan-sha256\",\n      \"a4ab78086e0756fcafe5f05d03c236c3ad22cca741587ed970e2de53feeb060b\",\n      \"--execute-root-chain-once\"\n    ],\n    \"created_unix_ms\": 1793871949133,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1ab19ad4d-fc05-4a62\",\n    \"idempotency_key\": \"root-1ad3-native-r8-neg01-once-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1ab19ad4d-fc05-4a62\",\n    \"request_digest\": \"771f1bb419d94171b03dcda27196c846a2a96d172a779675f8ace3190a694020\",\n    \"request_fingerprint\": 8583609875133186417,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab19ad4d-fc05-4a62\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 85917,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1ab19ad4d-fc05-4a62\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

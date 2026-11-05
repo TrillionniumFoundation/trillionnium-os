@@ -1,0 +1,17 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/preparer/prepare_final_cascade.py",
+    "--runtime-freeze-result-desc",
+    "{\"bytes\":22392,\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json\",\"sha256\":\"f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67\"}",
+    "--out",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-cascade-actual-1ad3-01",
+    "--execute-host-preparation"
+  ],
+  "cwd": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1",
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "root-1ad3-lossless-compact-cascade-preparation01-20261105",
+  "timeout_seconds": 150
+}

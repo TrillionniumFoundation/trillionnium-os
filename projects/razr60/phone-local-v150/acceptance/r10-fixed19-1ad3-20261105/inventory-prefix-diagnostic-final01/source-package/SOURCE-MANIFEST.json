@@ -1,0 +1,109 @@
+{
+  "candidate_source": {
+    "bytes": 67005,
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "current_runtime_changed": false,
+  "equivalence_checks_passed": 24,
+  "file_count": 15,
+  "files": [
+    {
+      "bytes": 1612,
+      "path": "DERIVATION.json",
+      "sha256": "2d6388a9a6992fa4abf75f2b046ec7968d8bc85db7c0b776aae9ba1842bcd2ab"
+    },
+    {
+      "bytes": 4379,
+      "path": "PERFORMANCE-COMPARISON.json",
+      "sha256": "2d25f09d7078911f8ea5b1ed8d6302fbac1db4b660e1ff2767581fd21427a98c"
+    },
+    {
+      "bytes": 6046,
+      "path": "README.md",
+      "sha256": "9cea1afafb6b59810145123435afea7dd7cb730e94bd087730fa00500a69363c"
+    },
+    {
+      "bytes": 7438,
+      "path": "SOURCE-CALL-GRAPH.json",
+      "sha256": "dd110a4e9fbc42e2126d4834969903f1e9defde01abff3b5bdab594a118d6bf9"
+    },
+    {
+      "bytes": 578,
+      "path": "SOURCE-INCREMENT.patch",
+      "sha256": "f288f17174e3bb4d1c1d29abf1270bea58300d1c40748df69c946fb47f1321c5"
+    },
+    {
+      "bytes": 8531,
+      "path": "check_inventory_equivalence.py",
+      "sha256": "29da6e953de5580597636acac585ec164b856df64e84090a28e65c1d5ff530e1"
+    },
+    {
+      "bytes": 11202,
+      "path": "profile_pure_history.py",
+      "sha256": "ffd0be81aa7d0cb57d6fc8609ad57ed2d5db40dafadd2ef1fcf78d470e4a9dbb"
+    },
+    {
+      "bytes": 53502,
+      "path": "reference/environment_parent_late_boundary_r6.py",
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+    },
+    {
+      "bytes": 66996,
+      "path": "reference/late_boundary.original.py",
+      "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+    },
+    {
+      "bytes": 35730,
+      "path": "reference/policy_parent_late_boundary_r4.py",
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+    },
+    {
+      "bytes": 62434,
+      "path": "reference/property_parent_late_boundary_r7.py",
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+    },
+    {
+      "bytes": 19116,
+      "path": "reference/stage_component.original.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    },
+    {
+      "bytes": 67005,
+      "path": "source/late_boundary.py",
+      "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+    },
+    {
+      "bytes": 13425,
+      "path": "validation/EQUIVALENCE.json",
+      "sha256": "552c1155fcb1ebb5105397896d18644349189f4b5a76e02da7e65727ad57fb37"
+    },
+    {
+      "bytes": 3571,
+      "path": "validation/INDEPENDENT-REVIEW.json",
+      "sha256": "e08367853bf5e755c1311cafd175582c6e9153ee9e5efb3a4ba4c2cfdd2732c0"
+    }
+  ],
+  "lease_or_time_gate_changed": false,
+  "new_nonce_created": false,
+  "only_changed_ast_function": "inventory_value",
+  "p4_calls": 0,
+  "parent_runtime_sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c",
+  "parent_source": {
+    "bytes": 66996,
+    "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+  },
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "pure_actual_output_pairs_equal": 2,
+  "required_immutable_profile_input": {
+    "bytes": 469829,
+    "sha256": "9aacc5789a65dd875ab9fe7456e2258e0bf4e54575d3be71a50d5542a489b288"
+  },
+  "review": {
+    "bytes": 3571,
+    "sha256": "e08367853bf5e755c1311cafd175582c6e9153ee9e5efb3a4ba4c2cfdd2732c0"
+  },
+  "schema": "hepta.native-guard.inventory-ancestry-optimization-source.v1",
+  "state": "SOURCE_ONLY_REVIEWED_CANDIDATE_NOT_AN_ACTUAL_RUNTIME",
+  "whole_byte_inverse_verified": true
+}

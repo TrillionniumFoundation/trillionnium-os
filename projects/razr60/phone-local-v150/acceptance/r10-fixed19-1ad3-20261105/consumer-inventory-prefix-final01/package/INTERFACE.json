@@ -1,0 +1,78 @@
+{
+  "all_nineteen_templates_checked": true,
+  "canonical_parents": {
+    "acceptance": {
+      "bytes": 20044,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9/MANIFEST.json",
+      "sha256": "a8b9979819e0b49add8837caa94c07afb3f74fa11f6bb35036f3b80ad5f99d7d"
+    },
+    "constructor": {
+      "bytes": 4850,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-component-boundary-input-entry-r8/MANIFEST.json",
+      "sha256": "84b2589ca34a0639a4b45a43d8351f8362be7bbb1581b767c7ab41d38ddcf969"
+    },
+    "consumer": {
+      "bytes": 27964,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8/MANIFEST.json",
+      "sha256": "c6f682a21126e72ec2ae64ae12c8d33ce94cf0409f6936a09b593f587dd7382b"
+    }
+  },
+  "case_generation_or_phone_operations": 0,
+  "derive_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-cascade-source-final01-1ad3/source/derive_final_cascade_property_r8.py",
+    "--execute-host-cascade-once"
+  ],
+  "expected_runtime_successor": {
+    "bytes": 19020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json",
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "interface_binding_rule": "Only a subsequent separately retained source revision may bind DELIVERY to the actual new consumer DELIVERY-RESULT exact3 and OUT to the fixed independent interface output. No future delivery descriptor is manufactured here.",
+  "interface_output_after_separate_actual_delivery_binding": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-seal-interface-r8-r1-inventory-prefix-1ad3-01",
+  "interface_slots_unfilled": [
+    "DELIVERY",
+    "OUT"
+  ],
+  "maximum_bundle_bytes": 33554432,
+  "maximum_policy_verifier_bytes": 131072,
+  "new_template_names": [
+    "release_boundaries.py",
+    "make_component_boundary_inputs.py"
+  ],
+  "original_freeze": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "outputs": {
+    "acceptance": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01",
+    "constructor": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-component-boundary-input-entry-r8-inventory-prefix-1ad3-01",
+    "consumer": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01"
+  },
+  "prepare_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/preparer/prepare_final_cascade.py",
+    "--runtime-freeze-result-desc",
+    "<exact original_freeze JSON above>",
+    "--runtime-successor-manifest-desc",
+    "<exact expected_runtime_successor JSON after actual source readback>",
+    "--out",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-cascade-source-final01-1ad3",
+    "--execute-host-preparation"
+  ],
+  "qualification_granted": false,
+  "schema": "hepta.inventory-prefix.consumer-cascade-source-interface.v1",
+  "seventeen_parent_templates_copied_unchanged": true,
+  "source_target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01",
+  "state": "LOCAL_SOURCE_ONLY_NOT_MAC_STAGED_NOT_GENERATED",
+  "template_parent": {
+    "bytes": 24857,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54"
+  }
+}

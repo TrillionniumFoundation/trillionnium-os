@@ -1,0 +1,22 @@
+{
+  "archive": {
+    "bytes": 100437,
+    "path": "/workspace/scratch/1ad3d6f55439/explicit_inventory_reader_diagnostic_candidate01/delivery-final01/explicit-inventory-reader-diagnostic-source-final01.tar.gz",
+    "regular_files": 13,
+    "sha256": "b43e2b3e33f1e410525467dd8d59fd90a914781f62c8f6913fba1159de3ee307"
+  },
+  "independent_review_pending": true,
+  "manifest": {
+    "bytes": 2309,
+    "path": "/workspace/scratch/1ad3d6f55439/explicit_inventory_reader_diagnostic_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "883555a1b25645bfa3d305952897f7f8dc47f526238ca3b86d77e8c8240f38cb"
+  },
+  "phone_operations": 0,
+  "schema": "hepta.explicit-reader-diagnostic.delivery.v1",
+  "source": {
+    "bytes": 44926,
+    "path": "/workspace/scratch/1ad3d6f55439/explicit_inventory_reader_diagnostic_candidate01/delivery-final01/package/source/verify_explicit_inventory_reader_once.py",
+    "sha256": "65aa1db1beb25aad324a1e7a027eb235f65392083a7fbdb0cae3362db7d44479"
+  },
+  "state": "SOURCE_ONLY_FROZEN_REVIEW_PENDING_NO_TARGET_EXECUTION"
+}

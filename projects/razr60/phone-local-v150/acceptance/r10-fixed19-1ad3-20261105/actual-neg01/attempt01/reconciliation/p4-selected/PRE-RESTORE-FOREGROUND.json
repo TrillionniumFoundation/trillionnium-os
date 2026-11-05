@@ -1,0 +1,13 @@
+{
+  "original_wire_receipt": {
+    "command": "dumpsys activity activities | grep topResumedActivity",
+    "rc": 0,
+    "route": [
+      5037,
+      "23"
+    ],
+    "stdout": "    topResumedActivity=ActivityRecord{132311758 u0 org.trillionnium.owneropen/.OwnerOpenShellActivity t205}\n",
+    "stderr": ""
+  },
+  "model_business_credit": false
+}

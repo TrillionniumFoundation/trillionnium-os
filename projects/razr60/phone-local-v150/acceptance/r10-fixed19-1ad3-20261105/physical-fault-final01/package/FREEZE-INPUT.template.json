@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.physical-fault.freeze-inputs.v1",
+  "out": "<B>/physical-fault-r10-r1-final-<new-tag>",
+  "runtime_package": {"path": "<actual R8 runtime/MANIFEST.json>", "bytes": null, "sha256": null},
+  "fault_package": {"path": "<actual finalized fault/MANIFEST.json>", "bytes": null, "sha256": null},
+  "consumer": {"path": "<actual final consumer/source/release_boundaries.py>", "bytes": null, "sha256": null},
+  "readiness": {"path": "<actual final consumer/source/collect_r10_readiness.py>", "bytes": null, "sha256": null},
+  "policy_adoption": {"path": "<actual independently verified POLICY-ADOPTION.json>", "bytes": null, "sha256": null},
+  "actual_policy": {"path": "<actual adoption.actual_export.path>", "bytes": null, "sha256": null},
+  "combination_sha256": null
+}

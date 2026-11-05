@@ -1,0 +1,13 @@
+{
+  "case_id": "NEG-01",
+  "label": "root-r10-neg01-1ad3-01",
+  "native_submissions": 0,
+  "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+  "phone_calls": 0,
+  "request_bytes": 317,
+  "request_sha256": "6cde40708b387361d0115eb65f0e39c61872f8146a593cf4a8cb4890202ff525",
+  "runtime_manifest_sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c",
+  "schema": "hepta.root.fixed19.one-use-owner-request.v1",
+  "source_package_sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e",
+  "state": "EXPLICIT_OWNER_REQUEST_CREATED_NO_NATIVE_ACTION"
+}

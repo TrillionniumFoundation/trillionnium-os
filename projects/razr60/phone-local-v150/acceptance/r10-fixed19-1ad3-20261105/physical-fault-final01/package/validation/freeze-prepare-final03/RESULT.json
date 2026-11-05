@@ -1,0 +1,80 @@
+{
+  "actual_adoptions_created": 0,
+  "actual_physical_cases_passed": 0,
+  "all_dependency_inputs_are_explicit_synthetic_fixtures": true,
+  "checks": [
+    {
+      "detail": {
+        "actual_adoption_awarded": false,
+        "changed_source_count": 4
+      },
+      "name": "freezer binds four source pin slots using explicit synthetic relationships",
+      "passed": true
+    },
+    {
+      "detail": "actual_consumer_and_readiness_source_relationships",
+      "name": "stale readiness-to-consumer reference rejected",
+      "passed": true
+    },
+    {
+      "detail": "only_four_original_shared_active_pin_slots_changed",
+      "name": "active source changes outside four reviewed slots rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "case_id": "NEG-04",
+        "phone_calls": 0,
+        "registry_abbreviated_component_preserved": true,
+        "source_only_fixture": true,
+        "wire_bytes": {
+          "operator_stage": 51386,
+          "watch": 17969
+        }
+      },
+      "name": "prepare NEG-04 exact owner/template and original actor helper fields",
+      "passed": true
+    },
+    {
+      "detail": {
+        "case_id": "NEG-05",
+        "phone_calls": 0,
+        "registry_abbreviated_component_preserved": true,
+        "source_only_fixture": true,
+        "wire_bytes": {
+          "operator_stage": 51386,
+          "watch": 18105
+        }
+      },
+      "name": "prepare NEG-05 exact owner/template and original actor helper fields",
+      "passed": true
+    },
+    {
+      "detail": {
+        "case_id": "NEG-07",
+        "phone_calls": 0,
+        "registry_abbreviated_component_preserved": true,
+        "source_only_fixture": true,
+        "wire_bytes": {
+          "operator_stage": 51386,
+          "watch": 18049
+        }
+      },
+      "name": "prepare NEG-07 exact owner/template and original actor helper fields",
+      "passed": true
+    }
+  ],
+  "fault_actor_invocations": 0,
+  "native_tasks": 0,
+  "passed": 6,
+  "phone_calls": 0,
+  "schema": "hepta.physical-fault.freeze-prepare-source-checks.v1",
+  "source_gate_semantics_only": true,
+  "source_manifest": {
+    "bytes": 8432,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/SOURCE-MANIFEST.json",
+    "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+  },
+  "state": "PASS",
+  "total": 6
+}

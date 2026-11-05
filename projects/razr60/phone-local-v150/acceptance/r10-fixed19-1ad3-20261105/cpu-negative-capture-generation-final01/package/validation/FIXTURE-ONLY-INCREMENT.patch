@@ -1,0 +1,25 @@
+--- reconstructed-first-fixture/test_capture_generation.py
++++ corrected-fixture/test_capture_generation.py
+@@ -132,7 +132,7 @@
+         try:return reject(lambda:G.capture_dependencies(SourceReader(values),binding),expected_message)
+         finally:G.ROOT_CAPTURE_MANIFEST=root_desc
+     check('old Q2 capture source is refused even with rehashed manifest',lambda:damaged_root(
+-        capture['references']['root_parent'],'actual_R8_root_not_exact_reviewed_capture_template'))
++        capture['references']['root_parent'],'one_actual_R8_slot'))
+     check('one byte outside seven Root slots is refused',lambda:damaged_root(actual_root+b'\n',
+         'actual_R8_root_not_exact_reviewed_capture_template'))
+     wrong,unused=G.changed_source(actual_root,[('ROOT_SCOPE_SHA',None,repr('0'*64))])
+@@ -169,9 +169,12 @@
+             target=directory/name;target.parent.mkdir(parents=True,exist_ok=True)
+             with target.open('xb') as stream:stream.write(body)
+         root=load(closure['source/root_cpu_negative.py'],directory/'source/root_cpu_negative.py','test_generated_root_loader')
++        # Process-local fixture namespace only; the generated source bytes and production B remain unchanged.
++        root.B=str(directory)
+         loaded=root.load_pure();assert set(loaded)=={'negative_originals','close_cpu_negative'}
+         assert loaded['negative_originals']['module'].final_dependencies()==G.strict(closure['FINAL-DEPENDENCIES.json'])
+-        return {'actual_pinned_loader_ran_on_synthetic_source_files':True,'case_execution_calls':0}
++        return {'actual_pinned_loader_ran_on_synthetic_source_files':True,'case_execution_calls':0,
++            'B_mapped_only_in_test_module_memory':True,'production_source_bytes_unchanged':True}
+     check('unchanged Root pinned loader loads generated closure modules and final dependencies',actual_loader)
+     result={'schema':'hepta.cpu-negative-capture-generator.source-checks.v1','state':'PASS' if all(x['passed'] for x in rows) else 'FAIL',
+         'checks':rows,'passed':sum(x['passed'] for x in rows),'total':len(rows),

@@ -1,0 +1,120 @@
+--- reviewed-parent/preparer/prepare_final_cascade.py
++++ inventory-prefix-successor/preparer/prepare_final_cascade.py
+@@ -15,10 +15,11 @@
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ PARENT = B/'property-r8-lossless-bundle-generators-candidate01'
+-SOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/derive_final_cascade_property_r8.py', 'bytes': 56374, 'sha256': 'd21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26'}
+-INTERFACE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/write_final_seal_interface_property_r8.py', 'bytes': 33280, 'sha256': '4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f'}
+-GENERATOR_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/GENERATOR-SOURCE-MANIFEST.json', 'bytes': 1845, 'sha256': '5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a'}
++SOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/source/derive_final_cascade_property_r8.py', 'bytes': 66393, 'sha256': '843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54'}
++INTERFACE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/source/write_final_seal_interface_property_r8.py', 'bytes': 40887, 'sha256': '1d88947679e6bb01a24762aa0b86e9875928f836b97eb9a4aff216ee6de0b500'}
++GENERATOR_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/GENERATOR-SOURCE-MANIFEST.json', 'bytes': 2634, 'sha256': 'f58abcc530bffdddfd4f8cbaa38985a9de9e8e55b14728fa324504ef81041a0e'}
+ TEMPLATE_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json', 'bytes': 24857, 'sha256': '81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54'}
++TEMPLATE_OVERRIDES = {'release_boundaries.py': {'parent': {'bytes': 77700, 'sha256': '619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1'}, 'successor': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/templates/release_boundaries.py', 'bytes': 84972, 'sha256': '57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0'}}, 'make_component_boundary_inputs.py': {'parent': {'bytes': 34626, 'sha256': 'ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc'}, 'successor': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/templates/make_component_boundary_inputs.py', 'bytes': 34843, 'sha256': '41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5'}}}
+ META = ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ 
+ 
+@@ -106,9 +107,10 @@
+ def validate_source_manifests(originals, template_module):
+     generators = strict(originals.read(GENERATOR_MANIFEST))
+     templates = strict(originals.read(TEMPLATE_MANIFEST))
+-    need(generators['schema']=='hepta.property-r8.lossless-compact-generators.source-package.v1'
++    need(generators['schema']=='hepta.inventory-prefix.final-generators.source-package.v1'
+          and generators['state']=='SOURCE_ONLY_FINALIZATION_AND_DELIVERY_UNFILLED'
+-         and generators['template_source_manifest']==TEMPLATE_MANIFEST,
++         and generators['template_source_manifest']==TEMPLATE_MANIFEST
++         and generators['template_overrides']==TEMPLATE_OVERRIDES,
+          'exact compact generator lineage differs')
+     expected_sources = [dict(path='source/derive_final_cascade_property_r8.py',
+                              **{k:SOURCE[k] for k in ('bytes','sha256')}),
+@@ -121,8 +123,16 @@
+     rows = templates['files']
+     need(type(rows) is list and all(type(r) is dict and set(r)=={'path','bytes','sha256'} for r in rows)
+          and len(rows)==len({r['path'] for r in rows}), 'unique exact template package inventory required')
++    parent_pins = dict(template_module.TEMPLATE_PINS)
++    need(set(TEMPLATE_OVERRIDES)=={'release_boundaries.py','make_component_boundary_inputs.py'},
++         'exact two source increment templates required')
++    for name, change in TEMPLATE_OVERRIDES.items():
++        need(parent_pins[name]=={k:change['successor'][k] for k in ('bytes','sha256')},
++             'actual cascade template pin differs from reviewed override')
++        originals.read(change['successor'])
++        parent_pins[name] = change['parent']
+     expected_templates = {('templates/'+name):dict(path='templates/'+name,**pin)
+-                          for name,pin in template_module.TEMPLATE_PINS.items()}
++                          for name,pin in parent_pins.items()}
+     observed_templates = {r['path']:r for r in rows if r['path'].startswith('templates/')}
+     need(len(expected_templates)==19 and observed_templates==expected_templates,
+          'all nineteen pinned lossless templates must match the actual package manifest')
+@@ -131,6 +141,7 @@
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--runtime-freeze-result-desc', required=True)
++    parser.add_argument('--runtime-successor-manifest-desc', required=True)
+     parser.add_argument('--out', type=Path, required=True)
+     parser.add_argument('--execute-host-preparation', action='store_true')
+     args = parser.parse_args()
+@@ -147,13 +158,37 @@
+     interface_raw = originals.read(INTERFACE)
+     template_module = module(SOURCE, source_raw, 'reviewed_final_cascade_template')
+     validate_source_manifests(originals, template_module)
++    increment = template_module.RUNTIME_SOURCE_INCREMENT
++    need(result_row==increment['base_freeze_result']
++         and result['runtime_manifest']==increment['base_runtime_manifest'],
++         'the actual immutable67dc/f1e R8 parent freeze is required')
++    originals.read(increment['base_freezer_source'])
++    originals.read(increment['base_runtime_manifest'])
++    runtime_row = strict(args.runtime_successor_manifest_desc)
++    need(type(runtime_row) is dict and set(runtime_row)=={'path','bytes','sha256'}
++         and type(runtime_row['bytes']) is int and 0<runtime_row['bytes']<=65536
++         and runtime_row['path']==str(B/'native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json'),
++         'one explicit inventory-prefix runtime successor path is required')
++    runtime_raw = originals.read(runtime_row)
++    runtime = strict(runtime_raw); runtime_files = {}
++    need(type(runtime) is dict and type(runtime.get('files')) is list
++         and len(runtime['files'])==32, 'exact32 bounded runtime rows required before reads')
++    for item in runtime['files']:
++        need(type(item) is dict and set(item)=={'path','bytes','sha256'}
++             and type(item['path']) is str and type(item['bytes']) is int
++             and 0<=item['bytes']<=8*1024*1024, 'exact bounded runtime row')
++        relative=Path(item['path'])
++        need(not relative.is_absolute() and '..' not in relative.parts and str(relative)==item['path']
++             and item['path'] not in runtime_files, 'unique canonical runtime member')
++        runtime_files[item['path']]=originals.read(dict(path=str(Path(runtime_row['path']).parent/relative),
++            bytes=item['bytes'],sha256=item['sha256']))
++    increment_proof = template_module.verify_runtime_source_increment(runtime_raw,runtime_files)
+     adoption_row, verifier_row = result['policy_adoption'], result['verifier']
+     adoption_raw = originals.read(adoption_row)
+     adoption = strict(adoption_raw)
+     verifier = module(verifier_row, originals.read(verifier_row), 'reviewed_actual_property_verifier')
+     verified = verifier.verify_adoption(adoption_raw, read_pinned=originals.read)
+-    runtime_row, combination_row = result['runtime_manifest'], result['combination']
+-    runtime = strict(originals.read(runtime_row))
++    combination_row = result['combination']
+     combination = strict(originals.read(combination_row))
+     actual = originals.read(adoption['actual_export'])
+     need(verified['current_adoption_sha256']==adoption_row['sha256']
+@@ -183,10 +218,13 @@
+     files = {'source/derive_final_cascade_property_r8.py':finalized,
+              'source/write_final_seal_interface_property_r8.py':interface_raw,
+              'reference/derive_final_cascade_property_r8.original.py':source_raw,
+-             'FINALIZATION.json':enc(frozen), 'RUNTIME-FREEZE-RESULT-DESCRIPTOR.json':enc(result_row)}
++             'FINALIZATION.json':enc(frozen), 'RUNTIME-FREEZE-RESULT-DESCRIPTOR.json':enc(result_row),
++             'RUNTIME-SUCCESSOR-MANIFEST-DESCRIPTOR.json':enc(runtime_row),
++             'RUNTIME-SOURCE-INCREMENT-PROOF.json':enc(increment_proof)}
+     for name, pin in template_module.TEMPLATE_PINS.items():
+         need(Path(name).name==name, 'simple template filename required')
+-        row = {'path':str(PARENT/'templates'/name), **pin}
++        row = (TEMPLATE_OVERRIDES[name]['successor'] if name in TEMPLATE_OVERRIDES
++               else {'path':str(PARENT/'templates'/name), **pin})
+         files['templates/'+name] = originals.read(row)
+     out = args.out
+     need(out.is_absolute() and out.parent.resolve(strict=True)==out.parent
+@@ -211,6 +249,7 @@
+     result = create(out/'PREPARATION-RESULT.json', enc({
+         'state':'ACTUAL_FINAL_CASCADE_SOURCES_CREATED_HOST_ONLY', 'source_manifest':manifest,
+         'entry':entry_row, 'runtime_freeze':result_row, 'finalization':frozen,
++        'runtime_successor_manifest':runtime_row, 'runtime_source_increment_proof':increment_proof,
+         'phone_calls':0, 'policy_writes':0, 'cascade_executed':False}))
+     print(json.dumps({'result':result, 'entry':entry}, sort_keys=True)); return 0
+ 

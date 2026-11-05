@@ -1,0 +1,38 @@
+{
+  "active_sha256": "41e83147ea3396b1cea6afe9a022acb4a478bbfd93c8a71f854cc1a435ba6ffb",
+  "combination_sha256": "7e3f8b9d19efc414418548863a9bc5defc0c23c0679d73a8043301861153a67b",
+  "configuration_sha256": "780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34",
+  "consumer_sha256": "f54d90370bd92327879fa9158ad3902cc928ab521505e07f7be22f86791f6950",
+  "live_policy": {
+    "bytes": 27,
+    "sha256": "9f51f679c83d6745ba5ed4e3ca66cf3a30873d33718b6f6357755a67646a427b"
+  },
+  "policy_adoption_sha256": "a66117fba15849bfee836ae3519f5fedd046d3383794854f8dab1bdfe71277cf",
+  "readiness_sha256": "62b35479c525f1c6650b8636ba7e77f8c0a95acd41f2c989942e048e7184b388",
+  "runtime_package_sha256": "53ef94b6283141c195799d89fe31793ab0e93b8ed42597f892621ec77a5723c0",
+  "schema": "hepta.r10.cpu-negative-final-dependencies.v1",
+  "service_inputs_sha256": "2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a",
+  "sources": {
+    "cpu": {
+      "bytes": 60828,
+      "sha256": "d8b4315903326002129a7db818546b2eef2caaa0e8dba720f05ac5117df7f5a8"
+    },
+    "p4": {
+      "bytes": 31418,
+      "sha256": "3574eadc4eb6b75e7f0dd503fea26cd3a447165a754033ad08f2132b66479bc5"
+    },
+    "phone": {
+      "bytes": 44097,
+      "sha256": "b1d65f7112d8e7dc930f6dadc12fb28024187deb695e65106998a3f2e865f10d"
+    },
+    "root_transport": {
+      "bytes": 72190,
+      "sha256": "0056343bb5bc40c6c6cbcb533eb709323543cc0797e7f359621849d9cdd3288e"
+    },
+    "sender": {
+      "bytes": 40788,
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+    }
+  },
+  "ui_package_sha256": "05bd0f507d1f6a534ddb24a0812f7f42346a0bb9fb30b6cd18997634331ae4e8"
+}

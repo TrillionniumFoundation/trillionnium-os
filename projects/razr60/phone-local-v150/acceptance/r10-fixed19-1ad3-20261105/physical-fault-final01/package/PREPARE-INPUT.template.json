@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.physical-fault.prepare-inputs.v1",
+  "case_id": "NEG-04",
+  "label": "<new-original-attempt-label>",
+  "operation_id": "<new-single-actor-operation-label>",
+  "sender_inputs": {
+    "request": {"path": "<actual material request.txt>", "bytes": null, "sha256": null},
+    "previous": {"path": "<actual previous selected original>", "bytes": null, "sha256": null},
+    "preserved_draft": {"path": "<actual preserved-draft original>", "bytes": null, "sha256": null},
+    "retirement_resolution": {"path": "<actual sender retirement resolution>", "bytes": null, "sha256": null},
+    "registration_result": {"path": "<actual unconsumed registration readback>", "bytes": null, "sha256": null}
+  },
+  "task_template": {"path": "<retained exact actual registered v150.3 template>", "bytes": null, "sha256": null},
+  "actual_ready": {"path": "<retained current actual READY>", "bytes": null, "sha256": null},
+  "expected_probe_component": null,
+  "configuration": {"path": "<actual shared local-config-r10-r1.json>", "bytes": 1493, "sha256": "780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34"},
+  "service": {"path": "<actual shared PHONE-SERVICE-INPUTS-v150-r10-r1.json>", "bytes": 10635, "sha256": "2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a"}
+}

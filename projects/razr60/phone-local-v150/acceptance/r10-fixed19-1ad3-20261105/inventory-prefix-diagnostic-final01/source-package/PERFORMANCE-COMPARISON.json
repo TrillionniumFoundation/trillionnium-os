@@ -1,0 +1,86 @@
+{
+  "schema": "hepta.inventory-parts-host-comparison.v1",
+  "state": "PURE_HOST_SUBSET_EQUIVALENT_AND_OBSERVED_FASTER_NO_PHONE_SPEEDUP_CLAIM",
+  "candidate_source": {
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/source/late_boundary.py",
+    "bytes": 67005,
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "baseline_profile": {
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/baseline-pure-profile02/PROFILE.json",
+    "bytes": 149255,
+    "sha256": "ba74889f642cc11516c4ce9d6215717241304a0b79a67b842e3df9e4a47dd751"
+  },
+  "candidate_profile": {
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/candidate-pure-profile01/PROFILE.json",
+    "bytes": 149683,
+    "sha256": "a93feaf7e2f035eaa7386572d5976132007e9dc5818f485d1db3cab1d6c79df3"
+  },
+  "equivalence": {
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/equivalence01/EQUIVALENCE.json",
+    "bytes": 13425,
+    "sha256": "552c1155fcb1ebb5105397896d18644349189f4b5a76e02da7e65727ad57fb37"
+  },
+  "observations": [
+    {
+      "case": "fixed_non_native_sidebranch",
+      "original_uninstrumented_wall_s": 1.1344904399957159,
+      "candidate_uninstrumented_wall_s": 0.3690541329997359,
+      "observed_uninstrumented_reduction_s": 0.76543630699598,
+      "original_profile_wall_s": 6.97793341200304,
+      "candidate_profile_wall_s": 1.003499574995658,
+      "original_changed_function_profile_cumulative_s": 4.64740249,
+      "candidate_changed_function_profile_cumulative_s": 0.31580103600000003,
+      "output_identical": true,
+      "output_fingerprint": {
+        "bytes": 2453269,
+        "sha256": "6b3da9a3d97945c36f74c55e6dc14b8e8d50077982270a497bdbfb4d155d9540"
+      }
+    },
+    {
+      "case": "actual08_boundary_original",
+      "original_uninstrumented_wall_s": 3.531195805000607,
+      "candidate_uninstrumented_wall_s": 1.1140775829990162,
+      "observed_uninstrumented_reduction_s": 2.4171182220015908,
+      "original_profile_wall_s": 8.398635901998205,
+      "candidate_profile_wall_s": 5.486794374002784,
+      "original_changed_function_profile_cumulative_s": 3.6565612510000003,
+      "candidate_changed_function_profile_cumulative_s": 0.31876058500000004,
+      "output_identical": true,
+      "output_fingerprint": {
+        "bytes": 9372,
+        "sha256": "04aca99b3103362b0813868438c407c6d4bbcbe7e8181d479fa17ef50ae3974b"
+      }
+    }
+  ],
+  "harness": {
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/profile_pure_history.py",
+    "bytes": 11202,
+    "sha256": "ffd0be81aa7d0cb57d6fc8609ad57ed2d5db40dafadd2ef1fcf78d470e4a9dbb"
+  },
+  "checks_harness": {
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/check_inventory_equivalence.py",
+    "bytes": 8531,
+    "sha256": "29da6e953de5580597636acac585ec164b856df64e84090a28e65c1d5ff530e1"
+  },
+  "limitations": [
+    "One sequential uninstrumented sample and one cProfile sample for each case/version; timing variability is visible across retained baseline runs.",
+    "cProfile changes cost materially; no instrumented elapsed is used to claim a phone request or lease budget can be met.",
+    "Only two pure subsets are measured here, not complete verify_retired/verify_current or full physical launch.",
+    "Historical R7/R6/R4 functions remain byte-identical and their own repeated ancestry work remains.",
+    "No live file read, inode/metadata check, inventory, process/endpoint absence or lock admission is memoized or omitted.",
+    "A new reviewed runtime/manifest and downstream bindings are required before use; canonical67dc and this failed case are unchanged."
+  ],
+  "prior_profile_history": {
+    "retained": {
+      "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/baseline-pure-profile01/PROFILE.json",
+      "bytes": 27934,
+      "sha256": "4924a9913c1a65f44e0e493f1e6291719b46ce532318dac70f64636ef6a45299"
+    },
+    "aggregation_caveat": "Initial summary used pstats.Stats, whose repeated code-location keys may lose separately recompiled code objects; second harness retains every getstats entry and explicitly sums counters. Original measured wall times remain observed history."
+  },
+  "phone_calls": 0,
+  "p4_calls": 0,
+  "signals": 0,
+  "case_pass": false
+}

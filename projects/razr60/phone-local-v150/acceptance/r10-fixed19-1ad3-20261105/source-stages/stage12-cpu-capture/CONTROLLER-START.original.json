@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-c\",\n      \"import sys,hashlib; body=sys.stdin.buffer.read(1048577); assert len(body)<=1048576; assert hashlib.sha256(body).hexdigest()=='cc257dd4fe048500b346793fb79e34b6f3cf1ba155375717cbb89e444bc7561c'; exec(compile(body,'/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12/STAGE-SOURCE.original.py','exec'),{'__name__':'__main__','__file__':'/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12/STAGE-SOURCE.original.py','STAGE_SOURCE':body})\"\n    ],\n    \"created_unix_ms\": 1793871877007,\n    \"cwd\": \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1ab18938f-fc05-4a48\",\n    \"idempotency_key\": \"root-1ad3-cpu-negative-capture-source-stage12-20261105\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1ab18938f-fc05-4a48\",\n    \"request_digest\": \"e7848822810c6a722c2ae4043a963f17dc608341b145985a3b83f396099c12a0\",\n    \"request_fingerprint\": 16682608601462499954,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab18938f-fc05-4a48\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 84959,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1ab18938f-fc05-4a48\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

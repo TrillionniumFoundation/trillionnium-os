@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.fixed19.comp01-neg03.source-interface.v1",
+  "state": "SOURCE_CANDIDATE_NO_CASE_EXECUTED",
+  "package_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-comp01-neg03-r7-source-candidate01",
+  "original_protocol": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-native5-provenance-candidate01/reference/parent-r9/inputs/original-protocol.json",
+    "bytes": 37318,
+    "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+  },
+  "production_sources": [
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-material-r1/actual-material-01/provider/source/phone_local_tools.py",
+      "bytes": 13813,
+      "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-material-r1/actual-material-01/provider/source/phone_task_guards.py",
+      "bytes": 22825,
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-material-r1/actual-material-01/provider/source/phone_observation_tools.py",
+      "bytes": 38774,
+      "sha256": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/r10-boundary-consumers-material-r1/actual-material-01/provider/source/provider_openai_compatible.py",
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    }
+  ],
+  "sealed_release_required": {
+    "state": "SEALED_ACTUAL_RETIREMENT_BOUND",
+    "actual_source_count": 15,
+    "component_runtime_sha256": "683481bdb653bd7cb97bd6171d6b14f6ecaf4f9948ed2691c7b7c420fea5fe3c",
+    "qualified_current_components": [
+      "NEG-01",
+      "NEG-02"
+    ],
+    "actual_seal_not_yet_supplied": true
+  },
+  "defaults": {
+    "zero_input_reads": true,
+    "zero_phone": true,
+    "zero_nonce_generation": true,
+    "zero_case_execution": true
+  },
+  "comp01": {
+    "source": "source/prepare_direct_return_component.py",
+    "cli": [
+      "/usr/bin/python3",
+      "-I",
+      "-B",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-comp01-neg03-r7-source-candidate01/source/prepare_direct_return_component.py",
+      "--mode",
+      "<baseline-request|prepare-return|verify-return>",
+      "--plan",
+      "<exact plan original>",
+      "--plan-sha256",
+      "<actual SHA>",
+      "--package-manifest-sha256",
+      "<actual MANIFEST SHA>",
+      "--out",
+      "<fresh private host output>",
+      "--execute-host-once"
+    ],
+    "mapping": "Original production PhoneTools.map return branch inherited by PhoneLocalTools; explicit operator component identity, no fabricated five-field native scope.",
+    "read_only_baseline": "Root executes the prepared exact BASELINE-REQUEST once through its already reviewed operator transport; save raw request, original wrapper, original operation.",
+    "effect": "The actual operator command prepends boot/fingerprint/stay-on/viewport/page equality guards to the byte-identical production return command; mapped and actual wires remain separate.",
+    "typed_verification": "Original guards.verify_return followed by original validate_viewport; no second map call in receipt verification.",
+    "remaining_gate": "Original Root live admission, command submission/once causality, full transport termination, restoration and required metrics remain required for component PASS. This host entry never awards COMP-01 PASS.",
+    "automatic_phone_entry": false,
+    "native_qualified": false,
+    "model_qualified": false
+  },
+  "neg03": {
+    "source": "source/verify_unqualified_geometry_fixture.py",
+    "cli": [
+      "/usr/bin/python3",
+      "-I",
+      "-B",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-comp01-neg03-r7-source-candidate01/source/verify_unqualified_geometry_fixture.py",
+      "--plan",
+      "<exact plan original>",
+      "--plan-sha256",
+      "<actual SHA>",
+      "--package-manifest-sha256",
+      "<actual MANIFEST SHA>",
+      "--out",
+      "<fresh isolated host output>",
+      "--execute-host-fixture-once"
+    ],
+    "dut": "Exact raw sealed production mapper and prepare/_image/return parsers. No production function replacement; no injected fake latest.",
+    "positive_baseline": [
+      "original-shaped qualified screenshot prepare",
+      "qualified current screenshot tap maps display 0 without dispatch",
+      "qualified return launch+focus+viewport prepare"
+    ],
+    "negative_axes": [
+      "screenshot logical_display_id only",
+      "screenshot rotation only",
+      "screenshot original_width only",
+      "return viewport displayId only",
+      "return viewport orientation only",
+      "return viewport logicalFrame only"
+    ],
+    "after_each_rejection": "Original tap map must reject absent valid latest; calls and atomic-write count remain unchanged by rejected tap.",
+    "isolation": "Host audit rejects network/process/signals and writes outside fresh output. All synthetic native-shaped records are explicitly retained under synthetic-receipts.",
+    "success": "NEG03_COMPONENT_FIXTURE_PASSED can satisfy the original fixture component_direct case; physical/native/model/business remain false.",
+    "old_six_host_suite_changed": false
+  },
+  "future_inputs": {
+    "actual_sealed_release": null,
+    "actual_comp01_identity": null,
+    "actual_root_live_admission": null,
+    "actual_case_results": null
+  },
+  "counts": {
+    "phone_calls": 0,
+    "case_runs": 0,
+    "model_requests": 0,
+    "native_sends": 0,
+    "new_nonce": false
+  }
+}

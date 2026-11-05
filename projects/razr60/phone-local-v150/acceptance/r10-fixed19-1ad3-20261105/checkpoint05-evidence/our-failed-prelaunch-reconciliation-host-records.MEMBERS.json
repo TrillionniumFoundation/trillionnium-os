@@ -1,0 +1,461 @@
+{
+  "file_bytes": 2282234,
+  "file_count": 64,
+  "files": [
+    {
+      "bytes": 499,
+      "git_blob_sha": "ca19b118acb5fdada4b71c2db947ed60be8fd721",
+      "path": "ARCHIVE-READ-CONNECTION-FAILURE.original.json",
+      "sha256": "e3f44fb7c827b8bdb07ad34941700202a9479e2da0a1b6fb03f452287fe5655b",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/ARCHIVE-READ-CONNECTION-FAILURE.original.json"
+    },
+    {
+      "bytes": 359,
+      "git_blob_sha": "738ca7e01c828b1b955a65aad452472f1d2ca7c1",
+      "path": "CHAIN-INTENT.json",
+      "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/CHAIN-INTENT.json"
+    },
+    {
+      "bytes": 1114,
+      "git_blob_sha": "f4af91d0dd20cd8c82cec2eb9f8e7f490c1409f1",
+      "path": "MAC-ORIGINALS-READBACK.json",
+      "sha256": "8d609d407fc4103e2deea737f9493443a162b71bd54b2dd861d5b5438099107a",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/MAC-ORIGINALS-READBACK.json"
+    },
+    {
+      "bytes": 2517,
+      "git_blob_sha": "0b548df898277f9fd8260615adf02e17c8ee4f72",
+      "path": "MAC-SENDER-ABSENCE.controller-read.original.json",
+      "sha256": "66d16cd27efdc4dc817e6013f3d42a12ddd7189074467c769c37abd63b051575",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/MAC-SENDER-ABSENCE.controller-read.original.json"
+    },
+    {
+      "bytes": 1313,
+      "git_blob_sha": "d4ee29e95f3f632aff545af0669d69e5765fcdaf",
+      "path": "MAC-SENDER-ABSENCE.controller-start.original.json",
+      "sha256": "ca0c16815e007a01c61bce76954567f8120cac4c7a4098fbe4d3f4f15ece142d",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/MAC-SENDER-ABSENCE.controller-start.original.json"
+    },
+    {
+      "bytes": 952,
+      "git_blob_sha": "10037cefaeee82b747032990e92375f9ad878d24",
+      "path": "MAC-SENDER-ABSENCE.controller-status.original.json",
+      "sha256": "b8045764a4ac77e9517be652f33c4466d2037cd706efe3bc73b0e336ee239489",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/MAC-SENDER-ABSENCE.controller-status.original.json"
+    },
+    {
+      "bytes": 620,
+      "git_blob_sha": "2113b08bf875e32102a17f79ae017395a0f98fa3",
+      "path": "MAC-SENDER-ABSENCE.original.json",
+      "sha256": "8d2e1fc9e990da7d4d017de20f3888b27cebb848a4faa5a9a0334c2d9b09d24b",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/MAC-SENDER-ABSENCE.original.json"
+    },
+    {
+      "bytes": 1066,
+      "git_blob_sha": "49608b6a432b6bb35ef41150c60e970b34008a52",
+      "path": "MAC-SENDER-ABSENCE.original.py",
+      "sha256": "edbae2b01b1e4ef679f32ec7b730857630b377b5444950a87f1f072322790053",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/MAC-SENDER-ABSENCE.original.py"
+    },
+    {
+      "bytes": 3539,
+      "git_blob_sha": "53ae501a3a746bf4e77b9179e35bfa59bf664bbb",
+      "path": "MAC-SENDER-IDENTITY.controller-read.original.json",
+      "sha256": "baa0bcd5ffdc22884bef94c39400030dbd6a0ea46bd80159cbe47fc36db698e0",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/MAC-SENDER-IDENTITY.controller-read.original.json"
+    },
+    {
+      "bytes": 383,
+      "git_blob_sha": "f1de1acc8e9493a3e3bd5a9a3a2d1d161eb45c5a",
+      "path": "OBSERVE-STAGE-P4-LAUNCHER-REVIEW.json",
+      "sha256": "7929854620be0c7862984a134c752360e8aa3b1b90743ece9d49ce7fd2315d69",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/OBSERVE-STAGE-P4-LAUNCHER-REVIEW.json"
+    },
+    {
+      "bytes": 51692,
+      "git_blob_sha": "abbc052fcb9ff3e7acfd952540891eb94fc280f1",
+      "path": "OBSERVE-STAGE-P4-LAUNCHER.original.py",
+      "sha256": "a6823b2544c19dbf38aaa178298ba61d8271dd4e4fe28775b5c7a5763f370ae7",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/OBSERVE-STAGE-P4-LAUNCHER.original.py"
+    },
+    {
+      "bytes": 1930,
+      "git_blob_sha": "a6dc69856b11b9dee06b00e6effcf7056bc828ad",
+      "path": "OBSERVED-EVIDENCE-REVIEW01.json",
+      "sha256": "5f832f0be737eb28b1753e0a98cd1a09067d0f6591ac904fca891219dc29c09d",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/OBSERVED-EVIDENCE-REVIEW01.json"
+    },
+    {
+      "bytes": 567,
+      "git_blob_sha": "eef8bc8cd926a05f91592cc2d79c6e66210058f5",
+      "path": "P4-SENDER-ARCHIVE-RESULT.original.json",
+      "sha256": "7e9c6749f73c8c9498fc37fde46a1f354f06004a1f089571c1166f77fc71f06c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-SENDER-ARCHIVE-RESULT.original.json"
+    },
+    {
+      "bytes": 2316,
+      "git_blob_sha": "fa554592b3a614738cf7faf42b45ed550ec378bf",
+      "path": "P4-SENDER-ARCHIVE.controller-result.original.json",
+      "sha256": "93001d1f865b8d1dec34b0f07fea76cb71a35e5cfa2e04453289a72905152bbd",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-SENDER-ARCHIVE.controller-result.original.json"
+    },
+    {
+      "bytes": 1226,
+      "git_blob_sha": "b9e4b7ada710d6f8d42b379e22b17b682c1c38a1",
+      "path": "P4-SENDER-ARCHIVE.controller-start.original.json",
+      "sha256": "68a9c516b7aecf4da0fc3080cb8b991f047259b96e0fbb316622b3f376fcceaf",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-SENDER-ARCHIVE.controller-start.original.json"
+    },
+    {
+      "bytes": 952,
+      "git_blob_sha": "4a82f78df4ea05bd3991cc4b49eb38c82d9ade95",
+      "path": "P4-SENDER-ARCHIVE.controller-status.original.json",
+      "sha256": "fa92ccda2cd688f43f75babb6cdc3b9101dc9a7f11c80c3d4c3e0bc4d1e8c0c1",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-SENDER-ARCHIVE.controller-status.original.json"
+    },
+    {
+      "bytes": 56877,
+      "git_blob_sha": "073f6952f1b213d66f4907ae86cf1a81e1aba4b2",
+      "path": "P4-SENDER-ARCHIVE.original.py",
+      "sha256": "9c723aabad7adb269916cb02ffdc3914e5c52326a31691c1b6028ea6bbd13b27",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-SENDER-ARCHIVE.original.py"
+    },
+    {
+      "bytes": 51164,
+      "git_blob_sha": "3f232f04365447eda52817d1437c33cd70c4cb72",
+      "path": "P4-SENDER-INVENTORY.original.json",
+      "sha256": "6ddc71d0373be9e293fb1b32548160929936def2a47ca8b36b788bc0c75fe42d",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-SENDER-INVENTORY.original.json"
+    },
+    {
+      "bytes": 732,
+      "git_blob_sha": "a63d86ffff5ec5ac1f158cb7f104e0f2f7a493d3",
+      "path": "P4-SENDER-INVENTORY.original.py",
+      "sha256": "cce0c4985a7a3282a3fecdb9f421a92d099342663de06e9d0cec09f2744ccb3a",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-SENDER-INVENTORY.original.py"
+    },
+    {
+      "bytes": 3258,
+      "git_blob_sha": "6e151fca90c7c9bbdb18aee246b38a1ad3bd2229",
+      "path": "P4-XZ-MIRROR.controller-read.original.json",
+      "sha256": "3403f066fd1d5300cbb2f716f32e4ec4d77f19d8d58961d1652697d28a2b1212",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-XZ-MIRROR.controller-read.original.json"
+    },
+    {
+      "bytes": 1231,
+      "git_blob_sha": "bb3f754e558a4de03cf34ade3ce4f288b8ec8362",
+      "path": "P4-XZ-MIRROR.controller-start.original.json",
+      "sha256": "53b3e1c3785fb325844dbb16bbdc5b3f1175d127af9e27b460416faf09fcc7b8",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-XZ-MIRROR.controller-start.original.json"
+    },
+    {
+      "bytes": 952,
+      "git_blob_sha": "46e7963f65e401c6615ec6561e3ca4ce8d78ad20",
+      "path": "P4-XZ-MIRROR.controller-status.original.json",
+      "sha256": "d5f6d049f53d42ac6cdb19eba8a5fae4d147bbd63a3a023f3ba110355694db9c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-XZ-MIRROR.controller-status.original.json"
+    },
+    {
+      "bytes": 2368,
+      "git_blob_sha": "99aefe11551e42be4b89b65f8ae7a6d60907d00a",
+      "path": "P4-XZ-MIRROR.original.py",
+      "sha256": "e3ae5eec4d0c9939903ecd3b509b7828012a3be43d62b72c1526ea1c0213c041",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/P4-XZ-MIRROR.original.py"
+    },
+    {
+      "bytes": 2837,
+      "git_blob_sha": "630994a0a6568f707481d54a3705b91c2c42fcf0",
+      "path": "PREPARED.json",
+      "sha256": "68df0f8167f4394db4abdb4aebee85c50325d918dc2cb027fbeaa747919d6ad9",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/PREPARED.json"
+    },
+    {
+      "bytes": 82841,
+      "git_blob_sha": "b8ef587107b8b53136eb65a2b56eb29a27f9b735",
+      "path": "SENDER-ACTOR.original.py",
+      "sha256": "4e470e5a3c255c80c93fe8d3f3b7940d084cda7d9429ab06bb2735e3c05502cd",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/SENDER-ACTOR.original.py"
+    },
+    {
+      "bytes": 51848,
+      "git_blob_sha": "73aa9ae766455bdc38a7798cae356bdc9057b396",
+      "path": "SENDER-ORIGINALS-MANIFEST.original.json",
+      "sha256": "b282ea02397708fc115f4f58365cad7a5751843d2b0f9abd603b5858fbbbcc43",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/SENDER-ORIGINALS-MANIFEST.original.json"
+    },
+    {
+      "bytes": 931,
+      "git_blob_sha": "6574d9c1f10a6c96a5ee6ee4955b9759935b7f0e",
+      "path": "XZ-MIRROR-RESULT.original.json",
+      "sha256": "78b0dd15a0963d4cb6474ca28ea9c748c20b7d1a72794740192438d63cde8446",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/XZ-MIRROR-RESULT.original.json"
+    },
+    {
+      "bytes": 65536,
+      "git_blob_sha": "0f8374dbb3f6fa8c8a928c7c8ef778318d2ab03f",
+      "path": "archive-chunks/00.bin",
+      "sha256": "906a4885e77d8a533d8abd4242a19cf9124c81471cb22df835edd71f3dea2027",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/archive-chunks/00.bin"
+    },
+    {
+      "bytes": 88281,
+      "git_blob_sha": "ea9126d837e6c7e269c892a5b2a942fa30c5d330",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK00.original.json",
+      "sha256": "40f9ecf0d6a9da380a2e967a54abd06c3ebfcc32f1e58d9bfbce82bc6cdef1f3",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK00.original.json"
+    },
+    {
+      "bytes": 88383,
+      "git_blob_sha": "eb097cdc1a8e49f08f76e0b682bef75214d41669",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK01.original.json",
+      "sha256": "ee05d9bfdfaf5549c3cc886ef3b1f53b87abac4a9ab6091f4c5d2edeef419144",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK01.original.json"
+    },
+    {
+      "bytes": 88385,
+      "git_blob_sha": "e92b018cf61eaf3bf91a2a8391aa808195efc520",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK02.original.json",
+      "sha256": "39fc24641bdd38785364684f247c874d5c9fefba140308d9e66354baa77140e4",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK02.original.json"
+    },
+    {
+      "bytes": 88385,
+      "git_blob_sha": "abd74aafe600d64f29c94f294e45483f67f601f7",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK03.original.json",
+      "sha256": "d569a6be584b1f940d0ef26ed17f32d201ad2d6e26299fab458c12129ca30673",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK03.original.json"
+    },
+    {
+      "bytes": 88385,
+      "git_blob_sha": "638275cb03667240715462906542ab9dfda1c6ca",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK04.original.json",
+      "sha256": "6e6017e85f25fc414a773a87e20d643123bfc9a338e9091852a7548de9eebe66",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK04.original.json"
+    },
+    {
+      "bytes": 88385,
+      "git_blob_sha": "23a7129567aab84ddfab0c700dd02848f6f593f7",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK05.original.json",
+      "sha256": "472c8dc1d935047436a4a92ac5e49febead91dbc7cb9c53f12f0304ce9bcb278",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK05.original.json"
+    },
+    {
+      "bytes": 88385,
+      "git_blob_sha": "7366dcdcab490c5073daff187b93c0d339b258ae",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK06.original.json",
+      "sha256": "4865a34171f28acfaa015664a018e8e19b83776724d114dc7ba63d12a56d917e",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK06.original.json"
+    },
+    {
+      "bytes": 15772,
+      "git_blob_sha": "d5b673d94c914fe49d155256f7d881f357615f80",
+      "path": "component-inputs-read01/CONTROLLER-CHUNK07.original.json",
+      "sha256": "0a4781ecbcdf3f2fd950756795eb6b4451a79da07fd94eeadbf1deaa8cb08298",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/CONTROLLER-CHUNK07.original.json"
+    },
+    {
+      "bytes": 510,
+      "git_blob_sha": "93de3d6eb58276e6185f6c9dcd4adb011f498be1",
+      "path": "component-inputs-read01/DOWNLOAD-VERIFICATION.json",
+      "sha256": "0cd1aca43c3198b69cf29d3fb0a9146ec704876cc82844268bed2c1b95651313",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/component-inputs-read01/DOWNLOAD-VERIFICATION.json"
+    },
+    {
+      "bytes": 152,
+      "git_blob_sha": "45b24f2dd0a86f69cbea8c03510c54641749bdb8",
+      "path": "p4-selected/ACTOR-FAILURE.json",
+      "sha256": "a267bcba2736b00460ce367f69a3f97b7074f32c192e0a90e687c8bfd436a27a",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/ACTOR-FAILURE.json"
+    },
+    {
+      "bytes": 1030,
+      "git_blob_sha": "fd150977feffad5d5637d2923d75f13695a9a668",
+      "path": "p4-selected/COMPONENT-PREPARED-NO-SEND.json",
+      "sha256": "e0a28598c16cc86ceb8ba12553523bd8740374c563460d8b064c369f3cdb7750",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/COMPONENT-PREPARED-NO-SEND.json"
+    },
+    {
+      "bytes": 222,
+      "git_blob_sha": "2f71ef889f5682a0ffaf840db896f90d22e9f964",
+      "path": "p4-selected/DRAFT-RESTORE-RESULT.json",
+      "sha256": "48b1e1f4865919702ef7c57cabfcd978d32f6d967de47e500bff9870fb6e8db1",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/DRAFT-RESTORE-RESULT.json"
+    },
+    {
+      "bytes": 2033,
+      "git_blob_sha": "64570be2753fed0906d549bbcb5fe37c447f17dc",
+      "path": "p4-selected/OPERATOR-CHINESE-PROMPT-INPUT.json",
+      "sha256": "f703af8282a8aa0621267134ff2476024444b4394913468125ad4411a1849167",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/OPERATOR-CHINESE-PROMPT-INPUT.json"
+    },
+    {
+      "bytes": 345,
+      "git_blob_sha": "0fed45ad7369809a37403edd547a6328f362d08b",
+      "path": "p4-selected/PRE-RESTORE-FOREGROUND.json",
+      "sha256": "a8f60aeb5a6881324d3e7e270d5843193c1ba1b0563d1478b3c04f87ba3e89da",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/PRE-RESTORE-FOREGROUND.json"
+    },
+    {
+      "bytes": 1613,
+      "git_blob_sha": "ff88aec3f495e266f0f414e47e1dd052a8e45e49",
+      "path": "p4-selected/PRESERVED-DRAFT-RESTORE.original.json",
+      "sha256": "67cd1f0736bf488afa3e3c384a403e4be70b202c982595631b34eed00543af74",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/PRESERVED-DRAFT-RESTORE.original.json"
+    },
+    {
+      "bytes": 180,
+      "git_blob_sha": "b69554c2a345990cfdca1ce5fc361e734739a989",
+      "path": "p4-selected/PRESERVED-USER-DRAFT.json",
+      "sha256": "b60c6be1928d5490e6ebd57dba67769796a779e5e58eefeb7fb70f071348b661",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/PRESERVED-USER-DRAFT.json"
+    },
+    {
+      "bytes": 11317,
+      "git_blob_sha": "291d0904936ffe6c6193cd2ea278b98f7da83213",
+      "path": "p4-selected/RESTORE-INITIAL.json",
+      "sha256": "7771abeb8115f9240635c7ef24c8e21a12876591500ece36b36c4e495842da4b",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/RESTORE-INITIAL.json"
+    },
+    {
+      "bytes": 727,
+      "git_blob_sha": "c9da2dd2aaa3a8f82a729ebce09b6a15407aee06",
+      "path": "p4-selected/RESTORE-SELECTED-FINAL.original-read.json",
+      "sha256": "1a4e6221f20ffc8427ce1d85ad3a0710bc0834862c9e0b74548ea3f72e77edbf",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/p4-selected/RESTORE-SELECTED-FINAL.original-read.json"
+    },
+    {
+      "bytes": 1524,
+      "git_blob_sha": "c0ae153f00e5b0f99427df8032573b446c5527b8",
+      "path": "phone-stage-read01/CONTROLLER-READ.original.json",
+      "sha256": "18963f00f89e43e5718b8b6e9857497fde0b3f483f02232bfdf9726859b35b08",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/CONTROLLER-READ.original.json"
+    },
+    {
+      "bytes": 1227,
+      "git_blob_sha": "0fe246037531c65df7ca9b7e54983928c564afbb",
+      "path": "phone-stage-read01/CONTROLLER-START.original.json",
+      "sha256": "898c72a001a7d5b908cb0336e4b11f0d639164fa4411250f81ab9436372da3b2",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/CONTROLLER-START.original.json"
+    },
+    {
+      "bytes": 952,
+      "git_blob_sha": "6b372b8aaeeec636c83507da5610695669f04196",
+      "path": "phone-stage-read01/CONTROLLER-STATUS.original.json",
+      "sha256": "27a27c9083b889aa4151b2dc6e72f05a7ff0832946b72500baa003ba1ba8f9fe",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/CONTROLLER-STATUS.original.json"
+    },
+    {
+      "bytes": 86,
+      "git_blob_sha": "7cd6b179943a1c6b7dc3e66c974d170c7f6a0cf7",
+      "path": "phone-stage-read01/JOINED.json",
+      "sha256": "43f64a52b4b3c1db4a2e29e453e10927b5d235a47e2f6625749301eb4a735dfa",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/JOINED.json"
+    },
+    {
+      "bytes": 20324,
+      "git_blob_sha": "a7d39352ab400cbb76bc32a06262ef274c8c8567",
+      "path": "phone-stage-read01/PHONE-STDOUT.original",
+      "sha256": "6c1ec237f163a1474ba74613f01d720400f5fd666ed8a4c8cd6349744d51c163",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/PHONE-STDOUT.original"
+    },
+    {
+      "bytes": 1370,
+      "git_blob_sha": "eb9b0270b81816ac0e56a6a63381350567071e8c",
+      "path": "phone-stage-read01/RESULT.json",
+      "sha256": "0dadb7ddec50a1e723823d3633409620e1acf69d85e41d1e629d4044b633eeef",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/RESULT.json"
+    },
+    {
+      "bytes": 348,
+      "git_blob_sha": "ea884ef4d8095ca65bd7f829adbc4f113137422c",
+      "path": "phone-stage-read01/phone-baseline.json.original",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/phone-baseline.json.original"
+    },
+    {
+      "bytes": 26202,
+      "git_blob_sha": "2411d3d10f73b576adceaf4215a86d765e9067f7",
+      "path": "phone-stage-read01/phone-intent.json.original",
+      "sha256": "11343c7ba4ab01cc2a7a09692686ba3d098f5249191dfcd138504b3eb65c8a91",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/phone-intent.json.original"
+    },
+    {
+      "bytes": 61889,
+      "git_blob_sha": "fe35ec6d3a3be9e7da05b44178bbf20d28d94509",
+      "path": "phone-stage-read01/phone-result.json.original",
+      "sha256": "aab2cd60a40d0648b343c605bda41b19282477ec973a9a5176278469152bc6b2",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/phone-stage-read01/phone-result.json.original"
+    },
+    {
+      "bytes": 65536,
+      "git_blob_sha": "21277bc844b1de807ce365493035fd9421ed1e22",
+      "path": "retirement-probe-source-read01/0.bin",
+      "sha256": "0169a7845177f0e0e0b21253d503c8502123ef39b8cc5b5711a8b40090d224ee",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retirement-probe-source-read01/0.bin"
+    },
+    {
+      "bytes": 65536,
+      "git_blob_sha": "788a57077f91e595bbdfe92f9417ac01c9eedfe4",
+      "path": "retirement-probe-source-read01/1.bin",
+      "sha256": "aaa66ff7eb4e0f8f1a970fbcba134131ee88ccb15c8f0b0ec30c223dda2dec83",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retirement-probe-source-read01/1.bin"
+    },
+    {
+      "bytes": 796,
+      "git_blob_sha": "30688c20286ac94c50fc4abb1fbf3966e4c66b85",
+      "path": "retirement-probe-source-read01/2.bin",
+      "sha256": "f62adec25dc823352dd9ab85f9dd434c97f8a9dab59b20ddce0f6d3a5165828d",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retirement-probe-source-read01/2.bin"
+    },
+    {
+      "bytes": 766658,
+      "git_blob_sha": "c1da2c9330ab27054b2f5ee4e93c38d0640325cc",
+      "path": "retirement-probe-source-read01/retirement_probe.original.py",
+      "sha256": "d1fe1478ee9699b5a1199aa4c2b96a2a405f7cafd0b5707071cfd2238dbe5df4",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retirement-probe-source-read01/retirement_probe.original.py"
+    },
+    {
+      "bytes": 131868,
+      "git_blob_sha": "95ebacf1dc2b8cc73ad3f3ec843a438ea3767915",
+      "path": "retirement-probe-source-read01/retirement_probe.original.py.xz",
+      "sha256": "2694c17c20448c4075e92c2ec26b3c4261e9999934a6a2465ee6019739c27cfe",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retirement-probe-source-read01/retirement_probe.original.py.xz"
+    },
+    {
+      "bytes": 672,
+      "git_blob_sha": "a954c64a840e88d3cc734bc1976f76182051e689",
+      "path": "root-r10-neg01-1ad3-01.send-result.json",
+      "sha256": "3a8ffc3ce20efd74d2e30d0763ae46ae32adea667d528f6e554170c067293932",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/root-r10-neg01-1ad3-01.send-result.json"
+    },
+    {
+      "bytes": 65536,
+      "git_blob_sha": "5953c120f121eafce2de099c31d8d08701fa9cb5",
+      "path": "sender-source-read01/0.bin",
+      "sha256": "3f5a51415fe8c3e8bf545f5f4607400b7db63941be467465f498ce9f0b76c7b4",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/sender-source-read01/0.bin"
+    },
+    {
+      "bytes": 17305,
+      "git_blob_sha": "a7746d7e48c388577714abcec6e11ad1315eaa70",
+      "path": "sender-source-read01/65536.bin",
+      "sha256": "d9a4c1d254a316c043695b2aecf05a5689b71c1e14f0cb02918c2b2009ec2385",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/sender-source-read01/65536.bin"
+    },
+    {
+      "bytes": 10295,
+      "git_blob_sha": "a99e2a1611f395f1a295c02bd50917dc9eb3b26a",
+      "path": "verify_observed_failure_originals.py",
+      "sha256": "6d40280ab0702de2b271ee00bfeefd836faad2daef0ea81e5f2f99382969179a",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/verify_observed_failure_originals.py"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "Existing failure reconciliation sources, controller receipts, stage-only observations, restoration and later process-absence records. Two exact payload archives and four later observation groups are separate. Redundant verified component .bin chunks are excluded; interrupted sender download 00.bin and its error are retained.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

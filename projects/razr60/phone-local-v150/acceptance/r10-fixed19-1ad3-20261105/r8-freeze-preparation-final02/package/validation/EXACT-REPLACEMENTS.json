@@ -1,0 +1,68 @@
+{
+  "freezer": [
+    {
+      "after": "def enc(v):return (json.dumps(v,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\\n').encode()\n\ndef combination_enc(v):return (json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\\n').encode()\n",
+      "before": "def enc(v):return (json.dumps(v,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\\n').encode()\n"
+    },
+    {
+      "after": "combination_enc(parent_combo)==parent_combo_raw",
+      "before": "enc(parent_combo)==parent_combo_raw"
+    },
+    {
+      "after": "combo_raw=combination_enc(combo)",
+      "before": "combo_raw=enc(combo)"
+    },
+    {
+      "after": "combination_enc(reversed_combo)==parent_combo_raw",
+      "before": "enc(reversed_combo)==parent_combo_raw"
+    }
+  ],
+  "neg_root_plan": [
+    {
+      "after": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d",
+      "before": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+    }
+  ],
+  "preparer": [
+    {
+      "after": "B/'native-guard-property-r8-freeze-preparation-final02-1ad3/source/freeze_property_runtime.py'",
+      "before": "B/'native-guard-property-r8-freeze-transport-candidate02-1ad3/source/freeze_property_runtime.py'"
+    },
+    {
+      "after": "'bytes':35543,'sha256':'78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d'",
+      "before": "'bytes':35375,'sha256':'62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509'"
+    },
+    {
+      "after": "F.combination_enc(parent)==parent_raw",
+      "before": "F.enc(parent)==parent_raw"
+    },
+    {
+      "after": "combo_raw=F.combination_enc(combination)",
+      "before": "combo_raw=F.enc(combination)"
+    },
+    {
+      "after": "F.combination_enc(reverse)==parent_raw,'only current live-policy field may change in combination'",
+      "before": "F.enc(reverse)==parent_raw,'only current live-policy field may change in combination'"
+    },
+    {
+      "after": "exact reviewed compact source required",
+      "before": "exact reviewed62bc source required"
+    },
+    {
+      "after": "exact reviewed compact source required for one-RHS binding",
+      "before": "exact62bc source required for one-RHS binding"
+    },
+    {
+      "after": "whole-source inverse must be exact reviewed compact source",
+      "before": "whole-source inverse must be exact62bc"
+    },
+    {
+      "after": "reference/freeze_property_runtime.compact.original.py",
+      "before": "reference/freeze_property_runtime.62bc.original.py"
+    },
+    {
+      "after": "reviewed-compact/freeze_property_runtime.py",
+      "before": "reviewed62bc/freeze_property_runtime.py"
+    }
+  ]
+}

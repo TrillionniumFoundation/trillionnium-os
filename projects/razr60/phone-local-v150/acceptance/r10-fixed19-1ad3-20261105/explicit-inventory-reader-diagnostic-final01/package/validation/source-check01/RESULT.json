@@ -1,0 +1,93 @@
+{
+  "checks": [
+    {
+      "detail": {
+        "byte_identical_original_helpers": [
+          "boot",
+          "load_module",
+          "metadata",
+          "need",
+          "own_fds",
+          "parent_fd",
+          "read_directory",
+          "read_original",
+          "recheck_bootstrap",
+          "release_owned_verifier_lock",
+          "sha",
+          "source_package",
+          "strict"
+        ],
+        "only_new_helpers": [
+          "explicit_candidate_source",
+          "load_explicit_candidate_late"
+        ]
+      },
+      "name": "all_original_bootstrap_and_owned_cleanup_helpers_byte_identical",
+      "passed": true
+    },
+    {
+      "detail": "One original call and original finally are AST identical; no tracing/signals;180 remains post-return.",
+      "name": "one_original_lifecycle_call_and_exact_finally",
+      "passed": true
+    },
+    {
+      "detail": "New result namespace cannot grant original clearance; no sys.modules/source-map/self-source override.",
+      "name": "diagnostic_identity_and_resource_anchor_are_separate",
+      "passed": true
+    },
+    {
+      "detail": {
+        "decoded": {
+          "bytes": 67005,
+          "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+        },
+        "staged": {
+          "bytes": 66996,
+          "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+        },
+        "target_module_compiled_or_executed": false
+      },
+      "name": "bounded_decode_exact147cf_and_full_inverse_c50a",
+      "passed": true
+    },
+    {
+      "detail": "the original stagedc50a reader must remain byte exact",
+      "name": "changed_staged_original_refused",
+      "passed": true
+    },
+    {
+      "detail": "bounded fixed candidate encoding",
+      "name": "encoding_budget_refused_before_decode",
+      "passed": true
+    },
+    {
+      "detail": "one complete bounded explicit147cf source required",
+      "name": "second_zlib_stream_refused_even_with_test_only_matching_compressed_pin",
+      "passed": true
+    },
+    {
+      "detail": "one complete bounded explicit147cf source required",
+      "name": "declared_decoded_budget_refused_even_with_test_only_matching_compressed_pin",
+      "passed": true
+    }
+  ],
+  "clearance_or_case_credit": false,
+  "main_invoked": false,
+  "optimized_phone_duration_measured": false,
+  "original_lifecycle_invoked": false,
+  "parent": {
+    "bytes": 17039,
+    "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba"
+  },
+  "passed": 8,
+  "remote_or_phone_operations": 0,
+  "schema": "hepta.explicit-reader-diagnostic.source-checks.v1",
+  "source": {
+    "bytes": 44926,
+    "path": "/workspace/scratch/1ad3d6f55439/explicit_inventory_reader_diagnostic_candidate01/source/verify_explicit_inventory_reader_once.py",
+    "sha256": "65aa1db1beb25aad324a1e7a027eb235f65392083a7fbdb0cae3362db7d44479"
+  },
+  "state": "PASS_SOURCE_AND_PURE_DECODER_ONLY",
+  "target_runtime_module_compiled_or_executed": false,
+  "total": 8
+}

@@ -1,0 +1,22 @@
+{
+  "actual_generation_calls": 0,
+  "archive": {
+    "bytes": 268678,
+    "sha256": "ad375bab2afdd43f441f87eb1c2a03be06ed67216aa4899e9dc2db2bd21b40dc"
+  },
+  "archive_only_local_gate": true,
+  "exact_regular_members": 53,
+  "local_stage_main_called": false,
+  "phone_calls": 0,
+  "schema": "hepta.cpu-negative.capture-source-stage-preflight.v1",
+  "source_imports": 0,
+  "source_manifest": {
+    "bytes": 10723,
+    "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6"
+  },
+  "stage_source": {
+    "bytes": 371472,
+    "sha256": "cc257dd4fe048500b346793fb79e34b6f3cf1ba155375717cbb89e444bc7561c"
+  },
+  "uncompressed_file_bytes": 967087
+}

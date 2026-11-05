@@ -1,0 +1,67 @@
+{
+  "case_qualification": false,
+  "checks": [
+    {
+      "case": "actual32_runtime_increment_interface",
+      "passed": true
+    },
+    {
+      "case": "actual3_capture_increment_interface_with_rebound_bridge",
+      "passed": true
+    },
+    {
+      "case": "original_freeze_and_canonical_slots_not_mutated",
+      "passed": true
+    },
+    {
+      "case": "canonical_runtime_cannot_replace_explicit_new_increment",
+      "error": "one exact independently reviewed runtime increment result required",
+      "new_cached_original_reads": 0,
+      "passed": true
+    },
+    {
+      "case": "old_capture_only_package_cannot_replace_explicit_new_increment",
+      "error": "one explicitly reviewed runtime/capture increment required",
+      "new_cached_original_reads": 0,
+      "passed": true
+    },
+    {
+      "case": "missing_failed_prelaunch_evidence",
+      "error": "failed-prelaunch verifier is not frozen: actual two-attempt original-evidence closure is required before a new Root plan; no state label substitutes for it",
+      "new_cached_original_reads": 0,
+      "passed": true
+    },
+    {
+      "case": "summary_label_cannot_replace_unfrozen_verifier",
+      "error": "failed-prelaunch verifier is not frozen: actual two-attempt original-evidence closure is required before a new Root plan; no state label substitutes for it",
+      "new_cached_original_reads": 0,
+      "passed": true
+    },
+    {
+      "case": "required_closure_precedes_coordinator_and_identity_assembly",
+      "passed": true
+    },
+    {
+      "case": "both_failed_nonces_feed_existing_identity_rejection",
+      "passed": true
+    }
+  ],
+  "checks_passed": 9,
+  "checks_total": 9,
+  "coordinator_loaded": false,
+  "exact_cached_original_read_count": 48,
+  "full_validate_freeze_executed": false,
+  "helper": {
+    "bytes": 42223,
+    "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+  },
+  "main_executed": false,
+  "nonce_generated": false,
+  "phone_calls": 0,
+  "plan_assembled": false,
+  "read_adapter_scope": "exact cached bytes mapped to retained original descriptors; not remote filesystem proof",
+  "remote_calls": 0,
+  "runtime_target_modules_executed": false,
+  "schema": "hepta.runtime-prefix.helper-source-checks.v1",
+  "state": "NEW_RUNTIME_CAPTURE_INTERFACES_PASSED_FAILED_PRELAUNCH_GATE_REMAINS_CLOSED"
+}

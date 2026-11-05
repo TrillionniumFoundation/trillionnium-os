@@ -1,0 +1,12 @@
+--- reviewed-parent/templates/make_component_boundary_inputs.py
++++ inventory-prefix-successor/templates/make_component_boundary_inputs.py
+@@ -309,6 +309,9 @@
+              and str(relative) == item['path'], 'unsafe frozen package member')
+         row = dict(path=str(package_dir/relative), bytes=item['bytes'], sha256=item['sha256'])
+         collect(row); package_files.append(dict(name=item['path'], copy=row))
++    # The constructor must pass the same complete-byte gate before any runtime loader.
++    h.verify_runtime_source_increment(manifest_raw,
++        {item['path']: bodies[item['sha256']] for item in manifest['files']})
+     retirement_raw = collect(plan['retirement_descriptor'])
+     need(sha(retirement_raw) == RETIREMENT_SHA, 'original actual retirement descriptor differs')
+     retirement = h.strict(retirement_raw)['files']

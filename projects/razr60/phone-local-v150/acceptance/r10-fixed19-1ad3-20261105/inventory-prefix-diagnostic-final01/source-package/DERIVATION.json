@@ -1,0 +1,33 @@
+{
+  "all_factual_validation_calls_retained": true,
+  "awaiting": "Actual original phone profile and Root decision on a separately reviewed runtime successor; no new runtime pins or case execution.",
+  "candidate_source": {
+    "bytes": 67005,
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "compiled_module_cache_added": false,
+  "current_runtime_changes": 0,
+  "historical_reference_source_changes": 0,
+  "new_deadlines_or_lease_changes": false,
+  "new_expression": "sum(p.parts[:len(q.parts)] == q.parts for q in paths) == 1",
+  "old_expression": "sum(p == q or q in p.parents for q in paths) == 1",
+  "only_changed_function": "inventory_value",
+  "parent_source": {
+    "bytes": 66996,
+    "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+  },
+  "reason": "Path ancestor membership reconstructs every ancestor for each root; full tuple-of-components prefix is equivalent to path identity or lexical ancestry for the already-checked canonical absolute POSIX paths, with bounded per-root tuple slicing and no retained ancestor set.",
+  "result_memoization_added": false,
+  "schema": "hepta.late-boundary-inventory-parts-increment.v1",
+  "state": "SOURCE_ONLY_EQUIVALENCE_AND_INDEPENDENT_REVIEW_PASSED_NOT_DEPLOYED",
+  "validated": {
+    "actual_pure_operation_output_pairs_identical": 2,
+    "equivalence_cases_passed": 24,
+    "equivalence_cases_total": 24,
+    "independent_review": {
+      "bytes": 3571,
+      "sha256": "e08367853bf5e755c1311cafd175582c6e9153ee9e5efb3a4ba4c2cfdd2732c0"
+    }
+  },
+  "whole_byte_inverse_verified": true
+}

@@ -1,0 +1,31 @@
+{
+  "actual_bundle_fit_claimed": false,
+  "actual_runtime_binding_source": "Caller supplied actual completed R8 FREEZE-RESULT, never an unpublished predicted Root manifest.",
+  "auto_execute_cascade": false,
+  "default_is_read_only_actual_preflight": true,
+  "future_finalization_values_written": false,
+  "generator_manifest": {
+    "bytes": 1845,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/GENERATOR-SOURCE-MANIFEST.json",
+    "sha256": "5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a"
+  },
+  "next_action": "Only the actual generated EXECUTION-ENTRY may be invoked by Root afterward.",
+  "prepare_argv_template": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/preparer/prepare_final_cascade.py",
+    "--runtime-freeze-result-desc",
+    "<actual complete R8 FREEZE-RESULT exact3>",
+    "--out",
+    "<fresh host cascade source output>",
+    "--execute-host-preparation"
+  ],
+  "schema": "hepta.property-r8.lossless-compact-preparation-interface.v1",
+  "source_template_package_manifest": {
+    "bytes": 24857,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54"
+  },
+  "staging_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02"
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.r10.cpu-negative-capture-source-binding-inputs.v1",
+  "out": "B/property-r8-negative-capture-bound-<new-tag>",
+  "finalization": {
+    "schema": "hepta.r10.property-negative-source-finalization.v1",
+    "consumer_manifest": null,
+    "acceptance_manifest": null,
+    "policy_adoption": null,
+    "current_policy": null
+  },
+  "root_capture_manifest": null
+}

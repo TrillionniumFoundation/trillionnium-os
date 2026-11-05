@@ -1,0 +1,200 @@
+{
+  "caps": {
+    "ADB_wire_bytes_exclusive": 65536,
+    "P4_phase_input_bytes": 131072,
+    "Root_host_collection_seconds": 1200,
+    "capture_bytes_per_stream": 67108864,
+    "native_turn_seconds": 300,
+    "no_native_deadline_extension": true,
+    "phone_expanded_source_bytes": 262144,
+    "source_package_bytes": 33554432,
+    "watch_seconds": 240
+  },
+  "exact_reused_P4_census": {
+    "all_function_class_source_segments_identical": true,
+    "count": 16,
+    "names": [
+      "Capture",
+      "archive",
+      "canonical",
+      "encoded",
+      "exact3",
+      "metadata",
+      "need",
+      "new_directory",
+      "observe_absence",
+      "parent_fd",
+      "put",
+      "read_regular",
+      "sha",
+      "strict",
+      "under",
+      "write_retained"
+    ],
+    "source": {
+      "bytes": 31418,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/capture-p4-cancel-r7.py",
+      "sha256": "a66d5e4de27912716748f53a599c513ea46bb81415d64ec184e91e4744c122c2"
+    }
+  },
+  "exact_reused_pure_projections": {
+    "all_function_class_source_segments_identical": true,
+    "names": [
+      "projected",
+      "FrozenSnapshot",
+      "business_api",
+      "private_restoration"
+    ],
+    "source": {
+      "bytes": 43958,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    }
+  },
+  "exact_reused_utilities": {
+    "all_function_class_source_segments_identical": true,
+    "count": 23,
+    "names": [
+      "Originals",
+      "Unverified",
+      "bytes_pin",
+      "canonical",
+      "digest",
+      "directory_row",
+      "encoded",
+      "exact3",
+      "file_row",
+      "host_capture",
+      "host_phase",
+      "literal",
+      "metadata",
+      "need",
+      "number",
+      "pretty",
+      "relative",
+      "same",
+      "sha",
+      "source_rows",
+      "source_segment",
+      "strict",
+      "unpack_archive"
+    ],
+    "source": {
+      "bytes": 44221,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/negative_originals.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    }
+  },
+  "known_implementation_corrections": [
+    "Initial whole inline bundle recipe was rejected by the pre-execution wire budget; split into a separate create-only source-only stage and exact descriptor read.",
+    "Preserved original extra-LF transfer mismatch and corrected reference sender to exact5ab040.",
+    "Preserved source-interface snapshot03c6; normalized only component comparison via pinned existing projection because original registry and mapper retain .Activity spelling.",
+    "The first prepare/freezer test invocation supplied the wrong manifest hash; rejected before any tests, preserved under freeze-prepare-run01."
+  ],
+  "new_owned_protocol": {
+    "P4": {
+      "bytes": 12325,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/p4_fault_dispatch_once.py",
+      "sha256": "361ed5f0da4664e7e38ecc2f1bc7c0139963dbd4740e91ea034e27a551f73d24"
+    },
+    "Root": {
+      "bytes": 24658,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/run_physical_fault_once.py",
+      "sha256": "40be35991b829c1d5eaf981c74d419e14a1ddf2e3fe5e6eca9f889b995725d95"
+    },
+    "closer": {
+      "bytes": 71672,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/verify_physical_fault.py",
+      "sha256": "8aa7ca90e6c3c8a587e43ea2864c4b25a38ffa55b5062a7c4a5ae6873a2c61da"
+    },
+    "description": "One unchanged production sender; one unchanged signal actor after original eligible phase; complete foreground phone watch and dual host capture; source-bound read-only collectors; separately joined independent closer; read-only final audit.",
+    "watch": {
+      "bytes": 23401,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/watch_physical_fault_once.py",
+      "sha256": "acd9d5c930685c2509ac4eb08929bf92755680a8e891ca60546485c68d4ecce9"
+    }
+  },
+  "phone_operations": 0,
+  "remaining_actual_prerequisites": [
+    "Independently verified actual adoption and final R8 runtime/consumer/readiness/fault cascade descriptors.",
+    "Current actual READY and fresh once-registered request/template; preserved draft, previous original selection and retirement resolution.",
+    "Root sole execution, original physical case data, independent final audit."
+  ],
+  "schema": "hepta.physical-fault.source-derivation.v1",
+  "separate_phone_collector": {
+    "changes": [
+      "Separate NEG04/05/07 schema and whitelist; CPU08/09 parent untouched.",
+      "Capture complete private static operator bundle, actual watch and original fault actor directories.",
+      "Require the original live PRE/fence/durability/later receipt for NEG07.",
+      "Original full15/config/service/model/ledger/native/selected capture and its limits remain."
+    ],
+    "parent": {
+      "bytes": 44102,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/capture-negative-phone-r7.py",
+      "sha256": "79ed15ea8b23662c091bd64bcdc63d972b18cd9552f5af9fa2d825ddd75cd082"
+    },
+    "source": {
+      "bytes": 46032,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/capture_fault_phone.py",
+      "sha256": "e4ba939e88cd05b29f791e6d77715ab2944fdb8308cc242a7b4a6ad4a8930760"
+    }
+  },
+  "source_manifest": {
+    "bytes": 8432,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/SOURCE-MANIFEST.json",
+    "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+  },
+  "state": "SOURCE_CANDIDATE_READY_FOR_ACTUAL_PIN_FREEZE",
+  "unchanged_effect_authorities": {
+    "original-protocol.json": {
+      "bytes": 37318,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    "phone_once.py": {
+      "bytes": 5652,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/phone_once.py",
+      "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+    },
+    "preserved_ui_package_phase_r7.py": {
+      "bytes": 24731,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/preserved_ui_package_phase_r7.py",
+      "sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b"
+    },
+    "send_new_native_task_r5.py": {
+      "bytes": 40788,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/send_new_native_task_r5.py",
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+    }
+  },
+  "unchanged_owned_capture": {
+    "bytes": 29065,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/owned_capture.py",
+    "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+  },
+  "unknown_semantics": [
+    "No automatic retry or new nonce replacement.",
+    "No numeric-PID signal fallback, follow-up CONT, Cancel or service signal.",
+    "Local capture close never proves remote cleanup.",
+    "Original sender restoration gate rejection remains failed/unknown."
+  ],
+  "validation": {
+    "actual_physical_cases_passed": 0,
+    "freeze_prepare_interfaces": {
+      "bytes": 2356,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/validation/freeze-prepare-final03/RESULT.json",
+      "sha256": "82be9c28a92ae7ec5aa810fbe1e33e9a4dafcb7d375a7b805a931d422add0293"
+    },
+    "independent_review_scope_reconciliation": {
+      "bytes": 5282,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/validation/REVIEW-SCOPE-RECONCILIATION.json",
+      "sha256": "440929262d03351eb36e25b22386e3da5b97662fc9ffd3ed39a9164b59bc03cc"
+    },
+    "source_interface": {
+      "bytes": 5994,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/validation/source-interface-final02/RESULT.json",
+      "sha256": "011e231d2577f4216ff9d17990d240df878085a26bf325c0a5de959f9c647958"
+    }
+  },
+  "whole_case_pass": false
+}

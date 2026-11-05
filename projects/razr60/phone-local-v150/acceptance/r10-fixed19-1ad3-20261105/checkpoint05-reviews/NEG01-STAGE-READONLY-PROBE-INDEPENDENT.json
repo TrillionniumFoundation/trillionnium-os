@@ -1,0 +1,91 @@
+{
+  "actual_probe_result_reviewed": false,
+  "all_manifest_members_verified": 7,
+  "checks": [
+    "Fixed nonce/label/boot/lease expiry and exact lease/runtime/archive/stage pins; argv length equals one before filesystem observations.",
+    "No target runtime import or archived-source execution; canonical gzip/tar parsing stays in memory under original caps.",
+    "Read-only opens and stdout output; no source/case write, mkdir, unlink, rename, process, signal, socket, or setxattr call.",
+    "parent_fd follows only the explicit /proc/1/root anchor and walks remaining components through held nofollow directory descriptors.",
+    "hold checks private Root regular/directory shape and named-vs-held full9. Reads have size/hash/full9 bookends.",
+    "Final recheck re-walks canonical parents for every held path; directory names and SELinux xattr are also rechecked.",
+    "Exact archive56 plus STAGE-COMPLETE current57 tree, exact derived directories, and empty claims/operator/executor.",
+    "29 fixed launch/acceptance paths require ENOENT at held parents before and after the readset; alternate errors fail closed.",
+    "GNU/Android executor aliases match original seed full9/xattr. Shared ancestor aliases match current full9 and original identity/label, preserving current bookends.",
+    "Already-expired lease, stable boot and nondecreasing wall time; no lease extension or retry path.",
+    "Output withholds sender termination, process absence, global publication absence, closed predecessor, component and business qualifications."
+  ],
+  "fixed_binding": {
+    "ARCHIVE_PIN": [
+      469829,
+      "9aacc5789a65dd875ab9fe7456e2258e0bf4e54575d3be71a50d5542a489b288"
+    ],
+    "BOOT": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+    "LABEL": "root-r10-neg01-1ad3-01",
+    "LEASE_EXPIRES_UNIX_MS": 1793872564534,
+    "LEASE_PIN": [
+      2488,
+      "2f47f823ef1484852c5dc1b91f27020d6f56685b3024dc320d5925a3dac92d59"
+    ],
+    "NONCE": "7c74b84aefb177d15f746fa7eae29d54",
+    "PACKAGE_PIN": [
+      16808,
+      "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+    ],
+    "STAGE_PIN": [
+      15628,
+      "a9855aba9e1112a5d98ef038225275c5359dab94ca6a157b6f1f03f8a7cd3309"
+    ]
+  },
+  "limits": {
+    "actual_archive_members": 56,
+    "actual_tree_files": 57,
+    "archive_total_members_max": 80,
+    "compressed_archive_max_bytes": 8388608,
+    "cooperative_monotonic_budget_seconds": 25,
+    "decompressed_archive_max_bytes": 16777216,
+    "hard_OS_IO_time_bound_proven_here": false,
+    "named_absence_count": 29,
+    "output_bytes_max": 65536,
+    "total_read_bytes_max": 16777216
+  },
+  "manifest": {
+    "bytes": 1396,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-stage-only-probe-candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "c7e8fdf8109edd277193a271f11782c26467f4f14938629066698252fe049d65"
+  },
+  "phone_calls": 0,
+  "pure_function_exact_copies": {
+    "archive_members": [
+      "reference/stage_component.original.py"
+    ],
+    "need": [
+      "reference/component_common.original.py",
+      "reference/stage_component.original.py"
+    ],
+    "parent_fd": [
+      "reference/component_common.original.py"
+    ],
+    "sha": [
+      "reference/component_common.original.py",
+      "reference/stage_component.original.py"
+    ],
+    "strict": [
+      "reference/stage_component.original.py"
+    ],
+    "validate_archive": [
+      "reference/stage_component.original.py"
+    ]
+  },
+  "remote_calls": 0,
+  "review_scope": "Source/manifest and byte-copy review only. No fault injection, target module import/main, runtime execution, phone observation, or result qualification. Actual outer process terminal/timeout remains execution owner responsibility.",
+  "schema": "hepta.fixed19.neg01-stage-probe-source-review.v1",
+  "source": {
+    "bytes": 20268,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-stage-only-probe-candidate01/delivery-final01/package/source/observe_failed_stage_once.py",
+    "sha256": "fdfa661921d8f5a80bae3f7ac07812c666188625a9e23b7951df8f4b8b1048ac"
+  },
+  "state": "INDEPENDENT_SOURCE_REVIEW_NO_BLOCKER_IN_REQUESTED_SCOPE",
+  "target_functions_executed": 0,
+  "target_source_imports": 0,
+  "timing": "Root reported the authorized actual probe had already been submitted after its own source review. This independent source review is not an execution-before gate."
+}

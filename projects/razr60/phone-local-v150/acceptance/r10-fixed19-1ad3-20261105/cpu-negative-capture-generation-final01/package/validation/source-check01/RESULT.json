@@ -1,0 +1,122 @@
+{
+  "actual_generations": 0,
+  "all_bindings_are_explicit_synthetic_source_controls": true,
+  "checks": [
+    {
+      "detail": {
+        "three_sources_python39": true
+      },
+      "name": "new generator and preparer retain Python 3.9 grammar",
+      "passed": true
+    },
+    {
+      "detail": {
+        "seven_original_functions_byte_identical": true,
+        "whole_source_inverse_to_6adb": true
+      },
+      "name": "whole increment inverse and original six-package functions are exact",
+      "passed": true
+    },
+    {
+      "detail": {
+        "generation_calls": 0,
+        "phone_calls": 0
+      },
+      "name": "both default entries perform source preview only",
+      "passed": true
+    },
+    {
+      "detail": "exact original descriptor required",
+      "name": "unbound actual Root manifest is refused",
+      "passed": true
+    },
+    {
+      "detail": {
+        "seven_slots_bound": 7,
+        "source_controls_are_synthetic": true
+      },
+      "name": "actual Root namespace and seven-slot reviewed source inverse join the dependency generation",
+      "passed": true
+    },
+    {
+      "detail": {
+        "all_bytes_equal": true,
+        "unchanged_output_packages": [
+          "component",
+          "cpu",
+          "fault",
+          "p4",
+          "phone",
+          "ui"
+        ]
+      },
+      "name": "all six original generated packages are byte-identical to6adb",
+      "passed": true
+    },
+    {
+      "detail": {
+        "dependency_SHA_fields": 9,
+        "dependency_sources": 5,
+        "sidecar_phase_inputs": 4,
+        "success_result_fields": 7
+      },
+      "name": "closure binds exact five sources nine SHA fields and separate original capture sidecars",
+      "passed": true
+    },
+    {
+      "error": "AssertionError:('actual_R8_root_not_exact_reviewed_capture_template', 'one_actual_R8_slot')",
+      "name": "old Q2 capture source is refused even with rehashed manifest",
+      "passed": false
+    },
+    {
+      "detail": "actual_R8_root_not_exact_reviewed_capture_template_with_seven_slots",
+      "name": "one byte outside seven Root slots is refused",
+      "passed": true
+    },
+    {
+      "detail": "all seven actual capture Root slots must match the admitted dependency originals",
+      "name": "valid-shaped wrong actual Root scope SHA is refused",
+      "passed": true
+    },
+    {
+      "detail": "only the actual frozen R8 Root source manifest may supply CPU capture",
+      "name": "canonical old Root package cannot substitute for reviewed successor",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_source_binding_created": false,
+        "only_two_binding_RHS": true
+      },
+      "name": "source-only preparer changes exactly original finalization and explicit Root manifest",
+      "passed": true
+    },
+    {
+      "detail": "fixed_negative_case_existing_nonce",
+      "name": "CPU closer still refuses physical fault case04",
+      "passed": true
+    },
+    {
+      "error": "HostUnverified:explicit_canonical_project_original",
+      "name": "unchanged Root pinned loader loads generated closure modules and final dependencies",
+      "passed": false
+    }
+  ],
+  "fault_actor_calls": 0,
+  "generator_source": {
+    "bytes": 53525,
+    "sha256": "57f67089f6885b0e5bdcca96a4dc73c1821626854a51794964c0ce3f6c32cf09"
+  },
+  "native_cases": 0,
+  "passed": 12,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "preparer_source": {
+    "bytes": 9860,
+    "sha256": "a7dfa4b865bd4babc3947fa92695cc2b773a1d4480e77d57c3f0a230bb172036"
+  },
+  "remote_calls": 0,
+  "schema": "hepta.cpu-negative-capture-generator.source-checks.v1",
+  "state": "FAIL",
+  "total": 14
+}

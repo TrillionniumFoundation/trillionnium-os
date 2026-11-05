@@ -1,0 +1,48 @@
+{
+  "findings": [
+    "validate_runtime_increment reads all32 unique actual successor members under the fixeda334 manifest, executes only exact6282 pure verifier, compares exact object/proof and independently retainedb13be result. Canonicalf1e/67dc identity is retained separately.",
+    "validate_capture_increment binds fixed4eb4 Root3 and new runtimea334, reverses all seven coordinator slots to whole50a5, reverses bridge PKG to exact6694 and then to canonical bridge bytes, retains74f4 verifier byte identity, and reconstructs the entire Root manifest with onlyfiles/state/pkg/source_scope differences.",
+    "validate_freeze is byte-identical to the prior independently reviewed1ff5 helper. No canonical freeze field is rewritten to imply it produced the successor.",
+    "choose_prior requires a qualified NEG01 predecessor whose plan package is the explicit execution runtime. assemble writes that execution descriptor and extends forbidden nonces with both recomputed failed-prelaunch nonces.",
+    "FAILED_PRELAUNCH_VERIFIER remains literalNone. main requires the evidence descriptor, checks its equality with pinned inputs, and calls admission before loading the execution coordinator, choosing prior or assembling a plan. A global actual08 verification label alone cannot pass this gate.",
+    "Exact output namespace exclusions retain both canonical and successor packages. This helper does not execute Chain, create a phone lease, or generate a nonce."
+  ],
+  "limitations": {
+    "actual_failed_prelaunch_admission_verified_here": false,
+    "capture_tests_repeated": false,
+    "local9_checks_repeated": false,
+    "main_called": false,
+    "physical_case_qualified": false,
+    "remote_or_phone_operations": 0,
+    "target_module_imported": false
+  },
+  "ordered_main_calls": {
+    "assemble": 588,
+    "choose_prior": 586,
+    "load_capture_coordinator": 585,
+    "require_unused": 598,
+    "validate_capture_increment": 583,
+    "validate_failed_prelaunch_admission": 584,
+    "validate_freeze": 581,
+    "validate_runtime_increment": 582
+  },
+  "parent": {
+    "bytes": 31714,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/proof/reference/prepare_native_guard_root_plan.1ff5.original.py",
+    "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+  },
+  "schema": "hepta.root.runtime-prefix-helper-independent-review.v1",
+  "scope": [
+    "validate_runtime_increment",
+    "validate_capture_increment",
+    "choose_prior/assemble execution runtime forwarding",
+    "main admission-before-load/assemble order",
+    "validate_freeze whole function byte identity"
+  ],
+  "source": {
+    "bytes": 42223,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+  },
+  "state": "PASS_NARROW_SOURCE_REVIEW_FAILED_PRELAUNCH_ADMISSION_REMAINS_BLOCKED"
+}

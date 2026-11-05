@@ -1,0 +1,33 @@
+{
+  "actual_case_qualification_awarded": false,
+  "main_executions": 0,
+  "not_a_transport_regression_rerun": true,
+  "phone_calls": 0,
+  "reviewed_sources": {
+    "increment": {
+      "bytes": 8100,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json",
+      "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+    },
+    "preparer": {
+      "bytes": 31714,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/source/prepare_native_guard_root_plan.py",
+      "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+    },
+    "root_source_package": {
+      "bytes": 13013,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json",
+      "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+    }
+  },
+  "reviewer": "root",
+  "schema": "hepta.actual-r8-root-capture-successor.independent-root-source-review.v1",
+  "scope": [
+    "Complete helper patch and actual8100 increment read by Root.",
+    "Only exact f1e freeze /70e source /7315 old Root /f305 original coordinator accepted as provenance.",
+    "Canonical coordinator is not loaded. New three-member manifest changes only files/state/source_scope metadata.",
+    "New coordinator seven-slot whole-byte inverse to50a5; bridge and verifier actual bytes retained.",
+    "NEG02 requires same successor predecessor; nonce/current08/resource gates remain."
+  ],
+  "state": "NO_BLOCKER_IN_NARROW_SOURCE_REVIEW"
+}

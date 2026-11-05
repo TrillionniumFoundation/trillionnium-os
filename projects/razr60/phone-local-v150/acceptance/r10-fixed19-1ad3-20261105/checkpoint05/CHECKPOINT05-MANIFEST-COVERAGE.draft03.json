@@ -1,0 +1,701 @@
+{
+  "actual_external_R8_scope": "Eight retained actual freeze/source/input/manifest/combination/derivation files plus read-only frontier; not a claimed full local runtime32 byte archive.",
+  "actual_source_preparation_snapshot": {
+    "all_locally_retained_member_byte_pins_verified": true,
+    "complete_actual_prepared_source_tree_claimed": false,
+    "declared_members": 24,
+    "locally_retained_declared_members": [
+      "FINALIZATION.json",
+      "RUNTIME-FREEZE-RESULT-DESCRIPTOR.json",
+      "source/derive_final_cascade_property_r8.py"
+    ],
+    "original_manifest_bytes_unchanged": true,
+    "remaining_members_have_descriptors_only_in_this_actual_readback": [
+      "reference/derive_final_cascade_property_r8.original.py",
+      "source/write_final_seal_interface_property_r8.py",
+      "templates/build_release_r10.py",
+      "templates/close_component.py",
+      "templates/collect_r10_readiness.py",
+      "templates/component_activation_gate.fragment.py",
+      "templates/component_common.py",
+      "templates/component_common_r5.py",
+      "templates/component_lifecycle.py",
+      "templates/component_snapshot.py",
+      "templates/environment_parent_late_boundary_r6.py",
+      "templates/install_phone_release_r10.py",
+      "templates/late_boundary.py",
+      "templates/make_component_boundary_inputs.py",
+      "templates/materialize_case_r10.py",
+      "templates/non_native_attempt05.py",
+      "templates/policy_parent_late_boundary_r4.py",
+      "templates/property_parent_late_boundary_r7.py",
+      "templates/release_boundaries.py",
+      "templates/root_acceptance_r10.py",
+      "templates/stage_component.py"
+    ],
+    "scope": "Actual host preparation and selected original readback; cascade execution, bundle fit, install and READY are not established.",
+    "source_manifest": {
+      "bytes": 4294,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/lossless_compact_cascade_candidate02/actual-preparation01/originals/SOURCE-MANIFEST.json",
+      "sha256": "7ad45d0b878c12499feeed9d774293c6beda88253414d5a36a058cde5c036d4f"
+    }
+  },
+  "all_original_manifest_bytes_preserved": true,
+  "complete_43MiB_post_archive_not_republished": true,
+  "complete_source_groups": 9,
+  "draft02_329_entries_preserved_verbatim": true,
+  "draft03_archives": [
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 573032,
+        "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/runtime-root-inventory-prefix-source-final01.tar.gz",
+        "sha256": "f1baeb82aceca4a86a86c8aba0c95045b8ec26fee750e99f50436348156ca963"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 2541109,
+      "plain_tar": {
+        "bytes": 2600960,
+        "sha256": "130722a23a4bf435a949960c18048d702bb4c98d66281e262674b14e7e1986b1"
+      },
+      "regular_members": 73
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 167855,
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/inventory-prefix-consumer-source-stage-final01.tar.gz",
+        "sha256": "d02c372f949962e9a5f8d153797f4cd89d8b9ebca7091c95cbdde8ce18aa8e0c"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 718464,
+      "plain_tar": {
+        "bytes": 757760,
+        "sha256": "fca84c1bcf531fcf740a2fc6b4577c44d0e5a4dd0c9dbb0bd7b3907bbc3a257e"
+      },
+      "regular_members": 38
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 363627,
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/inventory-prefix-consumer-full-evidence-final01.tar.gz",
+        "sha256": "0d89831a86b72e680ca294cab5c3d56fd71be4282aa86022f4e5c0f6fe3f09b6"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 1157288,
+      "plain_tar": {
+        "bytes": 1198080,
+        "sha256": "bbdff07dc25c98f5888ebcd3f45fd165bf99c0941d60d943ddf5d9f66ffb927f"
+      },
+      "regular_members": 45
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 90065,
+        "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/inventory-prefix-source-stage-final01.tar.gz",
+        "sha256": "9ed1c093248ec1139d4be0b7933591e5006a790bc1c36516cc08d30de7043a6c"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 365174,
+      "plain_tar": {
+        "bytes": 378880,
+        "sha256": "10b5b565e4737f43ee44a028c1763626511a0da1b4a7aa4ad23c4994387ac136"
+      },
+      "regular_members": 16
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 635753,
+        "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/inventory-prefix-full-evidence-final01.tar.gz",
+        "sha256": "4e2411dee5728063d94b9a754f92c5c3e589152505afb1f7ed9f1c081f459c63"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 1421291,
+      "plain_tar": {
+        "bytes": 1464320,
+        "sha256": "ebc83abd5b038e79b372b488c6d8dffcaaeb33aa183051538869bbf47bff235a"
+      },
+      "regular_members": 60
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 100437,
+        "path": "/workspace/scratch/1ad3d6f55439/explicit_inventory_reader_diagnostic_candidate01/delivery-final01/explicit-inventory-reader-diagnostic-source-final01.tar.gz",
+        "sha256": "b43e2b3e33f1e410525467dd8d59fd90a914781f62c8f6913fba1159de3ee307"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 229654,
+      "plain_tar": {
+        "bytes": 245760,
+        "sha256": "002c6c45ab9e52d12fcc12991f64338d2721e8342bf89ffe8c9c380d3f4da2b6"
+      },
+      "regular_members": 13
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 603564,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/stage13-runtime-root-prefix-complete-host-records.tar.xz",
+        "sha256": "15b78fb05e80a066a7d77b50f3af1492f74e26d9d6d05991df58c355a32167ae"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 5680,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/stage13-runtime-root-prefix-complete-host-records.MEMBERS.json",
+        "sha256": "0f4fd77a2e67f201c94547e423df609c26e5aa06b2598876bb0b0d6e8e39aa49"
+      },
+      "member_bytes": 1736156,
+      "regular_members": 14,
+      "scope": "Complete existing source-stage host records, including exact stdin source, request, controller terminal/read, file readback and verification. No staged entrypoint was executed."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 183248,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/stage14-consumer-prefix-complete-host-records.tar.xz",
+        "sha256": "6bc5aa8a699e4b4043bd6e8c02ed1cd69f5c3e1de202d68bcc10ebd469a062ef"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 5619,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/stage14-consumer-prefix-complete-host-records.MEMBERS.json",
+        "sha256": "eb667e498b7ce9e7e77710eaa05c1f249125627140745d0b2f947d75fa10b970"
+      },
+      "member_bytes": 552016,
+      "regular_members": 14,
+      "scope": "Complete existing source-stage host records, including exact stdin source, request, controller terminal/read, file readback and verification. No staged entrypoint was executed."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 110560,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/FULL-ORIGINALS.tar.xz",
+        "sha256": "038659f22243de3ba38bc033719484f7435fe407650d549924ce8ea191797cea"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 1103717,
+      "plain_tar": {
+        "bytes": 1116160,
+        "sha256": "1ae25e69f81450b72128964b1033361d17a9d213aa29ab06a8b28642b9ae5bbc"
+      },
+      "regular_members": 12
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 18672,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/readonly-profile-partial-d3f-host-receipts.tar.xz",
+        "sha256": "5b374855df780238dcc05ac3fd430f6b8563b3b651aa4a7944cf2e2df00c99b3"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 4398,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/readonly-profile-partial-d3f-host-receipts.MEMBERS.json",
+        "sha256": "a86af47a01ef4aea98b65e3448673c15bd78e12aa24d7e9b0f2191d78e94a374"
+      },
+      "member_bytes": 149538,
+      "regular_members": 10,
+      "scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 16144,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/FULL-ORIGINALS.tar.xz",
+        "sha256": "38bf8e00fcb2e70787bfa17ead58f09716a44d2bf429426e42181b50b50087b5"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 128676,
+      "plain_tar": {
+        "bytes": 143360,
+        "sha256": "7742149ad2f4fa9dcd005813e66fd6d7b1f96735daf3adde5ac487f91321302a"
+      },
+      "regular_members": 12
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 30032,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/readonly-global-118d-host-receipts.tar.xz",
+        "sha256": "d5db37d9520ed179472f7802994a312da7126753befb6b3e9ab618becb6cfc27"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 3909,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/readonly-global-118d-host-receipts.MEMBERS.json",
+        "sha256": "702f390ca40df3d6aecf25c039ddc4e58e592aba8ef8c435ae9d6c45ade02b2d"
+      },
+      "member_bytes": 92627,
+      "regular_members": 9,
+      "scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 19604,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/current-publication-read01/FULL-ORIGINALS.tar.xz",
+        "sha256": "660b5927d0731686f09b3ac3c2195cf77ff83d6852088d8a10cd29e5371945f1"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 197890,
+      "plain_tar": {
+        "bytes": 215040,
+        "sha256": "af161ee8cee1901fd92ddfcb192b28ad206a455f3cc4104dc6527ef2b3616248"
+      },
+      "regular_members": 12
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 32244,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/readonly-publication-1956-host-receipts.tar.xz",
+        "sha256": "59422cd9043d22102c5ec98a896c8eb7fac89a13702f55b7673aede0f6a0ce70"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 4428,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/readonly-publication-1956-host-receipts.MEMBERS.json",
+        "sha256": "fa41a456d96a49de83b158502c200c2724608d36779b35f0f318dbab92f26d6d"
+      },
+      "member_bytes": 85433,
+      "regular_members": 10,
+      "scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 18176,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/FULL-ORIGINALS.tar.xz",
+        "sha256": "339362f51fe2d4a1f8ea8214b419052cf5bbb64c36e21dd23f6731c964d62616"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 133780,
+      "plain_tar": {
+        "bytes": 153600,
+        "sha256": "f3e24750673cf07c757a0c21645e6fe65db5af00e8bf1dcaca4ce310f37f8e30"
+      },
+      "regular_members": 12
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 33196,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/external-neg01-09/readonly-stage-a460-host-receipts.tar.xz",
+        "sha256": "b958091f183945902665e4cc43e2b911a4a61707088467eeefb8763175173ed0"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 3928,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/external-neg01-09/readonly-stage-a460-host-receipts.MEMBERS.json",
+        "sha256": "5663acba820d0aae3eeef557feed03dfc2ef511fac0ded7156b2e55b49193dc4"
+      },
+      "member_bytes": 103687,
+      "regular_members": 9,
+      "scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 36360,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/explicit-prefix-diagnostic01/FULL-ORIGINALS.tar.xz",
+        "sha256": "f83e94a2e890aa94a65a60b480671bc6299ea2a8adf90374dd1ce62955ff3426"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 245748,
+      "plain_tar": {
+        "bytes": 256000,
+        "sha256": "a06e62a9bd86a1fd62b6efb858d832c15e244cebe0b91717787b8551ebf574c6"
+      },
+      "regular_members": 12
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 69896,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/explicit-prefix-diagnostic-65aa-host-receipts.tar.xz",
+        "sha256": "c35bd7ed24ebc7090f2215961446fa14bfa8c6ac980945c7d6e626b4d3776827"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 4399,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/actual-neg01/explicit-prefix-diagnostic-65aa-host-receipts.MEMBERS.json",
+        "sha256": "ef6bda65515c53d3ddf2d850b4ad86036ed7b9d0334788a32b1da3d317c54b37"
+      },
+      "member_bytes": 203956,
+      "regular_members": 10,
+      "scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 871168,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/our-failed-prelaunch-reconciliation-host-records.tar.xz",
+        "sha256": "82797123013275b0311bcd529c0d1ab777ca1952eb4c33ef896b4f46d1aac9e9"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 24498,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/our-failed-prelaunch-reconciliation-host-records.MEMBERS.json",
+        "sha256": "087e6b998b72f426f5f631e14344799010821294225aa35b8d85ed6efe910b5b"
+      },
+      "member_bytes": 2282234,
+      "regular_members": 64,
+      "scope": "Existing failure reconciliation sources, controller receipts, stage-only observations, restoration and later process-absence records. Two exact payload archives and four later observation groups are separate. Redundant verified component .bin chunks are excluded; interrupted sender download 00.bin and its error are retained."
+    },
+    {
+      "all_sender_member_pins_verified": true,
+      "archive": {
+        "bytes": 36756,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/SENDER-ORIGINALS.tar.xz",
+        "sha256": "7623360614d74de0b77416605f8a86019f052984d9e6beb94dc6f7699b09f11a"
+      },
+      "original_sender_members": 170,
+      "regular_members": 171,
+      "scope": "Lossless XZ mirror of original sender tar; does not retrofit the original parent join/EOF."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 38264,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/SENDER-ORIGINALS.tar.xz",
+        "sha256": "136d4cffc2648a2675cf91890ec02fe43fbee419ebd47fe1adf019cae0b49229"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 5451694,
+      "plain_tar": {
+        "bytes": 5570560,
+        "sha256": "8cec9392294f97779bc666fe2592c6f9c3e594b2a0803ca524c584e8db87504a"
+      },
+      "regular_members": 171
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 59612,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/MAC-ORIGINALS-AND-OBSERVATIONS.tar.xz",
+        "sha256": "33fca8cae126efe91574ffc9d726355d1c0d83c178b7c8d497db184352b24cec"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 772857,
+      "plain_tar": {
+        "bytes": 788480,
+        "sha256": "e8080b7caf957491f6c836ce62650a4eaf860065686f72f95d5ec7472df7ca8a"
+      },
+      "regular_members": 9
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 296740,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/reconciliation-1ad3-readonly01/component-inputs.original.tar.xz",
+        "sha256": "3f7b5463bdd5fe4bac72bf2d77c4c14898b7b4372df8dfa79c9e232fa4191afa"
+      },
+      "complete_expected_member_set": true,
+      "member_bytes": 2073935,
+      "plain_tar": {
+        "bytes": 2119680,
+        "sha256": "ddc50965226216ae678e95bf47642f81fc4a4274e8cb71c559649e18448530b5"
+      },
+      "regular_members": 56
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 444416,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/external09-reconciliation-host-records.tar.xz",
+        "sha256": "c7244c39a6684e1d1926528dd88ee2b95a3f0cbe1a625610ba7a62ca73495c30"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 13524,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/external09-reconciliation-host-records.MEMBERS.json",
+        "sha256": "ecdbcd9e5704c0a26c44f544181de6c0982f45de833f76e8ed51f29d4f72f919"
+      },
+      "member_bytes": 721791,
+      "regular_members": 32,
+      "scope": "Collectors, exact raw controller/binary-read receipts, archive manifests and byte verification reports. Expanded sender/component/Mac members are omitted only because all are byte-checked against the three published exact XZ archives. Component XZ preserves tar plaintext, not the original gzip encoding."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 28760,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/external09-root-and-canonical-cascade-snapshot.tar.xz",
+        "sha256": "6aec8626168eab3432dc62954750ef89e74a913967e9ad91d7b3c5d1d4e26ded"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 6975,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/external09-root-and-canonical-cascade-snapshot.MEMBERS.json",
+        "sha256": "3e538a5216e3e49448743b070c93d4eb48bc0e4bcdf51baa249d5d7058c2f1c9"
+      },
+      "member_bytes": 180693,
+      "regular_members": 16,
+      "scope": "Selected actual external Root plan/material/chain/failure/send-result, source and fixed canonical cascade descriptors currently downloaded. This is not a claim that all external Root-chain prefixes are locally complete."
+    },
+    {
+      "all_members_match_local_original_bytes": true,
+      "all_members_safe_regular_unique": true,
+      "archive": {
+        "bytes": 42384,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/failed-prelaunch-timing-complete-local-records.tar.xz",
+        "sha256": "1eb544ed4086792b06d8bc26c8e61f7ea87a95c91e8587ba4eb75eb18a518baf"
+      },
+      "local_lossless_snapshot": true,
+      "manifest": {
+        "bytes": 13859,
+        "path": "/workspace/scratch/1ad3d6f55439/git_checkpoint05_delivery/draft03-material/archives/failed-prelaunch-timing-complete-local-records.MEMBERS.json",
+        "sha256": "91b5a3a62d6a22e82a227b83c934a1df49dbb36ec5af51a9bb072b6d5c233ffd"
+      },
+      "member_bytes": 500839,
+      "regular_members": 37,
+      "scope": "Complete existing timing review, exact 25 retained stage originals, raw read receipts, derived timing and partial-profile attribution. Local analysis only; not a new case."
+    }
+  ],
+  "draft03_observations": [
+    {
+      "archive": {
+        "bytes": 110560,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/FULL-ORIGINALS.tar.xz",
+        "sha256": "038659f22243de3ba38bc033719484f7435fe407650d549924ce8ea191797cea"
+      },
+      "case_pass_claimed": false,
+      "failed_prelaunch_formal_closure_claimed": false,
+      "group": "actual-neg01/readonly-profile-partial-d3f",
+      "phone_stdout": {
+        "bytes": 491719,
+        "sha256": "efc845a1cc03b699997a70c8c71a2938ce5b28b9f8cc7c5f135027094f10b34b"
+      },
+      "regular_originals": 12,
+      "source_sha256": "d3f599e7adbb7b249e7da0550d48964d42713e6ac3989e16b0d3b0ca9d13e1f4",
+      "state": "READONLY_VERIFICATION_FAILED_OR_PARTIAL_RETAIN_ORIGINALS"
+    },
+    {
+      "archive": {
+        "bytes": 16144,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retired-read02/FULL-ORIGINALS.tar.xz",
+        "sha256": "38bf8e00fcb2e70787bfa17ead58f09716a44d2bf429426e42181b50b50087b5"
+      },
+      "case_pass_claimed": false,
+      "failed_prelaunch_formal_closure_claimed": false,
+      "group": "actual-neg01/readonly-global-118d",
+      "phone_stdout": {
+        "bytes": 25177,
+        "sha256": "62dd1f589d6ebce4b7ddd98c2acc2f60d89a2183a0d079224b99db2038ef4700"
+      },
+      "regular_originals": 12,
+      "source_sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba",
+      "state": "ACTUAL08_ORIGINAL_GLOBAL_VERIFICATION_RETURNED_AND_LOCK_RELEASED"
+    },
+    {
+      "archive": {
+        "bytes": 19604,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/current-publication-read01/FULL-ORIGINALS.tar.xz",
+        "sha256": "660b5927d0731686f09b3ac3c2195cf77ff83d6852088d8a10cd29e5371945f1"
+      },
+      "case_pass_claimed": false,
+      "failed_prelaunch_formal_closure_claimed": false,
+      "group": "actual-neg01/readonly-publication-1956",
+      "phone_stdout": {
+        "bytes": 66595,
+        "sha256": "2931845e3b074b13959fa203f9a2d14a49c6c7dad206ee262e72a685c3246ac9"
+      },
+      "regular_originals": 12,
+      "source_sha256": "1956c026152ff82a9c3065388139c8782c55c5788afa9cfeacfef054651f18ed",
+      "state": "TWO_FAILED_NONCES_UNPUBLISHED_SELECTED_ORIGINAL_UNCHANGED"
+    },
+    {
+      "archive": {
+        "bytes": 18176,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/phone-stage-read01/FULL-ORIGINALS.tar.xz",
+        "sha256": "339362f51fe2d4a1f8ea8214b419052cf5bbb64c36e21dd23f6731c964d62616"
+      },
+      "case_pass_claimed": false,
+      "failed_prelaunch_formal_closure_claimed": false,
+      "group": "external-neg01-09/readonly-stage-a460",
+      "phone_stdout": {
+        "bytes": 20344,
+        "sha256": "672d29dd81e6daec854eced00aea238bb787c8bf5ddef9bc9a765d754d7c1a46"
+      },
+      "regular_originals": 12,
+      "source_sha256": "a460562d2217bcbbd167ac6a4ae2e38d4713da05dee8b57337ff4ce3eceb37be",
+      "state": "EXACT_STAGED_TREE_RETAINED_NO_LAUNCH_ARTIFACTS_OBSERVED"
+    },
+    {
+      "archive": {
+        "bytes": 36360,
+        "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/explicit-prefix-diagnostic01/FULL-ORIGINALS.tar.xz",
+        "sha256": "f83e94a2e890aa94a65a60b480671bc6299ea2a8adf90374dd1ce62955ff3426"
+      },
+      "case_pass_claimed": false,
+      "failed_prelaunch_formal_closure_claimed": false,
+      "group": "actual-neg01/explicit-prefix-diagnostic-65aa",
+      "phone_stdout": {
+        "bytes": 27326,
+        "sha256": "bfab24df3bd9d9bb05279ecdd1ac9aa76bd2e6adfcb7e06bb9c81152e6b95882"
+      },
+      "regular_originals": 12,
+      "source_sha256": "65aa1db1beb25aad324a1e7a027eb235f65392083a7fbdb0cae3362db7d44479",
+      "state": "EXPLICIT_147CF_READONLY_DIAGNOSTIC_RETURNED_AND_LOCK_RELEASED"
+    }
+  ],
+  "groups": [
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 25,
+      "group": "root_capture_successor",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/root-capture-successor-final01/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 4705,
+        "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+        "sha256": "2cf34514668dea38364588f4f2b65e0c9a874ad36a4fb31e2d632c01184199e7"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 23,
+      "group": "r8_compact_encoding_final02",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparation-final02/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 6318,
+        "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/SOURCE-MANIFEST.json",
+        "sha256": "c10658746cfffb6971af4bec7e60161a129e9fbf4aad472af3675e30b2488f62"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 52,
+      "group": "cpu_capture_generator",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-negative-capture-generation-final01/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 10723,
+        "path": "/workspace/scratch/1ad3d6f55439/cpu_negative_generation_capture_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+        "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 16,
+      "group": "lossless_compact_cascade",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/lossless-compact-cascade-final02/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 4337,
+        "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/lossless_compact_cascade_candidate02/package/SOURCE-MANIFEST.json",
+        "sha256": "e948ad1bc932337aeaf85dfff9496b9e86c56200d6b6e4c6c4e7713c53c4a321"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 47,
+      "group": "physical_fault_source",
+      "loose_snapshot": "all manifest members and selected wrapper evidence; complete expanded test tree retained in full archive",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/physical-fault-final01/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 8432,
+        "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+        "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 72,
+      "group": "runtime_root_prefix_source",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/runtime-inventory-prefix-final01/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 14729,
+        "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+        "sha256": "431aee36a79b86a59bc3e9de37d9a7f88efa60151c1440cec5e79ada7017385e"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 37,
+      "group": "consumer_prefix_source",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/consumer-inventory-prefix-final01/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 7262,
+        "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+        "sha256": "949b1ea1d83ed745c035022bddcc4ace1dd5db57a23a07fd8b9b1c96e55cb22d"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 15,
+      "group": "inventory_expression_source",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/inventory-prefix-diagnostic-final01/source-package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 3609,
+        "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/source-package/SOURCE-MANIFEST.json",
+        "sha256": "d9918d3a6d12bb0cb5278336bd864a5a9dc43efdfa4b7dcf5d2e26afea0e9c78"
+      }
+    },
+    {
+      "all_declared_member_byte_pins_verified": true,
+      "all_declared_members_preserved": true,
+      "declared_members": 12,
+      "group": "explicit_reader_diagnostic_source",
+      "loose_snapshot": "complete package tree",
+      "original_manifest_bytes_unchanged": true,
+      "published_manifest_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/explicit-inventory-reader-diagnostic-final01/package/SOURCE-MANIFEST.json",
+      "source_manifest": {
+        "bytes": 2309,
+        "path": "/workspace/scratch/1ad3d6f55439/explicit_inventory_reader_diagnostic_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+        "sha256": "883555a1b25645bfa3d305952897f7f8dc47f526238ca3b86d77e8c8240f38cb"
+      }
+    }
+  ],
+  "host5_previous_checkpoint_not_republished": true,
+  "physical_test_tree_scope": "All source-MF47 members preserved loosely; full final archive and previous-source-checks archive retain expanded source fixtures and earlier failed checks.",
+  "schema": "hepta.fixed19.checkpoint05.source-manifest-coverage.v1",
+  "scope_note": "Byte preservation and source/record coverage only. Formal two-failed-prelaunch admission assembler is pending. The original failed parents remain unjoined/unknown in their original records."
+}

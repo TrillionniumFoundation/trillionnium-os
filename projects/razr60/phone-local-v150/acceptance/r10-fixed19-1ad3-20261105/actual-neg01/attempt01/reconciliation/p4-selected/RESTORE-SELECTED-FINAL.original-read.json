@@ -1,0 +1,10 @@
+{
+  "command": "/debug_ramdisk/su -c 'test ! -e /data/user/0/org.trillionnium.owneropen/files/owner-client-session-v1.pending && base64 /data/user/0/org.trillionnium.owneropen/files/owner-client-session-v1.bin && test ! -e /data/user/0/org.trillionnium.owneropen/files/owner-client-session-v1.pending'",
+  "rc": 0,
+  "route": [
+    5037,
+    "23"
+  ],
+  "stdout": "T09DTFNUMDEAAAACAAAAAAAAADMsc2Vzc2lvbi1lZTg5NzczOC04ZmMyLTRkM2UtYTkxNi01ZmUz\nNjhiMzQwZWYpdGFzay1kM2Y2MTAzMy01YjYxLTQwZTQtYjhjNi03ZWEwMGQ2YjJkNTYBKXR1cm4t\nMjM4NDBjNDctZjM5OS00NGI5LWE0N2MtM2YyNTQxZjFiY2EzAUA3NzcyMDk0YjczMzM3ZDhiZWNh\nZTQ3ZTBhNzZhOTlmOTVmYzg5MmVhYjI1ZDEwMTE2MWFlNWVkMWRhNjE1Yzc4AOdqm2XkeyoyZM/G\nj/4M0c4XmA69HbnoEOnnxoZrVC3n\n",
+  "stderr": ""
+}

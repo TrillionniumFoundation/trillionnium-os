@@ -1,0 +1,125 @@
+{
+  "file_bytes": 180693,
+  "file_count": 16,
+  "files": [
+    {
+      "bytes": 363,
+      "git_blob_sha": "81b2fd5ce4f81a228d5a878383e30873c192b6b1",
+      "path": "external09-small-originals/CHAIN-INTENT.json",
+      "sha256": "008cbdbc723b5e0abccab2040784828eacab7c8de0dc878ec0514a91799aaef4",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/CHAIN-INTENT.json"
+    },
+    {
+      "bytes": 31153,
+      "git_blob_sha": "11eca5c60ee3af51156c2d8eb5f9da6e54520d44",
+      "path": "external09-small-originals/READ-MULTIPLE-RECEIPT.original.json",
+      "sha256": "c8e46a5637652cd1317db35bf6478ebd3827eed66fcb28b4d4bc23cd21d9638e",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/READ-MULTIPLE-RECEIPT.original.json"
+    },
+    {
+      "bytes": 4745,
+      "git_blob_sha": "a22ab376fcfa644324c8ba85766b800849cd245b",
+      "path": "external09-small-originals/ROOT-PLAN.original.json",
+      "sha256": "c89fd6edd96e87fbd001853e71f9a00864c2c2d3bc3d5421b5a49fed958c9f7b",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/ROOT-PLAN.original.json"
+    },
+    {
+      "bytes": 2873,
+      "git_blob_sha": "aaa1ce06eb6e6198ab9c079e5e6ec12e6ced64f1",
+      "path": "external09-small-originals/material/PREPARED.json",
+      "sha256": "dab914a806a4caa9c7e1f0b8444d6786a9179b0e2c91b8a9d39d8a332b50d9be",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/material/PREPARED.json"
+    },
+    {
+      "bytes": 15676,
+      "git_blob_sha": "fe0262fab53a62b66326a611f851f095c9ed2d24",
+      "path": "external09-small-originals/phone-stage/STAGE-COMPLETE.original.json",
+      "sha256": "9c7510713e1a92aa8befb1fc1ed5fd4ffea066df365c8da19227dcc68e88e9d6",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/phone-stage/STAGE-COMPLETE.original.json"
+    },
+    {
+      "bytes": 17756,
+      "git_blob_sha": "3d79feb2b0529cf9cb66f8a58d38c7aaaae06af8",
+      "path": "external09-small-originals/phone-stage/stdout.original",
+      "sha256": "2ab28e579009ea4adcefc0cab1057fc3f6acf228ab344f479efa0b279d783c09",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/phone-stage/stdout.original"
+    },
+    {
+      "bytes": 234,
+      "git_blob_sha": "c8b41d211095cda7978369effc30a5b62f4d6206",
+      "path": "external09-small-originals/sender-execute/CHILD.json",
+      "sha256": "fc559f474a17eac7d02459521453c1112caa3e379dfb64252c175e8b8e232407",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/sender-execute/CHILD.json"
+    },
+    {
+      "bytes": 454,
+      "git_blob_sha": "e6d22d3b000c3f71b6bed97a78a15e8a5b85c7c7",
+      "path": "external09-small-originals/sender-preview/stdout.original",
+      "sha256": "e66730a0c582df580ffc31fcfbafa3f1b10289be809cc125192d1a7c207d96e2",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/external09-small-originals/sender-preview/stdout.original"
+    },
+    {
+      "bytes": 8350,
+      "git_blob_sha": "a4c797a3db117ecb8d99e9267117efe9bb88b05b",
+      "path": "native-guard-root-chains-r10-r1/root-r10-neg01-20261105-09/ROOT-FAILURE.json",
+      "sha256": "198e7beb9e692e5287ac7c6c68a89d18eda15a1cbddba34e1f7f666722e10abe",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/native-guard-root-chains-r10-r1/root-r10-neg01-20261105-09/ROOT-FAILURE.json"
+    },
+    {
+      "bytes": 24345,
+      "git_blob_sha": "9e4c45738b080fd2e8a535dc7415dd0e41ac2511",
+      "path": "r10-boundary-consumers-final-r8/DELIVERY-RESULT.json",
+      "sha256": "882a85ef9a0eb1a842de2bf32b2e03e54fff278387745440adf328a7e3a934c9",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/r10-boundary-consumers-final-r8/DELIVERY-RESULT.json"
+    },
+    {
+      "bytes": 27964,
+      "git_blob_sha": "7d9445e57116e98b799c054643f74a27a14d73af",
+      "path": "r10-boundary-consumers-final-r8/MANIFEST.json",
+      "sha256": "c6f682a21126e72ec2ae64ae12c8d33ce94cf0409f6936a09b593f587dd7382b",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/r10-boundary-consumers-final-r8/MANIFEST.json"
+    },
+    {
+      "bytes": 4850,
+      "git_blob_sha": "3b3bb6634f98a5076a4065cb772a8e7f22683b71",
+      "path": "r10-component-boundary-input-entry-r8/MANIFEST.json",
+      "sha256": "84b2589ca34a0639a4b45a43d8351f8362be7bbb1581b767c7ab41d38ddcf969",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/r10-component-boundary-input-entry-r8/MANIFEST.json"
+    },
+    {
+      "bytes": 676,
+      "git_blob_sha": "762355a3c1c46d78fcff989beec4184fed749a77",
+      "path": "root-r10-neg01-20261105-09.send-result.json",
+      "sha256": "fe6ece6bb5edd84d948c04a8266c4bc1e6d0b327169a8c428e3b20cca0c266f9",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/root-r10-neg01-20261105-09.send-result.json"
+    },
+    {
+      "bytes": 20044,
+      "git_blob_sha": "35beb849c9ffe22bce1f8435173ab4cbb7a16f85",
+      "path": "scoped-acceptance-v150-r10-r1-readiness-r9/MANIFEST.json",
+      "sha256": "a8b9979819e0b49add8837caa94c07afb3f74fa11f6bb35036f3b80ad5f99d7d",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/scoped-acceptance-v150-r10-r1-readiness-r9/MANIFEST.json"
+    },
+    {
+      "bytes": 935,
+      "git_blob_sha": "e99b50215e918020fe0771797cb618fca73abfa3",
+      "path": "stage-only-read-candidate01/SOURCE-REVIEW.json",
+      "sha256": "f25022c21fc764e03f718597d694beefc607688daf82e4ae684e5c73b4d4b871",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/stage-only-read-candidate01/SOURCE-REVIEW.json"
+    },
+    {
+      "bytes": 20275,
+      "git_blob_sha": "e7414dc5528e8b606087fdf01d2ac2c510cf948b",
+      "path": "stage-only-read-candidate01/observe_external09_stage_once.py",
+      "sha256": "a460562d2217bcbbd167ac6a4ae2e38d4713da05dee8b57337ff4ce3eceb37be",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09/stage-only-read-candidate01/observe_external09_stage_once.py"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "Selected actual external Root plan/material/chain/failure/send-result, source and fixed canonical cascade descriptors currently downloaded. This is not a claim that all external Root-chain prefixes are locally complete.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/actual_external_r8_cascade_and_09",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

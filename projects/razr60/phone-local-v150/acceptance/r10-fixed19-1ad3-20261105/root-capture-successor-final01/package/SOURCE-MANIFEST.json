@@ -1,0 +1,135 @@
+{
+  "canonical_actual_r8_changed": false,
+  "files": [
+    {
+      "bytes": 2455,
+      "path": "DELIVERY.json",
+      "sha256": "057cda38efc523782be2fa284bccd3f4dfc1b21b8e360578afa4830257ba187c"
+    },
+    {
+      "bytes": 3471,
+      "path": "README.md",
+      "sha256": "81f15e102e5b83d9acf7c134f0002392ff22227f5b13c0592fc4df6e8039fd13"
+    },
+    {
+      "bytes": 861,
+      "path": "proof/INPUTS.template.json",
+      "sha256": "1f436b5ba7d354f0eeac9536ca9a080252b7e4b25a25c217d3883d1b8e123a75"
+    },
+    {
+      "bytes": 8100,
+      "path": "proof/ROOT-CAPTURE-INCREMENT.json",
+      "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+    },
+    {
+      "bytes": 4429,
+      "path": "proof/SOURCE-MANIFEST.json",
+      "sha256": "c3410091219e22758b6fee992d794ca69601386a5b57977cd3f4ab0add69644d"
+    },
+    {
+      "bytes": 4702,
+      "path": "proof/reference/actual-r8/COMBINATION.json",
+      "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+    },
+    {
+      "bytes": 21558,
+      "path": "proof/reference/actual-r8/DERIVATION.json",
+      "sha256": "52ed94df0877745ae9cf0184cc4480b67595980ba5453edccda61abcc4055cb0"
+    },
+    {
+      "bytes": 9887,
+      "path": "proof/reference/actual-r8/FREEZE-INPUTS.original.json",
+      "sha256": "5e0f0fc20da46743ecc196022e5387439b37c80abd50ab5a573b598ec727c0f6"
+    },
+    {
+      "bytes": 22392,
+      "path": "proof/reference/actual-r8/FREEZE-RESULT.json",
+      "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+    },
+    {
+      "bytes": 36899,
+      "path": "proof/reference/actual-r8/FREEZE-SOURCE.original.py",
+      "sha256": "70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d"
+    },
+    {
+      "bytes": 11442,
+      "path": "proof/reference/actual-r8/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "7315f6561e221fb59429f9daa8ec1a34a944681fd2a117773611c11fa82a81ca"
+    },
+    {
+      "bytes": 47151,
+      "path": "proof/reference/actual-r8/root-chain/source/run_component_root_once.py",
+      "sha256": "f305ba54843cff4d91db0a65e5021c22f05d10a8237a897a5b78f7a119228bcd"
+    },
+    {
+      "bytes": 16808,
+      "path": "proof/reference/actual-r8/runtime/MANIFEST.json",
+      "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+    },
+    {
+      "bytes": 8036,
+      "path": "proof/reference/phone_chain_bridge.6694.original.py",
+      "sha256": "6694b106ee8ccf2177bf758367fda214f27b7ebfbea1611e11e67604a2bfd572"
+    },
+    {
+      "bytes": 24237,
+      "path": "proof/reference/prepare_native_guard_root_plan.0ede.original.py",
+      "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+    },
+    {
+      "bytes": 71820,
+      "path": "proof/reference/run_component_root_once.50a5.original.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    {
+      "bytes": 31714,
+      "path": "proof/source/prepare_native_guard_root_plan.py",
+      "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+    },
+    {
+      "bytes": 1185,
+      "path": "proof/validation/DERIVATION-CHECKS.json",
+      "sha256": "a9c69d57683b2ad40f3190356480dbb7175ea56d873551634cdf581daa8819e6"
+    },
+    {
+      "bytes": 13581,
+      "path": "proof/validation/EXACT-REPLACEMENTS.json",
+      "sha256": "11d4a6316db3a883172e05e41dfca9ea2237a6414b241adaa731748f991eae67"
+    },
+    {
+      "bytes": 1852,
+      "path": "proof/validation/SOURCE-ADMISSION-CHECKS.json",
+      "sha256": "bd067e7910c32accd1fc70753b801e0405d4c4677aa00259e120f73285b90647"
+    },
+    {
+      "bytes": 15722,
+      "path": "proof/validation/helper-increment.patch",
+      "sha256": "f400a4b0ef96d861bc96338370418a7cc28c26a26d51b71a587c1396af5b99e2"
+    },
+    {
+      "bytes": 13013,
+      "path": "root-package/SOURCE-MANIFEST.json",
+      "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+    },
+    {
+      "bytes": 126796,
+      "path": "root-package/reference/policy_native5_verifier.py",
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    },
+    {
+      "bytes": 8098,
+      "path": "root-package/source/phone_chain_bridge.py",
+      "sha256": "04f6bc7e3a2a0f2c2ef0a8385772c4d59dd879d9f590ce08902141fa437566da"
+    },
+    {
+      "bytes": 72194,
+      "path": "root-package/source/run_component_root_once.py",
+      "sha256": "c1b03c028359342a520372a7ddaa60ef38f3b9609ade3a133f32dfe3b6b372a9"
+    }
+  ],
+  "phone_calls": 0,
+  "root_executions": 0,
+  "runtime_freezes": 0,
+  "schema": "hepta.native-guard.actual-r8-root-capture-delivery.v1",
+  "state": "FINAL_SOURCE_DELIVERY_NO_ACTUAL_PLAN_OR_CASE"
+}

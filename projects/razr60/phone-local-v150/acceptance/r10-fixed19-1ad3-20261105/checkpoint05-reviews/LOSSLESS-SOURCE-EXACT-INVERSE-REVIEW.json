@@ -1,0 +1,46 @@
+{
+  "actual_bundle_fit_claimed": false,
+  "checks": [
+    {
+      "new_bytes": 77700,
+      "new_sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1",
+      "parent_body_independently_cached": true,
+      "parent_bytes": 76433,
+      "parent_sha256": "c844b4924397ffcdd30500c395395ade0bd0ad3eaa746f0a007c1b8ae274b0d6",
+      "source": "templates/release_boundaries.py",
+      "whole_forward_and_inverse_exact": true
+    },
+    {
+      "new_bytes": 34626,
+      "new_sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc",
+      "parent_body_independently_cached": false,
+      "parent_bytes": 34673,
+      "parent_sha256": "887c247b1578e78ab3b1591c399d3ad33dcdf5efe64b7a0796e181daed1c22e3",
+      "source": "templates/make_component_boundary_inputs.py",
+      "whole_forward_and_inverse_exact": true
+    },
+    {
+      "new_bytes": 56190,
+      "new_sha256": "a4341c41c26c4327c6d5a8c6ba9ec86f59e4e220b8d84e80e35b443fcd11096f",
+      "parent_body_independently_cached": true,
+      "parent_bytes": 56190,
+      "parent_sha256": "5196112d9d3469eefbbd1b564eb29ee41169dab428346d275ed8f1dd18f0a717",
+      "source": "source/derive_final_cascade_property_r8.py",
+      "whole_forward_and_inverse_exact": true
+    },
+    {
+      "new_bytes": 41788,
+      "new_sha256": "6adbfa234b88c1f9d6ab247e97fa40e98115c584a3d67c41975b06cf0739da4d",
+      "parent_body_independently_cached": true,
+      "parent_bytes": 41783,
+      "parent_sha256": "160cb8d82ecaddaafc73ee18f56cbe24c13937d45bf058816bb06bbb4c311cb2",
+      "source": "source/derive_negative_operator_sources.py",
+      "whole_forward_and_inverse_exact": true
+    }
+  ],
+  "main_calls": 0,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.lossless-bundle-source-exact-inverse-review.v1",
+  "state": "FOUR_SOURCE_FORWARD_AND_INVERSE_BYTE_IDENTITIES_VERIFIED"
+}

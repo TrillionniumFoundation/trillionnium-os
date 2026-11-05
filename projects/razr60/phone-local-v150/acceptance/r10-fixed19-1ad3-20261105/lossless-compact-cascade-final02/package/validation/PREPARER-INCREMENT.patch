@@ -1,0 +1,59 @@
+--- retained-parent/prepare_final_cascade.py
++++ candidate/prepare_final_cascade.py
+@@ -14,11 +14,11 @@
+ import types
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-PARENT = B/'property-policy-final-cascade-r8-candidate03'
+-SOURCE = {'path': str(PARENT/'source/derive_final_cascade_property_r8.py'), 'bytes': 56190,
+-          'sha256': '5196112d9d3469eefbbd1b564eb29ee41169dab428346d275ed8f1dd18f0a717'}
+-INTERFACE = {'path': str(PARENT/'source/write_final_seal_interface_property_r8.py'), 'bytes': 33096,
+-             'sha256': '8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb'}
++PARENT = B/'property-r8-lossless-bundle-generators-candidate01'
++SOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/derive_final_cascade_property_r8.py', 'bytes': 56374, 'sha256': 'd21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26'}
++INTERFACE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/write_final_seal_interface_property_r8.py', 'bytes': 33280, 'sha256': '4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f'}
++GENERATOR_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/GENERATOR-SOURCE-MANIFEST.json', 'bytes': 1845, 'sha256': '5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a'}
++TEMPLATE_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json', 'bytes': 24857, 'sha256': '81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54'}
+ META = ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ 
+ 
+@@ -103,6 +103,31 @@
+     return desc(path, raw)
+ 
+ 
++def validate_source_manifests(originals, template_module):
++    generators = strict(originals.read(GENERATOR_MANIFEST))
++    templates = strict(originals.read(TEMPLATE_MANIFEST))
++    need(generators['schema']=='hepta.property-r8.lossless-compact-generators.source-package.v1'
++         and generators['state']=='SOURCE_ONLY_FINALIZATION_AND_DELIVERY_UNFILLED'
++         and generators['template_source_manifest']==TEMPLATE_MANIFEST,
++         'exact compact generator lineage differs')
++    expected_sources = [dict(path='source/derive_final_cascade_property_r8.py',
++                             **{k:SOURCE[k] for k in ('bytes','sha256')}),
++                        dict(path='source/write_final_seal_interface_property_r8.py',
++                             **{k:INTERFACE[k] for k in ('bytes','sha256')})]
++    need(generators['files']==expected_sources, 'exact two compact generator sources required')
++    need(templates['schema']=='hepta.r8.lossless-bundle-generator-source-package.v1'
++         and templates['state']=='SOURCE_ONLY_FUTURE_FINALIZATION_NONE',
++         'exact lossless template package required')
++    rows = templates['files']
++    need(type(rows) is list and all(type(r) is dict and set(r)=={'path','bytes','sha256'} for r in rows)
++         and len(rows)==len({r['path'] for r in rows}), 'unique exact template package inventory required')
++    expected_templates = {('templates/'+name):dict(path='templates/'+name,**pin)
++                          for name,pin in template_module.TEMPLATE_PINS.items()}
++    observed_templates = {r['path']:r for r in rows if r['path'].startswith('templates/')}
++    need(len(expected_templates)==19 and observed_templates==expected_templates,
++         'all nineteen pinned lossless templates must match the actual package manifest')
++
++
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--runtime-freeze-result-desc', required=True)
+@@ -121,6 +146,7 @@
+     source_raw = originals.read(SOURCE)
+     interface_raw = originals.read(INTERFACE)
+     template_module = module(SOURCE, source_raw, 'reviewed_final_cascade_template')
++    validate_source_manifests(originals, template_module)
+     adoption_row, verifier_row = result['policy_adoption'], result['verifier']
+     adoption_raw = originals.read(adoption_row)
+     adoption = strict(adoption_raw)

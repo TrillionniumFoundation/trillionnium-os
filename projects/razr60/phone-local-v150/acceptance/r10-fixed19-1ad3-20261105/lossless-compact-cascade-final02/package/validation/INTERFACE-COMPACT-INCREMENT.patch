@@ -1,0 +1,26 @@
+--- retained-parent/write_final_seal_interface_property_r8.py
++++ candidate/write_final_seal_interface_property_r8.py
+@@ -50,6 +50,9 @@
+ 
+ 
+ def encode(value): return (json.dumps(value,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\n').encode()
++
++def combination_encode(value):
++    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\n').encode()
+ 
+ 
+ def meta(info): return tuple(getattr(info,x) for x in ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
+@@ -375,11 +378,11 @@
+          and original(adopted['full_rule'])[1]==frraw,
+          'new adoption must retain the same exact reviewed verifier and complete rule')
+     _,parent_combo_raw=read(RUNTIME_PARENT.parent/'COMBINATION.json',4702,POLICY_PARENT_COMBINATION_SHA)
+-    need(encode(strict(parent_combo_raw))==parent_combo_raw and encode(combination)==coraw
++    need(combination_encode(strict(parent_combo_raw))==parent_combo_raw and combination_encode(combination)==coraw
+          and combination['live_policy_sha256']==frozen['actual_policy']['sha256'],
+          'actual canonical property-policy combination differs')
+     reversed_combo=dict(combination);reversed_combo['live_policy_sha256']=POLICY_PARENT_SHA
+-    need(encode(reversed_combo)==parent_combo_raw and sha(coraw)!=POLICY_PARENT_COMBINATION_SHA,
++    need(combination_encode(reversed_combo)==parent_combo_raw and sha(coraw)!=POLICY_PARENT_COMBINATION_SHA,
+          'only the adopted current policy may change in the original R7 combination')
+     retirement,rraw=read(RET/'ACTUAL-RETIREMENT-INPUTS.json',2220,
+         'e3c8411f3d85440018392597d4f9f8795cfd7a60c44fc1680068a60949d20999')

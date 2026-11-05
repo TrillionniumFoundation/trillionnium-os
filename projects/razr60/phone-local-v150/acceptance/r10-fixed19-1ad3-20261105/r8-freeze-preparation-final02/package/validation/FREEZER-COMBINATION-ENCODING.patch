@@ -1,0 +1,27 @@
+--- original62bc/freeze_property_runtime.py
++++ source/freeze_property_runtime.py
+@@ -40,6 +40,8 @@
+ def sha(b):return hashlib.sha256(b).hexdigest()
+ 
+ def enc(v):return (json.dumps(v,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\n').encode()
++
++def combination_enc(v):return (json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\n').encode()
+ 
+ def strict(b):
+     def pairs(rows):
+@@ -266,12 +268,12 @@
+          and verified['prior_boundary_sha256']=='eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10',
+          'new explicit property-policy adoption does not retain actual50f/a5f/08')
+     parent_combo_raw=o.fixed('parent_combination');parent_combo=strict(parent_combo_raw)
+-    need(enc(parent_combo)==parent_combo_raw and parent_combo['live_policy_sha256']==PARENT_POLICY,
++    need(combination_enc(parent_combo)==parent_combo_raw and parent_combo['live_policy_sha256']==PARENT_POLICY,
+          'original canonical parent combination differs')
+     combo=copy.deepcopy(parent_combo);combo['live_policy_sha256']=sha(actual)
+-    combo_raw=enc(combo)
++    combo_raw=combination_enc(combo)
+     reversed_combo=copy.deepcopy(combo);reversed_combo['live_policy_sha256']=PARENT_POLICY
+-    need(enc(reversed_combo)==parent_combo_raw and sha(combo_raw)==f['combination_sha256'],
++    need(combination_enc(reversed_combo)==parent_combo_raw and sha(combo_raw)==f['combination_sha256'],
+          'only the reviewed current policy pin may change in this combination')
+     runtime=dict(parent_files)
+     late_source=candidate['source/late_boundary.py']

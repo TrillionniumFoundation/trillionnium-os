@@ -1,0 +1,17 @@
+{
+  "all_orbit_images_read_by_consumer": false,
+  "base64_unique_bytes": 3301592,
+  "canonical_base64_object_map_bytes": 3310343,
+  "existing_captured_verifier_files": 1,
+  "existing_independent_verifier_files": 1,
+  "known_historical_union_claimed": false,
+  "mac_index_bytes": 211221,
+  "new_retained_files": 191,
+  "original_path_count": 193,
+  "raw_unique_bytes": 2476074,
+  "retained_file_bytes": 5304871,
+  "retained_path_count": 193,
+  "schema": "hepta.runtime-properties.actual-mac-proof-capacity.v1",
+  "unique_sha256_objects": 125,
+  "whole_future_release_bundle_size_claimed": false
+}

@@ -1,0 +1,47 @@
+{
+  "actual_r8_freeze": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "canonical_r8_changed": false,
+  "case_executions": 0,
+  "deployments": [
+    {
+      "local_root": "root-package",
+      "mac_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3"
+    },
+    {
+      "local_root": "proof",
+      "mac_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof"
+    }
+  ],
+  "increment": {
+    "bytes": 8100,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json",
+    "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+  },
+  "local_source_checks": {
+    "passed": 6,
+    "scope": "source admission and byte inverse; not actual complete freeze or plan validation",
+    "total": 6
+  },
+  "phone_calls": 0,
+  "preparer": {
+    "bytes": 31714,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+  },
+  "root_coordinator": {
+    "bytes": 72194,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/source/run_component_root_once.py",
+    "sha256": "c1b03c028359342a520372a7ddaa60ef38f3b9609ade3a133f32dfe3b6b372a9"
+  },
+  "root_source_package": {
+    "bytes": 13013,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+  },
+  "state": "EXACT_ACTUAL_R8_CAPTURE_SUCCESSOR_SOURCE_DELIVERY_NO_EXECUTION",
+  "whole_cases_passed": 0
+}

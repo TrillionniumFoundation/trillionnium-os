@@ -1,0 +1,41 @@
+{
+  "all_declared_member_hashes_verified": true,
+  "archive": {
+    "bytes": 573032,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/delivery-final01/runtime-root-inventory-prefix-source-final01.tar.gz",
+    "sha256": "f1baeb82aceca4a86a86c8aba0c95045b8ec26fee750e99f50436348156ca963"
+  },
+  "archive_roundtrip_verified": true,
+  "case_qualification": false,
+  "failed_prelaunch_verifier": null,
+  "helper": {
+    "bytes": 42223,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "0d742ad23def3dfd4cf3bed1e50065b98b67de9d499c55168747e88ff74d5f0c"
+  },
+  "helper_interface_checks": 9,
+  "intended_install_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01",
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "regular_members": 73,
+  "remote_calls": 0,
+  "root_manifest": {
+    "bytes": 15020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/SOURCE-MANIFEST.json",
+    "sha256": "4eb4eeeb604e5526fd0c477a9a180b6b1e6d08f8016b3add7c605b62cdac22f3"
+  },
+  "runtime_manifest": {
+    "bytes": 19020,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json",
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "runtime_pure_checks": 7,
+  "schema": "hepta.source-only.local-delivery.v1",
+  "source_manifest": {
+    "bytes": 14729,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/SOURCE-MANIFEST.json",
+    "sha256": "431aee36a79b86a59bc3e9de37d9a7f88efa60151c1440cec5e79ada7017385e"
+  },
+  "state": "LOCAL_SOURCE_PACKAGE_FROZEN_REQUIRED_ADMISSION_STILL_UNFROZEN",
+  "uncompressed_file_bytes": 2541109
+}

@@ -1,0 +1,108 @@
+{
+  "actual_bundle_fit_claimed": false,
+  "files": [
+    {
+      "bytes": 1845,
+      "path": "GENERATOR-SOURCE-MANIFEST.json",
+      "sha256": "5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a"
+    },
+    {
+      "bytes": 1787,
+      "path": "INTERFACE.json",
+      "sha256": "9431797e40454849b6c0ce6c7ef7b78833158147a27a10aced7e3d1645de540f"
+    },
+    {
+      "bytes": 12443,
+      "path": "preparer/prepare_final_cascade.py",
+      "sha256": "18d716a503ff470093b7d8fcadd043be66a829b3696a1aa82239b15932d9962c"
+    },
+    {
+      "bytes": 4702,
+      "path": "reference/COMBINATION.ba5c.original.json",
+      "sha256": "ba5c590860bb7502910617e84d90329a191c5a91e6ace84fb7f8e45b1a556837"
+    },
+    {
+      "bytes": 24857,
+      "path": "reference/LOSSLESS-SOURCE-MANIFEST.81663.original.json",
+      "sha256": "81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54"
+    },
+    {
+      "bytes": 56190,
+      "path": "reference/derive_final_cascade_property_r8.a434.original.py",
+      "sha256": "a4341c41c26c4327c6d5a8c6ba9ec86f59e4e220b8d84e80e35b443fcd11096f"
+    },
+    {
+      "bytes": 9712,
+      "path": "reference/prepare_final_cascade.72c3.original.py",
+      "sha256": "72c36078084821e22f2707e081a9eee81f90e99ce69d97768987eb5f23a62195"
+    },
+    {
+      "bytes": 33096,
+      "path": "reference/write_final_seal_interface_property_r8.8d8f.original.py",
+      "sha256": "8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb"
+    },
+    {
+      "bytes": 56374,
+      "path": "source/derive_final_cascade_property_r8.py",
+      "sha256": "d21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26"
+    },
+    {
+      "bytes": 33280,
+      "path": "source/write_final_seal_interface_property_r8.py",
+      "sha256": "4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f"
+    },
+    {
+      "bytes": 1134,
+      "path": "validation/CASCADE-COMPACT-INCREMENT.patch",
+      "sha256": "8c47d4197bd52a6d90ef75cec713d0db2877e199b7f38a8f89c7d17d5feedb8e"
+    },
+    {
+      "bytes": 5797,
+      "path": "validation/EXACT-REPLACEMENTS.json",
+      "sha256": "6f267a6a0d158a0e7c51be15b78013fa9c264dc72995719213552f9a56bb1cf5"
+    },
+    {
+      "bytes": 1732,
+      "path": "validation/INTERFACE-COMPACT-INCREMENT.patch",
+      "sha256": "97f0f8d24a7ecfaaff2cad93fa07ad5ed48c5d8c64c668d712e12c8abffb129b"
+    },
+    {
+      "bytes": 4528,
+      "path": "validation/PREPARER-INCREMENT.patch",
+      "sha256": "356d132d402980dabb1d8867b347492e5822bbe89bc921dac2d40953f1806bbb"
+    },
+    {
+      "bytes": 3908,
+      "path": "validation/REVIEW.json",
+      "sha256": "b010f12d013a21ebe33af43f0f6a9746c79dc98eec724a3ca4af450e62447f0d"
+    },
+    {
+      "bytes": 19018,
+      "path": "validation/build_lossless_compact_cascade_candidate02.py",
+      "sha256": "c49b6d2b13130884c46c4f6892a845ca79ae3d53ad83bf8b81d26b889ee83a0a"
+    }
+  ],
+  "generator_manifest": {
+    "bytes": 1845,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/GENERATOR-SOURCE-MANIFEST.json",
+    "sha256": "5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a"
+  },
+  "main_calls": 0,
+  "new_nonces": 0,
+  "old_sources_and_namespace_retained": true,
+  "phone_calls": 0,
+  "preparer": {
+    "bytes": 12443,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/preparer/prepare_final_cascade.py",
+    "sha256": "18d716a503ff470093b7d8fcadd043be66a829b3696a1aa82239b15932d9962c"
+  },
+  "schema": "hepta.property-r8.lossless-compact-source-delivery.v1",
+  "source_only": true,
+  "staging_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02",
+  "state": "NARROW_SOURCE_AND_PURE_CODEC_CHECKS_PASSED_NO_ACTUAL_CASCADE",
+  "template_manifest": {
+    "bytes": 24857,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54"
+  }
+}

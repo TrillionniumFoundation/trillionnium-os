@@ -1,0 +1,41 @@
+{
+  "canonical67dc_unchanged": true,
+  "evidence_manifest": {
+    "bytes": 8057,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/evidence/EVIDENCE-MANIFEST.json",
+    "sha256": "779cd7fc3ab4f14647b2866af6c7d825c80b5718426fbdf0c286d8a10f845e87"
+  },
+  "full_evidence_archive": {
+    "bytes": 635753,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/inventory-prefix-full-evidence-final01.tar.gz",
+    "sha256": "4e2411dee5728063d94b9a754f92c5c3e589152505afb1f7ed9f1c081f459c63"
+  },
+  "full_evidence_regular_files": 60,
+  "next_step": "Root may choose a separately reviewed runtime derivation after actual original-phone profiling; no generation or case is authorized by this artifact.",
+  "phone_or_p4_operations": 0,
+  "previous_packaging_preserved": {
+    "bytes": 1934,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/DELIVERY.json",
+    "sha256": "82c77cfb9ce6555e9924ef61d9701971c53693fa7b30aeba27694b2b963aafc8"
+  },
+  "schema": "hepta.inventory-ancestry-optimization-split-delivery.v1",
+  "source": {
+    "bytes": 67005,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/source-package/source/late_boundary.py",
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "source_manifest": {
+    "bytes": 3609,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/source-package/SOURCE-MANIFEST.json",
+    "sha256": "d9918d3a6d12bb0cb5278336bd864a5a9dc43efdfa4b7dcf5d2e26afea0e9c78"
+  },
+  "source_package": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/source-package",
+  "source_stage_archive": {
+    "bytes": 90065,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/inventory-prefix-source-stage-final01.tar.gz",
+    "sha256": "9ed1c093248ec1139d4be0b7933591e5006a790bc1c36516cc08d30de7043a6c"
+  },
+  "source_stage_exact_manifest_closed_set": true,
+  "source_stage_regular_files": 16,
+  "state": "SOURCE_ONLY_FINAL01_FROZEN_NOT_STAGED_OR_EXECUTED"
+}

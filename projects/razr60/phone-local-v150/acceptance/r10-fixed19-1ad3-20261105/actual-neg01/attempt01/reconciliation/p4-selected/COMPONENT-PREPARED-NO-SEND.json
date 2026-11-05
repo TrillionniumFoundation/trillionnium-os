@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.native-guard.sender-prepared.v1",
+  "state": "PREPARED_NO_SEND",
+  "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+  "owner_request_sha256": "6cde40708b387361d0115eb65f0e39c61872f8146a593cf4a8cb4890202ff525",
+  "contract_sha256": "d44c17956cff7c94f4cf3527b591908c70cc5d8df66049f385a068bab6174b66",
+  "provider_source_sha256": "ad345c0080cbfd89f1378bb6e8583f43e1fa4af0a5928d7ecbf4ccc8d4f04c52",
+  "ready_path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-1ad3-01/READY.json",
+  "clock": "Pocket4 time.monotonic_ns, one actor process",
+  "prepared_monotonic_ns": 897764495925392,
+  "pre_send_deadline_monotonic_ns": 897887688040216,
+  "pre_send_budget_remaining_seconds": 123.192114824,
+  "same_phone_accept_minimum_remaining_seconds": 15,
+  "provider_started_by_sender": false,
+  "socket_connections": 0,
+  "send_attempt_count": 0,
+  "root_action": "Root may launch the separately reviewed isolated native-guard lifecycle once; sender only reads its pinned ready file"
+}

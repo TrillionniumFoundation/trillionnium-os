@@ -1,0 +1,10 @@
+{
+  "command": "CLASSPATH=/data/local/tmp/hepta-unicode-v148-r2/input.jar app_process /system/bin org.trillionnium.hepta.input.UnicodeInput set-text --operation-id root-prompt-root-r10-neg01-1ad3-01 --display 0 --package org.trillionnium.owneropen --view-id org.trillionnium.owneropen:id/ui_prompt --expected-text-b64 IOS9oOWlvQ== --text-b64 5Zyo5b2T5YmNIG93bmVyLW9wZW4g5Lya6K+d5omn6KGMIE5FRy0wMSDliY3lj7DliIfmjaLkv53miqTnu4Tku7bpqozmlLbjgILku4XmjInlt7LlrqHmn6XnmoTpmpTnprvljY/orq7lj5blvpfkuIDmrKHmlrDlsY/luZXop4Llr5/lubbmo4Dmn6Xkv53miqTmi5Lnu53nu5PmnpzvvJvmtYvor5XliY3lj7DnlLHni6znq4sgUm9vdCDlpLnlhbfliIfmjaLvvIzov4fml7bop4Llr5/kuI3lvpfpqbHliqjovpPlhaXvvIzkuI3lgZrmqKHlnovkuJrliqHmiJDlip/lo7DmmI7jgILpqozmlLbmoIfor4bvvJo3Yzc0Yjg0YWVmYjE3N2QxNWY3NDZmYTdlYWUyOWQ1NAo=",
+  "rc": 0,
+  "route": [
+    5037,
+    "23"
+  ],
+  "stdout": "{\"schema\":\"hepta.focused-unicode-input.v1\",\"status\":\"set_verified\",\"effect_state\":\"observed_exact_requested_text\",\"operation_id\":\"root-prompt-root-r10-neg01-1ad3-01\",\"display_id\":0,\"package\":\"org.trillionnium.owneropen\",\"view_id\":\"org.trillionnium.owneropen:id\\/ui_prompt\",\"requested_utf8_sha256\":\"6cde40708b387361d0115eb65f0e39c61872f8146a593cf4a8cb4890202ff525\",\"window_id\":571,\"bounds\":\"[84,1703][1011,1844]\",\"before_utf8_sha256\":\"6b6f27acd55005555aba99da08ff2bcda5ba019483ccea0c5af5e1a7bf12a8e7\",\"action_accepted\":true,\"after_utf8_sha256\":\"6cde40708b387361d0115eb65f0e39c61872f8146a593cf4a8cb4890202ff525\",\"readback_text_b64\":\"5Zyo5b2T5YmNIG93bmVyLW9wZW4g5Lya6K+d5omn6KGMIE5FRy0wMSDliY3lj7DliIfmjaLkv53miqTnu4Tku7bpqozmlLbjgILku4XmjInlt7LlrqHmn6XnmoTpmpTnprvljY\\/orq7lj5blvpfkuIDmrKHmlrDlsY\\/luZXop4Llr5\\/lubbmo4Dmn6Xkv53miqTmi5Lnu53nu5PmnpzvvJvmtYvor5XliY3lj7DnlLHni6znq4sgUm9vdCDlpLnlhbfliIfmjaLvvIzov4fml7bop4Llr5\\/kuI3lvpfpqbHliqjovpPlhaXvvIzkuI3lgZrmqKHlnovkuJrliqHmiJDlip\\/lo7DmmI7jgILpqozmlLbmoIfor4bvvJo3Yzc0Yjg0YWVmYjE3N2QxNWY3NDZmYTdlYWUyOWQ1NAo=\",\"action_attempted\":true,\"own_automation_disconnected\":true}\n",
+  "stderr": ""
+}

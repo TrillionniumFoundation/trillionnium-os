@@ -1,0 +1,220 @@
+--- reviewed6adb/derive_negative_operator_sources.py
++++ capture-compatible/derive_negative_operator_sources.py
+@@ -18,10 +18,12 @@
+ import re
+ import stat
+ import sys
++import types
+ 
+ sys.dont_write_bytecode = True
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ FINALIZATION = None
++ROOT_CAPTURE_MANIFEST = None
+ FINAL_SCHEMA = 'hepta.r10.property-negative-source-finalization.v1'
+ FC = B/'r10-boundary-consumers-final-r8'
+ AC = B/'scoped-acceptance-v150-r10-r1-readiness-r9'
+@@ -32,7 +34,8 @@
+     'component': B/'fixed19-comp01-neg03-property-r8-operator-r1',
+     'cpu': B/'cpu-cancel-original-verifier-property-r8-operator-r1',
+     'p4': B/'cpu-cancel-p4-original-capture-property-r8-operator-r1',
+-    'phone': B/'cpu-cancel-negative-phone-capture-property-r8-operator-r1'}
++    'phone': B/'cpu-cancel-negative-phone-capture-property-r8-operator-r1',
++    'closure': B/'cpu-cancel-host-closure-property-r8-operator-r1'}
+ PARENT_MANIFESTS = {
+     'ui': {'path':str(B/'cancel-native-r10-r1-host-candidate05/MANIFEST.json'),
+         'bytes':4262, 'sha256':'65720e417594205b45172fe509f3419d607d3dbf1e579b2a17faa8b40315ca10'},
+@@ -77,6 +80,17 @@
+ PROPERTY_HEAD_SHA = 'eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10'
+ ACTOR_SHA = 'd973891aa125ce2deb2237064fbc101d5d9d915d9e4bd75e25e4da298eecd5f1'
+ ACTIVE_PARENT_SHA = 'f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd'
++CLOSURE_REFERENCE_ROOT = B/'property-r8-negative-capture-generation-candidate01-1ad3/reference'
++CLOSURE_REFERENCES = {
++    'manifest': ('CPU-CAPTURE-COMPATIBILITY-MANIFEST.original.json',5017,'0e36fd00be0436bf0dcbd6babc7c8d1a2c268f05d72e51ab109646bac7851098'),
++    'negative_originals': ('negative_originals.3e17.original.py',44221,'3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b'),
++    'root_cpu_negative': ('root_cpu_negative.d7a2.original.py',15256,'d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0'),
++    'close_cpu_negative': ('close_cpu_negative.5c431.original.py',43958,'5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5'),
++    'ledger_prefix_negative': ('ledger_prefix_negative.7ed57.original.py',29465,'7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6'),
++    'root_parent': ('root-Q2-53b5.original.py',45952,'53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8'),
++    'host_phase_template': ('HOST-PHASE.template.original.json',1078,'00a1ff87bd21f177fbe4cff397a5e095c9145210e5b11f751a5419ba5cc78246')}
++SENDER_SOURCE = {'path':str(B/'send_new_native_task_r5.py'),'bytes':40788,
++    'sha256':'5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281'}
+ META = ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ MAX_ORIGINAL = 16*1024*1024
+ MAX_HELPER = 131072
+@@ -573,6 +587,142 @@
+         patches[kind] = diff({name:parents[kind]['raw']},{name:packages[kind][name]},kind)
+     return packages,proof,patches
+ 
++def capture_manifest_pin():
++    row = ROOT_CAPTURE_MANIFEST
++    descriptor(row,65536)
++    need(row['path'] == str(B/'native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json'),
++         'only the actual frozen R8 Root source manifest may supply CPU capture')
++    return row
++
++def capture_module(raw,path,name):
++    need(0 < len(raw) <= 131072,'unchanged pure source byte cap')
++    result=types.ModuleType(name);result.__file__=str(path)
++    exec(compile(raw,str(path),'exec'),result.__dict__)
++    return result
++
++def capture_dependencies(originals,binding):
++    references={}
++    for name,(leaf,size,digest) in CLOSURE_REFERENCES.items():
++        references[name]=originals.read({'path':str(CLOSURE_REFERENCE_ROOT/leaf),
++            'bytes':size,'sha256':digest},131072)
++    manifest=strict(references['manifest'])
++    need(manifest['schema']=='hepta.r10.cpu-negative-host-closure-source-package.v1'
++         and manifest['future_dependencies_frozen'] is False,
++         'exact independently reviewed capture compatibility source manifest')
++    required={name:pin(references[name]) for name in
++        ('negative_originals','root_cpu_negative','close_cpu_negative','ledger_prefix_negative')}
++    need({Path(r['path']).stem:{k:r[k] for k in ('bytes','sha256')}
++        for r in manifest['runtime_sources']}==required,'capture compatibility runtime four source pins')
++    assembly=capture_module(references['negative_originals'],
++        CLOSURE_REFERENCE_ROOT/'negative_originals.3e17.original.py','reviewed_cpu_capture_source')
++    need(assembly.FINAL_DEPENDENCIES is None and assembly.DEP_SOURCE_NAMES ==
++        {'cpu','phone','p4','sender','root_transport'} and assembly.DEP_HASH_NAMES ==
++        {'ui_package_sha256','active_sha256','runtime_package_sha256','consumer_sha256',
++         'readiness_sha256','policy_adoption_sha256','configuration_sha256',
++         'service_inputs_sha256','combination_sha256'},'unchanged five source and nine SHA dependency fields')
++    need(value(references['root_cpu_negative'],'PURE_MODULES')=={
++        'negative_originals':required['negative_originals'],
++        'close_cpu_negative':required['close_cpu_negative']},'reviewed Root CPU two module pins')
++    row=capture_manifest_pin();root_raw=originals.read(row,65536)
++    root_manifest,index=package_index(root_raw,'hepta.native-guard.root-chain-source-package.v1')
++    names={'source/run_component_root_once.py','source/phone_chain_bridge.py','reference/policy_native5_verifier.py'}
++    need(set(index)==names and root_manifest['state']==
++        'ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY'
++        and root_manifest['frozen_component_package_sha256']==binding['runtime']['sha256']
++        and root_manifest['current_combination_sha256']==binding['combination']['sha256']
++        and root_manifest['explicit_policy_adoption_sha256']==binding['adoption']['sha256'],
++        'actual Root manifest must match this exact FC8 generation')
++    root=Path(row['path']).parent
++    bodies={name:member(originals,root,index,name,131072) for name in sorted(names)}
++    coordinator=bodies['source/run_component_root_once.py']
++    assembly.root_source(coordinator,references['root_parent'])
++    unused,slots=assembly.normalized_capture_root(coordinator)
++    expected={'PKG':binding['runtime']['sha256'],'COMBINATION':binding['combination']['sha256'],
++        'VERIFIER_SHA':binding['verifier']['sha256'],'VERIFIER_BYTES':binding['verifier']['bytes'],
++        'POLICY_SHA':binding['policy']['sha256'],'ADOPTION_SHA':binding['adoption']['sha256'],
++        'ROOT_SCOPE_SHA':binding['scope']['sha256']}
++    need(slots==expected,'all seven actual capture Root slots must match the admitted dependency originals')
++    need(pin(bodies['reference/policy_native5_verifier.py'])==binding['verifier'],
++        'actual Root independent verifier must match the same FC8 verifier original')
++    bridge=bodies['source/phone_chain_bridge.py']
++    need(value(bridge,'PKG')==binding['runtime']['sha256'],'actual Root bridge runtime slot')
++    bridge_parent,unused=replace_literal(bridge,'PKG','None')
++    need(sha(bridge_parent)=='6694b106ee8ccf2177bf758367fda214f27b7ebfbea1611e11e67604a2bfd572',
++        'actual Root bridge differs outside its one admitted runtime slot')
++    sender=originals.read(SENDER_SOURCE,131072)
++    source=dict(index['source/run_component_root_once.py'],path=str(root/'source/run_component_root_once.py'))
++    return {'references':references,'root_source':source,'root_raw':coordinator,
++        'root_manifest':row,'root_slots':slots,'sender_raw':sender}
++
++def derive_capture_closure(packages,binding,capture):
++    references=capture['references']
++    source_names={'cpu':'cpu_cancel_originals.py','phone':'capture_negative_originals.py',
++        'p4':'capture_p4_cancel_originals.py'}
++    source_rows={kind:{'path':str(OUTPUTS[kind]/('source/'+name)),
++        **pin(packages[kind]['source/'+name])} for kind,name in source_names.items()}
++    source_rows.update(sender=dict(SENDER_SOURCE),root_transport=capture['root_source'])
++    final={'schema':'hepta.r10.cpu-negative-final-dependencies.v1',
++        'sources':{name:{k:row[k] for k in ('bytes','sha256')} for name,row in source_rows.items()},
++        'live_policy':binding['policy'],'ui_package_sha256':sha(packages['ui']['MANIFEST.json']),
++        'active_sha256':sha(packages['ui']['source/active_runtime_r10.py']),
++        'runtime_package_sha256':binding['runtime']['sha256'],'consumer_sha256':binding['consumer']['sha256'],
++        'readiness_sha256':binding['readiness']['sha256'],'policy_adoption_sha256':binding['adoption']['sha256'],
++        'configuration_sha256':CONFIG_SHA,'service_inputs_sha256':SERVICE_SHA,
++        'combination_sha256':binding['combination']['sha256']}
++    negative,negative_edits=changed_source(references['negative_originals'],
++        [('FINAL_DEPENDENCIES',None,repr(final))])
++    assembly=capture_module(negative,OUTPUTS['closure']/'source/negative_originals.py','frozen_cpu_capture_source')
++    need(assembly.final_dependencies()==final,'original CPU final dependency validator must accept the exact schema')
++    module_pins={'negative_originals':pin(negative),'close_cpu_negative':pin(references['close_cpu_negative'])}
++    root,root_edits=changed_source(references['root_cpu_negative'],[('PURE_MODULES',None,repr(module_pins))])
++    phases={'phone.execution':'phone-negative-capture','p4.execution.host':'negative-p4-capture',
++        'actor_execution.host':'negative-cancel-actor','sender.execution':'negative-sender'}
++    contract={'schema':'hepta.cpu-negative.capture-host-input-contract.v1',
++        'phase_inputs':{key:{'phase':phase,'sidecar':'OUTPUT-CAPTURE.json',
++            'required_records':['intent','child','result','stdout','stderr','stdin','output_capture']}
++            for key,phase in phases.items()},
++        'success_RESULT_fields':['state','phase','pid','returncode','stdout','stderr','automatic_retry'],
++        'sidecar_is_separate_from_RESULT':True,'same_phase_directory_required':True,
++        'every_sidecar_consumed_by_original_read_set':True,
++        'actual_phase_records_or_case_plan_created':False,'physical_case_pass':False}
++    inputs={'schema':'hepta.r10.cpu-negative-generated-source-inputs.v1',
++        'dependency_sources':source_rows,
++        'additional_source_inputs':{
++            'ledger_negative':{'path':str(OUTPUTS['closure']/'source/ledger_prefix_negative.py'),
++                **pin(references['ledger_prefix_negative'])},
++            'root_transport_parent':{'path':str(CLOSURE_REFERENCE_ROOT/CLOSURE_REFERENCES['root_parent'][0]),
++                **pin(references['root_parent'])}},
++        'root_capture_manifest':capture['root_manifest'],'root_capture_slots':capture['root_slots'],
++        'other_original_pure_references_unchanged':True,'actual_case_plan_created':False,
++        'phone_calls':0,'physical_case_pass':False}
++    files={'source/negative_originals.py':negative,'source/root_cpu_negative.py':root,
++        'source/close_cpu_negative.py':references['close_cpu_negative'],
++        'source/ledger_prefix_negative.py':references['ledger_prefix_negative'],
++        'FINAL-DEPENDENCIES.json':encoded(final),'CLOSURE-SOURCE-INPUTS.json':encoded(inputs),
++        'HOST-CAPTURE-INPUT-CONTRACT.json':encoded(contract),
++        'HOST-PHASE.template.json':references['host_phase_template']}
++    files['SOURCE-MANIFEST.json']=encoded({
++        'schema':'hepta.r10.cpu-negative-host-closure-source-package.v1',
++        'state':'SOURCE_PINS_BOUND_ACTUAL_CASE_AND_CAPTURE_NOT_EXECUTED',
++        'files':rowset(files),'runtime_sources':rowset({k:v for k,v in files.items() if k.startswith('source/')}),
++        'capture_compatibility_parent':{'bytes':5017,'sha256':CLOSURE_REFERENCES['manifest'][2]},
++        'root_capture_manifest':capture['root_manifest'],'future_dependencies_frozen':True,
++        'cases':['NEG-08','NEG-09'],'actual_cases':0,'phone_calls':0,'physical_case_pass':False})
++    proof={'schema':'hepta.r10.cpu-negative-capture-generation-proof.v1',
++        'negative_originals_edits':negative_edits,'root_cpu_negative_edits':root_edits,
++        'only_one_RHS_per_source':True,'five_dependency_sources_unchanged':sorted(final['sources']),
++        'nine_dependency_SHA_fields_unchanged':sorted(assembly.DEP_HASH_NAMES),
++        'both_whole_source_inverses_exact':True,'closer_and_ledger_bytes_unchanged':True,
++        'root_template_inverse':assembly.ROOT_CAPTURE_TEMPLATE,
++        'actual_Root_manifest':capture['root_manifest'],'actual_Root_source':capture['root_source'],
++        'all_seven_actual_Root_slots_bound':capture['root_slots'],
++        'four_required_separate_capture_sidecars':phases,
++        'actual_case_or_phase_created':False,'physical_qualification':False}
++    before={'source/'+name+'.py':references[name] for name in
++        ('negative_originals','root_cpu_negative','close_cpu_negative','ledger_prefix_negative')}
++    patch=diff(before,{name:body for name,body in files.items() if name.startswith('source/')},'closure')
++    return files,proof,patch
++
+ def syncdir(path):
+     fd = os.open(path,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+     try:
+@@ -645,11 +795,12 @@
+     args = p.parse_args()
+     if not args.execute_source_generation_once:
+         print(encoded({'schema':FINAL_SCHEMA,'state':'SOURCE_ONLY_PREVIEW',
+-            'future_dependencies_bound':FINALIZATION is not None,
++            'future_dependencies_bound':FINALIZATION is not None and ROOT_CAPTURE_MANIFEST is not None,
+             'outputs':{k:str(v) for k,v in OUTPUTS.items()},'originals_read':0,
+             'phone_calls':0,'new_nonces':0,'physical_qualification':False}).decode(),end='')
+         return 0
+     frozen = finalization()
++    capture_manifest_pin()
+     need(type(args.source_sha256) is str and HASH.fullmatch(args.source_sha256),
+          'the reviewed finalized generator source SHA is mandatory')
+     originals = Originals()
+@@ -666,6 +817,10 @@
+     parents = parent_packages(originals)
+     binding = actual_dependencies(originals,frozen)
+     packages,proof,patches = derive_packages(parents,binding)
++    capture = capture_dependencies(originals,binding)
++    closure,closure_proof,closure_patch = derive_capture_closure(packages,binding,capture)
++    packages['closure']=closure;patches['closure']=closure_patch
++    proof['cpu_closure_capture_compatibility']=closure_proof
+     originals.recheck()
+     mkdir_new(OUT)
+     intent = {'schema':'hepta.r10.property-negative-source-generation-intent.v1',
+@@ -677,7 +832,7 @@
+         put(OUT/'FINALIZATION.original.json',encoded(frozen))
+         put(OUT/'GENERATOR.original.py',self_raw)
+         delivery = {}
+-        for kind in ('ui','fault','component','cpu','p4','phone'):
++        for kind in ('ui','fault','component','cpu','p4','phone','closure'):
+             rows = write_tree(OUTPUTS[kind],packages[kind])
+             delivery[kind] = {'root':str(OUTPUTS[kind]),'files':rows,
+                 'manifest':next(r for r in rows if Path(r['path']).name in ('MANIFEST.json','SOURCE-MANIFEST.json'))}

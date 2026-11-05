@@ -1,0 +1,490 @@
+{
+  "schema": "hepta.neg01.prelaunch-diagnostic-review.v1",
+  "state": "OBSERVED_PRELAUNCH_RESERVE_REFUSAL_NO_RETRY_AUTHORIZED",
+  "case_label": "root-r10-neg01-1ad3-01",
+  "nonce": "7c74b84aefb177d15f746fa7eae29d54",
+  "actual_job": "1a1ab19ad4d-fc05-4a62",
+  "scope": {
+    "mac_reads_only": true,
+    "mac_small_files_retained": 25,
+    "source_changes": 0,
+    "process_starts": 0,
+    "phone_operations": 0,
+    "p4_operations": 0,
+    "new_nonce_or_retry": false,
+    "signals_sent": 0,
+    "no_send_closure_by_this_review": false,
+    "physical_case_pass": false
+  },
+  "failure": {
+    "source_function": "Chain.run",
+    "source_line": 864,
+    "operation": "self.remaining(510)",
+    "message": "same lease exhausted; no extension/restart",
+    "occurred_after": "validated COMPONENT-PREPARED-NO-SEND original marker",
+    "occurred_before": "frozen_phone(launch, ..., 60)",
+    "root_fixture_attempts": [],
+    "sender_execute_at_root_failure": "UNKNOWN: child not joined, neither pipe EOF, CAPTURE_STOP_REQUESTED, prefix_only_or_unknown true",
+    "later_sender_terminal": "Parent separately reports rc2/send0/restoreconfirmed; later originals are outside this report verification scope"
+  },
+  "timing": {
+    "schema": "hepta.neg01.prelaunch-timing-diagnostic.v1",
+    "case_label": "root-r10-neg01-1ad3-01",
+    "scope": "read_only_retained_case_files_and_pinned_source_analysis_no_process_or_phone_operation",
+    "method": "phase start = original capture execution_deadline_monotonic minus original INTENT maximum_wait_seconds, all same coordinator; epoch lease comparison uses retained stdout mtime and lease issue millisecond",
+    "sequential_phases": [
+      {
+        "phase": "prepare-material",
+        "budget_s": 30,
+        "start_monotonic": "10.79667375",
+        "child_join_monotonic": "11.007694875",
+        "elapsed_s": "0.211021125",
+        "pid": 86061,
+        "stdout_bytes": 2837,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793871964746502348,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "host-stage-material",
+        "budget_s": 90,
+        "start_monotonic": "11.033678791",
+        "child_join_monotonic": "11.49667975",
+        "elapsed_s": "0.463000959",
+        "pid": 86074,
+        "stdout_bytes": 8036,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793871965235999004,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "phone-push-material",
+        "budget_s": 145,
+        "start_monotonic": "11.512906958",
+        "child_join_monotonic": "12.483903125",
+        "elapsed_s": "0.970996167",
+        "pid": 86089,
+        "stdout_bytes": 915,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793871966223234976,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "phone-copy-material",
+        "budget_s": 95,
+        "start_monotonic": "12.49368325",
+        "child_join_monotonic": "13.473327833",
+        "elapsed_s": "0.979644583",
+        "pid": 86106,
+        "stdout_bytes": 18833,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793871967212617540,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "phone-push-stage-source",
+        "budget_s": 145,
+        "start_monotonic": "13.482133041",
+        "child_join_monotonic": "14.528619541",
+        "elapsed_s": "1.046486500",
+        "pid": 86117,
+        "stdout_bytes": 923,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793871968267878085,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "phone-copy-stage-source",
+        "budget_s": 95,
+        "start_monotonic": "14.538075833",
+        "child_join_monotonic": "15.488294958",
+        "elapsed_s": "0.950219125",
+        "pid": 86141,
+        "stdout_bytes": 18841,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793871969227729651,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "phone-stage",
+        "budget_s": 145,
+        "start_monotonic": "15.499090166",
+        "child_join_monotonic": "73.112558166",
+        "elapsed_s": "57.613468000",
+        "pid": 86152,
+        "stdout_bytes": 17700,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793872026852103463,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "sender-preview",
+        "budget_s": 20,
+        "start_monotonic": "73.120162125",
+        "child_join_monotonic": "73.277316833",
+        "elapsed_s": "0.157154708",
+        "pid": 87140,
+        "stdout_bytes": 450,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793872027016326394,
+        "successful_host_child_and_capture": true
+      },
+      {
+        "phase": "sender-prepared",
+        "budget_s": 120,
+        "start_monotonic": "73.281188041",
+        "child_join_monotonic": "101.087759166",
+        "elapsed_s": "27.806571125",
+        "pid": 87158,
+        "stdout_bytes": 1653,
+        "stderr_bytes": 0,
+        "stdout_mtime_ns": 1793872054827360750,
+        "successful_host_child_and_capture": true
+      }
+    ],
+    "async_sender": {
+      "phase": "sender-execute",
+      "start_monotonic": "73.278392625",
+      "status": "UNKNOWN_NO_JOIN_NO_EOF_CAPTURE_STOP_REQUESTED",
+      "not_added_to_sequential_elapsed": true,
+      "no_send_not_proven_by_empty_capture": true
+    },
+    "first_child_start_to_marker_child_join_s": "90.291085416",
+    "sum_sequential_child_elapsed_s": "90.198562292",
+    "interphase_and_local_gap_s": "0.092523124",
+    "lease_expires_unix_ms": 1793872564534,
+    "derived_lease_issue_unix_ms": 1793871964534,
+    "sender_prepared_persisted_stdout_mtime_ns": 1793872054827360750,
+    "recorded_marker_persistence_minus_recorded_issue_s": "90.29336075",
+    "recorded_lease_remaining_at_marker_persistence_s": "509.70663925",
+    "strict_prelaunch_remaining_threshold_s": 510,
+    "strict_prepare_window_s": 90,
+    "threshold_miss_already_at_marker_persistence_s": "0.29336075",
+    "limitations": [
+      "recorded issue is floored to milliseconds, so submillisecond source issue rounding applies",
+      "filesystem epoch mtime and coordinator monotonic are different clocks and not subtracted from each other",
+      "failed remaining() call timestamp not recorded; marker persistence precedes marker validation and remaining() call",
+      "host child success and local capture closure do not prove remote process termination or no Send",
+      "async sender overlaps sender-prepared and has no joined terminal result"
+    ]
+  },
+  "additional_inner_originals": {
+    "stage_wrapper_elapsed_s": "57.09787198097911",
+    "stage_outer_capture_elapsed_s": "57.613468000",
+    "outer_minus_wrapper_elapsed_s": "0.51559601902089",
+    "wrapper_elapsed_includes": "P4 wrapper intent persistence, route/baseline, one phone command; not a pure stage-command timer",
+    "actor_pre_send_budget_s": 150,
+    "actor_prepared_remaining_s": "123.192114824",
+    "actor_pre_send_elapsed_to_prepared_s": "26.807885176",
+    "sender_host_wait_minus_actor_preparation_s": "0.998685949",
+    "phone_stage_state": "PRIVATE_COMPONENT_INPUTS_STAGED_NO_ROLES",
+    "stage_service_launches": 0,
+    "stage_native_tasks": 0,
+    "stage_prior_closed_components": 5,
+    "stage_current_inventory_entries": 2413,
+    "stage_current_inventory_file_bytes_hashed": 16401835,
+    "created_directory_count": 9,
+    "same_phone_created_directory_metadata_span_ns": 88000000,
+    "metadata_span_is_not_full_stage_duration": true,
+    "decoded_originals": [
+      {
+        "path": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/decoded/STAGE-COMPLETE.original.json",
+        "bytes": 15628,
+        "sha256": "a9855aba9e1112a5d98ef038225275c5359dab94ca6a157b6f1f03f8a7cd3309"
+      },
+      {
+        "path": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/decoded/COMPONENT-PREPARED-NO-SEND.original.json",
+        "bytes": 1030,
+        "sha256": "e0a28598c16cc86ceb8ba12553523bd8740374c563460d8b064c369f3cdb7750"
+      }
+    ]
+  },
+  "budget_relationship": {
+    "lease_issue": "before any material preparation; fixed 600 seconds",
+    "prelaunch_check": "remaining >510, so elapsed preparation must be strictly <90 seconds",
+    "listener_check": "at listen(), require original lease >420 seconds remaining; service deadline=now+420, accept deadline=now+120",
+    "native_connection": "after accept, deadline=min(now+300, service_deadline); setup witness is inside that connection budget",
+    "reserve_relation": "510-420=90 is a threshold-relative allowance for work between prelaunch check and listener; it is not an independent extension",
+    "sixty_second_request": "510-60-420=30 is conditional arithmetic, not a guaranteed remaining margin; source does additional admission and asynchronous supervisor work",
+    "actor_root_waits": "80-second P4 actor wait and 115-second Root observation wait do not extend lease or prove remote absence on timeout",
+    "risk": "detached_launch and supervise both repeat verify_retired; passing 510 alone does not prove listener will retain >420"
+  },
+  "optimization_candidate": {
+    "status": "SOURCE-ONLY_PROPOSAL_NOT_IMPLEMENTED_NOT_PROFILED",
+    "target": "late_boundary.py pure historical validation path within one verify_current call",
+    "observed_source_repetition": [
+      "chain_originals calls boundary_from_original, then closed_boundary_originals calls it again for the same raw boundary",
+      "historical branches repeatedly call property_parent_reader, raw-load/compile the same exact R7 common and reader",
+      "boundary and closure validation plus historical-tail validation repeatedly invoke non_native_sidebranch, recompiling and purely verifying the same pinned verifier and three retained originals"
+    ],
+    "proposed_scope": "explicit invocation-local reuse of pure validation products keyed by all exact source/original bytes, descriptors, relevant generation inputs and record values; cache immutable results or defensive copies; reset at end of admission",
+    "must_remain_fresh": [
+      "original file full metadata/path/inode checks and end-of-admission rechecks",
+      "complete current filesystem inventory and byte hashes",
+      "retired/current process group absence and endpoint absence",
+      "old-journal exclusive lock admission and ownership",
+      "actual external artifact bytes/SELinux labels and live policy bytes",
+      "600/510/420/120/300 budgets and one-start/no-retry rules"
+    ],
+    "not_accepted_shortcuts": [
+      "unvalidated persistent verification cache",
+      "reusing prior current-inventory or process/endpoint absence",
+      "starting sender phone UI work concurrently with current-inventory admission without a separate concurrency proof",
+      "lowering510 or extending600",
+      "treating a 0.293-second observed miss as evidence a repeat will qualify"
+    ],
+    "evidence_needed_before_claiming_speedup": "profile exact retained raw historical inputs in a host-only immutable input harness, validate rejection sensitivity and byte-equivalent outputs, then independently review candidate; no claimed phone runtime saving from this record"
+  },
+  "limitations": [
+    "No timestamps bracket stage inner verify_retired/current_inventory/write/verify_external individually, so 57 seconds cannot be apportioned exactly",
+    "Phone metadata epochs, P4 monotonic and Mac monotonic are separate clocks; only same-clock differences are computed",
+    "150s actor budget is after actor setup; it is not sender process lifetime",
+    "Empty sender capture prefix is not no-Send, remote termination, or cleanup proof",
+    "Prepared marker is a point-in-time pre-Send observation, not a terminal result",
+    "Mac read_multiple batches are not atomic multi-file snapshots; every retained original was independently version/hash checked"
+  ],
+  "source_pins": [
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/candidate01/root-package/source/run_component_root_once.py",
+      "bytes": 72194,
+      "sha256": "c1b03c028359342a520372a7ddaa60ef38f3b9609ade3a133f32dfe3b6b372a9"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-reconciliation-source/runtime-source/stage_component.py",
+      "bytes": 19116,
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-reconciliation-source/runtime-source/component_lifecycle.py",
+      "bytes": 40261,
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-reconciliation-source/runtime-source/component_listener.py",
+      "bytes": 38823,
+      "sha256": "ad345c0080cbfd89f1378bb6e8583f43e1fa4af0a5928d7ecbf4ccc8d4f04c52"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-reconciliation-source/runtime-source/component_common.py",
+      "bytes": 19138,
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-reconciliation-source/runtime-source/late_boundary.py",
+      "bytes": 66996,
+      "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_reference/send_new_native_guard_task_r10_r4.py",
+      "bytes": 40952,
+      "sha256": "aafd40345c6dc35b7b7d34ab8b04c860ebf17d326d842ed733d0404cd0a051ad"
+    },
+    {
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_reference/phone_once.py",
+      "bytes": 5652,
+      "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+    }
+  ],
+  "original_files": [
+    {
+      "local_path": "originals/prepare-material/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/prepare-material/OUTPUT-CAPTURE.json",
+      "sha256": "b36f89a540643251e82bc19cd15177862adf10a1441294b954727b3fed2af080",
+      "size": 2504,
+      "version": "16777233:588378843:2504:1793871964746741433:1793871964746741433"
+    },
+    {
+      "local_path": "originals/prepare-material/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/prepare-material/INTENT.json",
+      "sha256": "4cf244ce2cb687b2d9e8ad5500c5b4427d0cff19fcdc09b149d46e930674b980",
+      "size": 4280,
+      "version": "16777233:588378768:4280:1793871964535109763:1793871964535109763"
+    },
+    {
+      "local_path": "originals/host-stage-material/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/host-stage-material/OUTPUT-CAPTURE.json",
+      "sha256": "d5f5d1d6ec9dc3f5ac23030d09382c330172d07a57c26a14e2721b013d7eabae",
+      "size": 2514,
+      "version": "16777233:588378857:2514:1793871965237838054:1793871965237838054"
+    },
+    {
+      "local_path": "originals/host-stage-material/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/host-stage-material/INTENT.json",
+      "sha256": "c85fd86dbf2f57afe3a7a98db410f6262926fe184aeaa8e88b0b9d73f5491202",
+      "size": 964,
+      "version": "16777233:588378846:964:1793871964770294614:1793871964770294614"
+    },
+    {
+      "local_path": "originals/phone-push-material/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-push-material/OUTPUT-CAPTURE.json",
+      "sha256": "d108ef169af158fc407514b00f84dd3c8052f49dc50f5e47fbea99a55e20cc3e",
+      "size": 2511,
+      "version": "16777233:588378869:2511:1793871966225097859:1793871966225097859"
+    },
+    {
+      "local_path": "originals/phone-push-material/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-push-material/INTENT.json",
+      "sha256": "02262be1624c407d9458a44255a97934ebd2d934c6f6f67e5e304521f153fc8d",
+      "size": 965,
+      "version": "16777233:588378860:965:1793871965250087605:1793871965250087605"
+    },
+    {
+      "local_path": "originals/phone-copy-material/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-copy-material/OUTPUT-CAPTURE.json",
+      "sha256": "5a69f322d6f3fa5cb4641c42fb0bb08ce1a3012ccedeba9d12870f84a6d3ec3b",
+      "size": 2517,
+      "version": "16777233:588378886:2517:1793871967214495339:1793871967214495339"
+    },
+    {
+      "local_path": "originals/phone-copy-material/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-copy-material/INTENT.json",
+      "sha256": "9169d49c4ce5290e79bf7cf430ce242d06f662038d7a1b6f2bd2c6d3c33aa048",
+      "size": 964,
+      "version": "16777233:588378872:964:1793871966230934841:1793871966230934841"
+    },
+    {
+      "local_path": "originals/phone-push-stage-source/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-push-stage-source/OUTPUT-CAPTURE.json",
+      "sha256": "3a7d2c062801e1926d5a4541827a5108fdebc89ac59cb77e16505a0a16b61ff1",
+      "size": 2521,
+      "version": "16777233:588378911:2521:1793871968269918260:1793871968269918260"
+    },
+    {
+      "local_path": "originals/phone-push-stage-source/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-push-stage-source/INTENT.json",
+      "sha256": "ea6c617b4099a8593e4dc68ec004f22d079d2afd8a2729bdc0064fdf7e541019",
+      "size": 969,
+      "version": "16777233:588378889:969:1793871967219572485:1793871967219572485"
+    },
+    {
+      "local_path": "originals/CHAIN-INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/CHAIN-INTENT.json",
+      "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88",
+      "size": 359,
+      "version": "16777233:588378766:359:1793871964534689720:1793871964534689720"
+    },
+    {
+      "local_path": "originals/material/PREPARED.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/material/PREPARED.json",
+      "sha256": "68df0f8167f4394db4abdb4aebee85c50325d918dc2cb027fbeaa747919d6ad9",
+      "size": 2837,
+      "version": "16777233:588378842:2837:1793871964742431790:1793871964742431790"
+    },
+    {
+      "local_path": "originals/phone-copy-stage-source/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-copy-stage-source/OUTPUT-CAPTURE.json",
+      "sha256": "8799c54d552f687db7e6e01a79dce75c7bc56284d5a8b35a677205c06c964d11",
+      "size": 2530,
+      "version": "16777233:588378920:2530:1793871969229641326:1793871969229641326"
+    },
+    {
+      "local_path": "originals/phone-copy-stage-source/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-copy-stage-source/INTENT.json",
+      "sha256": "d9e1efe46bd336732023951eeb67011455dac988071298f44cd582a6370b2076",
+      "size": 968,
+      "version": "16777233:588378914:968:1793871968275657992:1793871968275657992"
+    },
+    {
+      "local_path": "originals/phone-stage/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-stage/OUTPUT-CAPTURE.json",
+      "sha256": "de9b90d66e8e951c7bc8290a5cd0d5a02adb828a5ac8300136111c9b5ddaf691",
+      "size": 2491,
+      "version": "16777233:588379652:2491:1793872026854298805:1793872026854298805"
+    },
+    {
+      "local_path": "originals/phone-stage/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-stage/INTENT.json",
+      "sha256": "6faeb821abb50261101bb5382b2182922f4fb27466c722e16eeca7c50023aadb",
+      "size": 957,
+      "version": "16777233:588378923:957:1793871969236254728:1793871969236254728"
+    },
+    {
+      "local_path": "originals/sender-preview/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/sender-preview/OUTPUT-CAPTURE.json",
+      "sha256": "2f25be63cb8dab22a12ef2965a367ab60a388cdc3928b5902c1b08edddfdf7bc",
+      "size": 2496,
+      "version": "16777233:588379662:2496:1793872027016572145:1793872027016572145"
+    },
+    {
+      "local_path": "originals/sender-preview/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/sender-preview/INTENT.json",
+      "sha256": "7e474ffa869c06ac2975e7e3e614e542c0d9426955d3188da90cf9d6ecd18b87",
+      "size": 2168,
+      "version": "16777233:588379655:2168:1793872026858243780:1793872026858243780"
+    },
+    {
+      "local_path": "originals/sender-prepared/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/sender-prepared/OUTPUT-CAPTURE.json",
+      "sha256": "748b563c027f03f0c7bd2a25c802593ba1e0071eb8fdcb1fd0f046ca99e8c594",
+      "size": 2506,
+      "version": "16777233:588379975:2506:1793872054829162300:1793872054829162300"
+    },
+    {
+      "local_path": "originals/sender-prepared/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/sender-prepared/INTENT.json",
+      "sha256": "4c8b8d95d52aabadc94536441aab5752e0096abad319c27f53bd5027b028efb5",
+      "size": 961,
+      "version": "16777233:588379670:961:1793872027019718158:1793872027019718158"
+    },
+    {
+      "local_path": "originals/sender-execute/OUTPUT-CAPTURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/sender-execute/OUTPUT-CAPTURE.json",
+      "sha256": "55a14f41437afe7ff8f72750bdff31e1f0a19decb232f20428fb2c67c78dd092",
+      "size": 2548,
+      "version": "16777233:588379977:2548:1793872054851204224:1793872054851204224"
+    },
+    {
+      "local_path": "originals/sender-execute/INTENT.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/sender-execute/INTENT.json",
+      "sha256": "bcb5ebca60118433c598709e47ff6206e9503d485e22fcd870505f82aca443a4",
+      "size": 2191,
+      "version": "16777233:588379665:2191:1793872027017114731:1793872027017114731"
+    },
+    {
+      "local_path": "originals/ROOT-FAILURE.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/ROOT-FAILURE.json",
+      "sha256": "160d7a942ef1a94efe79319475db1d0d87d38a5d58b941b3e0689417d7e6fbc2",
+      "size": 11776,
+      "version": "16777233:588379979:11776:1793872054854609238:1793872054854609238"
+    },
+    {
+      "local_path": "originals/phone-stage/stdout.original",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/phone-stage/stdout.original",
+      "sha256": "99006633dc9688fc6aad42aff6f2e640e8e368cc9f0a1355a3dfaf02734a80b3",
+      "size": 17700,
+      "version": "16777233:588378925:17700:1793872026852103463:1793872026852103463"
+    },
+    {
+      "local_path": "originals/sender-prepared/stdout.original",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/sender-prepared/stdout.original",
+      "sha256": "38b847e86d4cca4815f8b2d6d8f0ecb44d1c8a5ac2265ea52e583927ee567c3d",
+      "size": 1653,
+      "version": "16777233:588379672:1653:1793872054827360750:1793872054827360750"
+    }
+  ]
+}

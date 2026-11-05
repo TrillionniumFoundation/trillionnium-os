@@ -1,0 +1,77 @@
+{
+  "archive": {
+    "bytes": 110560,
+    "path": "/home/alex/razr60-local-model-v150/fixed19-root-1ad3-neg01-retired-read01/FULL-ORIGINALS.tar.xz",
+    "sha256": "038659f22243de3ba38bc033719484f7435fe407650d549924ce8ea191797cea"
+  },
+  "case_pass": false,
+  "files": [
+    {
+      "bytes": 72,
+      "path": "CHILD.json",
+      "sha256": "ef4f0e414310d965f2cb449bd8d36a9365d82428a5c360e3cf30eb1029fdbc31"
+    },
+    {
+      "bytes": 600,
+      "path": "INTENT.json",
+      "sha256": "e9657538a4029f3502d8e1753577afe97747691a71b3cdaa6ab0f4d73d62c4ca"
+    },
+    {
+      "bytes": 86,
+      "path": "JOINED.json",
+      "sha256": "7f91e1eb09f0365e4755a42c7eee767ccb65e0757efe756f4c28e0b1c41b9f83"
+    },
+    {
+      "bytes": 491719,
+      "path": "PHONE-STDOUT.original",
+      "sha256": "efc845a1cc03b699997a70c8c71a2938ce5b28b9f8cc7c5f135027094f10b34b"
+    },
+    {
+      "bytes": 21812,
+      "path": "PROBE-SOURCE.original.py",
+      "sha256": "d3f599e7adbb7b249e7da0550d48964d42713e6ac3989e16b0d3b0ca9d13e1f4"
+    },
+    {
+      "bytes": 26389,
+      "path": "REQUEST.original.json",
+      "sha256": "f0eb6c6853527d95b15e2dd084352fbaf01f13b0312867e7e16d535dfcccb487"
+    },
+    {
+      "bytes": 1386,
+      "path": "RESULT.json",
+      "sha256": "9a53902d4a2d0100d602fdca143478d63157059f53ccba7d6ae03260edfc44c5"
+    },
+    {
+      "bytes": 0,
+      "path": "actor.stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 303,
+      "path": "actor.stdout.original",
+      "sha256": "2b3467a19a937e11dfe34c384903b3567366d67c626a17282c8954f6f306a448"
+    },
+    {
+      "bytes": 348,
+      "path": "phone-baseline.json.original",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43"
+    },
+    {
+      "bytes": 26699,
+      "path": "phone-intent.json.original",
+      "sha256": "00372f52524bcb7b0ed593db5d2ad27c78402486de9362ecc4819285bbad28bc"
+    },
+    {
+      "bytes": 534303,
+      "path": "phone-result.json.original",
+      "sha256": "96c5dc9ab3662f4be340c20cb6b6f92d11ebc336db1acdc8af28d8e7933e4da9"
+    }
+  ],
+  "originals_changed": false,
+  "schema": "hepta.fixed19.readonly-diagnostic-originals.v1",
+  "source_sha256": "d3f599e7adbb7b249e7da0550d48964d42713e6ac3989e16b0d3b0ca9d13e1f4",
+  "tar": {
+    "bytes": 1116160,
+    "sha256": "1ae25e69f81450b72128964b1033361d17a9d213aa29ab06a8b28642b9ae5bbc"
+  }
+}

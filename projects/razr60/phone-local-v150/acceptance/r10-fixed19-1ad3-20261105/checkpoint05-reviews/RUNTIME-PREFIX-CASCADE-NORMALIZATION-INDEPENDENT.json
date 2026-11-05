@@ -1,0 +1,44 @@
+{
+  "broad_tests_rerun": false,
+  "findings": [
+    "Cascade and consumer copy the exact typed 6282 increment assignment and verifier function byte-for-byte.",
+    "runtime_parent_proof_view first verifies all32/new manifest/c50a and67dc inverses, parses a separate manifest object, copies the source map, and replaces only one proven late source expression for the old historical proof.",
+    "reviewed_runtime reverses exactly to the old d21f function after undoing only its initial actual-to-proof-view load and final actual return. The complete old31-to32 identity, three-literal freezer inverse, non-native05, environment and historical manifest checks remain unchanged.",
+    "The normalized view remains internal to reviewed_runtime. Its returned values are actual_raw,actual_value,actual_files; derive forwards those actual bytes to finalized_sources, actual_tail_check, current-manifest retention and the explicit source-increment proof.",
+    "Consumer verify_runtime_source_increment follows full package body collection and precedes its first component_modules execution.",
+    "Constructor explicitly calls the same helper gate after collecting every source body and before any component_modules execution.",
+    "New FC/AC/CC namespace names are independent. Actual parent manifest hashes are c6f6/a8b9/84b2; comparison to retained parent FINALIZATION fixes all other seven actual pins when only runtime changes."
+  ],
+  "limits": [
+    "No main, derive, package filesystem read, actual tail/adoption proof or target component module was executed.",
+    "Review is limited to requested normalization/control-flow/source-copy scope, not a complete cascade or publication verification.",
+    "Snapshot source was not yet frozen by its owner; any later bytes require an explicit delta review.",
+    "No physical or business case qualification is established."
+  ],
+  "pure_source": {
+    "bytes": 7269,
+    "path": "/workspace/scratch/1ad3d6f55439/runtime_prefix_successor_candidate01/source/runtime_source_increment.v2.py",
+    "sha256": "6282d6d5478d3bd65acc368198db3af550c7284f9c8e66d0b101d6d8269628e4"
+  },
+  "root_or_phone_calls": 0,
+  "runtime_modules_executed": 0,
+  "schema": "hepta.independent-source-review.v1",
+  "snapshots": {
+    "cascade": {
+      "bytes": 66393,
+      "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/package/source/derive_final_cascade_property_r8.py",
+      "sha256": "843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54"
+    },
+    "constructor": {
+      "bytes": 34843,
+      "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/package/templates/make_component_boundary_inputs.py",
+      "sha256": "41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5"
+    },
+    "consumer": {
+      "bytes": 84972,
+      "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/package/templates/release_boundaries.py",
+      "sha256": "57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0"
+    }
+  },
+  "state": "NO_BLOCKER_IN_REQUESTED_RUNTIME_NORMALIZATION_AND_PRE_EXECUTION_GATE_SCOPE"
+}

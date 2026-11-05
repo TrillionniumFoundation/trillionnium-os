@@ -1,0 +1,124 @@
+{
+  "case_qualification": false,
+  "checks": [
+    {
+      "case": "actual32_source_successor",
+      "passed": true,
+      "proof": {
+        "all32_source_bytes_verified": true,
+        "base_runtime_manifest": {
+          "bytes": 16808,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/runtime/MANIFEST.json",
+          "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+        },
+        "business_qualified": false,
+        "component_qualified": false,
+        "historical_reference_changes": 0,
+        "member_count": 32,
+        "phone_calls": 0,
+        "runtime_manifest": {
+          "bytes": 19020,
+          "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+        },
+        "runtime_source_increment": {
+          "base_freeze_result": {
+            "bytes": 22392,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+            "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+          },
+          "base_freezer_source": {
+            "bytes": 36899,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/source/freeze_property_runtime.py",
+            "sha256": "70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d"
+          },
+          "base_runtime_manifest": {
+            "bytes": 16808,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/runtime/MANIFEST.json",
+            "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+          },
+          "changed_member": {
+            "parent": {
+              "bytes": 66996,
+              "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+            },
+            "path": "source/late_boundary.py",
+            "successor": {
+              "bytes": 67005,
+              "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+            }
+          },
+          "inherited_metadata_scope": "original_r7_to_r8_generation_preserved_not_successor_actions",
+          "runtime_member_count": 32,
+          "schema": "hepta.native-guard.runtime-source-increment.v1",
+          "state": "EXACT_RUNTIME32_SINGLE_EXPRESSION_SUCCESSOR_SOURCE_ONLY",
+          "successor_actions": {
+            "historical_reference_changes": 0,
+            "host_source_derivation": true,
+            "new_nonces": 0,
+            "phone_operations": 0,
+            "policy_adoptions_created": 0,
+            "policy_applications": 0
+          },
+          "transformation": {
+            "accepted_path_domain": "canonical_absolute_posix_without_dotdot",
+            "function": "inventory_value",
+            "new_utf8": "sum(p.parts[:len(q.parts)] == q.parts for q in paths) == 1",
+            "old_utf8": "sum(p == q or q in p.parents for q in paths) == 1",
+            "whole_source_inverse_required": true
+          },
+          "unchanged_member_count": 31
+        },
+        "schema": "hepta.native-guard.runtime-source-increment-proof.v1",
+        "state": "EXACT_RUNTIME32_SINGLE_EXPRESSION_AND_PARENT_INVERSES_VERIFIED",
+        "target_source_executed": false,
+        "unchanged_member_count": 31,
+        "whole_manifest_inverse_verified": true,
+        "whole_source_inverse_verified": true
+      }
+    },
+    {
+      "case": "boolean_cannot_replace_integer_zero_in_fixed_increment",
+      "detail": "runtime source increment: one exact-typed fixed reviewed runtime increment required",
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "case": "integer_one_cannot_replace_boolean_in_fixed_increment",
+      "detail": "runtime source increment: one exact-typed fixed reviewed runtime increment required",
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "case": "missing_increment",
+      "detail": "runtime source increment: one exact-typed fixed reviewed runtime increment required",
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "case": "changed_one_of_other31_source_bytes",
+      "detail": "runtime source increment: source bytes differ: reference/REVIEWED-PRODUCTION-PINS.json",
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "case": "changed_parent_metadata_cannot_inverse_to67dc",
+      "detail": "runtime source increment: whole manifest inverse differs from actual16808/67dc",
+      "error_type": "ValueError",
+      "passed": true
+    },
+    {
+      "case": "old_reader_cannot_masquerade_as_successor",
+      "detail": "runtime source increment: source bytes differ: source/late_boundary.py",
+      "error_type": "ValueError",
+      "passed": true
+    }
+  ],
+  "checks_passed": 7,
+  "checks_total": 7,
+  "phone_calls": 0,
+  "pure_verifier_executed": true,
+  "remote_calls": 0,
+  "runtime_target_modules_executed": 0,
+  "schema": "hepta.runtime-increment.local-pure-checks.v1",
+  "state": "LOCAL_EXACT_RUNTIME32_AND_TARGETED_REJECTIONS_PASSED"
+}

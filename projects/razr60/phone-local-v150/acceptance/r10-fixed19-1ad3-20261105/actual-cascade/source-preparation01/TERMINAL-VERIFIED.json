@@ -1,0 +1,35 @@
+{
+  "complete_terminal_verified": true,
+  "exit_code": 0,
+  "job_id": "1a1ab19ad4d-fc05-4a63",
+  "output": {
+    "entry": {
+      "argv": [
+        "-I",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-cascade-actual-1ad3-01/source/derive_final_cascade_property_r8.py",
+        "--execute-host-cascade-once"
+      ],
+      "executable": "/usr/bin/python3",
+      "phone_calls": 0,
+      "policy_writes": 0
+    },
+    "result": {
+      "bytes": 3266,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-cascade-actual-1ad3-01/PREPARATION-RESULT.json",
+      "sha256": "86561590d4166f071833029986df043221dd1ed20ab485fd296c96cc1f164dde"
+    }
+  },
+  "streams": {
+    "stderr": {
+      "bytes": 0,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/lossless_compact_cascade_candidate02/actual-preparation01/STDERR.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 633,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/lossless_compact_cascade_candidate02/actual-preparation01/STDOUT.original",
+      "sha256": "9a42028fbdcca99d8d65e81d90911411b1389cb02ec255a6d4b77702919827ac"
+    }
+  }
+}

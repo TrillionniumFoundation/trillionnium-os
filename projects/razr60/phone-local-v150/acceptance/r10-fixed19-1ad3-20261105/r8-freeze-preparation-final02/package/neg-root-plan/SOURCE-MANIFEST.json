@@ -1,0 +1,61 @@
+{
+  "actual_plan_created": false,
+  "actual_validate_plan_called": false,
+  "changed_rhs_only": "FREEZER_TEMPLATE_SHA",
+  "component_qualified": false,
+  "files": [
+    {
+      "bytes": 1585,
+      "path": "INTERFACE.json",
+      "sha256": "e800bb6d87a9a522ecc8dadcc3f43e3bb0b6d4b5384ad67955f074e6bcccc055"
+    },
+    {
+      "bytes": 488,
+      "path": "PREPARE-NEG01.template.json",
+      "sha256": "7d5c601c2bf1fd81df9c987eb7841c9f642e422ac072e65915367d70f3f09406"
+    },
+    {
+      "bytes": 488,
+      "path": "PREPARE-NEG02.template.json",
+      "sha256": "4786db47c0b99d00adb6b4bdf3b928ca8a868d928ed6ea3bb3d10d0b43c3f3ba"
+    },
+    {
+      "bytes": 916,
+      "path": "README.md",
+      "sha256": "20cba18ce65156394e397c12db7f50c869877552f63e7a3257093c013eca7c9c"
+    },
+    {
+      "bytes": 35543,
+      "path": "reference/freeze_property_runtime.compact.original.py",
+      "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+    },
+    {
+      "bytes": 24237,
+      "path": "reference/prepare_native_guard_root_plan.68df.original.py",
+      "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+    },
+    {
+      "bytes": 24237,
+      "path": "source/prepare_native_guard_root_plan.py",
+      "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+    },
+    {
+      "bytes": 745,
+      "path": "validation/SOURCE-INCREMENT.patch",
+      "sha256": "2d653b5cb14a49f5024761e2a4eb9920b1f86cf32c322220774122feec786eb2"
+    }
+  ],
+  "native_submissions": 0,
+  "parent_source": {
+    "bytes": 24237,
+    "path": "/workspace/scratch/1ad3d6f55439/neg_root_plan_helper_r8/source/prepare_native_guard_root_plan.py",
+    "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+  },
+  "phone_calls": 0,
+  "random_identities_generated": 0,
+  "reviewed_freezer_template_sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d",
+  "reviewed_root_template_sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649",
+  "schema": "hepta.native-guard.r8-root-plan-preparation-source-package.v1",
+  "state": "COMPACT_FREEZER_PIN_ONLY_SOURCE_REVIEWED_NOT_ACTUAL_VALIDATION",
+  "whole_source_inverse_exact": true
+}

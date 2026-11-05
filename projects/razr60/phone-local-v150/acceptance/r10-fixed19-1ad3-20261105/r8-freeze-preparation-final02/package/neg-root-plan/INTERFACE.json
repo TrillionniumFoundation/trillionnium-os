@@ -1,0 +1,38 @@
+{
+  "cli": [
+    "--inputs-desc",
+    "--execute-host-plan"
+  ],
+  "default": "read_only_complete_pure_validate_plan",
+  "existing_attempts": "reject_without_retry_or_replacement_identity",
+  "first_case": "NEG-01_from_exact_actual08",
+  "input_schema": "hepta.native-guard.r8-root-plan-preparation-inputs.v1",
+  "lease_generation": false,
+  "nonce_generation": false,
+  "output_plan": "ROOT-PLAN.json",
+  "output_plan_schema": "hepta.native-guard.root-chain-plan.v1",
+  "phone_calls": 0,
+  "process_starts": 0,
+  "qualification_claimed": false,
+  "remote_operations": 0,
+  "reviewed_freezer_template": {
+    "bytes": 35543,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/freeze_property_runtime.py",
+    "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+  },
+  "schema": "hepta.native-guard.r8-root-plan-preparation-interface.v1",
+  "second_case": "NEG-02_from_actual_qualified_same_generation_NEG01",
+  "staging_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/neg-root-plan",
+  "state": "SOURCE_ONLY_NO_ACTUAL_PLAN_PREPARED",
+  "unfilled_actual_inputs": [
+    "freeze_result",
+    "base_plan.bytes",
+    "base_plan.sha256",
+    "label",
+    "nonce",
+    "request",
+    "host_out",
+    "qualified_neg01_result_for_NEG02_only"
+  ],
+  "write_flag": "execute_host_plan_only_after_pure_validate_plan"
+}

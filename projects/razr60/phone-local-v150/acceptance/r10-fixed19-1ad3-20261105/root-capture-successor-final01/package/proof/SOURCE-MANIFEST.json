@@ -1,0 +1,115 @@
+{
+  "actual_freeze_result": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "execution_root_source_package": {
+    "bytes": 13013,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+  },
+  "files": [
+    {
+      "bytes": 861,
+      "path": "INPUTS.template.json",
+      "sha256": "1f436b5ba7d354f0eeac9536ca9a080252b7e4b25a25c217d3883d1b8e123a75"
+    },
+    {
+      "bytes": 8100,
+      "path": "ROOT-CAPTURE-INCREMENT.json",
+      "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+    },
+    {
+      "bytes": 4702,
+      "path": "reference/actual-r8/COMBINATION.json",
+      "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+    },
+    {
+      "bytes": 21558,
+      "path": "reference/actual-r8/DERIVATION.json",
+      "sha256": "52ed94df0877745ae9cf0184cc4480b67595980ba5453edccda61abcc4055cb0"
+    },
+    {
+      "bytes": 9887,
+      "path": "reference/actual-r8/FREEZE-INPUTS.original.json",
+      "sha256": "5e0f0fc20da46743ecc196022e5387439b37c80abd50ab5a573b598ec727c0f6"
+    },
+    {
+      "bytes": 22392,
+      "path": "reference/actual-r8/FREEZE-RESULT.json",
+      "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+    },
+    {
+      "bytes": 36899,
+      "path": "reference/actual-r8/FREEZE-SOURCE.original.py",
+      "sha256": "70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d"
+    },
+    {
+      "bytes": 11442,
+      "path": "reference/actual-r8/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "7315f6561e221fb59429f9daa8ec1a34a944681fd2a117773611c11fa82a81ca"
+    },
+    {
+      "bytes": 47151,
+      "path": "reference/actual-r8/root-chain/source/run_component_root_once.py",
+      "sha256": "f305ba54843cff4d91db0a65e5021c22f05d10a8237a897a5b78f7a119228bcd"
+    },
+    {
+      "bytes": 16808,
+      "path": "reference/actual-r8/runtime/MANIFEST.json",
+      "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+    },
+    {
+      "bytes": 8036,
+      "path": "reference/phone_chain_bridge.6694.original.py",
+      "sha256": "6694b106ee8ccf2177bf758367fda214f27b7ebfbea1611e11e67604a2bfd572"
+    },
+    {
+      "bytes": 24237,
+      "path": "reference/prepare_native_guard_root_plan.0ede.original.py",
+      "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+    },
+    {
+      "bytes": 71820,
+      "path": "reference/run_component_root_once.50a5.original.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    {
+      "bytes": 31714,
+      "path": "source/prepare_native_guard_root_plan.py",
+      "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+    },
+    {
+      "bytes": 1185,
+      "path": "validation/DERIVATION-CHECKS.json",
+      "sha256": "a9c69d57683b2ad40f3190356480dbb7175ea56d873551634cdf581daa8819e6"
+    },
+    {
+      "bytes": 13581,
+      "path": "validation/EXACT-REPLACEMENTS.json",
+      "sha256": "11d4a6316db3a883172e05e41dfca9ea2237a6414b241adaa731748f991eae67"
+    },
+    {
+      "bytes": 1852,
+      "path": "validation/SOURCE-ADMISSION-CHECKS.json",
+      "sha256": "bd067e7910c32accd1fc70753b801e0405d4c4677aa00259e120f73285b90647"
+    },
+    {
+      "bytes": 15722,
+      "path": "validation/helper-increment.patch",
+      "sha256": "f400a4b0ef96d861bc96338370418a7cc28c26a26d51b71a587c1396af5b99e2"
+    }
+  ],
+  "new_nonces_generated": 0,
+  "phone_calls": 0,
+  "root_capture_increment": {
+    "bytes": 8100,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json",
+    "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+  },
+  "root_executions": 0,
+  "runtime_freezes": 0,
+  "schema": "hepta.native-guard.actual-r8-capture-plan-helper-source-package.v1",
+  "state": "ACTUAL_PROVENANCE_AND_CAPTURE_INCREMENT_BOUND_NO_EXECUTION"
+}

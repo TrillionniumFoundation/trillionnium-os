@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.cpu-negative.capture-stage-readback.v1",
+  "job_id": "1a1ab18938f-fc05-4a48",
+  "host": "mac",
+  "files": [
+    {
+      "local_name": "RESULT.original.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12/RESULT.json",
+      "sha256": "0eba2b2524c318031bcdfb0849d2979467efe97854bbbcc54c1d2d8279e6e68d",
+      "size": 2397,
+      "version": "16777233:588377690:2397:1793871877268583247:1793871877268583247"
+    },
+    {
+      "local_name": "SOURCE-MANIFEST.original.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-negative-capture-generation-candidate01-1ad3/SOURCE-MANIFEST.json",
+      "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6",
+      "size": 10723,
+      "version": "16777233:588377627:10723:1793871877252658181:1793871877252658181"
+    },
+    {
+      "local_name": "STAGED-FILES.original.json",
+      "eof": true,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12/STAGED-FILES.json",
+      "sha256": "3da85a0a2ced6411d376883f6ad2812b462f47985c277b720c8ea6fdfe91e84b",
+      "size": 18783,
+      "version": "16777233:588377689:18783:1793871877268332079:1793871877268332079"
+    }
+  ]
+}

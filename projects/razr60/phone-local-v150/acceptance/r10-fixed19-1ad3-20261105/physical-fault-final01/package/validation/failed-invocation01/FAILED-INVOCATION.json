@@ -1,0 +1,9 @@
+{
+  "actual_sha256": "fad69cdd161839a4dad73cec8443b57c8cd7748ee593d557aa6ea2100fbf915e",
+  "cause": "Operator supplied the wrong explicit candidate manifest SHA to the test command. No test or phone operation began.",
+  "exception": "AssertionError: candidate manifest pin",
+  "phone_calls": 0,
+  "state": "REJECTED_BEFORE_TESTS",
+  "supplied_sha256": "36ba6897167cd4ff372a98b8b7fa157702787dfb1ae0e1775c88598d4297f83a",
+  "tests_started": 0
+}

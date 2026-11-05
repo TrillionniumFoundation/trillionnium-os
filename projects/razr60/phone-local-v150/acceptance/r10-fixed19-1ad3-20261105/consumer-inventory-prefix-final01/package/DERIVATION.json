@@ -1,0 +1,52 @@
+{
+  "Mac_operations": 0,
+  "P4_operations": 0,
+  "actual_source_derivation_executed": false,
+  "changes": [
+    "Consumer, cascade and interface contain byte-identical fixed RUNTIME_SOURCE_INCREMENT plus verify_runtime_source_increment from6282. Constructor calls the consumer gate after collecting all32 originals.",
+    "Gate runs before target runtime module execution. It checks exact typed increment, all32 member bytes, entire late-source inverse to66996/c50a and manifest inverse to16808/67dc after only the declared field and row change.",
+    "reviewed_runtime uses a newly parsed/copied parent view only while executing its original R7-to-R8 whole-source proof. Its return and all future source/tail consumers use the actual19020/a334 and67005/147cf bytes.",
+    "Canonical current FC8/AC9/CC8 manifests are exact read-only parents. The new packages have explicit independent suffixes; every overwritten parent member is retained in an additional reference path. Other source/seal/materializer and production code are unchanged.",
+    "Finalization has the same eight fields and remainsNone. Actual preparation reads immutablef1e plus the separate actual successor descriptor, verifies all32 before policy-verifier execution, and rechecks unchanged adoption/export/combination/scope/full-rule identities.",
+    "Preparer has additional admission limits before member reads: manifest<=65536, exactly32 rows and each member<=8MiB. The actual pure gate still binds every byte; resource limits do not substitute for identity.",
+    "Original lossless bounded-zlib codec, aggregate32MiB limit, ancestors and current-case requirements are unchanged. The interface retains empty current cases and unbound actual DELIVERY/OUT."
+  ],
+  "known_history": "Initial wiring report12/14 retained; two test fixture failures reconstructed three NAME=None lines without the exact original spaces. Exact template restoration fixed the fixture only; production candidate unchanged. New14/14 report retained separately.",
+  "originals": {
+    "cascade": {
+      "bytes": 56374,
+      "sha256": "d21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26"
+    },
+    "constructor_template": {
+      "bytes": 34626,
+      "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+    },
+    "consumer_template": {
+      "bytes": 77700,
+      "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+    },
+    "interface": {
+      "bytes": 33280,
+      "sha256": "4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f"
+    }
+  },
+  "phone_operations": 0,
+  "physical_case_passed": false,
+  "review_scope_limit": "Independent normalization review covers843a reviewed_runtime proof-view path and consumer/constructor insertion. It does not claim whole actual cascade, current-case closure, or actual host preparation.",
+  "schema": "hepta.inventory-prefix.consumer-cascade-source-derivation.v1",
+  "state": "SOURCE_ONLY_FIXED_INCREMENT_GATES_CONNECTED",
+  "validation": {
+    "bounded_preparer": {
+      "bytes": 1570,
+      "sha256": "e7b1a9d278dc3a2905ed03799dea457f16e4d13df382bd5c4b61984951ebf9e7"
+    },
+    "independent_normalization": {
+      "bytes": 3140,
+      "sha256": "f6c384e1e806c9b92089251a3fdb21412f3f521ae3abf5b660e3cdcd7a3632b1"
+    },
+    "wiring": {
+      "bytes": 4684,
+      "sha256": "2afbdd66a041bdd2328b966776d09d9989770363e8619c9edf1d5b0e5a516fbf"
+    }
+  }
+}

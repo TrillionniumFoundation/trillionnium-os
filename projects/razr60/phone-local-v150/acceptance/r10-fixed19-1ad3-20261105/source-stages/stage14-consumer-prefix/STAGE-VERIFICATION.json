@@ -1,0 +1,44 @@
+{
+  "all_package_member_pins_matched": true,
+  "case_runs": 0,
+  "controller_output_complete": true,
+  "controller_output_durable": true,
+  "controller_terminal_exit_code": 0,
+  "declared_members": 37,
+  "idempotency_key": "root-1ad3-inventory-prefix-consumers-source-stage14-20261105",
+  "job_id": "1a1ab61c456-fc05-4d24",
+  "manifest_original_bytes_unchanged": true,
+  "p4_calls": 0,
+  "phone_calls": 0,
+  "plans_created": 0,
+  "regular_files": 38,
+  "result": {
+    "bytes": 2395,
+    "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/RESULT.original.json",
+    "sha256": "affa9304718e1dff12b82a0d7a47588c7416a65f78022400f84109d06cb71366"
+  },
+  "runtime_freezes": 0,
+  "schema": "hepta.fixed19.source-stage-local-verification.v1",
+  "source_entrypoints_executed": 0,
+  "source_manifest": {
+    "bytes": 7262,
+    "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/SOURCE-MANIFEST.original.json",
+    "sha256": "949b1ea1d83ed745c035022bddcc4ace1dd5db57a23a07fd8b9b1c96e55cb22d"
+  },
+  "stage_source": {
+    "bytes": 237039,
+    "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/stage_mac_source14.py",
+    "sha256": "2ed9470588928c62848fcdb78ff06078e2361d59dee977218116820e1ba589c0"
+  },
+  "staged_files": {
+    "bytes": 13184,
+    "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/actual-stage14/STAGED-FILES.original.json",
+    "sha256": "e7737df51b996f22b247ff7190f0245785b93b20c83541fc9119f77cf4f9cdea"
+  },
+  "state": "ACTUAL_MAC_SOURCE_STAGE14_EXACT38_VERIFIED_NO_ENTRYPOINT_EXECUTED",
+  "stderr_bytes": 0,
+  "stdout_bytes": 749,
+  "target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01",
+  "uncompressed_file_bytes": 718464,
+  "whole_case_pass_claimed": false
+}

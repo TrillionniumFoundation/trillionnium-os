@@ -1,0 +1,38 @@
+{
+  "active_updates": [
+    {
+      "binding": "FREEZER exact3",
+      "new_descriptor": {
+        "bytes": 35543,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/freeze_property_runtime.py",
+        "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+      },
+      "old_sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509",
+      "source": "source/prepare_actual_r8_freeze.py"
+    },
+    {
+      "binding": "FREEZER_TEMPLATE_SHA",
+      "new_sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d",
+      "old_sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509",
+      "source": "neg-root-plan/source/prepare_native_guard_root_plan.py"
+    }
+  ],
+  "historical_files_kept_exact": [
+    "original62bc freezer",
+    "original106f preparer",
+    "original68df NEG helper",
+    "originalba5c parent combination",
+    "delivery-final01",
+    "checkpoint04",
+    "old reviews and manifests"
+  ],
+  "other_cached_downstream_executable_full_pin_hits": [],
+  "runtime_pin_flow": "actual FREEZE-RESULT and its source/input descriptors propagate into cascade and Root plans",
+  "schema": "hepta.native-guard.r8-compact-encoding-pin-propagation.v1",
+  "searched": [
+    "*.py",
+    "*.json",
+    "*.md"
+  ],
+  "source_only": true
+}

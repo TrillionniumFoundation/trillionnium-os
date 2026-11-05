@@ -1,0 +1,58 @@
+{
+  "actual_full_freeze_validation_executed": false,
+  "checks": [
+    {
+      "exact_memory_source_reads": 8,
+      "id": "actual_source_bytes_new_capture_admission",
+      "passed": true,
+      "root_loader_called": false
+    },
+    {
+      "id": "missing_explicit_increment_rejected",
+      "passed": true,
+      "rejection": "one explicitly reviewed capture increment required"
+    },
+    {
+      "id": "canonical_manifest_cannot_substitute_for_increment",
+      "passed": true,
+      "rejection": "one explicitly reviewed capture increment required"
+    },
+    {
+      "id": "foreign_runtime_binding_rejected",
+      "passed": true,
+      "rejection": "actual freeze and separate capture provenance differ"
+    },
+    {
+      "id": "other_freeze_rejected_before_original_reads",
+      "passed": true,
+      "rejection": "only the exact retained actual R8 freeze is accepted"
+    },
+    {
+      "id": "helper_whole_source_increment_inverse_to_0ede",
+      "passed": true,
+      "replacement_count": 13
+    }
+  ],
+  "main_calls": 0,
+  "new_nonces_generated": 0,
+  "passed": 6,
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "remote_calls": 0,
+  "root_coordinator_imports": 0,
+  "root_executions": 0,
+  "root_loader_calls": 0,
+  "runtime_and_root_physical_original_reads": false,
+  "runtime_freezes": 0,
+  "schema": "hepta.actual-r8-root-capture-successor.source-admission-checks.v1",
+  "source": {
+    "bytes": 31714,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/candidate01/proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+  },
+  "source_admission_memory_reader_only": true,
+  "source_bytes_are_exact_retained_actuals": true,
+  "state": "SIX_NARROW_SOURCE_ADMISSION_CHECKS_PASSED",
+  "total": 6,
+  "whole_cases_passed": 0
+}

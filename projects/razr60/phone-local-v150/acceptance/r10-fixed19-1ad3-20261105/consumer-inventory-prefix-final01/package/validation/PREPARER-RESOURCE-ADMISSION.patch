@@ -1,0 +1,23 @@
+--- draft01-90ffe9/preparer
++++ bounded-inventory-prefix/preparer
+@@ -165,12 +165,18 @@
+     originals.read(increment['base_freezer_source'])
+     originals.read(increment['base_runtime_manifest'])
+     runtime_row = strict(args.runtime_successor_manifest_desc)
+-    need(runtime_row['path']==str(B/'native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json'),
++    need(type(runtime_row) is dict and set(runtime_row)=={'path','bytes','sha256'}
++         and type(runtime_row['bytes']) is int and 0<runtime_row['bytes']<=65536
++         and runtime_row['path']==str(B/'native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json'),
+          'one explicit inventory-prefix runtime successor path is required')
+     runtime_raw = originals.read(runtime_row)
+     runtime = strict(runtime_raw); runtime_files = {}
++    need(type(runtime) is dict and type(runtime.get('files')) is list
++         and len(runtime['files'])==32, 'exact32 bounded runtime rows required before reads')
+     for item in runtime['files']:
+-        need(type(item) is dict and set(item)=={'path','bytes','sha256'}, 'exact runtime row')
++        need(type(item) is dict and set(item)=={'path','bytes','sha256'}
++             and type(item['path']) is str and type(item['bytes']) is int
++             and 0<=item['bytes']<=8*1024*1024, 'exact bounded runtime row')
+         relative=Path(item['path'])
+         need(not relative.is_absolute() and '..' not in relative.parts and str(relative)==item['path']
+              and item['path'] not in runtime_files, 'unique canonical runtime member')

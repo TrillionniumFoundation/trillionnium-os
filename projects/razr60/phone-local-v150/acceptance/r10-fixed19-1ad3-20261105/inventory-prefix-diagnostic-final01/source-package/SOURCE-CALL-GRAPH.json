@@ -1,0 +1,269 @@
+{
+  "schema": "hepta.prelaunch-pure-history-source-call-graph.v1",
+  "source": {
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-reconciliation-source/runtime-source/late_boundary.py",
+    "bytes": 66996,
+    "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+  },
+  "observed_case_closed_components": 5,
+  "exact_top_reader_constructions_for_observed_five_retained_rows": 16,
+  "derivation": "For each retained row chain_originals calls boundary_from_original once, then closed_boundary_originals calls boundary_from_original again and property_parent_reader once itself: 3*5. require_failed_ancestor_tail adds one reader: total16. This excludes nested reader construction inside exact R7/R6/R4 reference modules.",
+  "top_original_sources_compiled_per_reader": 2,
+  "top_source_compile_calls_derived": 32,
+  "phone_duration_attributed_to_these_calls": null,
+  "function_graph": [
+    {
+      "name": "property_parent_reader",
+      "first_line": 373,
+      "last_line": 421,
+      "utf8_bytes": 2706,
+      "sha256": "61f7a4ad1a56dbfc4709670ed4e5d30dbe7d1564cd7652eec400e189748c7922",
+      "selected_calls": [
+        {
+          "line": 400,
+          "function": "compile"
+        },
+        {
+          "line": 407,
+          "function": "compile"
+        }
+      ]
+    },
+    {
+      "name": "boundary_from_original",
+      "first_line": 539,
+      "last_line": 576,
+      "utf8_bytes": 2549,
+      "sha256": "59acf8cce566f7c78da45ca5c044ab0ae1556bfafc3c30d83d4e987db58b27d4",
+      "selected_calls": [
+        {
+          "line": 547,
+          "function": "_retained_property_parent_original"
+        },
+        {
+          "line": 550,
+          "function": "property_parent_reader"
+        },
+        {
+          "line": 551,
+          "function": "old.boundary_from_original"
+        },
+        {
+          "line": 565,
+          "function": "non_native_sidebranch"
+        },
+        {
+          "line": 569,
+          "function": "boundary_value"
+        }
+      ]
+    },
+    {
+      "name": "closed_boundary_originals",
+      "first_line": 580,
+      "last_line": 611,
+      "utf8_bytes": 2168,
+      "sha256": "17705776161b362fb9a0b81a1c018040a8027b5d60e151cc403fc0088aa7dd6e",
+      "selected_calls": [
+        {
+          "line": 582,
+          "function": "boundary_from_original"
+        },
+        {
+          "line": 584,
+          "function": "_retained_property_parent_original"
+        },
+        {
+          "line": 587,
+          "function": "property_parent_reader"
+        },
+        {
+          "line": 588,
+          "function": "old.closed_boundary_originals"
+        },
+        {
+          "line": 608,
+          "function": "inventory_value"
+        }
+      ]
+    },
+    {
+      "name": "require_failed_ancestor_tail",
+      "first_line": 615,
+      "last_line": 657,
+      "utf8_bytes": 2672,
+      "sha256": "851c17822fbfb13fba9da62c19806ea76fb02b4b3bb887612fa4d8dfbffe2df8",
+      "selected_calls": [
+        {
+          "line": 619,
+          "function": "property_parent_reader"
+        },
+        {
+          "line": 625,
+          "function": "originals.append"
+        },
+        {
+          "line": 625,
+          "function": "old.boundary_from_original"
+        },
+        {
+          "line": 648,
+          "function": "boundary_value"
+        }
+      ]
+    },
+    {
+      "name": "chain_originals",
+      "first_line": 660,
+      "last_line": 684,
+      "utf8_bytes": 1608,
+      "sha256": "f018feef2b48b575391de2d6cb3602449ae616e4b7482468387fc13c85558595",
+      "selected_calls": [
+        {
+          "line": 664,
+          "function": "original"
+        },
+        {
+          "line": 665,
+          "function": "boundary_from_original"
+        },
+        {
+          "line": 673,
+          "function": "original"
+        },
+        {
+          "line": 673,
+          "function": "original"
+        },
+        {
+          "line": 674,
+          "function": "closed_boundary_originals"
+        }
+      ]
+    },
+    {
+      "name": "current_inventory",
+      "first_line": 715,
+      "last_line": 722,
+      "utf8_bytes": 456,
+      "sha256": "1265c692b323ab19777482cc6496aa4a760f3a3bffbc428ad5bb99445b80963c",
+      "selected_calls": [
+        {
+          "line": 719,
+          "function": "LIFE.inventory"
+        },
+        {
+          "line": 720,
+          "function": "inventory_value"
+        },
+        {
+          "line": 720,
+          "function": "inventory_value"
+        }
+      ]
+    },
+    {
+      "name": "recheck_originals",
+      "first_line": 725,
+      "last_line": 727,
+      "utf8_bytes": 71,
+      "sha256": "69a12eeac96ec380f0647aaeb600e00ae88c0e099dd10b4d5038586ecc057c0f",
+      "selected_calls": [
+        {
+          "line": 727,
+          "function": "original"
+        }
+      ]
+    },
+    {
+      "name": "non_native_sidebranch",
+      "first_line": 751,
+      "last_line": 827,
+      "utf8_bytes": 4709,
+      "sha256": "a31fdee90cd3fa83fa2f4fc2d21f2c2bc8dff3aec2df731dfc2207beb25dd5e2",
+      "selected_calls": [
+        {
+          "line": 795,
+          "function": "compile"
+        },
+        {
+          "line": 796,
+          "function": "verifier.verify_sidebranch"
+        },
+        {
+          "line": 810,
+          "function": "inventory_value"
+        },
+        {
+          "line": 825,
+          "function": "original"
+        }
+      ]
+    },
+    {
+      "name": "verify_current",
+      "first_line": 853,
+      "last_line": 889,
+      "utf8_bytes": 2796,
+      "sha256": "e70f40f4762b88af3a779ba74a753e7fbdbe6638f04b25eb5f2e38ff8ca19377",
+      "selected_calls": [
+        {
+          "line": 860,
+          "function": "chain_originals"
+        },
+        {
+          "line": 862,
+          "function": "non_native_sidebranch"
+        },
+        {
+          "line": 865,
+          "function": "retired_originals"
+        },
+        {
+          "line": 867,
+          "function": "boundary['component_role_identities'].values"
+        },
+        {
+          "line": 868,
+          "function": "sidebranch['binding']['component_role_identities'].values"
+        },
+        {
+          "line": 870,
+          "function": "effective_prior_inventory"
+        },
+        {
+          "line": 871,
+          "function": "current_inventory"
+        },
+        {
+          "line": 873,
+          "function": "C.absent_groups"
+        },
+        {
+          "line": 873,
+          "function": "C.absent_groups"
+        },
+        {
+          "line": 875,
+          "function": "endpoint_absence"
+        },
+        {
+          "line": 876,
+          "function": "recheck_originals"
+        }
+      ]
+    }
+  ],
+  "candidate_options": [
+    "First profile exact pure non_native_sidebranch and actual08 boundary_from_original against the archived raw package map.",
+    "Prefer scope-local immutable compile or pure-result reuse with full current file byte/identity reread, without replacing historical reference bytes.",
+    "Do not propose compiled-module/global-result reuse before checking mutation isolation and historical nesting."
+  ],
+  "preserve_live_call_sites": [
+    "original(...) at every current phone file read",
+    "current_inventory(selected) and full live bytes/metadata comparison",
+    "C.absent_groups(roles) twice and endpoint_absence()",
+    "recheck_originals(...) at the end",
+    "lifecycle verify_retired old journal flock and outer fresh artifact/policy validation"
+  ]
+}

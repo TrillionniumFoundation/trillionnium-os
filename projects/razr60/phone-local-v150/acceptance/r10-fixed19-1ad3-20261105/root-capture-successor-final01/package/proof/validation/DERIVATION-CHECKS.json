@@ -1,0 +1,29 @@
+{
+  "actual_seven_pins_verified": {
+    "ADOPTION_SHA": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a",
+    "COMBINATION": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e",
+    "PKG": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c",
+    "POLICY_SHA": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70",
+    "ROOT_SCOPE_SHA": "5a08041da77eeec9168c869ae76adae0a117a5e34872aa07a1a096bc06a36132",
+    "VERIFIER_BYTES": 126796,
+    "VERIFIER_SHA": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+  },
+  "all_other_manifest_fields_unchanged": true,
+  "bridge_bytes_match_actual_manifest_04f6": true,
+  "bridge_new_remote_read_claimed": false,
+  "canonical_coordinator_inverse_to_5263": true,
+  "canonical_freeze_identity_verified": true,
+  "coordinator_whole_inverse_to_50a5": true,
+  "helper_inverse_to_0ede": true,
+  "manifest_fields_changed": [
+    "files",
+    "state",
+    "source_scope"
+  ],
+  "new_nonces_generated": 0,
+  "phone_calls": 0,
+  "root_executions": 0,
+  "runtime_freezes": 0,
+  "state": "EXACT_ACTUAL_SOURCE_DERIVATION_ONLY",
+  "verifier_bytes_match_actual_manifest_74f4": true
+}

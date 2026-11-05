@@ -1,0 +1,24 @@
+{
+  "actual_generation_or_physical_qualification": false,
+  "corrections": [
+    "Accept the actual earlier one_actual_R8_slot error for old Q2 source refusal.",
+    "Map B only in the test module memory to the explicitly synthetic local source directory for the original pinned loader; source bytes remain unchanged."
+  ],
+  "first_result": {
+    "bytes": 3661,
+    "sha256": "6072b9de97d5b76e161b9bd725ef655ea2e105ecd2f879f2f6cbafdc683ae145"
+  },
+  "production_generator_unchanged": {
+    "bytes": 53525,
+    "sha256": "57f67089f6885b0e5bdcca96a4dc73c1821626854a51794964c0ce3f6c32cf09"
+  },
+  "production_preparer_unchanged": {
+    "bytes": 9860,
+    "sha256": "a7dfa4b865bd4babc3947fa92695cc2b773a1d4480e77d57c3f0a230bb172036"
+  },
+  "schema": "hepta.cpu-negative.capture-source-fixture-corrections.v1",
+  "second_result": {
+    "bytes": 3751,
+    "sha256": "0d3f6de767695841a5b630a7148977176d3efcb44e59c2b3240a6ce1f12a0790"
+  }
+}

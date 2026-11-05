@@ -1,0 +1,335 @@
+--- prepare_native_guard_root_plan.1ff5.original.py
++++ prepare_native_guard_root_plan.py
+@@ -4,7 +4,9 @@
+ This helper never generates an identity, fixes a lease, instantiates Chain,
+ starts a process, or contacts the phone.  The caller supplies a pinned input
+ file only after choosing an authorized one-use identity and exact request.
+-The default performs the complete pure validation without creating files.
++This source-only revision is blocked until the separate failed-prelaunch
++original-evidence verifier is reviewed and frozen. No state label can
++substitute for it. After that revision, default validation creates no files.
+ --execute-host-plan creates a new host plan directory after validation.
+ """
+ import argparse
+@@ -32,10 +34,16 @@
+ ACTUAL_FREEZE_INPUTS = {'bytes': 9887, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/inputs/INPUTS.json', 'sha256': '5e0f0fc20da46743ecc196022e5387439b37c80abd50ab5a573b598ec727c0f6'}
+ ACTUAL_FREEZER_SOURCE = {'bytes': 36899, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/source/freeze_property_runtime.py', 'sha256': '70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d'}
+ ACTUAL_ROOT_TEMPLATE_SHA = '5263e9a19c8f6d2f7a60d560db7cce3a1c234ca79c77c04c3465323bc0bd9ca2'
+-ROOT_CAPTURE_HOME = B/'native-guard-property-root-r8-capture-successor01-1ad3'
+-ROOT_CAPTURE_PROOF_HOME = B/'native-guard-property-root-r8-capture-successor01-1ad3-proof'
+-ROOT_CAPTURE_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json', 'bytes': 13013, 'sha256': '52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e'}
+-ROOT_CAPTURE_INCREMENT = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json', 'bytes': 8100, 'sha256': 'd972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887'}
++SUCCESSOR_HOME = B/'native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01'
++ROOT_CAPTURE_HOME = SUCCESSOR_HOME/'root-chain'
++ROOT_CAPTURE_PROOF_HOME = SUCCESSOR_HOME/'proof'
++ROOT_CAPTURE_MANIFEST = {'bytes': 15020, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/root-chain/SOURCE-MANIFEST.json', 'sha256': '4eb4eeeb604e5526fd0c477a9a180b6b1e6d08f8016b3add7c605b62cdac22f3'}
++ROOT_CAPTURE_INCREMENT = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/ROOT-CAPTURE-INCREMENT.json', 'bytes': 12350, 'sha256': 'bb3d8fbb1133b4b46e5d389508577727414cfb7556791602d4f503fde6b15860'}
++EXECUTION_RUNTIME_MANIFEST = {'bytes': 19020, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json', 'sha256': 'a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7'}
++EXECUTION_RUNTIME_INCREMENT_RESULT = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-INCREMENT-RESULT.json', 'bytes': 6132, 'sha256': 'b13be5219320c82c9a440d2adfa83758d0ba06ee6d3e50468f7c28bb5658e171'}
++RUNTIME_SOURCE_INCREMENT_RECORD = {'bytes': 2087, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-SOURCE-INCREMENT.json', 'sha256': 'e6fbfdee18e95c8bb2d0ece71544669311572c672e90a0e63dc30a8984cf0656'}
++RUNTIME_INCREMENT_VERIFIER = {'bytes': 7269, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/source/runtime_source_increment.py', 'sha256': '6282d6d5478d3bd65acc368198db3af550c7284f9c8e66d0b101d6d8269628e4'}
++FAILED_PRELAUNCH_VERIFIER = None
+ FIRST_PRIOR = {
+     'history08_previous':{'path':str(OLD08/'ACTUAL-PREVIOUS-INPUT.json'),'bytes':1428,
+         'sha256':'9133e2511a66a809be647cb8bb49e3afb351825db5e465f75b1f2f0b6d9d88f4'},
+@@ -259,11 +267,99 @@
+     return freeze,inputs,{'manifest':root_manifest,'rows':root_rows,'raw':root_raw,'slots':slots}
+ 
+ 
+-def validate_capture_increment(originals, freeze, inputs, canonical, increment_row):
+-    need(increment_row==ROOT_CAPTURE_INCREMENT,'one explicitly reviewed capture increment required')
++def validate_runtime_increment(originals, freeze, increment_result_row):
++    need(increment_result_row==EXECUTION_RUNTIME_INCREMENT_RESULT,
++        'one exact independently reviewed runtime increment result required')
++    result = strict(originals.read(increment_result_row))
++    parent = strict(originals.read(freeze['runtime_manifest']))
++    expected = {row['path'] for row in parent['files']}
++    manifest,rows,raw = member_map(originals,EXECUTION_RUNTIME_MANIFEST,expected)
++    manifest_raw = originals.read(EXECUTION_RUNTIME_MANIFEST)
++    verifier_raw = originals.read(RUNTIME_INCREMENT_VERIFIER)
++    module = types.ModuleType('reviewed_pure_runtime_source_increment')
++    module.__file__ = RUNTIME_INCREMENT_VERIFIER['path']
++    exec(compile(verifier_raw,module.__file__,'exec'),module.__dict__)
++    proof = module.verify_runtime_source_increment(manifest_raw,raw)
++    increment_raw = originals.read(RUNTIME_SOURCE_INCREMENT_RECORD)
++    increment = strict(increment_raw)
++    need(encoded(module.RUNTIME_SOURCE_INCREMENT)==increment_raw
++        and encoded(manifest['runtime_source_increment'])==increment_raw,
++        'runtime source increment and exact fixed verifier object differ')
++    need(result['schema']=='hepta.native-guard.runtime-source-increment-result.v1'
++        and result['state']=='LOCAL_SOURCE_SUCCESSOR_PREPARED_NOT_REMOTE_STAGED_OR_EXECUTED'
++        and result['base_freeze_result']==ACTUAL_FREEZE_RESULT
++        and result['base_freezer_source']==freeze['source']
++        and result['base_runtime_manifest']==freeze['runtime_manifest']
++        and result['runtime_manifest']==EXECUTION_RUNTIME_MANIFEST
++        and result['runtime_source_increment']==RUNTIME_SOURCE_INCREMENT_RECORD
++        and result['pure_verifier_source']==RUNTIME_INCREMENT_VERIFIER
++        and encoded(result['source_inverse_proof'])==encoded(proof)
++        and increment['base_freeze_result']==ACTUAL_FREEZE_RESULT
++        and increment['base_runtime_manifest']==freeze['runtime_manifest']
++        and result['runtime_member_count']==32 and result['unchanged_member_count']==31
++        and result['canonical_originals_modified'] is False
++        and result['original_freeze_claimed_this_successor'] is False
++        and result['root_execution_started'] is False
++        and result['component_qualified'] is False and result['business_qualified'] is False
++        and all(type(result[key]) is int and result[key]==0 for key in
++            ('remote_directories_created_by_this_derivation','phone_calls',
++             'policy_applications','case_nonces_created')),
++        'exact original freeze and independent runtime derivation differ')
++    checks = strict(originals.read(result['local_source_checks']))
++    need(checks['state']=='LOCAL_EXACT_RUNTIME32_AND_TARGETED_REJECTIONS_PASSED'
++        and checks['checks_total']==checks['checks_passed']==len(checks['checks'])==7
++        and all(row['passed'] is True for row in checks['checks'])
++        and checks['case_qualification'] is False,
++        'retained source checks are required but do not qualify a physical case')
++    need(Path(EXECUTION_RUNTIME_MANIFEST['path'])==SUCCESSOR_HOME/'runtime/MANIFEST.json'
++        and manifest['current_combination_sha256']==parent['current_combination_sha256']
++        and manifest['current_policy_sha256']==parent['current_policy_sha256']
++        and manifest['explicit_policy_adoption_sha256']==parent['explicit_policy_adoption_sha256'],
++        'one exact runtime namespace with unchanged policy generation required')
++    return {'manifest':manifest,'rows':rows,'raw':raw,'source_package':EXECUTION_RUNTIME_MANIFEST,
++        'increment_result':increment_result_row,'increment':RUNTIME_SOURCE_INCREMENT_RECORD,
++        'verifier':RUNTIME_INCREMENT_VERIFIER,'proof':proof}
++
++
++def validate_failed_prelaunch_admission(originals, freeze_inputs, evidence_row):
++    # The exact verifier source must be reviewed and frozen in a successor
++    # revision.  A global actual08 profile alone cannot close either attempt.
++    need(type(FAILED_PRELAUNCH_VERIFIER) is dict
++        and set(FAILED_PRELAUNCH_VERIFIER)=={'path','bytes','sha256'}
++        and type(FAILED_PRELAUNCH_VERIFIER['bytes']) is int
++        and 0<FAILED_PRELAUNCH_VERIFIER['bytes']<=262144,
++        'failed-prelaunch verifier is not frozen: actual two-attempt original-evidence '
++        'closure is required before a new Root plan; no state label substitutes for it')
++    verifier_raw = originals.read(FAILED_PRELAUNCH_VERIFIER)
++    module = types.ModuleType('reviewed_failed_prelaunch_original_evidence_verifier')
++    module.__file__ = FAILED_PRELAUNCH_VERIFIER['path']
++    module.__reviewed_source_sha256__ = FAILED_PRELAUNCH_VERIFIER['sha256']
++    exec(compile(verifier_raw,module.__file__,'exec'),module.__dict__)
++    value = strict(originals.read(evidence_row))
++    result = module.verify_failed_prelaunch_admission(value,read_pinned=originals.read)
++    prior = strict(originals.read(freeze_inputs['history08_descriptor']))
++    need(type(result) is dict
++        and result['schema']=='hepta.native-guard.failed-prelaunch-admission.v1'
++        and result['state']=='TWO_FAILED_PRELAUNCH_ATTEMPTS_RECONCILED_LAST_NATIVE08_UNCHANGED'
++        and encoded(result['last_real_native_boundary'])==encoded(prior)
++        and result['failed_prelaunch_labels']==['root-r10-neg01-20261105-09','root-r10-neg01-1ad3-01']
++        and result['component_qualified'] is False and result['business_qualified'] is False
++        and result['native_boundary_created'] is False and result['nonce_reuse_forbidden'] is True,
++        'recomputed two-attempt closure and exact retained actual08 frontier required')
++    nonces = result['failed_prelaunch_nonces']
++    need(type(nonces) is list and len(nonces)==2 and len(set(nonces))==2
++        and all(type(nonce) is str and re.fullmatch('[0-9a-f]{32}',nonce) for nonce in nonces),
++        'both actual failed-prelaunch nonces must be independently recovered and forbidden')
++    return {'verifier_source':FAILED_PRELAUNCH_VERIFIER,'admission_original':evidence_row,
++        'verification':result,'forbidden_nonces':nonces}
++
++
++def validate_capture_increment(originals, freeze, inputs, canonical, runtime, increment_row):
++    need(increment_row==ROOT_CAPTURE_INCREMENT,'one explicitly reviewed runtime/capture increment required')
+     increment = strict(originals.read(increment_row))
+-    need(increment['schema']=='hepta.native-guard.actual-r8-root-capture-increment.v1'
+-        and increment['state']=='ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY'
++    execution_slots = dict(canonical['slots'],PKG=runtime['source_package']['sha256'])
++    need(increment['schema']=='hepta.native-guard.actual-r8-runtime-root-capture-increment.v1'
++        and increment['state']=='ACTUAL_R8_RUNTIME_CAPTURE_SUCCESSOR_SOURCE_ONLY'
+         and increment['actual_freeze_result']==ACTUAL_FREEZE_RESULT
+         and increment['actual_freezer_source']==freeze['source']
+         and increment['actual_freeze_inputs']==freeze['inputs']
+@@ -273,52 +369,72 @@
+         and increment['actual_root_manifest']==freeze['root_chain_manifest']
+         and increment['actual_coordinator']==canonical['rows']['source/run_component_root_once.py']
+         and increment['execution_source_package']==ROOT_CAPTURE_MANIFEST
+-        and increment['seven_actual_bindings']==canonical['slots']
++        and increment['execution_runtime_manifest']==runtime['source_package']
++        and increment['runtime_increment_result']==runtime['increment_result']
++        and increment['runtime_source_increment']==runtime['increment']
++        and increment['runtime_increment_verifier']==runtime['verifier']
++        and encoded(increment['seven_canonical_bindings'])==encoded(canonical['slots'])
++        and encoded(increment['seven_execution_bindings'])==encoded(execution_slots)
+         and increment['actual_old_freeze_used_repaired_capture'] is False
++        and increment['actual_old_freeze_used_runtime_increment'] is False
+         and increment['actual_old_freeze_outputs_preserved'] is True
+-        and all(increment[k]==0 for k in ('phone_calls','native_submissions','new_nonces_generated',
+-            'runtime_freezes','root_executions')),
+-        'actual freeze and separate capture provenance differ')
++        and all(type(increment[k]) is int and increment[k]==0 for k in
++            ('phone_calls','native_submissions','new_nonces_generated','runtime_freezes','root_executions')),
++        'actual freeze and separate runtime/capture provenance differ')
+     source_names = {'source/run_component_root_once.py','source/phone_chain_bridge.py',
+         'reference/policy_native5_verifier.py'}
+     manifest,rows,raw = member_map(originals,ROOT_CAPTURE_MANIFEST,source_names)
+     need(Path(ROOT_CAPTURE_MANIFEST['path'])==ROOT_CAPTURE_HOME/'SOURCE-MANIFEST.json'
+         and manifest['schema']=='hepta.native-guard.root-chain-source-package.v1'
+-        and manifest['state']=='ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY'
+-        and manifest['frozen_component_package_sha256']==freeze['runtime_manifest']['sha256']
++        and manifest['state']=='ACTUAL_R8_RUNTIME_CAPTURE_SUCCESSOR_SOURCE_ONLY'
++        and manifest['frozen_component_package_sha256']==runtime['source_package']['sha256']
+         and manifest['current_combination_sha256']==freeze['combination']['sha256']
+         and manifest['explicit_policy_adoption_sha256']==freeze['policy_adoption']['sha256'],
+-        'only the independently reviewed exact capture source package is executable')
+-    source_scope = {'schema':'hepta.native-guard.root-source-scope.v1',
++        'only the independently reviewed exact runtime/capture source package is executable')
++    source_scope = {'schema':'hepta.native-guard.root-source-scope.v2',
+         'actual_r8_freeze_result':ACTUAL_FREEZE_RESULT,'actual_r8_root_chain_manifest':freeze['root_chain_manifest'],
+-        'actual_freezer_source':freeze['source'],'execution_capture_template':increment['reviewed_capture_template'],
+-        'replacement_scope':'root_host_transport_capture_only','canonical_runtime_bytes_unchanged':True,
+-        'original_freeze_claimed_repaired_capture':False}
+-    need(manifest['source_scope']==source_scope==increment['source_scope'],
+-        'separate original and execution source identities required')
++        'actual_freezer_source':freeze['source'],'actual_r8_runtime_manifest':freeze['runtime_manifest'],
++        'execution_capture_template':increment['reviewed_capture_template'],
++        'execution_runtime_manifest':runtime['source_package'],
++        'runtime_source_increment':runtime['increment'],'runtime_increment_result':runtime['increment_result'],
++        'runtime_increment_verifier':runtime['verifier'],
++        'replacement_scope':'runtime_inventory_prefix_and_root_host_transport_capture',
++        'execution_runtime_changed_members':['source/late_boundary.py'],
++        'canonical_originals_modified':False,'original_freeze_claimed_repaired_capture':False,
++        'original_freeze_claimed_runtime_increment':False,
++        'inherited_metadata_scope':'original_r7_to_r8_generation_preserved_not_successor_actions'}
++    need(encoded(manifest['source_scope'])==encoded(source_scope)==encoded(increment['source_scope']),
++        'separate canonical and execution runtime/source identities required')
+     template = originals.read(increment['reviewed_capture_template'])
+     need(len(template)==71820 and sha(template)==ROOT_TEMPLATE_SHA,
+         'exact reviewed 50a5 transport template required')
+     coordinator = raw['source/run_component_root_once.py']
+     restored = coordinator
+-    for name,value in canonical['slots'].items():
++    for name,value in execution_slots.items():
+         restored = set_literal(restored,name,value,None)
+     need(restored==template and sha(restored)==ROOT_TEMPLATE_SHA
+         and rows['source/run_component_root_once.py']==increment['execution_coordinator'],
+-        'new capture coordinator differs beyond the seven exact actual bindings')
+-    for name in ('source/phone_chain_bridge.py','reference/policy_native5_verifier.py'):
+-        need(raw[name]==canonical['raw'][name],
+-            'canonical bridge and actual independent verifier must be byte-identical: '+name)
+-    need(sha(set_literal(raw['source/phone_chain_bridge.py'],'PKG',canonical['slots']['PKG'],None))==BRIDGE_TEMPLATE_SHA
+-        and raw['reference/policy_native5_verifier.py']==originals.read(freeze['verifier'])
++        'capture coordinator differs beyond the seven exact execution bindings')
++    bridge = raw['source/phone_chain_bridge.py']
++    bridge_template = originals.read(increment['reviewed_bridge_template'])
++    need(sha(bridge_template)==BRIDGE_TEMPLATE_SHA
++        and set_literal(bridge,'PKG',execution_slots['PKG'],None)==bridge_template
++        and set_literal(bridge,'PKG',execution_slots['PKG'],canonical['slots']['PKG'])
++            ==canonical['raw']['source/phone_chain_bridge.py']
++        and rows['source/phone_chain_bridge.py']==increment['execution_bridge'],
++        'bridge may change only its execution runtime package pin')
++    need(raw['reference/policy_native5_verifier.py']==canonical['raw']['reference/policy_native5_verifier.py']
++        ==originals.read(freeze['verifier'])
++        and rows['reference/policy_native5_verifier.py']==increment['unchanged_verifier']
+         and len(raw['reference/policy_native5_verifier.py'])<=131072,
+-        'unchanged bridge and bounded actual verifier required')
++        'actual independent verifier must retain its exact original identity and bound')
+     expected_manifest = copy.deepcopy(canonical['manifest'])
+-    expected_manifest['state'] = 'ACTUAL_R8_ROOT_CAPTURE_SUCCESSOR_SOURCE_ONLY'
++    expected_manifest['state'] = 'ACTUAL_R8_RUNTIME_CAPTURE_SUCCESSOR_SOURCE_ONLY'
+     expected_manifest['source_scope'] = source_scope
++    expected_manifest['frozen_component_package_sha256'] = runtime['source_package']['sha256']
+     expected_manifest['files'] = [descriptor(name,body) for name,body in sorted(raw.items())]
+     need(encoded(expected_manifest)==originals.read(ROOT_CAPTURE_MANIFEST),
+-        'capture manifest changed historical metadata beyond files/state/source_scope')
++        'Root manifest changed historical metadata beyond files/state/pkg/source_scope')
+     return {'manifest':manifest,'rows':rows,'raw':raw,'source_scope':source_scope,
+         'source_package':ROOT_CAPTURE_MANIFEST,'increment':increment_row}
+ 
+@@ -332,7 +448,7 @@
+     return mod
+ 
+ 
+-def choose_prior(originals, inputs, freeze, case_id, result_row, execution_manifest):
++def choose_prior(originals, inputs, freeze, case_id, result_row, execution_manifest, execution_runtime):
+     if case_id=='NEG-01':
+         need(result_row is None,'first NEG01 must enter through the exact frozen actual08 predecessor')
+         return {'previous':inputs['history08_previous'],
+@@ -349,7 +465,7 @@
+     predecessor = strict(predecessor_plan_raw)
+     need(set(predecessor)==PLAN_KEYS and predecessor['case_id']=='NEG-01'
+         and predecessor['out']==str(home) and predecessor['label']==home.name
+-        and predecessor['package']==freeze['runtime_manifest']
++        and predecessor['package']==execution_runtime
+         and predecessor['source_package']==execution_manifest
+         and predecessor['policy_adoption']==freeze['policy_adoption']
+         and predecessor['live_policy_sha256']==freeze['actual_adopted_policy_sha256'],
+@@ -372,7 +488,7 @@
+         'prior_boundary_descriptor':boundary_desc_row}
+ 
+ 
+-def assemble(originals, inputs, freeze, base_row, case_id, label, nonce, request_row, prior, execution_manifest):
++def assemble(originals, inputs, freeze, base_row, case_id, label, nonce, request_row, prior, execution_manifest, execution_runtime, admission):
+     base = strict(originals.read(base_row))
+     need(Path(base_row['path'])==OLD08/'ROOT-PLAN.original.json' and set(base)==PLAN_KEYS
+         and base['schema']=='hepta.native-guard.root-chain-plan.v1' and base['case_id']=='NEG-01'
+@@ -387,6 +503,7 @@
+     previous = strict(originals.read(prior['previous']))
+     boundary = strict(originals.read(prior['prior_boundary_original']))
+     prior_nonces = {OLD08_NONCE,boundary['nonce']}
++    prior_nonces.update(admission['forbidden_nonces'])
+     for key,row in inputs.items():
+         if re.fullmatch(r'history[0-9]+_boundary',key):
+             prior_nonces.add(strict(originals.read(row))['nonce'])
+@@ -396,7 +513,7 @@
+     plan = {key:copy.deepcopy(base[key]) for key in STABLE_PLAN_KEYS}
+     plan.update(schema='hepta.native-guard.root-chain-plan.v1',label=label,case_id=case_id,nonce=nonce,
+         boot_id=BOOT,session_id=previous['identity']['session_id'],profile_id=previous['identity']['profile_id'],
+-        request=copy.deepcopy(request_row),package=copy.deepcopy(freeze['runtime_manifest']),
++        request=copy.deepcopy(request_row),package=copy.deepcopy(execution_runtime),
+         source_package=copy.deepcopy(execution_manifest),policy_adoption=copy.deepcopy(freeze['policy_adoption']),
+         live_policy_sha256=freeze['actual_adopted_policy_sha256'],out=str(CHAINS/label),**copy.deepcopy(prior))
+     need(set(plan)==PLAN_KEYS and plan['shared_materials']==inputs['shared_materials'],
+@@ -416,6 +533,7 @@
+     need(host_out.is_absolute() and '..' not in host_out.parts and B in host_out.parents
+         and host_out.parent.resolve(strict=True)==host_out.parent
+         and R8 not in host_out.parents and CHAINS not in host_out.parents
++        and SUCCESSOR_HOME not in host_out.parents and host_out!=SUCCESSOR_HOME
+         and ROOT_CAPTURE_HOME not in host_out.parents and ROOT_CAPTURE_PROOF_HOME not in host_out.parents
+         and host_out not in (ROOT_CAPTURE_HOME,ROOT_CAPTURE_PROOF_HOME)
+         and host_out not in (execution_out,Path(plan['package']['path']).parent)
+@@ -444,6 +562,8 @@
+ def main(argv=None):
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--inputs-desc',required=True,help='JSON descriptor for the explicitly pinned preparation inputs')
++    parser.add_argument('--failed-prelaunch-admission-desc',required=True,
++        help='exact descriptor of the independently recomputed two-attempt closure originals')
+     parser.add_argument('--execute-host-plan',action='store_true')
+     args = parser.parse_args(argv)
+     originals = Originals()
+@@ -451,15 +571,22 @@
+     input_raw = originals.read(input_row)
+     value = strict(input_raw)
+     need(type(value) is dict and set(value)=={'schema','freeze_result','base_plan','case_id','label','nonce',
+-        'request','qualified_neg01_result','host_out','root_capture_increment'}
+-        and value['schema']=='hepta.native-guard.r8-root-plan-preparation-inputs.v1',
++        'request','qualified_neg01_result','host_out','root_capture_increment',
++        'runtime_source_increment_result','failed_prelaunch_evidence'}
++        and value['schema']=='hepta.native-guard.runtime-successor-root-plan-preparation-inputs.v1',
+         'exact explicit preparation inputs required')
++    failed_evidence_row = strict(args.failed_prelaunch_admission_desc)
++    need(encoded(failed_evidence_row)==encoded(value['failed_prelaunch_evidence']),
++        'explicit admission descriptor and pinned preparation input differ')
+     freeze,freeze_inputs,canonical = validate_freeze(originals,value['freeze_result'])
+-    capture = validate_capture_increment(originals,freeze,freeze_inputs,canonical,value['root_capture_increment'])
++    runtime = validate_runtime_increment(originals,freeze,value['runtime_source_increment_result'])
++    capture = validate_capture_increment(originals,freeze,freeze_inputs,canonical,runtime,value['root_capture_increment'])
++    admission = validate_failed_prelaunch_admission(originals,freeze_inputs,failed_evidence_row)
+     coordinator = load_capture_coordinator(capture)
+-    prior = choose_prior(originals,freeze_inputs,freeze,value['case_id'],value['qualified_neg01_result'],capture['source_package'])
++    prior = choose_prior(originals,freeze_inputs,freeze,value['case_id'],value['qualified_neg01_result'],
++        capture['source_package'],runtime['source_package'])
+     plan = assemble(originals,freeze_inputs,freeze,value['base_plan'],value['case_id'],value['label'],
+-        value['nonce'],value['request'],prior,capture['source_package'])
++        value['nonce'],value['request'],prior,capture['source_package'],runtime['source_package'],admission)
+     out = Path(value['host_out'])
+     require_unused(plan,out)
+     raw = encoded(plan)
+@@ -473,7 +600,10 @@
+         'state':'HOST_PREVIEW_PURE_ROOT_VALIDATION_PASSED_NO_FILES',
+         'helper':source_row,'inputs':input_row,'freeze_result':value['freeze_result'],
+         'coordinator':capture['rows']['source/run_component_root_once.py'],
+-        'runtime_manifest':freeze['runtime_manifest'],'root_chain_manifest':capture['source_package'],
++        'canonical_runtime_manifest':freeze['runtime_manifest'],
++        'runtime_manifest':runtime['source_package'],'root_chain_manifest':capture['source_package'],
++        'runtime_source_increment_result':runtime['increment_result'],
++        'failed_prelaunch_evidence':value['failed_prelaunch_evidence'],'failed_prelaunch_admission':admission,
+         'source_scope':dict(capture['source_scope'],root_capture_increment=capture['increment']),
+         'combination':freeze['combination'],'policy_adoption':freeze['policy_adoption'],
+         'case_id':plan['case_id'],'label':plan['label'],'nonce':plan['nonce'],

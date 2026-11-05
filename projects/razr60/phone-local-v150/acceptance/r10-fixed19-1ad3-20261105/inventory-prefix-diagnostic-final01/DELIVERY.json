@@ -1,0 +1,38 @@
+{
+  "archive": {
+    "bytes": 554302,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/inventory-prefix-candidate-final01.tar.gz",
+    "sha256": "100b9a8de0a4edac75a647d1e8440ee87dc4af03a7f69deab9f2b9a68dcd79ce"
+  },
+  "archive_matches_manifest_closed_set": true,
+  "comparison": {
+    "bytes": 4379,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/package/PERFORMANCE-COMPARISON.json",
+    "sha256": "2d25f09d7078911f8ea5b1ed8d6302fbac1db4b660e1ff2767581fd21427a98c"
+  },
+  "equivalence": {
+    "bytes": 13425,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/package/validation/equivalence01/EQUIVALENCE.json",
+    "sha256": "552c1155fcb1ebb5105397896d18644349189f4b5a76e02da7e65727ad57fb37"
+  },
+  "no_actual_runtime_or_case_qualification": true,
+  "package": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/package",
+  "regular_files": 18,
+  "schema": "hepta.inventory-ancestry-optimization-delivery.v1",
+  "source": {
+    "bytes": 67005,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/package/source/late_boundary.py",
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "source_manifest": {
+    "bytes": 3949,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "805ff787498f14d1d81821fd7f14fd093e665e37be9202957ec8f3d8bea9965d"
+  },
+  "source_review": {
+    "bytes": 3571,
+    "path": "/workspace/scratch/1ad3d6f55439/prelaunch_pure_history_candidate01/delivery-final01/package/validation/INDEPENDENT-REVIEW.json",
+    "sha256": "e08367853bf5e755c1311cafd175582c6e9153ee9e5efb3a4ba4c2cfdd2732c0"
+  },
+  "state": "SOURCE_ONLY_REVIEWED_CANDIDATE_NOT_AN_ACTUAL_RUNTIME"
+}

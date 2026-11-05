@@ -1,0 +1,28 @@
+{
+  "case_qualification": false,
+  "findings": [
+    "Both fixed labels/nonces/lease expiries/owner request hashes match retained CHAIN-INTENT and PREPARED originals; no nonce is generated.",
+    "Selected bytes249/575d are independently decoded from the original successful actor final-read wrapper; fixed selected-state bytes and pending ENOENT are rechecked at both ends.",
+    "All provider-in.jsonl files are enumerated under both exact evidence roots. Unknown run names, partial final lines, malformed turn.start frames, bounds or matching owner hashes reject. Missing provider-in files require explicit held-parent and canonical-reopen ENOENT.",
+    "Both failed nonce boundary files and directories must remain absent under the root-owned fixed publication directory. Actual08 is read with its complete exact byte and full9 descriptor.",
+    "Parent-fd walks prohibit symlink traversal except the one explicit /proc/1/root entry and the separately checked Android user0 literal alias to data/data. Selected files retain their actual non-root UID metadata; all other scoped originals are root-owned.",
+    "Every stored file, directory and explicit absence is reread with full9 comparisons; final selected-state and boot checks close the observation. Relative concurrency between checks is not claimed to be a global atomic snapshot.",
+    "All os.open calls are read-only. There is no exec/eval, subprocess, signal, socket, target import, mkdir, unlink, rename or xattr mutation. Only standard output is written.",
+    "Result explicitly keeps failed_prelaunch_closed_here=False, native_boundary_created=False and both qualification flagsFalse; this observation cannot stand alone as complete failed-attempt admission."
+  ],
+  "limits": [
+    "Static source and retained-input crosslink review only; no target source import/main/phone execution.",
+    "30-second budget is cooperative and does not make blocking kernel file operations hard real-time.",
+    "The read scopes are complete provider-in files and the explicitly named publication/selected state; no native-journal hash-chain or unrelated file-content proof is claimed."
+  ],
+  "phone_calls": 0,
+  "remote_calls_for_review": 0,
+  "runtime_modules_executed": 0,
+  "schema": "hepta.independent-source-review.v1",
+  "source": {
+    "bytes": 13192,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/failed_prelaunch_admission_candidate01/source/observe_failed_prelaunch_publication.py",
+    "sha256": "1956c026152ff82a9c3065388139c8782c55c5788afa9cfeacfef054651f18ed"
+  },
+  "state": "NO_BLOCKER_IN_FIXED_READONLY_PUBLICATION_SELECTED_AND_PROVIDER_SCAN_SCOPE"
+}

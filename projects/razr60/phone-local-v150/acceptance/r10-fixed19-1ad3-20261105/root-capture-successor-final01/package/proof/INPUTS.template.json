@@ -1,0 +1,20 @@
+{
+  "base_plan": null,
+  "case_id": "NEG-01",
+  "freeze_result": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "host_out": null,
+  "label": null,
+  "nonce": null,
+  "qualified_neg01_result": null,
+  "request": null,
+  "root_capture_increment": {
+    "bytes": 8100,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json",
+    "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+  },
+  "schema": "hepta.native-guard.r8-root-plan-preparation-inputs.v1"
+}

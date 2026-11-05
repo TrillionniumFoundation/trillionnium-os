@@ -1,0 +1,50 @@
+{
+  "actor_calls": 0,
+  "closer": {
+    "bytes": 69048,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/verify_physical_fault.py",
+    "sha256": "94255558a8ef1e08087c44127ca22ce75c2a1086a78d73aca78fc7f2f21022f1"
+  },
+  "findings": [
+    "put uses O_EXCL and fsyncs each file plus parent directory before returning.",
+    "Third read compares the same complete raw bytes and all nine file metadata values after persistence.",
+    "The closer binds the ack to exact retained FENCE bytes and the original pending receipt descriptor.",
+    "The closer enforces action return <= PRE observation <= durability observation < late receipt observation <= POST observation.",
+    "A receipt advancing during PRE persistence leaves the failed first fence and produces no durability ack; final_observation cannot retake it.",
+    "LATE originals are written only after terminal r6 receipt with joined waitpid, absent group and retained identity; failures after LATE cannot rewrite it."
+  ],
+  "limitations": [
+    "Only the specified increment was reviewed; unrelated closer code was not independently re-audited.",
+    "Tests use isolated temporary files and process-local BASE/put instrumentation solely for fault injection.",
+    "No physical phase, actor, native call, model, provider or phone was exercised."
+  ],
+  "local_checks": [
+    {
+      "name": "pending receipt produces bound durability ack after four copies and fence fsync",
+      "passed": true
+    },
+    {
+      "name": "receipt transition after fsynced fence rejects without durability ack or retake",
+      "passed": true
+    },
+    {
+      "name": "already terminal receipt cannot reconstruct a before-late fence",
+      "passed": true
+    }
+  ],
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "remote_calls": 0,
+  "schema": "hepta.physical-fault.neg07-durability-independent-review.v1",
+  "scope": [
+    "four_fence persistence and third pending-receipt bookend",
+    "final_observation no-retake behavior after PRE/LATE originals exist",
+    "actor_and_fences durability acknowledgement and temporal ordering"
+  ],
+  "state": "NO_BLOCKER_IN_NARROW_DURABILITY_INCREMENT",
+  "watcher": {
+    "bytes": 23221,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/watch_physical_fault_once.py",
+    "sha256": "59335e10b4e8903f450257360b182a5398afc02857bd34fd0f1f51835ab36e0d"
+  }
+}

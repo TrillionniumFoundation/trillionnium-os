@@ -1,0 +1,45 @@
+{
+  "archive": {
+    "bytes": 167855,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage14/inventory-prefix-consumer-source-stage-final01.tar.gz",
+    "sha256": "d02c372f949962e9a5f8d153797f4cd89d8b9ebca7091c95cbdde8ce18aa8e0c"
+  },
+  "audit": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage14",
+  "automatic_retry": false,
+  "case_runs": 0,
+  "closed_regular_inventory_verified": true,
+  "created_inode_readback_complete": true,
+  "declared_source_members": 37,
+  "elapsed_monotonic_ns": 14652000,
+  "exact_original_manifest_preserved": true,
+  "existing_outputs_overwritten": false,
+  "idempotency_key": "root-1ad3-inventory-prefix-consumers-source-stage14-20261105",
+  "p4_calls": 0,
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "plan_preparations": 0,
+  "regular_files": 38,
+  "runtime_freezes": 0,
+  "schema": "hepta.runtime-prefix.source-source-stage-result.v1",
+  "source_entrypoint_executions": 0,
+  "source_imports": 0,
+  "source_manifest": {
+    "bytes": 7262,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "949b1ea1d83ed745c035022bddcc4ace1dd5db57a23a07fd8b9b1c96e55cb22d"
+  },
+  "stage_source": {
+    "bytes": 237039,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage14/STAGE-SOURCE.original.py",
+    "sha256": "2ed9470588928c62848fcdb78ff06078e2361d59dee977218116820e1ba589c0"
+  },
+  "staged_files": {
+    "bytes": 13184,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage14/STAGED-FILES.json",
+    "sha256": "e7737df51b996f22b247ff7190f0245785b93b20c83541fc9119f77cf4f9cdea"
+  },
+  "state": "REVIEWED_SOURCE_PACKAGE_STAGED_NO_ENTRYPOINT_EXECUTED",
+  "target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01",
+  "uncompressed_file_bytes": 718464,
+  "whole_cases_passed": 0
+}

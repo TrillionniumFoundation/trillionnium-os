@@ -1,0 +1,175 @@
+{
+  "gates": [
+    {
+      "evidence": "Fixed label/nonce/boot/expiredlease2f47/runtime67dc/combination54b1/actual08; exact32 manifest closed set, full9 bootstrap read bookends, fresh modules from validated raw bytes.",
+      "name": "Exact original binding",
+      "result": "PASS"
+    },
+    {
+      "evidence": "d1fe module has only stdlib imports, literal assignments and inert Path arithmetic, no decorators or evaluated annotations/nonliteral defaults. Main is guarded; original L uses pinned_original_r9_r2_retirement and this non-None prior only consumes BOUND/GROUPS.",
+      "name": "Retirement exec import-time boundary",
+      "result": "PASS"
+    },
+    {
+      "evidence": "Only one original L.verify_retired and nested late.verify_current; no runtime main/launch/send/publish/policy setter or signals. Temporary original existing journal flock is read-only and explicitly released.",
+      "name": "Read-only work scope",
+      "result": "PASS"
+    },
+    {
+      "evidence": "A returned new own FD is closed in finally even on identity/flags mismatch, which remains a rejection. Abort without returned FD closes only new descriptors to the exact bootstrap lock; unknown remaining FDs deny complete cleanup.",
+      "name": "Owned FD cleanup",
+      "result": "PASS"
+    },
+    {
+      "evidence": "Every1024 Python call events checks time; timeout clears its own hook before raising. Finally clears only deadline.armed; AST confirms no unconditional clear on preexisting-hook rejection. Return is independently checked against180 seconds; blocked C/IO explicitly non-preemptible, no hard-deadline claim.",
+      "name": "Cooperative deadline and hook ownership",
+      "result": "PASS"
+    },
+    {
+      "evidence": "Each getstats code object and callee edge retains its own counters; text-only description sharing does not merge entries.4096-entry/32768-edge/one-MiB caps reject incomplete output. Cumulative timings are not summed as elapsed.",
+      "name": "Complete profiling records",
+      "result": "PASS"
+    },
+    {
+      "evidence": "Success requires original full actual08 result, exactly one original L and one nested late call, completed owned cleanup, timely return, all bootstrap rechecks and unchanged boot. Qualification and failed-prelaunch closure remainFalse.",
+      "name": "Completion gate",
+      "result": "PASS"
+    }
+  ],
+  "limitations": [
+    "Source review only. Actual Root wrapper/result are required before crediting a real global verification.",
+    "Cooperative tracing cannot interrupt blocked C/kernel I/O; passive wait expiry must remain unknown, not no-effect or cleanup proof.",
+    "cProfile+trace instrumentation changes timing; elapsed cannot be used as an uninstrumented production lease prediction."
+  ],
+  "local_review_harness_history": {
+    "bytes": 481,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/neg01-readonly-profile-independent01/REVIEW-HARNESS-FAILURE01.json",
+    "sha256": "a1124f71a8aa1c93988bc2a1e199cb091b0ab07f5acaa3891b87a5e230e9670c"
+  },
+  "resolved_drafts": [
+    {
+      "final_resolution": "cooperative trace; returned owned FD closes before error result",
+      "issues": [
+        "self SIGALRM deadline",
+        "returned FD mismatch not closed"
+      ],
+      "sha256": "23701261bbb95daef50c579fff4778b2287126dcee4e7b1b5b2739205639168e"
+    },
+    {
+      "final_resolution": "only owned armed hook is cleared; structural AST checked",
+      "issue": "rejected preexisting trace still unconditionally cleared",
+      "sha256": "1e5d08ffa88a3c7117233bd565b6cf80d99a06d1771a7feac7c733eaec6212c9"
+    }
+  ],
+  "retirement_probe": {
+    "bytes": 766658,
+    "path": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/retirement-probe-source-read01/retirement_probe.original.py",
+    "sha256": "d1fe1478ee9699b5a1199aa4c2b96a2a405f7cafd0b5707071cfd2238dbe5df4"
+  },
+  "retirement_probe_AST": {
+    "assignments": [
+      {
+        "initializer": "literal",
+        "names": [
+          "BOUND"
+        ]
+      },
+      {
+        "initializer": "Path('/var/lib/trillionnium/owner-open/phone-local-v150')",
+        "names": [
+          "BASE"
+        ]
+      },
+      {
+        "initializer": "BASE / 'module-retire-r9-r2-for-r10-r1-01'",
+        "names": [
+          "OUT"
+        ]
+      },
+      {
+        "initializer": "BASE / 'module-r10-r1-retirement-code-r1'",
+        "names": [
+          "CODE"
+        ]
+      },
+      {
+        "initializer": "BASE / 'provider-state/evidence'",
+        "names": [
+          "E"
+        ]
+      },
+      {
+        "initializer": "literal",
+        "names": [
+          "GROUPS"
+        ]
+      },
+      {
+        "initializer": "literal",
+        "names": [
+          "ANCHORS"
+        ]
+      },
+      {
+        "initializer": "BASE / 'executor-r6'",
+        "names": [
+          "DATA"
+        ]
+      },
+      {
+        "initializer": "literal",
+        "names": [
+          "EXPECTED_SELF"
+        ]
+      }
+    ],
+    "function_count": 23,
+    "functions": [
+      "need",
+      "sha",
+      "strict",
+      "private_dir",
+      "stable",
+      "meta",
+      "write",
+      "proc_bytes",
+      "proc",
+      "anchors",
+      "census",
+      "kernel_absence",
+      "business_originals",
+      "flat_snapshot",
+      "require_r6_terminal",
+      "retained_state",
+      "check_all_runs_terminal",
+      "live_slot",
+      "original_global_gate",
+      "common",
+      "preflight",
+      "retire",
+      "main"
+    ],
+    "imports": [
+      "import base64, subprocess, contextlib, errno, fcntl, hashlib, json, os, re, signal, stat, sys, time, urllib.request",
+      "from pathlib import Path"
+    ],
+    "only_guarded_main": true
+  },
+  "review_scope": {
+    "actual_global_verification_or_closure_claimed": false,
+    "author_synthetic_checks_rerun": false,
+    "main_calls": 0,
+    "original_verifier_calls": 0,
+    "p4_calls": 0,
+    "phone_calls": 0,
+    "source_and_AST_only": true,
+    "target_imports": 0
+  },
+  "reviewed_source": {
+    "bytes": 21812,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-retired-profile-candidate01/source/profile_actual_retired_once.py",
+    "sha256": "d3f599e7adbb7b249e7da0550d48964d42713e6ac3989e16b0d3b0ca9d13e1f4"
+  },
+  "schema": "hepta.independent-readonly-profile-source-review.v1",
+  "state": "PASS_FOR_NARROW_FIXED_READONLY_DIAGNOSTIC_SOURCE_SCOPE"
+}

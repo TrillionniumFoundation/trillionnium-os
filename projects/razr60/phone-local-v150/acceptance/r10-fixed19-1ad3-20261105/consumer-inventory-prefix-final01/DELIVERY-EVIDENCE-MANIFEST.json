@@ -1,0 +1,225 @@
+{
+  "files": [
+    {
+      "bytes": 2827,
+      "path": "evidence/118d-INDEPENDENT-REVIEW.json",
+      "sha256": "25c0cc7979fc92768dcea20fb93908f34a8f5304f7a7f7c55a0bd72bc061a621"
+    },
+    {
+      "bytes": 494,
+      "path": "evidence/118d-REVIEW-HARNESS-FAILURE01.json",
+      "sha256": "86cf11039b76604336fcc1865f1c5c334e87cb392cb0481ecb593d8b873ec521"
+    },
+    {
+      "bytes": 252163,
+      "path": "evidence/PARTIAL-PROFILE-ATTRIBUTION.json",
+      "sha256": "a12e29c37838c7b6b28380473fc78bd0594f9ed3407305c652cd0296aface051"
+    },
+    {
+      "bytes": 4068,
+      "path": "evidence/PRELISTEN-STATIC-BUDGET.json",
+      "sha256": "6ad022ab29d5c60fa76a52823d07ec6e2345850f94295a92d26a231f333d8cdd"
+    },
+    {
+      "bytes": 3030,
+      "path": "evidence/RUNTIME-HELPER-INDEPENDENT-REVIEW.json",
+      "sha256": "a6fe8583991c34ad2981442ee8c10565f2243020e0b61e273a46753a93ab1003"
+    },
+    {
+      "bytes": 167855,
+      "path": "inventory-prefix-consumer-source-stage-final01.tar.gz",
+      "sha256": "d02c372f949962e9a5f8d153797f4cd89d8b9ebca7091c95cbdde8ce18aa8e0c"
+    },
+    {
+      "bytes": 3428,
+      "path": "package/DERIVATION.json",
+      "sha256": "96e6e96b6c6ce10e9e59095d665c6e0c6bb0a5cdf4e2c1a5398f1d340b456b58"
+    },
+    {
+      "bytes": 2634,
+      "path": "package/GENERATOR-SOURCE-MANIFEST.json",
+      "sha256": "f58abcc530bffdddfd4f8cbaa38985a9de9e8e55b14728fa324504ef81041a0e"
+    },
+    {
+      "bytes": 4687,
+      "path": "package/INTERFACE.json",
+      "sha256": "fed53a7d02571d1994f9ca6829fd429bc894e00f9482f59d7b5455bb3697c826"
+    },
+    {
+      "bytes": 1718,
+      "path": "package/README.md",
+      "sha256": "54475df9750d4d8ea0f1977436c51e6fe2fc2eb88dc05bd65bc7398aa60e50df"
+    },
+    {
+      "bytes": 2087,
+      "path": "package/RUNTIME-SOURCE-INCREMENT.json",
+      "sha256": "e6fbfdee18e95c8bb2d0ece71544669311572c672e90a0e63dc30a8984cf0656"
+    },
+    {
+      "bytes": 7262,
+      "path": "package/SOURCE-MANIFEST.json",
+      "sha256": "949b1ea1d83ed745c035022bddcc4ace1dd5db57a23a07fd8b9b1c96e55cb22d"
+    },
+    {
+      "bytes": 16055,
+      "path": "package/preparer/prepare_final_cascade.py",
+      "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+    },
+    {
+      "bytes": 1845,
+      "path": "package/reference/COMPACT-GENERATOR-MANIFEST.5dda.original.json",
+      "sha256": "5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a"
+    },
+    {
+      "bytes": 24857,
+      "path": "package/reference/LOSSLESS-SOURCE-MANIFEST.81663.original.json",
+      "sha256": "81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54"
+    },
+    {
+      "bytes": 24345,
+      "path": "package/reference/actual-parents/FC8.DELIVERY-RESULT.original.json",
+      "sha256": "882a85ef9a0eb1a842de2bf32b2e03e54fff278387745440adf328a7e3a934c9"
+    },
+    {
+      "bytes": 27964,
+      "path": "package/reference/actual-parents/r10-boundary-consumers-final-r8.MANIFEST.original.json",
+      "sha256": "c6f682a21126e72ec2ae64ae12c8d33ce94cf0409f6936a09b593f587dd7382b"
+    },
+    {
+      "bytes": 4850,
+      "path": "package/reference/actual-parents/r10-component-boundary-input-entry-r8.MANIFEST.original.json",
+      "sha256": "84b2589ca34a0639a4b45a43d8351f8362be7bbb1581b767c7ab41d38ddcf969"
+    },
+    {
+      "bytes": 20044,
+      "path": "package/reference/actual-parents/scoped-acceptance-v150-r10-r1-readiness-r9.MANIFEST.original.json",
+      "sha256": "a8b9979819e0b49add8837caa94c07afb3f74fa11f6bb35036f3b80ad5f99d7d"
+    },
+    {
+      "bytes": 15594,
+      "path": "package/reference/preparer__prepare_final_cascade.draft01.py",
+      "sha256": "90ffe9f1dfe03dbfa3129731821e77aa6873305ee6c089de08b4c4273bd7fe37"
+    },
+    {
+      "bytes": 12443,
+      "path": "package/reference/preparer__prepare_final_cascade.py.original.py",
+      "sha256": "18d716a503ff470093b7d8fcadd043be66a829b3696a1aa82239b15932d9962c"
+    },
+    {
+      "bytes": 56374,
+      "path": "package/reference/source__derive_final_cascade_property_r8.py.original.py",
+      "sha256": "d21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26"
+    },
+    {
+      "bytes": 33280,
+      "path": "package/reference/source__write_final_seal_interface_property_r8.py.original.py",
+      "sha256": "4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f"
+    },
+    {
+      "bytes": 34626,
+      "path": "package/reference/templates__make_component_boundary_inputs.py.original.py",
+      "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+    },
+    {
+      "bytes": 77700,
+      "path": "package/reference/templates__release_boundaries.py.original.py",
+      "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+    },
+    {
+      "bytes": 66393,
+      "path": "package/source/derive_final_cascade_property_r8.py",
+      "sha256": "843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54"
+    },
+    {
+      "bytes": 7269,
+      "path": "package/source/runtime_source_increment.py",
+      "sha256": "6282d6d5478d3bd65acc368198db3af550c7284f9c8e66d0b101d6d8269628e4"
+    },
+    {
+      "bytes": 40887,
+      "path": "package/source/write_final_seal_interface_property_r8.py",
+      "sha256": "1d88947679e6bb01a24762aa0b86e9875928f836b97eb9a4aff216ee6de0b500"
+    },
+    {
+      "bytes": 34843,
+      "path": "package/templates/make_component_boundary_inputs.py",
+      "sha256": "41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5"
+    },
+    {
+      "bytes": 84972,
+      "path": "package/templates/release_boundaries.py",
+      "sha256": "57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0"
+    },
+    {
+      "bytes": 3140,
+      "path": "package/validation/INDEPENDENT-NORMALIZATION-REVIEW.json",
+      "sha256": "f6c384e1e806c9b92089251a3fdb21412f3f521ae3abf5b660e3cdcd7a3632b1"
+    },
+    {
+      "bytes": 1570,
+      "path": "package/validation/PREPARER-BOUNDS01.json",
+      "sha256": "e7b1a9d278dc3a2905ed03799dea457f16e4d13df382bd5c4b61984951ebf9e7"
+    },
+    {
+      "bytes": 1605,
+      "path": "package/validation/PREPARER-RESOURCE-ADMISSION.patch",
+      "sha256": "3d08e7c8677db3a27bb2b400282d1e8f973d4e0700967978ae5d61a1d9600d3e"
+    },
+    {
+      "bytes": 4684,
+      "path": "package/validation/WIRING-RUN02.json",
+      "sha256": "2afbdd66a041bdd2328b966776d09d9989770363e8619c9edf1d5b0e5a516fbf"
+    },
+    {
+      "bytes": 690,
+      "path": "package/validation/history/WIRING-FIXTURE-FAILURE.json",
+      "sha256": "57e497f6b407eac319acaf5e02871df9820a2b261cc99f48ea73364a03ea128e"
+    },
+    {
+      "bytes": 4557,
+      "path": "package/validation/history/WIRING-RUN01.json",
+      "sha256": "8eec8595c7312ebfe5dbf3e1ecd0032460ef26aeb2c0006d6bbbe006c08f3db3"
+    },
+    {
+      "bytes": 16847,
+      "path": "package/validation/history/verify_wiring.run01.original.py",
+      "sha256": "9575948b46d4219378f8ea50bc206db1e31fc53be59abbf1beb79bde3d602ff9"
+    },
+    {
+      "bytes": 10567,
+      "path": "package/validation/preparer__prepare_final_cascade.py.patch",
+      "sha256": "813fe72756383fec3a5e2763d04d9ce6c95e1797c00b78d8d23454683ed6e182"
+    },
+    {
+      "bytes": 27622,
+      "path": "package/validation/source__derive_final_cascade_property_r8.py.patch",
+      "sha256": "0bc8db2ded78a8430ea6628a0fe05ecc41190ceec1f171d295fbe34ce061ea44"
+    },
+    {
+      "bytes": 10096,
+      "path": "package/validation/source__write_final_seal_interface_property_r8.py.patch",
+      "sha256": "831cae15c39a05e1026a93828636cc26ee035f2cca1b5e8af734ec6a0d8eda58"
+    },
+    {
+      "bytes": 846,
+      "path": "package/validation/templates__make_component_boundary_inputs.py.patch",
+      "sha256": "0ce1a312adc6e9368e8900eed5a08a7b41fc12883fd163f320828883e34c0c0a"
+    },
+    {
+      "bytes": 8142,
+      "path": "package/validation/templates__release_boundaries.py.patch",
+      "sha256": "e85f4db0451cfd7948831ed9e20a447278b1e245239a713064ebda6ddc415838"
+    },
+    {
+      "bytes": 5092,
+      "path": "package/validation/verify_preparer_bounds.py",
+      "sha256": "ce0ee02f44eb8aee378f8bf89be1f122abad91e8811a06a76a98188220ac5592"
+    },
+    {
+      "bytes": 16849,
+      "path": "package/validation/verify_wiring.py",
+      "sha256": "39170f531b9f46d8f4d3d7afabbdf146dbb610475cd0954c6078ec42b4fd845f"
+    }
+  ],
+  "schema": "hepta.inventory-prefix.consumer-cascade-delivery-evidence.v1"
+}

@@ -1,0 +1,21 @@
+{
+  "archive": {
+    "bytes": 306125,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/delivery-final01/physical-fault-neg04-neg05-neg07-source-stage-final01.tar.gz",
+    "sha256": "833533c5b4c1bc90a17d92885e277b4c48c3811d3308f55a4e9cc01dababcca3"
+  },
+  "base64_wire_bytes": 408168,
+  "complete_delivery_unchanged": true,
+  "ordinary_file_count": 48,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "raw_file_bytes": 1162604,
+  "runtime_member_count": 47,
+  "schema": "hepta.physical-fault.source-stage-archive.v1",
+  "source_manifest": {
+    "bytes": 8432,
+    "path": "SOURCE-MANIFEST.json",
+    "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+  },
+  "state": "EXACT_SOURCE_MANIFEST_CLOSED_SET_NO_PHONE"
+}

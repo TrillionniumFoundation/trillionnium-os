@@ -1,0 +1,139 @@
+{
+  "candidate_source_manifest": {
+    "bytes": 8432,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/SOURCE-MANIFEST.json",
+    "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+  },
+  "checks": [
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "finish_async",
+      "sha256": "810963a8dfa3c2032e94414d14b60ba60f139eaa53ce521d8f0716cfafe4d3ae",
+      "source": "run_physical_fault_once.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "RootCase.begin_phone",
+      "sha256": "4bdd37cb67de772aa59c06362a6a85114cdb2cda51f530e17a43604827b8c1a5",
+      "source": "run_physical_fault_once.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "RootCase.run",
+      "sha256": "6f94639ce943e1a7289b7a967075be5cc61197c1fab9fe3b4b409dffd2cc8d81",
+      "source": "run_physical_fault_once.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "phone_phase",
+      "sha256": "242251b6875ca0fce9bcc00adc897fe78238148885856f6d208f420d0b6b68a6",
+      "source": "verify_physical_fault.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "p4_operations",
+      "sha256": "acde5f199a11e75e36f2345a316538c9bb9a6fcdc25ce57b391adfa9ba295e84",
+      "source": "verify_physical_fault.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "verify",
+      "sha256": "aa8f5e7339ab034cc5ec310711ef567e191f07de1770a5e528f2e9eb63da76ad",
+      "source": "verify_physical_fault.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "python_request",
+      "sha256": "369e73fe1d1693bf53f3bfc2d41beb845ec0b4b1409aa415dbcd8124100d75b5",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "source_request",
+      "sha256": "385c656bea2e6f836f3ab5f137d76b4036ba2c43eabc04524d0247046c24a732",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "p4_plan_stage_program",
+      "sha256": "c7a4493bad47acd85bdc8d26ba0b83ba91464bc3fe14848902a7ba7b429b5857",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "p4_archive_chunk_program",
+      "sha256": "6c47489a7c2a86eb65dbcfdf64e8e346b523dfb8b7e6ff8de2175ff4dec210e9",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "operator_bundle_bytes",
+      "sha256": "92b670636d598399b5d5df09df1a64d12c9e4473de0d4831538179c30a4ba7cc",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "operator_stage_request",
+      "sha256": "cf9f20b3e0489d0f1cbea8f70863799b3576ee8fc65f4a77681c5d5db01dbb5d",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "armed_request",
+      "sha256": "b1c99c8ff0c3467ed2fdef823bcefe8c00ad73965efcaee1bee2064b33b3cf29",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "archive_chunk_request",
+      "sha256": "3a17ab50f39cc64757e4a1a7eb9062dcba45d22ba9b01cc3e0c15fb22bd0ca49",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "put",
+      "sha256": "f01477e38ab3a4a26060ea5264757c6147c76e64f2db1aa4a07e2a8f9fc2786a",
+      "source": "watch_physical_fault_once.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "read_original",
+      "sha256": "6eee3c4eb2116df04075e5ab3a531bd99afcbfaa95f22ceac18a67b49c1d5e96",
+      "source": "watch_physical_fault_once.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "four_fence",
+      "sha256": "a4e979af9b241a7566d69ff21e781fb77a8c4614a3a576e55d6f17d7ecfb1192",
+      "source": "watch_physical_fault_once.py"
+    },
+    {
+      "exact_reviewed_segment_unchanged": true,
+      "function": "final_observation",
+      "sha256": "bb36f7ca0a46ccee9d99283d2f2d0731917c5a50a5671beac7ace502cb3e7cee",
+      "source": "watch_physical_fault_once.py"
+    }
+  ],
+  "independent_reports": [
+    "transport_fix/neg07-durability-independent01/REVIEW.json",
+    "transport_fix/physical-fault-interface-independent02/REVIEW.json"
+  ],
+  "not_a_claim_of_full_independent_business_audit": true,
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "remaining_changes": [
+    {
+      "change": "Only effects_and_models canonical component comparison changed after phase review; uses same pinned pure projection as the immutable actor.",
+      "source": "verify_physical_fault.py"
+    },
+    {
+      "change": "Adds pre-Send app-scope probe membership check and 32MiB total source package limit; reviewed wire recipes unchanged.",
+      "source": "physical_fault_common.py"
+    },
+    {
+      "change": "Only validate_plan adds NUL and previous-scope string-shape rejection after durability review.",
+      "source": "watch_physical_fault_once.py"
+    }
+  ],
+  "schema": "hepta.physical-fault.final-review-scope-reconciliation.v1"
+}

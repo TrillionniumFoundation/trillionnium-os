@@ -1,0 +1,120 @@
+{
+  "actual_adoption_original": {
+    "bytes": 208226,
+    "path": "/workspace/scratch/1ad3d6f55439/independent_post_execution/POLICY-ADOPTION.original.json",
+    "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+  },
+  "actual_adoption_reverified": false,
+  "actual_export_body_read": false,
+  "actual_parent": {
+    "bytes": 4702,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/actual_parent/COMBINATION.original.json",
+    "sha256": "ba5c590860bb7502910617e84d90329a191c5a91e6ace84fb7f8e45b1a556837"
+  },
+  "checks": [
+    {
+      "name": "actual_parent_4702_ba5c_is_exact_compact_sorted_utf8_lf",
+      "passed": true
+    },
+    {
+      "name": "original_pretty_encoder_reproduces_actual_rejection",
+      "passed": true
+    },
+    {
+      "name": "new_combination_encoder_reproduces_parent_bytes_exactly",
+      "passed": true
+    },
+    {
+      "name": "actual_adopted_export_changes_only_live_policy_sha256_and_byte_inverse_restores_parent",
+      "passed": true
+    },
+    {
+      "name": "pretty_input_template_and_generic_encoder_are_unchanged",
+      "passed": true
+    },
+    {
+      "name": "freezer_whole_source_inverse_to_62bc_and_only_three_combination_calls_plus_encoder",
+      "passed": true
+    },
+    {
+      "name": "preparer_whole_source_inverse_to_106f_with_explicit_pin_three_calls_and_provenance_labels",
+      "passed": true
+    },
+    {
+      "name": "freezer_all_fixed_pins_and_caps_history_gates_preserved",
+      "passed": true
+    },
+    {
+      "name": "preparer_exact_new_freezer_pin_accepts_new_and_rejects_old",
+      "passed": true
+    },
+    {
+      "name": "finalization_one_rhs_full_source_inverse_to_new_freezer",
+      "passed": true
+    },
+    {
+      "name": "neg_root_helper_single_pin_inverse_to_68df_and_exact_new_bound_freezer_identity",
+      "passed": true
+    },
+    {
+      "name": "old_bound_freezer_identity_not_admitted_by_new_neg_helper_pin",
+      "passed": true
+    },
+    {
+      "name": "duplicate_json_rejection_unchanged",
+      "passed": true
+    },
+    {
+      "name": "all_three_sources_compile_without_main_or_build_calls",
+      "passed": true
+    }
+  ],
+  "comparison_only_combination": {
+    "actual_export_sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70",
+    "bytes": 4702,
+    "field_changed_only": "live_policy_sha256",
+    "runtime_output_written": false,
+    "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+  },
+  "freezer_main_calls": 0,
+  "full_original_build_calls": 0,
+  "native_nonces_created": 0,
+  "neg_plan_main_calls": 0,
+  "neg_root_helper": {
+    "bytes": 24237,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/neg-root-plan/source/prepare_native_guard_root_plan.py",
+    "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+  },
+  "original_freezer": {
+    "bytes": 35375,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/native-guard-property-r8-freeze-transport-candidate02-1ad3/source/freeze_property_runtime.py",
+    "sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+  },
+  "original_neg_helper": {
+    "bytes": 24237,
+    "path": "/workspace/scratch/1ad3d6f55439/neg_root_plan_helper_r8/source/prepare_native_guard_root_plan.py",
+    "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+  },
+  "original_preparer": {
+    "bytes": 18226,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final01/package/source/prepare_actual_r8_freeze.py",
+    "sha256": "106f2ac9f40d32693dd992cbe27454f739674377700e21cfd284a335aa01194f"
+  },
+  "phone_calls": 0,
+  "preparer": {
+    "bytes": 18304,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/prepare_actual_r8_freeze.py",
+    "sha256": "a5deed4f086582a5ad13f5efcad75456b01cbbf46a2e4add19164dae2f80f39e"
+  },
+  "preparer_main_calls": 0,
+  "qualified_cases": 0,
+  "remote_calls": 0,
+  "runtime_freezes": 0,
+  "schema": "hepta.native-guard.r8-combination-encoding-local-checks.v1",
+  "source": {
+    "bytes": 35543,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/freeze_property_runtime.py",
+    "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+  },
+  "state": "SOURCE_COMPATIBILITY_CHECKS_PASSED_NO_RUNTIME_FREEZE"
+}

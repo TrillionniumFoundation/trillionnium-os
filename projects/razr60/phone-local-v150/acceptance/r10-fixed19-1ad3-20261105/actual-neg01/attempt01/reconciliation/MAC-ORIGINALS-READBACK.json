@@ -1,0 +1,20 @@
+[
+  {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-1ad3-01.send-result.json",
+    "size": 672,
+    "sha256": "3a8ffc3ce20efd74d2e30d0763ae46ae32adea667d528f6e554170c067293932",
+    "version": "16777233:588380797:672:1793872156351359092:1793872156351359092"
+  },
+  {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/CHAIN-INTENT.json",
+    "size": 359,
+    "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88",
+    "version": "16777233:588378766:359:1793871964534689720:1793871964534689720"
+  },
+  {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-1ad3-01/material/PREPARED.json",
+    "size": 2837,
+    "sha256": "68df0f8167f4394db4abdb4aebee85c50325d918dc2cb027fbeaa747919d6ad9",
+    "version": "16777233:588378842:2837:1793871964742431790:1793871964742431790"
+  }
+]

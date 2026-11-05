@@ -1,0 +1,7 @@
+{
+  "correction": "Use the counted six occurrences under the already fixed exact118d whole-source hash.",
+  "error": "The builder expected eight occurrences of the local global_verified identifier; exact118d has six. No source artifact had been written and no target code was executed.",
+  "phone_operations": 0,
+  "source_118d_unchanged": true,
+  "state": "LOCAL_DERIVATION_ASSERTION_FAILURE_BEFORE_SOURCE_WRITE"
+}

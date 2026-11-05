@@ -1,0 +1,83 @@
+{
+  "file_bytes": 149538,
+  "file_count": 10,
+  "files": [
+    {
+      "bytes": 2421,
+      "git_blob_sha": "171bdf5855989a6e5af6ba462414909b999ec755",
+      "path": "ARCHIVE-MANIFEST.original.json",
+      "sha256": "b234aaf2b670564bf62334213ab2814e9656ee8b2c789cabb1ed367ff1f96401",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/ARCHIVE-MANIFEST.original.json"
+    },
+    {
+      "bytes": 6388,
+      "git_blob_sha": "0689d28185c6f51a74322ae0b777816fc823b59e",
+      "path": "INDEPENDENT-REVIEW.original.json",
+      "sha256": "9d188da7e5013d2d73a6b88443a9b31d464a36bd3526057cdacc2d19d91ec408",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/INDEPENDENT-REVIEW.original.json"
+    },
+    {
+      "bytes": 54740,
+      "git_blob_sha": "5741543729d3507dc892a4da3c34d0ac46805675",
+      "path": "P4-LAUNCHER.original.py",
+      "sha256": "0443724b0f8a796d7e25c4eea74958951958fbfa6bc00f0d5fc33b38bcf25e5a",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/P4-LAUNCHER.original.py"
+    },
+    {
+      "bytes": 54740,
+      "git_blob_sha": "24c0207f9094c8d90eb605fceafe32cc2527dd58",
+      "path": "P4-LAUNCHER.pre-execution-draft01.py",
+      "sha256": "c70cf911b2db1d074eb0c0e9965732ef006cef7ee2d633f43e39b9b9679156b3",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/P4-LAUNCHER.pre-execution-draft01.py"
+    },
+    {
+      "bytes": 3002,
+      "git_blob_sha": "2acfd012471fa84e1e204e51d3a95e12acef5dbd",
+      "path": "PROFILE-CONTROLLER-READ.original.json",
+      "sha256": "751ba008d135bcbdce50d705eee5655026183720b1ec853ba4016dcd5eaabf91",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/PROFILE-CONTROLLER-READ.original.json"
+    },
+    {
+      "bytes": 1236,
+      "git_blob_sha": "1f6aa0e3b3e4694b569f46251fb7059864b15988",
+      "path": "PROFILE-CONTROLLER-START.original.json",
+      "sha256": "7734a27219c448e4c61d5b50d786bcee1953e5c2209e72047ff3eeb3abb35171",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/PROFILE-CONTROLLER-START.original.json"
+    },
+    {
+      "bytes": 1010,
+      "git_blob_sha": "27f9870e40638323ee2120687aaba72017fa6181",
+      "path": "PROFILE-CONTROLLER-STATUS.original.json",
+      "sha256": "e99e558f8578fabb2c6e9a1953b1371e9cc5590151ecac1cc12211188c3e04a6",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/PROFILE-CONTROLLER-STATUS.original.json"
+    },
+    {
+      "bytes": 21812,
+      "git_blob_sha": "b9dc3887c0811546781aa5676a6f9447ae5c8072",
+      "path": "PROFILE-SOURCE.original.py",
+      "sha256": "d3f599e7adbb7b249e7da0550d48964d42713e6ac3989e16b0d3b0ca9d13e1f4",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/PROFILE-SOURCE.original.py"
+    },
+    {
+      "bytes": 2871,
+      "git_blob_sha": "990c3962d803b80ffa29292a351aa2e6c3a63422",
+      "path": "RETIREMENT-SOURCE-CONTROLLER-READ.original.json",
+      "sha256": "6ec3461dbada2f7ba32241df94ca7a75d28a43c72ae23ee1de8d93e9c5aac16c",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/RETIREMENT-SOURCE-CONTROLLER-READ.original.json"
+    },
+    {
+      "bytes": 1318,
+      "git_blob_sha": "6cc4b7b4cda0649aa3aa032d401f990c1211d895",
+      "path": "RETIREMENT-SOURCE-CONTROLLER-START.original.json",
+      "sha256": "b8d0f871b37188a89f95cba7e08cda900086bc75a9b5e32c8349d3f471d44bfa",
+      "source": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01/RETIREMENT-SOURCE-CONTROLLER-START.original.json"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "All existing top-level source/controller/verification records. Expanded 12 originals and redundant download .bin chunks are represented by the separately verified exact FULL-ORIGINALS archive.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/actual_neg01_1ad3_01/reconciliation/profile-read01",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

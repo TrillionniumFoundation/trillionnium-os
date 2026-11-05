@@ -1,0 +1,55 @@
+{
+  "exact_unchanged_function_bodies": [
+    "boot",
+    "load_module",
+    "metadata",
+    "need",
+    "own_fds",
+    "parent_fd",
+    "read_directory",
+    "read_original",
+    "recheck_bootstrap",
+    "release_owned_verifier_lock",
+    "sha",
+    "source_package",
+    "strict"
+  ],
+  "findings": [
+    "All original read-only bootstrap, exact32 source, raw module loading, native identity, fixed expired lease and owned FD cleanup function bodies remain byte-identical to independently reviewed d3f.",
+    "One literal L.verify_retired callsite remains. entered increments immediately before that call; returned increments only after its tuple result. No profiler-derived zero is used for admission.",
+    "The existing owned verifier lock cleanup remains in the call finally, after wall/CPU observations. All original inode, returned-own-FD, EBADF and unknown-new-FD refusal logic is unchanged.",
+    "No cProfile, codeobject serializer, trace callback, signal, timer or replacement of runtime functions is added or retained. OBSERVED_CALL_SECONDS180 is checked only after return and explicitly described as a post-return observation, not a hard deadline.",
+    "Success additionally retains original global actual08 result checks, bootstrap/boot rereads and complete owned-lock cleanup. It grants no failed-prelaunch closure or physical case credit.",
+    "The fixed original lifecycle remains responsible for its nested verify_current call. Removing runtime tracing also removes the dynamic nested-call-count observation; source identity and the original return proof still apply."
+  ],
+  "parent": {
+    "bytes": 21812,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-retired-profile-candidate01/source/profile_actual_retired_once.py",
+    "sha256": "d3f599e7adbb7b249e7da0550d48964d42713e6ac3989e16b0d3b0ca9d13e1f4"
+  },
+  "removed_only_instrumentation_functions": [
+    "CooperativeDeadline",
+    "ProfileDeadline",
+    "code_description",
+    "profile_value"
+  ],
+  "reviewer_initial_transcription_failure": "REVIEW-HARNESS-FAILURE01.json",
+  "schema": "hepta.root.independent-readonly-verifier-increment-review.v1",
+  "scope_limits": {
+    "full_retest_of_d3f_helpers": false,
+    "global_state_verified_here": false,
+    "hard_deadline_proved": false,
+    "main_called": false,
+    "outer_210_240_transport_evaluated_here": false,
+    "phone_operations": 0,
+    "remote_reads": 0,
+    "target_original_verifier_executed": false,
+    "target_runtime_imported": false
+  },
+  "source": {
+    "bytes": 17039,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/neg01-retired-readonly-candidate01/source/verify_actual_retired_once.py",
+    "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba"
+  },
+  "state": "PASS_NARROW_SOURCE_REVIEW_NO_TARGET_EXECUTION"
+}

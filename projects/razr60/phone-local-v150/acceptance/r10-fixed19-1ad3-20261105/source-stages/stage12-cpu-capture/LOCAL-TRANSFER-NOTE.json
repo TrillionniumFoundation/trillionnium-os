@@ -1,0 +1,12 @@
+{
+  "schema": "hepta.local.stage-payload-transfer-note.v1",
+  "state": "LOCAL_TOOL_OUTPUT_CHUNKING_REQUIRED_BEFORE_ANY_REMOTE_CALL",
+  "attempts_before_remote_start": [
+    {"shape": "whole 371472-byte script inside request JSON", "result": "local exec result truncated; JSON parsing failed before process_start"},
+    {"shape": "two local source chunks of at most190000 characters", "result": "local exec result truncated at131072 characters; parsing failed before process_start"}
+  ],
+  "resolution": "Seven local chunks of at most60000 characters reassembled the unchanged371472-byte source; exact launch code checks source SHA256cc257dd4 before compilation.",
+  "remote_start_requests_before_resolution": 0,
+  "archive_or_source_bytes_changed": false,
+  "old_failures_erased": false
+}

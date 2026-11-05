@@ -1,0 +1,115 @@
+{
+  "all_read_bytes_unchanged": true,
+  "binder_calls": 0,
+  "checks": [
+    {
+      "finding": "Exact source57f67089 and manifestb512a2b2; all declared member hashes verified and readbookended.",
+      "id": "frozen_source_identity",
+      "passed": true
+    },
+    {
+      "finding": "Every preexisting function except main is byte-identical to reference6adb, including actual_dependencies, parent_packages and derive_packages.",
+      "id": "six_original_factories_unchanged",
+      "passed": true
+    },
+    {
+      "finding": "ROOT_CAPTURE_MANIFEST remains None until explicit binding; capture_manifest_pin accepts only the fixed successor namespace. Its state and exact three members match final successor52897.",
+      "id": "explicit_capture_single_namespace",
+      "passed": true
+    },
+    {
+      "finding": "capture_dependencies binds Root MF runtime/combo/adoption to the same FC8 actual inputs, requires exact50a5 Root normalization, all seven actual slots, verifier identity and bridge one-slot inverse6694. Old f305 capture is not accepted.",
+      "id": "actual_generation_and_seven_slots",
+      "passed": true
+    },
+    {
+      "finding": "The manifest0e36 and all compatibility sources remain exact. The original assembly still requires the same five dependency sources and nine SHA fields. Root CPU PURE_MODULES begins with exact3e17/5c431 references.",
+      "id": "reviewed_compatibility_sources",
+      "passed": true
+    },
+    {
+      "finding": "derive_capture_closure modifies only negative_originals FINAL_DEPENDENCIES and root_cpu_negative PURE_MODULES via changed_source whole inverse/body-preservation checks. Closer5c431 and ledger7ed57 are copied unchanged.",
+      "id": "two_literal_closure_derivation",
+      "passed": true
+    },
+    {
+      "finding": "The fifth source is the new actual Root transport, beside cpu/phone/P4/sender. Four explicit capture phases retain separate OUTPUT-CAPTURE sidecars and unchanged seven-field successful RESULT; contract metadata does not fabricate actual phase records.",
+      "id": "sidecar_contract_and_sources",
+      "passed": true
+    },
+    {
+      "finding": "The new seventh closure package is derived after original six-package admission and before any output directory is created. Existing create-only/readbookend/failure-retention behavior remains; generation reports no READY/task/case qualification.",
+      "id": "source_only_main_integration",
+      "passed": true
+    },
+    {
+      "finding": "The frozen Root successor namespace/state/three generation fields match capture_dependencies exactly. This review does not bind the two None literals, execute the generator/binder, or claim actual FC8/READY/physical qualification.",
+      "id": "successor_interface_compatible",
+      "passed": true
+    }
+  ],
+  "factory_calls": 0,
+  "full_binder_audit_claimed": false,
+  "integration_read": "main ordering, actual_dependencies return fields, changed_source inverse contracts",
+  "main_calls": 0,
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "regression_reruns": 0,
+  "remote_calls": 0,
+  "reviewed_functions": [
+    "capture_dependencies",
+    "derive_capture_closure",
+    "capture_manifest_pin"
+  ],
+  "schema": "hepta.cpu-negative.capture-generator-independent-source-review.v1",
+  "source": {
+    "bytes": 53525,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_negative_generation_capture_candidate01/delivery-final01/package/source/derive_negative_operator_sources.py",
+    "sha256": "57f67089f6885b0e5bdcca96a4dc73c1821626854a51794964c0ce3f6c32cf09"
+  },
+  "source_imports": 0,
+  "source_manifest": {
+    "bytes": 10723,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_negative_generation_capture_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6"
+  },
+  "source_member_count": 52,
+  "state": "NO_BLOCKER_IN_NARROW_CAPTURE_DEPENDENCY_AND_CLOSURE_DERIVATION_REVIEW",
+  "successor_manifest": {
+    "bytes": 13013,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/delivery-final01/package/root-package/SOURCE-MANIFEST.json",
+    "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+  },
+  "unchanged_parent_function_count": 29,
+  "unchanged_parent_functions": [
+    "need",
+    "sha",
+    "pin",
+    "encoded",
+    "strict",
+    "metadata",
+    "absolute",
+    "relative",
+    "descriptor",
+    "package_index",
+    "member",
+    "assignment",
+    "value",
+    "target",
+    "span",
+    "replace_literal",
+    "inverse",
+    "functions",
+    "changed_source",
+    "finalization",
+    "parent_packages",
+    "actual_dependencies",
+    "rowset",
+    "diff",
+    "derive_packages",
+    "syncdir",
+    "mkdir_new",
+    "put",
+    "write_tree"
+  ]
+}

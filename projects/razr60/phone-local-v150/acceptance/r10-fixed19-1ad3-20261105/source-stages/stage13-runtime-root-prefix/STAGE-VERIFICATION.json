@@ -1,0 +1,48 @@
+{
+  "state": "ACTUAL_SOURCE_ONLY_STAGE_AND_ALL73_PINS_VERIFIED",
+  "actual_result": {
+    "bytes": 2385,
+    "sha256": "bdf7b791036dd85efbb1fd8acd5768bb219dd1ed2b32e8a6d091a4fd38bdb46c"
+  },
+  "terminal": {
+    "at_unix_ms": 1793876187947,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ab5a510b-fc05-4cec",
+    "launch_nonce": "1fa82d2d8a3373030fcf290edadd8abf",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 751,
+        "stored": 751
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "source_members": 73,
+  "phone_calls": 0,
+  "case_runs": 0,
+  "helper_requires_unfrozen_failed_prelaunch_verifier": true
+}

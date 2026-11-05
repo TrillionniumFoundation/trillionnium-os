@@ -1,0 +1,26 @@
+{
+  "base_plan": null,
+  "case_id": "NEG-01",
+  "failed_prelaunch_evidence": null,
+  "freeze_result": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "host_out": null,
+  "label": null,
+  "nonce": null,
+  "qualified_neg01_result": null,
+  "request": null,
+  "root_capture_increment": {
+    "bytes": 12350,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/ROOT-CAPTURE-INCREMENT.json",
+    "sha256": "bb3d8fbb1133b4b46e5d389508577727414cfb7556791602d4f503fde6b15860"
+  },
+  "runtime_source_increment_result": {
+    "bytes": 6132,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/proof/RUNTIME-INCREMENT-RESULT.json",
+    "sha256": "b13be5219320c82c9a440d2adfa83758d0ba06ee6d3e50468f7c28bb5658e171"
+  },
+  "schema": "hepta.native-guard.runtime-successor-root-plan-preparation-inputs.v1"
+}

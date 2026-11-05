@@ -1,0 +1,11 @@
+--- original68df/prepare_native_guard_root_plan.py
++++ source/prepare_native_guard_root_plan.py
+@@ -26,7 +26,7 @@
+ BOOT = 'f8019f83-20a7-4f18-bea1-51c980621e4d'
+ ROOT_TEMPLATE_SHA = '50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649'
+ BRIDGE_TEMPLATE_SHA = '6694b106ee8ccf2177bf758367fda214f27b7ebfbea1611e11e67604a2bfd572'
+-FREEZER_TEMPLATE_SHA = '62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509'
++FREEZER_TEMPLATE_SHA = '78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d'
+ ROOT_CANDIDATE_MANIFEST = {
+     'path':str(B/'native-guard-property-root-r8-transport-candidate03-1ad3/SOURCE-MANIFEST.json'),
+     'bytes':4450,'sha256':'077c86ee40a5e239ed7c46200d414624d4e8b76d8e936c101b1cabdaefac3aa8',

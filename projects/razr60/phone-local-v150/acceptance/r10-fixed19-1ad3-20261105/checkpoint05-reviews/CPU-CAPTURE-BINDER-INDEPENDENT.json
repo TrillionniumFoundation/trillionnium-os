@@ -1,0 +1,72 @@
+{
+  "actual_generation_claimed": false,
+  "all_read_bytes_unchanged": true,
+  "binder_calls": 0,
+  "checks": [
+    {
+      "finding": "Binder a7dfa and generator57f/parent6adb match immutable final01 manifest b512; reviewed members are exact.",
+      "id": "exact_frozen_source_and_manifest",
+      "passed": true
+    },
+    {
+      "finding": "prepare validates exact input fields, obtains original finalization and fixed successor descriptor, edits exactly FINALIZATION/ROOT_CAPTURE_MANIFEST, and requires original whole-byte inverse. Both published literals remain None; inverse and changed_source bodies exactly retain6adb.",
+      "id": "two_explicit_rhs_and_inverse",
+      "passed": true
+    },
+    {
+      "finding": "All original actual FC8/AC9/runtime/adoption relationships plus capture seven-slot admission and both source derivations run before output mkdir. Original fixed output namespaces must all be absent, inputs/manifest/observed originals are rechecked. Factories are in-memory; generator main is never invoked.",
+      "id": "actual_admission_before_any_output",
+      "passed": true
+    },
+    {
+      "finding": "The four original descriptors remain consumer_manifest, acceptance_manifest, policy_adoption, current_policy with original exact FC8/AC9 paths. Root capture is a separate explicit exact3 descriptor in the fixed successor namespace; no future SHA or nonce is synthesized.",
+      "id": "same_actual_generation_mapping",
+      "passed": true
+    },
+    {
+      "finding": "Only --prepare-host-only performs admission and create-only source/output-evidence writes. Returned execute_argv pins actual derived source SHA and remains a separate generation action. No generator main, subprocess, phone, P4, nonce allocation or physical-pass claim is made.",
+      "id": "native_cli_and_source_only_result",
+      "passed": true
+    },
+    {
+      "finding": "Inputs use exact3 bounded NOFOLLOW reads and full9 fd/path bookends. Output writes are create-only, fsynced, and compare created dev/inode plus exact bytes to the path before returning descriptors.",
+      "id": "retained_input_and_output_identity",
+      "passed": true
+    }
+  ],
+  "complements_generator_review": {
+    "bytes": 4795,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/cpu-capture-generation-independent01/REVIEW.json",
+    "sha256": "4c61ab4b5ae0254757a25955e94e74dbcccdd5320132ca8ddaf4448a177fdf1c"
+  },
+  "factory_calls": 0,
+  "generator": {
+    "bytes": 53525,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_negative_generation_capture_candidate01/delivery-final01/package/source/derive_negative_operator_sources.py",
+    "sha256": "57f67089f6885b0e5bdcca96a4dc73c1821626854a51794964c0ce3f6c32cf09"
+  },
+  "generator_main_calls": 0,
+  "phone_calls": 0,
+  "reference": {
+    "bytes": 41788,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_negative_generation_capture_candidate01/delivery-final01/package/reference/derive_negative_operator_sources.6adb.original.py",
+    "sha256": "6adbfa234b88c1f9d6ab247e97fa40e98115c584a3d67c41975b06cf0739da4d"
+  },
+  "remaining_actual_gate": "Root must bind real FC8/AC9/adoption/current-policy descriptors and real successor manifest after their actual creation; current source review supplies no qualification credit.",
+  "remote_calls": 0,
+  "schema": "hepta.cpu-negative.capture-binder-independent-source-review.v1",
+  "source": {
+    "bytes": 9860,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_negative_generation_capture_candidate01/delivery-final01/package/source/prepare_negative_source_generation.py",
+    "sha256": "a7dfa4b865bd4babc3947fa92695cc2b773a1d4480e77d57c3f0a230bb172036"
+  },
+  "source_imports": 0,
+  "source_manifest": {
+    "bytes": 10723,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_negative_generation_capture_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6"
+  },
+  "state": "NO_BLOCKER_IN_NARROW_BINDER_AND_NATIVE_ENTRY_REVIEW",
+  "synthetic_future_bindings_created": 0,
+  "whole_source_inverse_scope": "original inverse algorithm preserved exactly and required on both actual RHS changes; no unexecuted actual binding is claimed"
+}

@@ -1,0 +1,11 @@
+{
+  "cause": "Fixture reconstructed three unfrozen late assignments as NAME=None, but exact66816/f42cf template uses NAME = None. The size mismatch66810 vs66816 failed the fixture SHA assertion before reviewed_runtime was called.",
+  "correction": "Restore the exact two spaces per assignment and require the expected f42cf whole-source SHA.",
+  "failed_checks": [
+    "original_runtime_proof_continues_and_returns_actual_successor",
+    "old_three_policy_literal_gate_still_refuses_wrong_policy"
+  ],
+  "first_report_sha256": "8eec8595c7312ebfe5dbf3e1ecd0032460ef26aeb2c0006d6bbbe006c08f3db3",
+  "source_changed": false,
+  "state": "TEST_FIXTURE_RECONSTRUCTION_ERROR_NOT_SOURCE_FAILURE"
+}

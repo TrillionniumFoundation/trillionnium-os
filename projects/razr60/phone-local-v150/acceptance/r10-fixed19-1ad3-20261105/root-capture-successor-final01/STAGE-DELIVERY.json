@@ -1,0 +1,76 @@
+{
+  "archive": {
+    "bytes": 67084,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/delivery-final01/actual-r8-root-capture-successor-stage-final01.tar.gz",
+    "sha256": "150fb74103794ea8c7e8ddc9a2a0855100c0f006ef89ce77d42c45076caac588"
+  },
+  "deployments": [
+    {
+      "local_root": "root-package",
+      "mac_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3"
+    },
+    {
+      "local_root": "proof",
+      "mac_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof"
+    }
+  ],
+  "files": [
+    {
+      "bytes": 8100,
+      "path": "proof/ROOT-CAPTURE-INCREMENT.json",
+      "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+    },
+    {
+      "bytes": 31714,
+      "path": "proof/source/prepare_native_guard_root_plan.py",
+      "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+    },
+    {
+      "bytes": 13013,
+      "path": "root-package/SOURCE-MANIFEST.json",
+      "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+    },
+    {
+      "bytes": 126796,
+      "path": "root-package/reference/policy_native5_verifier.py",
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    },
+    {
+      "bytes": 8098,
+      "path": "root-package/source/phone_chain_bridge.py",
+      "sha256": "04f6bc7e3a2a0f2c2ef0a8385772c4d59dd879d9f590ce08902141fa437566da"
+    },
+    {
+      "bytes": 72194,
+      "path": "root-package/source/run_component_root_once.py",
+      "sha256": "c1b03c028359342a520372a7ddaa60ef38f3b9609ade3a133f32dfe3b6b372a9"
+    }
+  ],
+  "increment": {
+    "bytes": 8100,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/ROOT-CAPTURE-INCREMENT.json",
+    "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+  },
+  "phone_calls": 0,
+  "preparer": {
+    "bytes": 31714,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3-proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+  },
+  "regular_members": 6,
+  "root_executions": 0,
+  "root_source_package": {
+    "bytes": 13013,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-root-r8-capture-successor01-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+  },
+  "runtime_freezes": 0,
+  "schema": "hepta.native-guard.actual-r8-capture-source-stage-delivery.v1",
+  "source_delivery_manifest": {
+    "bytes": 4705,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "2cf34514668dea38364588f4f2b65e0c9a874ad36a4fb31e2d632c01184199e7"
+  },
+  "state": "SOURCE_ARCHIVE_ONLY_NOT_STAGED_BY_THIS_BUILDER",
+  "uncompressed_file_bytes": 259915
+}

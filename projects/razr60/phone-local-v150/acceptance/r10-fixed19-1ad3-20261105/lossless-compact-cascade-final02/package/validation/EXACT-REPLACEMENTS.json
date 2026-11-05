@@ -1,0 +1,52 @@
+{
+  "cascade": [
+    {
+      "after": "def encode(value):\n    return (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False,\n                       allow_nan=False)+'\\n').encode()\n\ndef combination_encode(value):\n    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\\n').encode()\n",
+      "before": "def encode(value):\n    return (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False,\n                       allow_nan=False)+'\\n').encode()\n"
+    },
+    {
+      "after": "combination_encode(parent_combo) == parent_raw",
+      "before": "encode(parent_combo) == parent_raw"
+    },
+    {
+      "after": "combination_encode(combo) == combo_raw",
+      "before": "encode(combo) == combo_raw"
+    },
+    {
+      "after": "combination_encode(reversed_combo) == parent_raw",
+      "before": "encode(reversed_combo) == parent_raw"
+    }
+  ],
+  "interface": [
+    {
+      "after": "def encode(value): return (json.dumps(value,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\\n').encode()\n\ndef combination_encode(value):\n    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\\n').encode()\n",
+      "before": "def encode(value): return (json.dumps(value,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\\n').encode()\n"
+    },
+    {
+      "after": "combination_encode(strict(parent_combo_raw))==parent_combo_raw",
+      "before": "encode(strict(parent_combo_raw))==parent_combo_raw"
+    },
+    {
+      "after": "combination_encode(combination)==coraw",
+      "before": "encode(combination)==coraw"
+    },
+    {
+      "after": "combination_encode(reversed_combo)==parent_combo_raw",
+      "before": "encode(reversed_combo)==parent_combo_raw"
+    }
+  ],
+  "preparer": [
+    {
+      "after": "PARENT = B/'property-r8-lossless-bundle-generators-candidate01'\nSOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/derive_final_cascade_property_r8.py', 'bytes': 56374, 'sha256': 'd21fcd14bb5171938456e790318b09c0854ac1f2a1ce121a6f0b38d5d34aad26'}\nINTERFACE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/source/write_final_seal_interface_property_r8.py', 'bytes': 33280, 'sha256': '4fd182f8d8eba5b053b432da86e6503f6f18921ba9521a8413a65c5899bd8b0f'}\nGENERATOR_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-compact-generators-1ad3-candidate02/GENERATOR-SOURCE-MANIFEST.json', 'bytes': 1845, 'sha256': '5dda147dd1beb6cc02750fbf04b9eeebc599aca1a214d9e8bcf5d72a8f03954a'}\nTEMPLATE_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json', 'bytes': 24857, 'sha256': '81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54'}\n",
+      "before": "PARENT = B/'property-policy-final-cascade-r8-candidate03'\nSOURCE = {'path': str(PARENT/'source/derive_final_cascade_property_r8.py'), 'bytes': 56190,\n          'sha256': '5196112d9d3469eefbbd1b564eb29ee41169dab428346d275ed8f1dd18f0a717'}\nINTERFACE = {'path': str(PARENT/'source/write_final_seal_interface_property_r8.py'), 'bytes': 33096,\n             'sha256': '8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb'}\n"
+    },
+    {
+      "after": "def validate_source_manifests(originals, template_module):\n    generators = strict(originals.read(GENERATOR_MANIFEST))\n    templates = strict(originals.read(TEMPLATE_MANIFEST))\n    need(generators['schema']=='hepta.property-r8.lossless-compact-generators.source-package.v1'\n         and generators['state']=='SOURCE_ONLY_FINALIZATION_AND_DELIVERY_UNFILLED'\n         and generators['template_source_manifest']==TEMPLATE_MANIFEST,\n         'exact compact generator lineage differs')\n    expected_sources = [dict(path='source/derive_final_cascade_property_r8.py',\n                             **{k:SOURCE[k] for k in ('bytes','sha256')}),\n                        dict(path='source/write_final_seal_interface_property_r8.py',\n                             **{k:INTERFACE[k] for k in ('bytes','sha256')})]\n    need(generators['files']==expected_sources, 'exact two compact generator sources required')\n    need(templates['schema']=='hepta.r8.lossless-bundle-generator-source-package.v1'\n         and templates['state']=='SOURCE_ONLY_FUTURE_FINALIZATION_NONE',\n         'exact lossless template package required')\n    rows = templates['files']\n    need(type(rows) is list and all(type(r) is dict and set(r)=={'path','bytes','sha256'} for r in rows)\n         and len(rows)==len({r['path'] for r in rows}), 'unique exact template package inventory required')\n    expected_templates = {('templates/'+name):dict(path='templates/'+name,**pin)\n                          for name,pin in template_module.TEMPLATE_PINS.items()}\n    observed_templates = {r['path']:r for r in rows if r['path'].startswith('templates/')}\n    need(len(expected_templates)==19 and observed_templates==expected_templates,\n         'all nineteen pinned lossless templates must match the actual package manifest')\n\n\ndef main():\n",
+      "before": "def main():\n"
+    },
+    {
+      "after": "    template_module = module(SOURCE, source_raw, 'reviewed_final_cascade_template')\n    validate_source_manifests(originals, template_module)\n",
+      "before": "    template_module = module(SOURCE, source_raw, 'reviewed_final_cascade_template')\n"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+--- draft01-fad04/source
++++ explicit-resource-anchor/source
+@@ -264,7 +264,15 @@
+          and '__reviewed_package_sources__' not in module.__dict__
+          and '__reviewed_source_sha256__' not in module.__dict__,
+          'explicit candidate execution origin or original file-read path differs')
+-    proof['reference_resolution_file']=module.__file__
++    anchor=READSET.get(module.__file__)
++    need(type(anchor) is dict and anchor['path']==module.__file__
++         and (anchor['bytes'],anchor['sha256'])==STAGED_LATE_PIN,
++         'resource anchor must be the actual full9-read stagedc50a original')
++    proof['resource_anchor']=dict(anchor)
++    proof['resource_anchor_used_for']=['unchanged reference lookup','unchanged self-source read semantics']
++    proof['self_source_function_modified']=False
++    proof['self_source_function_is_executed_code_identity']=False
++    proof['self_source_read_semantics']='unchanged reviewed_source_sha256 reads stagedc50a if called; it is never reported as executed147cf identity'
+     proof['registered_as_staged_late_module']=False
+     return module,proof
+ 
+@@ -342,8 +350,10 @@
+         'original_call_wall_seconds':original_call_wall,'original_call_cpu_seconds':original_call_cpu,
+         'total_wall_seconds':time.monotonic()-started,
+         'profiling_enabled':False,'tracing_enabled':False,'runtime_functions_rebound':False,
+-        'explicit_alternate_current_late_module_supplied':explicit_source is not None,
+-        'staged_late_reader_unchanged':dict(bytes=STAGED_LATE_PIN[0],sha256=STAGED_LATE_PIN[1]),
++        'candidate_late_module_compiled':explicit_source is not None,
++        'candidate_late_argument_entered_callsite':entered==1 and explicit_source is not None,
++        'candidate_late_verification_returned':diagnostic_verified,
++        'expected_staged_late_reader_pin':dict(bytes=STAGED_LATE_PIN[0],sha256=STAGED_LATE_PIN[1]),
+         'configured_executed_late_reader':dict(bytes=EXECUTED_LATE_PIN[0],sha256=EXECUTED_LATE_PIN[1]),
+         'successor_runtime_claimed_staged':False,'memoization_added':False,
+         'bootstrap_originals':list(READSET.values()),'bootstrap_source_directories':list(DIRECTORIES.values()),

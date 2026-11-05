@@ -1,0 +1,71 @@
+{
+  "actual_phase_records_or_case_plan_created": false,
+  "every_sidecar_consumed_by_original_read_set": true,
+  "phase_inputs": {
+    "actor_execution.host": {
+      "phase": "negative-cancel-actor",
+      "required_records": [
+        "intent",
+        "child",
+        "result",
+        "stdout",
+        "stderr",
+        "stdin",
+        "output_capture"
+      ],
+      "sidecar": "OUTPUT-CAPTURE.json"
+    },
+    "p4.execution.host": {
+      "phase": "negative-p4-capture",
+      "required_records": [
+        "intent",
+        "child",
+        "result",
+        "stdout",
+        "stderr",
+        "stdin",
+        "output_capture"
+      ],
+      "sidecar": "OUTPUT-CAPTURE.json"
+    },
+    "phone.execution": {
+      "phase": "phone-negative-capture",
+      "required_records": [
+        "intent",
+        "child",
+        "result",
+        "stdout",
+        "stderr",
+        "stdin",
+        "output_capture"
+      ],
+      "sidecar": "OUTPUT-CAPTURE.json"
+    },
+    "sender.execution": {
+      "phase": "negative-sender",
+      "required_records": [
+        "intent",
+        "child",
+        "result",
+        "stdout",
+        "stderr",
+        "stdin",
+        "output_capture"
+      ],
+      "sidecar": "OUTPUT-CAPTURE.json"
+    }
+  },
+  "physical_case_pass": false,
+  "same_phase_directory_required": true,
+  "schema": "hepta.cpu-negative.capture-host-input-contract.v1",
+  "sidecar_is_separate_from_RESULT": true,
+  "success_RESULT_fields": [
+    "state",
+    "phase",
+    "pid",
+    "returncode",
+    "stdout",
+    "stderr",
+    "automatic_retry"
+  ]
+}

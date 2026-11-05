@@ -1,0 +1,18 @@
+{
+  "actual_closed_set_exact": true,
+  "request": {
+    "bytes": 1033,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/lossless_compact_cascade_candidate02/actual-preparation01/CONTROLLER-REQUEST.json",
+    "sha256": "c672a27541b60ae80cf920d973804b0eab70f35578efde818597ff07500fe1d7"
+  },
+  "runtime_freeze": {
+    "bytes": 22392,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+    "sha256": "f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67"
+  },
+  "stage_job": "1a1ab181069-fc05-4a3d",
+  "stage_result": [
+    7338,
+    "2a9198c090e0cdb760eed77530bdad167a4b340e3a8bbfc76909be6e462bfc03"
+  ]
+}

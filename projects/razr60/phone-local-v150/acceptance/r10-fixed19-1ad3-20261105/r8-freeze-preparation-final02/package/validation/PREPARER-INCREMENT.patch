@@ -1,0 +1,67 @@
+--- original106f/prepare_actual_r8_freeze.py
++++ source/prepare_actual_r8_freeze.py
+@@ -19,8 +19,8 @@
+ import types
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-FREEZER = {'path':str(B/'native-guard-property-r8-freeze-transport-candidate02-1ad3/source/freeze_property_runtime.py'),
+-    'bytes':35375,'sha256':'62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509'}
++FREEZER = {'path':str(B/'native-guard-property-r8-freeze-preparation-final02-1ad3/source/freeze_property_runtime.py'),
++    'bytes':35543,'sha256':'78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d'}
+ TEMPLATE = {'path':str(B/'native-guard-property-r8-freeze-transport-candidate02-1ad3/FREEZE-INPUTS.template.json'),
+     'bytes':8368,'sha256':'debd3165e14bf357f13bfa3b997ea3bb0b23e5d2bb4a0a8b54078477deff2934'}
+ VERIFIER = {'path':str(B/'policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py'),
+@@ -131,7 +131,7 @@
+ 
+ 
+ def freezer_source(raw):
+-    need(len(raw)==FREEZER['bytes'] and sha(raw)==FREEZER['sha256'],'exact reviewed62bc source required')
++    need(len(raw)==FREEZER['bytes'] and sha(raw)==FREEZER['sha256'],'exact reviewed compact source required')
+     value=module(raw,FREEZER['path'],'reviewed_unfrozen_r8_freezer')
+     need(value.FINALIZATION is None and value.OUT==B/'native-guard-r10-r1-operator-r8',
+         'original unbound finalization and fixed R8 output required')
+@@ -167,12 +167,12 @@
+             {k:r.get(k) for k in ('bytes','sha256')}==APPLIED])==1,
+         'one canonical independent74f4 and one actual applied5cd original required')
+     parent=strict(parent_raw)
+-    need(F.enc(parent)==parent_raw and sha(parent_raw)==F.PARENT_COMBINATION
++    need(F.combination_enc(parent)==parent_raw and sha(parent_raw)==F.PARENT_COMBINATION
+         and parent['live_policy_sha256']==F.PARENT_POLICY,'exact canonical parent combination required')
+     combination=copy.deepcopy(parent);combination['live_policy_sha256']=actual['sha256']
+-    combo_raw=F.enc(combination)
++    combo_raw=F.combination_enc(combination)
+     reverse=copy.deepcopy(combination);reverse['live_policy_sha256']=F.PARENT_POLICY
+-    need(F.enc(reverse)==parent_raw,'only current live-policy field may change in combination')
++    need(F.combination_enc(reverse)==parent_raw,'only current live-policy field may change in combination')
+     frozen={'schema':'hepta.native-guard.property-policy-finalization.v1',
+         'scope_decision':scope,'policy_adoption':exact3(adoption_row,16*1024*1024),
+         'verifier_source':dict(VERIFIER),'actual_export':actual,'combination_sha256':sha(combo_raw)}
+@@ -183,9 +183,9 @@
+ 
+ 
+ def bind_source(F,raw,frozen):
+-    need(len(raw)==FREEZER['bytes'] and sha(raw)==FREEZER['sha256'],'exact62bc source required for one-RHS binding')
++    need(len(raw)==FREEZER['bytes'] and sha(raw)==FREEZER['sha256'],'exact reviewed compact source required for one-RHS binding')
+     result=F.fill(raw,'FINALIZATION',None,frozen)
+-    need(F.fill(result,'FINALIZATION',frozen,None)==raw,'whole-source inverse must be exact62bc')
++    need(F.fill(result,'FINALIZATION',frozen,None)==raw,'whole-source inverse must be exact reviewed compact source')
+     before,after=ast.parse(raw),ast.parse(result)
+     def normalize(tree):
+         nodes=[n for n in tree.body if isinstance(n,ast.Assign) and len(n.targets)==1
+@@ -290,14 +290,14 @@
+         path:{'descriptor':descriptor(path,body),'metadata':observed.observed[path]}
+         for path,body in sorted(observed.raw.items())}}
+     files={'source/freeze_property_runtime.py':derived,
+-        'reference/freeze_property_runtime.62bc.original.py':original,
++        'reference/freeze_property_runtime.compact.original.py':original,
+         'reference/FREEZE-INPUTS.template.original.json':template_raw,
+         'FINALIZATION.json':encoded(frozen),'FREEZE-INPUTS.json':input_raw,
+         'COMBINATION.preview.json':combo_raw,'ORIGINAL-BUILD-DERIVATION.preview.json':encoded(derivation),
+         'DERIVATION.json':encoded(review),'ORIGINAL-READ-SET.json':encoded(read_set),
+         'EXECUTION-ENTRY.json':encoded(entry),'SOURCE-INCREMENT.patch':''.join(difflib.unified_diff(
+             original.decode().splitlines(keepends=True),derived.decode().splitlines(keepends=True),
+-            fromfile='reviewed62bc/freeze_property_runtime.py',tofile='actual/source/freeze_property_runtime.py')).encode()}
++            fromfile='reviewed-compact/freeze_property_runtime.py',tofile='actual/source/freeze_property_runtime.py')).encode()}
+     args.out.mkdir(mode=0o700);sync(args.out.parent)
+     for name in ('source','reference'):
+         (args.out/name).mkdir(mode=0o700);sync(args.out)

@@ -1,0 +1,132 @@
+{
+  "boundary_consumer_sha256": "37f920bf95fe78bbcecaf5f50525f4fd576b158d3c50b682046c40e3292d73e2",
+  "component_package_sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c",
+  "files": [
+    {
+      "bytes": 18491,
+      "path": "DERIVATION.json",
+      "sha256": "e5db73342cfed4715d3fa43db57c5e22147919618cece775c55fb8551cea7d6a"
+    },
+    {
+      "bytes": 12064,
+      "path": "PIN-CASCADE-INCREMENT.patch",
+      "sha256": "b856e8bb64db04bcf848f05d68c6abe7214471d5eb286d02318cbd0df41fa9c4"
+    },
+    {
+      "bytes": 13450,
+      "path": "reference/ACTUAL-LEGACY-PUBLICATION-RESULT.original.json",
+      "sha256": "5799fac9fcc837c61e2990b56d0feab9140affd97b988f80419feeefeb7167ce"
+    },
+    {
+      "bytes": 2354,
+      "path": "reference/PARENT-C4-MANIFEST.original.json",
+      "sha256": "49ac5fe0c765e89f05bd9ad0f69df4b835d3d3598330ac489fdf3f29ae5e2c49"
+    },
+    {
+      "bytes": 18437,
+      "path": "reference/PARENT-C4-SOURCE.original.py",
+      "sha256": "a3aea001e11b8dffb44d54d6971f17a2d24c84619a9ecc4493d967704095887d"
+    },
+    {
+      "bytes": 3222,
+      "path": "reference/PARENT-C5-MANIFEST.original.json",
+      "sha256": "6fcde393fe2c3286537a2646dc9479c638a93c3ebbad991a273cc12b49857640"
+    },
+    {
+      "bytes": 25994,
+      "path": "reference/PARENT-C5-SOURCE.original.py",
+      "sha256": "d0a762a3fc73e1dea7a6b836dc6a04e45e0484861aca38b7d1394e606ae12862"
+    },
+    {
+      "bytes": 3764,
+      "path": "reference/PARENT-C6-MANIFEST.original.json",
+      "sha256": "45d27a1ac4b5e65dc2dd9d232ff98ac8ef928b24a24a26286206852b7ccee5cd"
+    },
+    {
+      "bytes": 26467,
+      "path": "reference/PARENT-C6-SOURCE.original.py",
+      "sha256": "b7a7a883e35b547a46f8385bf49d27f771236ccfeaea21abc5144af124bcb778"
+    },
+    {
+      "bytes": 4307,
+      "path": "reference/PARENT-C7-MANIFEST.original.json",
+      "sha256": "e6795b9c7e31342943d17596a8c3a86177073bc36c8990de083642cd6fa0e649"
+    },
+    {
+      "bytes": 31972,
+      "path": "reference/PARENT-C7-SOURCE.original.py",
+      "sha256": "989b3aacc260dcad55df9e47ef862ce85093ecf6257bed7212ebb0caf2c2f54a"
+    },
+    {
+      "bytes": 2527,
+      "path": "reference/PARENT-MANIFEST.original.json",
+      "sha256": "55e9c436168912f604b97e208218bf431f04e35366095cbe11a0d6eeb4ebb365"
+    },
+    {
+      "bytes": 1236,
+      "path": "reference/PARENT-R3-MANIFEST.original.json",
+      "sha256": "4c6ae0677c909dd304ab0f07ccc47e88e566d556bac509d34a20442ef7b7502a"
+    },
+    {
+      "bytes": 14572,
+      "path": "reference/PARENT-R3-SOURCE.original.py",
+      "sha256": "77e0acec13539570b1e2032ba9fd1ac74274c86886160a4a8f7bbe3e88cea260"
+    },
+    {
+      "bytes": 14572,
+      "path": "reference/PARENT-SOURCE.original.py",
+      "sha256": "c30c891b6b5d0e9e60ac31d070a889f1dff28128504455ec9d5608fa6bf4e8ba"
+    },
+    {
+      "bytes": 16808,
+      "path": "reference/REVIEWED-CURRENT-RUNTIME-MANIFEST.original.json",
+      "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+    },
+    {
+      "bytes": 18312,
+      "path": "reference/REVIEWED-R4-CONSTRUCTOR-CANDIDATE.original.py",
+      "sha256": "71019ebb370abe98d5668e74b555b4d18957ce99992052c423395aa6ad72f39b"
+    },
+    {
+      "bytes": 5284,
+      "path": "reference/REVIEWED-R4-RUNTIME-MANIFEST.original.json",
+      "sha256": "1cd57949621b36e46dc72d3df55e6ec3814fa76fb046c15ae71524463e3e8996"
+    },
+    {
+      "bytes": 6696,
+      "path": "reference/REVIEWED-R4-SOURCE-CANDIDATE-MANIFEST.original.json",
+      "sha256": "354874f1e2fa1cdfcdb980290ef9393002817a594bed1d9eae3b23016b89fc79"
+    },
+    {
+      "bytes": 25702,
+      "path": "reference/REVIEWED-R5-CONSTRUCTOR-CANDIDATE.original.py",
+      "sha256": "d4f689181aadc5e4ea00f95e1901e6a42dac5f9c32172a11f86fd101fa0036b5"
+    },
+    {
+      "bytes": 26175,
+      "path": "reference/REVIEWED-R6-CONSTRUCTOR-CANDIDATE.original.py",
+      "sha256": "66ea960f884a8ef36188d90f51329a0182f6bde57658003864fb2b60f02e0b6c"
+    },
+    {
+      "bytes": 31847,
+      "path": "reference/REVIEWED-R7-CONSTRUCTOR-CANDIDATE.original.py",
+      "sha256": "58c5b20412956415136bd50be2213105e88080f7d575a4223dfbd4a81929b9ff"
+    },
+    {
+      "bytes": 34626,
+      "path": "reference/REVIEWED-R8-CONSTRUCTOR-CANDIDATE.original.py",
+      "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+    },
+    {
+      "bytes": 34918,
+      "path": "source/make_component_boundary_inputs.py",
+      "sha256": "1de39776fe0f88236ecb2282e7b13890f3fbee0a2ee936b8850376eb70b09199"
+    }
+  ],
+  "output_schema": "hepta.r10.component-boundary-inputs.v5",
+  "phone_calls": 0,
+  "plan_schema": "hepta.r10.component-boundary-construction-plan.v6",
+  "real_case_inputs_created": false,
+  "schema": "hepta.r10.component-boundary-input-entry.v8",
+  "state": "HOST_SOURCE_ONLY_WAITING_ACTUAL_CURRENT_COMPONENT_ORIGINALS"
+}

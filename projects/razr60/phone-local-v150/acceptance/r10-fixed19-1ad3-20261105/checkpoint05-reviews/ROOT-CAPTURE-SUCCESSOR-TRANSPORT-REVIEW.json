@@ -1,0 +1,47 @@
+{
+  "actual_generations": 0,
+  "checks": {
+    "bridge_and_verifier_exact_canonical_pins": true,
+    "coordinator_whole_byte_inverse_to_50a5": true,
+    "helper_whole_byte_inverse_to_0ede": true,
+    "manifest_preserves_all_other_canonical_fields": true
+  },
+  "coordinator": {
+    "bytes": 72194,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/candidate01/root-package/source/run_component_root_once.py",
+    "sha256": "c1b03c028359342a520372a7ddaa60ef38f3b9609ade3a133f32dfe3b6b372a9"
+  },
+  "increment": {
+    "bytes": 8100,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/candidate01/proof/ROOT-CAPTURE-INCREMENT.json",
+    "sha256": "d972a2d67a0f55cd0fadc0a92c172f03b142d2eb85f59eedb01ec35e2dcd1887"
+  },
+  "not_executed": [
+    "original factory and complete runtime inventory reads",
+    "helper main or validate_plan",
+    "transport regression suite",
+    "phone or remote operations"
+  ],
+  "physical_cases": 0,
+  "pure_source_modules_imported": 0,
+  "schema": "hepta.r8-root-capture-successor.narrow-independent-review.v1",
+  "scope": [
+    "validate_freeze retains exact f1e/70e/5e0 provenance and all bounded original output/crosslink reads; canonical old coordinator is checked against5263 only as historical source identity.",
+    "validate_capture_increment requires exact reviewed increment/manifest descriptors, actual generation relationships and separate source_scope that does not rewrite old capture provenance.",
+    "Executable coordinator restores whole bytes to71820/50a5 after only seven actual bindings; actual bridge/verifier bytes remain canonical04f6/74f4.",
+    "Successor manifest differs from canonical manifest only in files/state/source_scope; historical metadata remains identical.",
+    "Only the admitted successor is loaded; native Root plan source_package and NEG02 qualified predecessor both bind that successor descriptor.",
+    "Plan output cannot alias successor source or proof directories; original request/nonce/scope/predecessor and pure validation gates remain."
+  ],
+  "source": {
+    "bytes": 31714,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/candidate01/proof/source/prepare_native_guard_root_plan.py",
+    "sha256": "1ff5c00fa4dfd0930e8d22590f14795e9adcd8a49163d3b1bd88550bc6ee2d63"
+  },
+  "source_manifest": {
+    "bytes": 13013,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_root_capture_successor_candidate01/candidate01/root-package/SOURCE-MANIFEST.json",
+    "sha256": "52897bea5de19270c4a5d2ab8285c831a39f7d33376a8eb47ad873e31370c17e"
+  },
+  "state": "NO_BLOCKER_IN_REVIEWED_SOURCE_INCREMENT"
+}

@@ -1,0 +1,152 @@
+{
+  "all_local_bytes_read_back": true,
+  "files": [
+    {
+      "bytes": 2476,
+      "path": "INTERFACE.json",
+      "sha256": "bc4e7fcf4941a734e7e70ebb82be3fd999c1a2c27ad74e97cf775ff65f9a3074"
+    },
+    {
+      "bytes": 1828,
+      "path": "README.md",
+      "sha256": "a99340572541179d5ccd4be589059a06c35afc984bebc9761d80cdece2a9b8e3"
+    },
+    {
+      "bytes": 6318,
+      "path": "SOURCE-MANIFEST.json",
+      "sha256": "c10658746cfffb6971af4bec7e60161a129e9fbf4aad472af3675e30b2488f62"
+    },
+    {
+      "bytes": 1585,
+      "path": "neg-root-plan/INTERFACE.json",
+      "sha256": "e800bb6d87a9a522ecc8dadcc3f43e3bb0b6d4b5384ad67955f074e6bcccc055"
+    },
+    {
+      "bytes": 488,
+      "path": "neg-root-plan/PREPARE-NEG01.template.json",
+      "sha256": "7d5c601c2bf1fd81df9c987eb7841c9f642e422ac072e65915367d70f3f09406"
+    },
+    {
+      "bytes": 488,
+      "path": "neg-root-plan/PREPARE-NEG02.template.json",
+      "sha256": "4786db47c0b99d00adb6b4bdf3b928ca8a868d928ed6ea3bb3d10d0b43c3f3ba"
+    },
+    {
+      "bytes": 916,
+      "path": "neg-root-plan/README.md",
+      "sha256": "20cba18ce65156394e397c12db7f50c869877552f63e7a3257093c013eca7c9c"
+    },
+    {
+      "bytes": 2232,
+      "path": "neg-root-plan/SOURCE-MANIFEST.json",
+      "sha256": "10392e4c9264f0ba142504ca6d2307d99022e65aed43c5701e459bdb3cc9ecb2"
+    },
+    {
+      "bytes": 35543,
+      "path": "neg-root-plan/reference/freeze_property_runtime.compact.original.py",
+      "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+    },
+    {
+      "bytes": 24237,
+      "path": "neg-root-plan/reference/prepare_native_guard_root_plan.68df.original.py",
+      "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+    },
+    {
+      "bytes": 24237,
+      "path": "neg-root-plan/source/prepare_native_guard_root_plan.py",
+      "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+    },
+    {
+      "bytes": 745,
+      "path": "neg-root-plan/validation/SOURCE-INCREMENT.patch",
+      "sha256": "2d653b5cb14a49f5024761e2a4eb9920b1f86cf32c322220774122feec786eb2"
+    },
+    {
+      "bytes": 4702,
+      "path": "reference/COMBINATION.ba5c.original.json",
+      "sha256": "ba5c590860bb7502910617e84d90329a191c5a91e6ace84fb7f8e45b1a556837"
+    },
+    {
+      "bytes": 8368,
+      "path": "reference/FREEZE-INPUTS.template.original.json",
+      "sha256": "debd3165e14bf357f13bfa3b997ea3bb0b23e5d2bb4a0a8b54078477deff2934"
+    },
+    {
+      "bytes": 35375,
+      "path": "reference/freeze_property_runtime.62bc.original.py",
+      "sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+    },
+    {
+      "bytes": 18226,
+      "path": "reference/prepare_actual_r8_freeze.106f.original.py",
+      "sha256": "106f2ac9f40d32693dd992cbe27454f739674377700e21cfd284a335aa01194f"
+    },
+    {
+      "bytes": 35543,
+      "path": "source/freeze_property_runtime.py",
+      "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+    },
+    {
+      "bytes": 18304,
+      "path": "source/prepare_actual_r8_freeze.py",
+      "sha256": "a5deed4f086582a5ad13f5efcad75456b01cbbf46a2e4add19164dae2f80f39e"
+    },
+    {
+      "bytes": 4701,
+      "path": "validation/COMBINATION-ENCODING-CHECKS.json",
+      "sha256": "2178158b2911ad2c3a09588000649bbb618bf5dc095d7b3e9a8bd82b9532d559"
+    },
+    {
+      "bytes": 2669,
+      "path": "validation/EXACT-REPLACEMENTS.json",
+      "sha256": "d4d7ab529609bcd45070cf5e8cb5c3aed980eb7bc7950a7d82207e00bc9312de"
+    },
+    {
+      "bytes": 1619,
+      "path": "validation/FREEZER-COMBINATION-ENCODING.patch",
+      "sha256": "a85b17133bc2c3417fbe1332de1921bbbe38cc07f914e77f766fb921d6ad82f0"
+    },
+    {
+      "bytes": 1450,
+      "path": "validation/PIN-PROPAGATION.json",
+      "sha256": "4fac7457c91905497b71a4685838085fd5367545a024c5c0fb6015caf989f20e"
+    },
+    {
+      "bytes": 4794,
+      "path": "validation/PREPARER-INCREMENT.patch",
+      "sha256": "9d189f7243d856c2c776a2ec97a8d2e8b671a44b2c4d6d291722ac4792bf89a3"
+    },
+    {
+      "bytes": 22182,
+      "path": "validation/build_r8_compact_final02.py",
+      "sha256": "1060a72c86b353f433211c6c92d2a09fc7994eb7f39ef9e50a298f620c248cd6"
+    }
+  ],
+  "freezer": {
+    "bytes": 35543,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/freeze_property_runtime.py",
+    "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+  },
+  "manifest": {
+    "bytes": 6318,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "c10658746cfffb6971af4bec7e60161a129e9fbf4aad472af3675e30b2488f62"
+  },
+  "neg_root_helper": {
+    "bytes": 24237,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/neg-root-plan/source/prepare_native_guard_root_plan.py",
+    "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+  },
+  "new_nonces": 0,
+  "package": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package",
+  "phone_calls": 0,
+  "preparer": {
+    "bytes": 18304,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/prepare_actual_r8_freeze.py",
+    "sha256": "a5deed4f086582a5ad13f5efcad75456b01cbbf46a2e4add19164dae2f80f39e"
+  },
+  "runtime_freezes": 0,
+  "schema": "hepta.actual-r8-freeze-preparation.delivery.v1",
+  "staging_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3",
+  "state": "ACTUAL_PARENT_COMPACT_ENCODING_SOURCE_COMPATIBILITY_REVIEWED"
+}

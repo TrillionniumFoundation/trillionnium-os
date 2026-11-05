@@ -1,0 +1,27 @@
+{
+  "actual_runtime_generation": false,
+  "case_credit": false,
+  "full_evidence_archive": {
+    "bytes": 363627,
+    "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/inventory-prefix-consumer-full-evidence-final01.tar.gz",
+    "regular_files": 45,
+    "sha256": "0d89831a86b72e680ca294cab5c3d56fd71be4282aa86022f4e5c0f6fe3f09b6"
+  },
+  "phone_operations": 0,
+  "schema": "hepta.inventory-prefix.consumer-cascade-delivery.v1",
+  "source_manifest": {
+    "bytes": 7262,
+    "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+    "sha256": "949b1ea1d83ed745c035022bddcc4ace1dd5db57a23a07fd8b9b1c96e55cb22d"
+  },
+  "source_member_count": 37,
+  "source_package": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/package",
+  "source_stage_archive": {
+    "bytes": 167855,
+    "path": "/workspace/scratch/1ad3d6f55439/consumer_prefix_successor_candidate01/delivery-final01/inventory-prefix-consumer-source-stage-final01.tar.gz",
+    "regular_files": 38,
+    "sha256": "d02c372f949962e9a5f8d153797f4cd89d8b9ebca7091c95cbdde8ce18aa8e0c"
+  },
+  "source_target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01",
+  "state": "FROZEN_LOCAL_SOURCE_ONLY_NOT_MAC_STAGED"
+}

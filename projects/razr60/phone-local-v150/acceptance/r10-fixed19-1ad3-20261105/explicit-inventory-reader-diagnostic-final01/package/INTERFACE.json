@@ -1,0 +1,66 @@
+{
+  "Root_selected_observation_limits": {
+    "P4_passive_wait_seconds": 240,
+    "original_f_shell_seconds": 210
+  },
+  "automatic_retry": false,
+  "execution_mode": "Root alone may supply these exact bytes on stdin to the original fixed phone Python route after independent review. No source installation or new lease is involved.",
+  "explicit_executed_late": {
+    "bytes": 67005,
+    "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+  },
+  "fixed_case_label": "root-r10-neg01-1ad3-01",
+  "fixed_nonce": "7c74b84aefb177d15f746fa7eae29d54",
+  "maximum_stdin_source_bytes": 44926,
+  "new_nonces_or_lease_extensions": false,
+  "not_admissible_as_original_global_clearance": true,
+  "not_case_qualification": true,
+  "original_staged_late": {
+    "bytes": 66996,
+    "sha256": "c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add"
+  },
+  "original_staged_runtime": {
+    "bytes": 16808,
+    "sha256": "67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c"
+  },
+  "phone_files_or_source_modified": false,
+  "required_success_fields": {
+    "candidate_late_argument_entered_callsite": true,
+    "candidate_late_module_compiled": true,
+    "candidate_late_verification_returned": true,
+    "diagnostic_verification_complete": true,
+    "memoization_added": false,
+    "original_global_clearance_evidence": false,
+    "original_verification_complete": false,
+    "original_verify_retired_callsite_entered": 1,
+    "original_verify_retired_returned": 1,
+    "successor_runtime_claimed_staged": false
+  },
+  "same_expired_lease": {
+    "bytes": 2488,
+    "sha256": "2f47f823ef1484852c5dc1b91f27020d6f56685b3024dc320d5925a3dac92d59"
+  },
+  "schema": "hepta.explicit-reader-diagnostic.interface.v1",
+  "script_elapsed_policy": {
+    "bootstrap_postcheck_seconds": 25,
+    "original_lifecycle_call_postreturn_seconds": 180,
+    "self_hard_deadline": false,
+    "signals": 0,
+    "trace_or_profiler": false
+  },
+  "source": {
+    "bytes": 44926,
+    "path": "source/verify_explicit_inventory_reader_once.py",
+    "sha256": "65aa1db1beb25aad324a1e7a027eb235f65392083a7fbdb0cae3362db7d44479"
+  },
+  "source_identity_semantics": "Executed code is fixed147cf at the explicit virtual compile filename. __file__ is an originalc50a full9 resource anchor for unchanged reference/self-source reads. The unchanged self-source function must not be interpreted as reporting executed code identity.",
+  "state": "SOURCE_ONLY_NOT_EXECUTED_INDEPENDENT_REVIEW_PENDING",
+  "success_schema": "hepta.native-guard.expired-lease-explicit-reader-diagnostic.v1",
+  "success_state": "EXPLICIT_147CF_READONLY_DIAGNOSTIC_RETURNED_AND_LOCK_RELEASED",
+  "target_python_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "-"
+  ]
+}

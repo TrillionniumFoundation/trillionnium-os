@@ -1,0 +1,272 @@
+{
+  "file_bytes": 500839,
+  "file_count": 37,
+  "files": [
+    {
+      "bytes": 34221,
+      "git_blob_sha": "79a754a7733e2052567b0e75a6c2a9ddb74db66b",
+      "path": "CONTROLLER-READ-BATCH-0.original.json",
+      "sha256": "78c5a42c7d7ae068cefdf84f7fcbb536aed5509dbc95ace1d686f01e8ff9870d",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/CONTROLLER-READ-BATCH-0.original.json"
+    },
+    {
+      "bytes": 42935,
+      "git_blob_sha": "1c05d08b4496de8f6e6c1eec624306487e85b4b2",
+      "path": "CONTROLLER-READ-BATCH-1.original.json",
+      "sha256": "fa065f4cab2958c0c4b806fe98ee67c17bc4241c15d8e21a2cfff44b374a5c35",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/CONTROLLER-READ-BATCH-1.original.json"
+    },
+    {
+      "bytes": 24915,
+      "git_blob_sha": "00ec894f685cf7738795c4e0bae7eb9682eabbeb",
+      "path": "CONTROLLER-READ-BATCH-2.original.json",
+      "sha256": "3db2110ffc89c72ffaa062fdfe45ef8af55cd5cb502b828cdca5840af42bf7c9",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/CONTROLLER-READ-BATCH-2.original.json"
+    },
+    {
+      "bytes": 26192,
+      "git_blob_sha": "afbf82bdbe78794b466b712edf1cbef2e081dc58",
+      "path": "DIAGNOSTIC-REVIEW.json",
+      "sha256": "ad489cd6f1a8ea823a26d91db128cf3dca99b9beb5b38ab888f30ce252d5e86a",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/DIAGNOSTIC-REVIEW.json"
+    },
+    {
+      "bytes": 5980,
+      "git_blob_sha": "77822aa14d4303a60280c7cf21f29644110a5228",
+      "path": "DIAGNOSTIC-REVIEW.md",
+      "sha256": "39c45b9adce02eb10b8fb1d45ab3896723c5fc87431aba0f259e91b98aeeb69e",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/DIAGNOSTIC-REVIEW.md"
+    },
+    {
+      "bytes": 252163,
+      "git_blob_sha": "bc46583d98ef2b2cee6b64941c02edd34411f9c9",
+      "path": "PARTIAL-PROFILE-ATTRIBUTION.json",
+      "sha256": "a12e29c37838c7b6b28380473fc78bd0594f9ed3407305c652cd0296aface051",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/PARTIAL-PROFILE-ATTRIBUTION.json"
+    },
+    {
+      "bytes": 825,
+      "git_blob_sha": "12ca95c7db75274ad6931ae4d257bc86298cfcfe",
+      "path": "READBACK-BATCH-2.json",
+      "sha256": "5372aca48387a18a8cc6c6bd08ec696aa035b95d8cada5fc656a9ddf4085de5c",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/READBACK-BATCH-2.json"
+    },
+    {
+      "bytes": 11606,
+      "git_blob_sha": "fbe9ff9e9bc09b0ab5cd50ee7388dc700ea89009",
+      "path": "READBACK-MANIFEST.json",
+      "sha256": "6027d9959f084854d8f5653085f6d9e981f7b5e691026ab0c82ad6240877de58",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/READBACK-MANIFEST.json"
+    },
+    {
+      "bytes": 5089,
+      "git_blob_sha": "3a83f9da4fb38ca8c95c79211a7cb7a293c74441",
+      "path": "TIMING-ANALYSIS.json",
+      "sha256": "5666d2f72a79bfe72ddc22779e3883c72f6d619230c87c44e0f3e5ecb92d8323",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/TIMING-ANALYSIS.json"
+    },
+    {
+      "bytes": 5405,
+      "git_blob_sha": "a60166afd41c8bef24f96b00747fac159960c6be",
+      "path": "analyze_partial_profile_once.py",
+      "sha256": "12c58a0387fb8f62256cb23588313b6fda66772bb7bd10f9eae7de71da32a9d7",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/analyze_partial_profile_once.py"
+    },
+    {
+      "bytes": 1030,
+      "git_blob_sha": "fd150977feffad5d5637d2923d75f13695a9a668",
+      "path": "decoded/COMPONENT-PREPARED-NO-SEND.original.json",
+      "sha256": "e0a28598c16cc86ceb8ba12553523bd8740374c563460d8b064c369f3cdb7750",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/decoded/COMPONENT-PREPARED-NO-SEND.original.json"
+    },
+    {
+      "bytes": 15628,
+      "git_blob_sha": "b4890623de1ed77e70f5bf0a8c3e166378c5616e",
+      "path": "decoded/STAGE-COMPLETE.original.json",
+      "sha256": "a9855aba9e1112a5d98ef038225275c5359dab94ca6a157b6f1f03f8a7cd3309",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/decoded/STAGE-COMPLETE.original.json"
+    },
+    {
+      "bytes": 359,
+      "git_blob_sha": "738ca7e01c828b1b955a65aad452472f1d2ca7c1",
+      "path": "originals/CHAIN-INTENT.json",
+      "sha256": "7f33af2a5fb1b16abd753f415a89c9dc48f8c0e015e69511cc8c645503cf5c88",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/CHAIN-INTENT.json"
+    },
+    {
+      "bytes": 11776,
+      "git_blob_sha": "99d136393b2b6c081a3b737a328351c0a9615b39",
+      "path": "originals/ROOT-FAILURE.json",
+      "sha256": "160d7a942ef1a94efe79319475db1d0d87d38a5d58b941b3e0689417d7e6fbc2",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/ROOT-FAILURE.json"
+    },
+    {
+      "bytes": 964,
+      "git_blob_sha": "c474d2c9a145f2c8f7692aeda5a3da4d7335251d",
+      "path": "originals/host-stage-material/INTENT.json",
+      "sha256": "c85fd86dbf2f57afe3a7a98db410f6262926fe184aeaa8e88b0b9d73f5491202",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/host-stage-material/INTENT.json"
+    },
+    {
+      "bytes": 2514,
+      "git_blob_sha": "d39e71a0d137992e9d74f3c332c0d15065026b45",
+      "path": "originals/host-stage-material/OUTPUT-CAPTURE.json",
+      "sha256": "d5f5d1d6ec9dc3f5ac23030d09382c330172d07a57c26a14e2721b013d7eabae",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/host-stage-material/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 2837,
+      "git_blob_sha": "630994a0a6568f707481d54a3705b91c2c42fcf0",
+      "path": "originals/material/PREPARED.json",
+      "sha256": "68df0f8167f4394db4abdb4aebee85c50325d918dc2cb027fbeaa747919d6ad9",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/material/PREPARED.json"
+    },
+    {
+      "bytes": 964,
+      "git_blob_sha": "16eb45cdd3743c343ec5c9b3b7b64325ae54c561",
+      "path": "originals/phone-copy-material/INTENT.json",
+      "sha256": "9169d49c4ce5290e79bf7cf430ce242d06f662038d7a1b6f2bd2c6d3c33aa048",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-copy-material/INTENT.json"
+    },
+    {
+      "bytes": 2517,
+      "git_blob_sha": "0484b87bbb4f7da0add6d8d20605bf53dfb39921",
+      "path": "originals/phone-copy-material/OUTPUT-CAPTURE.json",
+      "sha256": "5a69f322d6f3fa5cb4641c42fb0bb08ce1a3012ccedeba9d12870f84a6d3ec3b",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-copy-material/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 968,
+      "git_blob_sha": "55d726667e34e3cd0cf53b49094fffef1640661a",
+      "path": "originals/phone-copy-stage-source/INTENT.json",
+      "sha256": "d9e1efe46bd336732023951eeb67011455dac988071298f44cd582a6370b2076",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-copy-stage-source/INTENT.json"
+    },
+    {
+      "bytes": 2530,
+      "git_blob_sha": "0808db5b69f5b52c897a64cf2d9a8127c13e5410",
+      "path": "originals/phone-copy-stage-source/OUTPUT-CAPTURE.json",
+      "sha256": "8799c54d552f687db7e6e01a79dce75c7bc56284d5a8b35a677205c06c964d11",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-copy-stage-source/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 965,
+      "git_blob_sha": "30c33a49d8a7723172519e10d4b35b9639be7c6f",
+      "path": "originals/phone-push-material/INTENT.json",
+      "sha256": "02262be1624c407d9458a44255a97934ebd2d934c6f6f67e5e304521f153fc8d",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-push-material/INTENT.json"
+    },
+    {
+      "bytes": 2511,
+      "git_blob_sha": "3dfa5a143c362354f7530c2639013414d7e4c090",
+      "path": "originals/phone-push-material/OUTPUT-CAPTURE.json",
+      "sha256": "d108ef169af158fc407514b00f84dd3c8052f49dc50f5e47fbea99a55e20cc3e",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-push-material/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 969,
+      "git_blob_sha": "3ac9123c2a6ea0751cc0ed87ee0b6435caac83cf",
+      "path": "originals/phone-push-stage-source/INTENT.json",
+      "sha256": "ea6c617b4099a8593e4dc68ec004f22d079d2afd8a2729bdc0064fdf7e541019",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-push-stage-source/INTENT.json"
+    },
+    {
+      "bytes": 2521,
+      "git_blob_sha": "187ac258dae4cba74388ec1a6f5b11cd46f81ce3",
+      "path": "originals/phone-push-stage-source/OUTPUT-CAPTURE.json",
+      "sha256": "3a7d2c062801e1926d5a4541827a5108fdebc89ac59cb77e16505a0a16b61ff1",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-push-stage-source/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 957,
+      "git_blob_sha": "9083aeb141e427125d1a18aa69128de1de332ca4",
+      "path": "originals/phone-stage/INTENT.json",
+      "sha256": "6faeb821abb50261101bb5382b2182922f4fb27466c722e16eeca7c50023aadb",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-stage/INTENT.json"
+    },
+    {
+      "bytes": 2491,
+      "git_blob_sha": "4214ae3285695bfc1bec07bec5109eb6e57073a4",
+      "path": "originals/phone-stage/OUTPUT-CAPTURE.json",
+      "sha256": "de9b90d66e8e951c7bc8290a5cd0d5a02adb828a5ac8300136111c9b5ddaf691",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-stage/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 17700,
+      "git_blob_sha": "98e1d71f5f9c091a362aa4938f045620246f6cd9",
+      "path": "originals/phone-stage/stdout.original",
+      "sha256": "99006633dc9688fc6aad42aff6f2e640e8e368cc9f0a1355a3dfaf02734a80b3",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/phone-stage/stdout.original"
+    },
+    {
+      "bytes": 4280,
+      "git_blob_sha": "770d6506751c6722eb125a9e78d7d7c635437d35",
+      "path": "originals/prepare-material/INTENT.json",
+      "sha256": "4cf244ce2cb687b2d9e8ad5500c5b4427d0cff19fcdc09b149d46e930674b980",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/prepare-material/INTENT.json"
+    },
+    {
+      "bytes": 2504,
+      "git_blob_sha": "dd19afafb5de9d71a0349c93e6678e2aacd2b44b",
+      "path": "originals/prepare-material/OUTPUT-CAPTURE.json",
+      "sha256": "b36f89a540643251e82bc19cd15177862adf10a1441294b954727b3fed2af080",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/prepare-material/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 2191,
+      "git_blob_sha": "918822812139a26f2f4a1bb3145d189e894a9445",
+      "path": "originals/sender-execute/INTENT.json",
+      "sha256": "bcb5ebca60118433c598709e47ff6206e9503d485e22fcd870505f82aca443a4",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/sender-execute/INTENT.json"
+    },
+    {
+      "bytes": 2548,
+      "git_blob_sha": "632f6429cb19e00a1beb8917eb4f0a29834c00f9",
+      "path": "originals/sender-execute/OUTPUT-CAPTURE.json",
+      "sha256": "55a14f41437afe7ff8f72750bdff31e1f0a19decb232f20428fb2c67c78dd092",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/sender-execute/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 961,
+      "git_blob_sha": "f29e7d734c8c1e7a9bc04ace6305e2c92d38568d",
+      "path": "originals/sender-prepared/INTENT.json",
+      "sha256": "4c8b8d95d52aabadc94536441aab5752e0096abad319c27f53bd5027b028efb5",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/sender-prepared/INTENT.json"
+    },
+    {
+      "bytes": 2506,
+      "git_blob_sha": "f8e9f3ff138ebb4b1888d3ef0ddec72459fa4baa",
+      "path": "originals/sender-prepared/OUTPUT-CAPTURE.json",
+      "sha256": "748b563c027f03f0c7bd2a25c802593ba1e0071eb8fdcb1fd0f046ca99e8c594",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/sender-prepared/OUTPUT-CAPTURE.json"
+    },
+    {
+      "bytes": 1653,
+      "git_blob_sha": "3ef62c634c2f8a28f830236986434097bbafe16d",
+      "path": "originals/sender-prepared/stdout.original",
+      "sha256": "38b847e86d4cca4815f8b2d6d8f0ecb44d1c8a5ac2265ea52e583927ee567c3d",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/sender-prepared/stdout.original"
+    },
+    {
+      "bytes": 2168,
+      "git_blob_sha": "810dfa011cdee74326e5b8af48f77f76c06a1cba",
+      "path": "originals/sender-preview/INTENT.json",
+      "sha256": "7e474ffa869c06ac2975e7e3e614e542c0d9426955d3188da90cf9d6ecd18b87",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/sender-preview/INTENT.json"
+    },
+    {
+      "bytes": 2496,
+      "git_blob_sha": "f01f9259548bf53c8bb22408d227d22309717bc4",
+      "path": "originals/sender-preview/OUTPUT-CAPTURE.json",
+      "sha256": "2f25be63cb8dab22a12ef2965a367ab60a388cdc3928b5902c1b08edddfdf7bc",
+      "source": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review/originals/sender-preview/OUTPUT-CAPTURE.json"
+    }
+  ],
+  "originals_modified": false,
+  "qualification_claimed": false,
+  "schema": "hepta.fixed19.checkpoint05.lossless-local-snapshot.v1",
+  "snapshot_scope": "Complete existing timing review, exact 25 retained stage originals, raw read receipts, derived timing and partial-profile attribution. Local analysis only; not a new case.",
+  "source_root": "/workspace/scratch/1ad3d6f55439/neg01_prelaunch_timing_review",
+  "tar_metadata": "Archive headers normalized locally; source file contents are unchanged.",
+  "target_code_executed": false
+}

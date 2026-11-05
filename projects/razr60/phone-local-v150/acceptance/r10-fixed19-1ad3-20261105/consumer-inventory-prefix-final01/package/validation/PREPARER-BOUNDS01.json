@@ -1,0 +1,53 @@
+{
+  "checks": [
+    {
+      "name": "actual_runtime32_reaches_policy_read_after_all_source_gates",
+      "outcome": "policy_read_fence",
+      "runtime_member_reads": 32,
+      "status": "PASS",
+      "writes": 0
+    },
+    {
+      "name": "33_rows_rejected_before_member_reads",
+      "outcome": "exact32 bounded runtime rows required before reads",
+      "runtime_member_reads": 0,
+      "status": "PASS",
+      "writes": 0
+    },
+    {
+      "name": "oversized_member_rejected_before_member_reads",
+      "outcome": "exact bounded runtime row",
+      "runtime_member_reads": 0,
+      "status": "PASS",
+      "writes": 0
+    },
+    {
+      "name": "oversized_manifest_descriptor_rejected_before_manifest_read",
+      "outcome": "one explicit inventory-prefix runtime successor path is required",
+      "runtime_member_reads": 0,
+      "status": "PASS",
+      "writes": 0
+    }
+  ],
+  "passed": 4,
+  "preparer": {
+    "bytes": 16055,
+    "sha256": "a8ab0f0987b4bda6139860def7ea6eed6c29bf9c4818166f7b1400a78bf8c4ea"
+  },
+  "runtime": {
+    "bytes": 19020,
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "schema": "hepta.inventory-prefix.preparer-resource-wiring-checks.v1",
+  "scope": {
+    "IO_replaced_by_exact_original_byte_map": true,
+    "Mac_P4_phone_operations": 0,
+    "case_credit": false,
+    "new_files_from_preparer": 0,
+    "policy_adoption_read_fenced": true,
+    "policy_verifier_executed": false,
+    "target_runtime_executed": false
+  },
+  "state": "PASS_LOCAL_BOUNDED_PREPARER_MAIN_PREFIX_ONLY",
+  "total": 4
+}

@@ -1,0 +1,71 @@
+{
+  "entrypoints_executed": 0,
+  "findings": [
+    "finish_async uses original owned child join and the same execution deadline, persists the managed pipe capture, closes held outputs, verifies stored inode binding and records the unchanged seven-field successful result; only then removes ownership. On exceptions the original owner remains available for cleanup/unknown reporting.",
+    "begin_phone and phone_phase reconstruct identical canonical packet, case, self SHA, SSH argv and request timeout plus55. P4 original actor uses timeout plus20, no stdin, and original capture proof matches its actual six original files.",
+    "P4 export contains exactly eight dispatch/request/wrapper/actor originals plus six capture files. The two new original intent/baseline names are exported by actual dispatcher and required by closer.",
+    "Original179a actor stdout has precisely run/status/sha256/elapsed_seconds/http_status/phone_rc/error; command_exited produces None HTTP/error, zero phone rc and the hash of its exact result.json. Closer expects this protocol, not a rewritten wrapper.",
+    "Actor request SHA is over the same pretty canonical request bytes used by P4; root command prefix and baseline command/boot/fingerprint/ADB/enforcement/adbd identity agree with unchanged179a.",
+    "P4 capture plan, collector invocation and each 524288-byte chunk use identical generated programs, argv and30/90 second phase limits in caller and closer. Stream EOF and child join are checked by original host_phase, and concatenated bytes equal the pinned archive.",
+    "Execution phase map is captured before independent-closure launch, so its closed-set check correctly excludes that future verifier phase. Final Root result separately requires the actual independent verifier child join and managed capture cleanup.",
+    "Exact phase set includes phone operator-stage/watch/armed-read/capture/all phone archive chunks, p4-stage/p4-capture-plan/p4-sender-capture/all P4 chunks, sender-preview and negative-sender. No extra phone or host effect phase is silently accepted."
+  ],
+  "limitations": [
+    "No runtime admission, phone, model, actor, sender or actual wrapper was executed.",
+    "This is a narrow producer/consumer interface review, not a complete independent review of all policy, ledger, resource, role or final-audit gates.",
+    "Candidate was not frozen when reviewed; future source revisions require scope/diff reconciliation."
+  ],
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "remote_calls": 0,
+  "schema": "hepta.physical-fault.phase-interface-independent-review.v1",
+  "scope": [
+    "finish_async/begin_phone/RootCase.run",
+    "phone_phase/p4_operations/verify exact phase set",
+    "dispatcher export and original179a actor wrapper/intent/baseline protocol"
+  ],
+  "source_syntax_python39_checked": true,
+  "sources": {
+    "capture": {
+      "bytes": 29065,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/owned_capture.py",
+      "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+    },
+    "closer": {
+      "bytes": 71652,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/verify_physical_fault.py",
+      "sha256": "02e4dccb075269bf7746eaf98b8933c26e4eda51502c6b1eccaab0f6462f465e"
+    },
+    "common": {
+      "bytes": 26595,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/physical_fault_common.py",
+      "sha256": "9df7b670cb547b1a54c0cc6d75a1f7dcb0cbdf18d2de1e1d8c2ddb38780f3070"
+    },
+    "dispatcher": {
+      "bytes": 12325,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/p4_fault_dispatch_once.py",
+      "sha256": "361ed5f0da4664e7e38ecc2f1bc7c0139963dbd4740e91ea034e27a551f73d24"
+    },
+    "host_originals": {
+      "bytes": 14747,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/fault_originals.py",
+      "sha256": "8e969725a5e86ffdfadcc104093a15909fd96004a23d99473a0a7821338a8bc0"
+    },
+    "original_actor": {
+      "bytes": 5652,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/reference/phone_once.py",
+      "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+    },
+    "p4_capture": {
+      "bytes": 19990,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/capture_fault_p4.py",
+      "sha256": "fde708a3c10ead122f68ac1925b0ad516d58bc14a148dd1d1f9670d2d7134f5a"
+    },
+    "root": {
+      "bytes": 24658,
+      "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/source/run_physical_fault_once.py",
+      "sha256": "40be35991b829c1d5eaf981c74d419e14a1ddf2e3fe5e6eca9f889b995725d95"
+    }
+  },
+  "state": "NO_BLOCKER_IN_SPECIFIED_SOURCE_INTERFACE_SCOPE"
+}

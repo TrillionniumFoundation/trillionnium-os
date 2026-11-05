@@ -1,0 +1,45 @@
+{
+  "archive": {
+    "bytes": 268678,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12/cpu-negative-capture-generation-source-stage-final01.tar.gz",
+    "sha256": "ad375bab2afdd43f441f87eb1c2a03be06ed67216aa4899e9dc2db2bd21b40dc"
+  },
+  "audit": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12",
+  "automatic_retry": false,
+  "case_runs": 0,
+  "closed_regular_inventory_verified": true,
+  "created_inode_readback_complete": true,
+  "declared_source_members": 52,
+  "elapsed_monotonic_ns": 22057917,
+  "exact_original_manifest_preserved": true,
+  "existing_outputs_overwritten": false,
+  "idempotency_key": "root-1ad3-cpu-negative-capture-source-stage12-20261105",
+  "p4_calls": 0,
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "plan_preparations": 0,
+  "regular_files": 53,
+  "runtime_freezes": 0,
+  "schema": "hepta.cpu-negative.capture-source-stage-result.v1",
+  "source_entrypoint_executions": 0,
+  "source_imports": 0,
+  "source_manifest": {
+    "bytes": 10723,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-negative-capture-generation-candidate01-1ad3/SOURCE-MANIFEST.json",
+    "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6"
+  },
+  "stage_source": {
+    "bytes": 371472,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12/STAGE-SOURCE.original.py",
+    "sha256": "cc257dd4fe048500b346793fb79e34b6f3cf1ba155375717cbb89e444bc7561c"
+  },
+  "staged_files": {
+    "bytes": 18783,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/source-stage12/STAGED-FILES.json",
+    "sha256": "3da85a0a2ced6411d376883f6ad2812b462f47985c277b720c8ea6fdfe91e84b"
+  },
+  "state": "REVIEWED_SOURCE_PACKAGE_STAGED_NO_ENTRYPOINT_EXECUTED",
+  "target": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-negative-capture-generation-candidate01-1ad3",
+  "uncompressed_file_bytes": 967087,
+  "whole_cases_passed": 0
+}

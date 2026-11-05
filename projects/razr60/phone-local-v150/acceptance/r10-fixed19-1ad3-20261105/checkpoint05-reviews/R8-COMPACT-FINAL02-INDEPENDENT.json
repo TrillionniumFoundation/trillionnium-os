@@ -1,0 +1,137 @@
+{
+  "actual_adoption_copy": {
+    "bytes": 208226,
+    "path": "/workspace/scratch/1ad3d6f55439/independent_post_execution/POLICY-ADOPTION.original.json",
+    "sha256": "527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a"
+  },
+  "actual_parent": {
+    "bytes": 4702,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/reference/COMBINATION.ba5c.original.json",
+    "sha256": "ba5c590860bb7502910617e84d90329a191c5a91e6ace84fb7f8e45b1a556837"
+  },
+  "actual_runtime_freezes": 0,
+  "build_calls": 0,
+  "checks": [
+    {
+      "name": "six exact current and historical source pins; Python3.9 syntax",
+      "passed": true
+    },
+    {
+      "name": "outer and NEG subpackage exact closed manifest members",
+      "passed": true
+    },
+    {
+      "name": "freezer complete forward and inverse byte transform",
+      "passed": true
+    },
+    {
+      "name": "preparer complete forward and inverse byte transform",
+      "passed": true
+    },
+    {
+      "name": "neg_root_plan complete forward and inverse byte transform",
+      "passed": true
+    },
+    {
+      "name": "freezer all other functions including main/default enc/gates unchanged; only three build calls differ",
+      "passed": true
+    },
+    {
+      "name": "exact final freezer/preparer/NEG source pins and fixed runtime/history/Root50a identities",
+      "passed": true
+    },
+    {
+      "name": "actual ba5c original reproduces old pretty rejection and exact new compact acceptance",
+      "passed": true
+    },
+    {
+      "name": "actual adopted f821 changes one combination field; compact inverse returns exact parent bytes",
+      "passed": true
+    },
+    {
+      "name": "existing pretty template unchanged; dedicated compact encoder still rejects nonfinite JSON",
+      "passed": true
+    },
+    {
+      "name": "preparer one-RHS binding consumed by unchanged NEG literal inverse with new78dad template pin",
+      "passed": true
+    },
+    {
+      "name": "cascade consumes actual FREEZE-RESULT verifier/runtime/combination and does not hardpin old62bc/106f",
+      "passed": true
+    }
+  ],
+  "checks_passed": 12,
+  "computed_combination": {
+    "bytes": 4702,
+    "only_changed_field": "live_policy_sha256",
+    "sha256": "54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e"
+  },
+  "interface_findings": [
+    "New canonical freezer descriptor78dad is exactly the source copied to the final02 package.",
+    "Preparer output filenames now accurately call the new parent compact; original62bc reference remains intact.",
+    "FREEZE-RESULT schema and source/input/adoption/verifier/output crosslinks are unchanged.",
+    "NEG helper changes only FREEZER_TEMPLATE_SHA; its inverse accepts solely a FINALIZATION RHS bound onto reviewed78dad.",
+    "No additional cascade pin migration is needed for this source increment."
+  ],
+  "limitations": [
+    "Actual policy binary and complete remote historical input pool were not re-read here.",
+    "The literal roundtrip is an in-memory interface probe using a local adoption-copy descriptor, never an actual prepared input.",
+    "No preparer main, freezer build/main, validate_freeze, verify_adoption, runtime freeze or phone operation was executed.",
+    "Actual Root execution must still satisfy every unchanged original adoption/history/source/cap gate."
+  ],
+  "main_calls": 0,
+  "old_candidates_or_checkpoint04_changed": false,
+  "package_manifest": {
+    "bytes": 6318,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/SOURCE-MANIFEST.json",
+    "sha256": "c10658746cfffb6971af4bec7e60161a129e9fbf4aad472af3675e30b2488f62"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.r8-compact-final02-independent-review.v1",
+  "sources": {
+    "freezer": {
+      "bytes": 35543,
+      "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/source/freeze_property_runtime.py",
+      "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+    },
+    "neg_root_plan": {
+      "bytes": 24237,
+      "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/neg-root-plan/source/prepare_native_guard_root_plan.py",
+      "sha256": "0ede5d2c87b3f356a74391ef62a6d37495ed0e698a926f1d54532cfa7586bcd8"
+    },
+    "old_freezer": {
+      "bytes": 35375,
+      "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/reference/freeze_property_runtime.62bc.original.py",
+      "sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+    },
+    "old_neg_root_plan": {
+      "bytes": 24237,
+      "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/neg-root-plan/reference/prepare_native_guard_root_plan.68df.original.py",
+      "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+    },
+    "old_preparer": {
+      "bytes": 18226,
+      "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/reference/prepare_actual_r8_freeze.106f.original.py",
+      "sha256": "106f2ac9f40d32693dd992cbe27454f739674377700e21cfd284a335aa01194f"
+    },
+    "preparer": {
+      "bytes": 18304,
+      "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final02/package/source/prepare_actual_r8_freeze.py",
+      "sha256": "a5deed4f086582a5ad13f5efcad75456b01cbbf46a2e4add19164dae2f80f39e"
+    }
+  },
+  "state": "NO_BLOCKER_IN_NARROW_ACTUAL_PARENT_ENCODING_AND_PIN_PROPAGATION_REPAIR",
+  "unchanged_gates": [
+    "original verify_adoption and historical FIXED inputs",
+    "default pretty enc for manifests/inputs/results",
+    "runtime32/Root3 inventories",
+    "131072 verifier source budget",
+    "33554432 bundle limit",
+    "create-only fixed R8 output",
+    "full original build before any new preparation package writes",
+    "original main reads/rechecks and full output readback",
+    "original NEG pure validate_plan before a written plan"
+  ]
+}

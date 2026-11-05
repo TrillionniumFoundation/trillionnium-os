@@ -1,0 +1,123 @@
+{
+  "checks": [
+    {
+      "detail": "Both complete template inverses match6195/ed12; codec and32MiB unchanged.",
+      "name": "complete_consumer_constructor_inverse_and_budget",
+      "status": "PASS"
+    },
+    {
+      "detail": "All three executable copies are byte-identical6282; same actual32 proof.",
+      "name": "pure_gate_whole_byte_copies_and_actual32",
+      "status": "PASS"
+    },
+    {
+      "detail": "All32 exact originals passed; stopped before combination or runtime execution.",
+      "name": "consumer_real_validation_path_reaches_only_next_fence",
+      "status": "PASS"
+    },
+    {
+      "detail": "runtime source increment: one exact-typed fixed reviewed runtime increment required",
+      "name": "consumer_original67dc_cannot_be_relabelled_successor",
+      "status": "PASS"
+    },
+    {
+      "detail": "runtime source increment: one exact-typed fixed reviewed runtime increment required",
+      "name": "consumer_dropped_increment_bool_type_substitution_refused",
+      "status": "PASS"
+    },
+    {
+      "detail": "runtime source increment: only the exact reviewed current reader can be changed",
+      "name": "consumer_hash_consistent_extra_source_drift_refused",
+      "status": "PASS"
+    },
+    {
+      "detail": "Stopped at retirement input after one real all32 constructor gate.",
+      "name": "constructor_real_build_all32_gate_before_retirement_case_or_runtime",
+      "status": "PASS"
+    },
+    {
+      "detail": "runtime source increment: one exact-typed fixed reviewed runtime increment required",
+      "name": "constructor_refuses_original67dc_before_retirement",
+      "status": "PASS"
+    },
+    {
+      "detail": "Normalized view is whole-byte actual67dc/c50a, inputs unchanged; proof bindsa334.",
+      "name": "parent_proof_view_is_exact_copy_no_original_mutation",
+      "status": "PASS"
+    },
+    {
+      "detail": "",
+      "error_type": "AssertionError",
+      "name": "original_runtime_proof_continues_and_returns_actual_successor",
+      "status": "FAIL"
+    },
+    {
+      "detail": "",
+      "error_type": "AssertionError",
+      "name": "old_three_policy_literal_gate_still_refuses_wrong_policy",
+      "status": "FAIL"
+    },
+    {
+      "detail": "Exact81663 nineteen-row source set with only two independently pinned overrides accepted.",
+      "name": "preparer_nineteen_original_templates_and_two_overrides",
+      "status": "PASS"
+    },
+    {
+      "detail": "new property-policy runtime, adoption, scope and rule pins are not frozen",
+      "name": "future_finalization_and_delivery_remain_unfilled",
+      "status": "PASS"
+    },
+    {
+      "detail": "Create-only suffixes differ from actual parents; replaced parent bytes retained.",
+      "name": "independent_namespaces_and_complete_replaced_parent_retention",
+      "status": "PASS"
+    }
+  ],
+  "passed": 12,
+  "runtime": {
+    "bytes": 19020,
+    "sha256": "a33474b4479b8bb47acb6407525e30e82151e9f4b83dc0081851051003b144d7"
+  },
+  "runtime_sources": 32,
+  "schema": "hepta.inventory-prefix.consumer-cascade-wiring-checks.v1",
+  "scope": {
+    "actual_parent_R7_manifest_read_here": false,
+    "actual_phone_or_P4_operations": 0,
+    "case_or_nonce_generated": false,
+    "constructor_stopped_before_retirement_and_cases": true,
+    "derived_R7_test_view_labelled_synthetic": true,
+    "host_source_only": true,
+    "no_full_cascade_or_interface_main_executed": true,
+    "no_policy_verifier_executed": true,
+    "no_target_runtime_module_executed": true,
+    "physical_case_passed": false
+  },
+  "sources": {
+    "preparer/prepare_final_cascade.py": {
+      "bytes": 15594,
+      "sha256": "90ffe9f1dfe03dbfa3129731821e77aa6873305ee6c089de08b4c4273bd7fe37"
+    },
+    "source/derive_final_cascade_property_r8.py": {
+      "bytes": 66393,
+      "sha256": "843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54"
+    },
+    "source/runtime_source_increment.py": {
+      "bytes": 7269,
+      "sha256": "6282d6d5478d3bd65acc368198db3af550c7284f9c8e66d0b101d6d8269628e4"
+    },
+    "source/write_final_seal_interface_property_r8.py": {
+      "bytes": 40887,
+      "sha256": "1d88947679e6bb01a24762aa0b86e9875928f836b97eb9a4aff216ee6de0b500"
+    },
+    "templates/make_component_boundary_inputs.py": {
+      "bytes": 34843,
+      "sha256": "41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5"
+    },
+    "templates/release_boundaries.py": {
+      "bytes": 84972,
+      "sha256": "57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0"
+    }
+  },
+  "state": "FAIL_RETAIN_ORIGINALS",
+  "total": 14
+}

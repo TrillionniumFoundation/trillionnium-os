@@ -1,0 +1,43 @@
+{
+  "active_policy_writes": 0,
+  "automatic_execution": false,
+  "automatic_retry": false,
+  "execute_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-actual-1ad3-02/source/freeze_property_runtime.py",
+    "--inputs",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-actual-1ad3-02/FREEZE-INPUTS.json",
+    "--inputs-sha256",
+    "4ff62e3a3ae075720949b3ddaa9eeddc385a9d14d5dca37bb7be99a1c750cd3f",
+    "--execute-host-freeze"
+  ],
+  "expected_result": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json",
+  "expected_state": "REVIEWED_PROPERTY_POLICY_R8_HOST_SOURCES_FROZEN_NOT_PHONE_QUALIFIED",
+  "fixed_runtime_out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8",
+  "inputs": {
+    "bytes": 9902,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-actual-1ad3-02/FREEZE-INPUTS.json",
+    "sha256": "4ff62e3a3ae075720949b3ddaa9eeddc385a9d14d5dca37bb7be99a1c750cd3f"
+  },
+  "native_submissions": 0,
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "preview_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-actual-1ad3-02/source/freeze_property_runtime.py",
+    "--inputs",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-actual-1ad3-02/FREEZE-INPUTS.json",
+    "--inputs-sha256",
+    "4ff62e3a3ae075720949b3ddaa9eeddc385a9d14d5dca37bb7be99a1c750cd3f"
+  ],
+  "schema": "hepta.native-guard.property-r8-freeze-entry.v1",
+  "source": {
+    "bytes": 36953,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-actual-1ad3-02/source/freeze_property_runtime.py",
+    "sha256": "a3c2ff098357921266e77fe2889c3cf68ccc7bf8cf1f25d3a0d59e9cda9a96a1"
+  }
+}

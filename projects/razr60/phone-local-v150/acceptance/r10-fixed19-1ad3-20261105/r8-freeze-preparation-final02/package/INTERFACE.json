@@ -1,0 +1,40 @@
+{
+  "fixed_runtime_out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8",
+  "freezer": {
+    "bytes": 35543,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/freeze_property_runtime.py",
+    "sha256": "78dad9b3a122ee7c52e673aa08a28041f809aa9428b73b8d1ea88b09f0f6839d"
+  },
+  "independent_verifier": {
+    "bytes": 126796,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py",
+    "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+  },
+  "native_nonces_created": 0,
+  "next_action": "Use actual prepared EXECUTION-ENTRY.json only after full original build succeeds",
+  "no_automatic_runtime_freeze": true,
+  "phone_calls": 0,
+  "prepare_argv_template": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/prepare_actual_r8_freeze.py",
+    "--policy-adoption-desc",
+    "<actual canonical adoption exact3 descriptor>",
+    "--out",
+    "<fresh permitted native-guard-property-r8-freeze-actual-* directory>",
+    "--execute-host-preparation"
+  ],
+  "preparer": {
+    "bytes": 18304,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3/source/prepare_actual_r8_freeze.py",
+    "sha256": "a5deed4f086582a5ad13f5efcad75456b01cbbf46a2e4add19164dae2f80f39e"
+  },
+  "schema": "hepta.actual-r8-freeze-preparation.compact-source-interface.v1",
+  "staging_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-preparation-final02-1ad3",
+  "unchanged_input_template": {
+    "bytes": 8368,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-transport-candidate02-1ad3/FREEZE-INPUTS.template.json",
+    "sha256": "debd3165e14bf357f13bfa3b997ea3bb0b23e5d2bb4a0a8b54078477deff2934"
+  }
+}

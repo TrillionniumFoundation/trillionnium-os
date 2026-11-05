@@ -1,0 +1,210 @@
+{
+  "SSH_calls": 0,
+  "actual_physical_cases_passed": 0,
+  "checks": [
+    {
+      "detail": {
+        "parsed_python_files": 42
+      },
+      "name": "all pinned Python sources parse with Python 3.9 grammar",
+      "passed": true
+    },
+    {
+      "detail": {
+        "source_sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+      },
+      "name": "reused owned capture is exact reviewed f12a source",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_PREVIEW_NO_IO_NO_PHONE"
+      },
+      "name": "default run_physical_fault_once performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_PREVIEW_NO_CASE_READ_NO_PHONE"
+      },
+      "name": "default verify_fault_once performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_PREVIEW_NO_PHONE_READ"
+      },
+      "name": "default watch_physical_fault_once performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_ONLY_PREVIEW_NO_PHONE_READ"
+      },
+      "name": "default capture_fault_phone performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_PREVIEW_NO_PRIVATE_READ"
+      },
+      "name": "default capture_fault_p4 performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_PREVIEW_NO_INPUT_READ_NO_PHONE"
+      },
+      "name": "default prepare_physical_fault performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_PREVIEW_NO_INPUT_READ_NO_PHONE"
+      },
+      "name": "default freeze_physical_fault performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "returncode": 0,
+        "state": "SOURCE_PREVIEW_NO_INPUT_READ_NO_PHONE"
+      },
+      "name": "default p4_fault_dispatch_once performs no case execution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejected_before_missing_case_path": true,
+        "returncode": 1
+      },
+      "name": "unfrozen run_physical_fault_once refuses before private case input",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejected_before_missing_case_path": true,
+        "returncode": 1
+      },
+      "name": "unfrozen verify_fault_once refuses before private case input",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejected_before_missing_case_path": true,
+        "returncode": 1
+      },
+      "name": "unfrozen prepare_physical_fault refuses before private case input",
+      "passed": true
+    },
+    {
+      "detail": "ValueError: future_actual_fault_dependencies_are_unfrozen",
+      "name": "unfrozen watcher refuses before owner or installed paths",
+      "passed": true
+    },
+    {
+      "detail": "ValueError: fixed_fault_watch_plan_fields",
+      "name": "CPU cancellation cases cannot enter this separate fault watch",
+      "passed": true
+    },
+    {
+      "detail": {
+        "capture": {
+          "unpacked_bytes": 47205,
+          "wire_bytes": 20368
+        },
+        "operator_stage": {
+          "unpacked_bytes": 125500,
+          "wire_bytes": 51154
+        },
+        "watch": {
+          "unpacked_bytes": 24462,
+          "wire_bytes": 13873
+        }
+      },
+      "name": "three exact staged UTF8 envelopes fit original wire and unpack caps",
+      "passed": true
+    },
+    {
+      "detail": "ValueError: bounded_exact_phone_source_and_plan",
+      "name": "oversized phone source rejected before recipe",
+      "passed": true
+    },
+    {
+      "detail": "ValueError: fixed_bounded_P4_archive_chunk",
+      "name": "foreign P4 archive path rejected before any read",
+      "passed": true
+    },
+    {
+      "detail": "ValueError: complete_source_package_32MiB_budget",
+      "name": "source package capacity rejected before opening oversized member",
+      "passed": true
+    },
+    {
+      "detail": {
+        "effect_functions_called": 0,
+        "pinned_pure_API_loads": true
+      },
+      "name": "original ledger model business and decoder projections load without effects",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_dependencies_claimed": false,
+        "changed_slots_per_source": 1
+      },
+      "name": "source freezing changes only exact UTF8 AST RHS and is wholly reversible",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "ValueError: new_output_inode_or_bytes_replaced",
+        "same_bytes_different_inode_rejected": true
+      },
+      "name": "source output receipt refuses same-byte pathname replacement",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_local_child_joined": true,
+        "phone_calls": 0,
+        "physical_case_pass": false,
+        "stdout_and_stderr_EOF": true
+      },
+      "name": "new async adapter actual local child accepted by exact capture parser",
+      "passed": true
+    },
+    {
+      "detail": {
+        "independent_core_effect_calls": 0,
+        "single_actor_callsite": true
+      },
+      "name": "one actor callsite and no process socket or signal call in independent core",
+      "passed": true
+    }
+  ],
+  "fault_actor_invocations": 0,
+  "limitations": [
+    "No actual physical integration or phone phase was run.",
+    "Synthetic wire fixtures are not READY or actual adoption."
+  ],
+  "local_subprocesses_only": true,
+  "passed": 24,
+  "phone_calls": 0,
+  "schema": "hepta.physical-fault.host-source-interface-checks.v1",
+  "source_manifest": {
+    "bytes": 8432,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/SOURCE-MANIFEST.json",
+    "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+  },
+  "state": "PASS",
+  "total": 24,
+  "whole_case_pass": false
+}

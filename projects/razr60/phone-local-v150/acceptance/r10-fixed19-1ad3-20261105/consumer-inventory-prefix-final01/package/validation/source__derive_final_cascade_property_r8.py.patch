@@ -1,0 +1,435 @@
+--- reviewed-parent/source/derive_final_cascade_property_r8.py
++++ inventory-prefix-successor/source/derive_final_cascade_property_r8.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Reviewed host-only R8 FC8 / AC9 / C8 property-policy source cascade.
++"""Reviewed host-only inventory-prefix successor of actual R8 FC8 / AC9 / C8.
+ 
+ Default is zero-I/O preview. Future trust pins remain None until a new reviewed
+ source revision fixes the actual runtime, combination, policy export, adoption
+@@ -24,15 +24,15 @@
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ FINALIZATION = None
+ REVIEWED_MODULE_INPUT_REPLACEMENT = {'path':str(B/'module-sidecar-android-environment-r7-candidate01/MODULE-INPUT-REPLACEMENT.json'), 'bytes':5897, 'sha256':'223801205cfaba915c88b76fb291f888043c0f75fe0ae22be10ff13b19931374'}
+-FC_PARENT = B/'r10-boundary-consumers-final-r7'
+-FC_PARENT_SHA = 'e4c1c351a363aed80968fa9a952f3ad3bb1291c9dd8cb2d1e7591c448f1efb41'
+-AC_PARENT = B/'scoped-acceptance-v150-r10-r1-readiness-r8'
+-AC_PARENT_SHA = '12f0ccf601b37d8e5e08b162ac1e8e2fcd4a1e7639e30d71afbf068d9f39293b'
+-CC_PARENT = B/'r10-component-boundary-input-entry-r7'
+-CC_PARENT_SHA = 'e6795b9c7e31342943d17596a8c3a86177073bc36c8990de083642cd6fa0e649'
+-FC = B/'r10-boundary-consumers-final-r8'
+-AC = B/'scoped-acceptance-v150-r10-r1-readiness-r9'
+-CC = B/'r10-component-boundary-input-entry-r8'
++FC_PARENT = B/'r10-boundary-consumers-final-r8'
++FC_PARENT_SHA = 'c6f682a21126e72ec2ae64ae12c8d33ce94cf0409f6936a09b593f587dd7382b'
++AC_PARENT = B/'scoped-acceptance-v150-r10-r1-readiness-r9'
++AC_PARENT_SHA = 'a8b9979819e0b49add8837caa94c07afb3f74fa11f6bb35036f3b80ad5f99d7d'
++CC_PARENT = B/'r10-component-boundary-input-entry-r8'
++CC_PARENT_SHA = '84b2589ca34a0639a4b45a43d8351f8362be7bbb1581b767c7ab41d38ddcf969'
++FC = B/'r10-boundary-consumers-final-r8-inventory-prefix-1ad3-01'
++AC = B/'scoped-acceptance-v150-r10-r1-readiness-r9-inventory-prefix-1ad3-01'
++CC = B/'r10-component-boundary-input-entry-r8-inventory-prefix-1ad3-01'
+ RUNTIME_PARENT = B/'native-guard-r10-r1-operator-r7/runtime'
+ RUNTIME_PARENT_SHA = '683481bdb653bd7cb97bd6171d6b14f6ecaf4f9948ed2691c7b7c420fea5fe3c'
+ HISTORICAL_RUNTIME = B/'native-guard-r10-r1-operator-r4/runtime'
+@@ -71,7 +71,7 @@
+ PARENT_FULL_RULE_SHA = 'aeda92123f1d043de2c53dd345dd7372b98da7b776299d57bda531dda868e4a1'
+ SHARED_CONFIGURATION_SHA = '780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34'
+ SHARED_SERVICE_SHA = '2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a'
+-FROZEN_READINESS_SHA = '345723406df0c523ab55b167bb52f5ceb9432d387ffe3b4aa5b1e5442465e392'
++FROZEN_READINESS_SHA = 'b0a3f3b4fbda835506c3d0f9099abbe3b47a10b6a131ee2069c9ef7350c6ba63'
+ RUNTIME_NAMES = ('release_boundaries.py', 'collect_r10_readiness.py',
+                  'build_release_r10.py', 'install_phone_release_r10.py',
+                  'component_activation_gate.fragment.py')
+@@ -79,84 +79,7 @@
+                    'export_originals_r10.py', 'read_archive_chunk_r10.py',
+                    'registration_phone_r10.py')
+ OBSERVED = {}
+-TEMPLATE_PINS = {
+-  "build_release_r10.py": {
+-    "bytes": 40822,
+-    "sha256": "79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9"
+-  },
+-  "close_component.py": {
+-    "bytes": 99120,
+-    "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+-  },
+-  "collect_r10_readiness.py": {
+-    "bytes": 16343,
+-    "sha256": "f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af"
+-  },
+-  "component_activation_gate.fragment.py": {
+-    "bytes": 4492,
+-    "sha256": "140b7591781a3e487ef7b3ee5b7187fc95058a8b49c28eb3db0c7d8b630fa922"
+-  },
+-  "component_common.py": {
+-    "bytes": 19138,
+-    "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+-  },
+-  "component_common_r5.py": {
+-    "bytes": 18133,
+-    "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02"
+-  },
+-  "component_lifecycle.py": {
+-    "bytes": 40261,
+-    "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+-  },
+-  "component_snapshot.py": {
+-    "bytes": 24187,
+-    "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+-  },
+-  "environment_parent_late_boundary_r6.py": {
+-    "bytes": 53502,
+-    "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+-  },
+-  "install_phone_release_r10.py": {
+-    "bytes": 34038,
+-    "sha256": "3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1"
+-  },
+-  "late_boundary.py": {
+-    "bytes": 66816,
+-    "sha256": "f42cf7da63df8e3ecd31e984b2deac5d5fc7e1ee0f2bdbb095a8268243a133d4"
+-  },
+-  "make_component_boundary_inputs.py": {
+-    "bytes": 34626,
+-    "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+-  },
+-  "materialize_case_r10.py": {
+-    "bytes": 24834,
+-    "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+-  },
+-  "non_native_attempt05.py": {
+-    "bytes": 19740,
+-    "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4"
+-  },
+-  "policy_parent_late_boundary_r4.py": {
+-    "bytes": 35730,
+-    "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+-  },
+-  "property_parent_late_boundary_r7.py": {
+-    "bytes": 62434,
+-    "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+-  },
+-  "release_boundaries.py": {
+-    "bytes": 77700,
+-    "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+-  },
+-  "root_acceptance_r10.py": {
+-    "bytes": 27473,
+-    "sha256": "70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d"
+-  },
+-  "stage_component.py": {
+-    "bytes": 19116,
+-    "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+-  }
+-}
++TEMPLATE_PINS = {'build_release_r10.py': {'bytes': 40822, 'sha256': '79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9'}, 'close_component.py': {'bytes': 99120, 'sha256': '9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1'}, 'collect_r10_readiness.py': {'bytes': 16343, 'sha256': 'f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af'}, 'component_activation_gate.fragment.py': {'bytes': 4492, 'sha256': '140b7591781a3e487ef7b3ee5b7187fc95058a8b49c28eb3db0c7d8b630fa922'}, 'component_common.py': {'bytes': 19138, 'sha256': '1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab'}, 'component_common_r5.py': {'bytes': 18133, 'sha256': '8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02'}, 'component_lifecycle.py': {'bytes': 40261, 'sha256': '144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2'}, 'component_snapshot.py': {'bytes': 24187, 'sha256': '2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa'}, 'environment_parent_late_boundary_r6.py': {'bytes': 53502, 'sha256': '1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c'}, 'install_phone_release_r10.py': {'bytes': 34038, 'sha256': '3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1'}, 'late_boundary.py': {'bytes': 66816, 'sha256': 'f42cf7da63df8e3ecd31e984b2deac5d5fc7e1ee0f2bdbb095a8268243a133d4'}, 'make_component_boundary_inputs.py': {'bytes': 34843, 'sha256': '41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5'}, 'materialize_case_r10.py': {'bytes': 24834, 'sha256': 'b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290'}, 'non_native_attempt05.py': {'bytes': 19740, 'sha256': 'a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4'}, 'policy_parent_late_boundary_r4.py': {'bytes': 35730, 'sha256': 'bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b'}, 'property_parent_late_boundary_r7.py': {'bytes': 62434, 'sha256': '3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd'}, 'release_boundaries.py': {'bytes': 84972, 'sha256': '57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0'}, 'root_acceptance_r10.py': {'bytes': 27473, 'sha256': '70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d'}, 'stage_component.py': {'bytes': 19116, 'sha256': '4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340'}}
+ 
+ 
+ def need(value, reason):
+@@ -457,6 +380,8 @@
+          and value['scope_decision']['sha256'] != PARENT_ROOT_SCOPE_DECISION_SHA
+          and value['full_rule']['sha256'] != PARENT_FULL_RULE_SHA,
+          'an old policy generation or old twelve-atom rule cannot be the new current generation')
++    need(value['runtime_manifest']['path'] == str(B/'native-guard-r10-r1-operator-r8-inventory-prefix-1ad3-01/runtime/MANIFEST.json'),
++         'the explicit inventory-prefix runtime successor path is required')
+     return value
+ 
+ 
+@@ -474,11 +399,162 @@
+             for name, row in TEMPLATE_PINS.items()}
+ 
+ 
++RUNTIME_SOURCE_INCREMENT = {'base_freeze_result': {'bytes': 22392,
++                        'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/FREEZE-RESULT.json',
++                        'sha256': 'f1e9f063468d1bfdbed0f1e877afb70acafcddf78bbc872dc4078d472afddc67'},
++ 'base_freezer_source': {'bytes': 36899,
++                         'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-property-r8-freeze-final01/source/freeze_property_runtime.py',
++                         'sha256': '70e0ccc9844438aeee54ba4e734e886c81c2e640f92a997a766015e7bb5b285d'},
++ 'base_runtime_manifest': {'bytes': 16808,
++                           'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8/runtime/MANIFEST.json',
++                           'sha256': '67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c'},
++ 'changed_member': {'parent': {'bytes': 66996,
++                               'sha256': 'c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add'},
++                    'path': 'source/late_boundary.py',
++                    'successor': {'bytes': 67005,
++                                  'sha256': '147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4'}},
++ 'inherited_metadata_scope': 'original_r7_to_r8_generation_preserved_not_successor_actions',
++ 'runtime_member_count': 32,
++ 'schema': 'hepta.native-guard.runtime-source-increment.v1',
++ 'state': 'EXACT_RUNTIME32_SINGLE_EXPRESSION_SUCCESSOR_SOURCE_ONLY',
++ 'successor_actions': {'historical_reference_changes': 0,
++                       'host_source_derivation': True,
++                       'new_nonces': 0,
++                       'phone_operations': 0,
++                       'policy_adoptions_created': 0,
++                       'policy_applications': 0},
++ 'transformation': {'accepted_path_domain': 'canonical_absolute_posix_without_dotdot',
++                    'function': 'inventory_value',
++                    'new_utf8': 'sum(p.parts[:len(q.parts)] == q.parts for q in paths) == 1',
++                    'old_utf8': 'sum(p == q or q in p.parents for q in paths) == 1',
++                    'whole_source_inverse_required': True},
++ 'unchanged_member_count': 31}
++
++
++def verify_runtime_source_increment(manifest_raw, source_files):
++    """Pure exact32/source-and-manifest inverse; never opens or executes a file.
++
++    Dependencies are only this module's fixed RUNTIME_SOURCE_INCREMENT object
++    and the standard json/hashlib modules. All parsing/encoding helpers are
++    local to prevent caller strict/encode implementations changing semantics.
++    The caller still performs its original proof, filesystem and case gates.
++    """
++    def require(value, reason):
++        if not value:
++            raise ValueError('runtime source increment: ' + reason)
++
++    def digest(raw):
++        return hashlib.sha256(raw).hexdigest()
++
++    def encode(value):
++        return (json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False,
++                           allow_nan=False) + '\n').encode('utf-8')
++
++    def pairs(rows):
++        result = {}
++        for key, value in rows:
++            require(key not in result, 'duplicate JSON key')
++            result[key] = value
++        return result
++
++    def nonfinite(_value):
++        raise ValueError('runtime source increment: nonfinite JSON')
++
++    require(type(manifest_raw) is bytes and 0 < len(manifest_raw) <= 65536,
++            'bounded exact manifest bytes required')
++    manifest = json.loads(manifest_raw, object_pairs_hook=pairs, parse_constant=nonfinite)
++    require(type(manifest) is dict and encode(manifest) == manifest_raw,
++            'original manifest encoding differs')
++    require(type(manifest.get('runtime_source_increment')) is dict
++            and encode(manifest['runtime_source_increment']) == encode(RUNTIME_SOURCE_INCREMENT),
++            'one exact-typed fixed reviewed runtime increment required')
++    require(type(source_files) is dict and type(manifest.get('files')) is list
++            and len(manifest['files']) == len(source_files) == 32,
++            'exact32 source container required')
++    rows = {}
++    for row in manifest['files']:
++        require(type(row) is dict and set(row) == {'path', 'bytes', 'sha256'}
++                and type(row['path']) is str and row['path'] not in rows
++                and type(row['bytes']) is int and 0 <= row['bytes'] <= 8 * 1024 * 1024
++                and type(row['sha256']) is str,
++                'exact bounded unique source row required')
++        rows[row['path']] = row
++    require(set(rows) == set(source_files), 'complete32 source names differ')
++    for name, row in rows.items():
++        body = source_files[name]
++        require(type(body) is bytes and len(body) == row['bytes']
++                and digest(body) == row['sha256'], 'source bytes differ: ' + name)
++    change = RUNTIME_SOURCE_INCREMENT['changed_member']
++    name = change['path']
++    require(name in rows and rows[name] == dict(path=name, **change['successor']),
++            'only the exact reviewed current reader can be changed')
++    candidate = source_files[name]
++    transformation = RUNTIME_SOURCE_INCREMENT['transformation']
++    before = transformation['old_utf8'].encode('ascii')
++    after = transformation['new_utf8'].encode('ascii')
++    require(candidate.count(after) == 1, 'one exact successor expression required')
++    restored_source = candidate.replace(after, before, 1)
++    require(restored_source.count(before) == 1
++            and {'bytes': len(restored_source), 'sha256': digest(restored_source)} == change['parent'],
++            'complete current reader inverse differs from actual c50a')
++    retained_increment = manifest.pop('runtime_source_increment')
++    restored_rows = []
++    for row in manifest['files']:
++        restored_rows.append(dict(path=name, **change['parent']) if row['path'] == name else row)
++    manifest['files'] = restored_rows
++    restored_manifest = encode(manifest)
++    parent = RUNTIME_SOURCE_INCREMENT['base_runtime_manifest']
++    require({'bytes': len(restored_manifest), 'sha256': digest(restored_manifest)}
++            == {key: parent[key] for key in ('bytes', 'sha256')},
++            'whole manifest inverse differs from actual16808/67dc')
++    return {'schema': 'hepta.native-guard.runtime-source-increment-proof.v1',
++            'state': 'EXACT_RUNTIME32_SINGLE_EXPRESSION_AND_PARENT_INVERSES_VERIFIED',
++            'runtime_manifest': {'bytes': len(manifest_raw), 'sha256': digest(manifest_raw)},
++            'base_runtime_manifest': dict(parent), 'runtime_source_increment': retained_increment,
++            'member_count': 32, 'unchanged_member_count': 31,
++            'all32_source_bytes_verified': True, 'whole_source_inverse_verified': True,
++            'whole_manifest_inverse_verified': True,
++            'target_source_executed': False, 'historical_reference_changes': 0,
++            'phone_calls': 0, 'component_qualified': False, 'business_qualified': False}
++
++
++def runtime_parent_proof_view(manifest_raw, source_files):
++    """Only a verified exact successor may be normalized for the old R7/R8 proof."""
++    proof = verify_runtime_source_increment(manifest_raw, source_files)
++    value = strict(manifest_raw)
++    value.pop('runtime_source_increment')
++    change = RUNTIME_SOURCE_INCREMENT['changed_member']
++    member = change['path']
++    for row in value['files']:
++        if row['path'] == member:
++            row.update(change['parent'])
++    files = dict(source_files)
++    transform = RUNTIME_SOURCE_INCREMENT['transformation']
++    files[member] = files[member].replace(transform['new_utf8'].encode('ascii'),
++                                        transform['old_utf8'].encode('ascii'), 1)
++    raw = encode(value)
++    need(descriptor(raw) == {key:RUNTIME_SOURCE_INCREMENT['base_runtime_manifest'][key]
++                             for key in ('bytes','sha256')}
++         and descriptor(files[member]) == change['parent'],
++         'verified parent proof view did not retain complete original bytes')
++    return raw, value, files, proof
++
++
++def retain_overwritten_parent_files(parent, files, prefix):
++    """Keep every replaced parent member as an exact retained reference."""
++    for name, body in parent.items():
++        if name in files and files[name] != body:
++            target = prefix+'/'+name
++            need(target not in files, 'retained parent reference already exists')
++            files[target] = body
++
++
+ def reviewed_runtime(frozen, templates, parent_manifest, parent_files):
+     row = frozen['runtime_manifest']
+     root = Path(row['path']).parent
+     need(Path(row['path']).name == 'MANIFEST.json', 'exact runtime manifest filename required')
+-    raw, value, files = package(root, row['sha256'], row['bytes'])
++    actual_raw, actual_value, actual_files = package(root, row['sha256'], row['bytes'])
++    raw, value, files, _increment = runtime_parent_proof_view(actual_raw, actual_files)
+     old_rows = parent_manifest['files']
+     old_names = {item['path'] for item in old_rows}
+     need(old_names == set(parent_files) and len(old_names) == len(old_rows) == 31
+@@ -558,7 +634,7 @@
+          and value['android_sidecar_environment_added_keys'] == [
+              'ANDROID_ART_ROOT','ANDROID_I18N_ROOT','ANDROID_TZDATA_ROOT','BOOTCLASSPATH','DEX2OATBOOTCLASSPATH'],
+          'source manifest changed the old history or claimed actual worker or case qualification')
+-    return raw, value, files
++    return actual_raw, actual_value, actual_files
+ 
+ 
+ def actual_adoption_check(frozen):
+@@ -710,9 +786,15 @@
+         RUNTIME_PARENT, RUNTIME_PARENT_SHA, 13446)
+     runtime_raw, runtime, runtime_files = reviewed_runtime(
+         frozen, templates, runtime_parent, runtime_parent_files)
+-    fc_raw, fc_value, fc_parent = package(FC_PARENT, FC_PARENT_SHA, 17923)
+-    ac_raw, ac_value, ac_parent = package(AC_PARENT, AC_PARENT_SHA, 19044)
+-    cc_raw, cc_value, cc_parent = package(CC_PARENT, CC_PARENT_SHA, 4307)
++    fc_raw, fc_value, fc_parent = package(FC_PARENT, FC_PARENT_SHA, 27964)
++    ac_raw, ac_value, ac_parent = package(AC_PARENT, AC_PARENT_SHA, 20044)
++    cc_raw, cc_value, cc_parent = package(CC_PARENT, CC_PARENT_SHA, 4850)
++    parent_finalization = strict(fc_parent['reference/ROOT-REVIEWED-FINALIZATION.json'])
++    current_as_parent = copy.deepcopy(frozen)
++    current_as_parent['runtime_manifest'] = dict(RUNTIME_SOURCE_INCREMENT['base_runtime_manifest'])
++    need(encode(parent_finalization) == encode(current_as_parent),
++         'source successor must retain the actual parent combination, policy, verifier, adoption, scope and rule')
++    runtime_increment = verify_runtime_source_increment(runtime_raw, runtime_files)
+     adoption_raw, combo_raw, policy_summary = actual_adoption_check(frozen)
+     final = finalized_sources(templates, frozen, runtime_files)
+     h = final['release_boundaries.py']; hs = sha(h)
+@@ -721,6 +803,7 @@
+         frozen['runtime_manifest']['sha256'], frozen['component_combination']['sha256'])
+     checks = {'schema':'hepta.property-policy.final-source-original-checks.v1',
+         'actual_policy_adoption':policy_summary, 'actual_tail':tail_result,
++        'runtime_source_increment_proof':runtime_increment,
+         'runtime_exact_paths':sorted(runtime_files), 'runtime_file_count':len(runtime_files),
+         'property_parent_ancestors':tail_result['property_parent_ancestors'],
+         'property_parent_boundary_sha256':PROPERTY_PARENT_BOUNDARY_SHAS[0],
+@@ -764,7 +847,7 @@
+     need(fc['reference/MODULE-INPUT-REPLACEMENT.original.json'] == module_replacement_raw
+          and fc['MODULE-SOURCE-ONLY-INCREMENT.patch'] == fc_parent['MODULE-SOURCE-ONLY-INCREMENT.patch'],
+          'the original R7 module adoption and its source patch must be preserved, not reapplied')
+-    fc['reference/PARENT-FC7-MANIFEST.original.json'] = fc_raw
++    fc['reference/PARENT-FC8-MANIFEST.original.json'] = fc_raw
+     fc['reference/PARENT-R7-RUNTIME-MANIFEST.original.json'] = runtime_parent_raw
+     fc['reference/REVIEWED-CURRENT-RUNTIME-MANIFEST.original.json'] = runtime_raw
+     fc['reference/REVIEWED-R8-PROPERTY-CANDIDATE.original.py'] = templates['release_boundaries.py']
+@@ -772,8 +855,8 @@
+     fc['reference/ACTUAL-CURRENT-COMBINATION.original.json'] = combo_raw
+     fc['reference/ACTUAL-EXTERNAL03-PUBLICATION.original.json'] = publication_raw
+     fc['reference/ROOT-REVIEWED-FINALIZATION.json'] = encode(frozen)
+-    fc['PIN-CASCADE-INCREMENT.patch'] = difference(fc_parent, fc, 'final-r8')
+-    fc['FINAL-R8-PIN-ONLY-INCREMENT.patch'] = finalized_pin_diff
++    fc['INVENTORY-PREFIX-CASCADE-INCREMENT.patch'] = difference(fc_parent, fc, 'final-r8')
++    fc['INVENTORY-PREFIX-PIN-ONLY-INCREMENT.patch'] = finalized_pin_diff
+     fc['validation/ACTUAL-POLICY-AND-TAIL-RECHECK.json'] = checks_raw
+     fc['FINAL-INPUT-PROVENANCE.json'] = encode({
+         'schema':'hepta.r10.final-input-pin-cascade.v8', 'parent_manifest_sha256':FC_PARENT_SHA,
+@@ -798,6 +881,7 @@
+         'actual_complete_component_and_policy_union_bytes':None,
+         'exact_boundary_member_maximum_bytes':32*1024*1024,
+         'final_seal_generated':False, 'phone_calls':0})
++    retain_overwritten_parent_files(fc_parent, fc, 'reference/inventory-prefix-parent-fc8')
+     add_manifest(fc, {'schema':'hepta.r10.final-boundary-consumers.v8',
+         'state':'HOST_SOURCE_READY_WAITING_ACTUAL_CURRENT_COMPONENT_ORIGINALS',
+         'parent_manifest_sha256':FC_PARENT_SHA,
+@@ -825,17 +909,17 @@
+     for name in UNCHANGED_CHAIN:
+         need(ac['operator-chain/'+name] == ac_parent['operator-chain/'+name],
+              'unrelated acceptance source changed')
+-    ac['reference-readiness-r8/MANIFEST.original.json'] = ac_raw
+-    ac['reference-readiness-r8/SOURCE-MANIFEST.original.json'] = ac_parent['operator-chain/SOURCE-MANIFEST.json']
+-    ac['reference-readiness-r8/root_acceptance_r10.original.py'] = ac_parent['operator-chain/root_acceptance_r10.py']
+-    ac['R9-R8-PROPERTY-READINESS-INCREMENT.patch'] = difference(ac_parent, ac, 'readiness-r9')
++    ac['reference-readiness-r9/MANIFEST.original.json'] = ac_raw
++    ac['reference-readiness-r9/SOURCE-MANIFEST.original.json'] = ac_parent['operator-chain/SOURCE-MANIFEST.json']
++    ac['reference-readiness-r9/root_acceptance_r10.original.py'] = ac_parent['operator-chain/root_acceptance_r10.py']
++    ac['R9-INVENTORY-PREFIX-READINESS-INCREMENT.patch'] = difference(ac_parent, ac, 'readiness-r9')
+     source_manifest = strict(ac_parent['operator-chain/SOURCE-MANIFEST.json'])
+     for row in source_manifest['files']:
+         row.update(descriptor(ac['operator-chain/'+row['path']]))
+     source_manifest['reviewed_readiness_helper_sha256'] = sha(final['collect_r10_readiness.py'])
+     source_manifest['parent_operator_manifest_sha256'] = sha(ac_parent['operator-chain/SOURCE-MANIFEST.json'])
+     ac['operator-chain/SOURCE-MANIFEST.json'] = encode(source_manifest)
+-    ac['READINESS-R9-FINAL.json'] = encode({
++    ac['READINESS-R9-INVENTORY-PREFIX-FINAL.json'] = encode({
+         'schema':'hepta.r10.scoped-acceptance-readiness-increment.v9',
+         'parent_package_sha256':AC_PARENT_SHA,
+         'component_package_sha256':frozen['runtime_manifest']['sha256'],
+@@ -851,20 +935,21 @@
+         'phone_calls':0, 'actual_final_release_generated':False})
+     ac_manifest = copy.deepcopy(ac_value); ac_manifest.pop('files')
+     ac_manifest['operator_manifest_sha256'] = sha(ac['operator-chain/SOURCE-MANIFEST.json'])
+-    ac_manifest['derivation'].update(parent_readiness_r8_package_sha256=AC_PARENT_SHA,
++    ac_manifest['derivation'].update(parent_readiness_r9_package_sha256=AC_PARENT_SHA,
+         component_package_sha256=frozen['runtime_manifest']['sha256'],
+         final_consumer_manifest_sha256=sha(fc['MANIFEST.json']),
+         final_readiness_helper_sha256=sha(final['collect_r10_readiness.py']),
+         materializer_exact_boundary_maximum_bytes=32*1024*1024)
++    retain_overwritten_parent_files(ac_parent, ac, 'reference/inventory-prefix-parent-ac9')
+     add_manifest(ac, ac_manifest)
+ 
+     cc = dict(cc_parent)
+     cc['source/make_component_boundary_inputs.py'] = final['make_component_boundary_inputs.py']
+-    cc['reference/PARENT-C7-MANIFEST.original.json'] = cc_raw
+-    cc['reference/PARENT-C7-SOURCE.original.py'] = cc_parent['source/make_component_boundary_inputs.py']
++    cc['reference/PARENT-C8-MANIFEST.original.json'] = cc_raw
++    cc['reference/PARENT-C8-SOURCE.original.py'] = cc_parent['source/make_component_boundary_inputs.py']
+     cc['reference/REVIEWED-R8-CONSTRUCTOR-CANDIDATE.original.py'] = templates['make_component_boundary_inputs.py']
+     cc['reference/REVIEWED-CURRENT-RUNTIME-MANIFEST.original.json'] = runtime_raw
+-    cc['PIN-CASCADE-INCREMENT.patch'] = difference(cc_parent, cc, 'constructor-r8')
++    cc['INVENTORY-PREFIX-CASCADE-INCREMENT.patch'] = difference(cc_parent, cc, 'constructor-r8')
+     cc['DERIVATION.json'] = encode({
+         'schema':'hepta.r10.component-input-constructor-pin-cascade.v8',
+         'parent_manifest_sha256':CC_PARENT_SHA,
+@@ -884,6 +969,7 @@
+         'environment_parent_ancestor_sha256':ENVIRONMENT_PARENT_BOUNDARY_SHA,
+         'non_native_sidebranch':tail_result['non_native_sidebranch'],
+         'non_native_case_count':0, 'phone_calls':0, 'real_case_inputs_created':False})
++    retain_overwritten_parent_files(cc_parent, cc, 'reference/inventory-prefix-parent-cc8')
+     add_manifest(cc, {'schema':'hepta.r10.component-boundary-input-entry.v8',
+         'state':'HOST_SOURCE_ONLY_WAITING_ACTUAL_CURRENT_COMPONENT_ORIGINALS',
+         'component_package_sha256':frozen['runtime_manifest']['sha256'],
+@@ -895,6 +981,11 @@
+     publish(FC, fc); publish(AC, ac); publish(CC, cc)
+     result = {'schema':'hepta.property-policy.final-boundary-cascade-delivery.v1', 'state':'HOST_ONLY_PUBLISHED',
+         'reviewed_finalization':frozen,
++        'runtime_source_increment_proof':runtime_increment,
++        'source_successor_parent_manifests':{
++            'consumer':dict(path=str(FC_PARENT/'MANIFEST.json'), **descriptor(fc_raw)),
++            'acceptance':dict(path=str(AC_PARENT/'MANIFEST.json'), **descriptor(ac_raw)),
++            'constructor':dict(path=str(CC_PARENT/'MANIFEST.json'), **descriptor(cc_raw))},
+         'policy_parent_sha256':POLICY_PARENT_SHA,
+         'parent_adoption_sha256':PARENT_ADOPTION_SHA,
+         'root_scope_decision':frozen['scope_decision'], 'full_rule':frozen['full_rule'],

@@ -1,0 +1,70 @@
+{
+  "case_credit": false,
+  "files": [
+    {
+      "bytes": 2331,
+      "path": "DERIVATION.json",
+      "sha256": "7b9d441100d7f49896bfd19c2bc951f2360f0199d730434e6fae776c9dae8c35"
+    },
+    {
+      "bytes": 2751,
+      "path": "INTERFACE.json",
+      "sha256": "d62e79580926bda66a0cde0d9ec183eca63e845578d6aeaa9ec2e9940c47e050"
+    },
+    {
+      "bytes": 1351,
+      "path": "README.md",
+      "sha256": "381265b1755804024fb1815c0d7d54062b74e5a4f5dc3f83cdbe669c5a524b29"
+    },
+    {
+      "bytes": 67005,
+      "path": "reference/late_boundary.147cf.original.py",
+      "sha256": "147cf49e91fb4bcbddeba6591d48c8782efe20452db2b2d6179e7addd68c27e4"
+    },
+    {
+      "bytes": 17039,
+      "path": "reference/verify_actual_retired_once.118d.original.py",
+      "sha256": "118d821b2007c41b6cea23ced070452c7376aa31b2829c7c4fb91e6724c0c5ba"
+    },
+    {
+      "bytes": 44167,
+      "path": "reference/verify_explicit_inventory_reader.fad04.draft01.py",
+      "sha256": "fad04dfee08e9ca66516ff0a88b8934ffb07d3c7ffe0fde49bda16b043ab7a76"
+    },
+    {
+      "bytes": 44926,
+      "path": "source/verify_explicit_inventory_reader_once.py",
+      "sha256": "65aa1db1beb25aad324a1e7a027eb235f65392083a7fbdb0cae3362db7d44479"
+    },
+    {
+      "bytes": 33830,
+      "path": "validation/EXPLICIT-READER-DIAGNOSTIC.patch",
+      "sha256": "74e8b89748942a6afdf155c4573b2a84130c2ec8d23fb5040c8864971d456f34"
+    },
+    {
+      "bytes": 2204,
+      "path": "validation/RESOURCE-ANCHOR-INCREMENT.patch",
+      "sha256": "c60c47f8a4a44783c129ac2b9944c25ff56cadb3f9f770b112618e68e3492686"
+    },
+    {
+      "bytes": 416,
+      "path": "validation/SOURCE-DERIVATION-FAILURE01.json",
+      "sha256": "9ec386cbd654a34fac2323a471ca6e649ce891d355652cc7f58d2061ca57bf24"
+    },
+    {
+      "bytes": 3016,
+      "path": "validation/source-check01/RESULT.json",
+      "sha256": "65bd141dfbfbca696cb1749d6e1a1fa29b4324e5ad15f6fd1d63b5aac487eab7"
+    },
+    {
+      "bytes": 8309,
+      "path": "validation/verify_source_only.py",
+      "sha256": "ac0a20018fe1b26e42fada776c9147f0163ae4b7157ffbf4298ec619ee28556f"
+    }
+  ],
+  "original_global_clearance_credit": false,
+  "phone_operations": 0,
+  "schema": "hepta.explicit-reader-diagnostic.source-package.v1",
+  "source_installs": 0,
+  "state": "SOURCE_ONLY_FROZEN_NOT_EXECUTED"
+}

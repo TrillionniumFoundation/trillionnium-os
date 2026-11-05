@@ -1,0 +1,11 @@
+--- canonical67dc/source/late_boundary.py
++++ candidate/source/late_boundary.py
+@@ -96,7 +96,7 @@
+     for name, row in entries.items():
+         p = Path(name)
+         C.need(p.is_absolute() and str(p) == name and '..' not in p.parts
+-               and sum(p == q or q in p.parents for q in paths) == 1,
++               and sum(p.parts[:len(q.parts)] == q.parts for q in paths) == 1,
+                'inventory entry left its unique complete root')
+         if row.get('kind') == 'absent':
+             C.need(row == {'kind': 'absent', 'absence': 'ENOENT'} and name in roots

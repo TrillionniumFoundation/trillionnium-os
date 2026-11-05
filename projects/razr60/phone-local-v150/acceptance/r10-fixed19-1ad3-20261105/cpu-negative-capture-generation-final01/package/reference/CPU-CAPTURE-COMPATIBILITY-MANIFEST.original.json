@@ -1,0 +1,153 @@
+{
+  "actual_cases": 0,
+  "files": [
+    {
+      "bytes": 1078,
+      "path": "HOST-PHASE.template.json",
+      "sha256": "00a1ff87bd21f177fbe4cff397a5e095c9145210e5b11f751a5419ba5cc78246"
+    },
+    {
+      "bytes": 7181,
+      "path": "PHYSICAL-FAULT-CLOSURE-REUSE.md",
+      "sha256": "4e731c02a827bf8dc37a828e322c071e821688b9593e3b315a7700b0521f7bcd"
+    },
+    {
+      "bytes": 5709,
+      "path": "README.md",
+      "sha256": "96bddb1a9984347c1660616804b73682490355bc30f4d166a4013431b0de5567"
+    },
+    {
+      "bytes": 14110,
+      "path": "build_candidate.py",
+      "sha256": "b85ba37afbcb26243d55915468fbb17d2e3b9104722499d3c736b89d97f116b7"
+    },
+    {
+      "bytes": 5862,
+      "path": "reference/PARENT-INTERFACE.original.json",
+      "sha256": "6753197cd3b8d1780eebb27f3f2f3ab59fa62203a302118379f2cf6298f1fcef"
+    },
+    {
+      "bytes": 7317,
+      "path": "reference/PARENT-SOURCE-MANIFEST.original.json",
+      "sha256": "6d7920a771d790e66eb45c7469a7a68a253b9247f11b9986ff868f0e5835606d"
+    },
+    {
+      "bytes": 43958,
+      "path": "reference/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "reference/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 37253,
+      "path": "reference/negative_originals.py",
+      "sha256": "939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2"
+    },
+    {
+      "bytes": 45952,
+      "path": "reference/root-Q2-53b5.original.py",
+      "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+    },
+    {
+      "bytes": 71820,
+      "path": "reference/root-capture-r8-50a5.original.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    {
+      "bytes": 15256,
+      "path": "reference/root_cpu_negative.py",
+      "sha256": "29531f8f54716b6aa83f76a3007473b9b5a38f4fbd6b8f74d895bfa2a1d3a748"
+    },
+    {
+      "bytes": 43958,
+      "path": "source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 44221,
+      "path": "source/negative_originals.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    {
+      "bytes": 15256,
+      "path": "source/root_cpu_negative.py",
+      "sha256": "d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0"
+    },
+    {
+      "bytes": 9130,
+      "path": "test_capture_compatibility.py",
+      "sha256": "96728b4b00780d57034a3bac9ce87ae8e52ccf9fdcf5e545acaa23084423997a"
+    },
+    {
+      "bytes": 4629,
+      "path": "validation/COMPATIBILITY-TESTS.json",
+      "sha256": "d0b96e40769a36fa76ab368a54f88eb7363d81a69af884b5a606fb50bdc5cd5e"
+    },
+    {
+      "bytes": 2373,
+      "path": "validation/DERIVATION.json",
+      "sha256": "05c9bf514fde6703dcfe19286ca40962d425fca54df417fe483b1a4c13fb530b"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/close_cpu_negative.py.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/ledger_prefix_negative.py.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 11442,
+      "path": "validation/negative_originals.py.patch",
+      "sha256": "9d1df659d39dddad9a359f4c8ee969de8cd6b5187aa7bac66d53c8035b4e8bdc"
+    },
+    {
+      "bytes": 808,
+      "path": "validation/root_cpu_negative.py.patch",
+      "sha256": "81d6480d4ea877f56bbfa6ba9801e92493b81c21a15e9ccb32d5008cbcc2cbba"
+    }
+  ],
+  "future_dependencies_frozen": false,
+  "generation": "cpu-cancel-closure-transport-candidate01-1ad3",
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "runtime_sources": [
+    {
+      "bytes": 43958,
+      "path": "source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 44221,
+      "path": "source/negative_originals.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    {
+      "bytes": 15256,
+      "path": "source/root_cpu_negative.py",
+      "sha256": "d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0"
+    }
+  ],
+  "schema": "hepta.r10.cpu-negative-host-closure-source-package.v1",
+  "source_checks": {
+    "all_passed": true,
+    "count": 22,
+    "scope": "exact source inverse and real retained 0374 phase compatibility; no new process or case"
+  },
+  "state": "SOURCE_ONLY_FUTURE_DEPENDENCIES_UNFROZEN"
+}
