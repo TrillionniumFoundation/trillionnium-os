@@ -15,6 +15,53 @@ VERIFY = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VERIFY)
 
 
+class EmailAutolinkTest(unittest.TestCase):
+    def targets(self, source: str) -> list[tuple[str, str]]:
+        return VERIFY.markdown_targets(source, definitions={}, label="email fixture")
+
+    def test_vendor_copyright_preserves_email_target_and_visible_text(self) -> None:
+        source = "Copyright (c) 2021 William Casarin <jb55@jb55.com>"
+        self.assertEqual(self.targets(source), [("mailto:jb55@jb55.com", "email autolink")])
+        self.assertEqual(
+            VERIFY._semantic_visible_text(source),
+            "Copyright (c) 2021 William Casarin jb55@jb55.com",
+        )
+
+    def test_commonmark_email_forms_have_external_targets(self) -> None:
+        for address in (
+            "foo@bar.example.com", "foo+special@Bar.baz-bar0.com", "a@b",
+            "a.!#$%&'*+/=?^_`{|}~-@example.com", "x@" + "a" * 63 + ".example",
+        ):
+            with self.subTest(address=address):
+                self.assertEqual(
+                    self.targets("Contact <" + address + ">."),
+                    [("mailto:" + address, "email autolink")],
+                )
+
+    def test_malformed_email_fragments_still_fail_closed(self) -> None:
+        for address in (
+            "foo@", "foo@@example.com", "foo@-example.com", "foo@example-.com",
+            "foo@example..com", "foo@example_com", "foo@" + "a" * 64 + ".com",
+            "foo&#64;example.com", "foo&commat;example.com", r"foo\+@example.com",
+        ):
+            with self.subTest(address=address):
+                with self.assertRaisesRegex(VERIFY.VerificationError, "HTML"):
+                    self.targets("<" + address + ">")
+
+    def test_email_does_not_hide_adjacent_html_targets(self) -> None:
+        self.assertCountEqual(
+            self.targets('<jb55@jb55.com> <a href="https://example.invalid/plan">plan</a>'),
+            [("mailto:jb55@jb55.com", "email autolink"),
+             ("https://example.invalid/plan", "HTML href/src target")],
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "duplicate HTML attributes"):
+            self.targets('<jb55@jb55.com> <a href="one" href="two">plan</a>')
+
+    def test_unclosed_fence_policy_is_unchanged(self) -> None:
+        with self.assertRaisesRegex(VERIFY.VerificationError, "unterminated fenced code"):
+            VERIFY.visible_markdown("```bibtex\n@article{example}\n")
+
+
 class RepositoryAuthorityTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
@@ -59,6 +106,18 @@ class RepositoryAuthorityTest(unittest.TestCase):
         path = self.root / "UNREGISTERED.md"
         path.write_text("Canonical source for this program: <https://example.invalid/plan>\n")
         with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
+
+    def test_email_autolink_cannot_be_declared_repository_authority(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\nCanonical plan: <owner@example.com>.\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target mailto:"):
+            VERIFY.verify(self.root)
+
+    def test_email_label_participates_in_visible_authority_phrase(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\nCanonical <plan@example.com> governs this tree.\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target mailto:"):
             VERIFY.verify(self.root)
 
     def test_privileged_directories_do_not_implicitly_register_authority(self) -> None:

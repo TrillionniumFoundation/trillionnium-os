@@ -1,3 +1,8 @@
+> Rendering note (2026-11-04): The [previously published bytes](PUBLIC-SOURCE-BOUNDARY-as-published-7645e697.raw.txt)
+> remain unchanged. This display copy adds this note and renders the required
+> instance-binding placeholder as inline code. No private binding, runtime
+> source or historical qualification statement has been changed.
+
 # Public source and evidence boundary
 
 This tree preserves exact frozen production source where the publication index says
@@ -6,7 +11,7 @@ a private sealed artifact. Its original SHA identifies the reviewed private inpu
 the projection has a different SHA and cannot replace that sealed runtime input.
 
 Some operator scripts and module launch sources use /operator-workspace/... or
-<INSTANCE_BINDING_SHA256_REQUIRED> placeholders. Their original and projected
+`<INSTANCE_BINDING_SHA256_REQUIRED>` placeholders. Their original and projected
 hashes are both listed. They are reviewable source, not ready-to-install launchers.
 Other approved module and parent-supervisor sources retain instance-specific
 inode, boot or process constants; they also are not general installers.
