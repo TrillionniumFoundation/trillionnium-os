@@ -1,0 +1,31 @@
+--- a/http_worker.py
++++ b/http_worker.py
+@@ -34,6 +34,7 @@
+     started = time.monotonic()
+     connection = http.client.HTTPConnection(hostname, port,
+                                             timeout=value['timeout_seconds'])
++    response = None
+     raw = b''
+     try:
+         # http.client does not inspect proxy variables, follow redirects or retry.
+@@ -53,6 +54,11 @@
+         exclusive_bytes(value['response_path'], raw)
+         if len(raw) > MAX_RESPONSE:
+             receipt.update(transport_terminal='response_size_bound', error_category='request_rejected')
++        elif response.length not in (None, 0):
++            # read(amt) may return a short body without raising IncompleteRead.
++            # Preserve those bytes, but never treat valid JSON as a complete
++            # response when the server's declared body is still missing bytes.
++            raise http.client.IncompleteRead(raw, response.length)
+         elif response.status != 200:
+             category = ('authentication_failed' if response.status in {401, 403}
+                         else 'rate_limit_exceeded' if response.status == 429
+@@ -82,6 +88,8 @@
+         receipt.update(transport_terminal='malformed_response',
+                        error_category='unknown_model_failure', error_type=type(error).__name__)
+     finally:
++        if response is not None:
++            response.close()
+         connection.close()
+         receipt['elapsed_monotonic_seconds'] = time.monotonic() - started
+         exclusive_bytes(value['receipt_path'], json.dumps(receipt, ensure_ascii=False,

@@ -150,3 +150,25 @@ A trustworthy daily-use claim also needs repeated representative business outcom
 ## Separate host transport source candidate — 2026-11-05
 
 The [host transport source candidate](operators/transport-source-candidate-r1/README.md) publishes review-only projections of a later coordinator/policy-driver repair, with explicit original-source/public-source hash mappings, synthetic local fault reproductions and public delta patches. It is separate from the measured r7-r3 checkpoint above. Its placeholders are not an installable package, and its host tests and read-only historical-plan compatibility check add **zero** phone, fixed-nineteen, component or business qualification. The historical measurements and failures above are unchanged.
+
+## Separate HTTP-observation and sender-failure source candidates — 2026-11-05
+
+Two narrow source-review packages follow the measured checkpoint and transport
+candidate above:
+
+- [Slot observation and HTTP response framing](slot-observation-deadline-20261105-r1/README.md):
+  a monotonic deadline for the synchronous slot GET, rejection of truncated
+  declared response bodies, exact three-file source application and loopback
+  regressions.
+- [Owned sender drain after phase failure](operators/failure-sender-drain-20261105-r1/README.md):
+  retain the original sender's bounded output wait after an ordinary phase
+  failure, preserve the Root failure and unknown remote effect, and propagate
+  control exits after owned cleanup.
+
+The selected definitions and host fixtures are public review material. The
+application tools create new local outputs and refuse unknown inputs or output
+replacement. Generated complete sources may retain private bindings and must
+stay outside the public packages. No current runtime, policy, source seal,
+device task, nonce or qualification is changed by publication. These packages
+add zero phone, fixed-nineteen, component, model-health, business or daily-use
+credits. The historical r7 sources and measured results above remain unchanged.
