@@ -1,0 +1,17 @@
+{
+  "active_policy_writes": 0,
+  "base64_unique_bytes": 3301592,
+  "canonical_base64_object_map_bytes": 3310343,
+  "file_descriptors": 193,
+  "full_archive_raw_unique_bytes": 83727589,
+  "full_archive_unique_objects": 366,
+  "index_original_bytes": 172640,
+  "known_historical_union_claimed": false,
+  "phone_operations": 0,
+  "raw_unique_bytes": 2476074,
+  "schema": "hepta.runtime-properties.actual-verification-original-capacity.v1",
+  "transfer_packet_expanded_bytes": 3721005,
+  "transfer_packet_gzip_bytes": 874243,
+  "unique_sha256_objects": 125,
+  "whole_future_release_bundle_size_claimed": false
+}

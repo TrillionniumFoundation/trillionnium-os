@@ -1,0 +1,218 @@
+--- /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-operator-r2-candidate01/source/policy_runtime_properties_verifier.py
++++ /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py
+@@ -1,5 +1,8 @@
+ #!/usr/bin/env python3
+-"""Pure verification for the explicitly approved runtime-property read transition.
++"""Independent host verification of the captured runtime-property live02 transition.
++
++The applied verifier remains the exact captured 5cd source. This independently
++reviewed source has its own identity and is never substituted into phone originals.
+ 
+ All original bytes enter through an explicit read_pinned callback. This module
+ does not read the device, open a socket, write a file, run a command or adopt a
+@@ -21,6 +24,8 @@
+ NATIVE_BASE = '/data/trillionnium/owner-open/state/phone-local-v150'
+ CODE_NAME = 'policy-runtime-properties-r10-live-code-r2'
+ OUT_NAME = 'policy-runtime-properties-r10-live-02'
++APPLIED_VERIFIER = {'bytes': 124306, 'sha256': '5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00'}
++INDEPENDENT_VERIFIER_SOURCE_PATH = '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py'
+ PACKAGE_ROOT = BASE+'/native-guard-r10-r1/root-r10-neg01-20261105-08/package'
+ DECISION = {'bytes':24830,'sha256':'5a08041da77eeec9168c869ae76adae0a117a5e34872aa07a1a096bc06a36132'}
+ PARENT = {'bytes':2667608,'sha256':'50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7'}
+@@ -70,8 +75,8 @@
+ # Unpublished dependencies cannot be supplied or overridden by a caller.
+ REVIEWED_OFFLINE_COMPARISON = {'bytes': 378604, 'sha256': '149c5063d98b3b7674364e34b98465c387d8f187fe1f26d3060ebf0e75c739cf'}
+ REVIEWED_COMPARISON_SOURCES = {'candidate_av_source': {'bytes': 17720, 'path': '/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/reference/policy_av_query.original.c', 'sha256': '262b264c79d12c1cd2af146808ac1c5998f6aa0159515a17796c381e12630a3c'}, 'candidate_av_tool': {'bytes': 34976, 'path': '/home/alex/razr60-local-model-v150/sepol-offline-query-r1-20261104/build-01/policy_av_query', 'sha256': '86f6d18eab7271d9a5688e5f7b03ed5b55740b9679e7dd078661573ad67f0c90'}, 'comparator': {'bytes': 61615, 'path': '/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/source/full_policy_compare_runtime_properties.py', 'sha256': 'd8acacb496fbc1ff1af20a85daa8d03d1552fcbaeed1f837bfa65c1d4cd42871'}, 'existing_tools': {'bytes': 19446, 'path': '/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/reference/EXISTING-PRIVATE-POLICY-TOOLS.original.json', 'sha256': 'b41918ef19a0c00b0ab2295c278f204b8d66c654e8dacad05db0dea232fbd288'}, 'image_comparator': {'bytes': 302816, 'path': '/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/actual-01/policy_runtime_properties_image', 'sha256': '048d3621e2143dff2c073c73180e4a1cc86c687ae5eaa0e820339352ab76afb2'}, 'image_comparator_source': {'bytes': 22838, 'path': '/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/source/policy_runtime_properties_image.c', 'sha256': 'da60ee90209a26216f053064a7ca47ebcb73c4730b4e00378886b5d653de09aa'}}
+-REVIEWED_POST_COMPARATOR_SOURCE = {'bytes': 64188, 'sha256': '151a1d724a82d611202054eb0dd5326fe4f4311ff78599b61c6bf58d68a2cf8f'}
+-REVIEWED_COMPARISON_RUNNERS = {'offline_candidate': {'bytes': 21915, 'sha256': '434f954b493c1aadc90929dbc8bba894ffec8acb5f17420746cc520aecac94e9'}, 'post_live_export': {'bytes': 9767, 'sha256': '0f6cb3d1a73a59f880566f5adc1afaa285fcb5366ceebf3a5373caf3167518a1'}}
++REVIEWED_POST_COMPARATOR_SOURCE = {'bytes': 65251, 'sha256': '85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471'}
++REVIEWED_COMPARISON_RUNNERS = {'offline_candidate': {'bytes': 21915, 'sha256': '434f954b493c1aadc90929dbc8bba894ffec8acb5f17420746cc520aecac94e9'}, 'post_live_export': {'bytes': 9767, 'sha256': '0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e'}}
+ REVIEWED_PARENT_READ_AV_PINS = ['5d3c1bc4ef9f799880c530700d7db6065d3c5b3772fbc2b18e02f8940d4f3baf', '8998d0d4797cbc42e3fa6ed347d11ec3bc68c148de7e80300cf0da01bbc13fcd', 'b56b37b7cdc39a5b9f12751ada3e379d896365e764502e987fa3a917c2561cc5', 'd405f388bdcfd78ecbf9c46e14a1d53f93423d74eb3f069bacc58169a6969a8c', 'db3c8b1addf98f370229cc71c37d6bbe09cc67c6c187e13f83d4d46b638c825a', '433c5cd49c3d8e8f2183ed230c30f3064cc408ea8fb21a9a3bb43f744320b4ee', '310ee62c1747b6d8e9870f2d397dde04fbe6ddd0f5a4e4cb44b1716d3b34507a', 'c08fa538cc91dc8ed0a15e1550d478694a5269cbc359155971f83f3f847d44d6', 'b63d9c430d0ad3c92b60fccc9d0d14d131fb209daf7ece0e434458122901bf0a', '9ccb9cd491adbdef4e7a32b4ea39744f42081bd829edd03cd689e452cb844593', '7c1be139ba444d9919ce6d3112e50ad788a9121c8721e2adad7d9c57d8b08c3e']
+ REVIEWED_PARENT_SET_AV_PINS = ['7ebd6a8d40ef761f98523dea81c9baddecbf6dedea67b831d6627e02d0b6b2da', '296344c44ebbeb2146cc37cab349efdd5de2e8b7577f16cb12292d35cd94f857', '0c0386666b5bd476b93477564be40a520bb4f4d8093bce976780e6ad8a6d932d', 'a689fe2461b430b65a2d47ff0938c9801bea7e6619198091e7ee08b0a58bd955', '99176f65e11969ba1086eddd5136e5c8e5c1bfcf916ecb79f126a1499292e90a', 'bcfd498d482c8a526f71387d5e57f99d08ceaf26cfa67c5a935e63383c64ee3a', 'ccf3e962eb52e488217d30b2b7a09a3d2ded0d482aa8a16f6ea2636d54dd42a2', '319e5dfc5058e7e0d5a4a3577c5679c00ef80fde180c79e16b59f684834168ad', '1a767a6edf976157d715450cb2853e4e882208aca338c320ee6c7ab43e954375', 'a36424018985d2936bfa3d9564d146a1431a4d95980e3ba3affd4f1b25595c28', '964b5b8a36e2eab91df989af00bb669c984ec77c5fcb75b27cfce7e83ecdbaf9']
+ ROOT_DRIVER = {'bytes': 19616, 'sha256': '574e639f52a3b99dc2ea6d6f82a7455d445fdb4d758bc486cf877df316921ebb'}
+@@ -334,7 +339,7 @@
+         'the separate non-native05 proof was dropped or given native credit')
+     L.preserve_non_native_private(rows[0][1],side)
+     roles=[identity for boundary,_,_ in rows for identity in boundary['component_role_identities'].values()]
+-    roles+=list(NON_NATIVE_BINDING['component_role_identities'].values())
++    roles+=list(side['binding']['component_role_identities'].values())
+     need(len(roles)==len({tuple(r) for r in roles})==18,
+         'the complete actual native/sidebranch role union differs')
+     return {'chain':rows,'latest':rows[0][0],'inventory':rows[0][1],
+@@ -404,7 +409,8 @@
+                      ('policy_runtime_properties_verifier.original.py','verifier_source'),
+                      ('apply_runtime_properties_once.original.sh','shell_source')):
+         bytes_match(files[name],b[key])
+-    need(b['verifier_source']['sha256']==reviewed_source_sha256(),'actual apply used another verifier source')
++    bytes_match(files['policy_runtime_properties_verifier.original.py'],APPLIED_VERIFIER)
++    need(b['verifier_source']==APPLIED_VERIFIER,'actual apply used another applied verifier source')
+     check_capture_members(files)
+     history=verify_closed_history(files,files['CLOSED-COMPONENT-PACKAGE.original.json'])
+     latest=history['latest']
+@@ -521,8 +527,8 @@
+     binding=read_pinned(file_descriptor(v['binding']));bytes_match(binding,v['binding'])
+     decision=read_pinned(file_descriptor(v['root_scope_decision']));root_scope(decision)
+     comparison=read_pinned(file_descriptor(v['offline_comparison']));verified_offline(comparison,decision)
+-    need(strict(binding)['verifier_source']['sha256']==reviewed_source_sha256(),
+-        'pre-live expectation is bound to another verifier source')
++    need(strict(binding)['verifier_source']==APPLIED_VERIFIER,
++        'pre-live expectation is bound to another applied verifier source')
+     need(v==expectation_value(binding,binding_descriptor=v['binding'],decision_descriptor=v['root_scope_decision'],
+         comparison_descriptor=v['offline_comparison']),'explicit pre-load semantic/null expectation differs')
+     return v
+@@ -609,7 +615,7 @@
+     bytes_match(get(plan['parent_rule']),PARENT_RULE);bytes_match(get(plan['full_rule']),FULL_RULE)
+     for name in ('comparator','image_comparator','image_comparator_source','existing_tools','candidate_av_tool','candidate_av_source'):
+         get(sources[name])
+-    common_sources={k:v for k,v in sources.items() if k not in ('comparator','live_provenance_verifier','image_build_result')}
++    common_sources={k:v for k,v in sources.items() if k not in ('comparator','live_provenance_verifier','applied_verifier_source','image_build_result')}
+     need(isinstance(REVIEWED_COMPARISON_SOURCES,dict) and all(
+         {q:v[q] for q in ('bytes','sha256')}=={q:REVIEWED_COMPARISON_SOURCES[k][q] for q in ('bytes','sha256')}
+         for k,v in common_sources.items()),'complete comparator binary/tool source pins differ')
+@@ -727,15 +733,27 @@
+             'complete_input_consumption':True,'semantic_delta_verified':False,'phone_operations':0,'active_policy_writes':0})
+     else:
+         need(live_summary is not None and type(live_inputs_raw) is bytes,'actual independent live-chain proof required')
++        fields={'schema','root_scope_decision','parent_adoption','parent','candidate','image_build_result',
++            'live_provenance_inputs','live_verifier_source','applied_verifier_source','input_original_map',
++            'delta_rule','full_rule','parent_rule','tool_inventory','image_comparator','image_comparator_source',
++            'parent_av_originals','parent_set_av_originals','parent_apex_original','candidate_av_tool',
++            'candidate_av_source','secondary_observation'}
++        need(set(plan)==fields and plan['schema']==
++            'hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2','exact independent post plan required')
+         build_desc=plan['image_build_result'];proof=report['post_live_originals']
+-        need(sources['image_build_result']==build_desc and sources['live_provenance_verifier']==plan['live_verifier_source'],
+-            'post actual source input linkage differs')
++        need(sources['image_build_result']==build_desc and sources['live_provenance_verifier']==plan['live_verifier_source']
++            and sources['applied_verifier_source']==plan['applied_verifier_source'],
++            'post independent/applied source input linkage differs')
++        bytes_match(get(plan['applied_verifier_source']),APPLIED_VERIFIER)
+         need(sha(get(plan['live_verifier_source']))==reviewed_source_sha256()
+             and get(plan['live_provenance_inputs'])==live_inputs_raw,'post used another verifier or live original input')
+-        exact(proof,{'schema':'hepta.runtime-properties.post-live-originals-recheck.v1',
++        exact(proof,{'schema':'hepta.runtime-properties.post-live-originals-recheck.v2',
+             'live_provenance_inputs':plan['live_provenance_inputs'],'input_original_map':plan['input_original_map'],
+             'live_provenance_raw_sha256':sha(live_inputs_raw),'live_provenance_verifier':plan['live_verifier_source'],
+-            'actual_reviewed_verifier_source_executed':True,'actual_original_parent':live_summary['parent'],
++            'applied_verifier_source':plan['applied_verifier_source'],
++            'independent_verifier_source':plan['live_verifier_source'],
++            'independent_reviewed_verifier_source_executed':True,'actual_applied_verifier_source_preserved':True,
++            'actual_original_parent':live_summary['parent'],
+             'actual_original_candidate':live_summary['candidate'],'binding_sha256':live_summary['binding_sha256'],
+             'host_capture_sha256':live_summary['host_capture_sha256'],
+             'provenance_inputs_canonical_sha256':live_summary['provenance_inputs_sha256'],
+@@ -753,7 +771,9 @@
+                 'post original mapping duplicated or changed')
+             by_original[key]=b
+         for name,field in [('parent','parent'),('candidate','candidate'),('root_scope_decision','root_scope_decision'),
+-            ('parent_adoption_history','parent_adoption')]:
++            ('parent_adoption_history','parent_adoption'),
++            ('applied_verifier_source','applied_verifier_source'),
++            ('independent_verifier_source','live_verifier_source')]:
+             need(by_original.get(descriptor_key(live_summary[name]))==plan[field],
+                 'actual live original does not map to exact independently parsed bytes')
+     build=strict(get(build_desc))
+@@ -832,6 +852,8 @@
+     else:need(value['root_decision'] is None,'preview inputs cannot contain a prewritten adoption decision')
+     need(set(originals)==used,'verification-original inventory contains unconsumed or unrelated originals')
+     return {'runtime_policy':live['actual_after_policy'],'full_rule':value['full_rule'],
++        'applied_verifier_source':live['applied_verifier_source'],
++        'independent_verifier_source':live['independent_verifier_source'],
+         'retirement_sha256':RETIREMENT,'prior_boundary_sha256':BOUNDARY['sha256'],
+         'root_scope_decision_sha256':DECISION['sha256'],'parent_adoption_sha256':PARENT_ADOPTION['sha256'],
+         'actual_live_binding_sha256':live['binding_sha256'],'root_decision':decision,
+@@ -854,11 +876,16 @@
+     """Independent post-comparison input gate; it never requires its own post report."""
+     need(isinstance(live_inputs,dict) and set(live_inputs)=={'schema','prepared','host_capture',
+         'original_operation','actor_wrapper','archive','capture_manifest','pre_live_expectation','originals',
+-        'root_plan','root_intent','root_execution'},
++        'root_plan','root_intent','root_execution','independent_verifier_source'},
+         'explicit complete live provenance fields differ')
+-    need(live_inputs['schema']=='hepta.runtime-properties-r10.live-provenance-inputs.v1','live provenance schema differs')
++    need(live_inputs['schema']=='hepta.runtime-properties-r10.live-provenance-inputs.v2','live provenance schema differs')
+     def get(row):
+         file_descriptor(row);raw=read_pinned(row);return bytes_match(raw,row)
++    independent=live_inputs['independent_verifier_source']
++    file_descriptor(independent,maximum=131072);independent_raw=get(independent)
++    need(independent['path']==INDEPENDENT_VERIFIER_SOURCE_PATH
++        and 0<len(independent_raw)<=131072 and sha(independent_raw)==reviewed_source_sha256(),
++        'actual independent host verifier raw identity differs')
+     values={key:get(live_inputs[key]) for key in ('prepared','host_capture','original_operation',
+         'actor_wrapper','archive','capture_manifest','pre_live_expectation','root_plan','root_intent','root_execution')}
+     prepared=strict(values['prepared']);host=strict(values['host_capture']);op=strict(values['original_operation'])
+@@ -903,6 +930,8 @@
+         and expectation['offline_candidate']==binding['offline_candidate'],'pre-load expectation bound another transaction')
+     root_transaction=verify_root_transaction(live_inputs,values,prepared,expectation,files,get)
+     return {'parent':originals['live-policy-before.bin'],'candidate':originals['live-policy-after.bin'],
++        'applied_verifier_source':originals['policy_runtime_properties_verifier.original.py'],
++        'independent_verifier_source':independent,
+         'root_scope_decision':originals['ROOT-SCOPE-DECISION.original.json'],
+         'parent_adoption_history':originals['PARENT-ADOPTION-HISTORY.original.json'],
+         'binding_sha256':binding_sha,'host_capture_sha256':sha(values['host_capture']),
+@@ -1247,8 +1276,8 @@
+         and v['offline_candidate']=={k:comparison['candidate'][k] for k in ('bytes','sha256')},
+         'actual complete offline comparison is not bound')
+     for key in ('guard_source','verifier_source','shell_source'):byte_pin(v[key],maximum=262144)
+-    need(v['verifier_source']['sha256']==reviewed_source_sha256(),
+-        'binding names another exact verifier revision')
++    need(v['verifier_source']==APPLIED_VERIFIER,
++        'binding names another exact applied verifier revision')
+     need(v['component_sources']==component_source_rows(package_raw),
+         'all raw dependencies must identify the actual closed08 package')
+     return v
+--- /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-operator-r2-candidate01/source/runtime_properties_host_originals.py
++++ /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/runtime_properties_host_originals.py
+@@ -8,7 +8,7 @@
+ import stat
+ import types
+ 
+-VERIFIER_SHA256='5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00'
++VERIFIER_SHA256 = '74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152'
+ META=('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ 
+ def need(ok,message):
+--- /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-operator-r2-candidate01/source/make_runtime_properties_adoption_inputs.py
++++ /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/make_runtime_properties_adoption_inputs.py
+@@ -8,7 +8,7 @@
+ import stat
+ import types
+ 
+-HOST_SUPPORT_SHA256='d1a3b84875fe1b02867b904463621fff5a602160cdebe300db5a89dd40b43593'
++HOST_SUPPORT_SHA256 = '5d6526dc44498e8ce5a6f9f95bcb9c111c66fb2f82e8288222ab72d396bf40f6'
+ 
+ def support():
+     path=Path(__file__).resolve().parent/'runtime_properties_host_originals.py'
+@@ -31,7 +31,7 @@
+         V.file_descriptor(row);old=pool.get(row['path']);H.need(old is None or old==row,'original path changed')
+         raw=o.pinned(row);pool[row['path']]=row;return raw
+     live_raw=add(plan['live_provenance']);live=V.strict(live_raw)
+-    H.need(live['schema']=='hepta.runtime-properties-r10.live-provenance-inputs.v1','actual original live provenance required')
++    H.need(live['schema']=='hepta.runtime-properties-r10.live-provenance-inputs.v2','actual original live provenance required')
+     for key,row in live.items():
+         if key not in ('schema','originals'):add(row)
+     for row in live['originals'].values():add(row)
+@@ -70,8 +70,11 @@
+         'live_provenance':plan['live_provenance'],'pre_live_expectation':live['pre_live_expectation'],
+         'verification_originals':list(pool.values()),'root_decision':None}
+     summary=V.validate_adoption_value(value,read_pinned=o.pinned,require_root_decision=False)
+-    H.need(len([r for r in value['verification_originals'] if r['sha256']==V.reviewed_source_sha256()])==1,
+-        'one unique captured verifier original required; proof map must retain that same host copy')
++    for key,pin in (('applied_verifier_source',V.APPLIED_VERIFIER['sha256']),
++                    ('independent_verifier_source',V.reviewed_source_sha256())):
++        rows=[r for r in value['verification_originals'] if r['sha256']==pin]
++        H.need(len(rows)==1 and rows[0]==summary[key],
++            'one unique original for each applied and independent verifier identity required')
+     value['schema']='hepta.runtime-properties-r10.policy-adoption-inputs.v1';return value,summary
+ 
+ 
+--- /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-operator-r2-candidate01/source/make_runtime_properties_adoption.py
++++ /Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/make_runtime_properties_adoption.py
+@@ -8,7 +8,7 @@
+ import stat
+ import types
+ 
+-HOST_SUPPORT_SHA256='d1a3b84875fe1b02867b904463621fff5a602160cdebe300db5a89dd40b43593'
++HOST_SUPPORT_SHA256 = '5d6526dc44498e8ce5a6f9f95bcb9c111c66fb2f82e8288222ab72d396bf40f6'
+ 
+ def support():
+     path=Path(__file__).resolve().parent/'runtime_properties_host_originals.py'

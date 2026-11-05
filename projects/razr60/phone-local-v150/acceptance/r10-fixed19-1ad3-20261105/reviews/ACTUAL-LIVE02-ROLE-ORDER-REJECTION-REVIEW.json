@@ -1,0 +1,129 @@
+{
+  "actual_count": 18,
+  "actual_host_capture": {
+    "bytes": 1580,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/HOST-CAPTURE.json",
+    "sha256": "e9f7e22ee0187cb65ff5ca5cdd6c23284f7f6adc5d2f28c0364935de5d61e04d"
+  },
+  "actual_rejection": {
+    "bytes": 61920,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/diagnostic/REJECTION.json",
+    "sha256": "465173196c229077235743b5f0a034127c3428be74b6f33ffe06963ad9537ca1"
+  },
+  "actual_root_execution": {
+    "bytes": 21536,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/ROOT-EXECUTION.original.json",
+    "sha256": "d5173756537a5303b78573b21b43d57e64bfdfe75010115b55b1fe925b1da849"
+  },
+  "actual_traceback": {
+    "bytes": 1622,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/diagnostic/TRACEBACK.original.txt",
+    "sha256": "666f2392dbfd738fbbf1937542743b7ecd3a46bbfaaf45eb5aec37a40be7e804"
+  },
+  "actual_unique_count": 18,
+  "all_full_identity_tuples_equal_as_sets": true,
+  "captured_guard": {
+    "bytes": 49202,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/guard_live_runtime_properties.py",
+    "sha256": "b77e84776df4b375c1ad7a150195e1ce78389207176ce16dd1d874e2019b269f"
+  },
+  "captured_verifier": {
+    "bytes": 124306,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/policy_runtime_properties_verifier.py",
+    "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+  },
+  "causal_source_difference": {
+    "actual_guard": "native chain is serialized/parses sort_keys JSON in immutable history cache, then side role identities append from the verified side binding producer",
+    "actual_side_order": [
+      "supervisor",
+      "provider",
+      "sidecar"
+    ],
+    "captured_verifier": "verify_closed_history appends side role identities from the NON_NATIVE_BINDING literal rather than the verified side binding producer; dict equality ignores key order but later list exactness does not",
+    "literal_side_order": [
+      "provider",
+      "sidecar",
+      "supervisor"
+    ]
+  },
+  "diagnostic_live_files_written": 0,
+  "diagnostic_phone_calls": 0,
+  "diagnostic_remote_calls": 0,
+  "exact_rejection_frames": [
+    {
+      "function": "verify_live_capture",
+      "line": 887,
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py"
+    },
+    {
+      "function": "verify_apply_originals",
+      "line": 457,
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py"
+    },
+    {
+      "function": "exact",
+      "line": 99,
+      "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py"
+    }
+  ],
+  "expected_count": 18,
+  "expected_unique_count": 18,
+  "first_fifteen_identical": true,
+  "last_three_actual": [
+    [
+      23779,
+      23779,
+      23779,
+      18132959
+    ],
+    [
+      23913,
+      23913,
+      23913,
+      18133299
+    ],
+    [
+      23911,
+      23911,
+      23911,
+      18133265
+    ]
+  ],
+  "last_three_expected": [
+    [
+      23913,
+      23913,
+      23913,
+      18133299
+    ],
+    [
+      23911,
+      23911,
+      23911,
+      18133265
+    ],
+    [
+      23779,
+      23779,
+      23779,
+      18132959
+    ]
+  ],
+  "original_verifier_called": 1,
+  "original_verifier_passed": false,
+  "policy_adoption_created": false,
+  "post_comparison_executed_by_this_review": false,
+  "read_only_diagnostic_original_path_count": 64,
+  "required_constraints": [
+    "Keep actual 5cd source, b77 guard, nine-source manifest, Root 574e/exact2, capture archive, and all originals byte-identical.",
+    "Keep original rejection as a separately pinned actual report; do not claim original 5cd full gate passed.",
+    "Use a new independently pinned host consumption revision; change only expected producer role order if proved by exact producer bytes, preserving exact identity, duplicates, cardinality and historical group order rejection.",
+    "Propagate the new consumer through retention, post comparison, proof collector, adoption and R8/cascade policy verifier; constructor-only correction cannot satisfy old exact consumers.",
+    "Preserve current budgets, Root exact3/runtime32, and single-file verifier 131072-byte maximum."
+  ],
+  "schema": "hepta.runtime-properties.live02-actual-role-order-rejection-review.v1",
+  "sole_field": "component_role_identities",
+  "state": "EXACT_UNCHANGED_CAPTURED_VERIFIER_REJECTION_CONFIRMED_REQUIRES_EXPLICIT_HOST_CONSUMER_REVISION",
+  "this_review_phone_calls": 0,
+  "this_review_remote_calls": 0
+}

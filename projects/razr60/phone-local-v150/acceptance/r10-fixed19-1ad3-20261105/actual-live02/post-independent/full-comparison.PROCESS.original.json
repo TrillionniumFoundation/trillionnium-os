@@ -1,0 +1,362 @@
+{
+  "active_policy_writes": 0,
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/post_live_compare_runtime_properties.py",
+    "--plan",
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+    "--plan-sha256",
+    "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518",
+    "--out",
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/comparison",
+    "--execute-host-only"
+  ],
+  "automatic_retry": false,
+  "captured_streams_complete": true,
+  "elapsed_seconds": 339.7802115390077,
+  "ended_epoch_ns": 1793868020180359100,
+  "input_originals_after": {
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/policy_runtime_properties_image.c": {
+      "descriptor": {
+        "bytes": 22838,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/policy_runtime_properties_image.c",
+        "sha256": "da60ee90209a26216f053064a7ca47ebcb73c4730b4e00378886b5d653de09aa"
+      },
+      "metadata": [
+        66306,
+        44184848,
+        33152,
+        1000,
+        1000,
+        1,
+        22838,
+        1793867552366719809,
+        1793867552366719809
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/post_live_compare_runtime_properties.py": {
+      "descriptor": {
+        "bytes": 65251,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/post_live_compare_runtime_properties.py",
+        "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+      },
+      "metadata": [
+        66306,
+        44184849,
+        33152,
+        1000,
+        1000,
+        1,
+        65251,
+        1793867552367285775,
+        1793867552367285775
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py": {
+      "descriptor": {
+        "bytes": 9767,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py",
+        "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+      },
+      "metadata": [
+        66306,
+        44184850,
+        33152,
+        1000,
+        1000,
+        1,
+        9767,
+        1793867552367882189,
+        1793867552367882189
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/actual-01/BUILD-RESULT.json": {
+      "descriptor": {
+        "bytes": 3954,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/actual-01/BUILD-RESULT.json",
+        "sha256": "86b2042d49c971cb9fd6dc507cd0482a4319151cccca34ecd06554ee08b4dde7"
+      },
+      "metadata": [
+        66306,
+        44181183,
+        33152,
+        1000,
+        1000,
+        1,
+        3954,
+        1793857865728372262,
+        1793857865728372262
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/LIVE-PROVENANCE-INPUTS.original.json": {
+      "descriptor": {
+        "bytes": 22659,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/LIVE-PROVENANCE-INPUTS.original.json",
+        "sha256": "01be4b34e7bcbb5a32aa47a249e36afbba94e30a6275b444f5143f2c8396e7f1"
+      },
+      "metadata": [
+        66306,
+        44185032,
+        33152,
+        1000,
+        1000,
+        1,
+        22659,
+        1793867619352211689,
+        1793867619352211689
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json": {
+      "descriptor": {
+        "bytes": 119744,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+        "sha256": "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518"
+      },
+      "metadata": [
+        66306,
+        44185033,
+        33152,
+        1000,
+        1000,
+        1,
+        119744,
+        1793867619352876985,
+        1793867619352876985
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/001-28e327546a52043db686.original": {
+      "descriptor": {
+        "bytes": 126796,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/001-28e327546a52043db686.original",
+        "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+      },
+      "metadata": [
+        66306,
+        44184866,
+        33152,
+        1000,
+        1000,
+        1,
+        126796,
+        1793867619156742460,
+        1793867619156742460
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/085-20cf71845358ad95ee0b.bin": {
+      "descriptor": {
+        "bytes": 2667740,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/085-20cf71845358ad95ee0b.bin",
+        "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+      },
+      "metadata": [
+        66306,
+        44184950,
+        33152,
+        1000,
+        1000,
+        1,
+        2667740,
+        1793867619258261492,
+        1793867619258261492
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/086-55bdb82beaf1fc064573.bin": {
+      "descriptor": {
+        "bytes": 2667608,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/086-55bdb82beaf1fc064573.bin",
+        "sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7"
+      },
+      "metadata": [
+        66306,
+        44184951,
+        33152,
+        1000,
+        1000,
+        1,
+        2667608,
+        1793867619268546153,
+        1793867619268546153
+      ]
+    }
+  },
+  "input_originals_before": {
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/policy_runtime_properties_image.c": {
+      "descriptor": {
+        "bytes": 22838,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/policy_runtime_properties_image.c",
+        "sha256": "da60ee90209a26216f053064a7ca47ebcb73c4730b4e00378886b5d653de09aa"
+      },
+      "metadata": [
+        66306,
+        44184848,
+        33152,
+        1000,
+        1000,
+        1,
+        22838,
+        1793867552366719809,
+        1793867552366719809
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/post_live_compare_runtime_properties.py": {
+      "descriptor": {
+        "bytes": 65251,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/post_live_compare_runtime_properties.py",
+        "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+      },
+      "metadata": [
+        66306,
+        44184849,
+        33152,
+        1000,
+        1000,
+        1,
+        65251,
+        1793867552367285775,
+        1793867552367285775
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py": {
+      "descriptor": {
+        "bytes": 9767,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py",
+        "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+      },
+      "metadata": [
+        66306,
+        44184850,
+        33152,
+        1000,
+        1000,
+        1,
+        9767,
+        1793867552367882189,
+        1793867552367882189
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/actual-01/BUILD-RESULT.json": {
+      "descriptor": {
+        "bytes": 3954,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/actual-01/BUILD-RESULT.json",
+        "sha256": "86b2042d49c971cb9fd6dc507cd0482a4319151cccca34ecd06554ee08b4dde7"
+      },
+      "metadata": [
+        66306,
+        44181183,
+        33152,
+        1000,
+        1000,
+        1,
+        3954,
+        1793857865728372262,
+        1793857865728372262
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/LIVE-PROVENANCE-INPUTS.original.json": {
+      "descriptor": {
+        "bytes": 22659,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/LIVE-PROVENANCE-INPUTS.original.json",
+        "sha256": "01be4b34e7bcbb5a32aa47a249e36afbba94e30a6275b444f5143f2c8396e7f1"
+      },
+      "metadata": [
+        66306,
+        44185032,
+        33152,
+        1000,
+        1000,
+        1,
+        22659,
+        1793867619352211689,
+        1793867619352211689
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json": {
+      "descriptor": {
+        "bytes": 119744,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+        "sha256": "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518"
+      },
+      "metadata": [
+        66306,
+        44185033,
+        33152,
+        1000,
+        1000,
+        1,
+        119744,
+        1793867619352876985,
+        1793867619352876985
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/001-28e327546a52043db686.original": {
+      "descriptor": {
+        "bytes": 126796,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/001-28e327546a52043db686.original",
+        "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+      },
+      "metadata": [
+        66306,
+        44184866,
+        33152,
+        1000,
+        1000,
+        1,
+        126796,
+        1793867619156742460,
+        1793867619156742460
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/085-20cf71845358ad95ee0b.bin": {
+      "descriptor": {
+        "bytes": 2667740,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/085-20cf71845358ad95ee0b.bin",
+        "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+      },
+      "metadata": [
+        66306,
+        44184950,
+        33152,
+        1000,
+        1000,
+        1,
+        2667740,
+        1793867619258261492,
+        1793867619258261492
+      ]
+    },
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/086-55bdb82beaf1fc064573.bin": {
+      "descriptor": {
+        "bytes": 2667608,
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/086-55bdb82beaf1fc064573.bin",
+        "sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7"
+      },
+      "metadata": [
+        66306,
+        44184951,
+        33152,
+        1000,
+        1000,
+        1,
+        2667608,
+        1793867619268546153,
+        1793867619268546153
+      ]
+    }
+  },
+  "phone_operations": 0,
+  "returncode": 0,
+  "started_epoch_ns": 1793867680400197156,
+  "stderr": {
+    "bytes": 0,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/full-comparison.stderr.original",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 401,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/full-comparison.stdout.original",
+    "sha256": "d82bd810d2198b192783f72bfd6b7da2b6bf477f3f57d608f0edfce98a76d634"
+  },
+  "timed_out": false
+}

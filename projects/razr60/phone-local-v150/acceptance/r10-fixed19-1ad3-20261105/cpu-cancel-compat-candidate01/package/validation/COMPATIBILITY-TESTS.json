@@ -1,0 +1,145 @@
+{
+  "FINAL_DEPENDENCIES_remains_None": true,
+  "candidate_source": {
+    "bytes": 44221,
+    "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+  },
+  "checks": [
+    {
+      "name": "only seven reviewed actual R8 RHS slots invert exactly to full 50a5 template",
+      "passed": true
+    },
+    {
+      "name": "unfilled Root template is not an actual frozen source",
+      "passed": true
+    },
+    {
+      "name": "old 53b compatibility gate rejects the new reviewed execute_process",
+      "passed": true
+    },
+    {
+      "name": "new Root body change outside seven slots is rejected",
+      "passed": true
+    },
+    {
+      "name": "an eighth appended source mutation is rejected",
+      "passed": true
+    },
+    {
+      "name": "invalid actual verifier byte type is rejected",
+      "passed": true
+    },
+    {
+      "name": "unfrozen closure rejects before case parsing or private original read",
+      "passed": true
+    },
+    {
+      "name": "real final0374 complete phase accepted with exact7 RESULT plus separate sidecar",
+      "passed": true
+    },
+    {
+      "name": "sidecar appears in the complete consumed original read set",
+      "passed": true
+    },
+    {
+      "name": "old intent schema rejects the actual new intent even without new record key",
+      "passed": true
+    },
+    {
+      "name": "missing sidecar never yields a joined phase",
+      "passed": true
+    },
+    {
+      "name": "unknown prefix is rejected",
+      "passed": true
+    },
+    {
+      "name": "stdout without EOF is rejected",
+      "passed": true
+    },
+    {
+      "name": "reader not joined is rejected",
+      "passed": true
+    },
+    {
+      "name": "capture from another child is rejected",
+      "passed": true
+    },
+    {
+      "name": "renamed replacement capture is rejected",
+      "passed": true
+    },
+    {
+      "name": "late descendant EOF is rejected",
+      "passed": true
+    },
+    {
+      "name": "same-size wrong captured output digest is rejected",
+      "passed": true
+    },
+    {
+      "name": "original-created inode mismatch is rejected",
+      "passed": true
+    },
+    {
+      "name": "capture cannot claim remote cleanup",
+      "passed": true
+    },
+    {
+      "name": "success RESULT remains exact7; no invented capture pointer",
+      "passed": true
+    },
+    {
+      "name": "Root pure-source pin updated; actual CPU/ledger closure logic unchanged",
+      "passed": true
+    }
+  ],
+  "failed": 0,
+  "mutated_originals_are_in_memory_negative_controls_only": true,
+  "new_case_executions": 0,
+  "new_processes": 0,
+  "new_signals": 0,
+  "passed": 22,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "real_retained_process_originals": [
+    {
+      "bytes": 878,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/CHILD.json",
+      "sha256": "7aa2638dd4d3ac8f53dbee9d667d0eec13c6d9f3ed295845550b810548d5b644"
+    },
+    {
+      "bytes": 889,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/INTENT.json",
+      "sha256": "7dffef3435391b2ac2b97b401a7ff8b183a2e60b5508c5c0dea652184122cd4e"
+    },
+    {
+      "bytes": 2325,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/OUTPUT-CAPTURE.json",
+      "sha256": "1cc7a4183b35ee9c55393b4af27a9af72deafd56579460887d4f40e0a97552b6"
+    },
+    {
+      "bytes": 619,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/RESULT.json",
+      "sha256": "911b715e75042d8da514ecab895f95b72efdee274446f5b8ac11696e1d74e264"
+    },
+    {
+      "bytes": 0,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 294912,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stdin.original",
+      "sha256": "3b4aca549e2f432ef1c9332ecf07b3aed71a646efda9870673cb7a6ab207dceb"
+    },
+    {
+      "bytes": 65,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stdout.original",
+      "sha256": "cc567eec932079ca2c4a7c635b018c464d51c71afaaccbdaf77c1d2f3ef8a6f9"
+    }
+  ],
+  "schema": "hepta.cpu-negative.capture-compatibility-source-checks.v1",
+  "state": "NARROW_COMPATIBILITY_CHECKS_PASSED",
+  "synthetic_Root_slot_values_are_unit_controls_only": true
+}

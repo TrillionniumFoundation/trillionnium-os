@@ -1,0 +1,67 @@
+{
+  "actual_after_policy": {
+    "bytes": 2667740,
+    "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+  },
+  "admission": {
+    "bytes": 8047,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/validation/LIVE-PROVENANCE-ADMISSION.json",
+    "sha256": "f372b29ed5d5dc370db55ee4e2b9f5918910a3db5f7128692eb563c790954e26"
+  },
+  "capture_originals": 105,
+  "cli": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/source/retain_actual_live_inputs.py",
+    "--request",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/RETENTION-REQUEST.json",
+    "--request-sha256",
+    "72c6bd12b75d41d7164d53360fee22a237c732e121fc81b50fc9ec5f1373ff2a",
+    "--execute-host-retention"
+  ],
+  "comparison_executions": 0,
+  "live_provenance_inputs": {
+    "bytes": 22659,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/LIVE-PROVENANCE-INPUTS.json",
+    "sha256": "01be4b34e7bcbb5a32aa47a249e36afbba94e30a6275b444f5143f2c8396e7f1"
+  },
+  "manifest": {
+    "bytes": 5892,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/MANIFEST.json",
+    "sha256": "7448cc52ee02dda83683b0f3e127c7486d3f0e0881a9667d8e351848810da059"
+  },
+  "original_read_set": {
+    "bytes": 152137,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/validation/ORIGINAL-READ-SET.json",
+    "sha256": "446b8f1319e082f2586dce833fee213127831eb2e1be66abfff99228a124b58f"
+  },
+  "patch": {
+    "bytes": 1834,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/validation/ACTUAL-INPUTS-INCREMENT.patch",
+    "sha256": "8875a6d6ffbb5d4998489c6a27a1e59f1a922810f699ec105d62c9ff530af8f7"
+  },
+  "phone_operations": 0,
+  "policy_adoption_authorized": false,
+  "policy_writes": 0,
+  "request": {
+    "bytes": 1911,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/RETENTION-REQUEST.json",
+    "sha256": "72c6bd12b75d41d7164d53360fee22a237c732e121fc81b50fc9ec5f1373ff2a"
+  },
+  "retention_executions": 0,
+  "schema": "hepta.runtime-properties-r10.actual-retention-source-finalization.v1",
+  "source": {
+    "bytes": 22408,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/source/retain_actual_live_inputs.py",
+    "sha256": "d960f6ba80c9e171b1b6212ac7f626a8187e6f715668f3d8c69596394009b030"
+  },
+  "source_inverse": {
+    "bytes": 2860,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/validation/SOURCE-INVERSE.json",
+    "sha256": "b40e490442d567245aeb0613852c09134ea91d286f4b09be52dfcee4d3f8d937"
+  },
+  "state": "ACTUAL_PROVENANCE_AND_SINGLE_ASSIGNMENT_SOURCE_READY_FOR_ROOT_REVIEW",
+  "verifier_callback_raw_bytes": 21336122,
+  "verifier_callback_unique_paths": 167
+}

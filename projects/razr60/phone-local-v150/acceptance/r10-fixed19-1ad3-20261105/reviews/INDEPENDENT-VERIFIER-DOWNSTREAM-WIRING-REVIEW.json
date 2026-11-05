@@ -1,0 +1,252 @@
+{
+  "actual_adoptions_created": 0,
+  "actual_freezes_created": 0,
+  "actual_source_identities": {
+    "applied_verifier": {
+      "bytes": 124306,
+      "role": "Immutable actual live02 phone source, retained as provenance and never claimed to have passed its original failed host gate.",
+      "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+    },
+    "canonical_independent_source_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py",
+    "independent_verifier": {
+      "bytes": 126796,
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    },
+    "new_post_comparator": {
+      "bytes": 65251,
+      "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+    },
+    "new_post_runner": {
+      "bytes": 9767,
+      "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+    }
+  },
+  "api_summary_fields_preserved": [
+    "runtime_policy",
+    "full_rule",
+    "retirement_sha256",
+    "prior_boundary_sha256",
+    "root_scope_decision_sha256",
+    "parent_adoption_sha256",
+    "current_adoption_sha256",
+    "parent_policy"
+  ],
+  "dependency_cycle_resolution": "Post85f takes an explicit verifier descriptor and does not embed the future verifier hash; verifier74f4 pins post85f and runner0793. Downstream sources pin74f4. The actual applied5cd identity is separately fixed in both verifier and post. No source hash cycle and no need for a second new verifier module.",
+  "minimal_source_changes_required_for_compatibility": [],
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "preserved_gates": {
+    "adoption_original_count_max": 1024,
+    "adoption_sum_raw_bytes_max": 33554432,
+    "all_originals_must_be_consumed": true,
+    "archive_external_bytes_max": 268435456,
+    "boundary_each_original_bytes_max": 16777216,
+    "boundary_encoded_bundle_bytes_max": 33554432,
+    "independent_source_bytes": 126796,
+    "installer_archive_bytes_max": 33554432,
+    "installer_expanded_bytes_max": 67108864,
+    "new_NEG01_NEG02_actual_qualification_required": true,
+    "root_source_file_count": 3,
+    "runtime_file_count": 32,
+    "same50f_a5f_actual08_ancestors_preserved": true,
+    "small_post_proof_file_count_max": 512,
+    "small_post_proof_sum_path_bytes_max": 16777216,
+    "source_size_margin_bytes": 4276,
+    "verifier_source_max_bytes": 131072
+  },
+  "relocation": "74f4.reviewed_source_sha256 uses only the caller-injected digest after exact raw source checks. Its canonical-path check applies to live_inputs.independent_verifier_source descriptor, not module.__file__. Root reference copies and /reviewed-property-adoption virtual module names are therefore compatible; bundle callback serves exact canonical-provenance bytes without filesystem access to Mac paths.",
+  "remote_calls": 0,
+  "required_final_bindings": {
+    "adoption_verification_originals": "Exactly one canonical independent74f4 descriptor and exactly one actual captured5cd descriptor; all other originals consumed by full verifier, no unrelated entries.",
+    "cascade_FINALIZATION_policy_verifier": "Same exact canonical74f4 descriptor as FREEZE-RESULT.verifier.",
+    "consumer_POLICY_VERIFIER_SHA_BYTES": {
+      "bytes": 126796,
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    },
+    "derived_downstream_pins": "Regenerate consumer, constructor, builder, installer, readiness and business Root source pins using existing exact literal-only cascade; do not relabel old generated sources.",
+    "freezer_FINALIZATION_policy_adoption": "Future actually complete independent post+adoption result exact descriptor.",
+    "freezer_FINALIZATION_verifier_source": "Exact canonical74f4 descriptor, never applied5cd.",
+    "live_provenance": "Existing exactv2 input with independent_verifier_source canonical74f4 and originals verifier5cd.",
+    "post_report_and_proof": "Original execution of85f under runner0793 with explicit retained mapping for both verifier identities.",
+    "root_reference_policy_native5_verifier_py": "Exact74f4 raw bytes; legacy filename is unchanged, not a claim that actual phone applied source changed."
+  },
+  "review_validation": {
+    "AST_call_chain_assertions_passed": true,
+    "all_reviewed_python_sources_compile_in_memory": true,
+    "exact_source_hashes_checked": true,
+    "no_budget_or_inventory_expansion": true,
+    "no_old_executable5cd_fallback_in_current_boundary_consumer": true,
+    "public_adoption_and_decision_schemas_unchanged": true
+  },
+  "reviewed_sources": {
+    "adoption_inputs": {
+      "bytes": 6226,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/make_runtime_properties_adoption_inputs.py",
+      "sha256": "4b3a8783111bef909949ba88d2677a937108910f7c24a091d979e03eda9f5616"
+    },
+    "adoption_writer": {
+      "bytes": 2938,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/make_runtime_properties_adoption.py",
+      "sha256": "dff6f3e546a4fa60c565ce17f5838c23e665ffd934202182f633e72400b7c8fe"
+    },
+    "boundary_consumer": {
+      "bytes": 76433,
+      "path": "/workspace/scratch/1ad3d6f55439/cascade_source_cache/templates/release_boundaries.py",
+      "sha256": "c844b4924397ffcdd30500c395395ade0bd0ad3eaa746f0a007c1b8ae274b0d6"
+    },
+    "builder": {
+      "bytes": 40822,
+      "path": "/workspace/scratch/1ad3d6f55439/cascade_source_cache/templates/build_release_r10.py",
+      "sha256": "79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9"
+    },
+    "cascade": {
+      "bytes": 56190,
+      "path": "/workspace/scratch/1ad3d6f55439/cascade_source_cache/source/derive_final_cascade_property_r8.py",
+      "sha256": "5196112d9d3469eefbbd1b564eb29ee41169dab428346d275ed8f1dd18f0a717"
+    },
+    "component_cancel_fault_finalizer": {
+      "bytes": 42940,
+      "path": "/workspace/scratch/1ad3d6f55439/downstream_finalizer/source/finalize_component_cancel_fault.py",
+      "sha256": "97f3a15283dba35b4f7dd9deb75a1f4d37a93e430b4d8573b81feb9a9a8994bb"
+    },
+    "host_support": {
+      "bytes": 3340,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/runtime_properties_host_originals.py",
+      "sha256": "5d6526dc44498e8ce5a6f9f95bcb9c111c66fb2f82e8288222ab72d396bf40f6"
+    },
+    "independent_verifier": {
+      "bytes": 126796,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/policy_runtime_properties_verifier.py",
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    },
+    "installer": {
+      "bytes": 34038,
+      "path": "/workspace/scratch/1ad3d6f55439/cascade_source_cache/templates/install_phone_release_r10.py",
+      "sha256": "3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1"
+    },
+    "neg_plan_helper": {
+      "bytes": 24237,
+      "path": "/workspace/scratch/1ad3d6f55439/neg_root_plan_helper_r8/source/prepare_native_guard_root_plan.py",
+      "sha256": "68df2c8e1dca7ee652d3fb960a262b59fbf20cbabb7c3e94b89b02884f82c78d"
+    },
+    "post_comparator": {
+      "bytes": 65251,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/comparison-source/post_live_compare_runtime_properties.py",
+      "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+    },
+    "post_runner": {
+      "bytes": 9767,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/comparison-source/run_post_live_actual.py",
+      "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+    },
+    "prepare_cascade": {
+      "bytes": 9712,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_final_cascade.py",
+      "sha256": "72c36078084821e22f2707e081a9eee81f90e99ce69d97768987eb5f23a62195"
+    },
+    "r8_freezer": {
+      "bytes": 35375,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/native-guard-property-r8-freeze-transport-candidate02-1ad3/source/freeze_property_runtime.py",
+      "sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+    },
+    "r8_root": {
+      "bytes": 71820,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/native-guard-property-root-r8-transport-candidate03-1ad3/source/run_component_root_once.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    "readiness": {
+      "bytes": 16343,
+      "path": "/workspace/scratch/1ad3d6f55439/cascade_source_cache/templates/collect_r10_readiness.py",
+      "sha256": "f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af"
+    },
+    "seal_interface": {
+      "bytes": 33096,
+      "path": "/workspace/scratch/1ad3d6f55439/cascade_source_cache/source/write_final_seal_interface_property_r8.py",
+      "sha256": "8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb"
+    },
+    "six_host_helper": {
+      "bytes": 12989,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_six_host_generation.py",
+      "sha256": "665b5e22ab4e6a24f1ecea56608ace7a299a07bc27b0f2e03c83cae70b560796"
+    }
+  },
+  "schema": "hepta.fixed19.independent-verifier-downstream-wiring-review.v1",
+  "scope": "Read-only local exact-source/API/pin review. Did not execute any source main, verifier on actual originals, post comparator, adoption writer, freezer, cascade, builder, installer, READY, phone, P4 or Mac. Property agent separately reviews the complete independent74f4 semantic increment.",
+  "source_consumer_matrix": [
+    {
+      "body_change_required": false,
+      "consumer": "R8 freezer62bc",
+      "input_slot": "FINALIZATION.verifier_source exact3",
+      "operation": "Read exact source <=131072, set __reviewed_source_sha256__, invoke verify_adoption(adoption_raw, read_pinned=o.read).",
+      "output_binding": "FREEZE-RESULT.verifier equals that descriptor. Exact same raw bytes copied to root-chain/reference/policy_native5_verifier.py; Root VERIFIER_SHA/BYTES generated from those bytes."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "R8 Root50a",
+      "input_slot": "VERIFIER_SHA/BYTES and same-generation Root3 reference source",
+      "operation": "validate_plan -> validate_adoption -> exact reference bytes -> verify_adoption(read_pinned=pin). Actual live export, new adoption/scope and exact50f/a5f/08 lineage checked."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "prepare_native_guard_root_plan",
+      "input_slot": "actual FREEZE-RESULT.verifier and finalization.verifier_source",
+      "operation": "Requires copied reference bytes equal actual frozen verifier, seven coordinator pins reverse to exact50a, Root3/runtime32 inventory, then original coordinator.validate_plan."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "prepare_final_cascade",
+      "input_slot": "FREEZE-RESULT.verifier",
+      "operation": "Exec exact same source, verify_adoption; creates FINALIZATION.policy_verifier with same descriptor."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "derive_final_cascade_property_r8",
+      "input_slot": "FINALIZATION.policy_verifier",
+      "operation": "actual_adoption_check -> verify_adoption; requires exactly one same verifier original in adoption.verification_originals. Fills consumer POLICY_VERIFIER_SHA/BYTES with74f4, plus policy/adoption/scope/runtime/combination pins."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "write_final_seal_interface_property_r8",
+      "input_slot": "DELIVERY.frozen.policy_verifier and generated consumer literals",
+      "operation": "Rechecks consumer seven pins, MAX_BUNDLE32MiB, runtime32, verifier original; verify_adoption again; creates empty current-case template only."
+    },
+    {
+      "actual_function_name": "validate_policy; this template has no validate_existing_adoption function.",
+      "body_change_required": false,
+      "consumer": "release_boundaries c844",
+      "input_slot": "POLICY_VERIFIER_SHA/BYTES plus adoption.verification_originals",
+      "operation": "validate_bundle -> validate_policy -> find exactly one74f4 source -> original_from(bundle, descriptor) -> set __reviewed_source_sha256__ -> verify_adoption with callback resolving only embedded original bytes. No old5cd executable fallback."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "build_release_r10",
+      "input_slot": "generated BOUNDARY_CONSUMER_SHA256",
+      "operation": "boundary_sources loads exact helper; prepare_bundle collects all recursively listed component/adoption descriptors, deduplicates raw bytes by SHA, checks MAX_BUNDLE, then validates complete bundle before sealing."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "install_phone_release_r10 stage/start",
+      "input_slot": "generated BOUNDARY_CONSUMER_SHA256 and exact archive/bundle pins",
+      "operation": "load_release loads exact helper from archive and validate_bundle reexecutes74f4 adoption verification through embedded originals. Both stage and start call load_release."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "collect_r10_readiness",
+      "input_slot": "generated BOUNDARY_CONSUMER_SHA256 and exact installed module boundary",
+      "operation": "Loads exact installed helper; validate_bundle reexecutes74f4 through embedded originals before current policy, source/material and four-role READY checks."
+    },
+    {
+      "body_change_required": false,
+      "consumer": "component/cancel/fault finalizer, six-host binder, physical fault plan",
+      "input_slot": "actual adoption exact descriptor and generated consumer/readiness pins",
+      "operation": "Existing hard adoption.v1/decision.v1 checks remain satisfied because74f4 retains those public schemas. Live provenance and post schemas alone arev2. Full policy verification remains the shared consumer responsibility."
+    }
+  ],
+  "state": "EXACT_74F4_V2_PROVENANCE_AND_V1_ADOPTION_CONSUMER_CHAIN_SOURCE_COMPATIBLE",
+  "still_requires_actual_work": [
+    "Complete actual independent post85f/0793 proof, retention/mirror and explicitly adopted record. Existing live-only admission is not complete comparison or adoption.",
+    "Run actual freeze and pure Root plan admission, then original NEG01 and NEG02 under74f4-bound generation.",
+    "Measure full actual component+policy evidence union against unchanged32MiB encoded bundle, plus existing proof/adoption caps; no assumption of capacity pass from live-only167-path count.",
+    "Run actual builder/stage/start/READY and original case closures; static compatibility gives no case credit."
+  ]
+}

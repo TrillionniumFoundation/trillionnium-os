@@ -1,0 +1,78 @@
+{
+  "actual_cascade_read": false,
+  "case_runs": 0,
+  "checks": [
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "actual_export_path_is_taken_from_adoption_not_cascade_barepin",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "four_exact3_finalization_keys",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "mismatched_policy_bytes_rejected",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "wrong_cascade_state_scope_rejected",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "barepin_cannot_replace_exact3_manifest",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "one_rhs_whole_source_inverse_exact",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "all_generator_function_and_class_bodies_identical",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "edited_parent_source_refused",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "original_none_gate_preserved",
+      "passed": true
+    },
+    {
+      "fixture_only_not_actual_generation": true,
+      "name": "bound_exact_finalization_accepted_without_IO",
+      "passed": true
+    }
+  ],
+  "fixture_inputs_not_actual_acceptance": true,
+  "generator_main_calls": 0,
+  "generator_prepare_calls": 0,
+  "harness_calls": 0,
+  "helper": {
+    "bytes": 12989,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_six_host_generation.py",
+    "sha256": "665b5e22ab4e6a24f1ecea56608ace7a299a07bc27b0f2e03c83cae70b560796"
+  },
+  "importer_calls": 0,
+  "passed": 10,
+  "phone_calls": 0,
+  "preparer_calls": 0,
+  "processes_started": 0,
+  "remote_calls": 0,
+  "reviewed_generator": {
+    "bytes": 17114,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-property-r8-generation-candidate01/source/derive_six_host_property_pins.py",
+    "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+  },
+  "schema": "hepta.fixed19.six-host-source-binding-local-review.v1",
+  "state": "SOURCE_BINDING_HELPER_REVIEWED_PENDING_REAL_CASCADE"
+}

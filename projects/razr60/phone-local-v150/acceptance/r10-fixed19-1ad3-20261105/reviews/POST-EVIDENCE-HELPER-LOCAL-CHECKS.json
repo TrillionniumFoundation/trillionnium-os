@@ -1,0 +1,81 @@
+{
+  "actual_archive_executions": 0,
+  "actual_mirror_executions": 0,
+  "adoption_writes": 0,
+  "checks": [
+    {
+      "name": "collector_pure_binding_actual_shapes",
+      "passed": true
+    },
+    {
+      "name": "collector_single_literal_and_native_gate",
+      "passed": true
+    },
+    {
+      "name": "collector_native_published_literal_gate",
+      "passed": true
+    },
+    {
+      "name": "already_bound_template_rejected",
+      "passed": true
+    },
+    {
+      "name": "wrong_job",
+      "passed": true
+    },
+    {
+      "name": "incomplete_stdout",
+      "passed": true
+    },
+    {
+      "name": "changed_lossless_hex",
+      "passed": true
+    },
+    {
+      "name": "nonzero_stderr_offset",
+      "passed": true
+    },
+    {
+      "name": "actual_export_pin_mismatch_rejected",
+      "passed": true
+    },
+    {
+      "name": "mirror_pure_binding_dual_actual_sources",
+      "passed": true
+    },
+    {
+      "name": "mirror_literal_inverse_stays_unpublished_template",
+      "passed": true
+    },
+    {
+      "name": "actual_small_proof_path_sum_gate",
+      "passed": true
+    },
+    {
+      "name": "proof_sum_over16MiB_rejected",
+      "passed": true
+    },
+    {
+      "name": "proof_count_over512_rejected",
+      "passed": true
+    },
+    {
+      "name": "packet_over16MiB_rejected",
+      "passed": true
+    },
+    {
+      "name": "packet_expanded_over64MiB_rejected",
+      "passed": true
+    }
+  ],
+  "fixture_scope": "In-memory synthetic controller/report/index shapes only, except exact existing source bytes and immutable actual live01be4 source identities. No actual post report/completion or evidence was generated or certified. Bound fixture source bytes were never saved.",
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.runtime-properties.post-evidence-source-helper-local-checks.v1",
+  "source": {
+    "bytes": 24852,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_independent_post_evidence.py",
+    "sha256": "10067a441965beb1231cf9a9fe8304e49eb2672caa4d9bdcff795b881120a428"
+  },
+  "state": "LOCAL_SOURCE_AND_SYNTHETIC_BINDING_CHECKS_PASSED"
+}

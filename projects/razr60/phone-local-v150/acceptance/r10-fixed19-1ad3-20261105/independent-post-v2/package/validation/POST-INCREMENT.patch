@@ -1,0 +1,86 @@
+--- parent/source/post_live_compare_runtime_properties.py
++++ comparison-source/post_live_compare_runtime_properties.py
+@@ -322,10 +322,10 @@
+     return decision
+ 
+ def validate_live_records(reader,plan):
+-    # The plan names the reviewed verifier explicitly. The final verifier may
+-    # pin this post-comparator source, so this source never embeds that future
+-    # verifier SHA. Its bytes must also be the exact source bound by the actual
+-    # Root transaction and its original apply binding.
++    # The plan names the independently reviewed host verifier explicitly.
++    # Its own raw identity is distinct from the immutable verifier that the
++    # phone actually executed. Both originals are mapped and checked below;
++    # this source never embeds a future independent-verifier hash.
+     mappings=plan['input_original_map']
+     need(type(mappings) is list and 1<=len(mappings)<=512,'bounded explicit cross-host input map')
+     index={};retained_total=0
+@@ -351,7 +351,10 @@
+         used.add(identity);return reader.descriptor(index[identity])
+     live_raw=reader.descriptor(plan['live_provenance_inputs']);live=strict(live_raw)
+     verifier_raw=reader.descriptor(plan['live_verifier_source'])
+-    need(0<len(verifier_raw)<=262144,'bounded actual verifier source')
++    applied_raw=reader.descriptor(plan['applied_verifier_source'])
++    need(0<len(verifier_raw)<=262144,'bounded independent host verifier source')
++    need(len(applied_raw)==124306 and sha(applied_raw)=='5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00',
++         'exact immutable verifier executed by the original phone transaction')
+     namespace={'__name__':'reviewed_runtime_properties_live_verifier','__file__':plan['live_verifier_source']['path'],
+                '__reviewed_source_sha256__':sha(verifier_raw)}
+     exec(compile(verifier_raw,plan['live_verifier_source']['path'],'exec'),namespace)
+@@ -364,10 +367,16 @@
+     for original_name,local_name in pairs:
+         original=summary[original_name];get(original)
+         need(index[key(original)]==plan[local_name],'actual original identity is not the explicit parser input copy')
+-    verifier_original=live['originals']['policy_runtime_properties_verifier.original.py'];get(verifier_original)
+-    need(index[key(verifier_original)]==plan['live_verifier_source']
+-         and summary['binding']['verifier_source']=={'bytes':len(verifier_raw),'sha256':sha(verifier_raw)},
+-         'executed verifier differs from the exact source bound by actual apply')
++    need(live['schema']=='hepta.runtime-properties-r10.live-provenance-inputs.v2','explicit dual-identity live provenance')
++    verifier_original=live['independent_verifier_source'];get(verifier_original)
++    applied_original=live['originals']['policy_runtime_properties_verifier.original.py'];get(applied_original)
++    need(summary['independent_verifier_source']==verifier_original
++         and summary['applied_verifier_source']==applied_original
++         and index[key(verifier_original)]==plan['live_verifier_source']
++         and index[key(applied_original)]==plan['applied_verifier_source']
++         and verifier_original['sha256']!=applied_original['sha256']
++         and summary['binding']['verifier_source']=={'bytes':len(applied_raw),'sha256':sha(applied_raw)},
++         'independent host verifier and actual applied verifier identities must remain distinct')
+     need(sha(summary['original_files']['ROOT-SCOPE-DECISION.original.json'])==ROOT_DECISION_SHA
+          and sha(summary['original_files']['live-policy-before.bin'])==PARENT_SHA
+          and sha(summary['original_files']['live-policy-after.bin'])==plan['candidate']['sha256'],
+@@ -381,10 +390,12 @@
+          and build['runtime_library']['sha256']=='c1e965eaae791bc4abc1fc2336a5433d7c483e5117778dbd06234b3fa9172092',
+          'original installed image library identity')
+     reader.recheck()
+-    return {'schema':'hepta.runtime-properties.post-live-originals-recheck.v1',
++    return {'schema':'hepta.runtime-properties.post-live-originals-recheck.v2',
+         'live_provenance_inputs':plan['live_provenance_inputs'],'live_provenance_raw_sha256':sha(live_raw),
+         'input_original_map':mappings,'used_original_descriptors':[{'path':p,'bytes':n,'sha256':h} for p,n,h in sorted(used)],
+-        'live_provenance_verifier':plan['live_verifier_source'],'actual_reviewed_verifier_source_executed':True,
++        'live_provenance_verifier':plan['live_verifier_source'],
++        'independent_verifier_source':plan['live_verifier_source'],'applied_verifier_source':plan['applied_verifier_source'],
++        'independent_reviewed_verifier_source_executed':True,'actual_applied_verifier_source_preserved':True,
+         'actual_original_parent':summary['parent'],'actual_original_candidate':summary['candidate'],
+         'binding_sha256':summary['binding_sha256'],'host_capture_sha256':summary['host_capture_sha256'],
+         'provenance_inputs_canonical_sha256':summary['provenance_inputs_sha256'],
+@@ -442,8 +453,8 @@
+     require_reviewed_scope()
+     os.umask(0o077);reader=Originals();selfpath=Path(__file__).resolve();selfraw=reader.read(selfpath)
+     planraw=reader.read(a.plan,a.plan_sha256);plan=strict(planraw)
+-    required={'schema','root_scope_decision','parent_adoption','parent','candidate','image_build_result','live_provenance_inputs','live_verifier_source','input_original_map','delta_rule','full_rule','parent_rule','tool_inventory','image_comparator','image_comparator_source','parent_av_originals','parent_set_av_originals','parent_apex_original','candidate_av_tool','candidate_av_source','secondary_observation'}
+-    need(set(plan)==required and plan['schema']=='hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v1','exact comparison plan')
++    required={'schema','root_scope_decision','parent_adoption','parent','candidate','image_build_result','live_provenance_inputs','live_verifier_source','applied_verifier_source','input_original_map','delta_rule','full_rule','parent_rule','tool_inventory','image_comparator','image_comparator_source','parent_av_originals','parent_set_av_originals','parent_apex_original','candidate_av_tool','candidate_av_source','secondary_observation'}
++    need(set(plan)==required and plan['schema']=='hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2','exact comparison plan')
+     parent=reader.descriptor(plan['parent']);cand=reader.descriptor(plan['candidate'])
+     need(sha(parent)==PARENT_SHA and len(parent)==PARENT_BYTES and sha(cand)==plan['candidate']['sha256']
+          and 0<len(cand)<=8*1024*1024,'exact current parent and explicit actual live export originals')
+@@ -725,7 +736,8 @@
+         'sources':{'comparator':{'path':str(selfpath),'bytes':len(selfraw),'sha256':sha(selfraw)},
+           'image_comparator':plan['image_comparator'],'image_comparator_source':plan['image_comparator_source'],'existing_tools':plan['tool_inventory'],
+           'candidate_av_tool':plan['candidate_av_tool'],'candidate_av_source':plan['candidate_av_source'],
+-          'live_provenance_verifier':plan['live_verifier_source'],'image_build_result':plan['image_build_result']},
++          'live_provenance_verifier':plan['live_verifier_source'],'applied_verifier_source':plan['applied_verifier_source'],
++          'image_build_result':plan['image_build_result']},
+         'package_tree_provenance':{'closed_tree':package_tree,'loaded_original_modules':loaded_package,'unindexed_entries':[],
+           'source_inventory':plan['tool_inventory'],'source_to_private_copy_map':package_origin_map,
+           'original_import_tree_closed_claimed':False,'original_import_path_added_to_sys_path':False,

@@ -1,0 +1,59 @@
+{
+  "capture_source_comparison": {
+    "donor_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+    "new_constructor_only": true,
+    "top_level_functions_source_identical": 19,
+    "transport_methods_source_identical": 6
+  },
+  "new_tests": 0,
+  "not_reviewed_or_executed": [
+    "full physical task semantics and runtime/policy adoption proof",
+    "actual P4 or phone operations",
+    "full31 harness rerun",
+    "current future release pins"
+  ],
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "reviewer": "transport_review",
+  "schema": "hepta.physical-component.independent-transport-restoration-source-review.v1",
+  "scope": [
+    "one-use P4 phase and request namespaces precede original actor dispatch",
+    "exact staged actor/capture bytes and one actor invocation",
+    "outer and inner continuous capture use the reviewed0374 implementation; success requires original full capture",
+    "64MiB plain/16MiB gzip export plus complete bounded decode and same original source-path mapping",
+    "original physical case budget300s and phone call cap5; phase cannot be reused",
+    "unknown P4/phone original never becomes cleanup or autorun restoration",
+    "separate restore-only entry first reconciles exact original joined P4 and phone rc0 through independent verifier and same nonce/phase",
+    "race with original coordinator blocked by shared restore-positive directory and actor request O_EXCL",
+    "restore-only observation has no case PASS and does not extend original case deadline"
+  ],
+  "source_mutations": 0,
+  "sources": [
+    {
+      "bytes": 29065,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/source/owned_capture.py",
+      "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+    },
+    {
+      "bytes": 12347,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/source/p4_component_dispatch_once.py",
+      "sha256": "e44191ad60d264504322e03933389264033e527dcd05978ef34c1c13a56b0ed7"
+    },
+    {
+      "bytes": 24645,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/source/run_physical_component_once.py",
+      "sha256": "bd5cbd63e0a04b4697244e49c2a70fa528adb74f1ee4ffddab5fd07eb83adce8"
+    },
+    {
+      "bytes": 13551,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/source/restore_existing_rotation_once.py",
+      "sha256": "cf252f0ba5f35c5acdb74ee178000ce872bc0a484bd6da13f384d95724d76cf3"
+    },
+    {
+      "bytes": 35365,
+      "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/source/verify_physical_component.py",
+      "sha256": "3827666e3533a99023ea2333b3ba1beed40717db312667841b113578d50e97bb"
+    }
+  ],
+  "state": "NO_BLOCKER_IN_SCOPED_STATIC_REVIEW"
+}

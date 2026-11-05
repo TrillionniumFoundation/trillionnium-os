@@ -1,0 +1,27 @@
+{
+  "actual_mac_calls": 0,
+  "actual_phone_calls": 0,
+  "checks_passed": 40,
+  "effect_capture_restore_verifier_runtime_unchanged": true,
+  "final_local_validation": {
+    "bytes": 7370,
+    "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/frozen-source-validation01/TEST-RESULT.json",
+    "sha256": "b68ff3c97fe38ed0f961208de6628b03627431b01a0281152bdb1ea0776b374d"
+  },
+  "fresh_nonce_generated": false,
+  "physical_cases_passed": 0,
+  "pinned_loaders": {
+    "bytes": 303,
+    "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/PINNED-LOADERS.json",
+    "sha256": "d277caaed2be411c893ad7af18ad8a9313e67e8544ae55d9e1eb9bbd357f483b"
+  },
+  "runtime_increment_from_final01": "Only ast.Add to ast.Div in static dependency path validator",
+  "schema": "hepta.physical-component.frozen-source-validation.v1",
+  "source_manifest": {
+    "bytes": 4973,
+    "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/package/SOURCE-MANIFEST.json",
+    "sha256": "e3d995a9a9550084cf9dd12cf4777298314bfe586b1f8d4df10a9440194c8510"
+  },
+  "source_members": 23,
+  "state": "FINAL02_FROZEN_SOURCE_STAGE_READY_NO_PHYSICAL_EXECUTION"
+}

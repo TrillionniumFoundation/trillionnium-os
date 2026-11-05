@@ -1,0 +1,83 @@
+{
+  "FINAL_DEPENDENCIES_remains_None": true,
+  "allowed_actual_root_RHS_slots": [
+    "PKG",
+    "COMBINATION",
+    "VERIFIER_SHA",
+    "VERIFIER_BYTES",
+    "POLICY_SHA",
+    "ADOPTION_SHA",
+    "ROOT_SCOPE_SHA"
+  ],
+  "files": {
+    "close_cpu_negative.py": {
+      "after": {
+        "bytes": 43958,
+        "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+      },
+      "before": {
+        "bytes": 43958,
+        "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+      },
+      "byte_identical": true
+    },
+    "ledger_prefix_negative.py": {
+      "after": {
+        "bytes": 29465,
+        "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+      },
+      "before": {
+        "bytes": 29465,
+        "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+      },
+      "byte_identical": true
+    },
+    "negative_originals.py": {
+      "after": {
+        "bytes": 44221,
+        "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+      },
+      "before": {
+        "bytes": 37253,
+        "sha256": "939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2"
+      },
+      "byte_identical": false
+    },
+    "root_cpu_negative.py": {
+      "after": {
+        "bytes": 15256,
+        "sha256": "d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0"
+      },
+      "before": {
+        "bytes": 15256,
+        "sha256": "29531f8f54716b6aa83f76a3007473b9b5a38f4fbd6b8f74d895bfa2a1d3a748"
+      },
+      "byte_identical": false
+    }
+  },
+  "host_phase_new_required_original": "output_capture => same phase OUTPUT-CAPTURE.json exact3",
+  "new_case_executions": 0,
+  "new_phone_calls": 0,
+  "parent_root": {
+    "bytes": 45952,
+    "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+  },
+  "physical_case_pass": false,
+  "root_template": {
+    "bytes": 71820,
+    "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+  },
+  "schema": "hepta.cpu-negative.capture-transport-source-derivation.v1",
+  "state": "SOURCE_ONLY_FUTURE_DEPENDENCIES_NONE",
+  "success_RESULT_schema_unchanged_exact7": true,
+  "unchanged_root_remote_constants": [
+    "REMOTE_IO",
+    "SSH",
+    "ACTOR"
+  ],
+  "unchanged_root_remote_methods": [
+    "remote",
+    "remote_program",
+    "phone"
+  ]
+}

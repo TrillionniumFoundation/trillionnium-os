@@ -1,0 +1,29 @@
+{
+  "candidate": {
+    "bytes": 21223,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/independent_post_retention_capture_r6_candidate01/source/retain_actual_live_inputs.py",
+    "sha256": "f6d8d7ec2af99c728d418d0a2322d42be2287e9db21c8b52c23c7c5d54a3ac5d"
+  },
+  "checks": {
+    "actual_applied_5cd_and_574e_unchanged": true,
+    "all_other_top_level_bindings_unchanged": true,
+    "compiled": true,
+    "complete_source_inverse_exact": true,
+    "independent_v2_sources_and_schemas_unchanged": true,
+    "post314619_manifest_unchanged": true,
+    "unknown_no_signal_no_retry_preserved": true
+  },
+  "comparison_executions": 0,
+  "parent": {
+    "bytes": 21133,
+    "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/source/retain_actual_live_inputs.py",
+    "sha256": "800fb84ebdf098e43fffde4b48aa73d79ad844acec5123d0018cb0b8ee2388b3"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "retention_executions": 0,
+  "schema": "hepta.independent.post-retention-source-review.v1",
+  "scope": "Two-hunk port only. Independent verifier74f4 and actual adoption/full comparison review belong to separate review; no compatibility verdict implied.",
+  "state": "INDEPENDENT_V2_TWO_HUNK_SOURCE_INCREMENT_VERIFIED_NO_EXECUTION",
+  "transport_semantics": "Same exact reviewed0374 transport methods; exception closes owned capture readers and persists unknown prefixes before FAILURE. No inference of remaining SSH-child or remote terminal cleanup."
+}

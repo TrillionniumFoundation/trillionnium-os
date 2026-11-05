@@ -1,0 +1,11 @@
+--- final01/source/physical_component_common.py
++++ final02/source/physical_component_common.py
+@@ -165,7 +165,7 @@
+                 if is_new:
+                     if name in path_names:
+                         value=node.value
+-                        ok=isinstance(value,ast.BinOp) and isinstance(value.op,ast.Add) \
++                        ok=isinstance(value,ast.BinOp) and isinstance(value.op,ast.Div) \
+                             and isinstance(value.left,ast.Name) and value.left.id=='B' \
+                             and isinstance(value.right,ast.Constant) and isinstance(value.right.value,str)
+                         ok=ok or (isinstance(value,ast.Call) and isinstance(value.func,ast.Name)

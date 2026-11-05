@@ -1,0 +1,48 @@
+{
+  "donor_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+  "new_logic": "private create-only standalone constructor only",
+  "output": {
+    "bytes": 29065,
+    "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/source/owned_capture.py",
+    "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+  },
+  "phone_calls": 0,
+  "process_starts": 0,
+  "qualification_claimed": false,
+  "schema": "hepta.physical-component.owned-capture-derivation.v1",
+  "signals_sent": 0,
+  "unchanged_function_bodies": [
+    "need",
+    "sha",
+    "enc",
+    "strict",
+    "desc",
+    "read",
+    "pin",
+    "put",
+    "syncdir",
+    "newdir",
+    "original_stream",
+    "close_streams_owned",
+    "finish_stream",
+    "filedesc",
+    "capture_stat",
+    "close_unclaimed_capture_readers",
+    "capture_output_worker",
+    "write_captured_output",
+    "capture_observation"
+  ],
+  "unchanged_limits": [
+    "HOST_OUTPUT_LIMIT",
+    "HOST_CAPTURE_POLL",
+    "HOST_CAPTURE_STOP_WAIT"
+  ],
+  "unchanged_method_bodies": [
+    "stop_host_capture",
+    "persist_host_capture",
+    "verify_host_capture_outputs",
+    "join_host_capture",
+    "execute_process",
+    "close_owned_host_outputs"
+  ]
+}

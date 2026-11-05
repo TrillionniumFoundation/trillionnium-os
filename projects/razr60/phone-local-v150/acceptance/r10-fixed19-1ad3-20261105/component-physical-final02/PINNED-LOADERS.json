@@ -1,0 +1,8 @@
+{
+  "actual_runtime_admission_attempted": false,
+  "effect_capture_restore_verifier_sources_byte_identical_to_final01": true,
+  "manifest_sha256": "e3d995a9a9550084cf9dd12cf4777298314bfe586b1f8d4df10a9440194c8510",
+  "members": 23,
+  "phone_calls": 0,
+  "state": "FINAL02_THREE_PINNED_LOADERS_PASSED"
+}

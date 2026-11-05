@@ -1,0 +1,60 @@
+{
+  "actual_adoptions_created": 0,
+  "actual_build_preflight_run_locally": false,
+  "files": [
+    {
+      "bytes": 6120,
+      "path": "README.md",
+      "sha256": "aa8384fe0cee99bdd7ba03676f5143702d92a960cd74ee5ed2d2a2eff9cca4cd"
+    },
+    {
+      "bytes": 8368,
+      "path": "reference/FREEZE-INPUTS.template.original.json",
+      "sha256": "debd3165e14bf357f13bfa3b997ea3bb0b23e5d2bb4a0a8b54078477deff2934"
+    },
+    {
+      "bytes": 334,
+      "path": "reference/INDEPENDENT-VERIFIER-DESCRIPTOR.json",
+      "sha256": "7abec3303e07ced5198c2787e40e8b04eb83d15f10998de5ede248f79785a2ed"
+    },
+    {
+      "bytes": 35375,
+      "path": "reference/freeze_property_runtime.62bc.original.py",
+      "sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+    },
+    {
+      "bytes": 18226,
+      "path": "source/prepare_actual_r8_freeze.py",
+      "sha256": "106f2ac9f40d32693dd992cbe27454f739674377700e21cfd284a335aa01194f"
+    },
+    {
+      "bytes": 1851,
+      "path": "validation/LOCAL-SOURCE-GATES.original.json",
+      "sha256": "46ceb9ce19b31ebe64fa6f2d808f58d208d5d03e2082852b88de34cabc5e4bf4"
+    },
+    {
+      "bytes": 810,
+      "path": "validation/PINNED-INTERFACE-CHECK.json",
+      "sha256": "3f04f8a2623071c91b7ae2f4bdd2f651e3ece64413ddd083dab7bf6572ecdcbf"
+    },
+    {
+      "bytes": 7964,
+      "path": "validation/test_prepare_actual_r8_freeze.py",
+      "sha256": "dde96e595a4fb1a00f08a1e216ed0732a0d33d37a6b3360de2e30f59d4789775"
+    }
+  ],
+  "freezer_parent_sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509",
+  "input_template_sha256": "debd3165e14bf357f13bfa3b997ea3bb0b23e5d2bb4a0a8b54078477deff2934",
+  "local_source_checks_passed": 10,
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "runtime_freezes": 0,
+  "schema": "hepta.actual-r8-freeze-preparation.source-package.v1",
+  "source_only": true,
+  "state": "HOST_SOURCE_READY_ACTUAL_ADOPTION_REQUIRED",
+  "verifier": {
+    "bytes": 126796,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py",
+    "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+  }
+}

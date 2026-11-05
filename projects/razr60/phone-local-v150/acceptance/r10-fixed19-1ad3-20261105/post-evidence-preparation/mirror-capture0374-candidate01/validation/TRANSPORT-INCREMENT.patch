@@ -1,0 +1,25 @@
+--- reference/mirror_actual_post_proof.5ee2.original.py
++++ source/mirror_actual_post_proof.py
+@@ -25,8 +25,8 @@
+ CAPTURED_VERIFIER=B/'policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py'
+ INDEPENDENT_VERIFIER=B/'policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py'
+ ACTUAL_PROOF=None
+-TRANSPORT={'path':str(B/'native-guard-r10-r1-operator-r4/root-chain/source/run_component_root_once.py'),
+- 'bytes':43438,'sha256':'860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22'}
++TRANSPORT={'path':str(B/'root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py'),
++ 'bytes':68481,'sha256':'0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd'}
+ INDEX_KEYS={'schema','comparison_kind','report','plan','process','execution','files','origin_map',
+  'complete_comparison_outputs_retained_elsewhere','all_orbit_images_embedded','complete_archive',
+  'complete_archive_manifest','phone_operations','active_policy_writes'}
+@@ -281,9 +281,10 @@
+         print(json.dumps({'result':result_desc,'index':index_desc,'report':mirror['report'],
+             'capacity':capacity,'phone_operations':0},sort_keys=True));return 0
+     except BaseException as error:
++        host_cleanup=chain.close_owned_host_outputs()
+         put(OUT/'MIRROR-FAILURE.json',encode({'state':'ORIGINAL_PROOF_MIRROR_STOPPED_NO_REPLAY',
+             'source':source_desc,'error_type':type(error).__name__,'detail':str(error)[:2048],
+-            'remote_read_steps':chain.steps,'automatic_retry':False,'phone_operations':0}))
++            'remote_read_steps':chain.steps,'host_cleanup':host_cleanup,'automatic_retry':False,'phone_operations':0}))
+         raise
+ 
+ if __name__=='__main__':raise SystemExit(main())

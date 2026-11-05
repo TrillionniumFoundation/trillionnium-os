@@ -1,0 +1,131 @@
+{
+  "actual_applied_verifier_preserved": {
+    "bytes": 124306,
+    "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+  },
+  "actual_post_archive": {
+    "actual_proof_mirror_or_adoption_completion_claimed": false,
+    "descriptors": 193,
+    "full_archive": {
+      "bytes": 42908438,
+      "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/COMPLETE-ORIGINALS.tar.gz",
+      "sha256": "ca42b7d93d0b88e97530758eebb47ce78381ca2486487240a82cf8330d9356b4"
+    },
+    "full_archive_binary_in_this_checkpoint": false,
+    "full_archive_manifest": {
+      "bytes": 355164,
+      "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/FULL-ORIGINALS-MANIFEST.json",
+      "sha256": "3c2fdc5ae205b6cb8b6e9b8ab15dfb5d960e4e29cf3e4a37a7a7ec02344e000d"
+    },
+    "full_archive_retained_at_original_P4_path": true,
+    "proof_all_path_byte_sum_verified_in_this_checkpoint": false,
+    "proof_index": {
+      "bytes": 172640,
+      "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/ADOPTION-PROOF-INPUTS.P4.json",
+      "sha256": "38643d13acc15f53792eb447feeedb54e6ad53c75efc37458bbb69945c481031"
+    },
+    "proof_packet": {
+      "bytes": 874243,
+      "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/PROOF-ORIGINALS.packet.json.gz",
+      "sha256": "d50a016f41917ce459d1f308728e7b649a821cdf3919b97715163014eadf0e4d"
+    },
+    "raw_unique_bytes": 2476074,
+    "source_preparation": {
+      "bytes": 20183,
+      "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/source/collect_actual_post_originals.py",
+      "sha256": "02891d1b928508e63d87ec13e3986f212b9d96d41def26987fcd222f03472485"
+    },
+    "state": "COMPLETE",
+    "unique_objects": 125
+  },
+  "actual_post_comparison": {
+    "active_policy_writes": 0,
+    "actual_policy": {
+      "bytes": 2667740,
+      "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+    },
+    "captured_streams_complete": true,
+    "checks": 16,
+    "comparison_source_sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471",
+    "controller_job_id": "1a1aad877de-fc05-4800",
+    "controller_stdout_bytes": 833,
+    "elapsed_seconds": 339.7802115390077,
+    "execution": {
+      "bytes": 2549,
+      "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/EXECUTION.RESULT.json",
+      "sha256": "00b7f38c77ca91860a32b1e31108890b98026eb1c400d9a27c802b6ba7094c20"
+    },
+    "input_originals_unchanged": true,
+    "passed": 16,
+    "phone_operations": 0,
+    "report": {
+      "bytes": 551562,
+      "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/comparison/RESULT.json",
+      "sha256": "84e47675990554ddb71fc639b45a04a6349cee4e5b524213bbcdcc0d8263368d"
+    },
+    "returncode": 0,
+    "timed_out": false
+  },
+  "actual_sealed_runtime_install_ready_not_claimed_by_checkpoint": true,
+  "adoption_completion_not_claimed_by_checkpoint": true,
+  "budgets_increased": false,
+  "checkpoint_builder_phone_calls": 0,
+  "checkpoint_builder_remote_calls": 0,
+  "git_writes": 0,
+  "historical_passes_inherited": false,
+  "host_lifecycle": {
+    "case_ids": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09"
+    ],
+    "originals_already_in_checkpoint03": true,
+    "originals_republished": false,
+    "passed": 5,
+    "physical_case_pass": false,
+    "qualification_layer": "host_isolated"
+  },
+  "independent_host_verifier": {
+    "bytes": 126796,
+    "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+  },
+  "original5cd_role_order_rejection_preserved": true,
+  "original_reports_rewritten": false,
+  "prior_checkpoint": {
+    "bytes": 6265,
+    "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/FIXED19-CHECKPOINT-03.json",
+    "sha256": "a88d7d13b92cbaabbbdfb450f89ef647e991f5daecdaea7c4c77f16eb0a3cc33"
+  },
+  "qualified_whole_cases": 0,
+  "required_cases": 19,
+  "retention_provenance": {
+    "actual_consumed_source": {
+      "bytes": 22408,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/source/retain_actual_live_inputs.py",
+      "sha256": "d960f6ba80c9e171b1b6212ac7f626a8187e6f715668f3d8c69596394009b030"
+    },
+    "actual_consumed_transport_sha256": "860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22",
+    "our_preparation_action_did_not_run_retention_or_comparison": true,
+    "ours_bound_candidate": {
+      "bytes": 22498,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-0374-1ad3-final01/source/retain_actual_live_inputs.py",
+      "sha256": "6193646f6b12d2a720a9086423aebcd7d914a3ff9d799edf7a86fe17f8d10758"
+    },
+    "ours_bound_candidate_consumption_claimed": false,
+    "ours_bound_candidate_executed": false,
+    "ours_unbound_candidate_sha256": "f6d8d7ec2af99c728d418d0a2322d42be2287e9db21c8b52c23c7c5d54a3ac5d"
+  },
+  "schema": "hepta.root.fixed19.integration-checkpoint.v3",
+  "source_manifest_missing_members_explicit": true,
+  "source_only_candidates": {
+    "component_actual_cases": 0,
+    "component_final02_local_checks": 40,
+    "cpu_cancel_compat_actual_cases": 0,
+    "r8_actual_runtime_freeze": false,
+    "r8_preparation_final01_local_checks": 10,
+    "six_host665b_actual_cases": 0
+  },
+  "state": "ACTUAL_POST16_AND_ARCHIVE_COMPLETE_SOURCE_CANDIDATES_FROZEN_WHOLE_CASES_STILL_ZERO"
+}

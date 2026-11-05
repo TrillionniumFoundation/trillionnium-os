@@ -1,0 +1,799 @@
+{
+  "complete_comparison_source_members_verified": 5,
+  "groups": [
+    {
+      "checkpoint_package": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package",
+      "copied_members": 23,
+      "declared_members": 23,
+      "declared_original_manifest_preserved_unchanged": true,
+      "not_cached_not_fabricated_members": [],
+      "original_manifest_closed": true,
+      "scope": "complete original package",
+      "source_manifest": {
+        "bytes": 4973,
+        "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/package/SOURCE-MANIFEST.json",
+        "sha256": "e3d995a9a9550084cf9dd12cf4777298314bfe586b1f8d4df10a9440194c8510"
+      },
+      "verified_copied_members": [
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/README.md",
+          "manifest_member": {
+            "bytes": 14897,
+            "path": "README.md",
+            "sha256": "b16cf285d6f9d64fd248a4a4e801591155d9c7d40f266a233317e46f928812cd"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/reference/active_runtime_r10.original.py",
+          "manifest_member": {
+            "bytes": 31813,
+            "path": "reference/active_runtime_r10.original.py",
+            "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/reference/capture_transport0374.original.py",
+          "manifest_member": {
+            "bytes": 68481,
+            "path": "reference/capture_transport0374.original.py",
+            "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/reference/component_source_context.original.py",
+          "manifest_member": {
+            "bytes": 15724,
+            "path": "reference/component_source_context.original.py",
+            "sha256": "2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/reference/geometry-assets/GIT-ORIGIN.json",
+          "manifest_member": {
+            "bytes": 786,
+            "path": "reference/geometry-assets/GIT-ORIGIN.json",
+            "sha256": "097473b50243d5566db2b2a6b74c40b60195a4cff8b9a1182684e227f214e7a2"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/reference/geometry-assets/synthetic.jpg",
+          "manifest_member": {
+            "bytes": 19356,
+            "path": "reference/geometry-assets/synthetic.jpg",
+            "sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/reference/geometry-assets/synthetic.png",
+          "manifest_member": {
+            "bytes": 1191,
+            "path": "reference/geometry-assets/synthetic.png",
+            "sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/reference/production-pins.json",
+          "manifest_member": {
+            "bytes": 1438,
+            "path": "reference/production-pins.json",
+            "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/source/owned_capture.py",
+          "manifest_member": {
+            "bytes": 29065,
+            "path": "source/owned_capture.py",
+            "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/source/p4_component_dispatch_once.py",
+          "manifest_member": {
+            "bytes": 12347,
+            "path": "source/p4_component_dispatch_once.py",
+            "sha256": "e44191ad60d264504322e03933389264033e527dcd05978ef34c1c13a56b0ed7"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/source/physical_component_common.py",
+          "manifest_member": {
+            "bytes": 29295,
+            "path": "source/physical_component_common.py",
+            "sha256": "9a722bc807bc6a3bd2c084b3f308ec1cea5656407da25faeeb95284ba9c9747f"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/source/restore_existing_rotation_once.py",
+          "manifest_member": {
+            "bytes": 13551,
+            "path": "source/restore_existing_rotation_once.py",
+            "sha256": "cf252f0ba5f35c5acdb74ee178000ce872bc0a484bd6da13f384d95724d76cf3"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/source/run_physical_component_once.py",
+          "manifest_member": {
+            "bytes": 24645,
+            "path": "source/run_physical_component_once.py",
+            "sha256": "bd5cbd63e0a04b4697244e49c2a70fa528adb74f1ee4ffddab5fd07eb83adce8"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/source/verify_physical_component.py",
+          "manifest_member": {
+            "bytes": 38480,
+            "path": "source/verify_physical_component.py",
+            "sha256": "745869a88b0db60745800942d82e0ebd61927f2c996e8dbbf3746afd1e38dc89"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/templates/COMP-01-ROOT-PLAN.template.json",
+          "manifest_member": {
+            "bytes": 576,
+            "path": "templates/COMP-01-ROOT-PLAN.template.json",
+            "sha256": "70717dd502fa57bd2306d7a368b1ca097ee02d856361dce939495e757338604f"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/templates/NEG-03-ROOT-PLAN.template.json",
+          "manifest_member": {
+            "bytes": 631,
+            "path": "templates/NEG-03-ROOT-PLAN.template.json",
+            "sha256": "8ea458276633b384c7c7f31f34d979b8e29a4cfdba74fdaa17e2d5d0ac0c9159"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/templates/NEG03-FIXTURE-PLAN.template.json",
+          "manifest_member": {
+            "bytes": 546,
+            "path": "templates/NEG03-FIXTURE-PLAN.template.json",
+            "sha256": "08d570c8fae60088de1a50272b05f1f89c26b22ad4b2d4019038fa4a023aa1fd"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/validation/CAPTURE-DERIVATION.json",
+          "manifest_member": {
+            "bytes": 1245,
+            "path": "validation/CAPTURE-DERIVATION.json",
+            "sha256": "d325f7e301777a4d176f9742996b27cf83a1235c9ac594f8cd050bdeb5713b2c"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/validation/LITERAL-PATH-FIX.json",
+          "manifest_member": {
+            "bytes": 944,
+            "path": "validation/LITERAL-PATH-FIX.json",
+            "sha256": "f0761186f275802d34d3412f72c45b7115b99eccf0558cc269db190fe9072631"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/validation/LITERAL-PATH-FIX.patch",
+          "manifest_member": {
+            "bytes": 708,
+            "path": "validation/LITERAL-PATH-FIX.patch",
+            "sha256": "e78e17eb2d680af01e766092239b410239a6d63ee2ae19b0a7ea076a2fe4b204"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/validation/LOCAL-SOURCE-RESULT.json",
+          "manifest_member": {
+            "bytes": 7370,
+            "path": "validation/LOCAL-SOURCE-RESULT.json",
+            "sha256": "b68ff3c97fe38ed0f961208de6628b03627431b01a0281152bdb1ea0776b374d"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/validation/derive_owned_capture.py",
+          "manifest_member": {
+            "bytes": 4267,
+            "path": "validation/derive_owned_capture.py",
+            "sha256": "6b54c44096b9a262646471657e73ba09558dfda17d89b0516d2a9f42ee1c97c9"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/component-physical-final02/package/validation/test_source_boundaries.py",
+          "manifest_member": {
+            "bytes": 17514,
+            "path": "validation/test_source_boundaries.py",
+            "sha256": "3915995cad9ba764f41487d2752426bc500cca690a7b1b90786f4f7ec9bd8b54"
+          }
+        }
+      ]
+    },
+    {
+      "checkpoint_package": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package",
+      "copied_members": 8,
+      "declared_members": 8,
+      "declared_original_manifest_preserved_unchanged": true,
+      "not_cached_not_fabricated_members": [],
+      "original_manifest_closed": true,
+      "scope": "complete original package",
+      "source_manifest": {
+        "bytes": 2283,
+        "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/delivery-final01/package/SOURCE-MANIFEST.json",
+        "sha256": "7ce365a909e6e19647ecb35eaf241d450a294f31e98d3ff3a91750c301bcd321"
+      },
+      "verified_copied_members": [
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/README.md",
+          "manifest_member": {
+            "bytes": 6120,
+            "path": "README.md",
+            "sha256": "aa8384fe0cee99bdd7ba03676f5143702d92a960cd74ee5ed2d2a2eff9cca4cd"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/reference/FREEZE-INPUTS.template.original.json",
+          "manifest_member": {
+            "bytes": 8368,
+            "path": "reference/FREEZE-INPUTS.template.original.json",
+            "sha256": "debd3165e14bf357f13bfa3b997ea3bb0b23e5d2bb4a0a8b54078477deff2934"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/reference/INDEPENDENT-VERIFIER-DESCRIPTOR.json",
+          "manifest_member": {
+            "bytes": 334,
+            "path": "reference/INDEPENDENT-VERIFIER-DESCRIPTOR.json",
+            "sha256": "7abec3303e07ced5198c2787e40e8b04eb83d15f10998de5ede248f79785a2ed"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/reference/freeze_property_runtime.62bc.original.py",
+          "manifest_member": {
+            "bytes": 35375,
+            "path": "reference/freeze_property_runtime.62bc.original.py",
+            "sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/source/prepare_actual_r8_freeze.py",
+          "manifest_member": {
+            "bytes": 18226,
+            "path": "source/prepare_actual_r8_freeze.py",
+            "sha256": "106f2ac9f40d32693dd992cbe27454f739674377700e21cfd284a335aa01194f"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/validation/LOCAL-SOURCE-GATES.original.json",
+          "manifest_member": {
+            "bytes": 1851,
+            "path": "validation/LOCAL-SOURCE-GATES.original.json",
+            "sha256": "46ceb9ce19b31ebe64fa6f2d808f58d208d5d03e2082852b88de34cabc5e4bf4"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/validation/PINNED-INTERFACE-CHECK.json",
+          "manifest_member": {
+            "bytes": 810,
+            "path": "validation/PINNED-INTERFACE-CHECK.json",
+            "sha256": "3f04f8a2623071c91b7ae2f4bdd2f651e3ece64413ddd083dab7bf6572ecdcbf"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/r8-freeze-preparer-final01/package/validation/test_prepare_actual_r8_freeze.py",
+          "manifest_member": {
+            "bytes": 7964,
+            "path": "validation/test_prepare_actual_r8_freeze.py",
+            "sha256": "dde96e595a4fb1a00f08a1e216ed0732a0d33d37a6b3360de2e30f59d4789775"
+          }
+        }
+      ]
+    },
+    {
+      "checkpoint_package": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package",
+      "copied_members": 23,
+      "declared_members": 23,
+      "declared_original_manifest_preserved_unchanged": true,
+      "not_cached_not_fabricated_members": [],
+      "original_manifest_closed": true,
+      "scope": "complete original package",
+      "source_manifest": {
+        "bytes": 5017,
+        "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/SOURCE-MANIFEST.json",
+        "sha256": "0e36fd00be0436bf0dcbd6babc7c8d1a2c268f05d72e51ab109646bac7851098"
+      },
+      "verified_copied_members": [
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/HOST-PHASE.template.json",
+          "manifest_member": {
+            "bytes": 1078,
+            "path": "HOST-PHASE.template.json",
+            "sha256": "00a1ff87bd21f177fbe4cff397a5e095c9145210e5b11f751a5419ba5cc78246"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/PHYSICAL-FAULT-CLOSURE-REUSE.md",
+          "manifest_member": {
+            "bytes": 7181,
+            "path": "PHYSICAL-FAULT-CLOSURE-REUSE.md",
+            "sha256": "4e731c02a827bf8dc37a828e322c071e821688b9593e3b315a7700b0521f7bcd"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/README.md",
+          "manifest_member": {
+            "bytes": 5709,
+            "path": "README.md",
+            "sha256": "96bddb1a9984347c1660616804b73682490355bc30f4d166a4013431b0de5567"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/build_candidate.py",
+          "manifest_member": {
+            "bytes": 14110,
+            "path": "build_candidate.py",
+            "sha256": "b85ba37afbcb26243d55915468fbb17d2e3b9104722499d3c736b89d97f116b7"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/PARENT-INTERFACE.original.json",
+          "manifest_member": {
+            "bytes": 5862,
+            "path": "reference/PARENT-INTERFACE.original.json",
+            "sha256": "6753197cd3b8d1780eebb27f3f2f3ab59fa62203a302118379f2cf6298f1fcef"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/PARENT-SOURCE-MANIFEST.original.json",
+          "manifest_member": {
+            "bytes": 7317,
+            "path": "reference/PARENT-SOURCE-MANIFEST.original.json",
+            "sha256": "6d7920a771d790e66eb45c7469a7a68a253b9247f11b9986ff868f0e5835606d"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/close_cpu_negative.py",
+          "manifest_member": {
+            "bytes": 43958,
+            "path": "reference/close_cpu_negative.py",
+            "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/ledger_prefix_negative.py",
+          "manifest_member": {
+            "bytes": 29465,
+            "path": "reference/ledger_prefix_negative.py",
+            "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/negative_originals.py",
+          "manifest_member": {
+            "bytes": 37253,
+            "path": "reference/negative_originals.py",
+            "sha256": "939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/root-Q2-53b5.original.py",
+          "manifest_member": {
+            "bytes": 45952,
+            "path": "reference/root-Q2-53b5.original.py",
+            "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/root-capture-r8-50a5.original.py",
+          "manifest_member": {
+            "bytes": 71820,
+            "path": "reference/root-capture-r8-50a5.original.py",
+            "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/reference/root_cpu_negative.py",
+          "manifest_member": {
+            "bytes": 15256,
+            "path": "reference/root_cpu_negative.py",
+            "sha256": "29531f8f54716b6aa83f76a3007473b9b5a38f4fbd6b8f74d895bfa2a1d3a748"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/source/close_cpu_negative.py",
+          "manifest_member": {
+            "bytes": 43958,
+            "path": "source/close_cpu_negative.py",
+            "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/source/ledger_prefix_negative.py",
+          "manifest_member": {
+            "bytes": 29465,
+            "path": "source/ledger_prefix_negative.py",
+            "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/source/negative_originals.py",
+          "manifest_member": {
+            "bytes": 44221,
+            "path": "source/negative_originals.py",
+            "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/source/root_cpu_negative.py",
+          "manifest_member": {
+            "bytes": 15256,
+            "path": "source/root_cpu_negative.py",
+            "sha256": "d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/test_capture_compatibility.py",
+          "manifest_member": {
+            "bytes": 9130,
+            "path": "test_capture_compatibility.py",
+            "sha256": "96728b4b00780d57034a3bac9ce87ae8e52ccf9fdcf5e545acaa23084423997a"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/validation/COMPATIBILITY-TESTS.json",
+          "manifest_member": {
+            "bytes": 4629,
+            "path": "validation/COMPATIBILITY-TESTS.json",
+            "sha256": "d0b96e40769a36fa76ab368a54f88eb7363d81a69af884b5a606fb50bdc5cd5e"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/validation/DERIVATION.json",
+          "manifest_member": {
+            "bytes": 2373,
+            "path": "validation/DERIVATION.json",
+            "sha256": "05c9bf514fde6703dcfe19286ca40962d425fca54df417fe483b1a4c13fb530b"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/validation/close_cpu_negative.py.patch",
+          "manifest_member": {
+            "bytes": 0,
+            "path": "validation/close_cpu_negative.py.patch",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/validation/ledger_prefix_negative.py.patch",
+          "manifest_member": {
+            "bytes": 0,
+            "path": "validation/ledger_prefix_negative.py.patch",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/validation/negative_originals.py.patch",
+          "manifest_member": {
+            "bytes": 11442,
+            "path": "validation/negative_originals.py.patch",
+            "sha256": "9d1df659d39dddad9a359f4c8ee969de8cd6b5187aa7bac66d53c8035b4e8bdc"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/cpu-cancel-compat-candidate01/package/validation/root_cpu_negative.py.patch",
+          "manifest_member": {
+            "bytes": 808,
+            "path": "validation/root_cpu_negative.py.patch",
+            "sha256": "81d6480d4ea877f56bbfa6ba9801e92493b81c21a15e9ccb32d5008cbcc2cbba"
+          }
+        }
+      ]
+    },
+    {
+      "checkpoint_package": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package",
+      "copied_members": 10,
+      "declared_members": 19,
+      "declared_original_manifest_preserved_unchanged": true,
+      "not_cached_not_fabricated_members": [
+        {
+          "bytes": 33761,
+          "path": "validation/SOURCE-DERIVATION.json",
+          "sha256": "7228932d80da0e43b5b6fc843da2ff7ccad9b89e2926e52b1448146a1373d042"
+        },
+        {
+          "bytes": 25202,
+          "path": "validation/STRUCTURAL-CHECKS.json",
+          "sha256": "338fec3084d14883de4f600ffe62b832427bd1de4d4f4a2bf5e31b4f0e030de8"
+        },
+        {
+          "bytes": 29838,
+          "path": "DERIVE.original.py",
+          "sha256": "444409a2ef2339084502f3f0d858a5f346eefc0799b7ebfe41688405696ef6d3"
+        },
+        {
+          "bytes": 28834,
+          "path": "validation/failed-generation-4745/DERIVE.original.py",
+          "sha256": "acbda088b26fe91a4ab4efc7ebf0744360ec623fbc75564e44ab09b0b5f47204"
+        },
+        {
+          "bytes": 726,
+          "path": "validation/failed-generation-4745/STATUS.original.json",
+          "sha256": "a94afc62f4f5b7c49bbcdc888dae363a54f60e64ae4662a8630efdfb169ab247"
+        },
+        {
+          "bytes": 1151,
+          "path": "validation/failed-generation-4745/READ.original.json",
+          "sha256": "faa4076f4a8a9de575fb3abb929335153bc991eeaf024e0573b56f2eda472d3b"
+        },
+        {
+          "bytes": 273,
+          "path": "validation/failed-generation-4745/stderr.original",
+          "sha256": "7b1bac6c7a5b5d886333916a0d2db49f8d42f4283c9b41926cf2c8dd5839afd9"
+        },
+        {
+          "bytes": 0,
+          "path": "validation/failed-generation-4745/stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 2435,
+          "path": "validation/failed-generation-4745/FAILURE-NOTE.json",
+          "sha256": "81dc63e6b7fa8885871c878ee2cd2d6bd1c405f550ef360e34166259a243af48"
+        }
+      ],
+      "original_manifest_closed": false,
+      "scope": "explicit local source/review snapshot; original package not fully cached",
+      "source_manifest": {
+        "bytes": 6924,
+        "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/SOURCE-MANIFEST.json",
+        "sha256": "1b4b515646c4ba6936633b727895eca7a21afb69d28914fdc66213c5411344c7"
+      },
+      "verified_copied_members": [
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/source/policy_runtime_properties_verifier.py",
+          "manifest_member": {
+            "bytes": 126796,
+            "path": "source/policy_runtime_properties_verifier.py",
+            "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/source/runtime_properties_host_originals.py",
+          "manifest_member": {
+            "bytes": 3340,
+            "path": "source/runtime_properties_host_originals.py",
+            "sha256": "5d6526dc44498e8ce5a6f9f95bcb9c111c66fb2f82e8288222ab72d396bf40f6"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/source/make_runtime_properties_adoption_inputs.py",
+          "manifest_member": {
+            "bytes": 6226,
+            "path": "source/make_runtime_properties_adoption_inputs.py",
+            "sha256": "4b3a8783111bef909949ba88d2677a937108910f7c24a091d979e03eda9f5616"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/source/make_runtime_properties_adoption.py",
+          "manifest_member": {
+            "bytes": 2938,
+            "path": "source/make_runtime_properties_adoption.py",
+            "sha256": "dff6f3e546a4fa60c565ce17f5838c23e665ffd934202182f633e72400b7c8fe"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/reference/applied-package-parent.policy_runtime_properties_verifier.py",
+          "manifest_member": {
+            "bytes": 124306,
+            "path": "reference/applied-package-parent.policy_runtime_properties_verifier.py",
+            "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/reference/applied-package-parent.runtime_properties_host_originals.py",
+          "manifest_member": {
+            "bytes": 3338,
+            "path": "reference/applied-package-parent.runtime_properties_host_originals.py",
+            "sha256": "d1a3b84875fe1b02867b904463621fff5a602160cdebe300db5a89dd40b43593"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/reference/applied-package-parent.make_runtime_properties_adoption_inputs.py",
+          "manifest_member": {
+            "bytes": 6046,
+            "path": "reference/applied-package-parent.make_runtime_properties_adoption_inputs.py",
+            "sha256": "e11f0e72257c80efbd38468a5c700ea9c7ae5c1543abd3aab5e83c41fb20b262"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/reference/applied-package-parent.make_runtime_properties_adoption.py",
+          "manifest_member": {
+            "bytes": 2936,
+            "path": "reference/applied-package-parent.make_runtime_properties_adoption.py",
+            "sha256": "95b27ac75e7e887f205d390975f0e805f24d2b03214275ee55b7a6c69b0cdae6"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/validation/INDEPENDENT-IDENTITIES-INCREMENT.patch",
+          "manifest_member": {
+            "bytes": 20379,
+            "path": "validation/INDEPENDENT-IDENTITIES-INCREMENT.patch",
+            "sha256": "71f36efe25315951a846646f921da191c3943d29e827a74e7bb691c4e7598659"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-host-verifier74f4/package/INTERFACE.json",
+          "manifest_member": {
+            "bytes": 2564,
+            "path": "INTERFACE.json",
+            "sha256": "006462cf4d720d188686a6af971b3b453afa587afba52052fd6748f31587363f"
+          }
+        }
+      ]
+    },
+    {
+      "checkpoint_package": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package",
+      "copied_members": 14,
+      "declared_members": 22,
+      "declared_original_manifest_preserved_unchanged": true,
+      "not_cached_not_fabricated_members": [
+        {
+          "bytes": 2956,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/COMPARISON-RESULT.json",
+          "sha256": "18522e569e636964f25e51cde150d02892a56dee56ece4d7d63b8c430a844e12"
+        },
+        {
+          "bytes": 90222,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/development/derive_comparison_sources.py",
+          "sha256": "12f5eed35f8698e3149eac1c97809d5085d19314c4f93102e8722c78d04d8602"
+        },
+        {
+          "bytes": 87547,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/development/derive_transport_sources.py",
+          "sha256": "3c22a7121c7963787e023982425d0b15b97523bc0d7f14e78a26f6fdbf772828"
+        },
+        {
+          "bytes": 14758,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/COMPARISON-SOURCE-DERIVATION.json",
+          "sha256": "82dc81b5defb1eefcd4c06de52f8dc616a4780e1beb0d18ba8b849924b9fffbd"
+        },
+        {
+          "bytes": 609,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/COMPARISON-SOURCE-GATES.json",
+          "sha256": "90fb9d37fd9e5a286c224544cf81f857a91366e13ecd6658dda065d9be8ee1e7"
+        },
+        {
+          "bytes": 1337,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/RUNNER-INCREMENT.patch",
+          "sha256": "7a3a5600da3d39ad5e509b470353ea451bdaa355b2f05bfc3d269a6fe7781ddb"
+        },
+        {
+          "bytes": 22654,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/TRANSPORT-SOURCE-DERIVATION.json",
+          "sha256": "567d4f35b462566d6d2c3111d3b2f54e5bea514a16ba75a362c49e5e48067516"
+        },
+        {
+          "bytes": 720,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/TRANSPORT-SOURCE-GATES.json",
+          "sha256": "fd025951ba29d1bd9e9e41eccc2263f8aca966de342a2e9497833953ba53885c"
+        }
+      ],
+      "original_manifest_closed": false,
+      "scope": "explicit local source/review snapshot; original package not fully cached",
+      "source_manifest": {
+        "bytes": 11293,
+        "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/MANIFEST.json",
+        "sha256": "8cd69845723afd2256718409afdf07fe6cff9c0487d1a381ba0779293b7ac233"
+      },
+      "verified_copied_members": [
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/COMPARISON-SOURCE-MANIFEST.json",
+          "manifest_member": {
+            "bytes": 3251,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/COMPARISON-SOURCE-MANIFEST.json",
+            "sha256": "314619e8767c3159a6ca767c2147629e65809e3578e656b3138c06d7dff07840"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/INTERFACE.json",
+          "manifest_member": {
+            "bytes": 4498,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/INTERFACE.json",
+            "sha256": "a32b762c3e7ada1bbc3cb0e31cb464931d5754334ffbbab1b783d179fd598025"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/comparison-source/full_policy_compare_runtime_properties.py",
+          "manifest_member": {
+            "bytes": 61615,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/comparison-source/full_policy_compare_runtime_properties.py",
+            "sha256": "d8acacb496fbc1ff1af20a85daa8d03d1552fcbaeed1f837bfa65c1d4cd42871"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/comparison-source/policy_runtime_properties_image.c",
+          "manifest_member": {
+            "bytes": 22838,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/comparison-source/policy_runtime_properties_image.c",
+            "sha256": "da60ee90209a26216f053064a7ca47ebcb73c4730b4e00378886b5d653de09aa"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/comparison-source/post_live_compare_runtime_properties.py",
+          "manifest_member": {
+            "bytes": 65251,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/comparison-source/post_live_compare_runtime_properties.py",
+            "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/comparison-source/run_post_live_actual.py",
+          "manifest_member": {
+            "bytes": 9767,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/comparison-source/run_post_live_actual.py",
+            "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/comparison-source/run_runtime_properties_actual.py",
+          "manifest_member": {
+            "bytes": 21915,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/comparison-source/run_runtime_properties_actual.py",
+            "sha256": "434f954b493c1aadc90929dbc8bba894ffec8acb5f17420746cc520aecac94e9"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/source/collect_actual_post_originals.py",
+          "manifest_member": {
+            "bytes": 19671,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/source/collect_actual_post_originals.py",
+            "sha256": "7f6c064c4288b912c090ee3491792e911b2c3af3443a6b4b91d27b77e1349200"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/source/mirror_actual_post_proof.py",
+          "manifest_member": {
+            "bytes": 19901,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/source/mirror_actual_post_proof.py",
+            "sha256": "5ee25517a5dbd09e9e46046f57a5602a18dd6fe22b54c10959df275c6d2ad32b"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/source/retain_actual_live_inputs.py",
+          "manifest_member": {
+            "bytes": 21133,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/source/retain_actual_live_inputs.py",
+            "sha256": "800fb84ebdf098e43fffde4b48aa73d79ad844acec5123d0018cb0b8ee2388b3"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/validation/COLLECTOR-INCREMENT.patch",
+          "manifest_member": {
+            "bytes": 4794,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/COLLECTOR-INCREMENT.patch",
+            "sha256": "d6460469d027546c1ae545e03a965362fe259e3c19673d48c685adafaff4b4bb"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/validation/MIRROR-INCREMENT.patch",
+          "manifest_member": {
+            "bytes": 8733,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/MIRROR-INCREMENT.patch",
+            "sha256": "cae827b905cbaacdc1d2036ac3cb499f8507638a6586759f26e00f859c236dc0"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/validation/POST-INCREMENT.patch",
+          "manifest_member": {
+            "bytes": 7711,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/POST-INCREMENT.patch",
+            "sha256": "ff8f71535d605e1573b61e3f47e3034a6593485ddca646ae5be0361fabe90825"
+          }
+        },
+        {
+          "checkpoint_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/independent-post-v2/package/validation/RETENTION-INCREMENT.patch",
+          "manifest_member": {
+            "bytes": 11963,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/validation/RETENTION-INCREMENT.patch",
+            "sha256": "f1a6499da96d116bb9969a0d9ed809da1aec6d42fa3b6aa45090ca401fc62108"
+          }
+        }
+      ]
+    }
+  ],
+  "missing_originals_reconstructed": false,
+  "schema": "hepta.fixed19.checkpoint-source-manifest-coverage.v1",
+  "source_manifest_bytes_rewritten": false
+}

@@ -1,0 +1,161 @@
+{
+  "actual_retention_calls": 0,
+  "actual_root_execution": {
+    "bytes": 21536,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/ROOT-EXECUTION.original.json",
+    "sha256": "d5173756537a5303b78573b21b43d57e64bfdfe75010115b55b1fe925b1da849"
+  },
+  "actual_wrapper": {
+    "bytes": 27449,
+    "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/ACTOR-WRAPPER.original.json",
+    "sha256": "573a115a960b2a61250b42436d9b8bdea718a08b62aba909055759d5ab25222f"
+  },
+  "check_count": 13,
+  "checks": [
+    {
+      "name": "constructor_and_diagnostic_compile",
+      "passed": true
+    },
+    {
+      "name": "actual_native_input_exact13_fields",
+      "passed": true
+    },
+    {
+      "name": "actual_capture_all52_mandatory_names",
+      "passed": true
+    },
+    {
+      "name": "actual_export_is_f821_not_offline_candidate",
+      "passed": true
+    },
+    {
+      "name": "sole_captured_verifier_5cd_actual_root574e_exact2_preserved",
+      "passed": true
+    },
+    {
+      "name": "reject_root_mutation",
+      "passed": true
+    },
+    {
+      "name": "reject_duplicate_mutation",
+      "passed": true
+    },
+    {
+      "name": "reject_missing_mutation",
+      "passed": true
+    },
+    {
+      "name": "reject_source_mutation",
+      "passed": true
+    },
+    {
+      "name": "unchanged_original_exact_rejects_actual_observed_role_order",
+      "passed": true
+    },
+    {
+      "name": "rejection_explains_same_unique_four_tuple_identities",
+      "passed": true
+    },
+    {
+      "name": "diagnostic_calls_original_gate_once_has_no_live_put_or_remote_calls",
+      "passed": true
+    },
+    {
+      "name": "retention_transport_and_cleanup_inverse_exact_to_a57",
+      "passed": true
+    }
+  ],
+  "comparison_processes": 0,
+  "constructor": {
+    "bytes": 15169,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/make_actual_live02_provenance.py",
+    "sha256": "65ac2c07fd8e955f2467cf0f901c44eae939bd663645d0bf8eb73c68d49713d8"
+  },
+  "diagnostic": {
+    "bytes": 6453,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/diagnose_actual_live02_provenance.py",
+    "sha256": "e63c4be2672ea2bed101f025c4e1fe34c0a5321605d3d049b103132b55eedae6"
+  },
+  "live_files_written": 0,
+  "native_mandatory_count": 52,
+  "original_exact_rejection": {
+    "detail": "exact expected fields differ",
+    "error_type": "ValueError",
+    "frames": [
+      {
+        "function": "<module>",
+        "line": 26,
+        "source": "<stdin>"
+      },
+      {
+        "function": "exact",
+        "line": 99,
+        "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py"
+      },
+      {
+        "function": "need",
+        "line": 82,
+        "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py"
+      }
+    ],
+    "original_exact_field_mismatches": [
+      {
+        "actual": [
+          [
+            23779,
+            23779,
+            23779,
+            18132959
+          ],
+          [
+            23913,
+            23913,
+            23913,
+            18133299
+          ],
+          [
+            23911,
+            23911,
+            23911,
+            18133265
+          ]
+        ],
+        "actual_type": "list",
+        "expected": [
+          [
+            23913,
+            23913,
+            23913,
+            18133299
+          ],
+          [
+            23911,
+            23911,
+            23911,
+            18133265
+          ],
+          [
+            23779,
+            23779,
+            23779,
+            18132959
+          ]
+        ],
+        "expected_type": "list",
+        "key": "component_role_identities",
+        "missing": false
+      }
+    ]
+  },
+  "original_full_verify_calls": 0,
+  "passed_count": 13,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "retention_template": {
+    "bytes": 19769,
+    "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/live02_post_retention_capture_r6_candidate01/source/retain_actual_live_inputs.py",
+    "sha256": "9f13fd790c16fa39d7a20ac2784f2d2f2c609923c93b24d666e58f703383649e"
+  },
+  "schema": "hepta.runtime-properties.live02-native-provenance-source-review.v1",
+  "state": "LOCAL_SOURCE_AND_ACTUAL_FIELD_DIAGNOSTIC_ONLY_ORIGINAL_FULL_GATE_NOT_RUN"
+}

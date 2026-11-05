@@ -1,0 +1,28 @@
+{
+  "adoption_writes": 0,
+  "candidate": {
+    "bytes": 19991,
+    "sha256": "e2ba3f8e942e5543e252a2782d66ab528da40c9c23a7d9f70a04381dd0980af8"
+  },
+  "changes": [
+    "Future read-only host transport fixed from860a to0374",
+    "Exception handler closes owned local output capture before recording failure, retaining remote-unknown semantics"
+  ],
+  "mirror_executions": 0,
+  "parent": {
+    "bytes": 19901,
+    "sha256": "5ee25517a5dbd09e9e46046f57a5602a18dd6fe22b54c10959df275c6d2ad32b"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.runtime-properties.post-proof-mirror-transport-increment.v1",
+  "source_only": true,
+  "unchanged": [
+    "ACTUAL_PROOF remains None",
+    "Dual v2 identity mapping and original actual live02 provenance",
+    "All packet, path-count, expanded-byte and archive limits",
+    "Fixed output namespace and request shapes",
+    "Success result schema"
+  ],
+  "whole_source_inverse_equal": true
+}

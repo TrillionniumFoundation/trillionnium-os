@@ -1,0 +1,136 @@
+{
+  "actual_generation_bound_only_by_explicit_validated_plan": true,
+  "automatic_execution": false,
+  "cases": [
+    "COMP-01",
+    "NEG-03"
+  ],
+  "files": [
+    {
+      "bytes": 14897,
+      "path": "README.md",
+      "sha256": "b16cf285d6f9d64fd248a4a4e801591155d9c7d40f266a233317e46f928812cd"
+    },
+    {
+      "bytes": 31813,
+      "path": "reference/active_runtime_r10.original.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 68481,
+      "path": "reference/capture_transport0374.original.py",
+      "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+    },
+    {
+      "bytes": 15724,
+      "path": "reference/component_source_context.original.py",
+      "sha256": "2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d"
+    },
+    {
+      "bytes": 786,
+      "path": "reference/geometry-assets/GIT-ORIGIN.json",
+      "sha256": "097473b50243d5566db2b2a6b74c40b60195a4cff8b9a1182684e227f214e7a2"
+    },
+    {
+      "bytes": 19356,
+      "path": "reference/geometry-assets/synthetic.jpg",
+      "sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521"
+    },
+    {
+      "bytes": 1191,
+      "path": "reference/geometry-assets/synthetic.png",
+      "sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13"
+    },
+    {
+      "bytes": 1438,
+      "path": "reference/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 29065,
+      "path": "source/owned_capture.py",
+      "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+    },
+    {
+      "bytes": 12347,
+      "path": "source/p4_component_dispatch_once.py",
+      "sha256": "e44191ad60d264504322e03933389264033e527dcd05978ef34c1c13a56b0ed7"
+    },
+    {
+      "bytes": 29295,
+      "path": "source/physical_component_common.py",
+      "sha256": "9a722bc807bc6a3bd2c084b3f308ec1cea5656407da25faeeb95284ba9c9747f"
+    },
+    {
+      "bytes": 13551,
+      "path": "source/restore_existing_rotation_once.py",
+      "sha256": "cf252f0ba5f35c5acdb74ee178000ce872bc0a484bd6da13f384d95724d76cf3"
+    },
+    {
+      "bytes": 24645,
+      "path": "source/run_physical_component_once.py",
+      "sha256": "bd5cbd63e0a04b4697244e49c2a70fa528adb74f1ee4ffddab5fd07eb83adce8"
+    },
+    {
+      "bytes": 38480,
+      "path": "source/verify_physical_component.py",
+      "sha256": "745869a88b0db60745800942d82e0ebd61927f2c996e8dbbf3746afd1e38dc89"
+    },
+    {
+      "bytes": 576,
+      "path": "templates/COMP-01-ROOT-PLAN.template.json",
+      "sha256": "70717dd502fa57bd2306d7a368b1ca097ee02d856361dce939495e757338604f"
+    },
+    {
+      "bytes": 631,
+      "path": "templates/NEG-03-ROOT-PLAN.template.json",
+      "sha256": "8ea458276633b384c7c7f31f34d979b8e29a4cfdba74fdaa17e2d5d0ac0c9159"
+    },
+    {
+      "bytes": 546,
+      "path": "templates/NEG03-FIXTURE-PLAN.template.json",
+      "sha256": "08d570c8fae60088de1a50272b05f1f89c26b22ad4b2d4019038fa4a023aa1fd"
+    },
+    {
+      "bytes": 1245,
+      "path": "validation/CAPTURE-DERIVATION.json",
+      "sha256": "d325f7e301777a4d176f9742996b27cf83a1235c9ac594f8cd050bdeb5713b2c"
+    },
+    {
+      "bytes": 944,
+      "path": "validation/LITERAL-PATH-FIX.json",
+      "sha256": "f0761186f275802d34d3412f72c45b7115b99eccf0558cc269db190fe9072631"
+    },
+    {
+      "bytes": 708,
+      "path": "validation/LITERAL-PATH-FIX.patch",
+      "sha256": "e78e17eb2d680af01e766092239b410239a6d63ee2ae19b0a7ea076a2fe4b204"
+    },
+    {
+      "bytes": 7370,
+      "path": "validation/LOCAL-SOURCE-RESULT.json",
+      "sha256": "b68ff3c97fe38ed0f961208de6628b03627431b01a0281152bdb1ea0776b374d"
+    },
+    {
+      "bytes": 4267,
+      "path": "validation/derive_owned_capture.py",
+      "sha256": "6b54c44096b9a262646471657e73ba09558dfda17d89b0516d2a9f42ee1c97c9"
+    },
+    {
+      "bytes": 17514,
+      "path": "validation/test_source_boundaries.py",
+      "sha256": "3915995cad9ba764f41487d2752426bc500cca690a7b1b90786f4f7ec9bd8b54"
+    }
+  ],
+  "final01_manifest_sha256": "cdb9ffaa058c1fcf9a29f03bf0f534cfe9ea0dbe1ecc8bcda8b657cd46c520e4",
+  "final02_increment": "one static path AST operator Add to Div; effect/capture/restoration/verifier bytes unchanged",
+  "original_transport_donor_sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd",
+  "owned_capture_sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3",
+  "phone_calls": 0,
+  "physical_cases_executed": 0,
+  "schema": "hepta.physical-component.root-source-package.v1",
+  "source_boundaries_local_checks": 40,
+  "source_increment_scope": "new standalone Root/P4 direct component wrapper, pure original verifier and same-case restore-only; original production15/component/active/capture methods unchanged",
+  "state": "SOURCE_FROZEN_NO_PHYSICAL_CASE_EXECUTION",
+  "synthetic_receipts_are_not_physical_evidence": true
+}

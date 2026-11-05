@@ -1,0 +1,218 @@
+{
+  "capacity_boundaries": {
+    "actual_future_archive_or_proof_size_not_claimed": true,
+    "adoption_all_original_inventory_bytes_max": 33554432,
+    "collector_original_max_each_bytes": 67108864,
+    "collector_original_max_paths": 2048,
+    "complete_archive_compressed_bytes_max": 268435456,
+    "complete_archive_unique_raw_bytes_max": 268435456,
+    "final_verifier_sum_of_all_small_proof_path_bytes_max": 16777216,
+    "important_distinction": "Collector records capacity without itself imposing the final16MiB path-sum gate. The helper rejects an actual oversized index before deriving mirror sources, and74f4 independently enforces16MiB again. No bound is expanded.",
+    "mirror_packet_compressed_bytes_max": 16777216,
+    "mirror_packet_expanded_bytes_max": 67108864,
+    "mirror_unique_raw_objects_bytes_max": 67108864,
+    "new_helper_prechecks_actual_index_path_sum_before_mirror_binding": true,
+    "small_proof_max_paths": 512
+  },
+  "collector_findings": {
+    "actual_completion_literal_remains_none": true,
+    "actual_controller_gate": [
+      "Raw status and read job_id equal the frozen actual controller job",
+      "Status succeeded, integer exit_code0, complete and durable output, not timed out",
+      "Controller stdout offset0 through EOF, next_offset and size and stored and seen match exact UTF8 bytes; raw hex equals those bytes",
+      "Native0793 runner stdout links actual report, actual execution, actual candidate and16checks",
+      "Native post execution and comparator PROCESS terminals, exact argv and unchanged input bookends are checked"
+    ],
+    "closed_raw_archive_covers": [
+      "Current comparison source root",
+      "Actual comparison output tree including normalized/orbit images",
+      "Retained cross-host live inputs tree",
+      "Collector source/request/controller originals tree",
+      "All process input originals, runtime libraries,tool inventory package/readers and image build descriptors"
+    ],
+    "new_helper_extra_controller_checks": [
+      "stderr offset,next_offset,size,seen,stored all0; EOF true and text/hex empty",
+      "Actual report/export pins must identify f8219 rather than offline105ee"
+    ],
+    "no_comparator_query_or_network_execution": true,
+    "proof_get_coverage": [
+      "Report, plan, outer process, execution and exact runner source",
+      "All report sources including independent74f4 and applied5cd; one unique entry per source identity",
+      "Scope, parent adoption, delta/full/parent rules and post live inputs",
+      "Parent11 read AV originals,11 set-deny originals and existing APEX original",
+      "All retained child PROCESS/stdout/stderr originals except separate all-TE orbit archives",
+      "Image build/process and compiler stdout/stderr",
+      "Actual collector/request and original controller status/read bytes"
+    ],
+    "raw_archive_readback_and_original_full9_bookends": true,
+    "request_schema": "hepta.runtime-properties-r10.post-comparison-archive-request.v1",
+    "required_binding_fields": [
+      "report",
+      "execution",
+      "controller_job_id"
+    ]
+  },
+  "inputs": {
+    "adoption_assembler": {
+      "bytes": 6226,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/make_runtime_properties_adoption_inputs.py",
+      "sha256": "4b3a8783111bef909949ba88d2677a937108910f7c24a091d979e03eda9f5616"
+    },
+    "adoption_entry": {
+      "bytes": 2938,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/make_runtime_properties_adoption.py",
+      "sha256": "dff6f3e546a4fa60c565ce17f5838c23e665ffd934202182f633e72400b7c8fe"
+    },
+    "collector": {
+      "bytes": 19671,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/source/collect_actual_post_originals.py",
+      "sha256": "7f6c064c4288b912c090ee3491792e911b2c3af3443a6b4b91d27b77e1349200"
+    },
+    "collector_patch": {
+      "bytes": 4794,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/validation/COLLECTOR-INCREMENT.patch",
+      "sha256": "d6460469d027546c1ae545e03a965362fe259e3c19673d48c685adafaff4b4bb"
+    },
+    "helper_checks": {
+      "bytes": 2121,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/POST-EVIDENCE-HELPER-LOCAL-CHECKS.json",
+      "sha256": "4fcf59de06ac9a32c94bd9f3cc090fabbe889d9e5c78cda77973e52f64c667b7"
+    },
+    "independent_verifier": {
+      "bytes": 126796,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/policy_runtime_properties_verifier.py",
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    },
+    "mirror_patch": {
+      "bytes": 8733,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/validation/MIRROR-INCREMENT.patch",
+      "sha256": "cae827b905cbaacdc1d2036ac3cb499f8507638a6586759f26e00f859c236dc0"
+    },
+    "original_mirror": {
+      "bytes": 19901,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/source/mirror_actual_post_proof.py",
+      "sha256": "5ee25517a5dbd09e9e46046f57a5602a18dd6fe22b54c10959df275c6d2ad32b"
+    },
+    "preparation_helper": {
+      "bytes": 24852,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_independent_post_evidence.py",
+      "sha256": "10067a441965beb1231cf9a9fe8304e49eb2672caa4d9bdcff795b881120a428"
+    },
+    "safe_mirror_derivation": {
+      "bytes": 945,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/independent_post_mirror_capture_r6_candidate01/validation/DERIVATION.json",
+      "sha256": "08cca0e3e04572d67d7a7767a85ae0c3aafbb8748491c0d28687d706d676f854"
+    },
+    "safe_mirror_template": {
+      "bytes": 19991,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/independent_post_mirror_capture_r6_candidate01/source/mirror_actual_post_proof.py",
+      "sha256": "e2ba3f8e942e5543e252a2782d66ab528da40c9c23a7d9f70a04381dd0980af8"
+    }
+  },
+  "mirror_findings": {
+    "all_new_and_reused_retained_metadata_bookended": true,
+    "dual_identity_aliases": [
+      "Applied5cd original P4 descriptor maps to existing captured Mac source",
+      "Independent74f4 original P4 descriptor maps to its separate canonical Mac source",
+      "All other original paths receive distinct new retained files; no raw report or full-nine metadata rewriting"
+    ],
+    "increment": [
+      "Fixed future host transport0374",
+      "Exception cleanup closes owned output readers and records host_cleanup before failure; leaves child/remote unknown when not joined"
+    ],
+    "independent_review": {
+      "result": "Two-hunk inverse and0374 Chain.__new__/remote_read/output schema/ownership review passed via collaboration message; no remote execution.",
+      "reviewer": "/root/transport_review"
+    },
+    "original5ee2_transport_is860a_and_must_not_execute_unmodified": true,
+    "original_index_raw_bytes_preserved_and_only_mapping_descriptors_change": true,
+    "safe_e2ba_whole_source_inverse_to5ee2": true,
+    "strict_packet_object_set_sha_size_checks": true
+  },
+  "native_adoption_path": {
+    "adopter_behavior": "Revalidates complete inputs; explicit execute-root-adoption and actualf8219 SHA required; calls74f4.verify_adoption before create-only policy adoption output.",
+    "adopter_source_sha256": "dff6f3e546a4fa60c565ce17f5838c23e665ffd934202182f633e72400b7c8fe",
+    "adoption_schema_remains_v1": true,
+    "assembler_behavior": "Collects v2 live and transitive failed-prior originals, both proof file sets and both exact verifier sources; calls74f4.validate_adoption_value(require_root_decision=False) before creating inputs.",
+    "assembler_source_sha256": "4b3a8783111bef909949ba88d2677a937108910f7c24a091d979e03eda9f5616",
+    "collection_plan_fields": [
+      "schema",
+      "live_provenance",
+      "offline_proof_inputs",
+      "post_live_proof_inputs"
+    ],
+    "collection_plan_schema": "hepta.runtime-properties-r10.adoption-input-collection-plan.v1",
+    "helper_only_emits_collection_plan_and_native_argv": true
+  },
+  "preparation_helper_interface": {
+    "adoption_collection_fields": [
+      "schema",
+      "phase=adoption-collection",
+      "mirror_result exact3"
+    ],
+    "adoption_collection_outputs": [
+      "ADOPTION-COLLECTION-PLAN.json",
+      "PREPARATION-RESULT.json with native input-assembler argv"
+    ],
+    "cli": [
+      "/usr/bin/python3",
+      "-I",
+      "-B",
+      "PREPARE_HELPER_PATH",
+      "--inputs-desc",
+      "EXACT3_JSON_OF_LOCAL_INPUTS",
+      "--out",
+      "NEW_MAC_PREPARATION_DIRECTORY",
+      "--write-source-only"
+    ],
+    "collector_fields": [
+      "schema",
+      "phase=collector",
+      "template exact3 matching7f6c",
+      "report_copy exact3",
+      "execution_copy exact3",
+      "controller_status_copy exact3",
+      "controller_read_copy exact3"
+    ],
+    "collector_outputs": [
+      "p4/source/collect_actual_post_originals.py",
+      "p4/controller-status.original.json",
+      "p4/controller-read.original.json",
+      "p4/ARCHIVE-REQUEST.json",
+      "PREPARATION-RESULT.json with exact p4_payload mappings and argv"
+    ],
+    "mirror_fields": [
+      "schema",
+      "phase=mirror",
+      "template exact3 matchinge2ba",
+      "report_copy exact3",
+      "collector_result_copy exact3",
+      "proof_index_copy exact3",
+      "capacity_copy exact3"
+    ],
+    "mirror_outputs": [
+      "source/mirror_actual_post_proof.py",
+      "MIRROR-REQUEST.json",
+      "PREPARATION-RESULT.json with actual9 bindings, unchanged capacities and argv"
+    ],
+    "no_remote_staging_or_execution": true,
+    "schema": "hepta.runtime-properties-r10.post-evidence-binding-inputs.v1",
+    "source_binding_is_one_literal_rhs_with_full_inverse": true,
+    "writes_are_local_create_only": true
+  },
+  "remaining_actual_steps": [
+    "Root must reconcile fixed comparison/collector/mirror namespaces and reuse any already-qualified actual result; no fresh-key retry or replay.",
+    "Obtain actual post16 native controller status/read and exact actual report/execution, then bind collector.",
+    "After actual collector completes, bind mirror using actual result/index/capacity; reject any actual final-verifier capacity overflow.",
+    "After actual mirror, run native inputs assembler, hash its actual new output, then explicitly run native adopter using the actualf8219 policy SHA."
+  ],
+  "reviewer_actual_collectors": 0,
+  "reviewer_actual_mirrors": 0,
+  "reviewer_actual_post_comparisons": 0,
+  "reviewer_adoptions": 0,
+  "reviewer_phone_calls": 0,
+  "reviewer_remote_calls": 0,
+  "schema": "hepta.runtime-properties.independent-post-evidence-local-review.v1",
+  "scope": "Local original-source and interface review; no remote or phone calls, actual post comparison, collector, mirror or adoption execution.",
+  "state": "REVIEWED_EXISTING_V2_CHAIN_WITH_REQUIRED_MIRROR_TRANSPORT_INCREMENT"
+}

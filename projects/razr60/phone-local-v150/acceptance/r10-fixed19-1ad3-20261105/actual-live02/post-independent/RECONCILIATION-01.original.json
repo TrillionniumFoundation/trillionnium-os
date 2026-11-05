@@ -1,0 +1,318 @@
+{
+  "comparison_executions": 0,
+  "mac": [
+    {
+      "exists": true,
+      "files": [
+        {
+          "bytes": 29103,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-post-live-root02-retention01/RESULT.json",
+          "sha256": "eb4dedcb8d56be9cb4a4cdab1c092e527400e32a0dc47a30c41f5dd6ebdc9381",
+          "summary": {
+            "comparison_cli": [
+              "/usr/bin/python3",
+              "-I",
+              "-B",
+              "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py",
+              "--plan",
+              "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+              "--plan-sha256",
+              "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518",
+              "--out",
+              "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01",
+              "--execute-host-only"
+            ],
+            "comparison_processes": 0,
+            "phone_operations": 0,
+            "post_plan": {
+              "bytes": 119744,
+              "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+              "sha256": "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518"
+            },
+            "request": {
+              "bytes": 1911,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/RETENTION-REQUEST.json",
+              "sha256": "72c6bd12b75d41d7164d53360fee22a237c732e121fc81b50fc9ec5f1373ff2a"
+            },
+            "source": {
+              "bytes": 22408,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/source/retain_actual_live_inputs.py",
+              "sha256": "d960f6ba80c9e171b1b6212ac7f626a8187e6f715668f3d8c69596394009b030"
+            },
+            "state": "ACTUAL_P4_INPUTS_RETAINED_COMPARISON_NOT_STARTED"
+          }
+        },
+        {
+          "bytes": 26157,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-post-live-root02-retention01/TRANSFER-INTENT.json",
+          "sha256": "4e19b829569a189040a8e5a98270710a3e8b59d1de4250204d4eba923ab0936c",
+          "summary": {
+            "comparison_processes": 0,
+            "phone_operations": 0,
+            "request": {
+              "bytes": 1911,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/RETENTION-REQUEST.json",
+              "sha256": "72c6bd12b75d41d7164d53360fee22a237c732e121fc81b50fc9ec5f1373ff2a"
+            },
+            "source": {
+              "bytes": 22408,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-final01/source/retain_actual_live_inputs.py",
+              "sha256": "d960f6ba80c9e171b1b6212ac7f626a8187e6f715668f3d8c69596394009b030"
+            }
+          }
+        }
+      ],
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-post-live-root02-retention01",
+      "top_names": [
+        "COLLECTION-INDEX.json",
+        "LIVE-PROVENANCE-INPUTS.original.json",
+        "POST-PLAN.original.json",
+        "REQUEST.original.json",
+        "RESULT.json",
+        "SOURCE.original.py",
+        "TRANSFER-INTENT.json",
+        "runtimeprops2-post-input-retention"
+      ]
+    },
+    {
+      "exists": false,
+      "files": [],
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-post-live-root02-independent-proof01"
+    }
+  ],
+  "p4": {
+    "observed_time_ns": 1793867840955304857,
+    "phone_calls": 0,
+    "rows": [
+      {
+        "exists": true,
+        "files": [
+          {
+            "bytes": 3251,
+            "keys": [
+              "actual_applied_verifier",
+              "comparison_executions",
+              "derivation",
+              "future_live_inputs",
+              "independent_verifier_hash_embedded",
+              "parent_manifest",
+              "phone_operations",
+              "policy_writes",
+              "schema",
+              "source_gates",
+              "sources",
+              "state",
+              "three_parent_sources_unchanged"
+            ],
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/ORIGINAL-MAC-COMPARISON-SOURCE-MANIFEST.original.json",
+            "sha256": "314619e8767c3159a6ca767c2147629e65809e3578e656b3138c06d7dff07840",
+            "summary": {
+              "phone_operations": 0,
+              "schema": "hepta.runtime-properties.final-source-package.v1",
+              "state": "INDEPENDENT_POST_SOURCE_REVIEW_PENDING_NO_COMPARISON"
+            }
+          },
+          {
+            "bytes": 12469,
+            "keys": [
+              "automatic_retry",
+              "closed_source_names",
+              "comparison_executions",
+              "exact_source_count",
+              "manifest_original",
+              "manifest_retained",
+              "mappings",
+              "phone_operations",
+              "policy_writes",
+              "raw_source_bytes",
+              "schema",
+              "source",
+              "source_originals",
+              "state"
+            ],
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/SOURCE-STAGE-RESULT.json",
+            "sha256": "adc78a45bb5957b43a872a51d2f3b3a9e0aba03c759c329978706585070851f3",
+            "summary": {
+              "automatic_retry": false,
+              "phone_operations": 0,
+              "schema": "hepta.runtime-properties-r10.independent-post-source-stage.v1",
+              "source": {
+                "bytes": 88447,
+                "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/STAGE-SOURCE.original.py",
+                "sha256": "eedd24a5561a759e5f9c1bc1a2d0dce6bedbfc6d16c20d6030e8927792549ae1"
+              },
+              "state": "EXACT_FIVE_REVIEWED_SOURCES_STAGED_AND_RAW_READBACK_COMPLETE"
+            }
+          },
+          {
+            "bytes": 88447,
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/STAGE-SOURCE.original.py",
+            "sha256": "eedd24a5561a759e5f9c1bc1a2d0dce6bedbfc6d16c20d6030e8927792549ae1"
+          },
+          {
+            "bytes": 61615,
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/full_policy_compare_runtime_properties.py",
+            "sha256": "d8acacb496fbc1ff1af20a85daa8d03d1552fcbaeed1f837bfa65c1d4cd42871"
+          },
+          {
+            "bytes": 22838,
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/policy_runtime_properties_image.c",
+            "sha256": "da60ee90209a26216f053064a7ca47ebcb73c4730b4e00378886b5d653de09aa"
+          },
+          {
+            "bytes": 65251,
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/post_live_compare_runtime_properties.py",
+            "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+          },
+          {
+            "bytes": 9767,
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py",
+            "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+          },
+          {
+            "bytes": 21915,
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_runtime_properties_actual.py",
+            "sha256": "434f954b493c1aadc90929dbc8bba894ffec8acb5f17420746cc520aecac94e9"
+          }
+        ],
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01",
+        "top_names": [
+          "ORIGINAL-MAC-COMPARISON-SOURCE-MANIFEST.original.json",
+          "SOURCE-STAGE-RESULT.json",
+          "STAGE-SOURCE.original.py",
+          "source"
+        ]
+      },
+      {
+        "exists": true,
+        "files": [
+          {
+            "bytes": 119744,
+            "keys": [
+              "applied_verifier_source",
+              "candidate",
+              "candidate_av_source",
+              "candidate_av_tool",
+              "delta_rule",
+              "full_rule",
+              "image_build_result",
+              "image_comparator",
+              "image_comparator_source",
+              "input_original_map",
+              "live_provenance_inputs",
+              "live_verifier_source",
+              "parent",
+              "parent_adoption",
+              "parent_apex_original",
+              "parent_av_originals",
+              "parent_rule",
+              "parent_set_av_originals",
+              "root_scope_decision",
+              "schema",
+              "secondary_observation",
+              "tool_inventory"
+            ],
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+            "sha256": "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518",
+            "summary": {
+              "applied_verifier_source": {
+                "bytes": 124306,
+                "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/090-a80f45d9115a3a88e211.original",
+                "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+              },
+              "candidate": {
+                "bytes": 2667740,
+                "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/085-20cf71845358ad95ee0b.bin",
+                "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+              },
+              "live_verifier_source": {
+                "bytes": 126796,
+                "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/001-28e327546a52043db686.original",
+                "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+              },
+              "parent": {
+                "bytes": 2667608,
+                "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/086-55bdb82beaf1fc064573.bin",
+                "sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7"
+              },
+              "schema": "hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2"
+            }
+          }
+        ],
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01",
+        "top_names": [
+          "COLLECTION-INDEX.original.json",
+          "LIVE-PROVENANCE-INPUTS.original.json",
+          "POST-PLAN.json",
+          "RETENTION-REQUEST.original.json",
+          "RETENTION-SOURCE.original.py",
+          "originals"
+        ]
+      },
+      {
+        "exists": true,
+        "files": [
+          {
+            "bytes": 1552,
+            "keys": [
+              "active_policy_writes",
+              "argv",
+              "automatic_retry",
+              "comparator",
+              "maximum_comparison_seconds",
+              "phone_operations",
+              "plan",
+              "schema",
+              "source"
+            ],
+            "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/INTENT.json",
+            "sha256": "103dcb6a1494e7bbfc06461dbcb8857a511a2c82efc0d8272647bf0d2fa97624",
+            "summary": {
+              "active_policy_writes": 0,
+              "automatic_retry": false,
+              "phone_operations": 0,
+              "plan": {
+                "bytes": 119744,
+                "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+                "sha256": "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518"
+              },
+              "schema": "hepta.runtime-properties.host-execution-intent.v1",
+              "source": {
+                "bytes": 9767,
+                "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py",
+                "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+              }
+            }
+          }
+        ],
+        "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01",
+        "top_names": [
+          "INTENT.json",
+          "comparison"
+        ]
+      }
+    ]
+  },
+  "phone_calls": 0,
+  "retention_executions": 0,
+  "schema": "root.existing.independent-post.reconciliation.v1",
+  "steps": [
+    {
+      "automatic_retry": false,
+      "phase": "read-existing-post-originals",
+      "pid": 47531,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/independent-post-reconciliation01/read-existing-post-originals/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 6705,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/independent-post-reconciliation01/read-existing-post-originals/stdout.original",
+        "sha256": "a0ff6178cc79d12b7de9777d2ebf2cb26e0f249516df1e49921de6a97edd68af"
+      }
+    }
+  ]
+}

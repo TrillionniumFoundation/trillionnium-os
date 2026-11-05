@@ -1,0 +1,5 @@
+#!/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3
+import os,sys
+if sys.argv[1]=='display': print('mViewports=['+os.environ['FIXTURE_VIEWPORT']+']')
+elif sys.argv[1]=='window': print('\n'.join(x for x in os.environ['FIXTURE_PAGE'].splitlines() if not x.startswith('topResumedActivity=')))
+elif sys.argv[1]=='activity': print('\n'.join(x for x in os.environ['FIXTURE_PAGE'].splitlines() if x.startswith('topResumedActivity=')))

@@ -1,0 +1,9 @@
+{
+  "input_commands": 0,
+  "kind": "host_synthetic_geometry_only",
+  "phone_calls": 0,
+  "physical_case_passed": false,
+  "returncode": 0,
+  "stderr": "",
+  "stdout": "HOST_FIXTURE_GUARD_CONTINUED\n"
+}

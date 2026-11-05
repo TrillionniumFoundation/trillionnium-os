@@ -1,0 +1,17 @@
+{
+  "actual_build_calls": 0,
+  "all_fixed_descriptors_equal": true,
+  "canonical_template_encoding_equal": true,
+  "finalization_none": true,
+  "fixed_input_count": 25,
+  "fixed_runtime_out": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-r8",
+  "freezer_bytes": 35375,
+  "freezer_sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509",
+  "phone_calls": 0,
+  "runtime_created": false,
+  "schema": "hepta.actual-r8-freeze.preparer-native-template-interface.v1",
+  "state": "EXACT_NATIVE_TEMPLATE_AND_FIXED_INPUTS_MATCH",
+  "template_bytes": 8368,
+  "template_has_only_schema_finalization_out_besides_FIXED": true,
+  "template_sha256": "debd3165e14bf357f13bfa3b997ea3bb0b23e5d2bb4a0a8b54078477deff2934"
+}

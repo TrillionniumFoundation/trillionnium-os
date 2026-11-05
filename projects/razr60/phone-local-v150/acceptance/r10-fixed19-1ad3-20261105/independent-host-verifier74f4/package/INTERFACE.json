@@ -1,0 +1,78 @@
+{
+  "actual_applied_source_field": "originals['policy_runtime_properties_verifier.original.py']",
+  "applied_verifier": {
+    "bytes": 124306,
+    "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+  },
+  "independent_verifier": {
+    "bytes": 126796,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py",
+    "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+  },
+  "live_provenance_schema": "hepta.runtime-properties-r10.live-provenance-inputs.v2",
+  "new_actual_adoption": null,
+  "new_actual_post_comparison": null,
+  "new_actual_provenance": null,
+  "new_live_input_field": "independent_verifier_source",
+  "new_live_input_shape": [
+    "path",
+    "bytes",
+    "sha256"
+  ],
+  "new_summary_fields": [
+    "applied_verifier_source",
+    "independent_verifier_source"
+  ],
+  "phone_operations": 0,
+  "policy_writes": 0,
+  "post_originals_new_facts": {
+    "actual_applied_verifier_source_preserved": true,
+    "independent_reviewed_verifier_source_executed": true
+  },
+  "post_originals_schema": "hepta.runtime-properties.post-live-originals-recheck.v2",
+  "post_plan_fields": [
+    "applied_verifier_source",
+    "candidate",
+    "candidate_av_source",
+    "candidate_av_tool",
+    "delta_rule",
+    "full_rule",
+    "image_build_result",
+    "image_comparator",
+    "image_comparator_source",
+    "input_original_map",
+    "live_provenance_inputs",
+    "live_verifier_source",
+    "parent",
+    "parent_adoption",
+    "parent_apex_original",
+    "parent_av_originals",
+    "parent_rule",
+    "parent_set_av_originals",
+    "root_scope_decision",
+    "schema",
+    "secondary_observation",
+    "tool_inventory"
+  ],
+  "post_plan_schema": "hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2",
+  "post_sources": {
+    "applied_verifier_source": "immutable captured 5cd",
+    "live_provenance_verifier": "independent host source"
+  },
+  "preserved_original_artifacts": [
+    "Root plan",
+    "Root intent",
+    "Root execution",
+    "pre-live expectation",
+    "PRECHECK",
+    "POLICY-APPLY",
+    "all archive originals",
+    "all stage sources"
+  ],
+  "schema": "hepta.runtime-properties.independent-host-verifier-interface.v1",
+  "source_package_only": true,
+  "unchanged_public_apis": [
+    "verify_live_capture(live_inputs, read_pinned=...)",
+    "verify_adoption(adoption_raw, read_pinned=...)"
+  ]
+}

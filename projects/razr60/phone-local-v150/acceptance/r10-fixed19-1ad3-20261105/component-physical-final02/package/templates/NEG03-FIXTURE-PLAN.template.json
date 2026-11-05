@@ -1,0 +1,23 @@
+{
+  "assets": {
+    "jpeg": {
+      "bytes": 19356,
+      "path": null,
+      "sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521"
+    },
+    "png": {
+      "bytes": 1191,
+      "path": null,
+      "sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13"
+    }
+  },
+  "case_id": "NEG-03",
+  "fixture_id": null,
+  "maximum_effect_dispatches": 0,
+  "physical_test": false,
+  "release": {
+    "build_result_sha256": null,
+    "path": null
+  },
+  "schema": "hepta.fixed19.neg03.geometry-fixture-plan.v1"
+}

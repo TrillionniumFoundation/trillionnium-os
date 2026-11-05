@@ -1,0 +1,17 @@
+{
+  "automatic_retry": false,
+  "phase": "bounded-original",
+  "pid": 81,
+  "returncode": 0,
+  "state": "ORIGINAL_HOST_CHILD_JOINED",
+  "stderr": {
+    "bytes": 0,
+    "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/frozen-source-validation01/capture/bounded-original/stderr.original",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 19,
+    "path": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final02/frozen-source-validation01/capture/bounded-original/stdout.original",
+    "sha256": "6d79f14a6fc77722847135fdafcc4545e15be0b8c6a7e5674215402b5bdf49a4"
+  }
+}

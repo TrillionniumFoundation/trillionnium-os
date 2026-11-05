@@ -1,0 +1,19 @@
+{
+  "commit": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+  "files": [
+    {
+      "bytes": 1191,
+      "git_blob": "dad9329e0f5b90e6315872e8eeeef20b9827444c",
+      "path": "component_physical_candidate01/reference/geometry-assets/synthetic.png",
+      "sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13"
+    },
+    {
+      "bytes": 19356,
+      "git_blob": "896c8b65580dca60ae2d2eecfe5a3c2f530ec23a",
+      "path": "component_physical_candidate01/reference/geometry-assets/synthetic.jpg",
+      "sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521"
+    }
+  ],
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "source_prefix": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-component-r1/assets/"
+}

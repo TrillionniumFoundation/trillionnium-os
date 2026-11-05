@@ -1,0 +1,53 @@
+{
+  "cli": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/source/collect_actual_post_originals.py",
+    "--request",
+    "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/ARCHIVE-REQUEST.json",
+    "--request-sha256",
+    "5d21c77dd3c05ea30c79c7c281a0a7af60d144e7171527a79b79084f24525a6e",
+    "--execute-host-archive"
+  ],
+  "collector_executions": 0,
+  "execution": {
+    "bytes": 2549,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/EXECUTION.RESULT.json",
+    "sha256": "00b7f38c77ca91860a32b1e31108890b98026eb1c400d9a27c802b6ba7094c20"
+  },
+  "inverse": {
+    "bytes": 1753,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/validation/SOURCE-INVERSE.json",
+    "sha256": "0a77a435fc472dfe8f4b4aeb6f678c85459d9035170e73374286f06a9625dbb4"
+  },
+  "manifest": {
+    "bytes": 7842,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/MANIFEST.json",
+    "sha256": "fc4ff7ab0f4430f63495c3b8c4f12ddab08afd8d9133f584ec714cc2d09af3b0"
+  },
+  "patch": {
+    "bytes": 984,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/validation/ACTUAL-COMPLETION-INCREMENT.patch",
+    "sha256": "71973bbf8f5160f4172537890a3f59c95f59797483f078733d5ca6325262fcc6"
+  },
+  "phone_operations": 0,
+  "policy_writes": 0,
+  "report": {
+    "bytes": 551562,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/comparison/RESULT.json",
+    "sha256": "84e47675990554ddb71fc639b45a04a6349cee4e5b524213bbcdcc0d8263368d"
+  },
+  "request": {
+    "bytes": 1547,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/ARCHIVE-REQUEST.json",
+    "sha256": "5d21c77dd3c05ea30c79c7c281a0a7af60d144e7171527a79b79084f24525a6e"
+  },
+  "schema": "hepta.runtime-properties-r10.actual-post-collector-source-ready.v1",
+  "source": {
+    "bytes": 20183,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01/source/collect_actual_post_originals.py",
+    "sha256": "02891d1b928508e63d87ec13e3986f212b9d96d41def26987fcd222f03472485"
+  },
+  "state": "ACTUAL_POST_SOURCE_READY"
+}

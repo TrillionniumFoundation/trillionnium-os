@@ -1,0 +1,171 @@
+{
+  "identity_and_consumption": {
+    "actual_root_driver_remains574e": true,
+    "adoption_assembler_requires_exactly_one_each_source": true,
+    "adoption_entire_original_inventory_must_be_consumed": true,
+    "adoption_schema": "hepta.runtime-properties-r10.policy-adoption.v1",
+    "applied_source_remains_fixed5cd": true,
+    "downstream_existing_verify_adoption_API_preserved": true,
+    "downstream_source_bound": 131072,
+    "independent_source_bytes": 126796,
+    "independent_source_self_identity_injected_by_exact_loader_and_read_as_listed_original": true,
+    "live_schema": "hepta.runtime-properties-r10.live-provenance-inputs.v2",
+    "post_does_not_embed_future_independent_source_hash": true,
+    "post_originals_schema": "hepta.runtime-properties.post-live-originals-recheck.v2",
+    "post_plan_schema": "hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2",
+    "post_separate_source_mapping_and_raw_checks": true,
+    "root_decision_schema": "hepta.root.runtime-properties-policy-adoption-decision.v1"
+  },
+  "inputs": {
+    "actual_live_inputs": {
+      "bytes": 22659,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/LIVE-PROVENANCE-INPUTS.json",
+      "sha256": "01be4b34e7bcbb5a32aa47a249e36afbba94e30a6275b444f5143f2c8396e7f1"
+    },
+    "applied_verifier": {
+      "bytes": 124306,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_external_source_cache/source/policy_runtime_properties_verifier.py",
+      "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+    },
+    "downstream_wiring_independent_review": {
+      "bytes": 14866,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/independent-verifier-downstream-wiring01/REVIEW.json",
+      "sha256": "c3c429261cf638f5dea8417790c3cf2ba07e9089f514717f6ddd8819c5243862"
+    },
+    "existing_retention_request": {
+      "bytes": 1911,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_final_source_cache/RETENTION-REQUEST.json",
+      "sha256": "72c6bd12b75d41d7164d53360fee22a237c732e121fc81b50fc9ec5f1373ff2a"
+    },
+    "independent_verifier": {
+      "bytes": 126796,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/policy_runtime_properties_verifier.py",
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    },
+    "new_source_manifest": {
+      "bytes": 6924,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/SOURCE-MANIFEST.json",
+      "sha256": "1b4b515646c4ba6936633b727895eca7a21afb69d28914fdc66213c5411344c7"
+    },
+    "original_5cd_rejection": {
+      "bytes": 61920,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/diagnostic/REJECTION.json",
+      "sha256": "465173196c229077235743b5f0a034127c3428be74b6f33ffe06963ad9537ca1"
+    },
+    "original_5cd_traceback": {
+      "bytes": 1622,
+      "path": "/workspace/scratch/1ad3d6f55439/live02_actual_evidence/diagnostic/TRACEBACK.original.txt",
+      "sha256": "666f2392dbfd738fbbf1937542743b7ecd3a46bbfaaf45eb5aec37a40be7e804"
+    },
+    "post_runner": {
+      "bytes": 9767,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/comparison-source/run_post_live_actual.py",
+      "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+    },
+    "post_source": {
+      "bytes": 65251,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/comparison-source/post_live_compare_runtime_properties.py",
+      "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+    },
+    "retained_actual_independent_admission": {
+      "bytes": 8047,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_final_source_cache/validation/LIVE-PROVENANCE-ADMISSION.json",
+      "sha256": "f372b29ed5d5dc370db55ee4e2b9f5918910a3db5f7128692eb563c790954e26"
+    },
+    "retention_independent_review": {
+      "bytes": 1474,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/post-retention-v2-independent01/REVIEW.json",
+      "sha256": "0cff68aa92f2e41b610efa85830133c47ae7c92661f4fec84bfdf964b4fa996a"
+    },
+    "safe_retention_transport_candidate": {
+      "bytes": 21223,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/independent_post_retention_capture_r6_candidate01/source/retain_actual_live_inputs.py",
+      "sha256": "f6d8d7ec2af99c728d418d0a2322d42be2287e9db21c8b52c23c7c5d54a3ac5d"
+    }
+  },
+  "next_owners_and_limits": [
+    "Root owns actual fixed-namespace occupancy reconciliation and execution; no nonce/output replacement or replay is authorized by this review.",
+    "Use f6d8 port with only actual ACTUAL_INPUTS RHS filled from existing original bindings; request collector_source must pin the resulting new source.",
+    "Do not execute upstream800f/d960 with old860a transport. Future retention uses0374; original live02 execution still records860a and574e.",
+    "Post16 still must actually complete using85f/0793 and actualf8219 export, then collect originals and explicitly adopt.",
+    "Old aac proof collector is not v2-compatible: p4_proof omits applied_verifier_source and mac_inputs loads captured5cd. Reuse and separately review existing7f6c collector and5ee2 mirror; do not silently run aac.",
+    "Original5cd rejection remains separate audit evidence; neither the new proof schemas nor this review claims original5cd verification passed."
+  ],
+  "retained_actual_admission_observed": {
+    "actual_policy": {
+      "bytes": 2667740,
+      "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+    },
+    "callback_paths": 167,
+    "callback_raw_bytes": 21336122,
+    "comparison_executions": 0,
+    "descriptor": {
+      "bytes": 8047,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_final_source_cache/validation/LIVE-PROVENANCE-ADMISSION.json",
+      "sha256": "f372b29ed5d5dc370db55ee4e2b9f5918910a3db5f7128692eb563c790954e26"
+    },
+    "policy_adoption_authorized": false,
+    "retention_executions": 0,
+    "reviewer_did_not_repeat_full_gate": true
+  },
+  "review_scope": "Local exact-source, AST, original-trace and retained actual admission review only; no remote, full live re-execution, post comparison or adoption by this reviewer.",
+  "reviewer_operations": {
+    "adoption_writes": 0,
+    "comparison_executions": 0,
+    "full_live_verifier_calls": 0,
+    "phone_calls": 0,
+    "remote_calls": 0,
+    "retention_executions": 0,
+    "source_mutations": 0
+  },
+  "role_order": {
+    "actual_difference": "Only the last three non-native05 role identities: producer order supervisor/provider/sidecar; former host literal order provider/sidecar/supervisor. First15 exact identical.",
+    "fixed_history_is_verified_before_role_use": true,
+    "native_prefix_order_unchanged": true,
+    "new_source_change": "One line: take side binding role values returned by the exact pinned pure historical verifier; all other verify_closed_history bytes reverse exactly to original5cd.",
+    "no_global_sort_or_set_acceptance": true,
+    "original_5cd_passed": false,
+    "original_failure_is_preserved": true,
+    "original_verifier_calls_in_retained_diagnostic": 1,
+    "pure_exact_gate_probe_scope": "Extracted unchanged production need/exact only, applied to retained actual mismatch lists. This is not a replay of full verify_live_capture.",
+    "pure_exact_gate_rejects": {
+      "changed_full_identity": true,
+      "duplicate_role": true,
+      "first15_reorder": true,
+      "missing_role": true,
+      "wrong_tail_order_1": true,
+      "wrong_tail_order_2": true,
+      "wrong_tail_order_3": true,
+      "wrong_tail_order_4": true,
+      "wrong_tail_order_5": true
+    },
+    "side_originals_all_exact_pinned": true,
+    "side_verifier_source_pin": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4",
+    "unique_full_four_tuple_count_required": 18
+  },
+  "schema": "hepta.runtime-properties.independent-host-verifier-local-review.v1",
+  "source_change_scope": {
+    "changed_functions": [
+      "validate_adoption_value",
+      "validate_binding",
+      "verify_apply_originals",
+      "verify_closed_history",
+      "verify_comparison_proof",
+      "verify_live_capture",
+      "verify_pre_live_expectation"
+    ],
+    "new_functions": 0,
+    "original_root_prior_stage_and_archive_functions_unchanged": true,
+    "removed_functions": 0,
+    "staging_base64_8x24576_and_actual_exact2_root_identity_unchanged": true,
+    "top_level_changes": [
+      "module_docstring",
+      "APPLIED_VERIFIER_added",
+      "INDEPENDENT_VERIFIER_SOURCE_PATH_added",
+      "REVIEWED_POST_COMPARATOR_SOURCE",
+      "REVIEWED_COMPARISON_RUNNERS"
+    ],
+    "unchanged_functions": 25
+  },
+  "state": "NO_SOURCE_BLOCKER_FOUND_FOR_EXISTING_V2_RETENTION_AND_POST16"
+}

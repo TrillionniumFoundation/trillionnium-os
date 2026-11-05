@@ -1,0 +1,11 @@
+--- original/root_cpu_negative.py
++++ candidate/root_cpu_negative.py
+@@ -21,7 +21,7 @@
+ 
+ sys.dont_write_bytecode=True
+ B=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-PURE_MODULES = {'negative_originals': {'bytes': 37253, 'sha256': '939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2'}, 'close_cpu_negative': {'bytes': 43958, 'sha256': '5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5'}}
++PURE_MODULES = {'negative_originals': {'bytes': 44221, 'sha256': '3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b'}, 'close_cpu_negative': {'bytes': 43958, 'sha256': '5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5'}}
+ SELF_LIMIT=65536
+ MAX_ORIGINAL=64*1024*1024
+ MAX_POOL=192*1024*1024

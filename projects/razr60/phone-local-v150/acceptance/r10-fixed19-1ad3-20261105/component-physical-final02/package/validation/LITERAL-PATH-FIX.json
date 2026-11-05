@@ -1,0 +1,24 @@
+{
+  "actual_admission_attempted": false,
+  "actual_finalizer_expression": "B/ + repr(relative path), because B is pathlib.Path",
+  "all_other_runtime_bytes_unchanged": true,
+  "new_source": {
+    "bytes": 29295,
+    "sha256": "9a722bc807bc6a3bd2c084b3f308ec1cea5656407da25faeeb95284ba9c9747f"
+  },
+  "old_package_preserved": "/workspace/scratch/1ad3d6f55439/component_physical_candidate01/delivery-final01/package",
+  "old_source": {
+    "bytes": 29295,
+    "sha256": "10f47aebbd0dc53769e2c2628580706e8567f242ede57941f4e2e93d56639e78"
+  },
+  "phone_calls": 0,
+  "regressions": [
+    "actual Mac B slash accepted",
+    "literal Path accepted",
+    "dynamic expression refused",
+    "non-slot executable drift refused"
+  ],
+  "schema": "hepta.physical-component.static-path-admission-fix.v1",
+  "single_runtime_token_change": "ast.Add to ast.Div in permitted static path shape",
+  "state": "SOURCE_ONLY_EXACT_FINALIZER_PATH_INTERFACE_REPAIRED"
+}

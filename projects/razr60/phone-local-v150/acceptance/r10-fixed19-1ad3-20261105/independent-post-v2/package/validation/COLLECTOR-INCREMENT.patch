@@ -1,0 +1,69 @@
+--- parent/source/collect_actual_post_originals.py
++++ source/collect_actual_post_originals.py
+@@ -20,13 +20,13 @@
+ import tarfile
+ 
+ BASE=Path('/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1')
+-ROOT=BASE/'offline-candidate01/source'
++ROOT=BASE/'independent-post-source01/source'
+ ACTUAL=BASE/'post-live-root02-actual01'
+ INPUT_ROOT=BASE/'post-live-root02-inputs01'
+-SOURCE_ROOT=BASE/'post-live-root02-evidence-source01'
+-OUT=BASE/'post-live-root02-evidence01'
+-POST_SHA='151a1d724a82d611202054eb0dd5326fe4f4311ff78599b61c6bf58d68a2cf8f'
+-RUNNER_SHA='0f6cb3d1a73a59f880566f5adc1afaa285fcb5366ceebf3a5373caf3167518a1'
++SOURCE_ROOT=BASE/'post-live-root02-independent-evidence-source01'
++OUT=BASE/'post-live-root02-independent-evidence01'
++POST_SHA='85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471'
++RUNNER_SHA='0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e'
+ PARENT_SHA='50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7'
+ # A separate reviewed revision may bind only actual completed post originals.
+ ACTUAL_COMPLETION=None
+@@ -180,7 +180,7 @@
+          and summary['checks']==16,'controller stdout original output linkage')
+     plan_desc=execution['plan'];plan=strict(o.descriptor(plan_desc))
+     process_desc=execution['comparison_process'];process=strict(o.descriptor(process_desc))
+-    need(plan['schema']=='hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v1'
++    need(plan['schema']=='hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2'
+          and process['returncode']==0 and process['timed_out'] is False
+          and process['captured_streams_complete'] is True and process['automatic_retry'] is False
+          and process['input_originals_before']==process['input_originals_after'],
+@@ -209,7 +209,7 @@
+     for d in (report_desc,plan_desc,process_desc,execution_desc,execution['source'],build_desc,collector_source,request_desc):add(d)
+     for d in report['sources'].values():add(d)
+     for key in ('root_scope_decision','parent_adoption','delta_rule','full_rule','parent_rule','secondary_observation','parent_apex_original',
+-                'live_provenance_inputs','live_verifier_source'):add(plan[key])
++                'live_provenance_inputs','live_verifier_source','applied_verifier_source'):add(plan[key])
+     need(len(plan['parent_av_originals'])==len(plan['parent_set_av_originals'])==11,'exact approved eleven read/set parent rows')
+     for d in plan['parent_av_originals']+plan['parent_set_av_originals']:add(d)
+     for d in report['retained_originals']:
+@@ -218,12 +218,16 @@
+     add(build['process'])
+     for original_process in (build,strict(o.descriptor(build['process']))):
+         for key in ('stdout','stderr'):add(original_process[key])
+-    # The actual live source is one explicit P4 original. Its Mac mirror must
+-    # reuse the already captured Mac verifier, not create another same-SHA entry.
+-    verifier=plan['live_verifier_source']
++    # Keep both source identities. Each Mac mirror reuses its distinct
++    # canonical original: the independent host source and the captured 5cd.
++    verifier=plan['live_verifier_source'];applied=plan['applied_verifier_source']
+     need(report['sources']['live_provenance_verifier']==verifier
+-         and [d for d in proof.values() if d['sha256']==verifier['sha256']]==[verifier],
+-         'one actual captured verifier source in the proof subset')
++         and report['sources']['applied_verifier_source']==applied
++         and {k:applied[k] for k in ('bytes','sha256')}=={'bytes':124306,'sha256':'5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00'}
++         and verifier['sha256']!=applied['sha256']
++         and [d for d in proof.values() if d['sha256']==verifier['sha256']]==[verifier]
++         and [d for d in proof.values() if d['sha256']==applied['sha256']]==[applied],
++         'one independent host and one actual applied verifier source in the proof subset')
+     add(request['controller_status']);add(request['controller_read'])
+     need(not OUT.exists() and not OUT.is_symlink() and OUT.parent.resolve(strict=True)==OUT.parent,'new original archive namespace')
+     OUT.mkdir(mode=0o700);sync(OUT.parent)
+@@ -283,6 +287,6 @@
+         'source_originals_preserved':True,'original_raw_reports_rewritten':False,
+         'phone_operations':0,'active_policy_writes':0,'parser_or_query_executions':0})
+     print(json.dumps({'result':result,'proof_packet':packet_desc,'capacity':sizes,
+-        'verifier_source':verifier,'phone_operations':0},sort_keys=True));return 0
++        'independent_verifier_source':verifier,'applied_verifier_source':applied,'phone_operations':0},sort_keys=True));return 0
+ 
+ if __name__=='__main__':raise SystemExit(main())

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-fixed19-1ad3-20261105-r1/host-tools/diagnose_actual_live02_provenance.py", line 98, in main
+    summary = verifier.verify_live_capture(live, read_pinned=originals.read)
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py", line 887, in verify_live_capture
+    binding,report=verify_apply_originals(files,binding_sha)
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py", line 457, in verify_apply_originals
+    exact(state,{'schema':'hepta.runtime-properties-r10.pre-policy-boundary-verification.v1',
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py", line 99, in exact
+    need(isinstance(value,dict) and all(k in value and type(value[k]) is type(v) and value[k]==v
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py", line 82, in need
+    if not ok: raise ValueError(message)
+ValueError: exact expected fields differ

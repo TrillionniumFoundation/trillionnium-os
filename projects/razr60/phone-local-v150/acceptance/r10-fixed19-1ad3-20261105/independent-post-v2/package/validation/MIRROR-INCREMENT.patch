@@ -1,0 +1,102 @@
+--- parent/source/mirror_actual_post_proof.py
++++ source/mirror_actual_post_proof.py
+@@ -21,8 +21,9 @@
+ 
+ B=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ P=Path('/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1')
+-OUT=B/'policy-runtime-properties-r10-post-live-root02-proof01'
++OUT=B/'policy-runtime-properties-r10-post-live-root02-independent-proof01'
+ CAPTURED_VERIFIER=B/'policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py'
++INDEPENDENT_VERIFIER=B/'policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py'
+ ACTUAL_PROOF=None
+ TRANSPORT={'path':str(B/'native-guard-r10-r1-operator-r4/root-chain/source/run_component_root_once.py'),
+  'bytes':43438,'sha256':'860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22'}
+@@ -100,7 +101,7 @@
+ 
+ def require_actual_proof():
+     value=ACTUAL_PROOF
+-    keys={'packet','original_index','report','collector_result','capacity','verifier_original','verifier_retained'}
++    keys={'packet','original_index','report','collector_result','capacity','verifier_original','verifier_retained','independent_verifier_original','independent_verifier_retained'}
+     need(type(value) is dict and set(value)==keys,'actual completed post proof remains unpublished')
+     for row in value.values():exact3(row)
+     return value
+@@ -121,22 +122,28 @@
+     request_raw,request_meta=read_regular(a.request)
+     need(sha(request_raw)==a.request_sha256,'mirror request original differs');request=strict(request_raw)
+     fields={'schema','source','packet','original_index','report','collector_result','capacity',
+-            'verifier_original','verifier_retained'}
++            'verifier_original','verifier_retained','independent_verifier_original','independent_verifier_retained'}
+     need(type(request) is dict and set(request)==fields
+-         and request['schema']=='hepta.runtime-properties-r10.post-proof-mirror-request.v1'
++         and request['schema']=='hepta.runtime-properties-r10.post-proof-mirror-request.v2'
+          and request['source']==source_desc,'explicit current mirror source request')
+     need(all(request[k]==actual[k] for k in actual),'actual completed post proof pins differ')
+     for key in fields-{'schema'}:exact3(request[key])
+-    need(request['packet']['path']==str(P/'post-live-root02-evidence01/PROOF-ORIGINALS.packet.json.gz')
+-         and request['collector_result']['path']==str(P/'post-live-root02-evidence01/RESULT.json')
+-         and request['capacity']['path']==str(P/'post-live-root02-evidence01/VERIFICATION-ORIGINALS-CAPACITY.json')
+-         and request['original_index']['path']==str(P/'post-live-root02-evidence01/ADOPTION-PROOF-INPUTS.P4.json')
++    need(request['packet']['path']==str(P/'post-live-root02-independent-evidence01/PROOF-ORIGINALS.packet.json.gz')
++         and request['collector_result']['path']==str(P/'post-live-root02-independent-evidence01/RESULT.json')
++         and request['capacity']['path']==str(P/'post-live-root02-independent-evidence01/VERIFICATION-ORIGINALS-CAPACITY.json')
++         and request['original_index']['path']==str(P/'post-live-root02-independent-evidence01/ADOPTION-PROOF-INPUTS.P4.json')
+          and request['report']['path']==str(P/'post-live-root02-actual01/comparison/RESULT.json'),
+          'only original Root02 comparison proof paths')
+     need(request['verifier_retained']['path']==str(CAPTURED_VERIFIER)
++         and {k:request['verifier_retained'][k] for k in ('bytes','sha256')}=={'bytes':124306,'sha256':'5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00'}
+          and all(request['verifier_original'][k]==request['verifier_retained'][k] for k in ('bytes','sha256')),
+-         'explicit existing captured verifier copy required')
++         'explicit immutable captured verifier copy required')
++    need(request['independent_verifier_retained']['path']==str(INDEPENDENT_VERIFIER)
++         and all(request['independent_verifier_original'][k]==request['independent_verifier_retained'][k] for k in ('bytes','sha256'))
++         and request['independent_verifier_retained']['sha256']!=request['verifier_retained']['sha256'],
++         'separate canonical independently reviewed host verifier required')
+     verifier_raw,verifier_meta=pinned(request['verifier_retained'])
++    independent_raw,independent_meta=pinned(request['independent_verifier_retained'])
+     transport_raw,transport_meta=pinned(TRANSPORT)
+     module=types.ModuleType('reviewed_runtime_properties_post_mirror_host_transport')
+     module.__file__=TRANSPORT['path'];module.__reviewed_source_sha256__=sha(transport_raw)
+@@ -197,11 +204,15 @@
+              and all(len(objects[d['sha256']])==d['bytes'] for d in originals)
+              and sum(map(len,objects.values()))<=64*1024*1024,'all proof bytes, sizes and aggregate bound')
+         verifier_original=request['verifier_original'];verifier_retained=request['verifier_retained']
++        independent_original=request['independent_verifier_original'];independent_retained=request['independent_verifier_retained']
+         need([d for d in originals if d['sha256']==verifier_original['sha256']]==[verifier_original]
+              and objects[verifier_original['sha256']]==verifier_raw,'exactly one captured verifier proof source')
++        need([d for d in originals if d['sha256']==independent_original['sha256']]==[independent_original]
++             and objects[independent_original['sha256']]==independent_raw,'exactly one independent host verifier proof source')
+         actual_report=strict(objects[index['report']['sha256']])
+         need(actual_report['comparison_kind']=='post_live_export' and actual_report['check_count']==actual_report['passed_count']==16
+-             and actual_report['sources']['live_provenance_verifier']==verifier_original,'post report source alias differs')
++             and actual_report['sources']['live_provenance_verifier']==independent_original
++             and actual_report['sources']['applied_verifier_source']==verifier_original,'post report dual source identities differ')
+         collector=strict(returned['collector_result']);capacity_original=strict(returned['capacity'])
+         need(collector['state']=='COMPLETE' and collector['report']==request['report']
+              and collector['proof_index']==request['original_index'] and collector['proof_packet']==request['packet']
+@@ -218,6 +229,9 @@
+             if d==verifier_original:
+                 retained=verifier_retained;meta=verifier_meta
+                 need(pinned(retained)==(verifier_raw,verifier_meta),'captured verifier changed')
++            elif d==independent_original:
++                retained=independent_retained;meta=independent_meta
++                need(pinned(retained)==(independent_raw,independent_meta),'independent host verifier changed')
+             else:
+                 name=Path(d['path']).name;need(re.fullmatch('[A-Za-z0-9_.-]{1,180}',name),'bounded proof filename')
+                 path=OUT/'originals'/('%03d-%s-%s'%(i,sha(d['path'].encode())[:16],name))
+@@ -244,7 +258,7 @@
+              and read_regular(a.request)==(request_raw,request_meta)
+              and pinned(TRANSPORT)==(transport_raw,transport_meta),'mirror control originals changed')
+         capacity={'schema':'hepta.runtime-properties.actual-mac-proof-capacity.v1','original_path_count':len(originals),
+-            'retained_path_count':len(saved),'new_retained_files':len(created_names),'existing_captured_verifier_files':1,
++            'retained_path_count':len(saved),'new_retained_files':len(created_names),'existing_captured_verifier_files':1,'existing_independent_verifier_files':1,
+             'unique_sha256_objects':len(objects),'retained_file_bytes':sum(d['bytes'] for d in saved),
+             'raw_unique_bytes':sum(map(len,objects.values())),
+             'base64_unique_bytes':sum(4*((len(raw)+2)//3) for raw in objects.values()),
+@@ -258,6 +272,7 @@
+             'index':index_desc,'capacity':capacity_desc,'collector_result':collector_result,
+             'capacity_original':capacity_copy,'original_path_count':len(originals),'retained_path_count':len(saved),
+             'unique_sha256_objects':len(objects),'existing_captured_verifier':verifier_retained,
++            'existing_independent_verifier':independent_retained,
+             'all_retained_bytes_and_metadata_rechecked':True,'original_raw_reports_rewritten':False,
+             'all_orbit_images_read_by_consumer':False,'complete_archive_retained_on_p4':True,
+             'remote_read_steps':chain.steps,'phone_operations':0,'active_policy_writes':0,

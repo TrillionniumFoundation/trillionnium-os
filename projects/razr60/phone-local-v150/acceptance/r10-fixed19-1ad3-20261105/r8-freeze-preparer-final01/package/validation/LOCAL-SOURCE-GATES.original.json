@@ -1,0 +1,63 @@
+{
+  "actual_adoptions": 0,
+  "actual_verifier_calls": 0,
+  "checks": [
+    {
+      "name": "malformed_original_descriptors_rejected",
+      "passed": true
+    },
+    {
+      "name": "source_drift_outside_finalization_rejected",
+      "passed": true
+    },
+    {
+      "name": "same_path_same_bytes_changed_metadata_rejected",
+      "passed": true
+    },
+    {
+      "name": "symlink_original_rejected",
+      "passed": true
+    },
+    {
+      "name": "default_preview_does_not_read_parse_or_write_actual_inputs",
+      "passed": true
+    },
+    {
+      "name": "actual_export_drives_only_policy_and_finalization_fields",
+      "passed": true
+    },
+    {
+      "name": "single_rhs_whole_source_inverse_to_exact62bc",
+      "passed": true
+    },
+    {
+      "name": "unadopted_or_preview_input_rejected",
+      "passed": true
+    },
+    {
+      "name": "independent_and_actual_verifier_swap_rejected",
+      "passed": true
+    },
+    {
+      "name": "original_full_build_precedes_every_package_write_and_main_never_called",
+      "passed": true
+    }
+  ],
+  "freezer_reference": {
+    "bytes": 35375,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/native-guard-property-r8-freeze-transport-candidate02-1ad3/source/freeze_property_runtime.py",
+    "sha256": "62bcfb5a3ece55526d6e3e5c4c5158426d0e0119b5a04d4754cc7903434ea509"
+  },
+  "original_build_calls": 0,
+  "phone_calls": 0,
+  "qualified_cases": 0,
+  "remote_calls": 0,
+  "runtime_freezes": 0,
+  "schema": "hepta.actual-r8-freeze-preparation.local-source-gates.v1",
+  "source": {
+    "bytes": 18226,
+    "path": "/workspace/scratch/1ad3d6f55439/r8_freeze_preparation_candidate01/source/prepare_actual_r8_freeze.py",
+    "sha256": "106f2ac9f40d32693dd992cbe27454f739674377700e21cfd284a335aa01194f"
+  },
+  "state": "LOCAL_SOURCE_AND_INTERFACE_CHECKS_PASSED_NO_ACTUAL_ADOPTION_OR_FREEZE"
+}

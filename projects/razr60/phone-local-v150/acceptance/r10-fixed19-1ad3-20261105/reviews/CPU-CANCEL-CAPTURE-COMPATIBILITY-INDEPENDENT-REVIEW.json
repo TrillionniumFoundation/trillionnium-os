@@ -1,0 +1,74 @@
+{
+  "case_executions": 0,
+  "execution_plan_requirement": "Future phone and P4 host phase maps must each include the exact3 descriptor for the existing same-directory OUTPUT-CAPTURE.json. Preserve RESULT unchanged.",
+  "existing_22_checks_report": {
+    "bytes": 4629,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/validation/COMPATIBILITY-TESTS.json",
+    "sha256": "d0b96e40769a36fa76ab368a54f88eb7363d81a69af884b5a606fb50bdc5cd5e"
+  },
+  "findings": [],
+  "new_processes": 0,
+  "parent_root": {
+    "bytes": 45952,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/reference/root-Q2-53b5.original.py",
+    "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+  },
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "reference_root": {
+    "bytes": 71820,
+    "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/reference/root-capture-r8-50a5.original.py",
+    "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+  },
+  "remote_calls": 0,
+  "reviewed_guards": [
+    "Seven exact top-level RHS values use UTF8 byte offsets, strict hex digests/positive verifier size, and invert to the complete 71820-byte 50a5 template; other source edits cannot be hidden.",
+    "Final source descriptors continue to pin the complete actual Root bytes. PKG, COMBINATION, ADOPTION_SHA and POLICY_SHA also equal the final generation fields.",
+    "REMOTE_IO/SSH/ACTOR and remote/remote_program/phone remain exact parent transport material; local capture changes are authenticated by the complete template inverse.",
+    "Each host phase requires seven records: intent, child, result, stdout, stderr, stdin, output_capture. A missing or None sidecar is rejected.",
+    "The success RESULT remains the original exact seven fields; no output_capture pointer is invented inside RESULT.",
+    "Sidecar closed field set, canonical original bytes, same phase/pid/intent, both EOF, joined closed worker, zero return, same finite deadline, no prefix/error/signal/remote-cleanup claim are all required.",
+    "Both original stdout/stderr paths and bytes match the sidecar; full metadata confirms original created regular single-link 0600 inode retained through complete capture.",
+    "Future dependencies remain unfilled and final_dependencies precedes plan parsing and callback reads; source review is not closure execution."
+  ],
+  "runtime_tests_rerun": false,
+  "schema": "hepta.cpu-negative.capture-compatibility-independent-review.v1",
+  "source_files_modified": false,
+  "source_scope": {
+    "FINAL_DEPENDENCIES_is_None": true,
+    "added_functions": [
+      "host_capture",
+      "normalized_capture_root"
+    ],
+    "changed_existing_functions": [
+      "host_phase",
+      "load_sources",
+      "root_source"
+    ],
+    "root_entry_exact_inverse_after_only_PURE_MODULES_RHS_restore": true,
+    "unchanged_cpu_and_ledger_closure_bytes": true
+  },
+  "state": "SOURCE_ONLY_CAPTURE_ADAPTER_REVIEW_PASSED_PENDING_ACTUAL_FINAL_DEPENDENCIES",
+  "subjects": {
+    "close_cpu_negative.py": {
+      "bytes": 43958,
+      "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    "ledger_prefix_negative.py": {
+      "bytes": 29465,
+      "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    "negative_originals.py": {
+      "bytes": 44221,
+      "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/source/negative_originals.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    "root_cpu_negative.py": {
+      "bytes": 15256,
+      "path": "/workspace/scratch/1ad3d6f55439/cpu_cancel_closure_transport_candidate01/source/root_cpu_negative.py",
+      "sha256": "d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0"
+    }
+  }
+}

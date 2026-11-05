@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-I",
+    "-B",
+    "-c",
+    "import sys;assert sys.stdin.buffer.read()==b'original-input';print('actual-owned-child')"
+  ],
+  "automatic_retry": false,
+  "deadline_scope": "popen_start_through_child_join_pipe_eof_and_output_verification",
+  "hard_bound_on_filesystem_spawn_or_cleanup": false,
+  "input_transport": "retained_readonly_regular_fd_child_reads_within_execution_budget",
+  "maximum_starts": 1,
+  "maximum_wait_seconds": 3,
+  "output_limit_bytes_per_stream": 67108864,
+  "output_transport": "owned_nonblocking_pipe_capture_worker_bounded_memory_main_thread_persistence",
+  "phase": "bounded-original",
+  "schema": "hepta.native-guard.root-host-command.v1",
+  "signals_on_timeout": false,
+  "stdin_sha256": "fed864a38a19fa9fe9e754c80312438cf9160e1b1e33611384ea9993d252053a"
+}

@@ -1,0 +1,236 @@
+{
+  "COMP01_pass": false,
+  "NEG03_physical_pass": false,
+  "actual_mac_calls": 0,
+  "actual_phone_calls": 0,
+  "checks": [
+    {
+      "name": "all exact current production15 sources match supplied cache",
+      "passed": true
+    },
+    {
+      "name": "donor is the reviewed 0374 bytes",
+      "passed": true
+    },
+    {
+      "name": "every extracted function and method AST is unchanged",
+      "passed": true
+    },
+    {
+      "name": "all executable candidate source parses",
+      "passed": true
+    },
+    {
+      "name": "actual Mac finalizer B slash path expressions are accepted unchanged",
+      "passed": true
+    },
+    {
+      "name": "explicit literal Path expressions remain supported",
+      "passed": true
+    },
+    {
+      "name": "dynamic dependency path expression is refused",
+      "passed": true,
+      "rejection": "frozen dependency path must remain a static Path expression"
+    },
+    {
+      "name": "non-slot executable drift is refused",
+      "passed": true,
+      "rejection": "dependency increment changed other reviewed executable logic"
+    },
+    {
+      "name": "physical guard is the actual focused-input precondition",
+      "passed": true
+    },
+    {
+      "name": "actual direct mapper records exactly one reviewed launch shell",
+      "passed": true
+    },
+    {
+      "name": "the same component call ID cannot be mapped twice",
+      "passed": true
+    },
+    {
+      "name": "synthetic typed return control proves launch and actual focus as separate fields",
+      "passed": true
+    },
+    {
+      "name": "launch success cannot substitute for HEPTA focus",
+      "passed": true
+    },
+    {
+      "name": "HEPTA focus cannot erase the failed launch exit",
+      "passed": true
+    },
+    {
+      "name": "real production guard admits the synthetic portrait control",
+      "passed": true
+    },
+    {
+      "name": "real production guard on synthetic rotation rejects before continuation",
+      "passed": true
+    },
+    {
+      "name": "real production guard on synthetic external rejects before continuation",
+      "passed": true
+    },
+    {
+      "name": "three clearly synthetic receipt shapes parse with actual production parsers",
+      "passed": true
+    },
+    {
+      "name": "setting-only rotation without observed physical orientation",
+      "passed": true,
+      "rejection": "actual rotated inner viewport must be observed, not inferred"
+    },
+    {
+      "name": "continuation marker after a reported rejection",
+      "passed": true,
+      "rejection": "actual production input qualification guard did not reject before its marker"
+    },
+    {
+      "name": "focus changed after the guard",
+      "passed": true,
+      "rejection": "page/viewport changed across actual screenshot and production guard"
+    },
+    {
+      "name": "screenshot hash changed",
+      "passed": true,
+      "rejection": "actual screenshot length/hash differs"
+    },
+    {
+      "name": "stale nonce",
+      "passed": true,
+      "rejection": "actual physical observation identity differs"
+    },
+    {
+      "name": "nonzero settings result",
+      "passed": true,
+      "rejection": "authorized rotation setting mutation was not observed"
+    },
+    {
+      "name": "PNG CRC corruption is rejected",
+      "passed": true,
+      "rejection": "actual PNG CRC differs"
+    },
+    {
+      "name": "portrait-baseline exact command syntax and no input/launch recipe",
+      "passed": true
+    },
+    {
+      "name": "rotate-negative exact command syntax and no input/launch recipe",
+      "passed": true
+    },
+    {
+      "name": "restore-positive exact command syntax and no input/launch recipe",
+      "passed": true
+    },
+    {
+      "name": "exact old settings, not a guessed positive baseline, determine restoration",
+      "passed": true
+    },
+    {
+      "name": "oversized ADB request fails before dispatch",
+      "passed": true,
+      "rejection": "original exclusive ADB request budget exceeded"
+    },
+    {
+      "name": "out-of-budget phone timeout fails before dispatch",
+      "passed": true,
+      "rejection": "bounded fixed shell recipe required"
+    },
+    {
+      "name": "real host child join plus both EOF/inode capture independently verifies",
+      "passed": true
+    },
+    {
+      "name": "missing stdout EOF",
+      "passed": true,
+      "rejection": "complete joined double-EOF capture required; it does not itself prove remote terminal"
+    },
+    {
+      "name": "replaced output inode",
+      "passed": true,
+      "rejection": "capture output path/inode was replaced or not privately created"
+    },
+    {
+      "name": "rebound CHILD intent",
+      "passed": true,
+      "rejection": "held child identity does not bind its original intent"
+    },
+    {
+      "name": "incomplete captured bytes",
+      "passed": true,
+      "rejection": "captured pipe digest must bind the actual original output file"
+    },
+    {
+      "name": "run_physical_component_once.py default preview reads no supplied inputs and starts no phone",
+      "passed": true
+    },
+    {
+      "name": "verify_physical_component.py default preview reads no supplied inputs and starts no phone",
+      "passed": true
+    },
+    {
+      "name": "restore_existing_rotation_once.py default preview reads no supplied inputs and starts no phone",
+      "passed": true
+    },
+    {
+      "name": "p4_component_dispatch_once.py default preview reads no supplied inputs and starts no phone",
+      "passed": true
+    }
+  ],
+  "checks_count": 40,
+  "native_submissions": 0,
+  "real_model_requests": 0,
+  "remaining_actual_gates": [
+    "actual sealed runtime/adoption generation",
+    "fresh actual ready binding",
+    "fresh same-generation six-axis NEG03 fixture",
+    "explicit owner request and new supplied nonce",
+    "actual phone phases and independent closure"
+  ],
+  "schema": "hepta.physical-component.source-validation.v1",
+  "source_files": {
+    "owned_capture.py": {
+      "bytes": 29065,
+      "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+    },
+    "p4_component_dispatch_once.py": {
+      "bytes": 12347,
+      "sha256": "e44191ad60d264504322e03933389264033e527dcd05978ef34c1c13a56b0ed7"
+    },
+    "physical_component_common.py": {
+      "bytes": 29295,
+      "sha256": "9a722bc807bc6a3bd2c084b3f308ec1cea5656407da25faeeb95284ba9c9747f"
+    },
+    "restore_existing_rotation_once.py": {
+      "bytes": 13551,
+      "sha256": "cf252f0ba5f35c5acdb74ee178000ce872bc0a484bd6da13f384d95724d76cf3"
+    },
+    "run_physical_component_once.py": {
+      "bytes": 24645,
+      "sha256": "bd5cbd63e0a04b4697244e49c2a70fa528adb74f1ee4ffddab5fd07eb83adce8"
+    },
+    "verify_physical_component.py": {
+      "bytes": 38480,
+      "sha256": "745869a88b0db60745800942d82e0ebd61927f2c996e8dbbf3746afd1e38dc89"
+    }
+  },
+  "state": "LOCAL_SOURCE_BOUNDARIES_PASSED_NOT_PHYSICAL_ACCEPTANCE",
+  "synthetic_geometry_explicitly_not_physical": true,
+  "synthetic_recipe_wires": {
+    "portrait-baseline": {
+      "bytes": 6235,
+      "sha256": "d76e340028f2386cec5dd80a658801961b68a399cc97a0e9b01383dd8ebeecf0"
+    },
+    "restore-positive": {
+      "bytes": 6538,
+      "sha256": "49f165fc5cfeab6907827a2e0775059debaa1ffe14083f80d5719be18c2e7130"
+    },
+    "rotate-negative": {
+      "bytes": 8531,
+      "sha256": "74e14c07577751b63c971e10d66843656e00c1e0388e498371582d5838d7c4de"
+    }
+  }
+}

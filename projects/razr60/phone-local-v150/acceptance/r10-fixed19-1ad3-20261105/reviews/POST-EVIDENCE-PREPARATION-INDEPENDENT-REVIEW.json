@@ -1,0 +1,104 @@
+{
+  "actual_proof_verified": false,
+  "adoption_recorded": false,
+  "entrypoint_calls": 0,
+  "findings": [
+    "Native runner emits report/execution/candidate/checks; helper retains remote descriptors and matches local copies by bytes and SHA.",
+    "Controller state/read must be same job, succeeded rc0, complete/durable, zero-offset EOF, lossless hex/text stdout and empty stderr.",
+    "Proof subset includes top four originals, source identities, original rule/history/AV inputs, retained subprocess terminals/streams and build streams; excluded all-te atom images are not get() inputs.",
+    "Actual captured5cd and independent74f4 are unique proof entries and map to their separate immutable canonical Mac files.",
+    "Small proof bound sums all original path bytes, including repeated SHA objects; it is not a deduplicated-byte bound.",
+    "Helper only generates source/request/collection plan and does not run collector, mirror, parser, comparison or adoption."
+  ],
+  "limitations": [
+    "No actual final post proof index, packet or completed adoption was verified by this review.",
+    "The actual retained controller sample is a historical failure used only for schema and rejection checks.",
+    "Local fixtures prove rejection/gate behavior only and are not admission inputs or physical evidence."
+  ],
+  "limits": {
+    "packet_compressed_bytes": 16777216,
+    "packet_expanded_bytes": 67108864,
+    "proof_all_path_bytes": 16777216,
+    "proof_paths": 512
+  },
+  "local_checks": [
+    {
+      "name": "exact five source hashes and Python 3.9 syntax",
+      "passed": true
+    },
+    {
+      "name": "preparer pins match actual collector, 0374 mirror and independent verifier",
+      "passed": true
+    },
+    {
+      "name": "collector exact protocol fields and whole-source one-RHS inverse",
+      "passed": true
+    },
+    {
+      "name": "mirror exact protocol fields and whole-source one-RHS inverse",
+      "passed": true
+    },
+    {
+      "name": "16 MiB gate counts every path even when all SHA objects are identical",
+      "passed": true
+    },
+    {
+      "name": "duplicate original paths rejected",
+      "passed": true
+    },
+    {
+      "name": "capacity disagreement rejected",
+      "passed": true
+    },
+    {
+      "name": "64 MiB expanded packet bound preserved",
+      "passed": true
+    },
+    {
+      "name": "actual retained controller originals have required status/read raw shape",
+      "passed": true
+    },
+    {
+      "name": "actual historical failed controller terminal cannot bind a completed post collector",
+      "passed": true
+    }
+  ],
+  "phone_calls": 0,
+  "physical_cases_passed": 0,
+  "remote_calls": 0,
+  "schema": "hepta.independent-post-evidence-preparation-review.v1",
+  "scope": [
+    "collector ACTUAL_COMPLETION and controller stdout identity mapping",
+    "mirror nine ACTUAL_PROOF fields and independent/applied source aliases",
+    "one-RHS inverse and unchanged capacity bounds",
+    "collector add coverage against 74f4 verify_comparison_proof get calls"
+  ],
+  "sources": {
+    "collector": {
+      "bytes": 19671,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/source/collect_actual_post_originals.py",
+      "sha256": "7f6c064c4288b912c090ee3491792e911b2c3af3443a6b4b91d27b77e1349200"
+    },
+    "mirror": {
+      "bytes": 19991,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/independent_post_mirror_capture_r6_candidate01/source/mirror_actual_post_proof.py",
+      "sha256": "e2ba3f8e942e5543e252a2782d66ab528da40c9c23a7d9f70a04381dd0980af8"
+    },
+    "preparer": {
+      "bytes": 24852,
+      "path": "/workspace/scratch/1ad3d6f55439/property_diagnostic/prepare_independent_post_evidence.py",
+      "sha256": "10067a441965beb1231cf9a9fe8304e49eb2672caa4d9bdcff795b881120a428"
+    },
+    "runner": {
+      "bytes": 9767,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_post_source_cache/comparison-source/run_post_live_actual.py",
+      "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+    },
+    "verifier": {
+      "bytes": 126796,
+      "path": "/workspace/scratch/1ad3d6f55439/independent_verifier_source_cache/source/policy_runtime_properties_verifier.py",
+      "sha256": "74f4c89b32b36b074971b247de1951962b45384ef821330b94656d144e512152"
+    }
+  },
+  "state": "NO_BLOCKER_IN_NARROW_SOURCE_AND_INTERFACE_REVIEW"
+}

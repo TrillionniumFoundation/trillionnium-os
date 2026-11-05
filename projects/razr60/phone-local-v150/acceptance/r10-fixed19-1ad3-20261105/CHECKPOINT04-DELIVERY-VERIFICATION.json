@@ -1,0 +1,37 @@
+{
+  "actual_archive_receipts_linked_to_same_post": true,
+  "actual_elapsed_seconds": 339.7802115390077,
+  "actual_post_controller_job": "1a1aad877de-fc05-4800",
+  "actual_post_count": 16,
+  "actual_post_report": {
+    "bytes": 551562,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/comparison/RESULT.json",
+    "sha256": "84e47675990554ddb71fc639b45a04a6349cee4e5b524213bbcdcc0d8263368d"
+  },
+  "all_local_original_sources_unchanged_after_copy": true,
+  "archive_checks": [
+    {
+      "bytes": 104180,
+      "declared_package_members_verified": 23,
+      "path": "component-physical-final02/physical-components-source-final02.tar.gz",
+      "sha256": "a56bf22f1ce55c861f5b5e788e22b566186c35be02e0965f9f5f845d791f7fef"
+    },
+    {
+      "bytes": 21034,
+      "declared_package_members_verified": 8,
+      "path": "r8-freeze-preparer-final01/actual-r8-freeze-preparation-final01.tar.gz",
+      "sha256": "034afb1d367e2715313417a7b6b7abf0b8e91d74025d6a8fce8945d91147a209"
+    }
+  ],
+  "complete_original_manifest_groups": 3,
+  "explicitly_partial_reference_manifest_groups": 2,
+  "full_archive_binary_copied": false,
+  "git_writes": 0,
+  "missing_reference_members_not_fabricated": 17,
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "schema": "hepta.fixed19.checkpoint-delivery-verification.v1",
+  "source_manifest_groups": 5,
+  "source_readback_hashes_verified": true,
+  "state": "LOCAL_FILES_AND_ACTUAL_POST_LINKS_VERIFIED_NO_REMOTE"
+}

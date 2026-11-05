@@ -1,0 +1,26 @@
+--- original800f/source/retain_actual_live_inputs.py
++++ capture-r6/source/retain_actual_live_inputs.py
+@@ -23,8 +23,8 @@
+ APPLIED_VERIFIER={'bytes':124306,'sha256':'5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00'}
+ OUT=B/'policy-runtime-properties-r10-post-live-root02-retention01'
+ P4_OUT=P/'policy-runtime-properties-r10-r1/post-live-root02-inputs01'
+-TRANSPORT={'path':str(B/'native-guard-r10-r1-operator-r4/root-chain/source/run_component_root_once.py'),
+-    'bytes':43438,'sha256':'860aaf747e89411efa993783b950f709b1d8ac5d7b606575065bdff74ef98e22'}
++TRANSPORT={'path':str(B/'root-runtime-properties-transport-r6-20261105-1ad3/source/run_component_root_once.py'),
++    'bytes':68481,'sha256':'0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd'}
+ STATIC_INDEX={'path':str(B/'policy-runtime-properties-r10-offline-proof01/ADOPTION-PROOF-INPUTS.json'),
+     'bytes':204360,'sha256':'efb2e2bfc17182f79db6036c4fddb9e06cf16d73e500766a7d8076e243a12390'}
+ POST_MANIFEST={'path':str(B/'policy-runtime-properties-r10-independent-post-r1-candidate01/COMPARISON-SOURCE-MANIFEST.json'),
+@@ -284,10 +284,11 @@
+             'post_plan':completed['post_plan'],'original_paths':len(mapping),'phone_operations':0,
+             'comparison_processes':0},sort_keys=True));return 0
+     except BaseException as error:
++        host_cleanup=chain.close_owned_host_outputs()
+         transport.put(OUT/'FAILURE.json',encoded({'schema':'hepta.runtime-properties-r10.host-retention-failure.v1',
+             'state':'ORIGINAL_HOST_RETENTION_STOPPED_NO_REPLAY','error_type':type(error).__name__,
+             'detail':str(error)[:2048],'source':source_desc,'request':request_desc,
+-            'p4_output':str(P4_OUT),'transfer_steps':chain.steps,
++            'p4_output':str(P4_OUT),'transfer_steps':chain.steps,'host_cleanup':host_cleanup,
+             'automatic_retry':False,'phone_operations':0,'comparison_processes':0}))
+         raise
+ 

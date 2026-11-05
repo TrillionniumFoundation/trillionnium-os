@@ -1,0 +1,93 @@
+{
+  "actual_applied_source": {
+    "bytes": 124306,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-live-02/capture/originals/policy_runtime_properties_verifier.original.py",
+    "sha256": "5cd18af19e1cd4cbe98542996fa41960bc36f697c6687ce201312b8ceda91c00"
+  },
+  "archive_executions": 0,
+  "collector_actual_inputs": [
+    "report",
+    "execution",
+    "controller_job_id"
+  ],
+  "collector_source": {
+    "bytes": 19671,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/source/collect_actual_post_originals.py",
+    "sha256": "7f6c064c4288b912c090ee3491792e911b2c3af3443a6b4b91d27b77e1349200"
+  },
+  "comparison_executions": 0,
+  "comparison_source_manifest": {
+    "bytes": 3251,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/COMPARISON-SOURCE-MANIFEST.json",
+    "sha256": "314619e8767c3159a6ca767c2147629e65809e3578e656b3138c06d7dff07840"
+  },
+  "complete_archive_external_bytes_bound": 268435456,
+  "each_source_reuses_exact_existing_mac_original": true,
+  "independent_verifier_canonical_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-host-verifier-r1-candidate01/source/policy_runtime_properties_verifier.py",
+  "live_provenance_schema": "hepta.runtime-properties-r10.live-provenance-inputs.v2",
+  "mac_mirror_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-post-live-root02-independent-proof01",
+  "mirror_actual_inputs": [
+    "capacity",
+    "collector_result",
+    "independent_verifier_original",
+    "independent_verifier_retained",
+    "original_index",
+    "packet",
+    "report",
+    "verifier_original",
+    "verifier_retained"
+  ],
+  "mirror_executions": 0,
+  "mirror_request_fields": [
+    "capacity",
+    "collector_result",
+    "independent_verifier_original",
+    "independent_verifier_retained",
+    "original_index",
+    "packet",
+    "report",
+    "schema",
+    "source",
+    "verifier_original",
+    "verifier_retained"
+  ],
+  "mirror_source": {
+    "bytes": 19901,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/source/mirror_actual_post_proof.py",
+    "sha256": "5ee25517a5dbd09e9e46046f57a5602a18dd6fe22b54c10959df275c6d2ad32b"
+  },
+  "p4_actual_root": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01",
+  "p4_collector_source_root": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence-source01",
+  "p4_evidence_root": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01",
+  "p4_input_root": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01",
+  "p4_source_root": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source",
+  "phone_operations": 0,
+  "policy_adoption_authorized": false,
+  "policy_writes": 0,
+  "post_plan_schema": "hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2",
+  "retention_actual_inputs": [
+    "live_provenance_inputs",
+    "verifier_source",
+    "independent_verifier_source",
+    "root_execution"
+  ],
+  "retention_executions": 0,
+  "retention_request_fields": [
+    "collector_source",
+    "independent_verifier_source",
+    "live_provenance_inputs",
+    "out",
+    "p4_out",
+    "root_output",
+    "schema",
+    "verifier_source"
+  ],
+  "retention_source": {
+    "bytes": 21133,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/policy-runtime-properties-r10-independent-post-r1-candidate01/source/retain_actual_live_inputs.py",
+    "sha256": "800fb84ebdf098e43fffde4b48aa73d79ad844acec5123d0018cb0b8ee2388b3"
+  },
+  "schema": "hepta.runtime-properties-r10.independent-post-transport-interface.v1",
+  "small_proof_sum_of_path_bytes_gate": 16777216,
+  "two_source_identities_and_canonical_paths_distinct": true
+}

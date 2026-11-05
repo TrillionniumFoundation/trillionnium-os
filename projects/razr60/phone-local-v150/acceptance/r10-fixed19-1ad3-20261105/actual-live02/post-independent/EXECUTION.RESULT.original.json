@@ -1,0 +1,55 @@
+{
+  "active_policy_writes": 0,
+  "all_originals_rechecked": true,
+  "automatic_retry": false,
+  "build": {
+    "bytes": 3954,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/offline-candidate01/actual-01/BUILD-RESULT.json",
+    "sha256": "86b2042d49c971cb9fd6dc507cd0482a4319151cccca34ecd06554ee08b4dde7"
+  },
+  "business_qualified": false,
+  "candidate": {
+    "bytes": 2667740,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/085-20cf71845358ad95ee0b.bin",
+    "sha256": "f8219f9c3ad2e1d16a95fda8d5f0bc7612a31e00c0a661e53bf9a6e921c49d70"
+  },
+  "captured_streams_complete": true,
+  "check_count": 16,
+  "comparison_process": {
+    "bytes": 12629,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/full-comparison.PROCESS.json",
+    "sha256": "676cd83e42f3fc402b3e474c0e4f4296886be2ed5c801e924a3dd638aa5799b7"
+  },
+  "live_policy_adoption_authorized": false,
+  "parent": {
+    "bytes": 2667608,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/086-55bdb82beaf1fc064573.bin",
+    "sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7"
+  },
+  "passed_count": 16,
+  "phone_operations": 0,
+  "plan": {
+    "bytes": 119744,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/POST-PLAN.json",
+    "sha256": "9fc9f5a3b222b5c757bac59f596206703e4689de2d8106e4cfa65a8d1db18518"
+  },
+  "report": {
+    "bytes": 551562,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/comparison/RESULT.json",
+    "sha256": "84e47675990554ddb71fc639b45a04a6349cee4e5b524213bbcdcc0d8263368d"
+  },
+  "returncode": 0,
+  "root_scope_decision": {
+    "bytes": 24830,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-inputs01/originals/052-5c2c6240ce9433bd169c.original",
+    "sha256": "5a08041da77eeec9168c869ae76adae0a117a5e34872aa07a1a096bc06a36132"
+  },
+  "schema": "hepta.runtime-properties.actual-host-execution.v1",
+  "source": {
+    "bytes": 9767,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/independent-post-source01/source/run_post_live_actual.py",
+    "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+  },
+  "state": "ACTUAL_HOST_POST_LIVE_COMPLETE_COMPARISON_FINISHED",
+  "timed_out": false
+}

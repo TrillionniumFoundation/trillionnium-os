@@ -1,0 +1,24 @@
+{
+  "actual_inputs": null,
+  "all_v2_schema_fields_and_mapping_logic_unchanged": true,
+  "changed_spans": 3,
+  "comparison_processes": 0,
+  "future_transport_0374_only": true,
+  "owner_cleanup_observation_not_remote_terminal_proof": true,
+  "parent": {
+    "bytes": 21133,
+    "sha256": "800fb84ebdf098e43fffde4b48aa73d79ad844acec5123d0018cb0b8ee2388b3"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "retention_calls": 0,
+  "root_driver_574e_and_actual_applied_5cd_unchanged": true,
+  "schema": "hepta.runtime-properties.independent-post-retention-transport-derivation.v1",
+  "semantic_hunks": 2,
+  "source": {
+    "bytes": 21223,
+    "sha256": "f6d8d7ec2af99c728d418d0a2322d42be2287e9db21c8b52c23c7c5d54a3ac5d"
+  },
+  "state": "SOURCE_ONLY_DUAL_IDENTITY_AND_ACTUAL_INPUTS_NONE_PRESERVED",
+  "whole_source_inverse_exact": true
+}

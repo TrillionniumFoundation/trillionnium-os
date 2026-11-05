@@ -1,0 +1,33 @@
+{
+  "actual_retention_calls": 0,
+  "all_other_post_functions_and_classes_byte_identical": true,
+  "comparison_processes": 0,
+  "executed_independent_verifier_explicit_separate_descriptor": true,
+  "narrow_0374_candidate": "/workspace/scratch/1ad3d6f55439/property_diagnostic/independent_post_retention_capture_r6_candidate01/source/retain_actual_live_inputs.py",
+  "not_yet_checked": [
+    "Actual independent host verifier implementation and canonical ordering fix",
+    "Its full actual live gate and v2 proof/adoption entrypoints",
+    "Collector/mirror source propagation of both identities and actual original rejection"
+  ],
+  "original_applied_verifier_fixed_5cd": true,
+  "phone_calls": 0,
+  "post": {
+    "bytes": 65251,
+    "sha256": "85f325f9525c3470b2fbfe1bf7167f80a54febcffd87d08d2e6cbcdde4597471"
+  },
+  "post_changed_functions": [
+    "validate_live_records",
+    "main"
+  ],
+  "post_does_not_embed_future_independent_verifier_sha": true,
+  "post_plan_schema": "hepta.runtime-properties-r10.post-live-complete-policy-comparison-plan.v2",
+  "remote_calls": 0,
+  "retention_800f_still_uses_affected860a": true,
+  "runner": {
+    "bytes": 9767,
+    "sha256": "0793b960f8aed79421097cc8be5ab465ce49a080af1231fbcd9b51e6a4209d6e"
+  },
+  "runner_inverse_only_post_source_sha_bytes_and_plan_schema_exact": true,
+  "schema": "hepta.runtime-properties.existing-independent-post-narrow-source-review.v1",
+  "state": "POST_AND_RUNNER_DUAL_IDENTITY_INTERFACE_CHECKED_HOST_VERIFIER_PENDING"
+}

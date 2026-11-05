@@ -1,0 +1,39 @@
+{
+  "active_policy_writes": 0,
+  "capacity": {
+    "bytes": 608,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/VERIFICATION-ORIGINALS-CAPACITY.json",
+    "sha256": "a902340be507f2dbdbca3fd3a25aa288f8e47ecf5b19699d5ec605751946192b"
+  },
+  "full_archive": {
+    "bytes": 42908438,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/COMPLETE-ORIGINALS.tar.gz",
+    "sha256": "ca42b7d93d0b88e97530758eebb47ce78381ca2486487240a82cf8330d9356b4"
+  },
+  "full_archive_manifest": {
+    "bytes": 355164,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/FULL-ORIGINALS-MANIFEST.json",
+    "sha256": "3c2fdc5ae205b6cb8b6e9b8ab15dfb5d960e4e29cf3e4a37a7a7ec02344e000d"
+  },
+  "original_raw_reports_rewritten": false,
+  "parser_or_query_executions": 0,
+  "phone_operations": 0,
+  "proof_index": {
+    "bytes": 172640,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/ADOPTION-PROOF-INPUTS.P4.json",
+    "sha256": "38643d13acc15f53792eb447feeedb54e6ad53c75efc37458bbb69945c481031"
+  },
+  "proof_packet": {
+    "bytes": 874243,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-independent-evidence01/PROOF-ORIGINALS.packet.json.gz",
+    "sha256": "d50a016f41917ce459d1f308728e7b649a821cdf3919b97715163014eadf0e4d"
+  },
+  "report": {
+    "bytes": 551562,
+    "path": "/home/alex/razr60-local-model-v150/policy-runtime-properties-r10-r1/post-live-root02-actual01/comparison/RESULT.json",
+    "sha256": "84e47675990554ddb71fc639b45a04a6349cee4e5b524213bbcdcc0d8263368d"
+  },
+  "schema": "hepta.runtime-properties.complete-original-preservation.v1",
+  "source_originals_preserved": true,
+  "state": "COMPLETE"
+}
