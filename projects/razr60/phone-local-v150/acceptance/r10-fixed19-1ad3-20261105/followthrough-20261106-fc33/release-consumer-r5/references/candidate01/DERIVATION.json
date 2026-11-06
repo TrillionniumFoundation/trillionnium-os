@@ -1,0 +1,52 @@
+{
+  "actual_BUILD": false,
+  "actual_READY": false,
+  "actual_install": false,
+  "actual_shared_combination": {
+    "bytes": 4695,
+    "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+  },
+  "actual_source_parent_count": 1,
+  "component_role_budget": 42,
+  "current_component_chain_length": 12,
+  "full_source_inverse_verified": true,
+  "historical_qualification_grants_current_tuple_credit": false,
+  "late_source": {
+    "bytes": 181669,
+    "sha256": "0a9f52cf8fb71177d0816f561cce279811a7182e986c12912d9431bde5997cda"
+  },
+  "observed_runtime_source_candidate": {
+    "bytes": 57078,
+    "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+  },
+  "original": {
+    "bytes": 243806,
+    "sha256": "3de6208604022671d4db21e2b479e3ef4d4bba4aaa9d2faa360f1865aec428da"
+  },
+  "outputs": [
+    {
+      "bytes": 249819,
+      "path": "source/release_boundaries.py",
+      "sha256": "6f97211ddcc1ac351b7fc73bfcfd4e7ffc87b9faa826ad8f54f2edcbe0b601b0"
+    },
+    {
+      "bytes": 12051,
+      "path": "SOURCE.patch",
+      "sha256": "634e8d14852c6eea7b57b52f7b2676dc02c551b36bcc72d2f2c545fed68aa49f"
+    }
+  ],
+  "package_file_count": 38,
+  "package_pin": null,
+  "phone_calls": 0,
+  "replacement_count": 5,
+  "schema": "hepta.fc33.release-consumer-source-derivation.v1",
+  "source_changes": [
+    "explicit unbound package and actual reviewed combination/count literals",
+    "pure closed-current original lease validation and exact cumulative root growth",
+    "exact source-parent prefix classification without new qualification credit",
+    "exclude source-parent closure from new current closure source pin",
+    "read two new lease originals through existing original-copy callback"
+  ],
+  "state": "UNBOUND_SOURCE_CANDIDATE_NOT_FROZEN_OR_QUALIFIED",
+  "unbound_rejected_before_component_input": true
+}

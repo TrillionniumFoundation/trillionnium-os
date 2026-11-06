@@ -1,0 +1,26 @@
+{
+  "actual_BUILD": false,
+  "actual_READY": false,
+  "actual_install": false,
+  "actual_runtime_freeze": false,
+  "controller": {
+    "bytes": 37801,
+    "sha256": "b1ba5b70f3e32f10618a92f736d9c548da848cb53e82d6cb610f7da8a0301bdb"
+  },
+  "files": 26,
+  "import": {
+    "bytes": 13526,
+    "sha256": "e9ea8058a19f1c67b200da491f1736e0ab4c73f4f15f179064db382f6edfca8f"
+  },
+  "job_id": "1a1b1bec363-fc05-7a98",
+  "package_manifest": {
+    "bytes": 13295,
+    "sha256": "dabf4114ed175d00c182b1350ac11bfba5c307f15d951c1462e53fd1f65629bd"
+  },
+  "phone_calls": 0,
+  "schema": "hepta.fc33.release-consumer-host-import-verification.v1",
+  "source_sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349",
+  "state": "HOST_CANDIDATE_ORIGINALS_AND_TERMINAL_TRANSPORT_VERIFIED",
+  "stderr_bytes": 0,
+  "stdout_bytes": 625
+}

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-release-source-chain01/validation/run_source_chain_controls.py", line 94, in <module>
+    result=M._derive(value,M.Originals(lambda r:memory[r["path"]]))
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-release-source-chain01/source/derive_reviewed_release_sources_UNBOUND.py", line 278, in _derive
+    reader=emit('source/verify_final_release_inputs.py',_release_reader(originals['release_reader'],fixed,consumer['runtime_sha256'],
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-release-source-chain01/source/derive_reviewed_release_sources_UNBOUND.py", line 243, in _release_reader
+    c.once("need(row['offset']==0 and row['eof'] is True and row['next_offset']==row['size']==len(b)\n              and row['text'].encode()==b and status['log_bytes'][name]=={'seen':len(b),'stored':len(b)}",
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-release-source-chain01/source/derive_reviewed_release_sources_UNBOUND.py", line 77, in once
+    need(type(before)is str and type(after)is str and before!=after and self.text.count(before)==1,'one full source transformation anchor')
+  File "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-release-source-chain01/source/derive_reviewed_release_sources_UNBOUND.py", line 24, in need
+    if not ok:raise ValueError(why)
+ValueError: one full source transformation anchor

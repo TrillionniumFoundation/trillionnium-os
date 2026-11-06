@@ -1,0 +1,23 @@
+{
+  "files": [
+    {
+      "bytes": 37801,
+      "git_blob_sha1": "dd8c51375d95998cb86dbe2311ce62b568067333",
+      "path": "CONTROLLER.original.json",
+      "sha256": "b1ba5b70f3e32f10618a92f736d9c548da848cb53e82d6cb610f7da8a0301bdb"
+    },
+    {
+      "bytes": 13526,
+      "git_blob_sha1": "d4e146a54f1299d08d67da0a738a7248c23985f3",
+      "path": "IMPORT.original.json",
+      "sha256": "e9ea8058a19f1c67b200da491f1736e0ab4c73f4f15f179064db382f6edfca8f"
+    },
+    {
+      "bytes": 833,
+      "git_blob_sha1": "5f0dd5e552c08dd884e00304b9de6e7d7a77702d",
+      "path": "VERIFICATION.json",
+      "sha256": "397e8946c7d55e2d0e115306ce6b428ba6bddcff2927da813993cc4115783fa7"
+    }
+  ],
+  "schema": "hepta.fc33.host-import-evidence-manifest.v1"
+}

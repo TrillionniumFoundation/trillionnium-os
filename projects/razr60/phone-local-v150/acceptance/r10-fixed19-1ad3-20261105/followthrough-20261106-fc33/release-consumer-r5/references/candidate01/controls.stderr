@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/fc33eac909ab/review/R5-release-consumer/run_consumer_source_controls.py", line 288, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/workspace/scratch/fc33eac909ab/review/R5-release-consumer/run_consumer_source_controls.py", line 188, in main
+    checked('synthetic_new_pair_accepts_only_exact_ordered_lease_roots_preserving_qualified_history',positive)
+  File "/workspace/scratch/fc33eac909ab/review/R5-release-consumer/run_consumer_source_controls.py", line 46, in checked
+    function()
+  File "/workspace/scratch/fc33eac909ab/review/R5-release-consumer/run_consumer_source_controls.py", line 183, in positive
+    fixture=Fixture();fixture.run()
+                      ^^^^^^^^^^^^^
+  File "/workspace/scratch/fc33eac909ab/review/R5-release-consumer/run_consumer_source_controls.py", line 176, in run
+    module.validate_final_component_prefix(self.chain,custom_late or prefix_late,retained,
+  File "/workspace/scratch/fc33eac909ab/review/R5-release-consumer/source/release_boundaries.py", line 1096, in validate_final_component_prefix
+    need(late.is_source_parent_ancestor(boundary)
+  File "/workspace/scratch/fc33eac909ab/review/R5-release-consumer/source/release_boundaries.py", line 70, in need
+    raise ValueError(reason)
+ValueError: only exact preceding-source originals may occupy the source-parent prefix

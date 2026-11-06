@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150_r10_r1
+name=HEPTA Phone Local v150 r10 attempt 1
+version=v150-r9-attempt1
+versionCode=150101
+author=Trillionnium
+description=Boot-aware activation with immutable original evidence; same-boot exact retirement; new-boot native identity; no automatic tasks or replay.

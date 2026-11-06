@@ -1,0 +1,13 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v3.py",
+    "--derive-reviewed-host-material"
+  ],
+  "stdin": "{\"reviewed_builder_sha256\":\"842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82\",\"candidate_sources\":{\"phone_observation_tools.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v3/candidate/source/phone_observation_tools.py\",\"bytes\":55981,\"sha256\":\"4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086\"},\"phone_local_tools.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v3/candidate/source/phone_local_tools.py\",\"bytes\":13927,\"sha256\":\"2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930\"},\"provider_codex_host.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v3/candidate/source/provider_codex_host.py\",\"bytes\":41618,\"sha256\":\"0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa\"},\"provider_phone_local.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v3/candidate/source/provider_phone_local.py\",\"bytes\":70303,\"sha256\":\"0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee\"},\"daily_phone_local.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v3/candidate/source/daily_phone_local.py\",\"bytes\":22059,\"sha256\":\"a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8\"}},\"output_dir\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-20261106-fc33-shared-material-v3-01\"}\n",
+  "idempotency_key": "fc33-derive-reviewed-shared-material-native-v3-01",
+  "timeout_seconds": 120
+}

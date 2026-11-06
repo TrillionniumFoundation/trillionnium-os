@@ -1,0 +1,39 @@
+{
+  "actual_cleanup_closure_bound": false,
+  "builder": {
+    "bytes": 16348,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v2.py",
+    "sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8"
+  },
+  "changed_sources": [
+    "daily_phone_local.py",
+    "phone_local_tools.py",
+    "phone_observation_tools.py"
+  ],
+  "original_component": {
+    "bytes": 4695,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-final-v3-getattr-a1055-r4/COMBINATION.json",
+    "sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708"
+  },
+  "original_request_sha256": "1e04e0ab82d87c1ecf1cc6953576480485b1959adb3b7f0f0213b9f2a93a31ba",
+  "phone_calls": 0,
+  "reviewed_replacements": {
+    "daily_phone_local.py": {
+      "bytes": 22059,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/candidate/source/daily_phone_local.py",
+      "sha256": "203862a29023c827804d4e2a7ccc0217f917f789f49272dc09f4ab64ec029027"
+    },
+    "phone_local_tools.py": {
+      "bytes": 13846,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/candidate/source/phone_local_tools.py",
+      "sha256": "6621f3463e525aa9eedeff927671045daca1065b3210ac0e34e0c2e9867afcd2"
+    },
+    "phone_observation_tools.py": {
+      "bytes": 46743,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/candidate/source/phone_observation_tools.py",
+      "sha256": "ec015260f64e2c61c8f9953f6abe0d8dc4a7a62ce86943ce3c9cfcd250c35162"
+    }
+  },
+  "schema": "hepta.reviewed-source-material-derivation-input.v1",
+  "state": "HOST_SOURCE_ONLY_NOT_RUNTIME_ADOPTION"
+}

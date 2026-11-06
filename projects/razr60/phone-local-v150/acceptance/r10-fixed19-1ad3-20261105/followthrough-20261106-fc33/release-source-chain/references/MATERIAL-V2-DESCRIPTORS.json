@@ -1,0 +1,42 @@
+{
+  "combination": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01/COMBINATION.json",
+    "bytes": 4695,
+    "sha256": "9025ea9c9a185ba471b0d13662e1ee932b316062bddfb656a4dcfa8bdbe4c3c4"
+  },
+  "source_seal": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01/SOURCE-SEAL.json",
+    "bytes": 2341,
+    "sha256": "cc329905d729a07760bb5da65c140c4b7b1df0cec51f6f82ae8719bfea9f7321"
+  },
+  "configuration": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01/shared/local-config-r10-r1.json",
+    "bytes": 1493,
+    "sha256": "07d50fb83cf4107cd7ec930481ccd65ed530d6bd02c84ca9fc354c8fe9289edb"
+  },
+  "service": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01/shared/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+    "bytes": 10654,
+    "sha256": "082a6e80cd084b1a7d1b81a555f33a4e26d62a1070c932ef7b60a88e606f9887"
+  },
+  "shared": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01/shared/SHARED-MATERIALS.json",
+    "bytes": 3519,
+    "sha256": "8cf8245244e83bf8b2d093c540c7bf2a83cd47342b1cb1c95bc5c5111eb79db4"
+  },
+  "source_inputs": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01/SOURCE-INPUTS.json",
+    "bytes": 2015,
+    "sha256": "9d8db64d684a2cd1b7fa53cad1cbb8ed28e454e8eb7d4fcf3fc5b52f22d97c66"
+  },
+  "derivation": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01/DERIVATION.json",
+    "bytes": 18047,
+    "sha256": "3e4edee129a0047e8c01ce8a16450818a00f9239302b6aed6f849c34c3450cd7"
+  },
+  "producer": {
+    "bytes": 16348,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v2.py",
+    "sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8"
+  }
+}

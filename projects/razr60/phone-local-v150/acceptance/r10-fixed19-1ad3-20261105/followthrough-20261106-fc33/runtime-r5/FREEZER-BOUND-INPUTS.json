@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.fc33.freezer-actual-input-binding.v1",
+  "parent": {
+    "bytes": 21026,
+    "sha256": "7f1664543e61fcea20124173e5d9ff6745c41ffec8fd00c97df61a3e05d108be"
+  },
+  "source": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/freeze_native_bound_runtime_r5_fc33.py",
+    "bytes": 22179,
+    "sha256": "a0e45cafe99bbc43b2298072d53b5a31a46c7747fc2be200c2b6b537a1b13b96"
+  },
+  "only_REVIEWED_INPUTS_literal_bound": true,
+  "whole_byte_inverse": true,
+  "inputs": {
+    "delta_bundle": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-delta-r5-assembled01.json.gz",
+      "bytes": 351673,
+      "sha256": "f296bf7c3c0b9a7c9380f7d1370ee5ff3adb9bf609f769868de109955afdc796"
+    },
+    "validation_originals": [
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/RESULT.json",
+        "bytes": 6931,
+        "sha256": "7bd2fc99b5bb2ae912b28b41ed2fb0ca920f30844cf51bf98cdf3bbf0ecf52f9"
+      },
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/ROOT-VERIFIER-ORIGINAL-TRANSPORT.json",
+        "bytes": 4704,
+        "sha256": "45a1c022c8135b60e39d811ee5ec22724903cb07d1c226fc11724a335743f73e"
+      },
+      {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-trace-controls-v2-RESULT.json",
+        "bytes": 3555,
+        "sha256": "9151c6281a8bd50ebd816c0ef737eebed4a8abd9bd912de72f889ede34b33df5"
+      }
+    ]
+  },
+  "phone_calls": 0
+}

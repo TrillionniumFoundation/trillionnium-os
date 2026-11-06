@@ -1,0 +1,144 @@
+{
+  "files": [
+    {
+      "candidate": {
+        "bytes": 29110,
+        "sha256": "f55cd1c25962d0cc1ccc76fc921f6bac116a670fbdf5779305efd6d3d00ef718"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 28878,
+        "sha256": "5fe50be4dccbe655a39124876d1f9c2199de20d80ec0a84f08a63d88e7f1a931"
+      },
+      "path": "runtime/source/native_guard_session_r2.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 107822,
+        "sha256": "0249db62b262226dd7fa87f0829f25eb1353f8d5f254c60e37577ca4bf0c1268"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 107528,
+        "sha256": "5b145819502951fe37e56ceb1bd2e04a6be19deef2f210590c1711e5fe401655"
+      },
+      "path": "runtime/source/close_component.py",
+      "replacement_count": 4
+    },
+    {
+      "candidate": {
+        "bytes": 27776,
+        "sha256": "1478e2f9c77a0e02145cb4b5172ad561f17cf3ea8668e96d56997547f209ea41"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 27762,
+        "sha256": "a3a2e9b7527b81d65daf5a6311b200c179c7bfcdeba33c2972e1a2031d42f1f0"
+      },
+      "path": "runtime/source/component_snapshot.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 39144,
+        "sha256": "e55b93e4d1adfa14819f626f9ba44a5ae6fcd0a9721b2db1c581617c9b1f7418"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 39144,
+        "sha256": "f9285a2cdac4895358671a19ada0d41c7da14832e6857c5de611fda8bf0678a9"
+      },
+      "path": "runtime/source/root_fixture_originals.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 14256,
+        "sha256": "96bd29f1e98615f26ea43e2c6101a555c72eff7268ce318151a4ab1f667174f4"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 14256,
+        "sha256": "2259eb2684ae207f27f3d40cfaaa8f28efb8d392f2bfaa27fee1183d699e6c3e"
+      },
+      "path": "runtime/source/prepare_component.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 19085,
+        "sha256": "e87dcf806f66a87ffbf4cbdfb00bac9280fb220268a9f3ee5e17f53ee35f07b9"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 19085,
+        "sha256": "ab60dc3303f14a4d979d1aa98b9990fd1496b7607f78611f26a3bb6134df4328"
+      },
+      "path": "runtime/source/stage_component.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 18725,
+        "sha256": "5d78ad21fede0044c6b4d7dd1def5df005008ed994116ea61332ed064abd1870"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 18725,
+        "sha256": "605f9cfd6170bf7a1dccd73345fbafb785de8f7956a4af091a59ca4a398d3cf1"
+      },
+      "path": "runtime/source/root_fixture_once.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 25040,
+        "sha256": "97b28afd910280bbdb7a1061218f4d72fc4b9024669b1aba10b0bfdb6caf13b2"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 25040,
+        "sha256": "a6fa2690dea61134cd51b162d86453e064c547571241959ad45f660905a542b6"
+      },
+      "path": "runtime/source/sender_native_guard_ready_r10_r4.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 40451,
+        "sha256": "99fd57b058e6e49ea4a8a9f7145641752acd3a4bc7727d7ba34710cb48aa8ae7"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 40451,
+        "sha256": "b4d876939121798f07d2a64ee46caf86a97d872b4d399ac4b96264c25725b626"
+      },
+      "path": "runtime/source/component_lifecycle.py",
+      "replacement_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 41080,
+        "sha256": "53a6e9149cf768211c3c8ba74d3c422f95d78f14efdb8751af1ac55d1a9225d5"
+      },
+      "exact_whole_byte_inverse": true,
+      "parent": {
+        "bytes": 41080,
+        "sha256": "16363414b952637f61367c51ab313187a37af632528a62207752e60f93caf6d6"
+      },
+      "path": "runtime/source/send_new_native_guard_task_r10_r4.py",
+      "replacement_count": 1
+    }
+  ],
+  "late_boundary_owned_by_separate_review": true,
+  "phone_calls": 0,
+  "qualification_credit": 0,
+  "root_driver_and_fixture_cap_binding_pending": true,
+  "schema": "hepta.fc33.runtime-root-source-delta.v1",
+  "state": "SOURCE_CANDIDATE_WITH_HISTORY_AND_PACKAGE_BINDING_PENDING",
+  "unmodified_component_common": {
+    "bytes": 19138,
+    "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+  }
+}

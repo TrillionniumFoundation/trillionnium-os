@@ -1,0 +1,318 @@
+{
+  "actual_BUILD": false,
+  "actual_READY": false,
+  "actual_closed_new_cases": 0,
+  "actual_install": false,
+  "actual_source_parent_boundary_classification_verified": true,
+  "checks": [
+    {
+      "name": "unbound_rejects_before_any_component_input",
+      "reason": "current policy component runtime has not been frozen and reviewed",
+      "state": "REJECTED"
+    },
+    {
+      "name": "all_unrelated_policy_retirement_history_functions_unchanged",
+      "state": "PASS"
+    },
+    {
+      "name": "actual_source_graph_manifest_records_counts_match",
+      "state": "PASS"
+    },
+    {
+      "name": "actual_old_qualified_NEG01_classifies_only_as_exact_source_parent",
+      "state": "PASS"
+    },
+    {
+      "name": "synthetic_new_pair_accepts_only_exact_ordered_lease_roots_preserving_qualified_history",
+      "state": "PASS"
+    },
+    {
+      "name": "missing_new_case_rejected",
+      "reason": "production release requires two new current cases, exact source parents and nine fixed failed ancestors",
+      "state": "REJECTED"
+    },
+    {
+      "name": "missing_source_parent_rejected",
+      "reason": "production release requires two new current cases, exact source parents and nine fixed failed ancestors",
+      "state": "REJECTED"
+    },
+    {
+      "name": "reordered_new_cases_rejected",
+      "reason": "closed current cases must be supplied latest-first after actual new NEG01 then NEG02",
+      "state": "REJECTED"
+    },
+    {
+      "name": "old_qualified_NEG01_cannot_supply_new_tuple_credit",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "source_parent_qualification_cannot_be_rewritten",
+      "reason": "only exact preceding-source originals may occupy the source-parent prefix",
+      "state": "REJECTED"
+    },
+    {
+      "name": "fixed_failed_tail_cannot_be_promoted",
+      "reason": "fixed historical failures do not provide new component qualification",
+      "state": "REJECTED"
+    },
+    {
+      "name": "new_boundary_package_sha256_rejected",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "new_boundary_combination_sha256_rejected",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "new_boundary_component_qualified_rejected",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "new_boundary_native_status_rejected",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "unknown_effects_False_rejected",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "unknown_effects_0.0_rejected",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "unknown_effects_1_rejected",
+      "reason": "both exact new current NEG component cases must actually qualify",
+      "state": "REJECTED"
+    },
+    {
+      "name": "stale_or_untyped_CURRENT_COMPONENT_CHAIN_LENGTH_11",
+      "reason": "production release requires two new current cases, exact source parents and nine fixed failed ancestors",
+      "state": "REJECTED"
+    },
+    {
+      "name": "stale_or_untyped_CURRENT_COMPONENT_CHAIN_LENGTH_True",
+      "reason": "production release requires two new current cases, exact source parents and nine fixed failed ancestors",
+      "state": "REJECTED"
+    },
+    {
+      "name": "stale_or_untyped_COMPONENT_ROLE_BUDGET_41",
+      "reason": "production release requires two new current cases, exact source parents and nine fixed failed ancestors",
+      "state": "REJECTED"
+    },
+    {
+      "name": "stale_or_untyped_COMPONENT_ROLE_BUDGET_42.0",
+      "reason": "production release requires two new current cases, exact source parents and nine fixed failed ancestors",
+      "state": "REJECTED"
+    },
+    {
+      "name": "same_count_foreign_root_rejected",
+      "reason": "current final inventory must preserve exact ordered baseline roots and add only its three lease-bound roots",
+      "state": "REJECTED"
+    },
+    {
+      "name": "root_order_change_rejected",
+      "reason": "current final inventory must preserve exact ordered baseline roots and add only its three lease-bound roots",
+      "state": "REJECTED"
+    },
+    {
+      "name": "original_lease_missing_rejected",
+      "reason": "'unit original missing'",
+      "state": "REJECTED"
+    },
+    {
+      "name": "inventory_lease_entry_missing_rejected",
+      "reason": "current complete inventory omitted the bounded original lease file",
+      "state": "REJECTED"
+    },
+    {
+      "name": "closure_lease_digest_mismatch_rejected",
+      "reason": "current lease original differs from the complete inventory or closure",
+      "state": "REJECTED"
+    },
+    {
+      "name": "closure_lease_path_outside_home_rejected",
+      "reason": "current lease left the exact component home namespace",
+      "state": "REJECTED"
+    },
+    {
+      "name": "lease_descriptor_float_size_rejected",
+      "reason": "current complete inventory omitted the bounded original lease file",
+      "state": "REJECTED"
+    },
+    {
+      "name": "lease_descriptor_boolean_metadata_rejected",
+      "reason": "original private file metadata differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "lease_descriptor_symlink_mode_rejected",
+      "reason": "original private file metadata differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "lease_descriptor_hard_link_rejected",
+      "reason": "original private file metadata differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "lease_original_full9_mismatch_rejected",
+      "reason": "unit exact original full descriptor differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_boot_id_mismatch_rejected",
+      "reason": "current original lease/closed binding differs: boot_id",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_nonce_mismatch_rejected",
+      "reason": "current original lease/closed binding differs: nonce",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_case_id_mismatch_rejected",
+      "reason": "current original lease/closed binding differs: case_id",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_owner_request_sha256_mismatch_rejected",
+      "reason": "current original lease/closed binding differs: owner_request_sha256",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_package_sha256_mismatch_rejected",
+      "reason": "current original lease/closed binding differs: package_sha256",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_retirement_mismatch_rejected",
+      "reason": "current original lease/closed binding differs: retirement",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_prior_boundary_mismatch_rejected",
+      "reason": "current original lease/closed binding differs: prior_boundary",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_selected_session_id_mismatch_rejected",
+      "reason": "current original lease selected scope differs: session_id",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_selected_profile_id_mismatch_rejected",
+      "reason": "current original lease selected scope differs: profile_id",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_label_shape_rejected",
+      "reason": "current original lease schema or label differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_schema_shape_rejected",
+      "reason": "current original lease schema or label differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_unknown_key_shape_rejected",
+      "reason": "current original lease schema or label differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_label_home_mismatch_rejected",
+      "reason": "current original lease home, journal or historical expiry differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_journal_mismatch_rejected",
+      "reason": "current original lease home, journal or historical expiry differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_expiry_True_rejected",
+      "reason": "current original lease home, journal or historical expiry differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_expiry_1.0_rejected",
+      "reason": "current original lease home, journal or historical expiry differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_expiry_0_rejected",
+      "reason": "current original lease home, journal or historical expiry differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_expiry_-1_rejected",
+      "reason": "current original lease home, journal or historical expiry differs",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_combination_4696_7969a11b_rejected",
+      "reason": "current original lease does not bind the actual complete current combination",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_combination_4695.0_7969a11b_rejected",
+      "reason": "current original lease does not bind the actual complete current combination",
+      "state": "REJECTED"
+    },
+    {
+      "name": "self_consistent_lease_combination_4695_ffffffff_rejected",
+      "reason": "current original lease does not bind the actual complete current combination",
+      "state": "REJECTED"
+    },
+    {
+      "name": "unbound_restored_after_all_memory_fixtures",
+      "reason": "current policy component runtime has not been frozen and reviewed",
+      "state": "REJECTED"
+    }
+  ],
+  "count": 55,
+  "current_package_fixture_only_in_memory": true,
+  "fixture_scope": "new prefix predicate only; retained-stage functions are explicit caller-precondition stubs",
+  "historical_qualification_grants_current_tuple_credit": false,
+  "original": {
+    "bytes": 243806,
+    "sha256": "3de6208604022671d4db21e2b479e3ef4d4bba4aaa9d2faa360f1865aec428da"
+  },
+  "phone_calls": 0,
+  "schema": "hepta.fc33.release-consumer-source-controls.v1",
+  "source": {
+    "bytes": 249798,
+    "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+  },
+  "source_graph_candidate": {
+    "bytes": 57078,
+    "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+  },
+  "source_parent_boundary": {
+    "bytes": 29342,
+    "metadata": [
+      65086,
+      154717,
+      33152,
+      0,
+      0,
+      1,
+      29342,
+      1793954246107886895,
+      1793954246107886895
+    ],
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+    "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+  },
+  "state": "PURE_SOURCE_AND_PREFIX_CONTROLS_PASSED_NOT_COMPONENT_QUALIFICATION",
+  "synthetic_new_cases_only_in_memory": true,
+  "unbound_source_unchanged": true,
+  "whole_case_qualified": false
+}

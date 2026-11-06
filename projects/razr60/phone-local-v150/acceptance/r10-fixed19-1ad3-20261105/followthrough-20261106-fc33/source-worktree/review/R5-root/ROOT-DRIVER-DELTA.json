@@ -1,0 +1,33 @@
+{
+  "bridge": {
+    "candidate": {
+      "bytes": 8038,
+      "sha256": "c157682d6d56d5536d474abf54f5d63efcc1849ce05ec9f68624bd1517028009"
+    },
+    "exact_whole_byte_inverse": true,
+    "parent": {
+      "bytes": 8100,
+      "sha256": "73cbce9037426918a1a9c91b1522affb3efec1ae400965b89c6b0c90e243d64e"
+    }
+  },
+  "fixed_material_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/shared",
+  "new_nonces": 0,
+  "only_unbound_runtime_constant": "PKG",
+  "phone_calls": 0,
+  "root": {
+    "candidate": {
+      "bytes": 78504,
+      "sha256": "4e2942fde0acab3368ccca5d93cda197d8bf58fd5ea39d12ed001d7f3f8a203b"
+    },
+    "exact_whole_byte_inverse": true,
+    "parent": {
+      "bytes": 78511,
+      "sha256": "af610de2e360a2de2086e43ff2c6f2355db7044175febbd86a828b2dfd4b321f"
+    },
+    "replacement_count": 13
+  },
+  "schema": "hepta.fc33.root-driver-source-parent-delta.v1",
+  "source_parent_count": 1,
+  "source_parent_credit_for_new_tuple": false,
+  "state": "RUNTIME_PACKAGE_SHA_PENDING"
+}

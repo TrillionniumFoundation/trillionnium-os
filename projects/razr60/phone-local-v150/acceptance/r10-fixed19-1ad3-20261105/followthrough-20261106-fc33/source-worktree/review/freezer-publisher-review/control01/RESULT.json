@@ -1,0 +1,632 @@
+{
+  "cases": [
+    {
+      "directories": 11,
+      "files": 6,
+      "name": "nested_complete_tree_terminal_last",
+      "passed": true,
+      "whole_bytes_read_back": true,
+      "write_order": [
+        "A.txt",
+        "FREEZE-RESULT.json",
+        "consumer.py",
+        "x.py",
+        "original.bin",
+        "DERIVATION.json"
+      ]
+    },
+    {
+      "error": "closed relative material file",
+      "name": "absolute_member",
+      "passed": true,
+      "rejected_before_output_mkdir": true
+    },
+    {
+      "error": "closed relative material file",
+      "name": "parent_traversal",
+      "passed": true,
+      "rejected_before_output_mkdir": true
+    },
+    {
+      "error": "closed relative material file",
+      "name": "noncanonical_double_slash",
+      "passed": true,
+      "rejected_before_output_mkdir": true
+    },
+    {
+      "error": "closed relative material file",
+      "name": "file_directory_collision",
+      "passed": true,
+      "rejected_before_output_mkdir": true
+    },
+    {
+      "error": "bounded runtime directory set",
+      "name": "directory_budget",
+      "passed": true,
+      "rejected_before_output_mkdir": true
+    },
+    {
+      "error": "complete bounded runtime file set",
+      "name": "file_count_budget",
+      "passed": true,
+      "rejected_before_output_mkdir": true
+    },
+    {
+      "DERIVATION_present": false,
+      "early_FREEZE_present": true,
+      "exact_exception_propagated": true,
+      "fault_count": 1,
+      "name": "terminal_creation_eio_retains_incomplete_tree",
+      "no_automatic_cleanup": true,
+      "passed": true,
+      "synthetic_fault_callback": true,
+      "write_order": [
+        "A.txt",
+        "FREEZE-RESULT.json",
+        "consumer.py",
+        "x.py",
+        "original.bin",
+        "DERIVATION.json"
+      ]
+    },
+    {
+      "error": "[Errno 17] File exists: '/workspace/scratch/fc33eac909ab/review/freezer-publisher-review/control01/retained-terminal-failure'",
+      "full9_and_bytes_unchanged": true,
+      "name": "existing_incomplete_output_refuses_restart",
+      "passed": true
+    },
+    {
+      "after": {
+        "child_system_cpu": 0.0,
+        "child_user_cpu": 0.002085,
+        "fd_count": 4,
+        "thread_ids": [
+          139644599867200
+        ]
+      },
+      "before": {
+        "child_system_cpu": 0.0,
+        "child_user_cpu": 0.002085,
+        "fd_count": 4,
+        "thread_ids": [
+          139644599867200
+        ]
+      },
+      "name": "source_originals_and_resources_unchanged",
+      "passed": true,
+      "source_full9_and_bytes_unchanged": true
+    }
+  ],
+  "derived_publisher_body": {
+    "bytes": 4124,
+    "sha256": "0d3c7d63cb3ec22b2b1013ac746ecc35f401499e6b959a1421cd1a9f7721ab39"
+  },
+  "freezer": {
+    "bytes": 21026,
+    "path": "/workspace/scratch/fc33eac909ab/review/freeze_native_bound_runtime_r5_UNBOUND.py",
+    "sha256": "7f1664543e61fcea20124173e5d9ff6745c41ffec8fd00c97df61a3e05d108be"
+  },
+  "limits": [
+    "All payloads are synthetic; the EIO is an explicitly injected host callback.",
+    "No freezer main, actual runtime publication, controller admission, nonce, device, model or native dispatch ran.",
+    "Only nested directory derivation, added bounds, retained failure and descriptor cleanup were exercised.",
+    "FREEZE-RESULT alone is not success: a failed publisher can leave it and its optimistic flags intact.",
+    "Consumption requires independently successful actual controller evidence, both identical terminal copies and complete file readback.",
+    "These controls do not qualify any physical acceptance case or replace the preparer consumer gates."
+  ],
+  "parent_publisher": {
+    "bytes": 16399,
+    "path": "/workspace/scratch/fc33eac909ab/review/derive_reviewed_source_material_v3.py",
+    "sha256": "842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82"
+  },
+  "passed": 10,
+  "publisher_derivation": {
+    "candidate_function": {
+      "bytes": 4124,
+      "sha256": "0d3c7d63cb3ec22b2b1013ac746ecc35f401499e6b959a1421cd1a9f7721ab39"
+    },
+    "exact_whole_function_inverse": true,
+    "only_directory_inventory_and_bounds_changed": true,
+    "parent_function": {
+      "bytes": 3878,
+      "sha256": "f4bf22d18592763c6a60b71f39fea384e8c51b5b62dba074a7028c0aab75163a"
+    }
+  },
+  "retained_outputs": {
+    "failed": {
+      ".": {
+        "full9": [
+          27,
+          1212526,
+          16832,
+          1000,
+          1000,
+          5,
+          4096,
+          1793982658885806970,
+          1793982658885806970
+        ]
+      },
+      "A.txt": {
+        "bytes": 20,
+        "full9": [
+          27,
+          1212537,
+          33152,
+          1000,
+          1000,
+          1,
+          20,
+          1793982658885528608,
+          1793982658885528608
+        ],
+        "sha256": "1645c8642d15628d6fc44c061dab5b2084c476ffe30090c1a5ed4aeb4c63c163"
+      },
+      "FREEZE-RESULT.json": {
+        "bytes": 117,
+        "full9": [
+          27,
+          1212538,
+          33152,
+          1000,
+          1000,
+          1,
+          117,
+          1793982658887440528,
+          1793982658887440528
+        ],
+        "sha256": "b46a98f6ec74fa95d5aca905083447f51bcc265a30dbfdb64a6bb635602fc95a"
+      },
+      "runtime": {
+        "full9": [
+          27,
+          1212527,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658884124561,
+          1793982658884124561
+        ]
+      },
+      "runtime/source": {
+        "full9": [
+          27,
+          1212530,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658884690500,
+          1793982658884690500
+        ]
+      },
+      "runtime/source/deep": {
+        "full9": [
+          27,
+          1212533,
+          16832,
+          1000,
+          1000,
+          2,
+          4096,
+          1793982658887440528,
+          1793982658887440528
+        ]
+      },
+      "runtime/source/deep/consumer.py": {
+        "bytes": 28,
+        "full9": [
+          27,
+          1212539,
+          33152,
+          1000,
+          1000,
+          1,
+          28,
+          1793982658889209804,
+          1793982658889209804
+        ],
+        "sha256": "c19e88c299354c254722b1da3dbc175dc8420035502b80000d6f17daa47cd8d4"
+      },
+      "shared": {
+        "full9": [
+          27,
+          1212528,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658884124561,
+          1793982658884124561
+        ]
+      },
+      "shared/provider": {
+        "full9": [
+          27,
+          1212531,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658884690500,
+          1793982658884690500
+        ]
+      },
+      "shared/provider/source": {
+        "full9": [
+          27,
+          1212534,
+          16832,
+          1000,
+          1000,
+          2,
+          4096,
+          1793982658889807047,
+          1793982658889807047
+        ]
+      },
+      "shared/provider/source/x.py": {
+        "bytes": 19,
+        "full9": [
+          27,
+          1212540,
+          33152,
+          1000,
+          1000,
+          1,
+          19,
+          1793982658892136226,
+          1793982658892136226
+        ],
+        "sha256": "a7f5ae972bcb2def31ecfe148591b646a71904d62213b89227581367858e444c"
+      },
+      "z-history": {
+        "full9": [
+          27,
+          1212529,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658884124561,
+          1793982658884124561
+        ]
+      },
+      "z-history/a": {
+        "full9": [
+          27,
+          1212532,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658884690500,
+          1793982658884690500
+        ]
+      },
+      "z-history/a/b": {
+        "full9": [
+          27,
+          1212535,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658885282229,
+          1793982658885282229
+        ]
+      },
+      "z-history/a/b/c": {
+        "full9": [
+          27,
+          1212536,
+          16832,
+          1000,
+          1000,
+          2,
+          4096,
+          1793982658893807125,
+          1793982658893807125
+        ]
+      },
+      "z-history/a/b/c/original.bin": {
+        "bytes": 31,
+        "full9": [
+          27,
+          1212541,
+          33152,
+          1000,
+          1000,
+          1,
+          31,
+          1793982658895272393,
+          1793982658895272393
+        ],
+        "sha256": "235b6d1f0488e0a24109adeb02ed77229a67bad27e734e58450aad59ab07723b"
+      }
+    },
+    "success": {
+      ".": {
+        "full9": [
+          27,
+          1212509,
+          16832,
+          1000,
+          1000,
+          5,
+          4096,
+          1793982658873806737,
+          1793982658873806737
+        ]
+      },
+      "A.txt": {
+        "bytes": 20,
+        "full9": [
+          27,
+          1212520,
+          33152,
+          1000,
+          1000,
+          1,
+          20,
+          1793982658857938685,
+          1793982658857938685
+        ],
+        "sha256": "1645c8642d15628d6fc44c061dab5b2084c476ffe30090c1a5ed4aeb4c63c163"
+      },
+      "DERIVATION.json": {
+        "bytes": 117,
+        "full9": [
+          27,
+          1212525,
+          33152,
+          1000,
+          1000,
+          1,
+          117,
+          1793982658878672277,
+          1793982658878672277
+        ],
+        "sha256": "b46a98f6ec74fa95d5aca905083447f51bcc265a30dbfdb64a6bb635602fc95a"
+      },
+      "FREEZE-RESULT.json": {
+        "bytes": 117,
+        "full9": [
+          27,
+          1212521,
+          33152,
+          1000,
+          1000,
+          1,
+          117,
+          1793982658862426341,
+          1793982658862426341
+        ],
+        "sha256": "b46a98f6ec74fa95d5aca905083447f51bcc265a30dbfdb64a6bb635602fc95a"
+      },
+      "runtime": {
+        "full9": [
+          27,
+          1212510,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658852612431,
+          1793982658852612431
+        ]
+      },
+      "runtime/source": {
+        "full9": [
+          27,
+          1212513,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658854451726,
+          1793982658854451726
+        ]
+      },
+      "runtime/source/deep": {
+        "full9": [
+          27,
+          1212516,
+          16832,
+          1000,
+          1000,
+          2,
+          4096,
+          1793982658862426341,
+          1793982658862426341
+        ]
+      },
+      "runtime/source/deep/consumer.py": {
+        "bytes": 28,
+        "full9": [
+          27,
+          1212522,
+          33152,
+          1000,
+          1000,
+          1,
+          28,
+          1793982658864048016,
+          1793982658864048016
+        ],
+        "sha256": "c19e88c299354c254722b1da3dbc175dc8420035502b80000d6f17daa47cd8d4"
+      },
+      "shared": {
+        "full9": [
+          27,
+          1212511,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658852612431,
+          1793982658852612431
+        ]
+      },
+      "shared/provider": {
+        "full9": [
+          27,
+          1212514,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658854451726,
+          1793982658854451726
+        ]
+      },
+      "shared/provider/source": {
+        "full9": [
+          27,
+          1212517,
+          16832,
+          1000,
+          1000,
+          2,
+          4096,
+          1793982658865806582,
+          1793982658865806582
+        ]
+      },
+      "shared/provider/source/x.py": {
+        "bytes": 19,
+        "full9": [
+          27,
+          1212523,
+          33152,
+          1000,
+          1000,
+          1,
+          19,
+          1793982658868171495,
+          1793982658868171495
+        ],
+        "sha256": "a7f5ae972bcb2def31ecfe148591b646a71904d62213b89227581367858e444c"
+      },
+      "z-history": {
+        "full9": [
+          27,
+          1212512,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658852612431,
+          1793982658852612431
+        ]
+      },
+      "z-history/a": {
+        "full9": [
+          27,
+          1212515,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658854451726,
+          1793982658854451726
+        ]
+      },
+      "z-history/a/b": {
+        "full9": [
+          27,
+          1212518,
+          16832,
+          1000,
+          1000,
+          3,
+          4096,
+          1793982658857660237,
+          1793982658857660237
+        ]
+      },
+      "z-history/a/b/c": {
+        "full9": [
+          27,
+          1212519,
+          16832,
+          1000,
+          1000,
+          2,
+          4096,
+          1793982658869806660,
+          1793982658869806660
+        ]
+      },
+      "z-history/a/b/c/original.bin": {
+        "bytes": 31,
+        "full9": [
+          27,
+          1212524,
+          33152,
+          1000,
+          1000,
+          1,
+          31,
+          1793982658871137587,
+          1793982658871137587
+        ],
+        "sha256": "235b6d1f0488e0a24109adeb02ed77229a67bad27e734e58450aad59ab07723b"
+      }
+    }
+  },
+  "schema": "fc33.r5.publisher.narrow-host-review.v1",
+  "script": {
+    "bytes": 11445,
+    "path": "/workspace/scratch/fc33eac909ab/review/freezer-publisher-review/test_freezer_publisher.py",
+    "sha256": "2fccb7d6ac35720cb6f88dcc7425f97aae506419bbe1689fa01b3531cf54082a"
+  },
+  "source_originals": {
+    "/workspace/scratch/fc33eac909ab/review/derive_reviewed_source_material_v3.py": {
+      "bytes": 16399,
+      "full9": [
+        27,
+        1205322,
+        33188,
+        1000,
+        1000,
+        1,
+        16399,
+        1793980156253103677,
+        1793980156253103677
+      ],
+      "sha256": "842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82"
+    },
+    "/workspace/scratch/fc33eac909ab/review/freeze_native_bound_runtime_r5_UNBOUND.py": {
+      "bytes": 21026,
+      "full9": [
+        27,
+        1210434,
+        33188,
+        1000,
+        1000,
+        1,
+        21026,
+        1793982034489579105,
+        1793982034489579105
+      ],
+      "sha256": "7f1664543e61fcea20124173e5d9ff6745c41ffec8fd00c97df61a3e05d108be"
+    }
+  },
+  "status": "PASS",
+  "total": 10
+}

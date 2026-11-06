@@ -1,0 +1,12 @@
+--- native-v2/provider_phone_local.py
++++ native-v3/provider_phone_local.py
+@@ -773,7 +773,8 @@
+                     self._record_health_terminal('turn.cancelled', {})
+                 return super().emit('turn.cancelled', summary='cancelled before completion frame; no further effects')
+         if kind == 'tool.call':
+-            call = fields['call']
++            call = self.phone_tools.dispatch_call(fields['call'])
++            fields['call'] = call
+             record = self.phone_tools.calls.get(call['call_id'])
+             require(record is not None and record['wire_call'] == call,
+                     'native dispatch differs from the reviewed typed phone mapping')

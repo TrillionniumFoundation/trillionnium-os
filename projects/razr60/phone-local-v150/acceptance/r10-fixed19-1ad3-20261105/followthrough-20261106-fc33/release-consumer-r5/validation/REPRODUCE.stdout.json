@@ -1,0 +1,31 @@
+{
+  "actual_BUILD": false,
+  "actual_READY": false,
+  "actual_install": false,
+  "controls": 55,
+  "phone_calls": 0,
+  "result": {
+    "bytes": 11484,
+    "sha256": "b54221e45e0a4a5213adca7bcbb2eef7fe303fcb9078f5757a76066b8c009ed0"
+  },
+  "runs": [
+    {
+      "exit_code": 0,
+      "script": "derive_consumer_candidate.py",
+      "stderr": "",
+      "stdout": "{\"chain_length\": 12, \"component_role_budget\": 42, \"package_pin\": null, \"patch\": {\"bytes\": 12030, \"sha256\": \"ee9293f41287fd4458c8b448aadf3ae0eebc34ef69ee4b912b3f51f0c51392d8\"}, \"source\": {\"bytes\": 249798, \"sha256\": \"016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349\"}, \"state\": \"UNBOUND_SOURCE_CANDIDATE_NOT_FROZEN_OR_QUALIFIED\"}\n"
+    },
+    {
+      "exit_code": 0,
+      "script": "run_consumer_source_controls.py",
+      "stderr": "",
+      "stdout": "{\"checks\": 55, \"phone_calls\": 0, \"result\": {\"bytes\": 11484, \"sha256\": \"b54221e45e0a4a5213adca7bcbb2eef7fe303fcb9078f5757a76066b8c009ed0\"}, \"source\": {\"bytes\": 249798, \"sha256\": \"016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349\"}, \"state\": \"PURE_SOURCE_AND_PREFIX_CONTROLS_PASSED_NOT_COMPONENT_QUALIFICATION\"}\n"
+    }
+  ],
+  "same_source_and_result_bytes": true,
+  "schema": "hepta.fc33.release-consumer-isolated-reproduction.v1",
+  "source": {
+    "bytes": 249798,
+    "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+  }
+}

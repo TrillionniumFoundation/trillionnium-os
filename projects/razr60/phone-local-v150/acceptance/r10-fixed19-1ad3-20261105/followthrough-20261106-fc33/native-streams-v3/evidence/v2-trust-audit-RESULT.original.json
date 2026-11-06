@@ -1,0 +1,168 @@
+{
+  "actual_original_formula_checks": [
+    {
+      "binding_expected_under_source_default_bin_sh_null_config": "47c726ccbb9e433417f5f8bbe0a18aef909d93046dc58d398143e3d24db1de5d",
+      "binding_matches_default_context": true,
+      "binding_returned": "47c726ccbb9e433417f5f8bbe0a18aef909d93046dc58d398143e3d24db1de5d",
+      "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+      "call_sha256": "3232395014a821a626d63e28754c6847cf8459301d5228bc1df1efdf5230cb44",
+      "canonical_preimage_keys": [
+        "argv",
+        "config_generation",
+        "mode",
+        "profile_id",
+        "protocol",
+        "protocol_version",
+        "pty",
+        "session_id",
+        "stream",
+        "task_id",
+        "timeout_ms",
+        "tool",
+        "turn_id"
+      ],
+      "exited": 0,
+      "generation": 73,
+      "observation_expected_from_actual_bytes": "43c402751c27b374286dfa9d39fc16cf52ae802e4c5fd2d3b4bd52506b541542",
+      "observation_matches": true,
+      "observation_returned": "43c402751c27b374286dfa9d39fc16cf52ae802e4c5fd2d3b4bd52506b541542",
+      "request_expected_under_source_default_null_config": "a14dd1639fb18afe951f3c573d937da8dac9b21a42bb248c86aa7858d5149929",
+      "request_matches_default_context": true,
+      "request_returned": "a14dd1639fb18afe951f3c573d937da8dac9b21a42bb248c86aa7858d5149929",
+      "result_sha256": "4cb54ae2927ab0be2527b0206282b10942e9d104b4f87c72ead3703b7571e59f"
+    },
+    {
+      "binding_expected_under_source_default_bin_sh_null_config": "47c726ccbb9e433417f5f8bbe0a18aef909d93046dc58d398143e3d24db1de5d",
+      "binding_matches_default_context": true,
+      "binding_returned": "47c726ccbb9e433417f5f8bbe0a18aef909d93046dc58d398143e3d24db1de5d",
+      "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+      "call_sha256": "c23cc458f969d9b33229b6db3d95823959b1ca5ac226f0311d666374f9d19f2c",
+      "canonical_preimage_keys": [
+        "argv",
+        "config_generation",
+        "mode",
+        "profile_id",
+        "protocol",
+        "protocol_version",
+        "pty",
+        "session_id",
+        "stream",
+        "task_id",
+        "timeout_ms",
+        "tool",
+        "turn_id"
+      ],
+      "exited": 70,
+      "generation": 74,
+      "observation_expected_from_actual_bytes": "34c8404d0c79c322dae8b0dfc0488e8170010b539e7f63da15e63e712a634889",
+      "observation_matches": true,
+      "observation_returned": "34c8404d0c79c322dae8b0dfc0488e8170010b539e7f63da15e63e712a634889",
+      "request_expected_under_source_default_null_config": "bd7517a414e889fa1d2ae747dff9a421212661a3f56ad1c8b11917b143c679f8",
+      "request_matches_default_context": true,
+      "request_returned": "bd7517a414e889fa1d2ae747dff9a421212661a3f56ad1c8b11917b143c679f8",
+      "result_sha256": "fae61bc4e72ea8cc9f3bed25753e7be86cb9415669f4f2f318c92fa6f0bff4de"
+    }
+  ],
+  "actual_originals_modified": false,
+  "candidate_v2_modified": false,
+  "consumer_findings": [
+    {
+      "actual_original_copy_only": true,
+      "name": "wrong_observation_hash",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "missing_observation_hash",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "wrong_request_hash",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "missing_request_hash",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "wrong_config_fingerprint",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "missing_config_fingerprint",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "wrong_generation_without_rehash",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "generation_bool",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "generation_float",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    },
+    {
+      "actual_original_copy_only": true,
+      "name": "missing_generation",
+      "stdout_sha256": "55d5ad960850514c1b77031faa2265fe950b78770c13538720c447549372754d",
+      "v2_consumer_accepted": true
+    }
+  ],
+  "limits": [
+    "Default-context formula matches alone do not establish an independently trusted active owner configuration; source/config derivation must bind that context before adoption.",
+    "Spawn generation is assigned by the producer registry, not knowable before dispatch from the current provider turn.start schema.",
+    "Observation hash is an integrity digest, not a MAC; an independent admission anchor is needed to distinguish a self-consistent forged generation/result.",
+    "These are read-only host copies, not a demonstrated corrupt runtime/transport ingress or physical task."
+  ],
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "phone_calls": 0,
+  "producer_sources": [
+    {
+      "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
+      "sha": "e05725a620c72b4e5c904fb01a309c87284c8578"
+    },
+    {
+      "path": "crates/trillionnium-owner-open-call-registry/src/lib.rs",
+      "sha": "39af96d8704cdc7885150041f2b6fd6aefc16c2f"
+    },
+    {
+      "path": "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+      "sha": "7739fd8cbc673c5f27da1967788c2c45faa2b9b9"
+    },
+    {
+      "path": "crates/trillionnium-owner-open-types/src/lib.rs",
+      "sha": "ce1f8e76ae87135322d6f85b57ba17d1541addc4"
+    },
+    {
+      "path": "crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
+      "sha": "29cd4548201a23347bc5f0d293c5cec63aaff53f"
+    }
+  ],
+  "schema": "hepta.native-consumer-trust-field-audit.v1",
+  "source_gate_findings": {
+    "consumer_received_metadata_rechecked_by_live_python_outer_adapter": false,
+    "producer_registry_generation_gate": true,
+    "producer_request_and_fingerprint_claims_recomputed": true
+  },
+  "state": "CURRENT_V2_CONSUMER_GAPS_REPRODUCED"
+}

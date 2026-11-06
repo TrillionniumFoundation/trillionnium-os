@@ -1,0 +1,200 @@
+{
+  "schema": "hepta.fc33.git-blob-handoff.v1",
+  "state": "IMMUTABLE_BLOBS_CREATED_NO_TREE_COMMIT_OR_REF_UPDATE",
+  "prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/",
+  "local_source_package": "/workspace/scratch/fc33eac909ab/review/R5-release-consumer",
+  "selected_source_sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349",
+  "controls": 55,
+  "reproduced_same_55_not_added": true,
+  "package_pin": null,
+  "actual_BUILD": false,
+  "actual_install": false,
+  "actual_READY": false,
+  "phone_calls": 0,
+  "file_count": 26,
+  "total_bytes": 1006241,
+  "files": [
+    {
+      "relative_path": "current_prefix_replacement.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/current_prefix_replacement.py",
+      "blob_sha": "4837b12429835c3743cf632817b6dfcf29fac2c0",
+      "bytes": 7340,
+      "sha256": "766572e6f504422782128a6d102a94bd8f7ad120a39ae7050d95871b7eb6f3e6"
+    },
+    {
+      "relative_path": "DERIVATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/DERIVATION.json",
+      "blob_sha": "187e3f707547c4156cb41d8706afde4949e64707",
+      "bytes": 1854,
+      "sha256": "17348d1cc565577dea414c3ebf7f2ccf6b646c3238f3e9e36a616a47ea68f8de"
+    },
+    {
+      "relative_path": "derive_consumer_candidate.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/derive_consumer_candidate.py",
+      "blob_sha": "d07d6ac8732258c2bbef98f2c78888336e15e6e9",
+      "bytes": 7418,
+      "sha256": "c32493f2f42b0c2bc0673d9b4cfbd948f832503dbfe6fa792d25acc4c75ccca9"
+    },
+    {
+      "relative_path": "INTERFACE.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/INTERFACE.md",
+      "blob_sha": "7154f17a5da75306a74f73cfa978d5a1f97ff14c",
+      "bytes": 3853,
+      "sha256": "5db3891fd1f1ff12fa81bed2d5fd56fb52cd05f301bf3233a467d955679a1c87"
+    },
+    {
+      "relative_path": "PACKAGE-MANIFEST.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/PACKAGE-MANIFEST.json",
+      "blob_sha": "1933a83119c7a17fc016a44f90e54e523012fb44",
+      "bytes": 13295,
+      "sha256": "dabf4114ed175d00c182b1350ac11bfba5c307f15d951c1462e53fd1f65629bd"
+    },
+    {
+      "relative_path": "PEER-REVIEW.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/PEER-REVIEW.md",
+      "blob_sha": "21520637e8556fa656982c0f5740b065bc0e373d",
+      "bytes": 1241,
+      "sha256": "d61368be0cb9012df80f822ac6d9fd0b091937f4b0fd32827e041e477a447167"
+    },
+    {
+      "relative_path": "README.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/README.md",
+      "blob_sha": "b8d3b1e8bdae6271532f25f5b8a4048e159b7752",
+      "bytes": 6197,
+      "sha256": "c41eaf5952754bdc1ec51af7593e934cebc0e6869c627583bf7e7884f0c70e8f"
+    },
+    {
+      "relative_path": "references/candidate01/ATTEMPT.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/candidate01/ATTEMPT.json",
+      "blob_sha": "a88f400c95be02a96bb4a66551d3a35fe77ed339",
+      "bytes": 1256,
+      "sha256": "2c717857eb7f28d21ca1c973e10f08816da52c1bbe76a6161c44295ca4ad825e"
+    },
+    {
+      "relative_path": "references/candidate01/controls.stderr",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/candidate01/controls.stderr",
+      "blob_sha": "b1a01efe95387685916542980f33c5dce0a4cf55",
+      "bytes": 1422,
+      "sha256": "9b4b0adcaaadfc50bbf7007050316f79f4640fa7510bf65bbc7828aeb7e76736"
+    },
+    {
+      "relative_path": "references/candidate01/controls.stdout",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/candidate01/controls.stdout",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "references/candidate01/DERIVATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/candidate01/DERIVATION.json",
+      "blob_sha": "387c465aa34e2aa70de9ff018b36134b1c595be4",
+      "bytes": 1854,
+      "sha256": "7b060708ef917c6c704bc515faf536e70c45bd0f8eae1e1a8b30571a3d74857d"
+    },
+    {
+      "relative_path": "references/candidate01/run_consumer_source_controls.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/candidate01/run_consumer_source_controls.py",
+      "blob_sha": "b7e4d87da76afb082fc7292b50d5d6a06d4fef20",
+      "bytes": 18190,
+      "sha256": "48c403847e798fc1ab46283edc580497b0d3a6a29fdb4cb673221ee56428a371"
+    },
+    {
+      "relative_path": "references/candidate01/SOURCE.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/candidate01/SOURCE.patch",
+      "blob_sha": "cc08e6a8049d799ffd753a24b7d4106cb04f1df0",
+      "bytes": 12051,
+      "sha256": "634e8d14852c6eea7b57b52f7b2676dc02c551b36bcc72d2f2c545fed68aa49f"
+    },
+    {
+      "relative_path": "references/candidate01/source/release_boundaries.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/candidate01/source/release_boundaries.py",
+      "blob_sha": "5492326f775b4420ee07f3afd4c6e786c63b95d5",
+      "bytes": 249819,
+      "sha256": "6f97211ddcc1ac351b7fc73bfcfd4e7ffc87b9faa826ad8f54f2edcbe0b601b0"
+    },
+    {
+      "relative_path": "references/NEG01-BOUNDARY.actual.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/NEG01-BOUNDARY.actual.json",
+      "blob_sha": "c6f52d529fce84dd1ec901bfa07c13e9ad27adde",
+      "bytes": 29342,
+      "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+    },
+    {
+      "relative_path": "references/release_boundaries.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/release_boundaries.original.py",
+      "blob_sha": "5bca2d1567c7db75717f8178a1b6bf31762f4c42",
+      "bytes": 243806,
+      "sha256": "3de6208604022671d4db21e2b479e3ef4d4bba4aaa9d2faa360f1865aec428da"
+    },
+    {
+      "relative_path": "references/runtime-MANIFEST.candidate.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/runtime-MANIFEST.candidate.json",
+      "blob_sha": "d4f593ac3daf991e196754c5747ee11f3698656c",
+      "bytes": 57078,
+      "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+    },
+    {
+      "relative_path": "references/shared-v3-original-transfer.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/shared-v3-original-transfer.json",
+      "blob_sha": "3ecc6fa0882aca00b941490e4a8f81f9e6918293",
+      "bytes": 46645,
+      "sha256": "2217ec199c9d11e2fcc4c65a75f4ab13fbf4262e1df723f8261c3c42b95589fa"
+    },
+    {
+      "relative_path": "references/SOURCE-PARENT-RECORDS.actual.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/references/SOURCE-PARENT-RECORDS.actual.json",
+      "blob_sha": "11f85c6f04726452d86b48df9e12ff58c47f11e1",
+      "bytes": 7114,
+      "sha256": "af95819ef9642ac3990f471d4b9029c9d6815348f0365f65fe76819e92257e26"
+    },
+    {
+      "relative_path": "reproduce_controls.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/reproduce_controls.py",
+      "blob_sha": "67a74639d9864547c7e15ebbb813b6587efec1ac",
+      "bytes": 3513,
+      "sha256": "d7f4a595f29b96044f7c581993879edd3a5983160c0a640d65c0cf8886f7bd1e"
+    },
+    {
+      "relative_path": "run_consumer_source_controls.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/run_consumer_source_controls.py",
+      "blob_sha": "b7e4d87da76afb082fc7292b50d5d6a06d4fef20",
+      "bytes": 18190,
+      "sha256": "48c403847e798fc1ab46283edc580497b0d3a6a29fdb4cb673221ee56428a371"
+    },
+    {
+      "relative_path": "SOURCE.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/SOURCE.patch",
+      "blob_sha": "a76c52c495df82d7f9d3f0a93d9d6bfaa1a93ff5",
+      "bytes": 12030,
+      "sha256": "ee9293f41287fd4458c8b448aadf3ae0eebc34ef69ee4b912b3f51f0c51392d8"
+    },
+    {
+      "relative_path": "source/release_boundaries.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/source/release_boundaries.py",
+      "blob_sha": "56029d45831dd41df45b592128c49ef17527fe8f",
+      "bytes": 249798,
+      "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+    },
+    {
+      "relative_path": "validation/REPRODUCE.stderr",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/validation/REPRODUCE.stderr",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "validation/REPRODUCE.stdout.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/validation/REPRODUCE.stdout.json",
+      "blob_sha": "1c4b13e518df0aff35ec725770d220ac46586995",
+      "bytes": 1451,
+      "sha256": "31d0415b6519b3876a1d02e3675e95b2dcac1c6789e9f01c9d1298dc54b38b50"
+    },
+    {
+      "relative_path": "validation/RESULT.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-consumer-r5/validation/RESULT.json",
+      "blob_sha": "86a2622bbb2538b60dfbd41145ebc0cf50bf7e01",
+      "bytes": 11484,
+      "sha256": "b54221e45e0a4a5213adca7bcbb2eef7fe303fcb9078f5757a76066b8c009ed0"
+    }
+  ]
+}

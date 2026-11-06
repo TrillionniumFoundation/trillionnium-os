@@ -1,0 +1,37 @@
+{
+  "exit_code": 1,
+  "files": [
+    {
+      "bytes": 1854,
+      "path": "references/candidate01/DERIVATION.json",
+      "sha256": "7b060708ef917c6c704bc515faf536e70c45bd0f8eae1e1a8b30571a3d74857d"
+    },
+    {
+      "bytes": 12051,
+      "path": "references/candidate01/SOURCE.patch",
+      "sha256": "634e8d14852c6eea7b57b52f7b2676dc02c551b36bcc72d2f2c545fed68aa49f"
+    },
+    {
+      "bytes": 1422,
+      "path": "references/candidate01/controls.stderr",
+      "sha256": "9b4b0adcaaadfc50bbf7007050316f79f4640fa7510bf65bbc7828aeb7e76736"
+    },
+    {
+      "bytes": 0,
+      "path": "references/candidate01/controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 18190,
+      "path": "references/candidate01/run_consumer_source_controls.py",
+      "sha256": "48c403847e798fc1ab46283edc580497b0d3a6a29fdb4cb673221ee56428a371"
+    },
+    {
+      "bytes": 249819,
+      "path": "references/candidate01/source/release_boundaries.py",
+      "sha256": "6f97211ddcc1ac351b7fc73bfcfd4e7ffc87b9faa826ad8f54f2edcbe0b601b0"
+    }
+  ],
+  "reason": "consumer indent2 serializer cannot hash canonical compact LATE boundary bytes",
+  "state": "REJECTED_REAL_SERIALIZATION_MISMATCH_RETAINED"
+}

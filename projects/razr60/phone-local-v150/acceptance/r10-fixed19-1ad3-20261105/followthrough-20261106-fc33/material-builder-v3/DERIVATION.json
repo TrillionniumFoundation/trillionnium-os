@@ -1,0 +1,25 @@
+{
+  "actual_derivation": false,
+  "allowed_sources": [
+    "daily_phone_local.py",
+    "phone_local_tools.py",
+    "phone_observation_tools.py",
+    "provider_codex_host.py",
+    "provider_phone_local.py"
+  ],
+  "candidate": {
+    "bytes": 16399,
+    "sha256": "842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82"
+  },
+  "exact_whole_byte_inverse": true,
+  "four_actual_daily_dependency_pins_required": true,
+  "new_tests_repeating_18_publisher_cases": 0,
+  "only_changed_assignment": "ALLOWED",
+  "parent": {
+    "bytes": 16348,
+    "sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8"
+  },
+  "phone_calls": 0,
+  "publisher_function_unchanged": true,
+  "schema": "hepta.material-builder.five-source-derivation.v1"
+}

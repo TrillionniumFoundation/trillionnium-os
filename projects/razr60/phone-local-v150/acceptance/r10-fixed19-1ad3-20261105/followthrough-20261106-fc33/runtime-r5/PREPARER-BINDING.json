@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.fc33.preparer-actual-freeze-binding.v1",
+  "source": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/prepare_native_bound_components_r5_fc33.py",
+    "bytes": 20681,
+    "sha256": "6746dcf25d31d210580600026a45e575cbb579b02caee24b0ad00a731de38f97"
+  },
+  "parent": {
+    "bytes": 19853,
+    "sha256": "b3cf58988b5533a4bd9ae7a94ea54872bf1539a08bcf2e7740232fb17c272116"
+  },
+  "only_FROZEN_INPUTS_literal_bound": true,
+  "whole_byte_inverse": true,
+  "actual_inputs": {
+    "freeze": {
+      "bytes": 1039896,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/FREEZE-RESULT.json",
+      "sha256": "d6ae0199011ddb9bfa86d8d0c4b9818e3a9037141f5441e85d43085874fd4a3c"
+    },
+    "source": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/freeze_native_bound_runtime_r5_fc33.py",
+      "bytes": 22179,
+      "sha256": "a0e45cafe99bbc43b2298072d53b5a31a46c7747fc2be200c2b6b537a1b13b96"
+    },
+    "controller": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-freeze-r5-CONTROLLER.original.json",
+      "bytes": 7823,
+      "sha256": "c154686b7d693596f0acf14367d1f6cfbc363a96600e719ec65648cf4b9a5422"
+    }
+  },
+  "phone_calls": 0,
+  "new_nonces": 0
+}

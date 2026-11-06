@@ -1,0 +1,246 @@
+{
+  "complete_originals_retained_at_actual_hosts": [
+    {
+      "bytes": 1345533,
+      "kind": "complete_recovery_after_inventory",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-unstarted-stage-cleanup-neg02-final04-a1055-candidate01/foreign-retained-reference01/cleanup02-import01/packet/AFTER-INVENTORY.json",
+      "sha256": "43dddeefb9e99396acc442b06c91b926d4323983b91d9112bb5888727a1618d1"
+    },
+    {
+      "bytes": 183496,
+      "kind": "complete_recovery_closure",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-unstarted-stage-cleanup-neg02-final04-a1055-candidate01/foreign-retained-reference01/cleanup02-import01/CLOSED.json",
+      "sha256": "c19e5d51712452dd38c9ddb0c6ef240f372a1d563225581634d5f27d53d84d10"
+    },
+    {
+      "bytes": 1440308,
+      "kind": "complete_recovery_complete_public_return",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-neg02-cleanup-source-recovery-a1055-20261106-01/fc33-independent-cleanup02-verification01/COMPLETE-PUBLIC-RETURN.json",
+      "sha256": "41f6df9d126e3954b721fee37fd38267fc7c3af6ca4d1979debc7dd0cf110f9f"
+    },
+    {
+      "bytes": 144523,
+      "kind": "complete_recovery_input_originals",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-neg02-cleanup-source-recovery-a1055-20261106-01/fc33-independent-cleanup02-verification01/ALL-INPUT-ORIGINALS.json",
+      "sha256": "121090d620a8b65c65c73dbb754bbd76f800ee096326fb901d1eb28d8bf7a01b"
+    },
+    {
+      "bytes": 774,
+      "kind": "complete_recovery_inputs",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-unstarted-stage-cleanup-neg02-final04-a1055-candidate01/foreign-retained-reference01/cleanup02-import01/INPUTS.json",
+      "sha256": "2edb818d53b320cb402154bf8dfc750a6a7c1cb8d64929ac9e3f5a7e3135058b"
+    },
+    {
+      "bytes": 69563,
+      "kind": "complete_recovery_reader",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-unstarted-stage-cleanup-neg02-final04-a1055-candidate01/foreign-retained-reference01/cleanup02-import01/source/verify_owned_current44_cleanup.py",
+      "sha256": "265134fb8632097388a85164be1c8d160533183415cfd725ae2e70da02b61ff2"
+    },
+    {
+      "bytes": 1510750,
+      "kind": "complete_history_public_return",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/IDENTICAL-CLOSED-PUBLIC-RETURN.json",
+      "sha256": "3a70bbdfb2941dcc90aea523f468783fb4b0ad165f2ea4e2c88477dfca7940d4"
+    },
+    {
+      "bytes": 8295,
+      "kind": "complete_history_manifest_fields",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/MANIFEST-SOURCE-PARENT-FIELDS.json",
+      "sha256": "eeb5851c12b507d1d0879e19ab015da0c03edd1cc5dcac5a3c2d274f4479885c"
+    }
+  ],
+  "git_commit_made_by_this_agent": false,
+  "history_controls": {
+    "actual_host_original_count": 56,
+    "historical_qualified_NEG01_preserved": true,
+    "job": "1a1b1a54800-fc05-7a10",
+    "new_task_or_phone_calls": 0,
+    "new_tuple_qualification": false,
+    "phone_to_host_original_count": 13,
+    "positive_controls": 11,
+    "rejection_controls": 15,
+    "state": "ACTUAL_HISTORY_AND_NEGATIVE_CONTROLS_PASSED"
+  },
+  "recovery": {
+    "actual_external_cleanup_job": "1a1b15889a7-fc05-77e7",
+    "actual_external_operation": {
+      "bytes": 6151995,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-a1055-neg02-final04-owned-cleanup02/result.json",
+      "sha256": "9bae925fe62ad40039b1b915d309c14c1d58a5f36067ad4d1b77fae719fe6fd0"
+    },
+    "fixed19_credit": 0,
+    "fresh_current44_admission_required": true,
+    "independent_replay_job": "1a1b1889e0b-fc05-7967",
+    "our_successor_remains_failed": {
+      "job": "1a1b16ac67a-fc05-7887",
+      "phone_stderr": {
+        "bytes": 1032,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/P4-SUCCESSOR02-PHONE-STDERR.original.txt",
+        "sha256": "0738b0f8c924a8f1513a3dc088fc48bb106a7f2254b97aed41c3554d54033bba"
+      },
+      "removed_paths": [],
+      "result": {
+        "bytes": 68497,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/P4-SUCCESSOR02-FAILED-RESULT.original.json",
+        "sha256": "f33dd1aafe7975faf3f8d99c478a82dc89a10fd32178d3b01264dacfa3af8452"
+      }
+    },
+    "owned_directories_removed": 9,
+    "owned_files_removed": 77,
+    "prior_final02_wait": "UNKNOWN_UNCHANGED",
+    "public_result": "INDEPENDENT_PUBLIC_API_REEXECUTION_PASSED",
+    "sender_xml_files_removed": 11
+  },
+  "root_inventory_comparison": {
+    "after_inventory": {
+      "bytes": 1345533,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-unstarted-stage-cleanup-neg02-final04-a1055-candidate01/foreign-retained-reference01/cleanup02-import01/packet/AFTER-INVENTORY.json",
+      "sha256": "43dddeefb9e99396acc442b06c91b926d4323983b91d9112bb5888727a1618d1"
+    },
+    "only_inventory_elapsed_seconds_is_excluded_by_pure_reader": true,
+    "parent_inventory": {
+      "bytes": 1345535,
+      "sha256": "4bd70b72d2a92a6c963912159d9e978fc681a35ddb30c03a2c741700bf47cde4"
+    },
+    "roots_and_entries_exact_equal": true
+  },
+  "schema": "hepta.fc33.recovery-and-source-parent-git-evidence-map.v1",
+  "source_artifacts_and_exact_small_originals": [
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/runtime/source/late_boundary.py",
+      "bytes": 181669,
+      "git_relative_path": "review/R5-agent-late/runtime/source/late_boundary.py",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/runtime/source/late_boundary.py",
+      "sha256": "0a9f52cf8fb71177d0816f561cce279811a7182e986c12912d9431bde5997cda"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/runtime/reference/source_parent_late_boundary_r4.py",
+      "bytes": 153138,
+      "git_relative_path": "review/R5-agent-late/runtime/reference/source_parent_late_boundary_r4.py",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/runtime/reference/source_parent_late_boundary_r4.py",
+      "sha256": "27350db238c5ca31796af91c77b5c2fdb9d02b838d35140f759df907903d4fa4"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/source_parent_extension.py",
+      "bytes": 14496,
+      "git_relative_path": "review/R5-agent-late/source_parent_extension.py",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/source_parent_extension.py",
+      "sha256": "1a73f70bfefe98d889179f716f5483535a4b1990505548b7658af8d1febf7eff"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/tail_replacement.py",
+      "bytes": 2819,
+      "git_relative_path": "review/R5-agent-late/tail_replacement.py",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/tail_replacement.py",
+      "sha256": "cde3afc48b79e69c73309046ffd3b09a9199f4675013dc3a80d8c141e8e413d4"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/build_source_parent_candidate.py",
+      "bytes": 15536,
+      "git_relative_path": "review/R5-agent-late/build_source_parent_candidate.py",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/build_source_parent_candidate.py",
+      "sha256": "9cacc9465bb7b8a1fb4238db5bdd4df95a12ad7f3a51be5db508a2d0599f690f"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/SOURCE.patch",
+      "bytes": 50370,
+      "git_relative_path": "review/R5-agent-late/SOURCE.patch",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/SOURCE.patch",
+      "sha256": "8ae854f418a943ec474937ec22ea6e60a7a7155ed9364d6d5d4e60e17065556a"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/SOURCE-PARENT-RECORDS.json",
+      "bytes": 7114,
+      "git_relative_path": "review/R5-agent-late/SOURCE-PARENT-RECORDS.json",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/SOURCE-PARENT-RECORDS.json",
+      "sha256": "af95819ef9642ac3990f471d4b9029c9d6815348f0365f65fe76819e92257e26"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/MANIFEST-SOURCE-PARENT-FIELDS.json",
+      "bytes": 8295,
+      "git_relative_path": "review/R5-agent-late/MANIFEST-SOURCE-PARENT-FIELDS.json",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/MANIFEST-SOURCE-PARENT-FIELDS.json",
+      "sha256": "eeb5851c12b507d1d0879e19ab015da0c03edd1cc5dcac5a3c2d274f4479885c"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CANDIDATE.json",
+      "bytes": 7795,
+      "git_relative_path": "review/R5-agent-late/CANDIDATE.json",
+      "kind": "source_parent_candidate_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/CANDIDATE.json",
+      "sha256": "775c90c67845ecc0a5c7bcf6e37c9950f173057366925c35e651e95592225460"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/RESULT.json",
+      "bytes": 6931,
+      "git_relative_path": "review/R5-agent-late/CONTROL-RESULT01/RESULT.json",
+      "kind": "actual_history_control_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/CONTROL-RESULT01/RESULT.json",
+      "sha256": "7bd2fc99b5bb2ae912b28b41ed2fb0ca920f30844cf51bf98cdf3bbf0ecf52f9"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/ACTUAL-PHONE-TO-HOST-ORIGINALS.json",
+      "bytes": 10755,
+      "git_relative_path": "review/R5-agent-late/CONTROL-RESULT01/ACTUAL-PHONE-TO-HOST-ORIGINALS.json",
+      "kind": "actual_history_control_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/CONTROL-RESULT01/ACTUAL-PHONE-TO-HOST-ORIGINALS.json",
+      "sha256": "eea26fad7deae5cb715603a54a26c554d37ce7da589b14a54b128d9eab7630be"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/ALL-ACTUAL-HOST-ORIGINALS.json",
+      "bytes": 23240,
+      "git_relative_path": "review/R5-agent-late/CONTROL-RESULT01/ALL-ACTUAL-HOST-ORIGINALS.json",
+      "kind": "actual_history_control_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/CONTROL-RESULT01/ALL-ACTUAL-HOST-ORIGINALS.json",
+      "sha256": "ddfb4e84f36720a82f2fc33569f661678d55084fc95073a4d707ad6262ff36f9"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/ROOT-VERIFIER-ORIGINAL-TRANSPORT.json",
+      "bytes": 4704,
+      "git_relative_path": "review/R5-agent-late/CONTROL-RESULT01/ROOT-VERIFIER-ORIGINAL-TRANSPORT.json",
+      "kind": "actual_history_control_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/CONTROL-RESULT01/ROOT-VERIFIER-ORIGINAL-TRANSPORT.json",
+      "sha256": "45a1c022c8135b60e39d811ee5ec22724903cb07d1c226fc11724a335743f73e"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-source-parent-late01/CONTROL-RESULT01/VERIFIER.original.py",
+      "bytes": 16263,
+      "git_relative_path": "review/R5-agent-late/CONTROL-RESULT01/VERIFIER.original.py",
+      "kind": "actual_history_control_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/CONTROL-RESULT01/VERIFIER.original.py",
+      "sha256": "549d8d54529d3dad5c6e05652078c1b978be66d5ef2868707e17a97af4881cec"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-neg02-cleanup-source-recovery-a1055-20261106-01/fc33-independent-cleanup02-verification01/SOURCE.original.py",
+      "bytes": 6734,
+      "git_relative_path": "neg02_recovery/INDEPENDENT-RECOVERY-CLOSURE/SOURCE.original.py",
+      "kind": "independent_recovery_public_replay_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/neg02_recovery/INDEPENDENT-RECOVERY-CLOSURE/SOURCE.original.py",
+      "sha256": "7e2ae7c09b382c5d5a6ca92f564afb370431b25dd0686980275f1b1daed68214"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-neg02-cleanup-source-recovery-a1055-20261106-01/fc33-independent-cleanup02-verification01/RESULT.json",
+      "bytes": 3810,
+      "git_relative_path": "neg02_recovery/INDEPENDENT-RECOVERY-CLOSURE/RESULT.json",
+      "kind": "independent_recovery_public_replay_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/neg02_recovery/INDEPENDENT-RECOVERY-CLOSURE/RESULT.json",
+      "sha256": "fa477423208b121e22bff5a76e6394668518487b2733287e9ef725fa2bbeace2"
+    },
+    {
+      "actual_mac_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-neg02-cleanup-source-recovery-a1055-20261106-01/fc33-independent-cleanup02-verification01/ROOT-VERIFIER-ORIGINAL-TRANSPORT.json",
+      "bytes": 5919,
+      "git_relative_path": "neg02_recovery/INDEPENDENT-RECOVERY-CLOSURE/ROOT-VERIFIER-ORIGINAL-TRANSPORT.json",
+      "kind": "independent_recovery_public_replay_original",
+      "local_path": "/workspace/scratch/fc33eac909ab/neg02_recovery/INDEPENDENT-RECOVERY-CLOSURE/ROOT-VERIFIER-ORIGINAL-TRANSPORT.json",
+      "sha256": "b5b167dbed32f6972d1bc04ba974eca5aef7ebc56dfb7f1c53d767c1ca107e96"
+    }
+  ]
+}

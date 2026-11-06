@@ -1,0 +1,88 @@
+{
+  "PhoneLocalTools_or_Adapter_constructed": false,
+  "audit_denied_events": [],
+  "case_count": 6,
+  "cases": [
+    {
+      "claims_equal_independent_reference": true,
+      "command_sha256": "129d8e30992049062afbee983f0b763f5a2f9ba7e9a9450d1b08fa789ddbf1b5",
+      "name": "capture_real_mapper_trace_and_closer",
+      "original_record_preserved": true,
+      "passed": true,
+      "request_digest_changes_only_for_trace": false,
+      "synthetic_r6_transport": true
+    },
+    {
+      "claims_equal_independent_reference": true,
+      "command_sha256": "1bc7e97793553091ef5811d07f0e7478347b7a3003650080ac6fe6c8db0d11db",
+      "name": "guard_real_mapper_trace_and_closer",
+      "original_record_preserved": true,
+      "passed": true,
+      "request_digest_changes_only_for_trace": true,
+      "synthetic_r6_transport": true
+    },
+    {
+      "closer_rejection": {
+        "message": "actual native wire is not the single reviewed mapping plus explicit trace",
+        "type": "ValueError"
+      },
+      "helper_rejection": {
+        "message": "phone native call claims differ from the trusted scope or qualified configuration",
+        "type": "ProviderError"
+      },
+      "name": "stale_trace_claims_rejected_even_when_intent_matches",
+      "passed": true
+    },
+    {
+      "name": "wrong_digest_self_consistent_intent_rejected",
+      "passed": true,
+      "rejection": {
+        "message": "actual native wire is not the single reviewed mapping plus explicit trace",
+        "type": "ValueError"
+      }
+    },
+    {
+      "component_envelope_parser_accepts_expected_nonzero": true,
+      "name": "expected_nonzero_70_component_only",
+      "passed": true,
+      "production_success_parser_rejects": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      }
+    },
+    {
+      "component_envelope_parser_accepts_expected_nonzero": true,
+      "name": "expected_nonzero_71_component_only",
+      "passed": true,
+      "production_success_parser_rejects": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      }
+    }
+  ],
+  "component_qualified": false,
+  "limits": [
+    "Real inherited PhoneTools.map and current r6_wire construct text; the transport fixture is explicitly synthetic.",
+    "NativeGuardSession._call and verify_mapped_phase run, but no real accepted component session or sidecar is created.",
+    "Component nonzero envelope acceptance is not production semantic success; expected 70/71 remain rejected by the production success parser.",
+    "No complete guard_result/verify_r6, journal provenance, public witness, or lifecycle closure is simulated as a real pass."
+  ],
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "phone_calls": 0,
+  "production_pins_sha256": "168cbbb9c49e86613622dfe6ce682516847cc856086b3369909e923ae8007d68",
+  "resources_restored": true,
+  "schema": "razr60-r5-trace-closure-host-review/v1",
+  "source_pins": {
+    "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/close_component.py": {
+      "bytes": 107822,
+      "sha256": "0249db62b262226dd7fa87f0829f25eb1353f8d5f254c60e37577ca4bf0c1268"
+    },
+    "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/native_guard_session_r2.py": {
+      "bytes": 29110,
+      "sha256": "f55cd1c25962d0cc1ccc76fc921f6bac116a670fbdf5779305efd6d3d00ef718"
+    }
+  },
+  "state": "PASSED_SELECTED_SYNTHETIC_CONTROLS",
+  "validate_executor_bypassed": false
+}

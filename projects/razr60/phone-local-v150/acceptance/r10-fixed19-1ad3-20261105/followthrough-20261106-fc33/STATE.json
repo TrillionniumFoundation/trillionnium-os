@@ -1,238 +1,225 @@
 {
-  "schema": "hepta.fixed19.followthrough-checkpoint.v3",
-  "recorded_at": "2026-11-06 15:25:40 UTC",
-  "repository_base_commit": "647dc84b4ccd7d37c323871de9c6efed03540645",
-  "scope": "Reviewed host candidates, actual shared-material derivation and retained fail-closed physical cleanup; final tuple and whole cases remain unqualified",
-  "current_component": {
-    "combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
-    "source_seal_sha256": "78c39b4cc4afd438bb149013fff20bbecc0a78241c3ed979e101320736eadcc0",
-    "runtime_manifest_sha256": "72d6dcb4c20547549debad6ef55001aa5c8d115574ac222312b158f9722e2515",
-    "runtime_files_verified": 37,
-    "runtime_bytes": 3157174,
-    "four_role_ready": false
+  "schema": "hepta.fc33.fixed19-followthrough-checkpoint.v4",
+  "recorded_at": "2026-11-06T17:02:58.036Z",
+  "repository_base_commit": "be7cea6dee3f8b7192e43833ab320b406fa57218",
+  "scope": "USER_REQUESTED_ALL_19_CURRENT_TUPLE_QUALIFICATION_CONTINUES",
+  "new_whole_cases_closed": [],
+  "current_tuple_component_cases_closed": [],
+  "current_tuple": {
+    "combination": {
+      "bytes": 4695,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/COMBINATION.json",
+      "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+    },
+    "runtime_manifest": {
+      "bytes": 57078,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/runtime/MANIFEST.json",
+      "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+    },
+    "root_manifest": {
+      "bytes": 50107,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "f9145ce2f0e5864a78ed8bece2d926187dc83e8baf15799758200bb646057282"
+    },
+    "shared_manifest": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1",
+    "production_sources_changed": [
+      "daily_phone_local.py",
+      "phone_local_tools.py",
+      "phone_observation_tools.py",
+      "provider_codex_host.py",
+      "provider_phone_local.py"
+    ],
+    "runtime_members": 38,
+    "shared_members": 17,
+    "source_parent_count": 1,
+    "maximum_native_chain": 12,
+    "maximum_component_roles": 42,
+    "complete_inventory_roots_before_new_cases": 44,
+    "complete_inventory_roots_after_two_new_cases": 50
   },
-  "candidates": {
-    "install_ready_reader": {
-      "source_sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681",
-      "protocol_sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35",
-      "persisted_mac_checks_passed": 67,
-      "persisted_mac_checks_total": 67,
-      "frozen_inputs_bound": false,
-      "frozen_execution_plan_bound": false,
-      "actual_install": false
+  "actual_runtime_freeze": {
+    "state": "FROZEN_FOR_NEW_NEG01_THEN_NEG02_NOT_QUALIFIED",
+    "combination": {
+      "bytes": 4695,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/COMBINATION.json",
+      "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
     },
-    "install_ready_reader_env_v2": {
-      "source_sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f",
-      "protocol_sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353",
-      "retained_mac_checks_passed": 72,
-      "retained_mac_checks_total": 72,
-      "prior_67_included": true,
-      "environment_controls": 5,
-      "reproduction_is_same_cases_not_additional_credit": true,
-      "actual_slots_bound": false,
-      "actual_install": false
+    "complete_directory_bytes": 18364398,
+    "freeze": {
+      "bytes": 1039896,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/FREEZE-RESULT.json",
+      "sha256": "d6ae0199011ddb9bfa86d8d0c4b9818e3a9037141f5441e85d43085874fd4a3c"
     },
-    "shared_business_admission": {
-      "candidate_source_pin_manifest_sha256": "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4",
-      "complete_source_count": 15,
-      "imported_source_count": 15,
-      "daily_dependency_pins_verified": 14,
-      "host_scenarios_passed": 14,
-      "host_scenarios_total": 14,
-      "job_id": "1a1b128da9b-fc05-765f",
-      "all_owner_and_receipt_inputs_synthetic": true,
-      "real_O_EXCL_race": true,
-      "real_pipe_admission": true,
-      "full_PhoneLocalAdapter_instantiated": false,
-      "executor_gate_bypassed": false,
-      "whole_NEG12_qualified": false,
-      "whole_NEG13_qualified": false
+    "full19_qualified": false,
+    "phone_calls": 0,
+    "root_chain_manifest": {
+      "bytes": 50107,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "f9145ce2f0e5864a78ed8bece2d926187dc83e8baf15799758200bb646057282"
     },
-    "native_streams_v1": {
-      "source_sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409",
-      "daily_loader_sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f",
-      "mac_checks_passed": 42,
-      "mac_checks_total": 42,
-      "job_id": "1a1b10f1643-fc05-7572",
-      "deployed": false,
-      "adopted_into_formal_combination": false,
-      "additional_metadata_probe": {
-        "source_candidate_modified": false,
-        "script_sha256": "20ec976d8dd5d5df755f366284f0f04e114fffc51d3748d0ee205bed904a6e34",
-        "result_sha256": "37c0215cd9837d4028c91da0c52cd6b12e14c985ebd111cffca39038695f74a8",
-        "job_id": "1a1b12fda88-fc05-76ba",
-        "unchecked_metadata_reproductions": 7,
-        "controls": 2,
-        "all_inputs_synthetic": true,
-        "semantic_fixture_promoted_to_turn_complete": true,
-        "outer_tool_result_receive_exercised": false,
-        "installed_attack_ingress_demonstrated": false,
-        "v2_fix_supplied": false,
-        "whole_NEG11_qualified": false
+    "runtime_manifest": {
+      "bytes": 57078,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/runtime/MANIFEST.json",
+      "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+    },
+    "source": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/freeze_native_bound_runtime_r5_fc33.py",
+      "bytes": 22179,
+      "sha256": "a0e45cafe99bbc43b2298072d53b5a31a46c7747fc2be200c2b6b537a1b13b96"
+    },
+    "controller": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-freeze-r5-CONTROLLER.original.json",
+      "bytes": 7823,
+      "sha256": "c154686b7d693596f0acf14367d1f6cfbc363a96600e719ec65648cf4b9a5422"
+    },
+    "job_id": "1a1b1c9d4f9-fc05-7acf",
+    "exit_code": 0,
+    "stdout_bytes": 1329,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "independent_preparer_preview_request": {
+      "host": "mac",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/prepare_native_bound_components_r5_fc33.py",
+        "--reviewed-source-sha256",
+        "6746dcf25d31d210580600026a45e575cbb579b02caee24b0ad00a731de38f97",
+        "--case",
+        "NEG-01",
+        "--previous",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-a1055-final04/ACTUAL-PREVIOUS-INPUT.json",
+        "--previous-bytes",
+        "1426",
+        "--previous-sha256",
+        "fcdf8a456f663d6963d3cd9caf231a210aad92d8f5e192a71917381d10ea10f0"
+      ],
+      "idempotency_key": "fc33-r5-neg01-preparer-preview-01",
+      "timeout_seconds": 240
+    },
+    "independent_preparer_terminal": null
+  },
+  "recovery": {
+    "actual_external_cleanup_job": "1a1b15889a7-fc05-77e7",
+    "actual_external_operation": {
+      "bytes": 6151995,
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-a1055-neg02-final04-owned-cleanup02/result.json",
+      "sha256": "9bae925fe62ad40039b1b915d309c14c1d58a5f36067ad4d1b77fae719fe6fd0"
+    },
+    "fixed19_credit": 0,
+    "fresh_current44_admission_required": true,
+    "independent_replay_job": "1a1b1889e0b-fc05-7967",
+    "our_successor_remains_failed": {
+      "job": "1a1b16ac67a-fc05-7887",
+      "phone_stderr": {
+        "bytes": 1032,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/P4-SUCCESSOR02-PHONE-STDERR.original.txt",
+        "sha256": "0738b0f8c924a8f1513a3dc088fc48bb106a7f2254b97aed41c3554d54033bba"
+      },
+      "removed_paths": [],
+      "result": {
+        "bytes": 68497,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/P4-SUCCESSOR02-FAILED-RESULT.original.json",
+        "sha256": "f33dd1aafe7975faf3f8d99c478a82dc89a10fd32178d3b01264dacfa3af8452"
       }
     },
-    "native_streams_v2": {
-      "source_sha256": "ec015260f64e2c61c8f9953f6abe0d8dc4a7a62ce86943ce3c9cfcd250c35162",
-      "local_tools_sha256": "6621f3463e525aa9eedeff927671045daca1065b3210ac0e34e0c2e9867afcd2",
-      "daily_sha256": "203862a29023c827804d4e2a7ccc0217f917f789f49272dc09f4ab64ec029027",
-      "candidate_pin_manifest_sha256": "8c15ed8eabefe9c2587cd4bbadd2738461b592eb30b103bd0c52ac14de83114a",
-      "parser_cases_passed": 73,
-      "outer_receive_semantic_business_cases_passed": 12,
-      "job_id": "1a1b15bf0df-fc05-77fc",
-      "same_shared_scenarios_rerun": 14,
-      "shared_job_id": "1a1b154242e-fc05-77c6",
-      "actual_neg01_archived_bytes_verified": true,
-      "new_native_dispatches": 0,
-      "new_phone_calls": 0,
-      "whole_NEG11_qualified": false,
-      "whole_NEG12_qualified": false,
-      "whole_NEG13_qualified": false,
-      "remaining_consumer_integrity_fields": [
-        "canonical request digest",
-        "configuration fingerprint",
-        "generation integrity boundary",
-        "complete observation SHA256"
-      ],
-      "not_final_source_tuple": true
+    "owned_directories_removed": 9,
+    "owned_files_removed": 77,
+    "prior_final02_wait": "UNKNOWN_UNCHANGED",
+    "public_result": "INDEPENDENT_PUBLIC_API_REEXECUTION_PASSED",
+    "sender_xml_files_removed": 11
+  },
+  "root_inventory_comparison": {
+    "after_inventory": {
+      "bytes": 1345533,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/owned-unstarted-stage-cleanup-neg02-final04-a1055-candidate01/foreign-retained-reference01/cleanup02-import01/packet/AFTER-INVENTORY.json",
+      "sha256": "43dddeefb9e99396acc442b06c91b926d4323983b91d9112bb5888727a1618d1"
     },
-    "install_retention": {
-      "producer_sha256": "280df226c4bde2294bfaefec93da40fcbc0c685e7c20a2359444e856fbd0bb7a",
-      "reader_sha256": "a95977c049b1d1a079014480cd37b9a52414bc60c2f584c4a36e21f5f8791144",
-      "host_controls_passed": 82,
-      "constructor_controls_passed": 10,
-      "host_job_id": "1a1b155bca8-fc05-77d3",
-      "actual_file_bytes": 9900047,
-      "exact_chunk_count": 12,
-      "maximum_response_bytes": 1399399,
-      "actual_phase_authority_bound": false,
-      "actual_phone_observer": false,
-      "actual_install": false,
-      "synthetic_uid_gid_projection_disclosed": true
+    "only_inventory_elapsed_seconds_is_excluded_by_pure_reader": true,
+    "parent_inventory": {
+      "bytes": 1345535,
+      "sha256": "4bd70b72d2a92a6c963912159d9e978fc681a35ddb30c03a2c741700bf47cde4"
     },
-    "material_builder_v2": {
-      "source_sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8",
-      "publication_controls_passed": 18,
-      "held_dirfd_output": true,
-      "derivation_result_last": true,
-      "actual_derivation_job": "1a1b16ec976-fc05-78ae",
-      "actual_derivation_exit": 0,
-      "actual_result_bytes": 18047,
-      "actual_result_sha256": "3e4edee129a0047e8c01ce8a16450818a00f9239302b6aed6f849c34c3450cd7",
-      "changed_source_count": 3,
-      "source_count": 15,
-      "daily_dependency_count": 14,
-      "shared_member_count": 17,
-      "derived_combination_sha256": "9025ea9c9a185ba471b0d13662e1ee932b316062bddfb656a4dcfa8bdbe4c3c4",
-      "runtime_freeze": false,
+    "roots_and_entries_exact_equal": true
+  },
+  "preserved_NEG01": {
+    "state": "QUALIFIED_ON_ORIGINAL_COMPONENT_ONLY",
+    "combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
+    "package_sha256": "72d6dcb4c20547549debad6ef55001aa5c8d115574ac222312b158f9722e2515",
+    "actual_previous": {
+      "bytes": 1426,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-a1055-final04/ACTUAL-PREVIOUS-INPUT.json",
+      "sha256": "fcdf8a456f663d6963d3cd9caf231a210aad92d8f5e192a71917381d10ea10f0"
+    },
+    "new_tuple_credit": false
+  },
+  "source_controls": {
+    "native_v3": {
+      "package_files": 79,
+      "groups_separate_not_summed": {
+        "inherited_parsers": 73,
+        "inherited_consumers": 12,
+        "trust_parsers": 40,
+        "wrong_hash_consumer_chains": 11,
+        "full_dispatch_bindings": 9,
+        "actual_ledger_full_call": 1
+      },
+      "source_only": true
+    },
+    "shared_v3": {
+      "source_imports": 15,
+      "daily_dependencies": 14,
+      "shared_controls": 14
+    },
+    "targeted_NEG10_NEG14": {
+      "image": 4,
+      "rename_io": 8,
+      "resources": 1,
+      "physical_qualification": false
+    },
+    "release_constructor": {
+      "current_controls": 43,
+      "previous_42_not_added": true,
       "actual_BUILD": false,
-      "actual_READY": false,
-      "phone_calls": 0
+      "actual_install": false,
+      "actual_READY": false
+    },
+    "release_consumer": {
+      "current_controls": 55,
+      "reproduction_same_55_not_added": true,
+      "source_sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349",
+      "package_pin": null,
+      "whole_case_qualification": false
+    },
+    "source_parent": {
+      "positive": 11,
+      "rejection": 15,
+      "new_task_or_phone_calls": 0
+    },
+    "freezer_publisher": {
+      "controls": 10,
+      "source_only": true
+    },
+    "preparer_controller": {
+      "positive": 1,
+      "rejection": 23,
+      "source_only": true
+    },
+    "trace_closer": {
+      "controls": 6,
+      "synthetic_transport_explicit": true,
+      "component_qualified": false
     }
   },
-  "new_whole_cases_closed": [],
-  "preserved_neg01": {
-    "component_qualified": true,
-    "business_qualified": false,
-    "four_role_qualification": false,
-    "root_stdout_bytes": 1191,
-    "root_stdout_sha256": "d57d7c93b620a7246eb20a1e51663f8a9fb5041bdfbc5632224b87e8b4f82082",
-    "model_requests": 0,
-    "automatic_retry": false,
-    "not_credited_to_new_candidates": true
-  },
-  "neg02_recovery": {
-    "original_business_send_attempt_count": 0,
-    "original_draft_restored": true,
-    "cleanup_actor_job_id": "1a1b10ebd5e-fc05-756b",
-    "cleanup_actor_exit_code": 0,
-    "cleanup_phone_rc": 1,
-    "cleanup_state": "REJECTED_BEFORE_FIRST_MUTATION",
-    "completed_removal_count": 0,
-    "cleanup_intent_created": false,
-    "cleanup_result_created": false,
-    "operation_actor_result_retained": true,
-    "operation_actor_result_sha256": "aae928ae0493966f92684f94cf56e30f409c3932ec8fd690f4ba99ff49800937",
-    "start_mcp_timed_out": true,
-    "original_job_reconciled": true,
-    "automatic_retry": false,
-    "cleanup_complete": false,
-    "precise_changed_field": "/proc/1/root/data/local/tmp metadata: st_mtime_ns and st_ctime_ns",
-    "tuple_list_conversion_patch": "NOT_JUSTIFIED_BY_SOURCE_REVIEW",
-    "parent_time_change": {
-      "old_decimal": "1793963850235883232",
-      "fresh_decimal": "1793970183899880816",
-      "cause": "NOT_IDENTIFIED",
-      "other_full9_fields_unchanged": true,
-      "all_881_member_names_unchanged": true
-    },
-    "fresh_readonly_capture": {
-      "job_id": "1a1b12453fd-fc05-7634",
-      "actor_exit_code": 0,
-      "phone_rc": 0,
-      "original_result_bytes": 7509274,
-      "original_result_sha256": "cb5b6619d8b7e58f7520aa40d6961f3d208911493ccc6bf8d0abf7aae09f9ba2",
-      "all_192_originals_equal": true,
-      "all_77_owned_files_equal": true,
-      "nine_owned_directories_equal": true,
-      "aliases_equal": true,
-      "two_transport_parents_equal": true,
-      "sender_xml_before_after_equal": true,
-      "same_14_existing_locks": true,
-      "old_cleanup_audit_names_absent_in_two_complete_censuses": true,
-      "archive_member_count": 111,
-      "host_analysis_sha256": "89e80ff36d170b1ec8b1fcaea01086b2e83ee01eb1651709ef2c4f617c931a13",
-      "cleanup_performed": false
-    },
-    "successor02_fc33": {
-      "source_sha256": "ab604ac3db2d5f908ce1c064b04ebda61ab593b1f66766498c384eabf895e32f",
-      "binding_sha256": "8aa3f7f9c9dc73b1839c197e650bec719a03aa72913fd2dbed245088af18f674",
-      "phone_request_bytes": 63151,
-      "phone_request_sha256": "7ae81b72c833dc2ddc7733a8249cf27f0f529ea70e8418e527858a5d690e1353",
-      "publication": "ACTUAL_BINARY_WRITE_ABSENT_VERIFIED",
-      "job_id": "1a1b16ac67a-fc05-7887",
-      "actor_exit_code": 0,
-      "phone_rc": 1,
-      "actor_output_complete": true,
-      "result_bytes": 68497,
-      "result_sha256": "f33dd1aafe7975faf3f8d99c478a82dc89a10fd32178d3b01264dacfa3af8452",
-      "phone_stderr_sha256": "0738b0f8c924a8f1513a3dc088fc48bb106a7f2254b97aed41c3554d54033bba",
-      "phase": "same_locked_original_capture_preflight",
-      "error_type": "FileNotFoundError",
-      "missing_name": "root-r10-neg02-a1055-final04",
-      "completed_removal_count": 0,
-      "completed_removed_paths": [],
-      "durable_intent": null,
-      "durable_result": null,
-      "automatic_retry": false,
-      "cleanup_success": false,
-      "root_offline_review": "only three literal source bindings changed; exact old/new launch wrapper apart from measured compression pins; targets differ only by preservation descriptor and two observed XML parent times"
-    },
-    "other_existing_operation_under_review": {
-      "operation": "ng-a1055-neg02-final04-owned-cleanup02",
-      "result_bytes": 6151995,
-      "result_sha256": "9bae925fe62ad40039b1b915d309c14c1d58a5f36067ad4d1b77fae719fe6fd0",
-      "reported_phone_rc": 0,
-      "whole_original_closure_independently_verified": false,
-      "adopted_as_our_success": false,
-      "current_baseline_not_assumed": true
-    },
-    "latest_recovery_closure": "PENDING_INDEPENDENT_RECONCILIATION_OF_ALREADY_EXISTING_CLEANUP"
-  },
-  "limits": [
-    "All original source versions, failed phone operations and their nonces remain preserved.",
-    "Host parser/consumer/retention/publisher controls are not physical acceptance counts; repeated fourteen scenarios are counted once per stated candidate.",
-    "The v2 material graph is a host derivation only, not a frozen runtime, BUILD, installation or READY.",
-    "The root successor actor exited zero but the actual phone exited one. It is recorded as a pre-mutation rejection, not cleanup success.",
-    "A separate already-existing cleanup result is under independent verification; no existing phone task has been replayed.",
-    "No new E2E, COMP or NEG whole case is promoted to pass; original NEG01 component evidence is not inherited by changed sources.",
-    "The unrelated prior final02 sender wait remains UNKNOWN_UNCHANGED."
-  ],
   "remaining_actual_dependencies": [
-    "Independently verify the already-existing cleanup and current phone baseline without replay.",
-    "Close native consumer request/configuration/observation integrity before final tuple freeze.",
-    "Propagate final source tuple through runtime/history/preparer/build and read-only proof readers.",
-    "Current final-tuple NEG01/NEG02 physical component execution and complete closure.",
-    "Actual BUILD/install/start/four-role READY plus complete installation originals.",
-    "Remaining same-tuple E2E, COMP and negative physical cases."
-  ]
+    "Independent complete frozen originals/tree/controller admission",
+    "Fresh one-shot NEG-01 then NEG-02 current component closures and original LEASE files",
+    "Actual BUILD/install/start/retention and four-role READY on final sources",
+    "Actual E2E-01..04 and production-return COMP-01",
+    "Actual NEG-03..09 physical tasks and current source tuple NEG-10..14 evidence consolidation"
+  ],
+  "full19_qualified": false
 }
