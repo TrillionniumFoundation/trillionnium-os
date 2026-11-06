@@ -1,0 +1,17 @@
+{
+  "axis": "geometry",
+  "changed_paths": [
+    "/viewport_b64"
+  ],
+  "negative_payload": {
+    "bytes": 987,
+    "sha256": "0af8851dab6742782a9fd76d51d249cdff84c3d29333f152b1f2bd2cc4746268"
+  },
+  "physical_observation": false,
+  "qualified_payload": {
+    "bytes": 987,
+    "sha256": "7fdacf25aee4d0e7406d49db843b7e9a160a517ee490dbd4d6b937c4b9e66780"
+  },
+  "semantic": "return",
+  "synthetic": true
+}

@@ -1,0 +1,22 @@
+--- reference/cpu-cancel-compat-candidate01/package/source/negative_originals.py
++++ candidate/templates/closure/negative_originals.py
+@@ -19,7 +19,7 @@
+ import zlib
+ 
+ FINAL_DEPENDENCIES = None
+-ROOT_CAPTURE_TEMPLATE = (71820, '50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649')
++ROOT_CAPTURE_TEMPLATE = (78193, 'ea1c1f4b016a4d7f69adb1c76ad811f95520b7172c66c6cb75e8fbe0397cf3b6')
+ ROOT_CAPTURE_SLOTS = ('PKG','COMBINATION','VERIFIER_SHA','VERIFIER_BYTES','POLICY_SHA','ADOPTION_SHA','ROOT_SCOPE_SHA')
+ SCHEMA = 'hepta.r10.cpu-negative-closure-plan.v1'
+ BASE = '/var/lib/trillionnium/owner-open/phone-local-v150'
+@@ -40,8 +40,8 @@
+  'protocol': (37318,'c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0'),
+  'cleanup': (37375,'9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183'),
+  'postconditions': (23211,'d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3'),
+- 'configuration': (None,'780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34'),
+- 'service': (10635,'2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a')}
++ 'configuration': (1493,'5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48'),
++ 'service': (10654,'273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58')}
+ # Configuration length is required to match its actual sealed descriptor.
+ # Its immutable SHA is the fixed authority here; no inferred length is supplied.
+ FIXED_SHA = {k:v[1] for k,v in PARENT_PINS.items()}

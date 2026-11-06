@@ -1,0 +1,140 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_native_scope": null,
+  "actual_source_chain_admission_executed": false,
+  "all_reference_originals_verified": 171,
+  "control_count": 15,
+  "controls": [
+    {
+      "detail": "UNBOUND_NEGATIVE_SOURCE_INPUTS_NO_IO",
+      "error_type": "ValueError",
+      "name": "unbound_public_constructor_refuses_before_parse_or_IO",
+      "passed": true
+    },
+    {
+      "name": "three_source_templates_reconstructed_with_complete_inverse",
+      "passed": true,
+      "source_graph": {
+        "normalized_root": {
+          "bytes": 78193,
+          "sha256": "ea1c1f4b016a4d7f69adb1c76ad811f95520b7172c66c6cb75e8fbe0397cf3b6"
+        },
+        "root_slots": [
+          "PKG",
+          "COMBINATION",
+          "VERIFIER_SHA",
+          "VERIFIER_BYTES",
+          "POLICY_SHA",
+          "ADOPTION_SHA",
+          "ROOT_SCOPE_SHA"
+        ],
+        "root_source": {
+          "bytes": 78566,
+          "sha256": "2af78597f211b8b7de32d5f40591e46c4ea5ff7caa3c4a2547ac4325666c2032"
+        },
+        "runtime": {
+          "bytes": 57078,
+          "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+        }
+      }
+    },
+    {
+      "detail": "frozen dependency must remain a literal",
+      "error_type": "ValueError",
+      "name": "original_context_dictionary_incompatibility_reproduced",
+      "passed": true
+    },
+    {
+      "name": "exact_four_real_source_pin_dictionary_accepted_by_new_source_gate",
+      "passed": true
+    },
+    {
+      "detail": "exact four geometry source byte pins required",
+      "error_type": "ValueError",
+      "name": "closed_dictionary_unexpected_source_name",
+      "passed": true
+    },
+    {
+      "detail": "exact four geometry source byte pins required",
+      "error_type": "ValueError",
+      "name": "closed_dictionary_boolean_byte_count",
+      "passed": true
+    },
+    {
+      "detail": "exact four geometry source byte pins required",
+      "error_type": "ValueError",
+      "name": "closed_dictionary_short_digest",
+      "passed": true
+    },
+    {
+      "detail": "dependency increment changed other reviewed executable logic",
+      "error_type": "ValueError",
+      "name": "extra_executable_change_rejected_by_whole_AST_inverse",
+      "passed": true
+    },
+    {
+      "name": "shared_active_six_literal_gate_preserves_all_actual_runtime_and_role_functions",
+      "passed": true
+    },
+    {
+      "detail": "actual_R8_root_not_exact_reviewed_capture_template_with_seven_slots",
+      "error_type": "Unverified",
+      "name": "old_whole_root_template_refuses_reviewed_R5_source",
+      "passed": true
+    },
+    {
+      "name": "new_exact_R5_whole_root_template_and_unchanged_Q2_transport_functions_pass",
+      "passed": true
+    },
+    {
+      "detail": "actual_R8_root_not_exact_reviewed_capture_template_with_seven_slots",
+      "error_type": "Unverified",
+      "name": "root_body_outside_seven_slots_refused",
+      "passed": true
+    },
+    {
+      "detail": "future_actual_fault_dependencies_are_unfrozen",
+      "error_type": "ValueError",
+      "name": "physical_fault_unbound_gate_still_refuses_before_action",
+      "passed": true
+    },
+    {
+      "name": "all_fault_request_transport_and_scope_helpers_remain_byte_identical",
+      "passed": true
+    },
+    {
+      "after": {
+        "child_cpu": [
+          0.002293,
+          0.0
+        ],
+        "fd_count": 4,
+        "thread_ids": [
+          140257261156160
+        ]
+      },
+      "before": {
+        "child_cpu": [
+          0.002293,
+          0.0
+        ],
+        "fd_count": 4,
+        "thread_ids": [
+          140257261156160
+        ]
+      },
+      "name": "all_171_reference_originals_and_process_resources_unchanged",
+      "originals": 171,
+      "passed": true
+    }
+  ],
+  "full_constructor_positive_requires_real_source_chain_publication": true,
+  "model_calls": 0,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "public_constructor_still_unbound": true,
+  "schema": "fc33.negative-source-template-controls.v1",
+  "signals_sent": 0,
+  "status": "PASS"
+}

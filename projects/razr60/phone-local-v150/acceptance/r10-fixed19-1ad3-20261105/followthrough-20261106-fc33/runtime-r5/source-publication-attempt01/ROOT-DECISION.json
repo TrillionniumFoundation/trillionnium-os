@@ -1,0 +1,13 @@
+{
+  "state": "ROOT_SELECTED_EXISTING_R5_AND_RELEASED_SOURCE_ONLY_HOLD",
+  "runtime_manifest_sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a",
+  "reason": "Fresh parent observation establishes exact additional foreign final05 directory; no current evidence of a runtime source defect. Proceed only with independent host source publication and pure derive.",
+  "original_hold_unchanged": true,
+  "phone_calls": 0,
+  "actual_BUILD": null,
+  "actual_install": null,
+  "actual_READY": null,
+  "failed_nonce_never_replayed": true,
+  "requires_complete_original_controller_terminal": true
+}
+

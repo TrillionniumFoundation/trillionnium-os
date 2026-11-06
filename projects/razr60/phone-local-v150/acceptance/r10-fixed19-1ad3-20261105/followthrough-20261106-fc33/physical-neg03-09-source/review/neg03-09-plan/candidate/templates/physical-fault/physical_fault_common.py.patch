@@ -1,0 +1,28 @@
+--- reference/physical-fault-final01/package/source/physical_fault_common.py
++++ candidate/templates/physical-fault/physical_fault_common.py
+@@ -154,12 +154,12 @@
+     readiness=originals.read(plan['readiness'],4*1024*1024)
+     policy=originals.read(plan['actual_policy'],16*1024*1024)
+     adoption=strict(originals.read(plan['policy_adoption'],16*1024*1024))
+-    need(runtime.get('revision')=='r10-r1-operator-r8' and len(runtime['files'])==32 and
++    need(runtime.get('revision')=='r10-r1-fc33-native-bound-v3-r5' and len(runtime['files'])==38 and
+          runtime.get('actual_combination_generated') is True and
+          runtime.get('current_policy_sha256')==sha(policy) and
+          runtime.get('current_combination_sha256')==plan['combination_sha256'] and
+          runtime.get('explicit_policy_adoption_sha256')==plan['policy_adoption']['sha256'],
+-         'actual_R8_runtime_manifest_generation')
++         'actual_reviewed_R5_runtime_manifest_generation')
+     need(literal(consumer,'PACKAGE_SHA')==plan['runtime_package']['sha256'] and
+          literal(consumer,'CURRENT_POLICY_SHA')==sha(policy) and
+          literal(consumer,'CURRENT_POLICY_ADOPTION_SHA')==plan['policy_adoption']['sha256'] and
+@@ -245,8 +245,8 @@
+     registration=strict(originals.read(inputs['registration_result'],4*1024*1024))
+     need(registration.get('rc')==0 and registration.get('unconsumed_template_read_back') is True and
+          registration.get('request_sha256')==sha(owner),'actual_unconsumed_registration_original')
+-    for name,pin in (('configuration','780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34'),
+-                      ('service','2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a')):
++    for name,pin in (('configuration','5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48'),
++                      ('service','273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58')):
+         need(sha(originals.read(plan[name],262144))==pin,'current_shared_material_'+name)
+     bundle={'manifest_b64':b64(originals.read(plan['fault_package'],262144)),
+         'sources':{name:b64(raw) for name,raw in fb.items()}}

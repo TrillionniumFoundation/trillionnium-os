@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.fc33.source-publication-output-observation-controller.v1",
+  "request": {
+    "host": "mac",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "stdin": "import os,stat,json\nfrom pathlib import Path\nbase=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')\nassert base.resolve(strict=True)==base\nrows=[]\nfor name in ('followthrough-fc33-release-source-binding-r5-01','followthrough-fc33-release-source-chain-r5-derived01'):\n p=base/name\n try:\n  s=p.lstat()\n except FileNotFoundError as e:\n  rows.append({'path':str(p),'state':'ENOENT','errno':e.errno})\n else:\n  rows.append({'path':str(p),'state':'PRESENT','metadata':[getattr(s,k) for k in ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')],'names':sorted(os.listdir(p)) if stat.S_ISDIR(s.st_mode) else None})\nprint(json.dumps({'schema':'hepta.fc33.source-output-readonly-observation.v1','file_writes':0,'phone_calls':0,'paths':rows},sort_keys=True))\n",
+    "idempotency_key": "fc33-r5-source-publication-failure01-output-observe01",
+    "timeout_seconds": 30
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793987098455,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b1f6b757-fc05-7bc4\",\n    \"idempotency_key\": \"fc33-r5-source-publication-failure01-output-observe01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b1f6b757-fc05-7bc4\",\n    \"request_digest\": \"282b42087012cb6b2efdea530c03b14ffa0a42c1f64887b0527278260f6ee97c\",\n    \"request_fingerprint\": 2894479789523127147,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b1f6b757-fc05-7bc4\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 2624,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b1f6b757-fc05-7bc4\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793987106865,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b1f6b757-fc05-7bc4\",\n  \"launch_nonce\": \"9e7f059cac1ddf81350e7d0813fbc5d3\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 505,\n      \"stored\": 505\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b1f6b757-fc05-7bc4\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b2266696c655f777269746573223a20302c20227061746873223a205b7b226572726e6f223a20322c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d72656c656173652d736f757263652d62696e64696e672d72352d3031222c20227374617465223a2022454e4f454e54227d2c207b226572726e6f223a20322c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d72656c656173652d736f757263652d636861696e2d72352d646572697665643031222c20227374617465223a2022454e4f454e54227d5d2c202270686f6e655f63616c6c73223a20302c2022736368656d61223a202268657074612e666333332e736f757263652d6f75747075742d726561646f6e6c792d6f62736572766174696f6e2e7631227d0a\",\n    \"eof\": true,\n    \"next_offset\": 505,\n    \"offset\": 0,\n    \"size\": 505,\n    \"text\": \"{\\\"file_writes\\\": 0, \\\"paths\\\": [{\\\"errno\\\": 2, \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01\\\", \\\"state\\\": \\\"ENOENT\\\"}, {\\\"errno\\\": 2, \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-chain-r5-derived01\\\", \\\"state\\\": \\\"ENOENT\\\"}], \\\"phone_calls\\\": 0, \\\"schema\\\": \\\"hepta.fc33.source-output-readonly-observation.v1\\\"}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

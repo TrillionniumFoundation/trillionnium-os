@@ -1,0 +1,48 @@
+--- parent/collector/mobile_use_evidence.py
++++ candidate/collector/mobile_use_evidence.py
+@@ -20,18 +20,18 @@
+ # A caller cannot authorize altered parser code merely by supplying a new seal.
+ REVIEWED_HELPER_SOURCE_PINS={
+     "action_ledger.py": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+-    "daily_phone_local.py": "ca23c60bbb4114960c6a571492cacd9e0bdc3404191409ac78bcf0c34a06c1d0",
++    "daily_phone_local.py": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8",
+     "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+     "ledger_round_evidence.py": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+     "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+     "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+     "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+-    "phone_local_tools.py": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54",
+-    "phone_observation_tools.py": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66",
++    "phone_local_tools.py": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930",
++    "phone_observation_tools.py": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086",
+     "phone_task_guards.py": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+-    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
++    "provider_codex_host.py": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa",
+     "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+-    "provider_phone_local.py": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6",
++    "provider_phone_local.py": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee",
+     "retirement_recovery.py": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+     "task_postconditions.py": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+ }
+--- parent/operator-chain/root_acceptance_r10.py
++++ candidate/operator-chain/root_acceptance_r10.py
+@@ -13,7 +13,7 @@
+ SENDER_SHA='5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281'
+ HARNESS_SHA='630c4cb2b9ec5363c7dc464af59455ea252abb1f4f56b3920002f73de177efb6'
+ MATERIALIZER_SHA='b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290'
+-READINESS_SHA='b0a3f3b4fbda835506c3d0f9099abbe3b47a10b6a131ee2069c9ef7350c6ba63'
++READINESS_SHA=None
+ TRANSPORT_SOURCE_SHA='6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b'
+ BOUNDED_TRANSPORT_SCHEMA='hepta.root-bounded-inline.v150.r10.1'
+ MAX_TRANSPORT_JSON=2*1024*1024
+--- parent/coordinator/run_fixed19_e2e_root_once.py
++++ candidate/coordinator/run_fixed19_e2e_root_once.py
+@@ -13,7 +13,7 @@
+ B=Path("/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1")
+ OPERATOR_MANIFEST_PIN = None
+ CAPTURE_PIN = {'bytes':37720,'sha256':'9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29'}
+-SHARED_PIN = {'bytes':3519,'sha256':'2ea9a478b366d6a69fdb8942699b6241d72330cfa789baa4b3132fdaca169e68'}
++SHARED_PIN = {'bytes':3519,'sha256':'cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1'}
+ CASES={'visual':'E2E-01','unicode':'E2E-02','calculator':'E2E-03','settings':'E2E-04'}
+ PHASES=(('register',240),('sender_preview',30),('sender_execute',650),
+         ('capture_export',500),('collect',135),('close',135))

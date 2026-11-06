@@ -1,0 +1,84 @@
+{
+  "business_qualified": false,
+  "component_qualified": false,
+  "file_count": 14,
+  "files": [
+    {
+      "bytes": 7073,
+      "path": "README.md",
+      "sha256": "643d78d45299840d3dfe2849942c3035d40fd12cde906d168090f7b2a564c7fd"
+    },
+    {
+      "bytes": 4480,
+      "path": "SOURCE-CONTROL-FLOW.txt",
+      "sha256": "e2999f03bd7cbc53d59437d566e9dae87e7bb67db1a459059b386dced0aa11f3"
+    },
+    {
+      "bytes": 10990,
+      "path": "VERIFICATION.json",
+      "sha256": "24901268bb1b05ea196f8e8a316ee5e4d10b402f07804a541ec02d408f8c888c"
+    },
+    {
+      "bytes": 155350,
+      "path": "evidence/mac-log-transfer-controller.original.json",
+      "sha256": "3a46a6be1ab6381b0f85a0bc221303d0774c8129cc79ca44039a1f60f848b4b9"
+    },
+    {
+      "bytes": 38820,
+      "path": "evidence/mac-log-transfer.stdout.original.json",
+      "sha256": "3ba6d0216e217ff46389ca47fe42e3b589f87f8d1e76bb74200fa610979fb96e"
+    },
+    {
+      "bytes": 66937,
+      "path": "evidence/mac-observation-controller.original.json",
+      "sha256": "7c449c2030d2d360a203bcb30bb67283a3288f3b42aa725c5779811c9b59b520"
+    },
+    {
+      "bytes": 232288,
+      "path": "evidence/mac-observation.stdout.original.json",
+      "sha256": "e583360bba5aa77db798dcfebaf89ae0bfdf3cff223827b226816c50229a0a25"
+    },
+    {
+      "bytes": 32936,
+      "path": "evidence/pocket4-observation-controller.original.json",
+      "sha256": "2d3323f3ea0827d04a3e1c514087afcee90a6416628a399423b00838af9205a5"
+    },
+    {
+      "bytes": 5825,
+      "path": "evidence/pocket4-observation.stdout.original.json",
+      "sha256": "285b2d4679ed01af0c3b0cbdb017d2a201589b88c5abf0cf3e1340acb5582880"
+    },
+    {
+      "bytes": 30979,
+      "path": "evidence/root-parent-observation-controller.original.json",
+      "sha256": "5cf361bcd530ef32b74e0f66221646006b10adc5e277b79f11b9b6c03304ef01"
+    },
+    {
+      "bytes": 13327,
+      "path": "evidence/root-parent-observation-operation.original.json",
+      "sha256": "4f42512522bec9d6985f1d8f204050c7f2bf9657ecd4a4c0f1ae9cf513977cf5"
+    },
+    {
+      "bytes": 31568,
+      "path": "evidence/root-stage-failure.original.json",
+      "sha256": "74ee32a40603f1ebc77036988ad98c5b3982e329668ea598f817e9a3a7ec6da4"
+    },
+    {
+      "bytes": 10700,
+      "path": "read_failed_attempt_host_originals.py",
+      "sha256": "0f7659960a622301738c326b6d9ddfb2373e6b3e4bcf99fa6d73aa94764b8e08"
+    },
+    {
+      "bytes": 16570,
+      "path": "verify_retained_evidence.py",
+      "sha256": "be2b96db92bb456a798c3f8be6c1425a81e3afeadf782940bd695cf4cb3c714a"
+    }
+  ],
+  "label": "root-r10-neg01-fc33-bound01",
+  "new_control_scenarios": 0,
+  "phone_calls_by_this_agent": 0,
+  "private_bodies_exported": false,
+  "schema": "hepta.fc33.failed-attempt-host-evidence-package.v1",
+  "state": "ACTUAL_FAILED_ATTEMPT_HOST_ORIGINALS_NO_QUALIFICATION",
+  "total_bytes": 657843
+}

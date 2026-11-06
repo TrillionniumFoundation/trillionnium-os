@@ -1,0 +1,272 @@
+{
+  "COMP-01_actual_return_case": null,
+  "COMP-01_direct_operator_helper": "historical reference only; no current qualification",
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_context": null,
+  "actual_formal_source_binding": null,
+  "actual_preserved_draft": null,
+  "actual_previous_input": null,
+  "actual_release_directory": null,
+  "actual_retirement_resolution": null,
+  "actual_runtime_freeze": null,
+  "actual_scope": null,
+  "actual_source_binding": null,
+  "automatic_retry": false,
+  "case_order": [
+    "E2E-01",
+    "E2E-02",
+    "E2E-03",
+    "E2E-04"
+  ],
+  "cases": [
+    {
+      "actual_closure": null,
+      "actual_context": null,
+      "actual_coordinator_plan": null,
+      "actual_coordinator_result": null,
+      "actual_material": null,
+      "actual_native_scope": null,
+      "actual_next_previous": null,
+      "actual_nonce": null,
+      "actual_report": null,
+      "actual_request": null,
+      "case_id": "E2E-01",
+      "current_case_pass": false,
+      "explicit_allowed_apps": [
+        "视觉挑战"
+      ],
+      "fresh_material_directory": null,
+      "fresh_sender_label": null,
+      "fresh_workflow_directory": null,
+      "kind": "visual",
+      "materializer_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        {
+          "unbound_slot": "actual_materializer.path"
+        },
+        "visual",
+        "--release-dir",
+        {
+          "unbound_slot": "actual_release_directory"
+        },
+        "--build-result-sha256",
+        {
+          "unbound_slot": "actual_BUILD.sha256"
+        },
+        "--out",
+        {
+          "unbound_slot": "fresh_material_directory"
+        },
+        "--session-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.session_id"
+        },
+        "--profile-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.profile_id"
+        },
+        "--allowed-app",
+        "视觉挑战"
+      ],
+      "return_requested": true,
+      "unicode_text_file_override": null
+    },
+    {
+      "actual_closure": null,
+      "actual_context": null,
+      "actual_coordinator_plan": null,
+      "actual_coordinator_result": null,
+      "actual_material": null,
+      "actual_native_scope": null,
+      "actual_next_previous": null,
+      "actual_nonce": null,
+      "actual_report": null,
+      "actual_request": null,
+      "case_id": "E2E-02",
+      "current_case_pass": false,
+      "explicit_allowed_apps": [
+        "Unicode验证"
+      ],
+      "fresh_material_directory": null,
+      "fresh_sender_label": null,
+      "fresh_workflow_directory": null,
+      "kind": "unicode",
+      "materializer_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        {
+          "unbound_slot": "actual_materializer.path"
+        },
+        "unicode",
+        "--release-dir",
+        {
+          "unbound_slot": "actual_release_directory"
+        },
+        "--build-result-sha256",
+        {
+          "unbound_slot": "actual_BUILD.sha256"
+        },
+        "--out",
+        {
+          "unbound_slot": "fresh_material_directory"
+        },
+        "--session-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.session_id"
+        },
+        "--profile-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.profile_id"
+        },
+        "--allowed-app",
+        "Unicode验证"
+      ],
+      "return_requested": true,
+      "unicode_text_file_override": null
+    },
+    {
+      "actual_closure": null,
+      "actual_context": null,
+      "actual_coordinator_plan": null,
+      "actual_coordinator_result": null,
+      "actual_material": null,
+      "actual_native_scope": null,
+      "actual_next_previous": null,
+      "actual_nonce": null,
+      "actual_report": null,
+      "actual_request": null,
+      "case_id": "E2E-03",
+      "current_case_pass": false,
+      "explicit_allowed_apps": [
+        "计算器"
+      ],
+      "fresh_material_directory": null,
+      "fresh_sender_label": null,
+      "fresh_workflow_directory": null,
+      "kind": "calculator",
+      "materializer_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        {
+          "unbound_slot": "actual_materializer.path"
+        },
+        "calculator",
+        "--release-dir",
+        {
+          "unbound_slot": "actual_release_directory"
+        },
+        "--build-result-sha256",
+        {
+          "unbound_slot": "actual_BUILD.sha256"
+        },
+        "--out",
+        {
+          "unbound_slot": "fresh_material_directory"
+        },
+        "--session-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.session_id"
+        },
+        "--profile-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.profile_id"
+        },
+        "--allowed-app",
+        "计算器"
+      ],
+      "return_requested": true,
+      "unicode_text_file_override": null
+    },
+    {
+      "actual_closure": null,
+      "actual_context": null,
+      "actual_coordinator_plan": null,
+      "actual_coordinator_result": null,
+      "actual_material": null,
+      "actual_native_scope": null,
+      "actual_next_previous": null,
+      "actual_nonce": null,
+      "actual_report": null,
+      "actual_request": null,
+      "case_id": "E2E-04",
+      "current_case_pass": false,
+      "explicit_allowed_apps": [
+        "settings_about"
+      ],
+      "fresh_material_directory": null,
+      "fresh_sender_label": null,
+      "fresh_workflow_directory": null,
+      "kind": "settings",
+      "materializer_argv_template": [
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        {
+          "unbound_slot": "actual_materializer.path"
+        },
+        "settings",
+        "--release-dir",
+        {
+          "unbound_slot": "actual_release_directory"
+        },
+        "--build-result-sha256",
+        {
+          "unbound_slot": "actual_BUILD.sha256"
+        },
+        "--out",
+        {
+          "unbound_slot": "fresh_material_directory"
+        },
+        "--session-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.session_id"
+        },
+        "--profile-id",
+        {
+          "unbound_slot": "actual_previous_input.identity.profile_id"
+        },
+        "--allowed-app",
+        "settings_about"
+      ],
+      "return_requested": false,
+      "unicode_text_file_override": null
+    }
+  ],
+  "dispatcher": "root only",
+  "fixed19_credit": 0,
+  "historical_pass_inherited": false,
+  "maximum_model_rounds": 8,
+  "maximum_tool_calls": 7,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_nonces": 0,
+  "next_case_previous_rule": "Only the actual closed previous-input from the preceding attempt. Unknown lifecycle requires reconciliation of that same attempt before another case.",
+  "phone_calls": 0,
+  "schema": "hepta.fc33.e2e.execution-inputs.unbound.v1",
+  "source_binding_constructor": {
+    "bytes": 15724,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/bind_e2e_sources_UNBOUND.py",
+    "sha256": "da654904764e807e8422e14021db253ae515a08381f49c3520769c8ab400f3a9"
+  },
+  "source_candidates": {
+    "bytes": 12133,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/candidate01/CANDIDATE-SOURCES.json",
+    "sha256": "d352e5aeafe52777ccbfe8d3deec15b76eb54ee9f9b61e62a7b1f7f4c6f5ee44"
+  },
+  "source_combination": {
+    "bytes": 4695,
+    "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+  },
+  "source_combination_is_not_the_formal_release_binding": true,
+  "source_controls": {
+    "bytes": 4950,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/SOURCE-CONTROLS.json",
+    "sha256": "553c446287abd2b1d4617f8f306bdd24b9cc713d522884e41de529b4ed093005"
+  },
+  "state": "REVIEW_ONLY_BUILD_READY_CONTEXT_UNBOUND"
+}

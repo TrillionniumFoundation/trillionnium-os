@@ -1,0 +1,57 @@
+{
+  "calculator": {
+    "actual_result": "841",
+    "expression": "(34×24)+25",
+    "focus_then_input_exact": true,
+    "helper_sha256": "b2bcd131f80a113ad2957021f3bfbc1dbf9a1c6cda463f84b3a6c3acb9c8b99c",
+    "original_component_sha256": "f3674f227bca2c9da7ebf86f531024bb7bd9720644239914233e45d77c3d8564",
+    "single_equals_and_actual_result": true
+  },
+  "model_requests": 0,
+  "native_tasks": 0,
+  "not_model_e2e": true,
+  "restoration": {
+    "draft_matches_initial": true,
+    "foreground": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+    "model_requests": 0,
+    "native_tasks": 0,
+    "operator_scope_only": true,
+    "schema": "hepta.app-route-ui-restoration.v150.1"
+  },
+  "schema": "hepta.runtime-app-component-qualification.v150.2",
+  "scope": "retained actual operator UI receipts reparsed by final source; no new phone effect",
+  "settings": {
+    "actual_component": "com.android.settings/com.android.settings.SubSettings",
+    "anchor_value": {
+      "anchor_bounds": [
+        96,
+        1193,
+        468,
+        1282
+      ],
+      "anchor_text": "Android 版本",
+      "bounds": [
+        96,
+        1282,
+        134,
+        1339
+      ],
+      "relation": "same_direct_preference_text_container",
+      "row_bounds": [
+        96,
+        1145,
+        1128,
+        1387
+      ],
+      "selector_schema": "hepta.public-text-anchor.v150.1",
+      "text": "16",
+      "title_view_id": "android:id/title",
+      "utf8_sha256": "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9",
+      "value_view_id": "android:id/summary"
+    },
+    "exact_match": true,
+    "independent_public_system_value": "16",
+    "original_ui_evidence_sha256": "3ca4cc963cb330f490b917631a7bd76799255a49897184f4a53737f680c85e4d"
+  },
+  "source_sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+}

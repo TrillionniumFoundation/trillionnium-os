@@ -1,0 +1,168 @@
+{
+  "automatic_retry": false,
+  "context_prepare_argv_template": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    {
+      "unbound_slot": "bound_operator_directory/root_acceptance_r10.py"
+    },
+    "prepare",
+    "--project-dir",
+    {
+      "unbound_slot": "B"
+    },
+    "--materializer",
+    {
+      "unbound_slot": "actual_materializer.path"
+    },
+    "--release-dir",
+    {
+      "unbound_slot": "actual_release_directory"
+    },
+    "--material",
+    {
+      "unbound_slot": "actual_material_directory"
+    },
+    "--previous-input",
+    {
+      "unbound_slot": "actual_previous_input.path"
+    },
+    "--ready-input",
+    {
+      "unbound_slot": "actual_READY.path"
+    },
+    "--preserved-draft",
+    {
+      "unbound_slot": "actual_preserved_draft.path"
+    },
+    "--retirement-resolution",
+    {
+      "unbound_slot": "actual_retirement_resolution.path"
+    },
+    "--collector-package",
+    {
+      "unbound_slot": "bound_collector_package_directory"
+    },
+    "--out",
+    {
+      "unbound_slot": "fresh_workflow_directory"
+    },
+    "--build-result-sha256",
+    {
+      "unbound_slot": "actual_BUILD.sha256"
+    },
+    "--previous-sha256",
+    {
+      "unbound_slot": "actual_previous_input.sha256"
+    },
+    "--ready-sha256",
+    {
+      "unbound_slot": "actual_READY.sha256"
+    },
+    "--preserved-draft-sha256",
+    {
+      "unbound_slot": "actual_preserved_draft.sha256"
+    },
+    "--retirement-resolution-sha256",
+    {
+      "unbound_slot": "actual_retirement_resolution.sha256"
+    },
+    "--operator-manifest-sha256",
+    {
+      "unbound_slot": "bound_operator_manifest.sha256"
+    },
+    "--collector-package-sha256",
+    {
+      "unbound_slot": "bound_collector_manifest.sha256"
+    },
+    "--sender-label",
+    {
+      "unbound_slot": "fresh_sender_label"
+    }
+  ],
+  "coordinator_argv_template": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    {
+      "unbound_slot": "bound_coordinator.path"
+    },
+    "--plan",
+    {
+      "unbound_slot": "actual_coordinator_plan.path"
+    },
+    "--plan-sha256",
+    {
+      "unbound_slot": "actual_coordinator_plan.sha256"
+    },
+    "--execute-e2e-once"
+  ],
+  "coordinator_plan_output_rule": "exact ROOT-CONTEXT.workflow_dir / owned-coordinator; absent before run",
+  "export_must_not_be_repeated": true,
+  "fixed19_credit": 0,
+  "historical_pass_inherited": false,
+  "known_failed_business_rule": "A closed lifecycle is eligible only as previous-input. It remains case failure and is never converted into a business pass.",
+  "materialization_gate": "Run original materializer only after actual BUILD validation and selected scope. It allocates one fresh nonce after a create-only intent.",
+  "materializer": {
+    "bytes": 24834,
+    "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+  },
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_nonces": 0,
+  "original_sender": {
+    "bytes": 40788,
+    "name": "send_new_native_task_r5.py",
+    "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+  },
+  "phases": [
+    {
+      "budget_seconds": 240,
+      "effect": "one request-bound registration after original READY checks",
+      "entry": "root_acceptance_r10.py register",
+      "explicit_flag": "--execute-register-once",
+      "name": "register"
+    },
+    {
+      "budget_seconds": 30,
+      "effect": "build original actor only; no send",
+      "entry": "root_acceptance_r10.py sender-preview",
+      "explicit_flag": null,
+      "name": "sender_preview"
+    },
+    {
+      "budget_seconds": 650,
+      "effect": "fresh readiness recheck, exact preview actor, maximum one native send",
+      "entry": "root_acceptance_r10.py sender-execute",
+      "explicit_flag": "--execute-send-once",
+      "name": "sender_execute"
+    },
+    {
+      "budget_seconds": 500,
+      "effect": "capture full originals and export them in this phase",
+      "entry": "export_originals_r10.py capture",
+      "explicit_flag": "--execute-read-once",
+      "name": "capture_export"
+    },
+    {
+      "budget_seconds": 135,
+      "effect": "new host-only original evidence report",
+      "entry": "export_originals_r10.py collect",
+      "explicit_flag": null,
+      "name": "collect"
+    },
+    {
+      "budget_seconds": 135,
+      "effect": "host closure against actual report SHA and original effect terminals",
+      "entry": "close_original_r10.py",
+      "explicit_flag": "--execute-close-once",
+      "name": "close"
+    }
+  ],
+  "phone_calls": 0,
+  "probe_reset": "Existing sender --reset-probe is used for visual/unicode. It force-stops the probe before the model opens it; it does not read a challenge answer.",
+  "schema": "hepta.fc33.e2e.reviewed-entrypoints.v1",
+  "source_binding_first": "Bind only actual frozen runtime/source/readiness inputs with the unbound source constructor.",
+  "unknown_result_rule": "Preserve E2E-FAILURE and all original phase outputs; reconcile the existing label/nonce/scope. Never rerun the coordinator or sender, allocate a replacement identity, or infer success."
+}

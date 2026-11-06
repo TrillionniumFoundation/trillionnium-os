@@ -1,0 +1,89 @@
+{
+  "eight_stream_inputs": null,
+  "execution_plan": null,
+  "install_originals": {
+    "install_intent": {
+      "bytes": null,
+      "metadata": null,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/root-install-v150-r10-r1/INSTALL-INTENT.json",
+      "sha256": null
+    },
+    "preservation": {
+      "bytes": null,
+      "metadata": null,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/root-install-v150-r10-r1/STAGED-PRESERVATION.original.json",
+      "sha256": null
+    },
+    "staged": {
+      "bytes": null,
+      "metadata": null,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/root-install-v150-r10-r1/STAGED.json",
+      "sha256": null
+    },
+    "start_intent": {
+      "bytes": null,
+      "metadata": null,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/root-install-v150-r10-r1/START-INTENT.json",
+      "sha256": null
+    },
+    "started": {
+      "bytes": null,
+      "metadata": null,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/root-install-v150-r10-r1/STARTED.json",
+      "sha256": null
+    }
+  },
+  "original_map": null,
+  "phases": {
+    "ready": {
+      "actor_source_after": null,
+      "actor_source_before": null,
+      "baseline": null,
+      "intent": null,
+      "phone_stderr": null,
+      "phone_stdout": null,
+      "process": {
+        "dispatch": null,
+        "read": null,
+        "start": null,
+        "status": null
+      },
+      "request": null,
+      "result": null
+    },
+    "stage": {
+      "actor_source_after": null,
+      "actor_source_before": null,
+      "baseline": null,
+      "intent": null,
+      "phone_stderr": null,
+      "phone_stdout": null,
+      "process": {
+        "dispatch": null,
+        "read": null,
+        "start": null,
+        "status": null
+      },
+      "request": null,
+      "result": null
+    },
+    "start": {
+      "actor_source_after": null,
+      "actor_source_before": null,
+      "baseline": null,
+      "intent": null,
+      "phone_stderr": null,
+      "phone_stdout": null,
+      "process": {
+        "dispatch": null,
+        "read": null,
+        "start": null,
+        "status": null
+      },
+      "request": null,
+      "result": null
+    }
+  },
+  "release_inputs": null,
+  "schema": "hepta.production.install-start-ready.original-inputs.v1"
+}

@@ -1,0 +1,37 @@
+{
+  "active_package": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "case_id": "NEG-03",
+  "component_package": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "fixture_result": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "label": null,
+  "nonce": null,
+  "out": null,
+  "ready": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "release": {
+    "build_result_sha256": null,
+    "path": null
+  },
+  "request": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "rotation_authorized": true,
+  "schema": "hepta.physical-component.root-plan.v1"
+}

@@ -1,0 +1,262 @@
+{
+  "approved_app_registry": {
+    "Unicode验证": {
+      "component": "org.trillionnium.hepta.controlprobe/.TextEntryActivity",
+      "label": "HEPTA Unicode验证"
+    },
+    "settings_about": {
+      "component": "com.android.settings/com.android.settings.Settings$MyDeviceInfoActivity",
+      "label": "设置：关于手机（公开详情入口）"
+    },
+    "视觉挑战": {
+      "component": "org.trillionnium.hepta.controlprobe/.VisualChallengeActivity",
+      "label": "HEPTA视觉挑战"
+    },
+    "计算器": {
+      "component": "com.motorola.cn.calculator/.Calculator",
+      "label": "计算器"
+    },
+    "设置": {
+      "component": "com.android.settings/.homepage.SettingsHomepageActivity",
+      "label": "设置"
+    }
+  },
+  "executor": {
+    "automatic_retry": false,
+    "binary": {
+      "bytes": 965824,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-sidecar-r6",
+      "sha256": "8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976"
+    },
+    "client": {
+      "bytes": 17390,
+      "gnu_path": "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py",
+      "host_state_path": "/data/trillionnium/owner-open/state/phone-local-v150/tool_client_r6.py",
+      "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+      "source_seal_sha256": "c4b06581319f8fef8319c7ee46cba8898fe9c81096c113addc45c3abfc621866"
+    },
+    "credential_and_domain_handshake_after_worker_exec_transition": true,
+    "effect_gid": 2000,
+    "effect_supplementary_groups": [],
+    "effect_uid": 2000,
+    "execute_caller_context": "u:r:trillionnium_owner_open_bootstrap:s0",
+    "global_selinux_required": "Enforcing",
+    "legacy_client_and_journal_preserved": true,
+    "legacy_endpoint_fallback": false,
+    "no_new_privs_required": 0,
+    "parent_context": "u:r:trillionnium_owner_open_phone_executor:s0",
+    "policy_source_and_file_label_application": "separately reviewed and sealed; pending actual domain/worker qualification",
+    "production_parent_uid": 0,
+    "revision": 6,
+    "same_child_session_and_process_group": true,
+    "socket_name": "hepta_phone_executor_v150_r6",
+    "source_manifest_sha256": "a8618aba4d974e1fa6363f41e763ac64e17bb494c87d75c1a1a6075b447aade6",
+    "source_sha256": "baafc644a3a7da62c68b4ccc369e17d162bd11d411e7d151db1a4c611ea02475",
+    "state_directory": "/data/trillionnium/owner-open/state/phone-local-v150/executor-r6",
+    "version": "v150-r6-rc1",
+    "worker": {
+      "bytes": 296096,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-worker-r6",
+      "sha256": "49fb74f8798194c63d5e510c0ed81604d64a55e1df84822d9457ae4110cab6da",
+      "source_sha256": "8c5a4cb4479c384776776448fa2907044667f99b310a05adaf88866bf6892d7d"
+    },
+    "worker_context": "u:r:trillionnium_owner_open_phone_worker:s0"
+  },
+  "helper_deployment_constraints": {
+    "helper_file_label": "u:object_r:trillionnium_owner_open_phone_helper_file:s0",
+    "new_owned_readonly_traversable_subtree": true,
+    "old_helper_labels_bytes_permissions_unchanged": true,
+    "old_model_key_directory_permissions_unchanged": true,
+    "original_public_png_xml_path_contracts_unchanged": true
+  },
+  "helpers": [
+    {
+      "byte_identical_copy_required": true,
+      "bytes": 16076,
+      "original_path": "/data/local/tmp/hepta-unicode-v148-r2/input.jar",
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r6/helpers/unicode-input-v148r2.jar",
+      "sha256": "0dedcab0d1a0edcd87e0023bf6809366afb4b6f02f3354db8828ed1b3ecbadc2"
+    },
+    {
+      "byte_identical_copy_required": true,
+      "bytes": 26156,
+      "original_path": "/data/local/tmp/hepta-screen-codec-runtime-diag-a1055-v3-r1/original.jar",
+      "path": "/data/local/tmp/hepta-screen-codec-runtime-diag-a1055-v3-r1/codec.jar",
+      "sha256": "54adf8e1434380b9b8414fac7ce1632a35ce8ebe97b5f1dc8b68af64fb6de60f"
+    },
+    {
+      "bytes": 20732,
+      "legacy_input_contract_unchanged": true,
+      "path": "/data/local/tmp/hepta-phone-executor-v150-r9-r1/helpers/focus-text-input-v150-r9.jar",
+      "sha256": "c8ec62529d88a29872c313052cdd335dc7611b11089db87531008b35d926e855",
+      "typed_operation": "phone.focus_input_text"
+    }
+  ],
+  "model": {
+    "acquisition_manifest_sha256": "e7f15a13b2c5a80449922f0fa57df597c468fa9742484ad8348bb1795ab03769",
+    "projector": {
+      "bytes": 445053216,
+      "file": "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7"
+    },
+    "quantization_repository": "mradermacher/GUI-Owl-1.5-2B-Instruct-GGUF",
+    "quantization_revision": "a0592aa615540e507a918bc6281fdbfc1b441361",
+    "upstream": "mPLUG/GUI-Owl-1.5-2B-Instruct",
+    "weights": {
+      "bytes": 1107410432,
+      "file": "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5"
+    }
+  },
+  "model_parameters": {
+    "alias": "gui-owl-1.5-2b-phone-q4km",
+    "api_key_file": "/data/local/tmp/hepta-phone-local-v150-r1/state/api.key",
+    "batch": 256,
+    "context_tokens": 4096,
+    "gpu_layers": 0,
+    "host": "127.0.0.1",
+    "image_max_tokens": 1024,
+    "image_min_tokens": 1024,
+    "jinja": true,
+    "metrics": true,
+    "mmproj_offload": false,
+    "parallel_slots": 1,
+    "port": 18087,
+    "slots": true,
+    "threads": 4,
+    "ubatch": 128,
+    "warmup": false,
+    "webui": false
+  },
+  "parent_service_inputs_sha256": "e0522c5d743fd9bdc30343d93200a894d58016f935f564284bb6b0d924ba898a",
+  "phone": {
+    "architecture": "aarch64",
+    "fingerprint": "motorola/leap_cn/leap:16/W1VL36H.59-53-11/643c83-3ed541:user/release-keys",
+    "model_root": "/data/local/tmp/hepta-phone-local-v150-r1",
+    "ram_total_kib": 15540960,
+    "selinux": "Enforcing",
+    "soc": "SM8750",
+    "state_root": "/data/trillionnium/owner-open/state/phone-local-v150"
+  },
+  "provider_sources": [
+    {
+      "bytes": 15587,
+      "path": "provider-r10-r1/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "path": "provider-r10-r1/source/daily_phone_local.py",
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8"
+    },
+    {
+      "bytes": 11439,
+      "path": "provider-r10-r1/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "path": "provider-r10-r1/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "path": "provider-r10-r1/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "path": "provider-r10-r1/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "path": "provider-r10-r1/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13927,
+      "path": "provider-r10-r1/source/phone_local_tools.py",
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930"
+    },
+    {
+      "bytes": 55981,
+      "path": "provider-r10-r1/source/phone_observation_tools.py",
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086"
+    },
+    {
+      "bytes": 22825,
+      "path": "provider-r10-r1/source/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41618,
+      "path": "provider-r10-r1/source/provider_codex_host.py",
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa"
+    },
+    {
+      "bytes": 17730,
+      "path": "provider-r10-r1/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70303,
+      "path": "provider-r10-r1/source/provider_phone_local.py",
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee"
+    },
+    {
+      "bytes": 9802,
+      "path": "provider-r10-r1/source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "path": "provider-r10-r1/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "qualification_at_manifest_issue": {
+    "actual_r10_startup": "NOT_STARTED",
+    "business_19": "NOT_RUN_ON_THIS_COMBINATION",
+    "cold_boot": "NOT_RUN",
+    "host_source_checks_do_not_grant_phone_qualification": true,
+    "model_health": "NEW_NONCE_REQUIRED",
+    "native_new_helper": "NOT_DEVICE_QUALIFIED",
+    "physical_faults": "NOT_RUN"
+  },
+  "runtime": {
+    "android_api": 28,
+    "android_interpreter": "/system/bin/linker64",
+    "backend": "cpu",
+    "commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+    "cpu_text_and_image_cancel_required": true,
+    "explicit_environment": {
+      "LLAMA_HEPTA_CPU_CANCEL_SAFEPOINT": "1",
+      "LLAMA_HEPTA_RECEIPT_DIR": "/data/trillionnium/owner-open/state/phone-local-v150/model-runtime-r10-r1/{boot_id}/receipts"
+    },
+    "native_cancel_source_manifest_sha256": "fc27ecdde0ff933d101be8400f82ac23d3cd2708794cc061f6100eca5a14e957",
+    "ndk_version": "28.1.13356709",
+    "needed_system_libraries": [
+      "libm.so",
+      "libdl.so",
+      "libc.so"
+    ],
+    "per_boot_receipts": "/data/trillionnium/owner-open/state/phone-local-v150/model-runtime-r10-r1/{boot_id}/receipts",
+    "project": "ggml-org/llama.cpp",
+    "server": {
+      "bytes": 11662392,
+      "path": "/data/local/tmp/hepta-phone-local-v150-r10-r1/bin/llama-server",
+      "sha256": "dbca8b3c6d024c414d018146e73df996cae51b18c8cf5d3bdab6b776318a348c"
+    },
+    "tag": "v0.8.0"
+  },
+  "schema": "hepta.phone-local.service-inputs.v150.r10.1",
+  "scope": "Exact r9 runtime, model, executor/client, helpers and provider source bytes. Phone readiness, health, business and fault qualification remain separately evidenced.",
+  "state_preservation": {
+    "keep_all_claims_receipts_and_consumed_contract_bindings": true,
+    "no_old_request_text_or_unknown_effect_redispatch": true,
+    "no_original_failure_rewritten_as_success": true,
+    "original_user_draft_preserved_privately": true,
+    "state_path": "/data/trillionnium/owner-open/state/phone-local-v150/provider-state"
+  }
+}

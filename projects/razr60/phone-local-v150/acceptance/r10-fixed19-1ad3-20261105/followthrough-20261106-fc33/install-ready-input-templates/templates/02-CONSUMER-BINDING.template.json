@@ -1,0 +1,17 @@
+{
+  "actual_freeze_controller": null,
+  "actual_freeze_originals": null,
+  "actual_independent_admission": null,
+  "actual_runtime_package": null,
+  "assignment": "PACKAGE_SHA",
+  "bound_output": null,
+  "current_literal": null,
+  "full_source_inverse": null,
+  "replacement_literal": null,
+  "schema": "hepta.fc33.consumer-single-literal-binding-plan.v1",
+  "template": {
+    "bytes": 249798,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-consumer-r5-source01/source/release_boundaries.py",
+    "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+  }
+}

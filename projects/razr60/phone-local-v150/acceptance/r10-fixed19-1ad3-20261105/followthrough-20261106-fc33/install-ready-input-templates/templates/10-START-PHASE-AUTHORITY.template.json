@@ -1,0 +1,41 @@
+{
+  "execution_plan": null,
+  "original_map": null,
+  "phase": "start",
+  "phases": {
+    "stage": {
+      "actor_source_after": null,
+      "actor_source_before": null,
+      "baseline": null,
+      "intent": null,
+      "phone_stderr": null,
+      "phone_stdout": null,
+      "process": {
+        "dispatch": null,
+        "read": null,
+        "start": null,
+        "status": null
+      },
+      "request": null,
+      "result": null
+    },
+    "start": {
+      "actor_source_after": null,
+      "actor_source_before": null,
+      "baseline": null,
+      "intent": null,
+      "phone_stderr": null,
+      "phone_stdout": null,
+      "process": {
+        "dispatch": null,
+        "read": null,
+        "start": null,
+        "status": null
+      },
+      "request": null,
+      "result": null
+    }
+  },
+  "release_inputs": null,
+  "schema": "hepta.install-original-retention.phase-authority-inputs.v1"
+}

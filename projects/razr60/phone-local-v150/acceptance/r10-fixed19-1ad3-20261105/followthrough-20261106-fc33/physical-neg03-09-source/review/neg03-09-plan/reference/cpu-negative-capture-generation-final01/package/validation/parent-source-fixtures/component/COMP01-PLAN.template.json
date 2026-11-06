@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.fixed19.comp01.direct-return-plan.v1",
+  "case_id": "COMP-01",
+  "release": {
+    "path": null,
+    "build_result_sha256": null
+  },
+  "label": null,
+  "nonce": null,
+  "request": {
+    "path": null,
+    "bytes": null,
+    "sha256": null
+  },
+  "baseline": null,
+  "prepared": null,
+  "actual_return": null
+}

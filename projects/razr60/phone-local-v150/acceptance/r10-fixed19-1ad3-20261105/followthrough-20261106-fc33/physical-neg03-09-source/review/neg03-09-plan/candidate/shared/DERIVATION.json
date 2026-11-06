@@ -1,0 +1,20 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_freeze": null,
+  "binding": "wire and actual were already checked against the original semantic wire_call and turn",
+  "candidate": {
+    "bytes": 17507,
+    "path": "/workspace/scratch/fc33eac909ab/review/neg03-09-plan/candidate/shared/observe_cancel_phase_r10.py",
+    "sha256": "5d9839ae004a91857b5f9ca978d25fb0b13087c0af57d0ea850a842e6f28d540"
+  },
+  "changed_function": "dispatches",
+  "exact_full_byte_inverse": true,
+  "original": {
+    "bytes": 17449,
+    "path": "/workspace/scratch/fc33eac909ab/review/neg03-09-plan/reference/physical-fault-final01/package/validation/operator-source-fixture/source/observe_cancel_phase_r10.py",
+    "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+  },
+  "phone_calls": 0,
+  "schema": "fc33.physical-observer-native-v3-interface.v1"
+}

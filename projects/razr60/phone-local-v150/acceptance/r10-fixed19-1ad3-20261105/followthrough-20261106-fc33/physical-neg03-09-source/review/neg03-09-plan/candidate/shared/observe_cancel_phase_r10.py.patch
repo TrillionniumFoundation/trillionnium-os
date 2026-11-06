@@ -1,0 +1,12 @@
+--- reference/observe_cancel_phase_r10.py
++++ candidate/observe_cancel_phase_r10.py
+@@ -132,7 +132,8 @@
+             receipt=strict(stable(rp));recovery.require_r6_terminal(receipt)
+             need(receipt['action_id']==action and receipt['command_sha256']==sha(command) and
+                 receipt['state']=='completed' and receipt['can_redispatch'] is False, 'original open executor receipt differs')
+-            typed=strict(phone.native_streams(results[0],call_id,'shell.exec'))
++            typed=strict(phone.native_streams(results[0],call_id,'shell.exec',
++                expected_call=wire,expected_scope=actual))
+             page,viewport=guards.verify_app_open(typed,action,semantic['component'])
+             phone.validate_viewport(viewport)
+             row['verified_app_open']=True;row['verified_component']=page['component']

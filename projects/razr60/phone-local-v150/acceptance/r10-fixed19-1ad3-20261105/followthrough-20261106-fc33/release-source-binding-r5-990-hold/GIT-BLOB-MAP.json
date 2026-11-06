@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.fc33.git-blob-handoff.v1",
+  "state": "IMMUTABLE_BLOBS_ONLY_SOURCE_PREPARATION_NO_MAC_PUBLICATION",
+  "prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/",
+  "file_count": 10,
+  "total_bytes": 458385,
+  "phone_calls": 0,
+  "new_control_scenarios": 0,
+  "actual_BUILD": null,
+  "actual_install": null,
+  "actual_READY": null,
+  "source_candidate_on_hold": true,
+  "files": [
+    {
+      "relative_path": "BINDING-PROOF.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/BINDING-PROOF.json",
+      "blob_sha": "571b5f72f4dc22d58217015bc19920d556ab60b4",
+      "bytes": 5461,
+      "sha256": "a0e0b9bd483d280dda5f4a32a70a3c671f9c7054790f7bce74520a569113511d",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "HOLD.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/HOLD.json",
+      "blob_sha": "5af5f679e43d05136f70f2b873cb8afb8dd81bb0",
+      "bytes": 717,
+      "sha256": "cd4e47e88f174ab07de392745ff80e2de2db8973021153aa784dc0d863e83da3",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "PACKAGE-MANIFEST.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/PACKAGE-MANIFEST.json",
+      "blob_sha": "d4e4779f944afd56122f7d9a2a49f0882a1894b7",
+      "bytes": 1760,
+      "sha256": "df965ce924553e78ae043e95a1d49e85c8c1518808e69e96e4928789402df595",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "prepare_source_binding.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/prepare_source_binding.py",
+      "blob_sha": "6e39978f8de5bcfa0cce3854c053a65d20dd6f59",
+      "bytes": 4619,
+      "sha256": "38b43b8ed1dea761a9d5e6acf008b64b02b8dfe7769b0e7ebe70ec0c4f535994",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "publish_and_derive_source_chain.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/publish_and_derive_source_chain.py",
+      "blob_sha": "910d403ccd19ba16e056c94848736151a9b83baf",
+      "bytes": 141612,
+      "sha256": "d6bfac4486ccd444bfe9ee98f1d1536b6453751200677d6bee5c6f5698360a27",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "publish_and_derive_source_chain.template.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/publish_and_derive_source_chain.template.py",
+      "blob_sha": "3ccdba1ca6c77c928998a423c4ba18370e361ecc",
+      "bytes": 11256,
+      "sha256": "e9171b6f0e73b1f6ab5d907c4d997ace9c1cbcfde964f5b0653ca18264ef927a",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "README.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/README.md",
+      "blob_sha": "b3e72af740283e20e3ac75cc5af89cb012afe224",
+      "bytes": 5482,
+      "sha256": "24fdfc117c4067df259dc86d22682f8ab1e135d1aa1db07e6b3ed07b4848a6b1",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "SOURCE-CHAIN-INPUTS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/SOURCE-CHAIN-INPUTS.json",
+      "blob_sha": "b52d83fc544639712d2c8a4182038b2f9f74fc4e",
+      "bytes": 3515,
+      "sha256": "e3cc22536e42074ba3fe662101dd4a4c98224de285b0a5c13c32f84d2fac322b",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "source/derive_reviewed_release_sources_BOUND.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/source/derive_reviewed_release_sources_BOUND.py",
+      "blob_sha": "19e2da92744af9e6f3af5aa499937e39d62d313a",
+      "bytes": 34103,
+      "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "source/release_boundaries.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/release-source-binding-r5-990-hold/source/release_boundaries.py",
+      "blob_sha": "2715e38dd0803c86741427bc56d1018e0933ef82",
+      "bytes": 249860,
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479",
+      "reused_existing_blob": false
+    }
+  ]
+}

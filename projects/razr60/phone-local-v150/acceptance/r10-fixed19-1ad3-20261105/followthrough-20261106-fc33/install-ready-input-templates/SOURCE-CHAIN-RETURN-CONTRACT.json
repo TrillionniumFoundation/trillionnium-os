@@ -1,0 +1,59 @@
+{
+  "actual_consumer_descriptor": null,
+  "actual_published_report": null,
+  "actual_readiness_descriptor": null,
+  "actual_source_binding_file": null,
+  "change_entry_keys": [
+    "parent",
+    "candidate",
+    "changes",
+    "complete_inverse"
+  ],
+  "change_item_keys": [
+    "before",
+    "after"
+  ],
+  "consumer_runtime_keys": [
+    "runtime_sha256",
+    "package_file_count",
+    "chain_length",
+    "role_budget"
+  ],
+  "entrypoint": "derive_reviewed_source_chain(inputs_raw, read_pinned=...)",
+  "files_names": [
+    "source/collect_r10_readiness.py",
+    "source/install_phone_release_r10.py",
+    "contracts/FINAL-INTEGRATION-INPUTS.json",
+    "source/component_activation_gate.fragment.py",
+    "source/build_release_r10.py",
+    "source/release_boundaries.py",
+    "preview-module/service.sh",
+    "preview-module/RESIDENT-OWNER-FINALIZER.json",
+    "source/verify_final_release_inputs.py",
+    "source/verify_resident_output_bindings.py",
+    "source/install_ready_execution_protocol.py",
+    "source/verify_install_start_ready_UNBOUND.py",
+    "source/install_retention_protocol_UNBOUND.py",
+    "source/verify_install_retention_UNBOUND.py"
+  ],
+  "report_schema": "hepta.reviewed-release-source-chain-construction.v1",
+  "report_state": "SOURCE_CANDIDATES_ONLY_ACTUAL_EXECUTION_UNBOUND",
+  "result_keys": [
+    "files",
+    "changes",
+    "source_binding",
+    "consumer_runtime",
+    "report"
+  ],
+  "source_binding_keys": [
+    "formal_parent",
+    "formal",
+    "readiness",
+    "production_replacements",
+    "configuration",
+    "service",
+    "material_parent_configuration_sha256",
+    "material_parent_service_sha256",
+    "material_source_input"
+  ]
+}

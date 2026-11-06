@@ -1,0 +1,20 @@
+{
+  "actual_inputs_synthesized": false,
+  "candidate": {
+    "bytes": 43142,
+    "path": "derive_negative_sources_UNBOUND.py",
+    "sha256": "d539cb12c5b3d99f4b6066de148f11db78d3ad4210bc034669ebc1bc99c44903"
+  },
+  "note": "Last constructor changes after the interface read are output manifest metadata and descriptive phase text only; no source-chain bridge change.",
+  "phone_calls": 0,
+  "public_constructor_positive_executed": false,
+  "result": "No concrete incompatibility found in requested narrow static scope.",
+  "review_scope": [
+    "Originals full-byte repeated read and final bookend",
+    "Changes complete single-RHS inverse",
+    "_admit_sources public source-chain interface and complete published consumer/readiness comparison"
+  ],
+  "reviewed_interfaces_compatible": true,
+  "reviewer_agent": "/root/install_reader",
+  "schema": "fc33.negative-source-chain-static-review.v1"
+}

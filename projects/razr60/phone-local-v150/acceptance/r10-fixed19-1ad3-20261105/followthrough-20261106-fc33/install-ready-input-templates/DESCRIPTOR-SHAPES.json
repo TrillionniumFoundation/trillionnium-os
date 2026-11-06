@@ -1,0 +1,39 @@
+{
+  "actual_identity4": null,
+  "actual_identity5": null,
+  "exact_original4": {
+    "bytes": null,
+    "metadata": null,
+    "path": null,
+    "sha256": null
+  },
+  "full9_order": [
+    "st_dev",
+    "st_ino",
+    "st_mode",
+    "st_uid",
+    "st_gid",
+    "st_nlink",
+    "st_size",
+    "st_mtime_ns",
+    "st_ctime_ns"
+  ],
+  "host3": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "resident_identity4_order": [
+    "pid",
+    "pgrp",
+    "session",
+    "start_ticks"
+  ],
+  "source_guard_identity5_order": [
+    "pid",
+    "ppid",
+    "pgrp",
+    "session",
+    "start_ticks"
+  ]
+}

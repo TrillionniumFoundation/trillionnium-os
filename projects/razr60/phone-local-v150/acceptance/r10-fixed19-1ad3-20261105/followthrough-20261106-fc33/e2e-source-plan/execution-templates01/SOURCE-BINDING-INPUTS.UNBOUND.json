@@ -1,0 +1,38 @@
+{
+  "boundary_consumer": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "candidate_manifest": {
+    "bytes": 12133,
+    "path": null,
+    "sha256": "d352e5aeafe52777ccbfe8d3deec15b76eb54ee9f9b61e62a7b1f7f4c6f5ee44"
+  },
+  "formal_source_binding": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "output": null,
+  "owned_capture_source": {
+    "bytes": 37720,
+    "path": null,
+    "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29"
+  },
+  "readiness_source": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "runtime_freeze": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "runtime_manifest": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  }
+}

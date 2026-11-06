@@ -1,0 +1,218 @@
+{
+  "actual_cases": 0,
+  "files": [
+    {
+      "bytes": 741,
+      "path": "FINAL-DEPENDENCIES.template.json",
+      "sha256": "0ec6f90e8042d43e60259760bcbafb6a3cdd5e2c562db5f9825b058e832e18a5"
+    },
+    {
+      "bytes": 5862,
+      "path": "INTERFACE.json",
+      "sha256": "6753197cd3b8d1780eebb27f3f2f3ab59fa62203a302118379f2cf6298f1fcef"
+    },
+    {
+      "bytes": 7797,
+      "path": "PLAN.template.json",
+      "sha256": "94c863680a08fdf72cc0beb185d8d62951b65f95f8904777cdc9f2929ed675ef"
+    },
+    {
+      "bytes": 2141,
+      "path": "README.md",
+      "sha256": "858b9d9381b4e1da4645c16f962e7ec3f3e00b0e27445f65b102cb4bb7013323"
+    },
+    {
+      "bytes": 26407,
+      "path": "reference/cancel-native-actor.py",
+      "sha256": "d973891aa125ce2deb2237064fbc101d5d9d915d9e4bd75e25e4da298eecd5f1"
+    },
+    {
+      "bytes": 44102,
+      "path": "reference/capture-negative-phone-r7.py",
+      "sha256": "79ed15ea8b23662c091bd64bcdc63d972b18cd9552f5af9fa2d825ddd75cd082"
+    },
+    {
+      "bytes": 31418,
+      "path": "reference/capture-p4-cancel-r7.py",
+      "sha256": "a66d5e4de27912716748f53a599c513ea46bb81415d64ec184e91e4744c122c2"
+    },
+    {
+      "bytes": 41173,
+      "path": "reference/close_original_r10.original.py",
+      "sha256": "19af371cb5271ea6b3f8c2929ab969357aee07d14d498dcf50f57e9b3bbc9e75"
+    },
+    {
+      "bytes": 56572,
+      "path": "reference/collect_business_evidence.original.py",
+      "sha256": "b2774a4669a60d576fe3f19ea00fdec7119b5e5d36a6b591853bc686dbb5de3f"
+    },
+    {
+      "bytes": 60828,
+      "path": "reference/cpu-originals-r2-ledger-prefix.py",
+      "sha256": "88fd6ca9ed46e99082d30d25ba5b1aaf9cdc8d071cf0705c62ca933f50a1e531"
+    },
+    {
+      "bytes": 59827,
+      "path": "reference/cpu-originals-r7-parent.py",
+      "sha256": "7c30e54630d6b18fd69ccc50821ddefd9abcd25c6681fbfea35fa1e484782143"
+    },
+    {
+      "bytes": 29100,
+      "path": "reference/ledger_prefix_audit.original.py",
+      "sha256": "022b9321d19563d2405051f796dfebe517045333627babe34aeeb810754647f4"
+    },
+    {
+      "bytes": 15135,
+      "path": "reference/ledger_round_evidence.original.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 24834,
+      "path": "reference/materialize_case_r10.original.py",
+      "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+    },
+    {
+      "bytes": 6701,
+      "path": "reference/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 37318,
+      "path": "reference/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 40788,
+      "path": "reference/production_sender_shape.original.py",
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+    },
+    {
+      "bytes": 27535,
+      "path": "reference/root_acceptance_r10.original.py",
+      "sha256": "1725978fb68e3846b01f3a16d047c279fce45cbab2c316bbfe563d54e7101286"
+    },
+    {
+      "bytes": 15024,
+      "path": "reference/root_cpu_negative.unbound-template.py",
+      "sha256": "718e636d9cf5d672de40769aa86cd41198230c55a9da7a9b7bb2d98bb7a9d8d6"
+    },
+    {
+      "bytes": 45952,
+      "path": "reference/root_transport_Q2.original.py",
+      "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+    },
+    {
+      "bytes": 43958,
+      "path": "source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 37253,
+      "path": "source/negative_originals.py",
+      "sha256": "939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2"
+    },
+    {
+      "bytes": 15256,
+      "path": "source/root_cpu_negative.py",
+      "sha256": "29531f8f54716b6aa83f76a3007473b9b5a38f4fbd6b8f74d895bfa2a1d3a748"
+    },
+    {
+      "bytes": 1381,
+      "path": "validation/DERIVATION.json",
+      "sha256": "396245b2cee19a57d444ffe631d20032251d69420571d9a7202dc46034b556ad"
+    },
+    {
+      "bytes": 1903,
+      "path": "validation/FROZEN-HELPER-PROOF.json",
+      "sha256": "f00baa035fe9705e57cc779ed1d58f8c41d9d83fe91a27f835b0286391795ba8"
+    },
+    {
+      "bytes": 1716,
+      "path": "validation/LEDGER-ADAPTER-INCREMENT.patch",
+      "sha256": "746fcc6dba450b25a46763af84dea077fb37d067e96525e7e87c37ab5f2456f0"
+    },
+    {
+      "bytes": 98232,
+      "path": "validation/NEW-HOST-SOURCES.patch",
+      "sha256": "a42f49acd1e832e813b8272a1d208e9fdd666728b4b0c851685b6f8cb58b3ad6"
+    },
+    {
+      "bytes": 565,
+      "path": "validation/ROOT-STATIC-MODULE-PINS.patch",
+      "sha256": "55d6f046bffb84ab05697c66ff86fd1af348eecf69520fc7c8d5303d80f81d25"
+    },
+    {
+      "bytes": 2784,
+      "path": "validation/SOURCE-PARSER-HOST-RESULT.json",
+      "sha256": "b84ce105538bf8d9760746f72392e7685b689299c1b52374a4c742330d40de86"
+    },
+    {
+      "bytes": 414,
+      "path": "validation/failed-host-check-01/NOTE.json",
+      "sha256": "732c488230534b9d2b463f1c6105c09866c1570cc68ad7f140db5cfb8af80ff3"
+    },
+    {
+      "bytes": 726,
+      "path": "validation/failed-host-check-01/STATUS.original.json",
+      "sha256": "d2cb5cd1d194a8242ff8a806262c7bc476a794b93c0993ad0c571b1a9d79331d"
+    },
+    {
+      "bytes": 1001,
+      "path": "validation/failed-host-check-01/STREAMS.original.json",
+      "sha256": "62798737c7efa1c354c1d7077c6ce1014d2ceb2b3eb7935d33514f7f069b4ac5"
+    },
+    {
+      "bytes": 21316,
+      "path": "validation/failed-host-check-01/source.py",
+      "sha256": "ab6cb30d1b8e0930d4b6915c881a473e69a629a001923048ca9f3460588b243a"
+    },
+    {
+      "bytes": 222,
+      "path": "validation/failed-host-check-01/stderr.original",
+      "sha256": "c710135d31080c43050d1b828f11a143425d1417cd51426e6df38b44b9af8648"
+    },
+    {
+      "bytes": 0,
+      "path": "validation/failed-host-check-01/stdout.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "future_dependencies_frozen": false,
+  "generation": "cpu-cancel-host-closure-r1-candidate01",
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "runtime_sources": [
+    {
+      "bytes": 43958,
+      "path": "source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 37253,
+      "path": "source/negative_originals.py",
+      "sha256": "939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2"
+    },
+    {
+      "bytes": 15256,
+      "path": "source/root_cpu_negative.py",
+      "sha256": "29531f8f54716b6aa83f76a3007473b9b5a38f4fbd6b8f74d895bfa2a1d3a748"
+    }
+  ],
+  "schema": "hepta.r10.cpu-negative-host-closure-source-package.v1",
+  "source_checks": {
+    "all_passed": true,
+    "count": 17,
+    "scope": "pure parser / exact parent source checks only"
+  },
+  "state": "SOURCE_ONLY_FUTURE_DEPENDENCIES_UNFROZEN"
+}

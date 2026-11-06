@@ -1,0 +1,24 @@
+{
+  "constructor": {
+    "bytes": 43142,
+    "path": "derive_negative_sources_UNBOUND.py",
+    "sha256": "d539cb12c5b3d99f4b6066de148f11db78d3ad4210bc034669ebc1bc99c44903"
+  },
+  "full_constructor_positive_executed": false,
+  "model_calls": 0,
+  "observed_control_count": 15,
+  "observed_stdout_status": "PASS",
+  "phone_calls": 0,
+  "previous_15_controls_not_added_to_count": true,
+  "result": {
+    "bytes": 4108,
+    "path": "template-controls02/RESULT.json",
+    "sha256": "46a8b4c2066bf00748370ceccfc70d1ff1a3f8f7890ccd31f1cdd85d7c59e326"
+  },
+  "schema": "fc33.negative-source-template-control-inputs.v1",
+  "script": {
+    "bytes": 9889,
+    "path": "test_negative_source_templates.py",
+    "sha256": "2477d83074e63bd22a665d3e711d637c05b5a3d74d3b71620583ab43b8b079d4"
+  }
+}

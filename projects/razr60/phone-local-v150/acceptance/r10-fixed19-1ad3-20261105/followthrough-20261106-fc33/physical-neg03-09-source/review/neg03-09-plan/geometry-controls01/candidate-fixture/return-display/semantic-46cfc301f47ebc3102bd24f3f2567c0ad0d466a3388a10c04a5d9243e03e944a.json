@@ -1,0 +1,28 @@
+{
+  "call_id": "return-display-negative",
+  "capture_id": "76d10aa85fbeb04aca46d3436354e029",
+  "postcondition": "actual_inner_display_focused_resumed_HEPTA",
+  "semantic_tool": "phone.return_hepta",
+  "state": "model_decision_mapped_not_dispatch_confirmation",
+  "turn": {
+    "profile_id": "synthetic-profile_id-eb3da5b0aeaad821fac05fd7316b5261",
+    "session_id": "synthetic-session_id-eb3da5b0aeaad821fac05fd7316b5261",
+    "task_id": "synthetic-task_id-eb3da5b0aeaad821fac05fd7316b5261",
+    "turn_id": "synthetic-turn_id-eb3da5b0aeaad821fac05fd7316b5261",
+    "turn_stream_id": "synthetic-turn_stream_id-eb3da5b0aeaad821fac05fd7316b5261"
+  },
+  "wire_call": {
+    "argv": [
+      "-s",
+      "ZY22LS7WZT",
+      "shell",
+      "[ \"$(getprop ro.serialno)\" = ZY22LS7WZT ] || exit 64; hepta_launch=$(am start -W -n org.trillionnium.owneropen/.OwnerOpenShellActivity 2>&1); hepta_launch_rc=$?; hepta_return_page=$(dumpsys window | grep -E '^[[:space:]]*(Display: mDisplayId=|mTopFocusedDisplayId=|mCurrentFocus=|mFocusedApp=|isKeyguardShowing=)'; dumpsys activity activities | grep -E '^[[:space:]]*topResumedActivity='); hepta_return_viewport=$(dumpsys display | grep 'mViewports='); hepta_launch_b64=$(printf '%s' \"$hepta_launch\" | base64 | tr -d '\\r\\n'); hepta_page_b64=$(printf '%s' \"$hepta_return_page\" | base64 | tr -d '\\r\\n'); hepta_viewport_b64=$(printf '%s' \"$hepta_return_viewport\" | base64 | tr -d '\\r\\n'); printf '{\"schema\":\"hepta.return-receipt.v149.1\",\"operation_id\":\"76d10aa85fbeb04aca46d3436354e029\",\"launch_exit_code\":%s,\"launch_b64\":\"%s\",\"page_b64\":\"%s\",\"viewport_b64\":\"%s\"}\n' \"$hepta_launch_rc\" \"$hepta_launch_b64\" \"$hepta_page_b64\" \"$hepta_viewport_b64\"; exit \"$hepta_launch_rc\""
+    ],
+    "binding_fingerprint": "a6015f798e00ccfb2e343dcb1de484f9cbfbfbc77494c98c138f9712baa1bdec",
+    "call_id": "return-display-negative",
+    "config_generation": null,
+    "request_sha256": "0dda6f2a0cf5d45545221d8ad1a89c8f8e0a96b0d06805462cf5cb4d448c9cb3",
+    "tool": "adb.exec"
+  },
+  "wire_tool": "adb.exec"
+}

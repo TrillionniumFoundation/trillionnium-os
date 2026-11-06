@@ -1,0 +1,17 @@
+{
+  "axis": "rotation",
+  "changed_paths": [
+    "/screenshot/rotation"
+  ],
+  "negative_payload": {
+    "bytes": 27863,
+    "sha256": "04b58df9ce7d6db66288c4768e59c846970c1129437cf9388710bc81a2bd11a9"
+  },
+  "physical_observation": false,
+  "qualified_payload": {
+    "bytes": 27863,
+    "sha256": "c96d9ddc851cee651050645ed41e4af270ffc036830427d5201fb6cdab132dae"
+  },
+  "semantic": "screenshot",
+  "synthetic": true
+}

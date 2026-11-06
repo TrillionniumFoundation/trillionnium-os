@@ -1,0 +1,33 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    null,
+    "--inputs",
+    null,
+    "--inputs-sha256",
+    null,
+    "--output",
+    null,
+    "--retirement-inputs",
+    null,
+    "--retirement-inputs-sha256",
+    null,
+    "--component-boundary-inputs",
+    null,
+    "--component-boundary-inputs-sha256",
+    null,
+    "--policy-adoption-inputs",
+    null,
+    "--policy-adoption-inputs-sha256",
+    null,
+    "--shared-materials",
+    null,
+    "--shared-materials-sha256",
+    null
+  ],
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": null,
+  "timeout_seconds": null
+}

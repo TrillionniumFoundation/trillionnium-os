@@ -1,0 +1,1185 @@
+{
+  "schema": "hepta.fc33.null-input-slot-index.v1",
+  "slots": [
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_build_controller"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_build_output_root"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_build_result"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_component_boundary_inputs"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_eight_stream_inputs"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_execution_plan"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_four_role_identity_originals"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_freeze_controller"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_independent_freeze_admission"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_install_reader_inputs"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_install_ready_verdict"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_ready_original"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_ready_phase"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_release_original_inputs"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_retirement_inputs"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_runtime_freeze"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_stage_phase"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_stage_retention"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_stage_retention_authority"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_start_phase"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_start_retention"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/actual_start_retention_authority"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/bound_consumer_source"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/formal_source_binding"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/new_NEG01_closed_originals"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/new_NEG01_lease_original"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/new_NEG02_closed_originals"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/new_NEG02_lease_original"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/published_source_chain"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/source_chain_constructor_binding"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/source_chain_inputs"
+    },
+    {
+      "file": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "pointer": "/source_output_root"
+    },
+    {
+      "file": "templates/01-SOURCE-CHAIN-INPUTS.template.json",
+      "pointer": "/consumer/runtime_package"
+    },
+    {
+      "file": "templates/01-SOURCE-CHAIN-INPUTS.template.json",
+      "pointer": "/consumer/source"
+    },
+    {
+      "file": "templates/01-SOURCE-CHAIN-INPUTS.template.json",
+      "pointer": "/output_root"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/actual_freeze_controller"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/actual_freeze_originals"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/actual_independent_admission"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/actual_runtime_package"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/bound_output"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/current_literal"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/full_source_inverse"
+    },
+    {
+      "file": "templates/02-CONSUMER-BINDING.template.json",
+      "pointer": "/replacement_literal"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/codec_diagnostic_parent_ancestor"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/component_package_files"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/component_package_manifest"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/diagnostic_parent_ancestor"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/environment_parent_ancestor"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/latest_boundary"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/non_native_sidebranch"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/non_native_sidebranches"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/originals"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/pre_policy_ancestor"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/property_parent_ancestors"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/publish_result"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/retained_unstarted_stage"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/retirement"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/stack_diagnostic_parent_ancestor"
+    },
+    {
+      "file": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "pointer": "/v3_runtime_diagnostic_ancestor"
+    },
+    {
+      "file": "templates/04-RETIREMENT-INPUTS.template.json",
+      "pointer": "/ancestor_retirement"
+    },
+    {
+      "file": "templates/04-RETIREMENT-INPUTS.template.json",
+      "pointer": "/failed_predecessor"
+    },
+    {
+      "file": "templates/04-RETIREMENT-INPUTS.template.json",
+      "pointer": "/operator"
+    },
+    {
+      "file": "templates/04-RETIREMENT-INPUTS.template.json",
+      "pointer": "/original_operation_evidence"
+    },
+    {
+      "file": "templates/04-RETIREMENT-INPUTS.template.json",
+      "pointer": "/report"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/2"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/4"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/6"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/8"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/10"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/12"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/14"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/16"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/18"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/20"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/22"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/args/24"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/idempotency_key"
+    },
+    {
+      "file": "templates/05-BUILD-PROCESS-START.template.json",
+      "pointer": "/timeout_seconds"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/build_process/read"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/build_process/start"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/build_process/status"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/build_result"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/builder_source"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/component_boundary_inputs"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/formal_inputs"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/installer_source"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/module_binding"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/module_manifest"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/production_source_seal"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/release_archive"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/release_manifest"
+    },
+    {
+      "file": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "pointer": "/retirement_inputs"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/actor/path"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/archive"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/installer"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/ready/idempotency_key"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/ready/label"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/ready/request_path"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/ready/timeout_seconds"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/stage/idempotency_key"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/stage/label"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/stage/request_path"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/stage/timeout_seconds"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/start/idempotency_key"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/start/label"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/start/request_path"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/phases/start/timeout_seconds"
+    },
+    {
+      "file": "templates/07-EXECUTION-PLAN.template.json",
+      "pointer": "/release_inputs_sha256"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/actor_source_after"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/actor_source_before"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/baseline"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/intent"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/phone_stderr"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/phone_stdout"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/process/dispatch"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/process/read"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/process/start"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/process/status"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/request"
+    },
+    {
+      "file": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "pointer": "/result"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/execution_plan"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/original_map"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/actor_source_after"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/actor_source_before"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/baseline"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/intent"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/phone_stderr"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/phone_stdout"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/dispatch"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/read"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/start"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/status"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/request"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/result"
+    },
+    {
+      "file": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "pointer": "/release_inputs"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/actual_build_result_sha256"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/archive_sha256"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/authority_inputs"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/component_boundary_inputs_sha256"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/execution_plan"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/files"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/installation_generation"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/phase_result_sha256"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/phase_source_identity"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/phase_stdout_sha256"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/policy_adoption_inputs_sha256"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/release_inputs"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/release_manifest_sha256"
+    },
+    {
+      "file": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "pointer": "/retirement_sha256"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/execution_plan"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/original_map"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/actor_source_after"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/actor_source_before"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/baseline"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/intent"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/phone_stderr"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/phone_stdout"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/dispatch"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/read"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/start"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/process/status"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/request"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/stage/result"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/actor_source_after"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/actor_source_before"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/baseline"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/intent"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/phone_stderr"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/phone_stdout"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/process/dispatch"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/process/read"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/process/start"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/process/status"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/request"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/phases/start/result"
+    },
+    {
+      "file": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "pointer": "/release_inputs"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/actual_build_result_sha256"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/archive_sha256"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/authority_inputs"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/component_boundary_inputs_sha256"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/execution_plan"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/files"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/installation_generation"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/phase_result_sha256"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/phase_source_identity"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/phase_stdout_sha256"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/policy_adoption_inputs_sha256"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/release_inputs"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/release_manifest_sha256"
+    },
+    {
+      "file": "derived-shapes/START-SCOPE.output-shape.json",
+      "pointer": "/retirement_sha256"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/identity/idempotency_key"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/identity/label"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/identity/request_path"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/actor_source_after"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/actor_source_before"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/baseline"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/intent"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/phone_stderr"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/phone_stdout"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/process/dispatch"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/process/read"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/process/start"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/process/status"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/request"
+    },
+    {
+      "file": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "pointer": "/originals/result"
+    },
+    {
+      "file": "templates/12-STAGE-RETENTION-INPUTS.template.json",
+      "pointer": "/operations"
+    },
+    {
+      "file": "templates/12-STAGE-RETENTION-INPUTS.template.json",
+      "pointer": "/original_map"
+    },
+    {
+      "file": "templates/12-STAGE-RETENTION-INPUTS.template.json",
+      "pointer": "/phase_authority"
+    },
+    {
+      "file": "templates/12-STAGE-RETENTION-INPUTS.template.json",
+      "pointer": "/scope"
+    },
+    {
+      "file": "templates/13-START-RETENTION-INPUTS.template.json",
+      "pointer": "/operations"
+    },
+    {
+      "file": "templates/13-START-RETENTION-INPUTS.template.json",
+      "pointer": "/original_map"
+    },
+    {
+      "file": "templates/13-START-RETENTION-INPUTS.template.json",
+      "pointer": "/phase_authority"
+    },
+    {
+      "file": "templates/13-START-RETENTION-INPUTS.template.json",
+      "pointer": "/scope"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/child_bindings/model"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/child_bindings/provider"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/child_bindings/sidecar"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/module_originals/binding"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/module_originals/helper"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/module_originals/manifest"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/module_originals/service"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/ready/original"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/ready/source"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/release_inputs"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/role_identity_originals/model"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/role_identity_originals/provider"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/role_identity_originals/sidecar"
+    },
+    {
+      "file": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "pointer": "/role_identity_originals/supervisor"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/eight_stream_inputs"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/execution_plan"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/install_intent/bytes"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/install_intent/metadata"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/install_intent/sha256"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/preservation/bytes"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/preservation/metadata"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/preservation/sha256"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/staged/bytes"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/staged/metadata"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/staged/sha256"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/start_intent/bytes"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/start_intent/metadata"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/start_intent/sha256"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/started/bytes"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/started/metadata"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/install_originals/started/sha256"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/original_map"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/actor_source_after"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/actor_source_before"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/baseline"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/intent"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/phone_stderr"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/phone_stdout"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/process/dispatch"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/process/read"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/process/start"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/process/status"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/request"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/ready/result"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/actor_source_after"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/actor_source_before"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/baseline"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/intent"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/phone_stderr"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/phone_stdout"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/process/dispatch"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/process/read"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/process/start"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/process/status"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/request"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/stage/result"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/actor_source_after"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/actor_source_before"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/baseline"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/intent"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/phone_stderr"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/phone_stdout"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/process/dispatch"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/process/read"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/process/start"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/process/status"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/request"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/phases/start/result"
+    },
+    {
+      "file": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "pointer": "/release_inputs"
+    },
+    {
+      "file": "templates/16-ORIGINAL-MAP.fragment.json",
+      "pointer": "/namespace"
+    },
+    {
+      "file": "templates/16-ORIGINAL-MAP.fragment.json",
+      "pointer": "/original"
+    },
+    {
+      "file": "templates/16-ORIGINAL-MAP.fragment.json",
+      "pointer": "/retained/bytes"
+    },
+    {
+      "file": "templates/16-ORIGINAL-MAP.fragment.json",
+      "pointer": "/retained/metadata"
+    },
+    {
+      "file": "templates/16-ORIGINAL-MAP.fragment.json",
+      "pointer": "/retained/path"
+    },
+    {
+      "file": "templates/16-ORIGINAL-MAP.fragment.json",
+      "pointer": "/retained/sha256"
+    },
+    {
+      "file": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "pointer": "/copy/bytes"
+    },
+    {
+      "file": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "pointer": "/copy/path"
+    },
+    {
+      "file": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "pointer": "/copy/sha256"
+    },
+    {
+      "file": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "pointer": "/phone/bytes"
+    },
+    {
+      "file": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "pointer": "/phone/metadata"
+    },
+    {
+      "file": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "pointer": "/phone/path"
+    },
+    {
+      "file": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "pointer": "/phone/sha256"
+    }
+  ]
+}

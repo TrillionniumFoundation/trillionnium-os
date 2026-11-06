@@ -1,0 +1,58 @@
+Exact source excerpts; source byte pins are verified against actual frozen Mac originals in the observation.
+
+run_component_root_once.py 706..717
+            rc=self.join_host_capture(name,child);wait_returned=True
+            if stdin_file is not None:pin_retained_input(stdin_file.fileno(),stdin_metadata)
+            o=b''.join(capture['chunks']['stdout']);e=b''.join(capture['chunks']['stderr'])
+            cleanup_errors+=close_owned_streams();streams.pop(name,None)
+            need(not cleanup_errors,'owned host stream finalization failed: '+repr(cleanup_errors))
+            self.verify_host_capture_outputs(name)
+            result={'state':'ORIGINAL_HOST_CHILD_JOINED','phase':name,'pid':child.pid,'returncode':rc,
+                'stdout':desc(d/'stdout.original',o),'stderr':desc(d/'stderr.original',e),'automatic_retry':False}
+            put(d/'RESULT.json',enc(result));self.steps.append(result);result_recorded=True
+            owners.pop(name,None);deadlines.pop(name,None);captures.pop(name,None)
+            need(rc==0,'original phase failed; no replay: '+name)
+            return o
+
+run_component_root_once.py 877..883
+        result=self.remote('phone-'+tag,code,req['timeout_seconds']+55)
+        need(result['actor_rc']==0,'phone actor unknown/nonzero; inspect original without replay')
+        w=result['wrapper']
+        if req['kind']=='push':
+            need(w['status']=='pushed_and_hash_verified' and w['sha256']==req['sha256'] and w['readback']['rc']==0,'actual push not confirmed')
+            return w
+        ph=w['phone'];need(type(ph['rc']) is int and ph['rc']==0,'actual phone command failed; no new key retry');return strict(ph['stdout'])
+
+run_component_root_once.py 930..945
+        self.remote_files('host-stage-material',files,True)
+        for tag,name,rel in [('material',p['label']+'.tar.gz','inputs/component-inputs.tar.gz'),('stage-source',p['label']+'.stage.py','inputs/stage_component.py')]:
+            b=files[rel];self.push_copy(tag,self.remote_root+'/'+rel,name,len(b),sha(b))
+        home=self.prepared['phone_home'];staging=G+'/native-guard-staging-r10-r1/'
+        self.frozen_phone('stage',['/usr/bin/python3','-I','-B',staging+p['label']+'.stage.py',
+            '--archive',staging+p['label']+'.tar.gz','--archive-sha256',sha(archive),
+            '--lease-sha256',self.prepared['lease']['sha256'],'--package-sha256',PKG,'--execute-private-stage-once'],90)
+        self.remaining(465)
+        sender=['/usr/bin/python3','-I','-B',str(runtime/'source/send_new_native_guard_task_r10_r4.py'),p['label'],p['request']['path'],p['previous']['path'],
+            '--preserved-draft',p['preserved_draft']['path'],'--retirement-resolution',p['sender_retirement_resolution']['path'],
+            '--evidence-root','component','--component-contract',str(self.material/'tree/sender-contract.json'),
+            '--component-package',p['package']['path'],'--component-package-sha256',PKG]
+        self.execute_process('sender-preview',sender,20)
+        self.sender=self.execute_process('sender-execute',sender+['--execute-once'],600,async_start=True)
+        sender_dir='/home/alex/codex-hepta-natural-'+p['label']+'-root-v150'
+        marker=self.remote_read('sender-prepared',{'prepared':sender_dir+'/COMPONENT-PREPARED-NO-SEND.json'},
+
+send_new_native_guard_task_r10_r4.py 266..278
+ save('SEND.once.json',{'prompt':expected,'prompt_sha256':hashlib.sha256(expected.encode()).hexdigest(),'bounds':send.attrib['bounds'],'supplied_app_commands':False,'supplied_app_coordinates':False,'automatic_replay':False})
+ save('SEND.MONOTONIC-INTENT.json',{'p4_pre_send_monotonic_ns':time.monotonic_ns(),'send_attempt_count':1,'automatic_replay':False})
+ assert time.monotonic_ns()<=pre_send_deadline_ns,'Pre-Send budget elapsed after intent persistence; no late Send'
+ if component_final is not None:component_send_margin(component_final)
+ send_started_monotonic_ns=time.monotonic_ns()
+ send_status='unknown'
+ send_attempted=True
+ try:
+  result=tap(send);send_status='tap_returned';save('SEND.result.json',result)
+ except Exception as error:
+  save('SEND.unknown.json',{'error':str(error),'automatic_replay':False,'next':'Only read original request/scope'})
+ send_returned_monotonic_ns=time.monotonic_ns()
+ save('SEND.MONOTONIC-WINDOW.json',{'send_started_monotonic_ns':send_started_monotonic_ns,'send_returned_monotonic_ns':send_returned_monotonic_ns,'clock':'Pocket4 time.monotonic_ns','send_status':send_status,'automatic_replay':False})
+

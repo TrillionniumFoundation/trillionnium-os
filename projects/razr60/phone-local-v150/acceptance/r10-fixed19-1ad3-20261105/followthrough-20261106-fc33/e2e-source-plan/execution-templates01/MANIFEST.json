@@ -1,0 +1,63 @@
+{
+  "actual_fields_remain_null": true,
+  "automatic_retry": false,
+  "files": [
+    {
+      "bytes": 582,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/COORDINATOR-PLAN.E2E-01.UNBOUND.json",
+      "sha256": "22d26beadc2772fde3c8322b39241333cb82455f5bf2a03afbf116e43f7e6ef7"
+    },
+    {
+      "bytes": 582,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/COORDINATOR-PLAN.E2E-02.UNBOUND.json",
+      "sha256": "6ddd09b62f1375af84f4105a4653ccc7248c8440a02f6389ac749527c627dfac"
+    },
+    {
+      "bytes": 582,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/COORDINATOR-PLAN.E2E-03.UNBOUND.json",
+      "sha256": "51aa787baac64ae7ee40b1d82b44d619d8303c57c847a307f5bc80a7148952a7"
+    },
+    {
+      "bytes": 582,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/COORDINATOR-PLAN.E2E-04.UNBOUND.json",
+      "sha256": "847b5340c8ba8d4b8a40985f9d0e5e1e04f516f86e536ef6a4cb2f0e9020966b"
+    },
+    {
+      "bytes": 5034,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/ENTRYPOINTS.json",
+      "sha256": "e7ea8ed6c13887b7f2c309825cf824faeae43e8cba29e9dc50f6dc54b0da0e51"
+    },
+    {
+      "bytes": 8148,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/EVIDENCE-CLOSURE-CHECKLIST.json",
+      "sha256": "3713fcf2364b97ffddffdc3e8fb96af29f4f19166bd423fa0dddca948f06f4ec"
+    },
+    {
+      "bytes": 7797,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/EXECUTION-INPUTS.UNBOUND.json",
+      "sha256": "b0801732a1541b6eff81e7cba1d571122da62a5e0922ede84878e0b1e46ed8c3"
+    },
+    {
+      "bytes": 752,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/SOURCE-BINDING-INPUTS.UNBOUND.json",
+      "sha256": "af2632426de10f192a05e7731c9730add8e8ee16471f9e301340e4a5e7c3d7fb"
+    },
+    {
+      "bytes": 2045,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/SOURCE-READINESS.json",
+      "sha256": "57fe0f4d57c7175c74922b1fbcdfef883ff5fb51f359f4db5b366944514b0ebc"
+    }
+  ],
+  "fixed19_credit": 0,
+  "historical_pass_inherited": false,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.e2e.execution-template-package.v1",
+  "source": {
+    "bytes": 20617,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/prepare_execution_templates.py",
+    "sha256": "373037e62e04fb7a9a77942a935dec947e4b11f9bb50d4a68c0790666f8afc64"
+  }
+}

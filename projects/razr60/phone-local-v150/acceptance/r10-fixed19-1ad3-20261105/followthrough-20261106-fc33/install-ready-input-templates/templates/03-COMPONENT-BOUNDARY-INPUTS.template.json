@@ -1,0 +1,26 @@
+{
+  "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "codec_diagnostic_parent_ancestor": null,
+  "component_combination": {
+    "bytes": 4695,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-20261106-fc33-shared-material-v3-01/COMBINATION.json",
+    "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+  },
+  "component_package_files": null,
+  "component_package_manifest": null,
+  "diagnostic_parent_ancestor": null,
+  "environment_parent_ancestor": null,
+  "latest_boundary": null,
+  "non_native_sidebranch": null,
+  "non_native_sidebranches": null,
+  "originals": null,
+  "pre_policy_ancestor": null,
+  "property_parent_ancestors": null,
+  "publish_result": null,
+  "release_id": "v150-r10-r1",
+  "retained_unstarted_stage": null,
+  "retirement": null,
+  "schema": "hepta.r10.component-boundary-inputs.v10",
+  "stack_diagnostic_parent_ancestor": null,
+  "v3_runtime_diagnostic_ancestor": null
+}

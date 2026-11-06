@@ -1,0 +1,17 @@
+{
+  "axis": "rotation",
+  "changed_paths": [
+    "/viewport_b64"
+  ],
+  "negative_payload": {
+    "bytes": 987,
+    "sha256": "1666f9434095df5f50886d3acf4c4fe6d115210e0bcefdab978eecd70de6ffb9"
+  },
+  "physical_observation": false,
+  "qualified_payload": {
+    "bytes": 987,
+    "sha256": "bbafa10c1976443823802cce18ffa5ba5e2fa28770639fde4b855757f9459c22"
+  },
+  "semantic": "return",
+  "synthetic": true
+}

@@ -1,0 +1,17 @@
+{
+  "axis": "geometry",
+  "changed_paths": [
+    "/screenshot/original_width"
+  ],
+  "negative_payload": {
+    "bytes": 27863,
+    "sha256": "043f34c69430712967623f6fd2904bdfdf8cfdc7276d098c30c8eecda9b0d4bf"
+  },
+  "physical_observation": false,
+  "qualified_payload": {
+    "bytes": 27863,
+    "sha256": "227d8e83d331361fdf835f28ea127ebdd86d9ae54c59f3003449bd11590c5a18"
+  },
+  "semantic": "screenshot",
+  "synthetic": true
+}

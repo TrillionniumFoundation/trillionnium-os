@@ -1,0 +1,61 @@
+{
+  "direct_host_tools_enabled": false,
+  "images": [
+    {
+      "call_id": "return-rotation-base",
+      "capture_id": "e79c43dabfcda0da9b4147ae23ba8f8d",
+      "encoded_bytes": 19356,
+      "encoded_height": 374,
+      "encoded_size": [
+        153,
+        374
+      ],
+      "encoded_width": 153,
+      "encoding": "base64",
+      "image_sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521",
+      "logical_display_id": 0,
+      "media_type": "image/jpeg",
+      "observation_kind": "lossy_scaled_actual_phone_screenshot_not_UI_XML",
+      "observed_page": {
+        "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+        "display_id": 0,
+        "keyguard_showing": false
+      },
+      "original_height": 2992,
+      "original_result_sha256": "9cbf551049c9fd4b037fe3f74da17c1dd2e4b0bc14cf3281cf6f74e43b90ed44",
+      "original_width": 1224,
+      "page_state": "Display: mDisplayId=0\nmTopFocusedDisplayId=0\nmCurrentFocus=Window{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\nmFocusedApp=ActivityRecord{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\nisKeyguardShowing=false\ntopResumedActivity=ActivityRecord{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\n",
+      "page_state_sha256": "943214ddf94e83688b31e96ae30c8fb3541eed85819daa701ad7e7b595638a77",
+      "path": "/workspace/scratch/fc33eac909ab/review/neg03-09-plan/geometry-controls01/candidate-fixture/return-rotation/image-e79c43dabfcda0da9b4147ae23ba8f8d.jpg",
+      "physical_display_id": "4630947043778501779",
+      "pixel_mapping": "round_half_up(encoded_coordinate*original_dimension/encoded_dimension)",
+      "quality": 75,
+      "rotation": 0,
+      "schema": "hepta.phone-screenshot.v1",
+      "serial": "ZY22LS7WZT",
+      "source_png_bytes": 1191,
+      "source_png_sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13",
+      "status": "encoded",
+      "turn": {
+        "profile_id": "synthetic-profile_id-2e241339a83227e68fef24d2308f039e",
+        "session_id": "synthetic-session_id-2e241339a83227e68fef24d2308f039e",
+        "task_id": "synthetic-task_id-2e241339a83227e68fef24d2308f039e",
+        "turn_id": "synthetic-turn_id-2e241339a83227e68fef24d2308f039e",
+        "turn_stream_id": "synthetic-turn_stream_id-2e241339a83227e68fef24d2308f039e"
+      },
+      "turn_image_bytes_used": 19356,
+      "viewport": "DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='local:4630947043778501779', orientation=0, logicalFrame=Rect(0, 0 - 1224, 2992), physicalFrame=Rect(0, 0 - 1224, 2992)}",
+      "viewport_after": "DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='local:4630947043778501779', orientation=0, logicalFrame=Rect(0, 0 - 1224, 2992), physicalFrame=Rect(0, 0 - 1224, 2992)}",
+      "viewport_before": "DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='local:4630947043778501779', orientation=0, logicalFrame=Rect(0, 0 - 1224, 2992), physicalFrame=Rect(0, 0 - 1224, 2992)}",
+      "viewport_sha256": "82a9a93ac429f7a370f42bf469dbc74c2ffa945c9353a8c69e21547d6c5a0a8e"
+    }
+  ],
+  "old_images_attached": false,
+  "turn": {
+    "profile_id": "synthetic-profile_id-2e241339a83227e68fef24d2308f039e",
+    "session_id": "synthetic-session_id-2e241339a83227e68fef24d2308f039e",
+    "task_id": "synthetic-task_id-2e241339a83227e68fef24d2308f039e",
+    "turn_id": "synthetic-turn_id-2e241339a83227e68fef24d2308f039e",
+    "turn_stream_id": "synthetic-turn_stream_id-2e241339a83227e68fef24d2308f039e"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "binding_remaining": {
+    "BUILD": null,
+    "READY": null,
+    "actual_readiness_source": null,
+    "context": null,
+    "formal_source_binding": null,
+    "runtime_freeze": null
+  },
+  "candidate": {
+    "bytes": 12133,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/candidate01/CANDIDATE-SOURCES.json",
+    "sha256": "d352e5aeafe52777ccbfe8d3deec15b76eb54ee9f9b61e62a7b1f7f4c6f5ee44"
+  },
+  "case_notes": {
+    "COMP-01": "Use production native return originals from a return-demanding E2E case. No direct-helper adapter or historical/current credit conflation.",
+    "E2E-01": "New screenshot must appear in the actual local-model request; exactly one selection, same-code public receipt and actual return.",
+    "E2E-02": "Exact original UTF-8/LF, actual confirmation and both public readbacks plus return. Count confirmation from original semantic/native evidence.",
+    "E2E-03": "Fresh saved expression, one actual equals activation, visible result and independent integer arithmetic plus return.",
+    "E2E-04": "Unique current Android-version row, package/focus/top-resumed independently checked; unchanged read-only request does not ask for return."
+  },
+  "collector": {
+    "bytes": 4270,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/candidate01/collector-package/MANIFEST.json",
+    "sha256": "ec593e1b8c97eb979ee1059cca8629861e896c38088973764a984b590cc47517"
+  },
+  "current_business_credit": 0,
+  "historical_pass_inherited": false,
+  "independent_interface_review": {
+    "required_publication": "Publish source-chain43 result.source_binding directly as the formal_source_binding file; do not wrap it in the complete result/report.",
+    "result": "no interface blocker found",
+    "reviewer": "/root/install_reader",
+    "runtime_controls_added_by_review": 0,
+    "scope": "source-chain43 source_binding exact nine keys/readiness descriptor; complete consumer and readiness single-literal inverse compatibility"
+  },
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "root_is_unique_phone_dispatcher": true,
+  "schema": "hepta.fc33.e2e.source-review-handoff.v1",
+  "source_constructor": {
+    "bytes": 15724,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/bind_e2e_sources_UNBOUND.py",
+    "sha256": "da654904764e807e8422e14021db253ae515a08381f49c3520769c8ab400f3a9"
+  },
+  "source_controls": {
+    "bytes": 4950,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/SOURCE-CONTROLS.json",
+    "sha256": "553c446287abd2b1d4617f8f306bdd24b9cc713d522884e41de529b4ed093005"
+  },
+  "source_patch": {
+    "bytes": 3661,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/candidate01/SOURCE.patch",
+    "sha256": "2c73189fd4b4e69132c2db715bf279a1ab05a1bf5029abce49c2222ad0cf9d6d"
+  },
+  "state": "SOURCE_CANDIDATES_AND_EXECUTION_TEMPLATES_COMPLETE_ACTUAL_RELEASE_UNBOUND",
+  "templates": {
+    "bytes": 2653,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/execution-templates01/MANIFEST.json",
+    "sha256": "9d77a96ecdf959767de1117d6cc37106c2f0a55afa4701a7f4aeb1d7b8c54def"
+  }
+}

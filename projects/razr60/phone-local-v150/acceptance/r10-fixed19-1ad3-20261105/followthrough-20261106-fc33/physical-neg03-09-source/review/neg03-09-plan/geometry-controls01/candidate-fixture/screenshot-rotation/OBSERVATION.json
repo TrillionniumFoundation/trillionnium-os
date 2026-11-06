@@ -1,0 +1,18 @@
+{
+  "current_valid_latest": false,
+  "input_dispatches": 0,
+  "mutation_path": "/screenshot/rotation",
+  "name": "screenshot-rotation",
+  "new_tap_mapping": false,
+  "original_parser_rejection": {
+    "message": "screenshot metadata does not match the selected phone call",
+    "rejected": true,
+    "type": "ProviderError"
+  },
+  "physical_qualified": false,
+  "subsequent_original_tap_rejection": {
+    "message": "phone.tap requires the current completion's latest valid screenshot",
+    "rejected": true,
+    "type": "ProviderError"
+  }
+}

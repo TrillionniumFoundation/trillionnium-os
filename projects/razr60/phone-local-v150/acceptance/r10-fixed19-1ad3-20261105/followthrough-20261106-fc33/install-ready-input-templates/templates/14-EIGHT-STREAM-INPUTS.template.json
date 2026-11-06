@@ -1,0 +1,25 @@
+{
+  "child_bindings": {
+    "model": null,
+    "provider": null,
+    "sidecar": null
+  },
+  "module_originals": {
+    "binding": null,
+    "helper": null,
+    "manifest": null,
+    "service": null
+  },
+  "ready": {
+    "original": null,
+    "source": null
+  },
+  "release_inputs": null,
+  "role_identity_originals": {
+    "model": null,
+    "provider": null,
+    "sidecar": null,
+    "supervisor": null
+  },
+  "schema": "hepta.resident-owner.eight-stream-original-inputs.v1"
+}

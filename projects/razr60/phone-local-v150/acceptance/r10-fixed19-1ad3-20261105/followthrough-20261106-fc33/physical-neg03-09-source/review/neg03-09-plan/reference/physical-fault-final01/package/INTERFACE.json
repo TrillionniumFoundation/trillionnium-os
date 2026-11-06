@@ -1,0 +1,76 @@
+{
+  "cases": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07"
+  ],
+  "effect_entry": "Use PREPARE-RESULT.execute_argv exactly once; only run_physical_fault_once.py --execute-once starts effects.",
+  "existing_preparation": {
+    "KINDS_or_positive_closer_modified": false,
+    "allowed_app": "视觉挑战",
+    "material_kind": "visual",
+    "materializer_sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290",
+    "registration": "Use its exact REGISTRATION-ARGV.json with the existing sealed b0f0 helper once; retain actual template readback."
+  },
+  "final_audit_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "<frozen>/source/verify_fault_once.py",
+    "--source-manifest-sha256",
+    "<frozen-sha256>",
+    "--plan",
+    "<actual-out>/ROOT-PLAN.original.json",
+    "--plan-sha256",
+    "<actual-plan-sha256>",
+    "--execution",
+    "<actual-out>/EXECUTION.original.json",
+    "--execution-sha256",
+    "<actual-execution-sha256>",
+    "--out",
+    "<actual-out>/closure",
+    "--audit-final-originals-only"
+  ],
+  "final_dependencies_frozen": false,
+  "freeze_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "<candidate>/source/freeze_physical_fault.py",
+    "--source-manifest-sha256",
+    "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654",
+    "--inputs",
+    "<actual-freeze-input.json>",
+    "--inputs-sha256",
+    "<exact-input-sha256>",
+    "--freeze-source-only"
+  ],
+  "phone_operations": 0,
+  "physical_cases_passed": 0,
+  "prepare_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "<frozen>/source/prepare_physical_fault.py",
+    "--source-manifest-sha256",
+    "<returned-frozen-manifest-sha256>",
+    "--inputs",
+    "<actual-prepared-material-input.json>",
+    "--inputs-sha256",
+    "<exact-input-sha256>",
+    "--prepare-host-only"
+  ],
+  "qualification": {
+    "Root_requires_actual_join_and_dual_EOF": true,
+    "host_isolated_inferred": false,
+    "pending_closure_physical_case_pass": false,
+    "whole_case_pass": false
+  },
+  "schema": "hepta.physical-fault.root-source-interface.v1",
+  "source_manifest": {
+    "bytes": 8432,
+    "path": "/workspace/scratch/1ad3d6f55439/physical_fault_candidate01/SOURCE-MANIFEST.json",
+    "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+  },
+  "state": "SOURCE_CANDIDATE_UNFROZEN_NO_CASE_EXECUTED"
+}

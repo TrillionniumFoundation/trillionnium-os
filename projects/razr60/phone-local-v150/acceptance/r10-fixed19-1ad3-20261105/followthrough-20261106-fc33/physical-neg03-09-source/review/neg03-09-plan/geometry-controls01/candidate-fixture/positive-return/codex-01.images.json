@@ -1,0 +1,12 @@
+{
+  "direct_host_tools_enabled": false,
+  "images": [],
+  "old_images_attached": false,
+  "turn": {
+    "profile_id": "synthetic-profile_id-165c8bb85a91366c6cd25fefdb386673",
+    "session_id": "synthetic-session_id-165c8bb85a91366c6cd25fefdb386673",
+    "task_id": "synthetic-task_id-165c8bb85a91366c6cd25fefdb386673",
+    "turn_id": "synthetic-turn_id-165c8bb85a91366c6cd25fefdb386673",
+    "turn_stream_id": "synthetic-turn_stream_id-165c8bb85a91366c6cd25fefdb386673"
+  }
+}

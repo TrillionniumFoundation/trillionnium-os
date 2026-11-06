@@ -1,0 +1,52 @@
+--- reference/component-physical-final02/package/source/physical_component_common.py
++++ candidate/templates/physical-component/physical_component_common.py
+@@ -23,7 +23,7 @@
+ DIRECT_SHA='915f57d98934f216179806beefc213986df83e255e402c6d8a8f34fea6d123f0'
+ CONTEXT_SHA='2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d'
+ ACTIVE_SHA='f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd'
+-FIXTURE_SHA='3cbc0d9d77629c2183f706fc897075a16952e4cb586f16fef29a65e521c81487'
++FIXTURE_SHA='5ae3f51d89d8e1d36be07846b34b09f652fdf39db0db0eee98ed0f194c720a2d'
+ META=('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ MAX_ORIGINAL=64*1024*1024
+ MAX_PNG=16*1024*1024
+@@ -174,7 +174,14 @@
+                         need(ok,'frozen dependency path must remain a static Path expression')
+                     else:
+                         value=ast.literal_eval(node.value)
+-                        need(isinstance(value,(str,tuple)),'frozen dependency must remain a literal')
++                        if name=='SOURCE_PINS':
++                            need(type(value)is dict and set(value)=={'provider_openai_compatible.py',
++                                'phone_task_guards.py','phone_observation_tools.py','phone_local_tools.py'}
++                                and all(type(v)is tuple and len(v)==2 and type(v[0])is int and 0<v[0]<=1048576
++                                    and type(v[1])is str and re.fullmatch('[0-9a-f]{64}',v[1]) for v in value.values()),
++                                'exact four geometry source byte pins required')
++                        else:
++                            need(isinstance(value,(str,tuple)),'frozen dependency must remain a literal')
+                 node.value=ast.Constant(value=None)
+                 names.append(name)
+         need(set(names)==set(allowed) and len(names)==len(allowed),'exact selected dependency assignments required')
+@@ -204,7 +211,7 @@
+     _,oldactive=originals.known(own_root/'reference/active_runtime_r10.original.py',65536)
+     need(sha(oldcontext)==CONTEXT_SHA and sha(oldactive)==ACTIVE_SHA,'reviewed source references differ')
+     verify_literal_increment(files['source/component_source_context.py'],oldcontext,
+-        {'MATERIALIZER','CONSUMER','CONSUMER_PIN','READINESS_PIN','RUNTIME_SHA','POLICY_SHA','ADOPTION_SHA'},
++        {'MATERIALIZER','CONSUMER','CONSUMER_PIN','READINESS_PIN','RUNTIME_SHA','POLICY_SHA','ADOPTION_SHA','SOURCE_PINS'},
+         {'MATERIALIZER','CONSUMER'})
+     direct_path=Path(plan['component_package']['path']).parent/'source/prepare_direct_return_component.py'
+     D=module(files['source/prepare_direct_return_component.py'],direct_path,'original_direct_return_entry')
+@@ -215,12 +222,13 @@
+         'actual newly adopted and sealed R8 generation required')
+     amf,afiles=load_members(originals,plan['active_package'])
+     active_raw=afiles['source/active_runtime_r10.py']
+-    verify_literal_increment(active_raw,oldactive,{'CONSUMER_SHA','READINESS_SHA','POLICY_SHA','ADOPTION_SHA'})
++    verify_literal_increment(active_raw,oldactive,{'CONSUMER_SHA','READINESS_SHA','POLICY_SHA','ADOPTION_SHA','CONFIG_SHA','SERVICE_SHA'})
+     active=module(active_raw,Path(plan['active_package']['path']).parent/'source/active_runtime_r10.py',
+         'physical_case_active_runtime')
+     need(active.CONSUMER_SHA==pins['boundary_consumer_sha256']
+         and active.READINESS_SHA==pins['readiness_source_sha256']
+-        and active.POLICY_SHA==pins['policy_sha256'] and active.ADOPTION_SHA==pins['policy_adoption_inputs_sha256'],
++        and active.POLICY_SHA==pins['policy_sha256'] and active.ADOPTION_SHA==pins['policy_adoption_inputs_sha256']
++        and active.CONFIG_SHA==pins['configuration_sha256'] and active.SERVICE_SHA==pins['service_inputs_sha256'],
+         'component and active runtime dependency generations differ')
+     pp=strict(afiles['source/production-pins.json'])
+     need(pp=={name:sha(raw) for name,raw in release['source'].items()},'active complete production15 differs')

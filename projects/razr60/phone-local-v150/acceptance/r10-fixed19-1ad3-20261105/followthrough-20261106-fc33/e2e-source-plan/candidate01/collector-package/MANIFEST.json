@@ -1,0 +1,85 @@
+{
+  "automatic_retry": false,
+  "current_business_qualification": false,
+  "current_collector_executions": 0,
+  "current_shared_materials": {
+    "bytes": 3519,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-20261106-fc33-shared-material-v3-01/shared/SHARED-MATERIALS.json",
+    "sha256": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1"
+  },
+  "current_source_combination": {
+    "bytes": 4695,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-20261106-fc33-shared-material-v3-01/COMBINATION.json",
+    "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+  },
+  "files": [
+    {
+      "bytes": 10207,
+      "path": "collector/business_fact_recheck.py",
+      "sha256": "15ff4d7bf0815bdd53fa7234c95e20f50f460052770c5069f9a59d0ecc24559d"
+    },
+    {
+      "bytes": 56572,
+      "path": "collector/collect_business_evidence.py",
+      "sha256": "b2774a4669a60d576fe3f19ea00fdec7119b5e5d36a6b591853bc686dbb5de3f"
+    },
+    {
+      "bytes": 4318,
+      "path": "collector/health_context_audit.py",
+      "sha256": "25b483fb2af25b3578f58c9d14b6f093325445879ae2fa8e2fdfc52690209765"
+    },
+    {
+      "bytes": 15483,
+      "path": "collector/history_context_audit.py",
+      "sha256": "2a43e62ad5409c978f1caccb7df512adfdf5200d224e9d092532b7613e9844ef"
+    },
+    {
+      "bytes": 29100,
+      "path": "collector/ledger_prefix_audit.py",
+      "sha256": "022b9321d19563d2405051f796dfebe517045333627babe34aeeb810754647f4"
+    },
+    {
+      "bytes": 14929,
+      "path": "collector/mobile_use_evidence.py",
+      "sha256": "7511ad1607522015f4be1a68c43194ac2c818ede5324d5494d8a7116ffabd867"
+    },
+    {
+      "bytes": 6701,
+      "path": "collector/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    }
+  ],
+  "fixed19_credit": 0,
+  "historical_pass_inherited": false,
+  "historical_suites_rerun": false,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "parent_manifest": {
+    "bytes": 19271,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/references/acceptance-tools-v150-r10-v3-shared-a1055-r2/MANIFEST.json",
+    "sha256": "b8513e925526059be82f3063af0add9dd7a1d2824c7ca9fa783173f5e9c7220b"
+  },
+  "phone_calls": 0,
+  "physical_qualification": false,
+  "projection_fragments_sha256_unchanged": "b86a027b0fcb6aea55b845c42c7b3af916eebeee20148eb8d49485f08d86127b",
+  "reviewed_production_source_pins": {
+    "action_ledger.py": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+    "daily_phone_local.py": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8",
+    "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "ledger_round_evidence.py": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+    "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+    "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+    "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "phone_local_tools.py": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930",
+    "phone_observation_tools.py": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086",
+    "phone_task_guards.py": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+    "provider_codex_host.py": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa",
+    "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+    "provider_phone_local.py": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee",
+    "retirement_recovery.py": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+    "task_postconditions.py": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+  },
+  "schema": "hepta.r10.acceptance-tools.v1",
+  "source_change": "Exactly five SHA256 literals in mobile_use_evidence; six other collectors byte-identical.",
+  "state": "SOURCE_REBOUND_UNQUALIFIED_NO_ACTUAL_CASE"
+}

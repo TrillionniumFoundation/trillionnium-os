@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "bytes": 5652,
+    "path": null,
+    "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+  },
+  "actor_cwd": "/home/alex/razr60-local-model-v150",
+  "actor_python": "/usr/bin/python3",
+  "archive": null,
+  "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "installer": null,
+  "phases": {
+    "ready": {
+      "idempotency_key": null,
+      "label": null,
+      "request_path": null,
+      "timeout_seconds": null
+    },
+    "stage": {
+      "idempotency_key": null,
+      "label": null,
+      "request_path": null,
+      "timeout_seconds": null
+    },
+    "start": {
+      "idempotency_key": null,
+      "label": null,
+      "request_path": null,
+      "timeout_seconds": null
+    }
+  },
+  "release_id": "v150-r10-r1",
+  "release_inputs_sha256": null,
+  "schema": "hepta.production.install-start-ready.execution-plan.v1"
+}

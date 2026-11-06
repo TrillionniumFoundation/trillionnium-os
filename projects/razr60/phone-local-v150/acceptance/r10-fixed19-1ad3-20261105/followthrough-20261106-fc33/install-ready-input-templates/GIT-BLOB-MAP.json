@@ -1,0 +1,335 @@
+{
+  "schema": "hepta.fc33.git-blob-handoff.v1",
+  "state": "IMMUTABLE_BLOBS_ONLY_SOURCE_PREPARATION_NO_MAC_PUBLICATION",
+  "prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/",
+  "file_count": 40,
+  "total_bytes": 392309,
+  "phone_calls": 0,
+  "new_control_scenarios": 0,
+  "actual_BUILD": null,
+  "actual_install": null,
+  "actual_READY": null,
+  "source_candidate_on_hold": false,
+  "files": [
+    {
+      "relative_path": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/derived-shapes/STAGE-SCOPE.output-shape.json",
+      "blob_sha": "277294f3ff3a7bf0fb1d16c52a27314b6b30fc5e",
+      "bytes": 604,
+      "sha256": "9223f555f529141177055aa31be7f1819f338622b46005d748aa520d6383a763",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "derived-shapes/START-SCOPE.output-shape.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/derived-shapes/START-SCOPE.output-shape.json",
+      "blob_sha": "e993f9dcadcf4836fc93d9237e62c19f4fedb7b4",
+      "bytes": 604,
+      "sha256": "25ec9c4627f9670d26216c6ef125c9bf570a6af59a583e15835a44b00ba2d6b3",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "DESCRIPTOR-SHAPES.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/DESCRIPTOR-SHAPES.json",
+      "blob_sha": "18ef2472e8042ff1b3631d3f82bd8c51c8ba0810",
+      "bytes": 604,
+      "sha256": "b06e397b75a898e27d5a105e42c2207220315b2029b90c89c73b72b3082eebfd",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "EXECUTION-RECIPES.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/EXECUTION-RECIPES.md",
+      "blob_sha": "2c75b24592c80a20da5dfd6eac871794934889f9",
+      "bytes": 9616,
+      "sha256": "42d3148e574b144a523043ef9259c4d6524d75568732cfab5dd816c29ef8636d",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "KNOWN-SOURCE-REFERENCES.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/KNOWN-SOURCE-REFERENCES.json",
+      "blob_sha": "2bc62a03cacfee4bde17a66ccfba22163587782b",
+      "bytes": 7967,
+      "sha256": "55ea11568e0ab35f90cf997c92038ff0d9da02b42841521cbc9a991622aac212",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "make_input_templates.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/make_input_templates.py",
+      "blob_sha": "50eef840cb9190bb6a3da241f2cac620b7d4fbcd",
+      "bytes": 15658,
+      "sha256": "55af6018df1a69a2555acb60e567033a5c19a3b425a5ab87a6039807ea70e0f4",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "PACKAGE-MANIFEST.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/PACKAGE-MANIFEST.json",
+      "blob_sha": "7524a2749d1bc0dc98c10ebd947927ba6b8d1dfb",
+      "bytes": 7049,
+      "sha256": "8f5e8f32a5454cd1a78eb5f891b3111919661aa9c1f2146185e84498d5a92cb1",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "PREPARATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/PREPARATION.json",
+      "blob_sha": "0dc040b772cd256f06d8941dba2c3b59214c3f0d",
+      "bytes": 4689,
+      "sha256": "f8cfbd656e00b53902036b411f283f61f10de24640fc8fede87eade3ea05f9b6",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "README.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/README.md",
+      "blob_sha": "0706b38db474ddf715433ebe5d60807d901f5ef8",
+      "bytes": 7131,
+      "sha256": "afc39143407f606b7c03479a15a663ac2c1865169a707aba97c04e9782493e1f",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "references/builder.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/builder.original.py",
+      "blob_sha": "6031d8735548237234025187eda867ef58536060",
+      "bytes": 61822,
+      "sha256": "991465020b2012372d677cc4c7cf9fc02c668a406a0af0fc6fc08514d3f0073e",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/exact8.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/exact8.original.py",
+      "blob_sha": "c168f04809f90b3ffa1da74293567f715f1f3ad3",
+      "bytes": 29027,
+      "sha256": "24db28bee38671322b11ce4c2afd5dd47425381101dd85f887141f567811b490",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/install_reader.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/install_reader.original.py",
+      "blob_sha": "eb966faf3b8d0fdc1c7c74ecb5ec24dc1b1c62ed",
+      "bytes": 35031,
+      "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/installer.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/installer.original.py",
+      "blob_sha": "208f21e089e9cf132336d21cdca3f5be1aff432b",
+      "bytes": 34100,
+      "sha256": "714a2916680e2313bfcee5a4319d6484b3c6ea5539854818c1134ad84ea02446",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/material_producer.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/material_producer.original.py",
+      "blob_sha": "98800d0d8741d818e02744b2c44166dda68359cf",
+      "bytes": 16399,
+      "sha256": "842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "references/MATERIAL-SOURCE-INPUTS.original.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/MATERIAL-SOURCE-INPUTS.original.json",
+      "blob_sha": "23cede520d68ef0396f24607057f1af1b0d47a4c",
+      "bytes": 2730,
+      "sha256": "f02822b6ae8393738e563f61b73a646ddf0ccdf799d94e662fb5a88a43f16bcc",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "references/protocol.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/protocol.original.py",
+      "blob_sha": "a6ac2f8e1e986a44d402275f34385feede72a2ae",
+      "bytes": 12782,
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/readiness.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/readiness.original.py",
+      "blob_sha": "dabc5b756be2639b17588f1d3d2843dc7bc41d3c",
+      "bytes": 16407,
+      "sha256": "2b4ff90f7078af2481feb8a2d33c39d1a0e260102cd769a4ee3b46d9bec47e11",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/release_reader.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/release_reader.original.py",
+      "blob_sha": "c55ad693167f037a6b54bf6eeee77e040addda78",
+      "bytes": 28483,
+      "sha256": "e947a3b2de75a0820fcc3cb5cfe758f874cd85625cb11bac793b38256a670c43",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/retention_protocol.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/retention_protocol.original.py",
+      "blob_sha": "033e821c9ef81e6f7f9b7420e1a6145257f23518",
+      "bytes": 20851,
+      "sha256": "280df226c4bde2294bfaefec93da40fcbc0c685e7c20a2359444e856fbd0bb7a",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "references/retention.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/references/retention.original.py",
+      "blob_sha": "4b35ebd789376fbe4f0828f11d9a80449a64460f",
+      "bytes": 22066,
+      "sha256": "a95977c049b1d1a079014480cd37b9a52414bc60c2f584c4a36e21f5f8791144",
+      "reused_existing_blob": true
+    },
+    {
+      "relative_path": "SOURCE-CHAIN-RETURN-CONTRACT.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/SOURCE-CHAIN-RETURN-CONTRACT.json",
+      "blob_sha": "1014fcca9a48f8566d81175f4d7b39b0bc4ac48a",
+      "bytes": 1677,
+      "sha256": "67e736b3f2f4b29538663bd4039a4fbfd6b509f8338e869650773c6d12e09d0e",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "blob_sha": "ae13e788396828a14bf3b8e721ac986632c5fd27",
+      "bytes": 1234,
+      "sha256": "ed6803432a5f6d8f46541bb0076f97a2fd7442cdfe75541e449dfd4151f9ccaa",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/01-SOURCE-CHAIN-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/01-SOURCE-CHAIN-INPUTS.template.json",
+      "blob_sha": "de7d683309267a7fc34e8c30c1c8a172d75858c7",
+      "bytes": 2759,
+      "sha256": "ee9de98194e74f603a309c77951dfb6546770d597a07d66713b8c66714c696d2",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/02-CONSUMER-BINDING.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/02-CONSUMER-BINDING.template.json",
+      "blob_sha": "8161d30d8ebf335c3904d7190ca4f1cb8e0837c2",
+      "bytes": 676,
+      "sha256": "c23666467e2c127d502a300dabb9ee784b86b0bde89fdd6224158f9128657abb",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "blob_sha": "282945ca004b6e4581d8a619013433cb03d0651b",
+      "bytes": 1009,
+      "sha256": "448262db9d14f8f82ff107a348577734053b69614836b65e18c142094bffa6db",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/04-RETIREMENT-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/04-RETIREMENT-INPUTS.template.json",
+      "blob_sha": "3d227a32b12fd6fbb6f514d99265d56512a66407",
+      "bytes": 141,
+      "sha256": "9d42e70fa1d1d3d3bd62757260ef9bad1dc237e12253887da6b7679d800d456a",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/05-BUILD-PROCESS-START.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/05-BUILD-PROCESS-START.template.json",
+      "blob_sha": "57ab3f42b7fc64eb654817cf1cfaad392ec3dedf",
+      "bytes": 589,
+      "sha256": "53861c9066f791f2c9b06dce1bfc018f40e8a42155a8a953fced58a35c31c33f",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "blob_sha": "a61479d470365afb43b8859183c4f64910042989",
+      "bytes": 8651,
+      "sha256": "f7e46c9aaa3ec288fb1f456b5a488b537eefaf5df9e498960b1e65be5050c5c7",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/07-EXECUTION-PLAN.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/07-EXECUTION-PLAN.template.json",
+      "blob_sha": "4058336666b9ad24e9e8acccdd975ab9ef7b1b64",
+      "bytes": 871,
+      "sha256": "84e6d3d1ff4b188343b6bf07dd5019c3b419da42e22e17d16f56c6d84cf8514d",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/08-PHASE-ORIGINALS.fragment.json",
+      "blob_sha": "2756ed469b4bcb21d15ef96562e19de4a27d8a2f",
+      "bytes": 285,
+      "sha256": "2eb45f64f6664f2fc2c2062f533d4045ce4e7fda649f8f2607c41ab37528a5a0",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "blob_sha": "e8b177c2ffc02f4a05b05d97cef73a9e3e96217a",
+      "bytes": 550,
+      "sha256": "7fbf0422d9085e7b70505fb754c6374e6fb8236dd25b02bca155ec1d3a06900a",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/10-START-PHASE-AUTHORITY.template.json",
+      "blob_sha": "b1447ce08355356dec15d63d66c1dbc12313d5a1",
+      "bytes": 909,
+      "sha256": "084357b83ffea2cf6601ede8a649ce3c286620c365beda17ec8c7c16c07f1752",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/11-CAPTURE-OPERATION.fragment.json",
+      "blob_sha": "0b366e7139be0bc8dfe2918338594f7cd379e7d4",
+      "bytes": 428,
+      "sha256": "aa7ae35b576d7699e853caab1a3ba52f26de88a3ece80cea746f9d81ce88fd4f",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/12-STAGE-RETENTION-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/12-STAGE-RETENTION-INPUTS.template.json",
+      "blob_sha": "19876bd04228bc509eabd5adbc809a4f8afb03d3",
+      "bytes": 160,
+      "sha256": "9538d52add27feff8ec153c52c8b2a0622d861874f8d534ae1ec9ba4766b59ba",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/13-START-RETENTION-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/13-START-RETENTION-INPUTS.template.json",
+      "blob_sha": "19876bd04228bc509eabd5adbc809a4f8afb03d3",
+      "bytes": 160,
+      "sha256": "9538d52add27feff8ec153c52c8b2a0622d861874f8d534ae1ec9ba4766b59ba",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "blob_sha": "a605f50474ce259573d86e33da163500f2a9319a",
+      "bytes": 477,
+      "sha256": "28b06d930f9d7c202f51747a4b24e17bc710c8b40d33d69f101fabfeb212a7ad",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "blob_sha": "5b6009179bdf5b486e6cc4acd1202095841a8446",
+      "bytes": 2328,
+      "sha256": "64d709f381fa02b3bebc21e5ff9cfba38e529b596594a274be73ab739bcd503f",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/16-ORIGINAL-MAP.fragment.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/16-ORIGINAL-MAP.fragment.json",
+      "blob_sha": "e5f20b8450e71fc20551e4ce3cff4860ae51882d",
+      "bytes": 143,
+      "sha256": "885e2da4b5b8d9e1d360d8329e635fc3f6874657457c1f5574a6b0349bcd2c60",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "blob_sha": "4daeaa73bd85e527f0acea9313b65b16afc5319e",
+      "bytes": 172,
+      "sha256": "120d0292138f2306e905333693ca70776f303d640f9b09d22df2e517bb3c5966",
+      "reused_existing_blob": false
+    },
+    {
+      "relative_path": "UNBOUND-SLOTS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/install-ready-input-templates/UNBOUND-SLOTS.json",
+      "blob_sha": "a4cd40f6de95b429b5e89c4761139d99a03660ad",
+      "bytes": 35470,
+      "sha256": "a6780e2b057f5dbbc51cbc61680ba57622d9acf41cf2b193223eaadfad09cfb8",
+      "reused_existing_blob": false
+    }
+  ]
+}

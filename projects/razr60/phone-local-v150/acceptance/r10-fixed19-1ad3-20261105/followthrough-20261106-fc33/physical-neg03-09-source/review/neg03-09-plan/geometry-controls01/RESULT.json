@@ -1,0 +1,533 @@
+{
+  "actual_BUILD_or_READY_supplied": false,
+  "actual_entry_admission_unchanged": true,
+  "after": {
+    "child_cpu": [
+      0.0029749999999999998,
+      0.0
+    ],
+    "fd_count": 4,
+    "thread_ids": [
+      139924086851392
+    ]
+  },
+  "before": {
+    "child_cpu": [
+      0.0029749999999999998,
+      0.0
+    ],
+    "fd_count": 4,
+    "thread_ids": [
+      139924086851392
+    ]
+  },
+  "check_count": 70,
+  "checks": [
+    {
+      "name": "production geometry and budgets unchanged",
+      "passed": true
+    },
+    {
+      "name": "positive-screenshot-and-tap explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "positive-base mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "positive original-shaped qualified screenshot passes",
+      "passed": true
+    },
+    {
+      "name": "positive-tap mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "qualified baseline tap only maps display0 and does not execute",
+      "passed": true
+    },
+    {
+      "name": "positive-return explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "positive-return mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "qualified return launch focus keyguard and viewport pass",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display-base mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display original-shaped qualified screenshot passes",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display-negative mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display only its declared geometry field differs",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display rejected result has no current valid latest or admitted fact",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display subsequent tap original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "screenshot-display rejected tap creates no wire or atomic record",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation-base mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation original-shaped qualified screenshot passes",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation-negative mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation only its declared geometry field differs",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation rejected result has no current valid latest or admitted fact",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation subsequent tap original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "screenshot-rotation rejected tap creates no wire or atomic record",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry-base mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry original-shaped qualified screenshot passes",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry-negative mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry only its declared geometry field differs",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry rejected result has no current valid latest or admitted fact",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry subsequent tap original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "screenshot-geometry rejected tap creates no wire or atomic record",
+      "passed": true
+    },
+    {
+      "name": "return-display explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "return-display-base mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "return-display original-shaped qualified screenshot passes",
+      "passed": true
+    },
+    {
+      "name": "return-display-negative mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "return-display exactly one viewport substitution",
+      "passed": true
+    },
+    {
+      "name": "return-display launch and focus remain valid before viewport gate",
+      "passed": true
+    },
+    {
+      "name": "return-display only its declared geometry field differs",
+      "passed": true
+    },
+    {
+      "name": "return-display original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "return-display rejected result has no current valid latest or admitted fact",
+      "passed": true
+    },
+    {
+      "name": "return-display subsequent tap original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "return-display rejected tap creates no wire or atomic record",
+      "passed": true
+    },
+    {
+      "name": "return-rotation explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "return-rotation-base mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "return-rotation original-shaped qualified screenshot passes",
+      "passed": true
+    },
+    {
+      "name": "return-rotation-negative mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "return-rotation exactly one viewport substitution",
+      "passed": true
+    },
+    {
+      "name": "return-rotation launch and focus remain valid before viewport gate",
+      "passed": true
+    },
+    {
+      "name": "return-rotation only its declared geometry field differs",
+      "passed": true
+    },
+    {
+      "name": "return-rotation original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "return-rotation rejected result has no current valid latest or admitted fact",
+      "passed": true
+    },
+    {
+      "name": "return-rotation subsequent tap original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "return-rotation rejected tap creates no wire or atomic record",
+      "passed": true
+    },
+    {
+      "name": "return-geometry explicitly synthetic native scope with no actual task",
+      "passed": true
+    },
+    {
+      "name": "return-geometry-base mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "return-geometry original-shaped qualified screenshot passes",
+      "passed": true
+    },
+    {
+      "name": "return-geometry-negative mapper retained its exact wire",
+      "passed": true
+    },
+    {
+      "name": "return-geometry exactly one viewport substitution",
+      "passed": true
+    },
+    {
+      "name": "return-geometry launch and focus remain valid before viewport gate",
+      "passed": true
+    },
+    {
+      "name": "return-geometry only its declared geometry field differs",
+      "passed": true
+    },
+    {
+      "name": "return-geometry original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "return-geometry rejected result has no current valid latest or admitted fact",
+      "passed": true
+    },
+    {
+      "name": "return-geometry subsequent tap original rejection reason",
+      "passed": true
+    },
+    {
+      "name": "return-geometry rejected tap creates no wire or atomic record",
+      "passed": true
+    },
+    {
+      "name": "all six independent single-field negative cases observed",
+      "passed": true
+    }
+  ],
+  "direct_return_helper_unchanged": true,
+  "dispatches": 0,
+  "formal_COMP01_qualification": false,
+  "formal_NEG03_qualification": false,
+  "full_production_consumers_called": [
+    "PhoneTools.map",
+    "PhoneTools.prepare",
+    "native_streams",
+    "validate_viewport",
+    "phone_task_guards.verify_return"
+  ],
+  "geometry_axes": [
+    {
+      "current_valid_latest": false,
+      "input_dispatches": 0,
+      "mutation_path": "/screenshot/logical_display_id",
+      "name": "screenshot-display",
+      "new_tap_mapping": false,
+      "original_parser_rejection": {
+        "message": "screenshot metadata does not match the selected phone call",
+        "rejected": true,
+        "type": "ProviderError"
+      },
+      "physical_qualified": false,
+      "subsequent_original_tap_rejection": {
+        "message": "phone.tap requires the current completion's latest valid screenshot",
+        "rejected": true,
+        "type": "ProviderError"
+      }
+    },
+    {
+      "current_valid_latest": false,
+      "input_dispatches": 0,
+      "mutation_path": "/screenshot/rotation",
+      "name": "screenshot-rotation",
+      "new_tap_mapping": false,
+      "original_parser_rejection": {
+        "message": "screenshot metadata does not match the selected phone call",
+        "rejected": true,
+        "type": "ProviderError"
+      },
+      "physical_qualified": false,
+      "subsequent_original_tap_rejection": {
+        "message": "phone.tap requires the current completion's latest valid screenshot",
+        "rejected": true,
+        "type": "ProviderError"
+      }
+    },
+    {
+      "current_valid_latest": false,
+      "input_dispatches": 0,
+      "mutation_path": "/screenshot/original_width",
+      "name": "screenshot-geometry",
+      "new_tap_mapping": false,
+      "original_parser_rejection": {
+        "message": "screenshot codec fields differ",
+        "rejected": true,
+        "type": "ProviderError"
+      },
+      "physical_qualified": false,
+      "subsequent_original_tap_rejection": {
+        "message": "phone.tap requires the current completion's latest valid screenshot",
+        "rejected": true,
+        "type": "ProviderError"
+      }
+    },
+    {
+      "current_valid_latest": false,
+      "input_dispatches": 0,
+      "mutation_path": "/viewport_b64",
+      "name": "return-display",
+      "new_tap_mapping": false,
+      "original_parser_rejection": {
+        "message": "screenshot display or rotation is not qualified",
+        "rejected": true,
+        "type": "ProviderError"
+      },
+      "physical_qualified": false,
+      "subsequent_original_tap_rejection": {
+        "message": "phone.tap requires the current completion's latest valid screenshot",
+        "rejected": true,
+        "type": "ProviderError"
+      }
+    },
+    {
+      "current_valid_latest": false,
+      "input_dispatches": 0,
+      "mutation_path": "/viewport_b64",
+      "name": "return-rotation",
+      "new_tap_mapping": false,
+      "original_parser_rejection": {
+        "message": "screenshot display or rotation is not qualified",
+        "rejected": true,
+        "type": "ProviderError"
+      },
+      "physical_qualified": false,
+      "subsequent_original_tap_rejection": {
+        "message": "phone.tap requires the current completion's latest valid screenshot",
+        "rejected": true,
+        "type": "ProviderError"
+      }
+    },
+    {
+      "current_valid_latest": false,
+      "input_dispatches": 0,
+      "mutation_path": "/viewport_b64",
+      "name": "return-geometry",
+      "new_tap_mapping": false,
+      "original_parser_rejection": {
+        "message": "screenshot display or rotation is not qualified",
+        "rejected": true,
+        "type": "ProviderError"
+      },
+      "physical_qualified": false,
+      "subsequent_original_tap_rejection": {
+        "message": "phone.tap requires the current completion's latest valid screenshot",
+        "rejected": true,
+        "type": "ProviderError"
+      }
+    }
+  ],
+  "input_receipts_and_scope_synthetic": true,
+  "model_calls": 0,
+  "original_scope_failure": {
+    "expected_failure": true,
+    "message": "phone native binding lacks the accepted turn scope",
+    "type": "ProviderError"
+  },
+  "phone_calls": 0,
+  "physical_test": false,
+  "production_source_count": 15,
+  "production_source_pins": [
+    {
+      "bytes": 15587,
+      "git_blob_sha1": "9779079985636df58686330571222ce582f69944",
+      "path": "candidate/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "git_blob_sha1": "59e2c8594b88a58793d7ba3c6761bd5d277df725",
+      "path": "candidate/source/daily_phone_local.py",
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8"
+    },
+    {
+      "bytes": 11439,
+      "git_blob_sha1": "556bbf50b9849e0fbe1ea507ad35cc98b6f58945",
+      "path": "candidate/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "git_blob_sha1": "b98fa2e0e04dca525ad5442cccbc7acb5ec91efc",
+      "path": "candidate/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "git_blob_sha1": "fbe2e8832dcc2a3958e9dc790a1ecf394023eb37",
+      "path": "candidate/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "git_blob_sha1": "339f98ec195a62d4dfd4538c1cb8ff634596a0d0",
+      "path": "candidate/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "git_blob_sha1": "34b67ebbc6338e66f0c43ae19059ab0ffda7aba2",
+      "path": "candidate/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13927,
+      "git_blob_sha1": "03800a9aab65d102477cbb6f6c7d8867fe0a16ef",
+      "path": "candidate/source/phone_local_tools.py",
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930"
+    },
+    {
+      "bytes": 55981,
+      "git_blob_sha1": "598544ec9460977b374744d053c5a83d490c8f99",
+      "path": "candidate/source/phone_observation_tools.py",
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086"
+    },
+    {
+      "bytes": 22825,
+      "git_blob_sha1": "9cdba9872fd2637c144dc889ba38643300bef568",
+      "path": "candidate/source/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41618,
+      "git_blob_sha1": "6c430b9f14f1cb17e5e6585229ee9fa212f550e5",
+      "path": "candidate/source/provider_codex_host.py",
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa"
+    },
+    {
+      "bytes": 17730,
+      "git_blob_sha1": "d5755ca4129da5c5ed1da9b8771a116be3b3efa5",
+      "path": "candidate/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70303,
+      "git_blob_sha1": "78be7653d6af6784b30871c1e1054e398e29e4ab",
+      "path": "candidate/source/provider_phone_local.py",
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee"
+    },
+    {
+      "bytes": 9802,
+      "git_blob_sha1": "938ad60ef2b1b33103384c6ef50d764d9da8e5e3",
+      "path": "candidate/source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "git_blob_sha1": "1da225de785769d3dd5329ab48b4ad207f3c77c8",
+      "path": "candidate/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "schema": "fc33.geometry-native-v3-host-controls.v1",
+  "sealed_sources_called": false,
+  "status": "PASS"
+}

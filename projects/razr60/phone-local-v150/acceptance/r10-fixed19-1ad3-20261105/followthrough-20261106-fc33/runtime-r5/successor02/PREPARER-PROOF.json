@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.fc33.successor-plan-preparer-review.v1",
+  "state": "SOURCE_PREPARED_UNEXECUTED_PENDING_FOREIGN_RECOVERY",
+  "parent": {
+    "path": "review/prepare_native_bound_components_r5_fc33.py",
+    "bytes": 20681,
+    "sha256": "6746dcf25d31d210580600026a45e575cbb579b02caee24b0ad00a731de38f97"
+  },
+  "candidate": {
+    "path": "review/prepare_native_bound_components_r5_fc33_successor02.py",
+    "bytes": 20772,
+    "sha256": "90edc36bb790641b39e3a81d938237e48506976fcf1bd37c51fdf567416a7c1b"
+  },
+  "changes": [
+    {
+      "before": "LABELS={'NEG-01':'root-r10-neg01-fc33-bound01','NEG-02':'root-r10-neg02-fc33-bound01'}",
+      "after": "LABELS={'NEG-01':'root-r10-neg01-fc33-bound02','NEG-02':'root-r10-neg02-fc33-bound01'}"
+    },
+    {
+      "before": "    nonces.add('660f586740b3d85d68c053f54a21e059')",
+      "after": "    nonces.add('660f586740b3d85d68c053f54a21e059')\n    nonces.update({'e2fdaccd43cec9da1df4d77783db8fdb','9b37081161d7bcbc3adf76d2e6ec7841'})"
+    }
+  ],
+  "complete_byte_inverse": true,
+  "runtime_or_root_source_changed": false,
+  "existing_plan_or_label_modified": false,
+  "new_identity_generated": false,
+  "phone_calls": 0,
+  "preconditions_before_create": [
+    "Actual final05 recovery independently closed and exact current 44-root/16-member admission reestablished",
+    "Original failed fc33 bound01 plan, nonce, controller, and stage evidence retained",
+    "Root reviews exact source and uses one durable fresh invocation; no automatic retry"
+  ],
+  "excluded_consumed_nonce_reasons": {
+    "e2fdaccd43cec9da1df4d77783db8fdb": "Own actual NEG01 bound01 failed before home creation and sender; never reusable",
+    "9b37081161d7bcbc3adf76d2e6ec7841": "Existing foreign NEG02 final05 lifecycle failure; never reusable; no qualification credit"
+  }
+}

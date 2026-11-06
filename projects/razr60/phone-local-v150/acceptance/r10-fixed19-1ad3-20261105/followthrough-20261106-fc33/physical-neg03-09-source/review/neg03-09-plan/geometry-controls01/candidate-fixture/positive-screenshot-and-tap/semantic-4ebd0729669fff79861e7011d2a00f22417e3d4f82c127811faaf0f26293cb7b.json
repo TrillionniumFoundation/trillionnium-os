@@ -1,0 +1,42 @@
+{
+  "call_id": "positive-tap",
+  "capture_id": "c2868193a7bc6f720d03fa3725e25d28",
+  "encoded_xy": [
+    0,
+    0
+  ],
+  "exact_pixel_and_focus_guard": true,
+  "guard_png_path": "/data/local/tmp/hepta-tap-guard-c2868193a7bc6f720d03fa3725e25d28.png",
+  "original_xy": [
+    0,
+    0
+  ],
+  "package": "org.example.hepta.synthetic",
+  "page_state_sha256": "943214ddf94e83688b31e96ae30c8fb3541eed85819daa701ad7e7b595638a77",
+  "semantic_tool": "phone.tap",
+  "source_image_call_id": "positive-base",
+  "source_image_sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521",
+  "source_png_sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13",
+  "state": "model_decision_mapped_not_dispatch_confirmation",
+  "turn": {
+    "profile_id": "synthetic-profile_id-42586549b1af716c58411421f891c52d",
+    "session_id": "synthetic-session_id-42586549b1af716c58411421f891c52d",
+    "task_id": "synthetic-task_id-42586549b1af716c58411421f891c52d",
+    "turn_id": "synthetic-turn_id-42586549b1af716c58411421f891c52d",
+    "turn_stream_id": "synthetic-turn_stream_id-42586549b1af716c58411421f891c52d"
+  },
+  "wire_call": {
+    "argv": [
+      "-s",
+      "ZY22LS7WZT",
+      "shell",
+      "[ \"$(getprop ro.serialno)\" = ZY22LS7WZT ] || exit 64; [ \"$(dumpsys display | grep 'mViewports=')\" = 'DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='\"'\"'local:4630947043778501779'\"'\"', orientation=0, logicalFrame=Rect(0, 0 - 1224, 2992), physicalFrame=Rect(0, 0 - 1224, 2992)}' ] || exit 68; hepta_page_now=$(dumpsys window | grep -E '^[[:space:]]*(Display: mDisplayId=|mTopFocusedDisplayId=|mCurrentFocus=|mFocusedApp=|isKeyguardShowing=)'; dumpsys activity activities | grep -E '^[[:space:]]*topResumedActivity='); [ \"$hepta_page_now\" = 'Display: mDisplayId=0\nmTopFocusedDisplayId=0\nmCurrentFocus=Window{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\nmFocusedApp=ActivityRecord{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\nisKeyguardShowing=false\ntopResumedActivity=ActivityRecord{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\n' ] || exit 70; umask 077; test ! -e /data/local/tmp/hepta-tap-guard-c2868193a7bc6f720d03fa3725e25d28.png && test ! -L /data/local/tmp/hepta-tap-guard-c2868193a7bc6f720d03fa3725e25d28.png || exit 66; trap 'hepta_guard_rc=$?; trap - 0; rm -f -- /data/local/tmp/hepta-tap-guard-c2868193a7bc6f720d03fa3725e25d28.png || exit 69; exit \"$hepta_guard_rc\"' 0; screencap -d 4630947043778501779 -p /data/local/tmp/hepta-tap-guard-c2868193a7bc6f720d03fa3725e25d28.png || exit 67; [ \"$(sha256sum /data/local/tmp/hepta-tap-guard-c2868193a7bc6f720d03fa3725e25d28.png | cut -d ' ' -f 1)\" = 4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13 ] || exit 71; hepta_page_now=$(dumpsys window | grep -E '^[[:space:]]*(Display: mDisplayId=|mTopFocusedDisplayId=|mCurrentFocus=|mFocusedApp=|isKeyguardShowing=)'; dumpsys activity activities | grep -E '^[[:space:]]*topResumedActivity='); [ \"$hepta_page_now\" = 'Display: mDisplayId=0\nmTopFocusedDisplayId=0\nmCurrentFocus=Window{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\nmFocusedApp=ActivityRecord{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\nisKeyguardShowing=false\ntopResumedActivity=ActivityRecord{synthetic u0 org.example.hepta.synthetic/.FixtureActivity}\n' ] || exit 70; [ \"$(dumpsys display | grep 'mViewports=')\" = 'DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='\"'\"'local:4630947043778501779'\"'\"', orientation=0, logicalFrame=Rect(0, 0 - 1224, 2992), physicalFrame=Rect(0, 0 - 1224, 2992)}' ] || exit 68; input -d 0 tap 0 0"
+    ],
+    "binding_fingerprint": "a6015f798e00ccfb2e343dcb1de484f9cbfbfbc77494c98c138f9712baa1bdec",
+    "call_id": "positive-tap",
+    "config_generation": null,
+    "request_sha256": "ef698707b417747b9624288632110d203d0de1dadfd5f800e3003f67beda9232",
+    "tool": "adb.exec"
+  },
+  "wire_tool": "adb.exec"
+}

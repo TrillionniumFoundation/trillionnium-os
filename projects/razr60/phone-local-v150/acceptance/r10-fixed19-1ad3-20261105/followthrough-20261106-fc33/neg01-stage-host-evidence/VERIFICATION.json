@@ -1,0 +1,247 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "business_qualified": false,
+  "cleanup_actions_by_this_agent": 0,
+  "component_qualified": false,
+  "host_tree_directory_count": 15,
+  "host_tree_file_bytes": 10998073,
+  "host_tree_file_count": 115,
+  "label": "root-r10-neg01-fc33-bound01",
+  "last_phase_actor_exit_code": 0,
+  "last_phase_host_exit_code": 0,
+  "last_phase_phone_exit_code": 1,
+  "mac_absent_sender_paths": [
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/sender-preview",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/sender-execute",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/sender-prepared",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-fc33-bound01.actor.py",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-fc33-bound01.local-once.json",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-neg01-fc33-bound01.send-result.json"
+  ],
+  "mac_log_transfer_job": "1a1b1e51bb6-fc05-7b60",
+  "mac_observation_job": "1a1b1e28eff-fc05-7b53",
+  "new_control_scenarios": 0,
+  "nonce": "e2fdaccd43cec9da1df4d77783db8fdb",
+  "original_audit_transport": "Complete closed stdout file read with EOF/full9 and zlib transfer; controller terminal stored count, first 16384 bytes and terminal EOF probe agree. This is not represented as contiguous process_read pagination.",
+  "original_files": [
+    {
+      "bytes": 155350,
+      "path": "evidence/mac-log-transfer-controller.original.json",
+      "sha256": "3a46a6be1ab6381b0f85a0bc221303d0774c8129cc79ca44039a1f60f848b4b9"
+    },
+    {
+      "bytes": 38820,
+      "path": "evidence/mac-log-transfer.stdout.original.json",
+      "sha256": "3ba6d0216e217ff46389ca47fe42e3b589f87f8d1e76bb74200fa610979fb96e"
+    },
+    {
+      "bytes": 66937,
+      "path": "evidence/mac-observation-controller.original.json",
+      "sha256": "7c449c2030d2d360a203bcb30bb67283a3288f3b42aa725c5779811c9b59b520"
+    },
+    {
+      "bytes": 232288,
+      "path": "evidence/mac-observation.stdout.original.json",
+      "sha256": "e583360bba5aa77db798dcfebaf89ae0bfdf3cff223827b226816c50229a0a25"
+    },
+    {
+      "bytes": 32936,
+      "path": "evidence/pocket4-observation-controller.original.json",
+      "sha256": "2d3323f3ea0827d04a3e1c514087afcee90a6416628a399423b00838af9205a5"
+    },
+    {
+      "bytes": 5825,
+      "path": "evidence/pocket4-observation.stdout.original.json",
+      "sha256": "285b2d4679ed01af0c3b0cbdb017d2a201589b88c5abf0cf3e1340acb5582880"
+    },
+    {
+      "bytes": 30979,
+      "path": "evidence/root-parent-observation-controller.original.json",
+      "sha256": "5cf361bcd530ef32b74e0f66221646006b10adc5e277b79f11b9b6c03304ef01"
+    },
+    {
+      "bytes": 13327,
+      "path": "evidence/root-parent-observation-operation.original.json",
+      "sha256": "4f42512522bec9d6985f1d8f204050c7f2bf9657ecd4a4c0f1ae9cf513977cf5"
+    },
+    {
+      "bytes": 31568,
+      "path": "evidence/root-stage-failure.original.json",
+      "sha256": "74ee32a40603f1ebc77036988ad98c5b3982e329668ea598f817e9a3a7ec6da4"
+    }
+  ],
+  "outer_only_sensitive_descriptors": [
+    {
+      "bytes": 6220067,
+      "eof": true,
+      "full9_bookended": true,
+      "metadata": {
+        "st_ctime_ns": 1793984804314047693,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593452391,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793984804314047693,
+        "st_nlink": 1,
+        "st_size": 6220067,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/host-stage-material/stdin.original",
+      "relative_path": "host-stage-material/stdin.original",
+      "sha256": "a0ad3cc0015d1810e1bed98cac9719d44e16d43931c038eb69b98a3abea763a5"
+    },
+    {
+      "bytes": 13777,
+      "eof": true,
+      "full9_bookended": true,
+      "metadata": {
+        "st_ctime_ns": 1793984805851143269,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593452407,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793984805851143269,
+        "st_nlink": 1,
+        "st_size": 13777,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-copy-material/stdin.original",
+      "relative_path": "phone-copy-material/stdin.original",
+      "sha256": "9ca79dad25d4fac533f7a3842d6a1c13c1784470f47085824ba2021326fbc65d"
+    },
+    {
+      "bytes": 13786,
+      "eof": true,
+      "full9_bookended": true,
+      "metadata": {
+        "st_ctime_ns": 1793984807957795994,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593452435,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793984807957795994,
+        "st_nlink": 1,
+        "st_size": 13786,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-copy-stage-source/stdin.original",
+      "relative_path": "phone-copy-stage-source/stdin.original",
+      "sha256": "3766c71e1f61ccbebfb98ad20c5cbff6ae899820a040a6e8a5562bdd8a57615f"
+    },
+    {
+      "bytes": 2493,
+      "eof": true,
+      "full9_bookended": true,
+      "metadata": {
+        "st_ctime_ns": 1793984804816797884,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593452399,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793984804816797884,
+        "st_nlink": 1,
+        "st_size": 2493,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-push-material/stdin.original",
+      "relative_path": "phone-push-material/stdin.original",
+      "sha256": "648aaa9cc83218a249fba44d69ba0cfba75a706205077385c3b9d758e1a034f5"
+    },
+    {
+      "bytes": 2498,
+      "eof": true,
+      "full9_bookended": true,
+      "metadata": {
+        "st_ctime_ns": 1793984806937000932,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593452415,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793984806937000932,
+        "st_nlink": 1,
+        "st_size": 2498,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-push-stage-source/stdin.original",
+      "relative_path": "phone-push-stage-source/stdin.original",
+      "sha256": "74967bcc22047052171ee5ac2e6d2fee270e451c05fa1cbf32bdfc6ecfa18d4f"
+    },
+    {
+      "bytes": 3108,
+      "eof": true,
+      "full9_bookended": true,
+      "metadata": {
+        "st_ctime_ns": 1793984808989934860,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593452450,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793984808989934860,
+        "st_nlink": 1,
+        "st_size": 3108,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-stage/stdin.original",
+      "relative_path": "phone-stage/stdin.original",
+      "sha256": "1d9c90df3f64f4b451dbc42c90943bdbf067222ef8ca351c78a12c70a72bd77b"
+    }
+  ],
+  "phase_order": [
+    "prepare-material",
+    "host-stage-material",
+    "phone-push-material",
+    "phone-copy-material",
+    "phone-push-stage-source",
+    "phone-copy-stage-source",
+    "phone-stage"
+  ],
+  "phone_calls_by_this_agent": 0,
+  "pocket4_absent_sender_paths": [
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150/COMPONENT-PREPARED-NO-SEND.json",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150/SEND.once.json",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150/SEND.MONOTONIC-INTENT.json",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150/SEND.result.json",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150/SEND.unknown.json",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150/SEND.MONOTONIC-WINDOW.json",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-bound01-root-v150/SEND-NATIVE-LATENCY.json"
+  ],
+  "pocket4_observation_job": "1a1b1e63649-fc05-7b67",
+  "private_body_exported": false,
+  "public_original_bytes": 77606,
+  "public_original_count": 30,
+  "root_exit_code": 1,
+  "root_job": "1a1b1d3a2d9-fc05-7b03",
+  "root_phone_observation_job": "1a1b1dbf291-fc05-7b2b",
+  "root_stderr_bytes": 1896,
+  "root_stdout_bytes": 0,
+  "schema": "hepta.fc33.failed-neg01-host-evidence-verification.v1",
+  "scope_limits": [
+    "No claim that phone had zero effects: material/source push and stage attempt already occurred.",
+    "No claim of global sender inactivity, foreign-attempt cleanup, current tuple qualification, or component closure.",
+    "Path absence is at the recorded observations; the stop-before-sender conclusion also relies on the exact executed source and complete original phase history.",
+    "The fresh phone observation was executed earlier by root; this agent only performed host reads."
+  ],
+  "sender_conclusion_basis": "Exact executed root source requires successful phone-stage return before sender-preview/execute; retained root failure and complete phase inventory stop at inner phone rc=1; Mac/P4 exact sender paths are absent at the recorded observations.",
+  "sender_stage_reached_by_this_root_chain": false,
+  "separate_root_phone_observation_owned_paths": [
+    {
+      "errno": 2,
+      "exists": false,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-bound01"
+    },
+    {
+      "errno": 2,
+      "exists": false,
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-bound01/executor"
+    },
+    {
+      "errno": 2,
+      "exists": false,
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-e2fdaccd43cec9da1df4d77783db8fdb"
+    }
+  ],
+  "state": "ACTUAL_FAILED_ATTEMPT_STOPPED_BEFORE_SENDER_HOST_EVIDENCE_VERIFIED"
+}

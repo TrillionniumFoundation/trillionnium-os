@@ -1,0 +1,33 @@
+{
+  "active_package": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "case_id": "COMP-01",
+  "component_package": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "fixture_result": null,
+  "label": null,
+  "nonce": null,
+  "out": null,
+  "ready": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "release": {
+    "build_result_sha256": null,
+    "path": null
+  },
+  "request": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "rotation_authorized": false,
+  "schema": "hepta.physical-component.root-plan.v1"
+}

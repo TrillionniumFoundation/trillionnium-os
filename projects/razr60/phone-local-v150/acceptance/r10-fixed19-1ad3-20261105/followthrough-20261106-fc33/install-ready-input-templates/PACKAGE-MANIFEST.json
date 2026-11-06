@@ -1,0 +1,208 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "file_count": 39,
+  "files": [
+    {
+      "bytes": 604,
+      "path": "DESCRIPTOR-SHAPES.json",
+      "sha256": "b06e397b75a898e27d5a105e42c2207220315b2029b90c89c73b72b3082eebfd"
+    },
+    {
+      "bytes": 9616,
+      "path": "EXECUTION-RECIPES.md",
+      "sha256": "42d3148e574b144a523043ef9259c4d6524d75568732cfab5dd816c29ef8636d"
+    },
+    {
+      "bytes": 7967,
+      "path": "KNOWN-SOURCE-REFERENCES.json",
+      "sha256": "55ea11568e0ab35f90cf997c92038ff0d9da02b42841521cbc9a991622aac212"
+    },
+    {
+      "bytes": 4689,
+      "path": "PREPARATION.json",
+      "sha256": "f8cfbd656e00b53902036b411f283f61f10de24640fc8fede87eade3ea05f9b6"
+    },
+    {
+      "bytes": 7131,
+      "path": "README.md",
+      "sha256": "afc39143407f606b7c03479a15a663ac2c1865169a707aba97c04e9782493e1f"
+    },
+    {
+      "bytes": 1677,
+      "path": "SOURCE-CHAIN-RETURN-CONTRACT.json",
+      "sha256": "67e736b3f2f4b29538663bd4039a4fbfd6b509f8338e869650773c6d12e09d0e"
+    },
+    {
+      "bytes": 35470,
+      "path": "UNBOUND-SLOTS.json",
+      "sha256": "a6780e2b057f5dbbc51cbc61680ba57622d9acf41cf2b193223eaadfad09cfb8"
+    },
+    {
+      "bytes": 604,
+      "path": "derived-shapes/STAGE-SCOPE.output-shape.json",
+      "sha256": "9223f555f529141177055aa31be7f1819f338622b46005d748aa520d6383a763"
+    },
+    {
+      "bytes": 604,
+      "path": "derived-shapes/START-SCOPE.output-shape.json",
+      "sha256": "25ec9c4627f9670d26216c6ef125c9bf570a6af59a583e15835a44b00ba2d6b3"
+    },
+    {
+      "bytes": 15658,
+      "path": "make_input_templates.py",
+      "sha256": "55af6018df1a69a2555acb60e567033a5c19a3b425a5ab87a6039807ea70e0f4"
+    },
+    {
+      "bytes": 2730,
+      "path": "references/MATERIAL-SOURCE-INPUTS.original.json",
+      "sha256": "f02822b6ae8393738e563f61b73a646ddf0ccdf799d94e662fb5a88a43f16bcc"
+    },
+    {
+      "bytes": 61822,
+      "path": "references/builder.original.py",
+      "sha256": "991465020b2012372d677cc4c7cf9fc02c668a406a0af0fc6fc08514d3f0073e"
+    },
+    {
+      "bytes": 29027,
+      "path": "references/exact8.original.py",
+      "sha256": "24db28bee38671322b11ce4c2afd5dd47425381101dd85f887141f567811b490"
+    },
+    {
+      "bytes": 35031,
+      "path": "references/install_reader.original.py",
+      "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f"
+    },
+    {
+      "bytes": 34100,
+      "path": "references/installer.original.py",
+      "sha256": "714a2916680e2313bfcee5a4319d6484b3c6ea5539854818c1134ad84ea02446"
+    },
+    {
+      "bytes": 16399,
+      "path": "references/material_producer.original.py",
+      "sha256": "842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82"
+    },
+    {
+      "bytes": 12782,
+      "path": "references/protocol.original.py",
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    {
+      "bytes": 16407,
+      "path": "references/readiness.original.py",
+      "sha256": "2b4ff90f7078af2481feb8a2d33c39d1a0e260102cd769a4ee3b46d9bec47e11"
+    },
+    {
+      "bytes": 28483,
+      "path": "references/release_reader.original.py",
+      "sha256": "e947a3b2de75a0820fcc3cb5cfe758f874cd85625cb11bac793b38256a670c43"
+    },
+    {
+      "bytes": 22066,
+      "path": "references/retention.original.py",
+      "sha256": "a95977c049b1d1a079014480cd37b9a52414bc60c2f584c4a36e21f5f8791144"
+    },
+    {
+      "bytes": 20851,
+      "path": "references/retention_protocol.original.py",
+      "sha256": "280df226c4bde2294bfaefec93da40fcbc0c685e7c20a2359444e856fbd0bb7a"
+    },
+    {
+      "bytes": 1234,
+      "path": "templates/00-ACTUAL-BINDINGS-UNBOUND.json",
+      "sha256": "ed6803432a5f6d8f46541bb0076f97a2fd7442cdfe75541e449dfd4151f9ccaa"
+    },
+    {
+      "bytes": 2759,
+      "path": "templates/01-SOURCE-CHAIN-INPUTS.template.json",
+      "sha256": "ee9de98194e74f603a309c77951dfb6546770d597a07d66713b8c66714c696d2"
+    },
+    {
+      "bytes": 676,
+      "path": "templates/02-CONSUMER-BINDING.template.json",
+      "sha256": "c23666467e2c127d502a300dabb9ee784b86b0bde89fdd6224158f9128657abb"
+    },
+    {
+      "bytes": 1009,
+      "path": "templates/03-COMPONENT-BOUNDARY-INPUTS.template.json",
+      "sha256": "448262db9d14f8f82ff107a348577734053b69614836b65e18c142094bffa6db"
+    },
+    {
+      "bytes": 141,
+      "path": "templates/04-RETIREMENT-INPUTS.template.json",
+      "sha256": "9d42e70fa1d1d3d3bd62757260ef9bad1dc237e12253887da6b7679d800d456a"
+    },
+    {
+      "bytes": 589,
+      "path": "templates/05-BUILD-PROCESS-START.template.json",
+      "sha256": "53861c9066f791f2c9b06dce1bfc018f40e8a42155a8a953fced58a35c31c33f"
+    },
+    {
+      "bytes": 8651,
+      "path": "templates/06-ACTUAL-RELEASE-ORIGINAL-INPUTS.template.json",
+      "sha256": "f7e46c9aaa3ec288fb1f456b5a488b537eefaf5df9e498960b1e65be5050c5c7"
+    },
+    {
+      "bytes": 871,
+      "path": "templates/07-EXECUTION-PLAN.template.json",
+      "sha256": "84e6d3d1ff4b188343b6bf07dd5019c3b419da42e22e17d16f56c6d84cf8514d"
+    },
+    {
+      "bytes": 285,
+      "path": "templates/08-PHASE-ORIGINALS.fragment.json",
+      "sha256": "2eb45f64f6664f2fc2c2062f533d4045ce4e7fda649f8f2607c41ab37528a5a0"
+    },
+    {
+      "bytes": 550,
+      "path": "templates/09-STAGE-PHASE-AUTHORITY.template.json",
+      "sha256": "7fbf0422d9085e7b70505fb754c6374e6fb8236dd25b02bca155ec1d3a06900a"
+    },
+    {
+      "bytes": 909,
+      "path": "templates/10-START-PHASE-AUTHORITY.template.json",
+      "sha256": "084357b83ffea2cf6601ede8a649ce3c286620c365beda17ec8c7c16c07f1752"
+    },
+    {
+      "bytes": 428,
+      "path": "templates/11-CAPTURE-OPERATION.fragment.json",
+      "sha256": "aa7ae35b576d7699e853caab1a3ba52f26de88a3ece80cea746f9d81ce88fd4f"
+    },
+    {
+      "bytes": 160,
+      "path": "templates/12-STAGE-RETENTION-INPUTS.template.json",
+      "sha256": "9538d52add27feff8ec153c52c8b2a0622d861874f8d534ae1ec9ba4766b59ba"
+    },
+    {
+      "bytes": 160,
+      "path": "templates/13-START-RETENTION-INPUTS.template.json",
+      "sha256": "9538d52add27feff8ec153c52c8b2a0622d861874f8d534ae1ec9ba4766b59ba"
+    },
+    {
+      "bytes": 477,
+      "path": "templates/14-EIGHT-STREAM-INPUTS.template.json",
+      "sha256": "28b06d930f9d7c202f51747a4b24e17bc710c8b40d33d69f101fabfeb212a7ad"
+    },
+    {
+      "bytes": 2328,
+      "path": "templates/15-INSTALL-START-READY-INPUTS.template.json",
+      "sha256": "64d709f381fa02b3bebc21e5ff9cfba38e529b596594a274be73ab739bcd503f"
+    },
+    {
+      "bytes": 143,
+      "path": "templates/16-ORIGINAL-MAP.fragment.json",
+      "sha256": "885e2da4b5b8d9e1d360d8329e635fc3f6874657457c1f5574a6b0349bcd2c60"
+    },
+    {
+      "bytes": 172,
+      "path": "templates/17-NEW-COMPONENT-LEASE-COPY.fragment.json",
+      "sha256": "120d0292138f2306e905333693ca70776f303d640f9b09d22df2e517bb3c5966"
+    }
+  ],
+  "new_control_scenarios": 0,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.host-preparation-package.v1",
+  "state": "SOURCE_AND_INPUT_PREPARATION_ONLY_NOT_EXECUTED",
+  "total_bytes": 385260
+}

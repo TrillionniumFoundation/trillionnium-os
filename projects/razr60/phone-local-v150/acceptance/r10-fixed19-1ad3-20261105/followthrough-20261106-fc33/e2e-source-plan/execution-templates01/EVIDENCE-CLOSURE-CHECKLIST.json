@@ -1,0 +1,127 @@
+{
+  "actual_evidence": null,
+  "automatic_retry": false,
+  "cases": {
+    "COMP-01": {
+      "actual_native_result": null,
+      "actual_return_call": null,
+      "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+      "current_pass": false,
+      "gates": [
+        "The original request explicitly requires returning, and the actual model mapped phone.return_hepta to the production native call.",
+        "Complete native claim/sequence/result binding matches the current source tuple, request, five-field scope and exact accepted dispatch.",
+        "launch_exit_code is integer zero; am start -W has exactly one Status: ok and one normalized Activity equal to OwnerOpenShellActivity, with no Error/Exception/SecurityException.",
+        "Actual currentFocus, focusedApp and single topResumedActivity all name the exact HEPTA component; qualified inner display and unlocked state are verified.",
+        "The fresh typed foreground_hepta fact was derived from this original result. Operator restoration, old direct helper, or merely issued launch commands cannot supply this fact."
+      ],
+      "receipt_schema": "hepta.return-receipt.v149.1",
+      "selected_actual_case": null,
+      "source_cases": [
+        "E2E-01",
+        "E2E-02",
+        "E2E-03"
+      ]
+    },
+    "E2E-01": {
+      "contract": [
+        "visual_receipt_matches_challenge",
+        "foreground_hepta"
+      ],
+      "current_pass": false,
+      "freshness": "Force-stop then fresh app open; the challenge is observed only through the new screenshot before the selection.",
+      "gates": [
+        "Retain screenshot original, encoded JPEG, request body data URI and hashes; exact JPEG must be present in the actual local-model round.",
+        "Exactly one native phone.tap using that current screenshot/viewport/page and source-image claim; no hierarchy or challenge-code read before the completed visual tap.",
+        "Read visual_challenge_code and visual_receipt from the same current public UI; prefix 挑战码： and HEPTA_VISUAL_OK carry the same nonempty challenge code.",
+        "Actual production phone.return_hepta verifies the requested return and contributes eligible COMP-01 originals."
+      ],
+      "view_ids": [
+        "org.trillionnium.hepta.controlprobe:id/visual_challenge_code",
+        "org.trillionnium.hepta.controlprobe:id/visual_receipt"
+      ]
+    },
+    "E2E-02": {
+      "contract": [
+        "text_readback_exact",
+        "public_text_exact",
+        "public_text_exact",
+        "foreground_hepta"
+      ],
+      "current_pass": false,
+      "extra_original_audit": "The existing aggregate collector enforces input<=1. Independently count the actual confirmation action and review its original target; do not infer it solely from a final receipt.",
+      "fresh_text": null,
+      "gates": [
+        "Exactly one focused input intent with the complete original UTF-8 text; all original LF bytes are 0a and must not become spaces.",
+        "Confirm using the actual visible unicode_submit once; retain semantic action/image-to-coordinate/native terminal evidence.",
+        "Input confirmation readback, public unicode_readback and the requested text have the same exact bytes/SHA; no Unicode or whitespace normalization.",
+        "Public unicode_receipt is exactly HEPTA_UNICODE_READBACK plus LF-separated sha256, codepoints and utf8_bytes derived independently from the request.",
+        "Actual production return receipt verifies HEPTA, independently of operator draft restoration."
+      ],
+      "text_recipe": "Original materializer creates new Chinese + emoji text containing an actual LF and literal quotes, backslash, dollar/substitution/shell metacharacters. BEGIN/END delimiters are not input content.",
+      "view_ids": [
+        "org.trillionnium.hepta.controlprobe:id/unicode_input",
+        "org.trillionnium.hepta.controlprobe:id/unicode_submit",
+        "org.trillionnium.hepta.controlprobe:id/unicode_readback",
+        "org.trillionnium.hepta.controlprobe:id/unicode_receipt"
+      ]
+    },
+    "E2E-03": {
+      "contract": [
+        "text_readback_exact",
+        "public_text_exact",
+        "foreground_hepta"
+      ],
+      "current_pass": false,
+      "expression_recipe": "Original materializer draws a,b,c independently in 11..29 and creates (a×b)+c. Compute a*b+c independently on the host from the actual saved integers.",
+      "extra_original_audit": "The existing collector enforces input<=1, but does not separately count equals. Count the actual equals action and verify its original target/ordering.",
+      "fresh_expression": null,
+      "gates": [
+        "Retain the fresh expression/expected-result original files and arithmetic inputs. Do not reuse a historical expression or inject the answer.",
+        "One complete input, actual formula_or_result expression readback, one visible equals activation, and a fresh visible result from the application.",
+        "Actual public result exactly matches the independently computed integer and the bound expected-result bytes.",
+        "Actual production return receipt verifies HEPTA."
+      ],
+      "independent_integer_result": null,
+      "view_id": "com.motorola.cn.calculator:id/formula_or_result"
+    },
+    "E2E-04": {
+      "contract": [
+        "public_text_anchor_exact"
+      ],
+      "current_pass": false,
+      "entry": "com.android.settings/com.android.settings.Settings$MyDeviceInfoActivity",
+      "gates": [
+        "Navigate the actual current public UI without changing settings, permissions, network or accounts.",
+        "Exactly one visible enabled title/value pair in the same direct android.widget.RelativeLayout; package and bounds are valid and password is false.",
+        "Current window focus, focused-app component and top-resumed component independently agree on the expected Settings component.",
+        "Read the actual UI version value. Historical route/getprop reference is only the fixed contract reference and never substitutes for a fresh observation.",
+        "If the observed value differs from the fixed contract, retain failure; do not edit expected values in an already registered task."
+      ],
+      "result_component": "com.android.settings/com.android.settings.SubSettings",
+      "return_requested": false,
+      "selector": {
+        "anchor_text": "Android 版本",
+        "relation": "same_direct_preference_text_container",
+        "title_view_id": "android:id/title",
+        "value_view_id": "android:id/summary"
+      }
+    }
+  },
+  "common_gates": [
+    "Actual sealed BUILD, four-role READY, source/config/service/module and both boundary-input identities agree. Source-only 7969 combination is not a BUILD.",
+    "Exact owner request and one-use nonce, explicit approved app subset, five native scope fields, and native-envelope digest remain separately bound.",
+    "Exactly one actual send; every accepted native call maps to the actual local model action and full claim/sequence/length/terminal/hash-verified native record.",
+    "Local-model request bytes include the exact fresh screenshot JPEG, if required; response and worker cleanup are real and complete. No retry, hidden fallback, old round, or fabricated image input.",
+    "Capture thirteen bindings, complete originals/archive SHA and actor/phone return codes are verified. Collector actual exit is zero and issues are empty.",
+    "All requested postconditions are rederived by the exact selected production parser, agree with the recorded full-task outcome, and native terminal is completed.",
+    "All effects have original confirmed terminals, model workers are joined, owned resources are cleaned, and the next previous-input is the exact closure output.",
+    "Coordinator E2E-RESULT.case_pass, report proof/business, closure proof/business and all six phase return codes agree. Missing conditions or unknown effects remain failure/unknown."
+  ],
+  "fixed19_credit": 0,
+  "historical_pass_inherited": false,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.e2e.comp01.closure-checklist.v1"
+}

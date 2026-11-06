@@ -1,0 +1,59 @@
+{
+  "actual_r10_ready_bound": false,
+  "actual_task_bound": false,
+  "expected_live_policy_sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7",
+  "parent_candidate_manifest_sha256": "5efa410faca34cd224977d347c0b14193a9b2edde37346e51832236347c88a24",
+  "parent_manifest_sha256": "cd6908e6969bd0cbec247f30ed11b5aa6f916829a6f94028424276dff943b3cc",
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "reviewed_boundary_consumer_sha256": "a791a7493fe8544aa44b910dd627f405f71678a048f9df94df91529a54fdf703",
+  "reviewed_component_runtime_sha256": "683481bdb653bd7cb97bd6171d6b14f6ecaf4f9948ed2691c7b7c420fea5fe3c",
+  "reviewed_final_consumer_manifest_sha256": "e4c1c351a363aed80968fa9a952f3ad3bb1291c9dd8cb2d1e7591c448f1efb41",
+  "reviewed_policy_adoption_sha256": "a5f94e24ead8b7b811025197439ddbfa762d05eaf7d1de2a5f61f26d9502ebd5",
+  "reviewed_readiness_sha256": "345723406df0c523ab55b167bb52f5ceb9432d387ffe3b4aa5b1e5442465e392",
+  "runtime_sources": [
+    {
+      "bytes": 31813,
+      "path": "source/active_runtime_r10.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 8053,
+      "path": "source/cancel_phase.py",
+      "sha256": "36890bfb9dbbf324963a92c93e45d211a574fcb8e360c8e413669ce2ce607ed2"
+    },
+    {
+      "bytes": 6701,
+      "path": "source/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 17449,
+      "path": "source/observe_cancel_phase_r10.py",
+      "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+    },
+    {
+      "bytes": 17587,
+      "path": "source/observe_carrier_r10.py",
+      "sha256": "1a94086416f3ea82efc04cd85b3a28cceff085201028f938c865e30bb41a90f0"
+    },
+    {
+      "bytes": 1438,
+      "path": "source/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 3977,
+      "path": "source/reviewed_page_projection.py",
+      "sha256": "96a1af463b205adf5baa544a9a27122fc7424e72fcc38e2fd4bcf26533ea7c93"
+    },
+    {
+      "bytes": 32953,
+      "path": "source/signal_fault_once_r10.py",
+      "sha256": "cd5100c0f12dc77b275a55893aa31fdc7d6b5ec61839635b70c0c9a11f0cbb1e"
+    }
+  ],
+  "schema": "hepta.r10.signal-fault-package.v1",
+  "shared_materials_sha256": "121416839ffdac15485270cda0e95445e376b0a24801fa283659a3da084ae45f",
+  "state": "HOST_SOURCE_PINS_BOUND_WAITING_ACTUAL_SEAL_READY_AND_CASE"
+}

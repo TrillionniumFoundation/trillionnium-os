@@ -1,0 +1,11 @@
+{
+  "schema": "fc33.observer-host-fixture-preflight-rejection.v1",
+  "observed_exec_command_result": {
+    "chunk_id": "a5f2c2",
+    "wall_time_seconds": 0.047634608,
+    "exit_code": 1,
+    "original_token_count": 289,
+    "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/fc33eac909ab/review/neg03-09-plan/test_observer_native_v3.py\", line 217, in <module>\n    main()\n  File \"/workspace/scratch/fc33eac909ab/review/neg03-09-plan/test_observer_native_v3.py\", line 157, in main\n    old.dispatches(run, scope, [result], outgoing)\n  File \"/workspace/scratch/fc33eac909ab/review/neg03-09-plan/reference/physical-fault-final01/package/validation/operator-source-fixture/source/observe_cancel_phase_r10.py\", line 106, in dispatches\n    semantic_raw=stable(semantic_path);semantic=strict(semantic_raw)\n                 ^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/fc33eac909ab/review/neg03-09-plan/reference/physical-fault-final01/package/validation/operator-source-fixture/source/observe_cancel_phase_r10.py\", line 31, in stable\n    need(stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_uid==a.st_gid==0 and\n  File \"/workspace/scratch/fc33eac909ab/review/neg03-09-plan/reference/physical-fault-final01/package/validation/operator-source-fixture/source/cancel_phase.py\", line 16, in need\n    raise ValueError(reason)\nValueError: original type/ownership/size differs\n"
+  },
+  "reason": "Original Android-root file ownership guard rejected non-root host fixture before interface exercise. No production source was changed."
+}

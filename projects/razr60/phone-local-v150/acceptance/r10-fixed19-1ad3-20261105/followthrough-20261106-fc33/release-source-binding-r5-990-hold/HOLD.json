@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.fc33.source-candidate-hold.v1",
+  "state": "HOLD_NO_MAC_PUBLICATION_NO_SOURCE_CHAIN_DERIVATION",
+  "runtime_candidate_sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a",
+  "root_reported_cause": "New NEG01 stage verify_retired / LATE.retained_stage_parent_profiles rejected exact parent directory names before sender. Root is investigating actual extra directories versus source propagation omission.",
+  "root_owns_next_action": true,
+  "source_chain_derive_called": false,
+  "mac_publisher_executed": false,
+  "actual_new_case_qualified": false,
+  "actual_BUILD": null,
+  "actual_install": null,
+  "actual_READY": null,
+  "phone_calls": 0,
+  "automatic_retry": false
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.fc33.github-tree-rejection.v1",
+  "original_result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "GitHub API error 422: {\"message\":\"tree.sha a795d4c77b5bd757599b2bc15a6a1f1a520a2231 is not a valid blob\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#create-a-tree\",\"status\":\"422\"}"
+      }
+    ],
+    "structuredContent": {
+      "error": "GitHub API error 422: {\"message\":\"tree.sha a795d4c77b5bd757599b2bc15a6a1f1a520a2231 is not a valid blob\",\"documentation_url\":\"https://docs.github.com/rest/git/trees#create-a-tree\",\"status\":\"422\"}",
+      "error_code": "INVALID_ARGUMENT",
+      "error_data": {
+        "message": "tree.sha a795d4c77b5bd757599b2bc15a6a1f1a520a2231 is not a valid blob",
+        "documentation_url": "https://docs.github.com/rest/git/trees#create-a-tree",
+        "status": "422"
+      }
+    },
+    "isError": true
+  },
+  "branch_ref_was_not_updated": true,
+  "missing_local_sha1_map_was_replaced_by_actual_90_blob_API_publication": true
+}

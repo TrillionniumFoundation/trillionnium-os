@@ -1,0 +1,141 @@
+--- reference/verify_unqualified_geometry_fixture.py
++++ candidate/verify_unqualified_geometry_fixture.py
+@@ -54,14 +54,108 @@
+   'isKeyguardShowing=false\ntopResumedActivity=ActivityRecord{synthetic u0 '+component+'}\n')
+ def viewport(obs):
+  return "DisplayViewport{type=INTERNAL, valid=true, isActive=true, displayId=0, uniqueId='local:"+obs.PHYSICAL_DISPLAY+"', orientation=0, logicalFrame=Rect(0, 0 - 1224, 2992), physicalFrame=Rect(0, 0 - 1224, 2992)}"
++def sha(raw):
++    return hashlib.sha256(raw).hexdigest()
++
++
++def reference_field(hasher, name, value):
++    raw_name = name.encode("ascii")
++    hasher.update(len(raw_name).to_bytes(8, "big"))
++    hasher.update(raw_name)
++    hasher.update(len(value).to_bytes(8, "big"))
++    hasher.update(value)
++
++
++def reference_claims(call, scope):
++    # Independent transcription of the reviewed Rust narrow argv preimage.
++    # No production native_bound_call or digest helper is invoked here.
++    value = {key: scope[key] for key in ("session_id", "profile_id", "task_id", "turn_id")}
++    value.update(tool=call["tool"], argv=call["argv"], config_generation=None, mode="argv",
++                 pty=False, timeout_ms=0, stream=True, protocol="trillionnium.agent.turn.v1", protocol_version=1)
++    if "target" in call or "target_id" in call:
++        value["target_id"] = call.get("target_id") if call.get("target_id") is not None else call.get("target")
++    fingerprint = hashlib.sha256()
++    for key, raw in (("schema", b"trillionnium.owner-open.binding.v1"), ("tool", call["tool"].encode()),
++                     ("executable", b"/bin/sh" if call["tool"] == "shell.exec" else b"adb"),
++                     ("config_generation", b"null")):
++        reference_field(fingerprint, key, raw)
++    return {"request_sha256": sha(canonical(value)), "binding_fingerprint": fingerprint.hexdigest()}
++
++
++def reference_observation(call, reply):
++    digest = hashlib.sha256()
++    target = call.get("target_id") if call.get("target_id") is not None else call.get("target")
++    for key, raw in (("schema", b"trillionnium.owner-open.local-observation.v1"),
++                     ("call_id", call["call_id"].encode()), ("tool", call["tool"].encode()),
++                     ("target_id", target.encode() if target is not None else b""),
++                     ("spawn_generation", reply["generation"].to_bytes(8, "big"))):
++        reference_field(digest, key, raw)
++    for index, record in enumerate(reply["events"]):
++        event = record["event"]
++        reference_field(digest, "event_ordinal", index.to_bytes(8, "big"))
++        reference_field(digest, "kind", event["kind"].encode())
++        if event["kind"] == "started":
++            reference_field(digest, "pid", event["pid"].to_bytes(4, "big"))
++        elif event["kind"] == "output":
++            reference_field(digest, "stream", event["stream"].encode())
++            reference_field(digest, "bytes", base64.b64decode(event["data"], validate=True))
++        elif event["kind"] == "terminal":
++            terminal = event["terminal"]
++            reference_field(digest, "terminal_kind", terminal["kind"].encode())
++            for key in ("exit_code", "signal"):
++                value = terminal[key] if terminal[key] is not None else -2147483648
++                reference_field(digest, key, value.to_bytes(4, "big", signed=True))
++            for key in ("stdout_bytes", "stderr_bytes"):
++                reference_field(digest, key, terminal[key].to_bytes(8, "big"))
++            reference_field(digest, "output_truncated", bytes([int(terminal["output_truncated"])]))
++            reference_field(digest, "elapsed_ms", terminal["elapsed_ms"].to_bytes(8, "big"))
++            reference_field(digest, "error", (terminal["error"] or "").encode())
++    return digest.hexdigest()
++
++
++def seal_native_fixture(reply, call, scope):
++    claims = reference_claims(call, scope)
++    reply["registry"].update(claims)
++    observed = reference_observation(call, reply)
++    reply["observation_sha256"] = observed
++    terminal = reply["terminal"]
++    exit_value = "None" if terminal["exit_code"] is None else "Some(" + str(terminal["exit_code"]) + ")"
++    signal_value = "None" if terminal["signal"] is None else "Some(" + str(terminal["signal"]) + ")"
++    reply["registry"]["state"] = (
++        'Terminal { generation: ' + str(reply["generation"]) + ', terminal: TerminalRecord { terminal_kind: "'
++        + terminal["kind"] + '", exit_code: ' + exit_value + ', signal: ' + signal_value
++        + ', observation_sha256: "' + observed + '", stdout_bytes: ' + str(terminal["stdout_bytes"])
++        + ', stderr_bytes: ' + str(terminal["stderr_bytes"]) + ' } }')
++    return reply
++
++
++def native(call_id, raw, tool, *, wire_call, scope):
++    # Explicitly synthetic current-schema receipt. Real archived NEG01 goldens
++    # independently verify these preimages; no physical execution is attested.
++    assert wire_call["call_id"] == call_id and wire_call["tool"] == tool
++    target = wire_call.get("target_id") if wire_call.get("target_id") is not None else wire_call.get("target")
++    terminal = {"kind": "exited", "exit_code": 0, "signal": None, "stdout_bytes": len(raw),
++                "stderr_bytes": 0, "output_truncated": False, "elapsed_ms": 7, "error": None}
++    events = [{"kind": "accepted"}, {"kind": "started", "pid": 12345},
++              {"kind": "output", "stream": "stdout", "encoding": "base64",
++               "data": b64(raw), "byte_count": len(raw)},
++              {"kind": "terminal", "terminal": copy.deepcopy(terminal)}]
++    reply = {"protocol": "trillionnium.owner-open.provider-jsonl.v1", "kind": "tool.result", "seq": 1,
++             "call_id": call_id, "status": "terminal", "terminal": terminal,
++             "registry": {"call_id": call_id, "tool": tool, "target_id": target,
++                          "cancellation_requested": False, "connection_lost": False,
++                          "earliest_history_seq": 0, "next_event_seq": 4},
++             "generation": 1,
++             "events": [{"call_id": call_id, "target_id": target, "tool": tool,
++                         "seq": i, "elapsed_ms": i * 2, "event": event}
++                        for i, event in enumerate(events)]}
++    return seal_native_fixture(reply, wire_call, scope)
++
++
+ def synthetic_reply(call,raw):
+- terminal={'kind':'exited','exit_code':0,'error':None,'output_truncated':False,'stdout_bytes':len(raw),'stderr_bytes':0}
+- events=[{'kind':'accepted'},{'kind':'started'},
+-         {'kind':'output','stream':'stdout','encoding':'base64','data':b64(raw),'byte_count':len(raw)},
+-         {'kind':'terminal','terminal':copy.deepcopy(terminal)}]
+- return {'call_id':call['call_id'],'status':'terminal','terminal':terminal,
+-         'events':[{'call_id':call['call_id'],'tool':call['wire_tool'],'seq':i,'event':event}
+-                   for i,event in enumerate(events)]}
++ # Only explicitly synthetic fixture scopes enter this constructor.
++ assert all(isinstance(value,str) and value.startswith('synthetic-') for value in call['turn'].values())
++ return native(call['call_id'],raw,call['wire_tool'],wire_call=call['wire_call'],scope=call['turn'])
+ def image_envelope(obs,token,jpeg,png):
+  screen={'schema':'hepta.phone-screenshot.v1','status':'encoded','capture_id':token,'serial':obs.SERIAL,
+   'logical_display_id':0,'physical_display_id':obs.PHYSICAL_DISPLAY,'rotation':0,
+@@ -107,9 +201,11 @@
+   def record(path,value):
+    writes.append(str(path));return self.record(path,value)
+   t=self.obs.PhoneTools(root,record)
+-  identity={'schema':'hepta.operator-isolated-component-fixture.v1','case_id':'NEG-03',
+-            'fixture_id':self.fixture_id,'instance':label,'synthetic':True}
+-  self.check(label+' no fabricated native task scope',not ({'session_id','profile_id','task_id','turn_id','stream_id'}&set(identity)))
++  token=self.C.sha(canonical([self.fixture_id,label]))[:32]
++  identity={key:'synthetic-'+key+'-'+token for key in
++            ('session_id','profile_id','task_id','turn_id','turn_stream_id')}
++  self.check(label+' explicitly synthetic native scope with no actual task',
++             all(value.startswith('synthetic-') for value in identity.values()))
+   t.bind(identity)
+   return t,root,writes
+  def mapped(self,t,call_id,tool,argv):
+@@ -246,6 +342,7 @@
+    'fixture_id':plan['fixture_id'],'fixed19_component_case_passed':True,'physical_qualified':False,
+    'native_task_qualified':False,'model_qualified':False,'business_verified':False,
+    'all_receipts_synthetic':True,'actual_phone_observations':0,'no_original_native_task_identity_fabricated':True,
++   'all_native_scopes_synthetic':True,'actual_native_scope_or_generation_attested':False,
+    'source_package':package['descriptor'],'release_pins':release_pins,'contract':C.pin(protocol),
+    'source_originals':list(originals.seen.values()),'checks':e.checks,'negative_observations':e.rows,
+    'metrics':{'latency':{'host_elapsed_ns':ended-started,'start_monotonic_ns':started,'end_monotonic_ns':ended},

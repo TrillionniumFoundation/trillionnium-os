@@ -1,0 +1,89 @@
+{
+  "actual_component_runtime_manifest": {
+    "bytes": 46685,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-final-v3-getattr-a1055-r4/runtime/MANIFEST.json",
+    "sha256": "72d6dcb4c20547549debad6ef55001aa5c8d115574ac222312b158f9722e2515"
+  },
+  "actual_formal_BUILD": false,
+  "actual_four_role_READY": false,
+  "automatic_retry": false,
+  "collector_manifest_sha256": "b8513e925526059be82f3063af0add9dd7a1d2824c7ca9fa783173f5e9c7220b",
+  "current_collector_manifest": {
+    "bytes": 19271,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/acceptance-tools-v150-r10-v3-shared-a1055-r2/MANIFEST.json",
+    "sha256": "b8513e925526059be82f3063af0add9dd7a1d2824c7ca9fa783173f5e9c7220b"
+  },
+  "current_formal_consumer_sources": {
+    "bytes": 6142,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-release-reader-reconstruction-a1055-r4/SOURCE-MANIFEST.json",
+    "sha256": "ea92ef94df4c00572b1dc16fb44e042eccd0fc044d7785571911627bb4e0648a"
+  },
+  "current_shared_materials": {
+    "bytes": 3519,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-final-v3-getattr-a1055-r4/shared/SHARED-MATERIALS.json",
+    "sha256": "2ea9a478b366d6a69fdb8942699b6241d72330cfa789baa4b3132fdaca169e68"
+  },
+  "files": [
+    {
+      "bytes": 25550,
+      "path": "capture_originals_r10.py",
+      "sha256": "7e8b3920f9fa1345e8e2906f9cc05afb9db8b9c70c05577d5e5ad2202243d10c"
+    },
+    {
+      "bytes": 41173,
+      "path": "close_original_r10.py",
+      "sha256": "19af371cb5271ea6b3f8c2929ab969357aee07d14d498dcf50f57e9b3bbc9e75"
+    },
+    {
+      "bytes": 27540,
+      "path": "export_originals_r10.py",
+      "sha256": "034cebffe8569f09139d3e39dfcef7882683923af6fb5ae7935bb04162e43586"
+    },
+    {
+      "bytes": 2549,
+      "path": "read_archive_chunk_r10.py",
+      "sha256": "afb19e6792dcced3dc443d25bb5cd9534e56030e3792a85bf7a0c6b7ba574f32"
+    },
+    {
+      "bytes": 10669,
+      "path": "registration_phone_r10.py",
+      "sha256": "0922878919264a7af3c10db6db960392955654c1e7dbb09716f8a980754546f5"
+    },
+    {
+      "bytes": 27537,
+      "path": "root_acceptance_r10.py",
+      "sha256": "9f18969b3276df30ffa5c12189143bf8ef31db3263b8a6eda7574408ef57a017"
+    }
+  ],
+  "model_requests": 0,
+  "new_acceptance_nonce_generated": false,
+  "parent_operator_manifest_sha256": "75e1d179e77272b17d30962882574d7efe50d425f283861451d7ab881763bdac",
+  "parent_provenance": {
+    "bytes": 1865,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/SOURCE-MANIFEST.json",
+    "sha256": "75e1d179e77272b17d30962882574d7efe50d425f283861451d7ab881763bdac"
+  },
+  "phone_calls": 0,
+  "qualification": "HOST_PREPARED_ONLY_REQUIRES_ACTUAL_SEALED_RELEASE_AND_READY",
+  "release_id": "v150-r10-r1",
+  "reviewed_production_source_pins": {
+    "action_ledger.py": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+    "daily_phone_local.py": "ca23c60bbb4114960c6a571492cacd9e0bdc3404191409ac78bcf0c34a06c1d0",
+    "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "ledger_round_evidence.py": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+    "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+    "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+    "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "phone_local_tools.py": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54",
+    "phone_observation_tools.py": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66",
+    "phone_task_guards.py": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+    "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+    "provider_phone_local.py": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6",
+    "retirement_recovery.py": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+    "task_postconditions.py": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+  },
+  "reviewed_readiness_helper_sha256": "2b4ff90f7078af2481feb8a2d33c39d1a0e260102cd769a4ee3b46d9bec47e11",
+  "schema": "hepta.root-acceptance-sources.v150.r10.1",
+  "sender_sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+}

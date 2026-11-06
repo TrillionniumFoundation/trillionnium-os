@@ -1,0 +1,80 @@
+{
+  "actual_runtime_ready": false,
+  "entry": "source/cancel_native_once_r10.py",
+  "expected_live_policy_sha256": "50f07eccca1a1afd59fac1c31f4d40a26e5396635c6516e695694a8923fd3ea7",
+  "files": [
+    {
+      "bytes": 31813,
+      "path": "source/active_runtime_r10.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 26407,
+      "path": "source/cancel_native_once_r10.py",
+      "sha256": "d973891aa125ce2deb2237064fbc101d5d9d915d9e4bd75e25e4da298eecd5f1"
+    },
+    {
+      "bytes": 8053,
+      "path": "source/cancel_phase.py",
+      "sha256": "36890bfb9dbbf324963a92c93e45d211a574fcb8e360c8e413669ce2ce607ed2"
+    },
+    {
+      "bytes": 4116,
+      "path": "source/decode_client_state.py",
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+    },
+    {
+      "bytes": 6701,
+      "path": "source/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 17449,
+      "path": "source/observe_cancel_phase_r10.py",
+      "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+    },
+    {
+      "bytes": 1438,
+      "path": "source/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 3977,
+      "path": "source/reviewed_page_projection.py",
+      "sha256": "96a1af463b205adf5baa544a9a27122fc7424e72fcc38e2fd4bcf26533ea7c93"
+    }
+  ],
+  "model_requests": 0,
+  "parent_candidate_manifest_sha256": "f26f9bb66cd18e401c79df69dc4699cada9b2656226d03f4610cb9437521506b",
+  "parent_manifest_sha256": "f8728fc703bc7d1a58f20fb81932b8c9eb997c6ce7049b6dfd863654a6bdee1c",
+  "phone_calls": 0,
+  "physical_qualification": false,
+  "real_nonces_generated": 0,
+  "reviewed_boundary_consumer_sha256": "a791a7493fe8544aa44b910dd627f405f71678a048f9df94df91529a54fdf703",
+  "reviewed_component_runtime_manifest_sha256": "683481bdb653bd7cb97bd6171d6b14f6ecaf4f9948ed2691c7b7c420fea5fe3c",
+  "reviewed_final_consumer_manifest_sha256": "e4c1c351a363aed80968fa9a952f3ad3bb1291c9dd8cb2d1e7591c448f1efb41",
+  "reviewed_policy_adoption_sha256": "a5f94e24ead8b7b811025197439ddbfa762d05eaf7d1de2a5f61f26d9502ebd5",
+  "reviewed_production_source_pins": {
+    "action_ledger.py": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+    "daily_phone_local.py": "f42fa1f3268d2a2c00e49610d356b440d1e32722fbe2af877580fb6eb180f712",
+    "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "ledger_round_evidence.py": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+    "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+    "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+    "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "phone_local_tools.py": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54",
+    "phone_observation_tools.py": "f16c77c1b4509babcea5fc2e8d0a7ae8ab43b3cd58e6640441b44ecd4bccb6df",
+    "phone_task_guards.py": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+    "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+    "provider_phone_local.py": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6",
+    "retirement_recovery.py": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+    "task_postconditions.py": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+  },
+  "reviewed_readiness_sha256": "345723406df0c523ab55b167bb52f5ceb9432d387ffe3b4aa5b1e5442465e392",
+  "revision": "host-candidate05-actual-R7-two-dependency-pins-bound",
+  "runtime_release": "v150-r10-r1",
+  "schema": "hepta.r10.native-cancel-operator-package.v1",
+  "shared_observer_manifest_relationship": "immutable_f3d_active_exactly_two_actual_dependency_literals_derived",
+  "shared_observer_manifest_sha256": "0dd14f3c73fbf6314d46e0e8f166559b6a2fe9d06cafbb2a99532deffdbbd547"
+}

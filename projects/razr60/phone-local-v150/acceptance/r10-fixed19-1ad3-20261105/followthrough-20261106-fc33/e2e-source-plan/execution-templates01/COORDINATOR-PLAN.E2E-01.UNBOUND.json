@@ -1,0 +1,26 @@
+{
+  "capture_source": {
+    "bytes": 37720,
+    "path": null,
+    "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29"
+  },
+  "case_id": "E2E-01",
+  "context": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "coordinator_sha256": null,
+  "operator_manifest": {
+    "bytes": null,
+    "path": null,
+    "sha256": null
+  },
+  "output": null,
+  "schema": "hepta.fixed19.e2e.coordinator-plan.v1",
+  "shared_materials": {
+    "bytes": 3519,
+    "path": null,
+    "sha256": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1"
+  }
+}

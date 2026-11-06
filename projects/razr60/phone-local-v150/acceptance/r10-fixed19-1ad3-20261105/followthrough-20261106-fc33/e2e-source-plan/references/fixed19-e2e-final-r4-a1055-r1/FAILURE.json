@@ -1,0 +1,79 @@
+{
+  "checks_before_failure": [
+    {
+      "detail": null,
+      "name": "core_single_READINESS_RHS_whole_byte_inverse_and_other_five_operators_identical",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "seven_collector_sources_and_seventeen_shared_originals_read_same_fifteen_production_pins",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "coordinator_single_manifest_RHS_whole_byte_inverse_to_fd892_template03",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "phase_order_and_capture_includes_export_once_budgets_unchanged",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "actual_bound_core_reads_closed_six_sources_and_current_seven_collector_manifest",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 1722,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-e2e-final-r4-a1055-r1/controls/register/RESULT.json",
+        "sha256": "b6e3ec49d4eee006c3d6888f052d502001a9bb9e5c4a4b21563bb7e86851b1e3"
+      },
+      "name": "actual_register_CLI_rejects_invalid_context_before_phone",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 1760,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-e2e-final-r4-a1055-r1/controls/sender_preview/RESULT.json",
+        "sha256": "ef00c1b9cb20d8783a8e90aeee1692eca0a2612d5cd8350635092e4adfa96f2b"
+      },
+      "name": "actual_sender_preview_CLI_rejects_invalid_context_before_phone",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 1760,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-e2e-final-r4-a1055-r1/controls/sender_execute/RESULT.json",
+        "sha256": "e65296e6ce27acf76901f776f1ee99128d8dbb5618ad93b3234ec944dc7f69c8"
+      },
+      "name": "actual_sender_execute_CLI_rejects_invalid_context_before_phone",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 1760,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-e2e-final-r4-a1055-r1/controls/capture_export/RESULT.json",
+        "sha256": "41dbd6c7e3520348025dab04b2eca8d11b5bba2cfe27072b2b5f09a1583efc29"
+      },
+      "name": "actual_capture_export_CLI_rejects_invalid_context_before_phone",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 1725,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-e2e-final-r4-a1055-r1/controls/collect/RESULT.json",
+        "sha256": "3d583a653e150e04deea1d0da5d067c4a84564bdec326031a65a08c4984c4478"
+      },
+      "name": "actual_collect_CLI_rejects_invalid_context_before_phone",
+      "passed": true
+    }
+  ],
+  "detail": "invalid context control wrote output or bytecode namespace",
+  "error_type": "ValueError",
+  "fixed19_credit": false,
+  "phone_calls": 0,
+  "state": "SOURCE_BINDING_OR_CONTROL_FAILURE_RETAINED"
+}

@@ -1,0 +1,178 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_context": null,
+  "actual_source_binding": null,
+  "binder": {
+    "bytes": 15724,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/bind_e2e_sources_UNBOUND.py",
+    "sha256": "da654904764e807e8422e14021db253ae515a08381f49c3520769c8ab400f3a9"
+  },
+  "candidate_manifest": {
+    "bytes": 12133,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/candidate01/CANDIDATE-SOURCES.json",
+    "sha256": "d352e5aeafe52777ccbfe8d3deec15b76eb54ee9f9b61e62a7b1f7f4c6f5ee44"
+  },
+  "check_count": 23,
+  "checks": [
+    {
+      "detail": null,
+      "name": "all_46_candidate_members_complete_and_python_parse",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "actual_fifteen_sources_and_seven_fragments_load",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "reviewed_map_equals_actual_source_manifest",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "selected typed helper/ledger source bytes are not reviewed",
+        "error_type": "ValueError"
+      },
+      "name": "old_source_rejected_daily_phone_local.py",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "selected typed helper/ledger source bytes are not reviewed",
+        "error_type": "ValueError"
+      },
+      "name": "old_source_rejected_phone_local_tools.py",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "selected typed helper/ledger source bytes are not reviewed",
+        "error_type": "ValueError"
+      },
+      "name": "old_source_rejected_phone_observation_tools.py",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "selected typed helper/ledger source bytes are not reviewed",
+        "error_type": "ValueError"
+      },
+      "name": "old_source_rejected_provider_codex_host.py",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "selected typed helper/ledger source bytes are not reviewed",
+        "error_type": "ValueError"
+      },
+      "name": "old_source_rejected_provider_phone_local.py",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "complete r10 source inventory required",
+        "error_type": "ValueError"
+      },
+      "name": "missing_production_member_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "source pin identity differs",
+        "error_type": "ValueError"
+      },
+      "name": "duplicate_production_member_rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "selected projection function/constant bytes are not reviewed",
+        "error_type": "ValueError"
+      },
+      "name": "projection_fragment_hash_remains_enforced",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "original_operator_accepts_complete_current_collector_manifest",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "operator_waits_for_actual_readiness_source",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "original_materializer_identity_retained",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "coordinator_exact_actual_shared_source_pin",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "UNBOUND_E2E_OPERATOR_MANIFEST_NO_EXECUTION",
+        "error_type": "ValueError"
+      },
+      "name": "unbound_coordinator_rejects_before_context_or_output",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "coordinator_preview_has_six_phases_and_zero_effects",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "binder_is_explicitly_unbound",
+      "passed": true
+    },
+    {
+      "detail": {
+        "detail": "UNBOUND_ACTUAL_SOURCE_INPUTS_NO_PUBLICATION",
+        "error_type": "ValueError"
+      },
+      "name": "unbound_binder_rejects_before_any_publication",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "consumer_parent_complete_pin_available",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "readiness_single_literal_inverse_preserves_entire_source",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "consumer_single_literal_inverse_preserves_entire_source",
+      "passed": true
+    },
+    {
+      "detail": null,
+      "name": "no_external_effect_attempted",
+      "passed": true
+    }
+  ],
+  "external_effect_attempts": [],
+  "fixed19_credit": 0,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.e2e.source-controls.v1",
+  "source": {
+    "bytes": 9747,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/check_e2e_source_candidates.py",
+    "sha256": "d5e9488c124ee385abcb9c6d1424863630b3e00b43dc4094ec89fec019192d7f"
+  },
+  "state": "PASS_SOURCE_CONTROLS_ACTUAL_EXECUTION_UNBOUND",
+  "synthetic_values_are_not_release_or_runtime_evidence": true
+}

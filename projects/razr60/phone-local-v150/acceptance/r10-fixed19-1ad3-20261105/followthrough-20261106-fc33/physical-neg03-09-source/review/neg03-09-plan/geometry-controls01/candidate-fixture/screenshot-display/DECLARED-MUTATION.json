@@ -1,0 +1,17 @@
+{
+  "axis": "display",
+  "changed_paths": [
+    "/screenshot/logical_display_id"
+  ],
+  "negative_payload": {
+    "bytes": 27863,
+    "sha256": "1e2099170e85747b2db309bf889cd3286300840bd91bc580877cb1f9d63be617"
+  },
+  "physical_observation": false,
+  "qualified_payload": {
+    "bytes": 27863,
+    "sha256": "1597d1b12e3b0125f99f8babafc98b7aed7618215d92de1736e3cb20be24f319"
+  },
+  "semantic": "screenshot",
+  "synthetic": true
+}

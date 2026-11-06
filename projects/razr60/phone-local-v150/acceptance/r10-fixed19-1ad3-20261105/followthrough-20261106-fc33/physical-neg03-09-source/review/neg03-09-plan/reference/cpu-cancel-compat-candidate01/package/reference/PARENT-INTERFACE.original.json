@@ -1,0 +1,101 @@
+{
+  "actual_case_executions": 0,
+  "actual_entry": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cpu-cancel-host-closure-r1-candidate01/source/root_cpu_negative.py",
+    "--plan",
+    "B/cpu-cancel-negative-inputs-r1/<actual-existing-nonce>/PLAN.json",
+    "--plan-sha256",
+    "<actual-plan-raw-SHA>",
+    "--reviewed-source-sha256",
+    "<actual-final-Root-source-SHA>",
+    "--qualify-original-case-once"
+  ],
+  "actual_qualification": {
+    "aggregate_fixed19_PASS_not_issued": true,
+    "entry": "root_cpu_negative.py --qualify-original-case-once",
+    "host_fixture_qualification": null,
+    "layer": "physical_native_task",
+    "model_business_qualification": false,
+    "ordinary_cancel_without_CPU_phase": "Durable ordinary closure; CPU eligibility false, no physical receipt; qualification exit3.",
+    "partial_phase_miss_unknown": "Retain original read set/archive bytes privately; no known closure/qualification/replay.",
+    "positive_AC_whitelist_unchanged": true,
+    "receipt": "PHYSICAL-NEGATIVE-RECEIPT.json",
+    "requires": [
+      "actual CPU safe point for same body/round/server/RID",
+      "one actual Send and original Cancel CAS",
+      "complete Actor/sender/once raw originals and original process receipts",
+      "both full archives and final collector status",
+      "full captured native prefix and original selected offsets",
+      "original ledger reconstruction and prior auxiliary preservation",
+      "known task effects/no later dispatch",
+      "selected identity/draft exact restore/consumed claim",
+      "actual kernel/source/READY protection"
+    ]
+  },
+  "allowed_cases": [
+    "NEG-08",
+    "NEG-09"
+  ],
+  "close_only_flag": "--close-originals-once",
+  "containers": {
+    "P4_capture_bytes": 67108864,
+    "host_input_read_set_bytes": 201326592,
+    "phone_capture_bytes": 67108864,
+    "unchanged_module_bundle_bytes": 33554432,
+    "unchanged_native_chain_limit": 8,
+    "unchanged_role_limit": 24,
+    "unchanged_runtime_file_limit": 32,
+    "unpacked_tar_bytes": 75497472
+  },
+  "default_preview": "No case plan/private read; no output mutation.",
+  "future_dependency_literal": "negative_originals.FINAL_DEPENDENCIES",
+  "future_dependency_template": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cpu-cancel-host-closure-r1-candidate01/FINAL-DEPENDENCIES.template.json",
+  "future_runtime_or_policy_frozen": false,
+  "host_output": "B/cpu-cancel-negative-closures-r1/<actual-existing-nonce>",
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "plan_schema": "hepta.r10.cpu-negative-closure-plan.v1",
+  "plan_template": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cpu-cancel-host-closure-r1-candidate01/PLAN.template.json",
+  "preservation": "Failed phases/SEND.unknown retained. Later native terminal is a separate fact, not a rewritten wire result.",
+  "prior_execution_receipts": {
+    "Actor": "Root remote_program negative-cancel-actor, exact nonce inputs/package, wait_seconds+240 outer budget; Actor8s/12s unchanged.",
+    "P4_capture": "Root remote_program negative-p4-capture, timeout90; original source+plan+result+full archive.",
+    "capture_export": "Every archive byte bound to original producer final result/complete members; copy metadata never replaces source metadata.",
+    "phone_capture": "Root phone negative-capture; pure phone_request exact source+plan,120s; original actor/phone zero and raw wrapper.",
+    "root_source": "Actual pinned future source; execute_process/remote/remote_program/phone and REMOTE_IO/SSH/ACTOR equal Q2 reference.",
+    "sender": "Root execute_process negative-sender, exact sender_terminal argv, timeout660, actual joined receipt; stdin descriptor null."
+  },
+  "pure_API": {
+    "assembler": "negative_originals.assemble(plan_raw, read_pinned=...)",
+    "closer": "close_cpu_negative.close_originals(plan_raw, read_pinned=...)"
+  },
+  "schema": "hepta.r10.cpu-negative-host-closure-interface.v1",
+  "source_pin_cascade": "Final dependencies frozen later; then Root PURE_MODULES core/closer exact descriptors follow in one reviewed generation.",
+  "sources": {
+    "close_cpu_negative.py": {
+      "bytes": 43958,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cpu-cancel-host-closure-r1-candidate01/source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    "ledger_prefix_negative.py": {
+      "bytes": 29465,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cpu-cancel-host-closure-r1-candidate01/source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    "negative_originals.py": {
+      "bytes": 37253,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cpu-cancel-host-closure-r1-candidate01/source/negative_originals.py",
+      "sha256": "939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2"
+    },
+    "root_cpu_negative.py": {
+      "bytes": 15256,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/cpu-cancel-host-closure-r1-candidate01/source/root_cpu_negative.py",
+      "sha256": "29531f8f54716b6aa83f76a3007473b9b5a38f4fbd6b8f74d895bfa2a1d3a748"
+    }
+  },
+  "state": "SOURCE_ONLY_FUTURE_DEPENDENCIES_UNFROZEN",
+  "third_directory": "Actual run/ledger-prefix full9/names with baseline.json mandatory; equality justified by original record plus final_stability, not invented observations."
+}

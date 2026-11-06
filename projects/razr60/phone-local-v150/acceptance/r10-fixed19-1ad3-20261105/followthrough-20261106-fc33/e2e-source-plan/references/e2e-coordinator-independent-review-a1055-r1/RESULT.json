@@ -1,0 +1,534 @@
+{
+  "actual_business_case_passes": 0,
+  "actual_original_timeout_capture": {
+    "bytes": 2553,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/original-deadline/OUTPUT-CAPTURE.json",
+    "sha256": "0dbe378e89402c64fdd2507e9738621f1fec1bfcd57602a9300f0bba88a8ef5b"
+  },
+  "actual_owned_transport_controls": [
+    {
+      "kind": "actual-operator-CLI-rejection-no-phone",
+      "phase": "register",
+      "result": {
+        "automatic_retry": false,
+        "phase": "cli-register",
+        "pid": 75126,
+        "returncode": 1,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 991,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-register/stderr.original",
+          "sha256": "5a35f8221da379bdb43e6a06a27f79b8295c49aeb080b1b879061504cc0b2210"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-register/stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "kind": "actual-operator-CLI-rejection-no-phone",
+      "phase": "sender_preview",
+      "result": {
+        "automatic_retry": false,
+        "phase": "cli-sender-preview",
+        "pid": 75135,
+        "returncode": 1,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 991,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-sender-preview/stderr.original",
+          "sha256": "5a35f8221da379bdb43e6a06a27f79b8295c49aeb080b1b879061504cc0b2210"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-sender-preview/stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "kind": "actual-operator-CLI-rejection-no-phone",
+      "phase": "sender_execute",
+      "result": {
+        "automatic_retry": false,
+        "phase": "cli-sender-execute",
+        "pid": 75141,
+        "returncode": 1,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 991,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-sender-execute/stderr.original",
+          "sha256": "5a35f8221da379bdb43e6a06a27f79b8295c49aeb080b1b879061504cc0b2210"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-sender-execute/stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "kind": "actual-operator-CLI-rejection-no-phone",
+      "phase": "capture_export",
+      "result": {
+        "automatic_retry": false,
+        "phase": "cli-capture-export",
+        "pid": 75145,
+        "returncode": 1,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 1003,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-capture-export/stderr.original",
+          "sha256": "22b6a0a36dacfd64785f5d92ba463106dbb25962cc354e1619f9c5ecec063ea3"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-capture-export/stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "kind": "actual-operator-CLI-rejection-no-phone",
+      "phase": "collect",
+      "result": {
+        "automatic_retry": false,
+        "phase": "cli-collect",
+        "pid": 75147,
+        "returncode": 1,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 1003,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-collect/stderr.original",
+          "sha256": "22b6a0a36dacfd64785f5d92ba463106dbb25962cc354e1619f9c5ecec063ea3"
+        },
+        "stdout": {
+          "bytes": 0,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-collect/stdout.original",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "kind": "actual-operator-CLI-rejection-no-phone",
+      "phase": "close",
+      "result": {
+        "automatic_retry": false,
+        "phase": "cli-close",
+        "pid": 75148,
+        "returncode": 1,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 1249,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-close/stderr.original",
+          "sha256": "9014d5256a05e5d6b21fcd93faf03b7f4fb560f3b37b5056adc3806f8f7023e4"
+        },
+        "stdout": {
+          "bytes": 141,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/cli-close/stdout.original",
+          "sha256": "f01dacbc0d0fe2b409c3b93e27c1bf2e0dc8c91c02811013b657db77111f8f42"
+        }
+      }
+    },
+    {
+      "kind": "actual-owned-retained-input-transport-only",
+      "result": {
+        "automatic_retry": false,
+        "phase": "retained-input-rc0",
+        "pid": 75149,
+        "returncode": 0,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 16,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/retained-input-rc0/stderr.original",
+          "sha256": "762e471c4c70aced109b0d6d098a5653497c1120f1d259e9b8c3abb1137fe007"
+        },
+        "stdout": {
+          "bytes": 4291,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/retained-input-rc0/stdout.original",
+          "sha256": "4c0c7fa3813650c779bf110f4a7ea2efe8097a6f2c93abdd619e79c89b3cb07f"
+        }
+      }
+    },
+    {
+      "kind": "actual-owned-retained-input-transport-only",
+      "result": {
+        "automatic_retry": false,
+        "phase": "retained-input-rc2",
+        "pid": 75150,
+        "returncode": 2,
+        "state": "ORIGINAL_HOST_CHILD_JOINED",
+        "stderr": {
+          "bytes": 16,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/retained-input-rc2/stderr.original",
+          "sha256": "762e471c4c70aced109b0d6d098a5653497c1120f1d259e9b8c3abb1137fe007"
+        },
+        "stdout": {
+          "bytes": 4291,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/retained-input-rc2/stdout.original",
+          "sha256": "4c0c7fa3813650c779bf110f4a7ea2efe8097a6f2c93abdd619e79c89b3cb07f"
+        }
+      }
+    }
+  ],
+  "checks": 29,
+  "control_source": {
+    "bytes": 18197,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fivefault-source-reconstruction-a1055-r2/source/review_e2e_owned_coordinator03.py",
+    "sha256": "bcd6e17f9c2a99dfcf6fa43855d7d54aead99c475b3ce063932e0dcf05f32fbe"
+  },
+  "current_source_or_runtime_binding_not_inferred": true,
+  "exact_previous10_fields_rechecked": true,
+  "fixed19_credit": 0,
+  "invalid_context_stopped_all_six_operators_before_any_real_phone_phase": true,
+  "model_requests": 0,
+  "native_hash_from_independently_closed_original_report_not_raw_owner_hash": true,
+  "native_submissions": 0,
+  "operator_manifest_pin_is_null": true,
+  "original_deadline_cleanup": {
+    "host_children": [
+      {
+        "automatic_retry": false,
+        "business_qualified": false,
+        "child_join_observed_monotonic": null,
+        "child_wait_returned": false,
+        "cleanup_errors": [
+          {
+            "error_type": "TimeoutExpired",
+            "operation": "original_failure_join",
+            "phase": "original-deadline"
+          }
+        ],
+        "execution_deadline_monotonic": 0.876185875,
+        "output_capture": {
+          "automatic_retry": false,
+          "captured": {
+            "stderr": {
+              "bytes": 0,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 6,
+              "sha256": "e7a2e8b216e5aec3facf743962d3997f2e7d70088ef257de472d6a258049832e"
+            }
+          },
+          "child_join_observed_monotonic": null,
+          "child_returncode": null,
+          "child_wait_returned": false,
+          "deadline_validity": "this_running_coordinator_only",
+          "eof_observed_monotonic": {
+            "stderr": null,
+            "stdout": null
+          },
+          "error": {
+            "code": "CAPTURE_STOP_REQUESTED",
+            "error_type": "InterruptedError"
+          },
+          "execution_deadline_monotonic": 0.876185875,
+          "files": {
+            "stderr": {
+              "bytes": 0,
+              "metadata": {
+                "st_ctime_ns": 1793942720472483191,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 592790009,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793942720472483191,
+                "st_nlink": 1,
+                "st_size": 0,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/original-deadline/stderr.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "stdout": {
+              "bytes": 6,
+              "metadata": {
+                "st_ctime_ns": 1793942720534303777,
+                "st_dev": 16777233,
+                "st_gid": 20,
+                "st_ino": 592790008,
+                "st_mode": 33152,
+                "st_mtime_ns": 1793942720534303777,
+                "st_nlink": 1,
+                "st_size": 6,
+                "st_uid": 501
+              },
+              "original_created_inode_bound": true,
+              "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/transport/original-deadline/stdout.original",
+              "sha256": "e7a2e8b216e5aec3facf743962d3997f2e7d70088ef257de472d6a258049832e"
+            }
+          },
+          "output_limit_bytes_per_stream": 67108864,
+          "persist_errors": [],
+          "phase": "original-deadline",
+          "pid": 75151,
+          "pipe_close_errors": [],
+          "pipe_reader_owner": "closed_by_worker",
+          "prefix_only_or_unknown": true,
+          "remote_terminal_or_cleanup_proven": false,
+          "schema": "hepta.native-guard.host-output-capture.v1",
+          "signals_sent": 0,
+          "source_intent_sha256": "aca60367ff91661f55616707c07bb43fde77ce16ae8d6890da7fe1b1dc5c0263",
+          "stderr_eof": false,
+          "stdout_eof": false,
+          "worker_joined": true,
+          "worker_started": true
+        },
+        "phase": "original-deadline",
+        "pid": 75151,
+        "remote_terminal_or_cleanup_proven": false,
+        "returncode": null,
+        "signals_sent": 0,
+        "state": "OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY"
+      }
+    ],
+    "stream_cleanup_errors": [
+      {
+        "error_type": "TimeoutExpired",
+        "operation": "original_failure_join",
+        "phase": "original-deadline"
+      }
+    ]
+  },
+  "owned_source": {
+    "bytes": 37720,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-e2e-owned-transport-a1055-r1/source/owned_e2e_capture.py",
+    "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29"
+  },
+  "parent_template": {
+    "bytes": 16447,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/final-runtime-actual-adoption-source-a1055-r1/source/run_fixed19_e2e_root_once_template02.py",
+    "sha256": "0f8039e7da75d8e14dddc5187d56c12ff1d278b1286ada62cabb34d842fbf13b"
+  },
+  "passed": [
+    {
+      "name": "E2E-failure-finalizer-is-exact-reviewed-Root-f976-method",
+      "status": "PASS"
+    },
+    {
+      "name": "complete-owned-transport-byte-inverse-with-only-declared-protocol-and-finalizer-deltas",
+      "status": "PASS"
+    },
+    {
+      "name": "complete-template03-byte-inverse-preserves-all-other-phase-and-business-predicates",
+      "status": "PASS"
+    },
+    {
+      "name": "actual-template-remains-unbound",
+      "status": "PASS"
+    },
+    {
+      "error": "UNBOUND_E2E_OPERATOR_MANIFEST_NO_EXECUTION",
+      "error_type": "ValueError",
+      "name": "unbound-execution-refuses-before-input-read",
+      "status": "PASS"
+    },
+    {
+      "name": "actual-default-preview-performs-no-case",
+      "status": "PASS"
+    },
+    {
+      "name": "same-six-phases-and-unchanged-parent-wait-budgets",
+      "status": "PASS"
+    },
+    {
+      "name": "actual-capture-exports-once-no-second-export-phase",
+      "status": "PASS"
+    },
+    {
+      "name": "distinct-owner-native-digests-remain-individually-bound",
+      "status": "PASS"
+    },
+    {
+      "error": "owner bytes and independently audited native envelope are separate bindings",
+      "error_type": "ValueError",
+      "name": "owner-UTF8-digest-mismatch-refused",
+      "status": "PASS"
+    },
+    {
+      "error": "owner bytes and independently audited native envelope are separate bindings",
+      "error_type": "ValueError",
+      "name": "closure-native-digest-cannot-use-raw-owner-hash",
+      "status": "PASS"
+    },
+    {
+      "error": "actual previous native envelope/terminal binding",
+      "error_type": "ValueError",
+      "name": "previous-native-digest-cannot-use-raw-owner-hash",
+      "status": "PASS"
+    },
+    {
+      "error": "same complete actual native scope",
+      "error_type": "ValueError",
+      "name": "previous-full-scope-mismatch-refused",
+      "status": "PASS"
+    },
+    {
+      "error": "actual previous native envelope/terminal binding",
+      "error_type": "ValueError",
+      "name": "previous-entire-native-terminal-mismatch-refused",
+      "status": "PASS"
+    },
+    {
+      "error": "exact actual previous-input producer fields",
+      "error_type": "ValueError",
+      "name": "previous-extra-unreviewed-field-refused",
+      "status": "PASS"
+    },
+    {
+      "error": "exact previous qualification boolean types",
+      "error_type": "ValueError",
+      "name": "previous-integer-is-not-boolean",
+      "status": "PASS"
+    },
+    {
+      "error": "actual previous cleanup/qualification facts differ",
+      "error_type": "ValueError",
+      "name": "previous-no-tool-flag-cannot-hide-actual-tool",
+      "status": "PASS"
+    },
+    {
+      "error": "actual previous cleanup/qualification facts differ",
+      "error_type": "ValueError",
+      "name": "previous-health-credit-for-E2E-refused",
+      "status": "PASS"
+    },
+    {
+      "error": "actual previous cleanup/qualification facts differ",
+      "error_type": "ValueError",
+      "name": "draft-restoration-cannot-grant-business-return-credit",
+      "status": "PASS"
+    },
+    {
+      "error": "actual previous native envelope/terminal binding",
+      "error_type": "ValueError",
+      "name": "unclosed-native-status-refused",
+      "status": "PASS"
+    },
+    {
+      "error": "actual original tool cardinality",
+      "error_type": "ValueError",
+      "name": "tool-cardinality-mismatch-refused",
+      "status": "PASS"
+    },
+    {
+      "error": "previous scope statement cannot grant a future dispatch",
+      "error_type": "ValueError",
+      "name": "changed-previous-scope-statement-refused",
+      "status": "PASS"
+    },
+    {
+      "name": "closed-provider-failure-keeps-failed-status-and-zero-tool-facts",
+      "status": "PASS"
+    },
+    {
+      "error": "actual previous cleanup/qualification facts differ",
+      "error_type": "ValueError",
+      "name": "failed-status-cannot-be-upgraded-by-previous-original",
+      "status": "PASS"
+    },
+    {
+      "name": "six-real-operator-CLIs-and-I-raw-loader-reject-invalid-context-before-any-phone-phase",
+      "status": "PASS"
+    },
+    {
+      "name": "real-owned-original-wait0-and2-plus-both-output-streams-retained",
+      "status": "PASS"
+    },
+    {
+      "error": "phase subject identity",
+      "error_type": "ValueError",
+      "name": "fault-case-id-refused-by-E2E-owner-before-launch",
+      "status": "PASS"
+    },
+    {
+      "name": "input-nonreader-original-deadline-stays-UNKNOWN-after-separate-harness-reap",
+      "status": "PASS"
+    },
+    {
+      "name": "I-raw-loader-created-no-ambient-or-sibling-bytecode-cache",
+      "status": "PASS"
+    }
+  ],
+  "patch": {
+    "bytes": 6544,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/e2e-coordinator-independent-review-a1055-r1/TEMPLATE03.patch",
+    "sha256": "375ba9b4e2aed5eb21f2474c247b76ec229f3ea1516c7e5468e16930e9496081"
+  },
+  "phone_calls": 0,
+  "schema": "hepta.fixed19.e2e.independent-source-review.v1",
+  "source_originals": [
+    {
+      "bytes": 20119,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/final-runtime-actual-adoption-source-a1055-r1/source/run_fixed19_e2e_root_once_template03.py",
+      "sha256": "fd892ebb871442fb984068881dfcecd32af899bd3aa43fe21f891a518fbf706a"
+    },
+    {
+      "bytes": 16447,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/final-runtime-actual-adoption-source-a1055-r1/source/run_fixed19_e2e_root_once_template02.py",
+      "sha256": "0f8039e7da75d8e14dddc5187d56c12ff1d278b1286ada62cabb34d842fbf13b"
+    },
+    {
+      "bytes": 37720,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-e2e-owned-transport-a1055-r1/source/owned_e2e_capture.py",
+      "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29"
+    },
+    {
+      "bytes": 33395,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fivefault-source-reconstruction-a1055-r2/cpu-coordinator-candidate02/source/owned_capture_v3.py",
+      "sha256": "6d1471beefdc243b0246042d905221a32c075609fe0dda360fe0a909375b56f4"
+    },
+    {
+      "bytes": 77398,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-async-failure-finalization-candidate01-a1055-r1/source/run_component_root_once.py",
+      "sha256": "f976c6e99be006fdfa9ec4f13d9fa450bf8f0b2200d7ba297ff9a1e7ce5c8e92"
+    },
+    {
+      "bytes": 1865,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/SOURCE-MANIFEST.json",
+      "sha256": "75e1d179e77272b17d30962882574d7efe50d425f283861451d7ab881763bdac"
+    },
+    {
+      "bytes": 25550,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/capture_originals_r10.py",
+      "sha256": "7e8b3920f9fa1345e8e2906f9cc05afb9db8b9c70c05577d5e5ad2202243d10c"
+    },
+    {
+      "bytes": 41173,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/close_original_r10.py",
+      "sha256": "19af371cb5271ea6b3f8c2929ab969357aee07d14d498dcf50f57e9b3bbc9e75"
+    },
+    {
+      "bytes": 27540,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/export_originals_r10.py",
+      "sha256": "034cebffe8569f09139d3e39dfcef7882683923af6fb5ae7935bb04162e43586"
+    },
+    {
+      "bytes": 2549,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/read_archive_chunk_r10.py",
+      "sha256": "afb19e6792dcced3dc443d25bb5cd9534e56030e3792a85bf7a0c6b7ba574f32"
+    },
+    {
+      "bytes": 10669,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/registration_phone_r10.py",
+      "sha256": "0922878919264a7af3c10db6db960392955654c1e7dbb09716f8a980754546f5"
+    },
+    {
+      "bytes": 27537,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-acceptance-r8-diag02-sides-r1/operator-chain/root_acceptance_r10.py",
+      "sha256": "d92939e5216906c39d87c9c9da05bf8e8efd4c927630258fcb625a2480acc25b"
+    }
+  ],
+  "source_review_never_replaces_actual_original_closure": true,
+  "state": "PASS_HOST_SOURCE_CONTROLS_UNBOUND",
+  "template": {
+    "bytes": 20119,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/final-runtime-actual-adoption-source-a1055-r1/source/run_fixed19_e2e_root_once_template03.py",
+    "sha256": "fd892ebb871442fb984068881dfcecd32af899bd3aa43fe21f891a518fbf706a"
+  }
+}

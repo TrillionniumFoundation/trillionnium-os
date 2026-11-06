@@ -1,0 +1,16 @@
+{
+  "actor_source_after": null,
+  "actor_source_before": null,
+  "baseline": null,
+  "intent": null,
+  "phone_stderr": null,
+  "phone_stdout": null,
+  "process": {
+    "dispatch": null,
+    "read": null,
+    "start": null,
+    "status": null
+  },
+  "request": null,
+  "result": null
+}

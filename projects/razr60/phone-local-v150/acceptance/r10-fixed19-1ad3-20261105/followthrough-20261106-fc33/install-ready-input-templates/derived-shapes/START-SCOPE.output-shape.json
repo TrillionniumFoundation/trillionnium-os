@@ -1,0 +1,20 @@
+{
+  "actual_build_result_sha256": null,
+  "archive_sha256": null,
+  "authority_inputs": null,
+  "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "component_boundary_inputs_sha256": null,
+  "execution_plan": null,
+  "files": null,
+  "installation_generation": null,
+  "phase": "start",
+  "phase_result_sha256": null,
+  "phase_source_identity": null,
+  "phase_stdout_sha256": null,
+  "policy_adoption_inputs_sha256": null,
+  "release_id": "v150-r10-r1",
+  "release_inputs": null,
+  "release_manifest_sha256": null,
+  "retirement_sha256": null,
+  "schema": "hepta.install-original-retention.scope.v1"
+}

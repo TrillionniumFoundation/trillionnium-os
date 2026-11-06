@@ -1,0 +1,120 @@
+{
+  "automatic_retry": false,
+  "case_runs": 0,
+  "cases": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09"
+  ],
+  "current_production_source_count": 15,
+  "files": [
+    {
+      "bytes": 1420,
+      "path": "DERIVATION.json",
+      "sha256": "aef8c34d8c465c6056f5a01dd2c0f0dfe4996c77e5edaf04d1b14814ac459638"
+    },
+    {
+      "bytes": 2259,
+      "path": "GIT-ORIGINALS.json",
+      "sha256": "1854a1684271326e4ebe6a29fcba893cefea350a7ba8dae373c8530034d3ebc0"
+    },
+    {
+      "bytes": 7306,
+      "path": "README.md",
+      "sha256": "76ae5a437ecb86e09350bcd4e64e0325eda6d7f60129b30e538424b32ef2ae5d"
+    },
+    {
+      "bytes": 37318,
+      "path": "reference/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 3130,
+      "path": "reference/r7-r3/README.r7-r2.original.md",
+      "sha256": "150615f7733e1847c39d284e791c7c938fee7adecd4a2548c986091acb8c548b"
+    },
+    {
+      "bytes": 6171,
+      "path": "reference/r7-r3/SOURCE-SEAL.PUBLIC.json",
+      "sha256": "d1ec59f6c80f27bb2522f00b69a8af983303fdeef4b922b58c98669e17d8134d"
+    },
+    {
+      "bytes": 2299,
+      "path": "reference/r7-r3/counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 7559,
+      "path": "reference/r7-r3/execute_namespace_once.py",
+      "sha256": "d9dce9dd6c6612fc5a85ff07a1b321bc0d08c7ff9dc4c24e077771ee3bf0de5f"
+    },
+    {
+      "bytes": 5371,
+      "path": "reference/r7-r3/fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 22963,
+      "path": "reference/r7-r3/frozen_fixture_support.py",
+      "sha256": "f43ca2a3009405cb1a7b58e7fa43808f8d1fba4632da525468972c6e1f4b5cdb"
+    },
+    {
+      "bytes": 26214,
+      "path": "reference/r7-r3/run_fault_cases.py",
+      "sha256": "6163449a9c92fd370fb5e27b190461ae46f2bfe11c180ea7ca1987bdb190b178"
+    },
+    {
+      "bytes": 2975,
+      "path": "reference/r7-r3/run_fixed_faults_once.py",
+      "sha256": "b8f68ae2f9d41d7a5509cd8bbcb8987bceb4277accd66cc92d545b1204a45ea3"
+    },
+    {
+      "bytes": 17390,
+      "path": "reference/tool_client_r6.py",
+      "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f"
+    },
+    {
+      "bytes": 2299,
+      "path": "source/counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 5371,
+      "path": "source/fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 68481,
+      "path": "source/host_capture_transport.py",
+      "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+    },
+    {
+      "bytes": 21183,
+      "path": "source/host_lifecycle.py",
+      "sha256": "19e0ac1e1d8820eddcea6420779e272529ee27d81d802219b74bdb4c71909784"
+    },
+    {
+      "bytes": 15960,
+      "path": "source/lifecycle_support.py",
+      "sha256": "5735be88424d4243c0eb77833b6d90c825ed7a0b1697d22a6cdb28975dbdcdfa"
+    },
+    {
+      "bytes": 27301,
+      "path": "source/run_fault_cases.py",
+      "sha256": "1f2ea3fcba45099acd3ae1b488fd0afe05d0bffd0fef50ec2ccf87e0011eeafc"
+    },
+    {
+      "bytes": 28759,
+      "path": "source/verify_host_originals.py",
+      "sha256": "b4d22fc4964bc236c6e3108d4c0fc509cb98d8e4f61d5c5bd679ac7a225b5e98"
+    }
+  ],
+  "inner_deadline_seconds": 90,
+  "outer_deadline_seconds": 105,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "qualification_layer": "host_isolated",
+  "schema": "hepta.fixed19.r10.host-lifecycle-source-package.v1"
+}

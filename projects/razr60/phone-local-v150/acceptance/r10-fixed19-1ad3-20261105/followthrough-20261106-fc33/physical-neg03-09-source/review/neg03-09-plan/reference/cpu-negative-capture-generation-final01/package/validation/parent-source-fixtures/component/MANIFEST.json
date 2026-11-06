@@ -1,0 +1,46 @@
+{
+  "files": [
+    {
+      "bytes": 330,
+      "path": "COMP01-PLAN.template.json",
+      "sha256": "f09470ffbfd353ffea974ae53e4e987236ef0f00b2784e9225415bbe323987f5"
+    },
+    {
+      "bytes": 6198,
+      "path": "INTERFACE.json",
+      "sha256": "0b4333feac658cdcd8f7edc53485d445c877adb4fc5ba25d86c5978f1c28c9cb"
+    },
+    {
+      "bytes": 546,
+      "path": "NEG03-PLAN.template.json",
+      "sha256": "af05b0c14b3faf44eaf0bbf632ff637a4407af59e03b5dfa57944cb843fb7008"
+    },
+    {
+      "bytes": 30154,
+      "path": "reference/host_negative_runner.original.py",
+      "sha256": "32dd8e70d3b253748f6bfa1b068dd26497cb9ef530dcf5bad49caa5ba5d75d5f"
+    },
+    {
+      "bytes": 37318,
+      "path": "reference/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 15724,
+      "path": "source/component_source_context.py",
+      "sha256": "2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d"
+    },
+    {
+      "bytes": 18043,
+      "path": "source/prepare_direct_return_component.py",
+      "sha256": "915f57d98934f216179806beefc213986df83e255e402c6d8a8f34fea6d123f0"
+    },
+    {
+      "bytes": 18636,
+      "path": "source/verify_unqualified_geometry_fixture.py",
+      "sha256": "3cbc0d9d77629c2183f706fc897075a16952e4cb586f16fef29a65e521c81487"
+    }
+  ],
+  "schema": "hepta.fixed19.comp01-neg03.source-package.v1",
+  "state": "HOST_SOURCE_CANDIDATE_NOT_EXECUTED"
+}

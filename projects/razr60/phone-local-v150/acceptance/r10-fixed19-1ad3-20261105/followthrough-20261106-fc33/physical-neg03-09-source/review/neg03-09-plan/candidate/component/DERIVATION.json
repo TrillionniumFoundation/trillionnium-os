@@ -1,0 +1,49 @@
+{
+  "actual_ready": null,
+  "actual_release": null,
+  "candidate": {
+    "bytes": 24236,
+    "sha256": "5ae3f51d89d8e1d36be07846b34b09f652fdf39db0db0eee98ed0f194c720a2d"
+  },
+  "complete_inverse": true,
+  "direct_return_helper_changed": false,
+  "exact_reference_functions": {
+    "native": {
+      "bytes": 1577,
+      "sha256": "70f162a5f74bc59befa77d6c4b3c6f9e19f207f69e0d1deb89b37360c7dee393"
+    },
+    "reference_claims": {
+      "bytes": 1075,
+      "sha256": "2aff24a894f53e40a4b7b9835c69f1fed6c4216d119cf79b385456d0200979e6"
+    },
+    "reference_field": {
+      "bytes": 232,
+      "sha256": "67c51529983e52ead9800ba1e1ed79fa796f683dea027b37101c47bce79997a9"
+    },
+    "reference_observation": {
+      "bytes": 1914,
+      "sha256": "86c1e699b0deaa41fda6b441c29121e395a7044b1b2805d385b16d5702b06f2d"
+    },
+    "seal_native_fixture": {
+      "bytes": 881,
+      "sha256": "caefaa1a1a2e4f40182e8cbfde1f5e616103d1e13fdf391ede52eb131c859170"
+    },
+    "sha": {
+      "bytes": 57,
+      "sha256": "2f1541faf4c4ebe2f74c17d4b666982327a0f1e144708a531c92f08669705d57"
+    }
+  },
+  "independent_fixture_helper": {
+    "bytes": 40884,
+    "sha256": "dbbfece5877955b68a98770af41a9010365990b3fdbe29a8c9c37e648ec6756a"
+  },
+  "original": {
+    "bytes": 18636,
+    "sha256": "3cbc0d9d77629c2183f706fc897075a16952e4cb586f16fef29a65e521c81487"
+  },
+  "phone_calls": 0,
+  "physical_qualification": false,
+  "production_changed": false,
+  "schema": "fc33.geometry-native-schema-derivation.v1",
+  "synthetic_only": true
+}

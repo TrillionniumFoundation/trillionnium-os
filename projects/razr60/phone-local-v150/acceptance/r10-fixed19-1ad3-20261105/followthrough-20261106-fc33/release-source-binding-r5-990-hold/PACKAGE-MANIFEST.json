@@ -1,0 +1,58 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 5461,
+      "path": "BINDING-PROOF.json",
+      "sha256": "a0e0b9bd483d280dda5f4a32a70a3c671f9c7054790f7bce74520a569113511d"
+    },
+    {
+      "bytes": 717,
+      "path": "HOLD.json",
+      "sha256": "cd4e47e88f174ab07de392745ff80e2de2db8973021153aa784dc0d863e83da3"
+    },
+    {
+      "bytes": 5482,
+      "path": "README.md",
+      "sha256": "24fdfc117c4067df259dc86d22682f8ab1e135d1aa1db07e6b3ed07b4848a6b1"
+    },
+    {
+      "bytes": 3515,
+      "path": "SOURCE-CHAIN-INPUTS.json",
+      "sha256": "e3cc22536e42074ba3fe662101dd4a4c98224de285b0a5c13c32f84d2fac322b"
+    },
+    {
+      "bytes": 4619,
+      "path": "prepare_source_binding.py",
+      "sha256": "38b43b8ed1dea761a9d5e6acf008b64b02b8dfe7769b0e7ebe70ec0c4f535994"
+    },
+    {
+      "bytes": 141612,
+      "path": "publish_and_derive_source_chain.py",
+      "sha256": "d6bfac4486ccd444bfe9ee98f1d1536b6453751200677d6bee5c6f5698360a27"
+    },
+    {
+      "bytes": 11256,
+      "path": "publish_and_derive_source_chain.template.py",
+      "sha256": "e9171b6f0e73b1f6ab5d907c4d997ace9c1cbcfde964f5b0653ca18264ef927a"
+    },
+    {
+      "bytes": 34103,
+      "path": "source/derive_reviewed_release_sources_BOUND.py",
+      "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a"
+    },
+    {
+      "bytes": 249860,
+      "path": "source/release_boundaries.py",
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+    }
+  ],
+  "new_control_scenarios": 0,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.host-preparation-package.v1",
+  "state": "SOURCE_AND_INPUT_PREPARATION_ONLY_NOT_EXECUTED",
+  "total_bytes": 456625
+}

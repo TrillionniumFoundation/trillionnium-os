@@ -1,0 +1,14 @@
+{
+  "actual_policy": null,
+  "host_neg06_namespace": null,
+  "materializer": null,
+  "output_root": null,
+  "policy_adoption": null,
+  "reference_root": null,
+  "release_source_chain": {
+    "constructor": null,
+    "inputs": null
+  },
+  "root_manifest": null,
+  "schema": "hepta.fc33.negative-source-inputs.v1"
+}

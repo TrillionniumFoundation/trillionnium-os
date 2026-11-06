@@ -1,7 +1,7 @@
 {
-  "schema": "hepta.fc33.fixed19-followthrough-checkpoint.v5",
-  "recorded_at": "2026-11-06 17:26:24 UTC",
-  "repository_base_commit": "caaa5c95f1da7689a8fece1c226e845f9dddad5d",
+  "schema": "hepta.fc33.fixed19-followthrough-checkpoint.v6",
+  "recorded_at": "2026-11-06 17:46:10 UTC",
+  "repository_base_commit": "81ec9e53b0d94cd12b18bec101f36991e92355a7",
   "scope": "USER_REQUESTED_ALL_19_CURRENT_TUPLE_QUALIFICATION_CONTINUES",
   "new_whole_cases_closed": [],
   "current_tuple_component_cases_closed": [],
@@ -288,7 +288,25 @@
       "not_a_reconstruction_of_the_exact_prior_failure_instant": true
     },
     "component_qualified": false,
-    "business_qualified": false
+    "business_qualified": false,
+    "host_crosscheck": {
+      "evidence": "neg01-stage-host-evidence/",
+      "verification": {
+        "bytes": 10990,
+        "sha256": "24901268bb1b05ea196f8e8a316ee5e4d10b402f07804a541ec02d408f8c888c"
+      },
+      "host_tree_files": 115,
+      "host_tree_directories": 15,
+      "host_tree_bytes": 10998073,
+      "completed_synchronous_phases": 7,
+      "sender_preview_execute_prepared_actual_ENOENT": true,
+      "own_sender_directory_and_markers_actual_ENOENT": true,
+      "public_originals": 30,
+      "public_original_bytes": 77606,
+      "private_bodies_exported": false,
+      "whole_durable_log_transferred_readonly_not_claimed_as_contiguous_process_read": true,
+      "phone_material_and_source_pushes_did_occur": true
+    }
   },
   "current_foreign_blocker": {
     "label": "root-r10-neg02-a1055-final05",
@@ -305,6 +323,104 @@
       "draft_restore_attempts": 1
     },
     "complete_remote_role_retirement_verified": false,
-    "read_only_reconciliation_in_progress": true
+    "read_only_reconciliation_in_progress": true,
+    "existing_lifecycle_cause_read": {
+      "operation_bytes": 202392,
+      "operation_sha256": "c66ff14cbc1dd93f171b6013c303192fdbef67273431b42d759fdabed2273bef",
+      "existing_readonly_proc_census_does_not_prove_complete_scope_closure": true,
+      "complete_37_runtime_not_yet_freshly_read": true,
+      "independent_kernel_absence_not_yet_observed": true,
+      "new_readonly_probe_preparing": true
+    }
+  },
+  "source_packages_preserved": [
+    {
+      "path": "physical-neg03-09-source/",
+      "files": 328,
+      "bytes": 5669746,
+      "actual_source_chain_admission": null,
+      "actual_BUILD": null,
+      "actual_READY": null,
+      "phone_calls": 0,
+      "whole_case_pass": false
+    },
+    {
+      "path": "e2e-source-plan/",
+      "files": 90,
+      "actual_source_binding": null,
+      "actual_BUILD": null,
+      "actual_READY": null,
+      "phone_calls": 0,
+      "fixed19_credit": 0,
+      "actual_git_blob_publication": {
+        "files": 90,
+        "report_bytes": 62652,
+        "report_sha256": "0d27e7187ba24d0619a5310d63a0d0af98414fa6d99da5ab5477a9cdd3c35215",
+        "git_blob": "9c9800c9531b75a0cfd14c586ce8844dd6c6573d",
+        "original_local_sha1_map_was_not_a_publication_receipt": true
+      }
+    },
+    {
+      "path": "install-ready-input-templates/",
+      "files": 40,
+      "bytes": 392309,
+      "actual_BUILD": null,
+      "actual_install": null,
+      "actual_READY": null,
+      "unbound_slots": 295
+    },
+    {
+      "path": "release-source-binding-r5-990-hold/",
+      "files": 10,
+      "bytes": 458385,
+      "state": "HOLD_SOURCE_CANDIDATE_NOT_PUBLISHED_OR_DERIVED",
+      "actual_BUILD": null,
+      "actual_install": null,
+      "actual_READY": null
+    },
+    {
+      "path": "neg01-stage-host-evidence/",
+      "files": 15,
+      "bytes": 660709,
+      "state": "ACTUAL_FAILED_ATTEMPT_PRESERVED_BEFORE_SENDER",
+      "component_qualified": false
+    }
+  ],
+  "source_publication_attempt01": {
+    "job_id": "1a1b1f3d1a6-fc05-7bb2",
+    "state": "FAILED_BEFORE_ANY_OUTPUT_DIRECTORY_CREATION",
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "stderr_bytes": 207,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "reason": "JSON descriptor key insertion order changed generated Python source bytes; exact full-byte inverse gate rejected",
+    "pure_local_reproduction": true,
+    "phone_calls": 0,
+    "actual_BUILD": null,
+    "actual_install": null,
+    "actual_READY": null,
+    "output_observation": {
+      "job_id": "1a1b1f6b757-fc05-7bc4",
+      "exit_code": 0,
+      "stdout_bytes": 505,
+      "stderr_bytes": 0,
+      "both_output_directories_actual_ENOENT": true
+    },
+    "source_correction_in_progress": true
+  },
+  "successor_preparer_source_only": {
+    "source_sha256": "90edc36bb790641b39e3a81d938237e48506976fcf1bd37c51fdf567416a7c1b",
+    "bytes": 20772,
+    "NEG01_label": "root-r10-neg01-fc33-bound02",
+    "NEG02_label": "root-r10-neg02-fc33-bound01",
+    "original_label_untouched": true,
+    "explicitly_excludes_prior_two_consumed_nonces": true,
+    "complete_byte_inverse": true,
+    "identity_generated": false,
+    "host_plan_create_executed": false,
+    "phone_calls": 0,
+    "requires_fresh_recovery_admission": true
   }
 }
