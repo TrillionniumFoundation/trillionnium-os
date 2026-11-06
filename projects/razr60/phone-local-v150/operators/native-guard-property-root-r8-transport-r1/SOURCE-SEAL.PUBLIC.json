@@ -1,0 +1,97 @@
+{
+  "boundary_reference": "PUBLIC-SOURCE-BOUNDARY.md",
+  "boundary_sha256": "49ab5e01669c3f30d946b415a92907d433fca12c040f71938096539b87090e49",
+  "excluded": [
+    "private requests or fresh nonces",
+    "draft contents or their digests",
+    "actual claims or native histories or their digests",
+    "keys or key-content digests",
+    "original private runtime bindings",
+    "raw host process records or hashes of raw results",
+    "repeated synthetic fixture inputs",
+    "model weights or executables",
+    "full binary SELinux policies",
+    "deployment archives",
+    "private original review patch",
+    "installer or activation script"
+  ],
+  "files": [
+    {
+      "bytes": 622,
+      "path": "CANDIDATE-BINDING.PUBLIC.json",
+      "sha256": "378bc5ea95fb4abb9f539cc30bd7b634631edada821cb4028b7a694d77bd70b3"
+    },
+    {
+      "bytes": 9322,
+      "path": "HOST-TEST-SUMMARY.PUBLIC.json",
+      "sha256": "6db0fcba5830c4c694ff3cad6b78698cb9c85306eebab0dc78e86a58a61e0474"
+    },
+    {
+      "bytes": 8372,
+      "path": "PROJECTION-RULES.PUBLIC.json",
+      "sha256": "17d4c5cfcd33d2424489028fe3463576f1bd10c6a7c8333991b89531e524e519"
+    },
+    {
+      "bytes": 6898,
+      "path": "README-PUBLIC.md",
+      "sha256": "c7f9941664b05c67bbc8d18863a6bd19e0dc1081187906ac5a51b343cedb50ba"
+    },
+    {
+      "bytes": 15081,
+      "path": "TRANSPORT.PUBLIC.patch",
+      "sha256": "dfe5eed6e269bf46ed283f551337b08c087b135bfa07c7e0c22952589d8c353a"
+    },
+    {
+      "bytes": 46176,
+      "path": "base/run_component_root_once.py",
+      "sha256": "3eacd09518e4a729bab879fa63dff327a6e3e192d89722dc27d955333c7cce8d"
+    },
+    {
+      "bytes": 54762,
+      "path": "candidate/run_component_root_once.py",
+      "sha256": "88a37c17ceda4664e1d8a1b6d5f14351526cd8288ceed7bc00b863084ef095da"
+    },
+    {
+      "bytes": 16691,
+      "path": "test_transport_public.py",
+      "sha256": "141a67e624f97ddc2ab911b50efbb6e1090a80176a83adf202f130b956488c6a"
+    }
+  ],
+  "original_to_public": [
+    {
+      "original_full_source_sha256": "5263e9a19c8f6d2f7a60d560db7cce3a1c234ca79c77c04c3465323bc0bd9ca2",
+      "public_path": "base/run_component_root_once.py",
+      "public_sha256": "3eacd09518e4a729bab879fa63dff327a6e3e192d89722dc27d955333c7cce8d",
+      "role": "baseline"
+    },
+    {
+      "original_full_source_sha256": "033b8351450946392fdfb0cea14775af726eb4d1dfb2e70a0f8b54fd44ddbb27",
+      "public_path": "candidate/run_component_root_once.py",
+      "public_sha256": "88a37c17ceda4664e1d8a1b6d5f14351526cd8288ceed7bc00b863084ef095da",
+      "role": "candidate"
+    }
+  ],
+  "repository_directory": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1",
+  "schema": "razr60.r8-transport-public-source-seal.v1",
+  "seal_and_allowlist_and_checksums_excluded_from_this_payload_index": true,
+  "state": "PUBLIC_REVIEW_ONLY_SOURCE_PROJECTION_WITH_HOST_TESTS",
+  "verification": {
+    "baseline_defect_reproductions": 2,
+    "both_complete_public_sources_compile": true,
+    "candidate_regressions": 31,
+    "full_private_binding_validation_claimed": false,
+    "original_none_guards_preserved": [
+      "PKG",
+      "COMBINATION",
+      "VERIFIER_SHA",
+      "VERIFIER_BYTES",
+      "POLICY_SHA",
+      "ADOPTION_SHA",
+      "ROOT_SCOPE_SHA"
+    ],
+    "phone_execution_or_qualification": false,
+    "public_host_checks_passed": 33,
+    "public_patch_applies_exactly": true,
+    "public_transport_test_ast_equals_corresponding_private_ast": true
+  }
+}

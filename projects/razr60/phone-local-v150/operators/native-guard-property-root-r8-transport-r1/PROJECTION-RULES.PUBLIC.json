@@ -1,0 +1,266 @@
+{
+  "boundary_reference": "PUBLIC-SOURCE-BOUNDARY.md",
+  "boundary_sha256": "49ab5e01669c3f30d946b415a92907d433fca12c040f71938096539b87090e49",
+  "header": "Common explicit review-only public-projection marker added after the shebang.",
+  "original_none_guards_preserved": [
+    "PKG",
+    "COMBINATION",
+    "VERIFIER_SHA",
+    "VERIFIER_BYTES",
+    "POLICY_SHA",
+    "ADOPTION_SHA",
+    "ROOT_SCOPE_SHA"
+  ],
+  "removed_binding_values_and_their_hashes_published": false,
+  "same_substitutions_applied_to_both_sources": true,
+  "schema": "razr60.r8-transport-public-projection-rules.v1",
+  "standalone_process_instance_literals_found": 0,
+  "substitutions": [
+    {
+      "category": "workspace",
+      "id": "P01",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_PRIVATE_WORKSPACE",
+      "selector": "B.Path_argument"
+    },
+    {
+      "category": "runtime_binding",
+      "id": "P02",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_PHONE_GUEST_STATE_ROOT",
+      "selector": "assignment.G"
+    },
+    {
+      "category": "runtime_binding",
+      "id": "P03",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_PHONE_NATIVE_STATE_ROOT",
+      "selector": "assignment.N"
+    },
+    {
+      "category": "runtime_binding",
+      "id": "P04",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_DEVICE_BOOT_ID",
+      "selector": "assignment.BOOT"
+    },
+    {
+      "category": "runtime_binding",
+      "id": "P05",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_PHONE_EXECUTION_ENVIRONMENT ",
+      "selector": "assignment.ENV"
+    },
+    {
+      "category": "retained_material",
+      "id": "P06",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_SHARED_MATERIAL_DIRECTORY",
+      "selector": "MATERIAL_ROOT.relative_directory"
+    },
+    {
+      "category": "host_address",
+      "id": "P07",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_SSH_JUMP_HOST.invalid",
+      "selector": "SSH.jump_host"
+    },
+    {
+      "category": "host_address",
+      "id": "P08",
+      "matches_in_each_source": 1,
+      "required_replacement": "HostName=REQUIRED_SSH_ADDRESS.invalid",
+      "selector": "SSH.HostName_option"
+    },
+    {
+      "category": "host_address",
+      "id": "P09",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_SSH_TARGET.invalid",
+      "selector": "SSH.target_alias"
+    },
+    {
+      "category": "remote_workspace",
+      "id": "P10",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_REMOTE_CHAIN_ROOT/",
+      "selector": "Chain.remote_root"
+    },
+    {
+      "category": "remote_workspace",
+      "id": "P11",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_REMOTE_SENDER_PREFIX/",
+      "selector": "Chain.run.sender_directory"
+    },
+    {
+      "category": "remote_workspace",
+      "id": "P12",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_REMOTE_FIXTURE_ROOT/",
+      "selector": "Chain.run.fixture_root"
+    },
+    {
+      "category": "remote_workspace",
+      "id": "P13",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_REMOTE_ACTOR_WORKSPACE",
+      "selector": "Chain.phone.actor_workspace"
+    },
+    {
+      "category": "runtime_binding",
+      "id": "P14",
+      "matches_in_each_source": 1,
+      "required_replacement": "/REQUIRED_PHONE_PUSH_PREFIX/",
+      "selector": "Chain.push_copy.destination_prefix"
+    },
+    {
+      "category": "runtime_binding",
+      "id": "P15",
+      "matches_in_each_source": 1,
+      "required_replacement": "shell,v2,raw:/REQUIRED_PHONE_ROOT_SHELL -c ",
+      "selector": "Chain.phone.root_shell_wire_prefix"
+    },
+    {
+      "category": "retained_history",
+      "id": "P16",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_CLOSED_PREDECESSOR_DIRECTORY",
+      "selector": "validate_current_prior.closed_predecessor_namespace"
+    },
+    {
+      "category": "retained_size_binding",
+      "id": "P17",
+      "matches_in_each_source": 1,
+      "required_replacement": "p['previous']['bytes']=='REQUIRED_PREVIOUS_INPUT_BYTES'",
+      "selector": "p['previous']['bytes']"
+    },
+    {
+      "category": "retained_size_binding",
+      "id": "P18",
+      "matches_in_each_source": 1,
+      "required_replacement": "p['shared_materials']['bytes']=='REQUIRED_SHARED_MATERIAL_BYTES'",
+      "selector": "p['shared_materials']['bytes']"
+    },
+    {
+      "category": "history_label",
+      "id": "P19",
+      "matches_in_each_source": 5,
+      "required_replacement": "REQUIRED_CLOSED_PREDECESSOR",
+      "selector": "diagnostic_history_label"
+    },
+    {
+      "category": "history_label",
+      "id": "P20",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_EARLIER_PREDECESSOR",
+      "selector": "diagnostic_history_label"
+    },
+    {
+      "category": "history_label",
+      "id": "P21",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_EARLIER_GENERATIONS",
+      "selector": "diagnostic_history_label"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D01",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_SENDER_SOURCE_SHA256",
+      "selector": "SENDER"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D02",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_READY_HELPER_SOURCE_SHA256",
+      "selector": "READY_HELPER"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D03",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_ACTOR_SOURCE_SHA256",
+      "selector": "ACTOR"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D04",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_RETIREMENT_DESCRIPTOR_SHA256",
+      "selector": "RET"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D05",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_SHARED_MATERIALS_SHA256",
+      "selector": "SHARED"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D06",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_CONFIG_SHA256",
+      "selector": "CONFIG"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D07",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_SERVICE_INPUTS_SHA256",
+      "selector": "SERVICE"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D08",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_PRIOR_POLICY_SHA256_01",
+      "selector": "validate_adoption.prior_policy_1"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D09",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_PRIOR_POLICY_SHA256_02",
+      "selector": "validate_adoption.prior_policy_2"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D10",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_PRIOR_POLICY_SHA256_03",
+      "selector": "validate_adoption.prior_policy_3"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D11",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_PARENT_ADOPTION_SHA256",
+      "selector": "validate_adoption.parent_adoption"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D12",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_PRIOR_BOUNDARY_SHA256",
+      "selector": "validate_adoption.prior_boundary"
+    },
+    {
+      "category": "embedded_binding_digest",
+      "id": "D13",
+      "matches_in_each_source": 1,
+      "required_replacement": "REQUIRED_CLOSED_PREDECESSOR_INPUT_SHA256",
+      "selector": "validate_current_prior.previous_input"
+    }
+  ],
+  "test_harness_projection": [
+    "relative public source and binding filenames",
+    "raw output defaults to unique OS temporary directory",
+    "public binding schema assertion",
+    "raw result path removed from printed completion metadata",
+    "no test assertions or test cases removed"
+  ],
+  "tested_transport_ast_unchanged_by_projection": true
+}
