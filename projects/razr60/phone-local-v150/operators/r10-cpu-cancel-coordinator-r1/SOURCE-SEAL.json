@@ -1,0 +1,172 @@
+{
+  "acceptance_case_credit": 0,
+  "created_utc": "2026-11-06T01:30:44.086339+00:00",
+  "entry_source": "source/coordinate_cpu_cancel_once.py",
+  "file_count": 31,
+  "files": [
+    {
+      "bytes": 11079,
+      "path": "README.md",
+      "sha256": "e9178d4c51a7210664dec91decd39df05a2a8ab9bbed50bf5eef7a8d8d311023"
+    },
+    {
+      "bytes": 7224,
+      "path": "REFERENCE-INDEX.json",
+      "sha256": "43f046687a1ae82714fe9cbd7d2a299af13d3472c0a6bb8a35e938dafd70c02c"
+    },
+    {
+      "bytes": 31609,
+      "path": "reference/active-current-template.py",
+      "sha256": "9ac3d3957a2f0769817aae505d5f9a49e2e6549e4f0bd964ea268b8b5781ed6d"
+    },
+    {
+      "bytes": 878,
+      "path": "reference/actual-capture0374/CHILD.json",
+      "sha256": "7aa2638dd4d3ac8f53dbee9d667d0eec13c6d9f3ed295845550b810548d5b644"
+    },
+    {
+      "bytes": 889,
+      "path": "reference/actual-capture0374/INTENT.json",
+      "sha256": "7dffef3435391b2ac2b97b401a7ff8b183a2e60b5508c5c0dea652184122cd4e"
+    },
+    {
+      "bytes": 2325,
+      "path": "reference/actual-capture0374/OUTPUT-CAPTURE.json",
+      "sha256": "1cc7a4183b35ee9c55393b4af27a9af72deafd56579460887d4f40e0a97552b6"
+    },
+    {
+      "bytes": 619,
+      "path": "reference/actual-capture0374/RESULT.json",
+      "sha256": "911b715e75042d8da514ecab895f95b72efdee274446f5b8ac11696e1d74e264"
+    },
+    {
+      "bytes": 0,
+      "path": "reference/actual-capture0374/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 294912,
+      "path": "reference/actual-capture0374/stdin.original",
+      "sha256": "3b4aca549e2f432ef1c9332ecf07b3aed71a646efda9870673cb7a6ab207dceb"
+    },
+    {
+      "bytes": 65,
+      "path": "reference/actual-capture0374/stdout.original",
+      "sha256": "cc567eec932079ca2c4a7c635b018c464d51c71afaaccbdaf77c1d2f3ef8a6f9"
+    },
+    {
+      "bytes": 31813,
+      "path": "reference/cancel-base/active_runtime_r10.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 26407,
+      "path": "reference/cancel-base/cancel_native_once_r10.py",
+      "sha256": "d973891aa125ce2deb2237064fbc101d5d9d915d9e4bd75e25e4da298eecd5f1"
+    },
+    {
+      "bytes": 8053,
+      "path": "reference/cancel-base/cancel_phase.py",
+      "sha256": "36890bfb9dbbf324963a92c93e45d211a574fcb8e360c8e413669ce2ce607ed2"
+    },
+    {
+      "bytes": 4116,
+      "path": "reference/cancel-base/decode_client_state.py",
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+    },
+    {
+      "bytes": 6701,
+      "path": "reference/cancel-base/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 17449,
+      "path": "reference/cancel-base/observe_cancel_phase_r10.py",
+      "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+    },
+    {
+      "bytes": 1438,
+      "path": "reference/cancel-base/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 3977,
+      "path": "reference/cancel-base/reviewed_page_projection.py",
+      "sha256": "96a1af463b205adf5baa544a9a27122fc7424e72fcc38e2fd4bcf26533ea7c93"
+    },
+    {
+      "bytes": 44221,
+      "path": "reference/negative_originals.original.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    {
+      "bytes": 31418,
+      "path": "reference/p4_capture.original.py",
+      "sha256": "a66d5e4de27912716748f53a599c513ea46bb81415d64ec184e91e4744c122c2"
+    },
+    {
+      "bytes": 44102,
+      "path": "reference/phone_capture.original.py",
+      "sha256": "79ed15ea8b23662c091bd64bcdc63d972b18cd9552f5af9fa2d825ddd75cd082"
+    },
+    {
+      "bytes": 1438,
+      "path": "reference/production-pins-current.json",
+      "sha256": "ee4362447744673df4ac5d051df283c47bd0ee382a8f3a9742ba1a4bd0b917c7"
+    },
+    {
+      "bytes": 45952,
+      "path": "reference/root-Q2.original.py",
+      "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+    },
+    {
+      "bytes": 71820,
+      "path": "reference/root-capture-r8.original.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    {
+      "bytes": 50546,
+      "path": "source/coordinate_cpu_cancel_once.py",
+      "sha256": "59449fc7839504143a08c4acec1e6ab7bd2321012e3b21a5835d19592aa73086"
+    },
+    {
+      "bytes": 571,
+      "path": "templates/COORDINATOR-PLAN.template.json",
+      "sha256": "5e76b502d113996a7d91b843d527743ba37c9ebaad5e5d7ceb15c7fd2fd2f62e"
+    },
+    {
+      "bytes": 1012,
+      "path": "templates/FINAL-AUTHORITY.template.json",
+      "sha256": "6ce208a5f6fb575222e3c6412cf5e3eba55e190527dd444ee65a79da2ba1eddb"
+    },
+    {
+      "bytes": 22396,
+      "path": "tests/run_regressions.py",
+      "sha256": "24fad8d4d3d5ff664a77e7b23220fffcb98478d7b6783416cfe198ba90f8248f"
+    },
+    {
+      "bytes": 893,
+      "path": "validation/INDEPENDENT-MAPPING-REVIEW.json",
+      "sha256": "e58ca205f027730f433d1862da2a8f1df97db9125b77b93a3d668eab4f5b2f46"
+    },
+    {
+      "bytes": 14698,
+      "path": "validation/LOCAL-REGRESSIONS.initial.json",
+      "sha256": "c1d3a83e155032410674a0a689f40db870ecf20783bd182a51e03b4ecee2bb61"
+    },
+    {
+      "bytes": 14698,
+      "path": "validation/LOCAL-REGRESSIONS.pre-review.json",
+      "sha256": "2010c503fece98ba5aa83766ae38eb070f7c7149809674186d21f6ba8a9caf20"
+    }
+  ],
+  "final_authority": null,
+  "historical_or_synthetic_fixtures_are_execution_authority": false,
+  "independent_mapping_review": "validation/INDEPENDENT-MAPPING-REVIEW.json",
+  "native_cases_run": 0,
+  "phone_calls": 0,
+  "schema": "hepta.cpu-cancel.coordinator-source-seal.v1",
+  "state": "FROZEN_UNBOUND_SOURCE_CANDIDATE",
+  "total_bytes": 793319,
+  "validation": "validation/LOCAL-REGRESSIONS.pre-review.json"
+}

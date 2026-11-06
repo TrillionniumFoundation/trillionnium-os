@@ -1,0 +1,62 @@
+{
+  "files": [
+    {
+      "bytes": 10160,
+      "path": "README.md",
+      "sha256": "320d4efd760e5188d77525a97216e68667aa386cbb5cb4ac235770eef2ee8712"
+    },
+    {
+      "bytes": 114386,
+      "path": "SOURCE-PAYLOAD.json",
+      "sha256": "75213e221fe5366946f16894f69354e70c9a205e5f1679429f9308875615e71e"
+    },
+    {
+      "bytes": 818,
+      "path": "SOURCE-PINS.json",
+      "sha256": "d227d0efe7effa5f12a62ea2861ac13bd1059a8db5e97c714e3638263d09600c"
+    },
+    {
+      "bytes": 3751,
+      "path": "STAGER-SEAL.json",
+      "sha256": "76bd66444371a771d6c1b0b3c8b1f5b29c8f7d610202a3c7f88771b04bf89ea3"
+    },
+    {
+      "bytes": 11752,
+      "path": "evidence/BASELINE-STAGER.py.original",
+      "sha256": "390a82412a730954bf9a757e9ee1ebdde1fd6152bf49a2ebfbe544d997cc3a69"
+    },
+    {
+      "bytes": 45051,
+      "path": "evidence/CP09-PARENT-NAMES-BEFORE.json",
+      "sha256": "2bb37c4595424b274b169035c35d9bd66fa556c5da969891f162eccb226d0370"
+    },
+    {
+      "bytes": 8730,
+      "path": "evidence/LOCAL-STAGER-REGRESSIONS-PARENT-RACE.json",
+      "sha256": "60a862998fbcecebdc68a8f7f52a61dd04b24091f82c3fdcabf2cb8b534c1c84"
+    },
+    {
+      "bytes": 6471,
+      "path": "evidence/LOCAL-STAGER-REGRESSIONS.json",
+      "sha256": "83d5dc486d1aa07af3e3aaddefa95f08896ce0b4f921fec5dc160d96152e5101"
+    },
+    {
+      "bytes": 145503,
+      "path": "process-start.NOT-EXECUTED.json",
+      "sha256": "15380938bbaab91ca07ae9bb29f0babca5ef0a1ec3a7465cbd1f3ac01155fb2b"
+    },
+    {
+      "bytes": 30141,
+      "path": "stage_sources_once.py",
+      "sha256": "68951c4ed2c0165b2091c034ef926b6aaacf775ad90834bad42d025437d09c5e"
+    },
+    {
+      "bytes": 23391,
+      "path": "tests/run_regressions.py",
+      "sha256": "5c5859a6c1539abd153e6eb41f2160de08de4121eee609464abdca8862bb271c"
+    }
+  ],
+  "inventory_self_included": false,
+  "schema": "hepta.reviewable-package-inventory.v1",
+  "scope": "audit02 source-stage preparation; not executed"
+}

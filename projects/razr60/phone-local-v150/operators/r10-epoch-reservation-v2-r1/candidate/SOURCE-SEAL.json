@@ -1,0 +1,66 @@
+{
+  "case_credit": 0,
+  "files": [
+    {
+      "bytes": 2939,
+      "path": "README.md",
+      "sha256": "0d8e53413825e43782245bcffd32c26f061f5ce13327fd3c90a06900d1b2ef54"
+    },
+    {
+      "bytes": 11892,
+      "path": "build_candidate.py",
+      "sha256": "802886bad74252b9dfb2e74525d0f5aaca7040ef98d9e5a2caa2c32fff99277f"
+    },
+    {
+      "bytes": 118140,
+      "path": "reference/component_common.py",
+      "sha256": "dd9374251800637f6269fba0745653d1f23c0944e9c436ad89913f838456b7a2"
+    },
+    {
+      "bytes": 9812,
+      "path": "reference/epoch_admission_values.fragment.py",
+      "sha256": "6d3b3d1ab5fd10e23b125f99c216141d4d341dc116c4eb5387571f6fffb5959d"
+    },
+    {
+      "bytes": 105202,
+      "path": "reference/epoch_stage_operations.fragment.py",
+      "sha256": "3704b0918d0a5e51f2761630a947ee8b394e96330bad4699836b69bcd4d93c25"
+    },
+    {
+      "bytes": 130768,
+      "path": "reference/prepare_component.parent.py",
+      "sha256": "b5cfdd8a909ff06a2e8f15d71b33f6e8db5641c9dbb9e763f96528beeeee4fba"
+    },
+    {
+      "bytes": 21816,
+      "path": "run_regressions.py",
+      "sha256": "8c084c8aba2c4c1fcc8a6c8388dd6ef7b9db6b07e0936cfa0c17aee7a8e4074b"
+    },
+    {
+      "bytes": 130365,
+      "path": "source/prepare_component.py",
+      "sha256": "27ad2b5f39dcfc24f600d2890d4d9a81d7c1eaf0561b9fb00b6df5294dc65b13"
+    },
+    {
+      "bytes": 5907,
+      "path": "validation/LOCAL-REGRESSIONS.json",
+      "sha256": "c904dbd91870eae1a25246318eaf5d3c60f83652312071f8704e5c118c3b2b0f"
+    },
+    {
+      "bytes": 14487,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "153cc95a2471a3d4067fa97b56c28f9e4001b8fcddf6751bb7ea2f0b9f2f4d1f"
+    },
+    {
+      "bytes": 20875,
+      "path": "validation/prepare_component.patch",
+      "sha256": "b3175a52077d6a418bec8e9bae84dd94280d72604e78b00d5e7caf906bddfdde"
+    }
+  ],
+  "final_runtime_assembly": false,
+  "phone_calls": 0,
+  "schema": "hepta.prepare-epoch-v2.source-seal.v1",
+  "source_bytes": 130365,
+  "source_limit": 131072,
+  "state": "FROZEN_UNBOUND_SOURCE_CANDIDATE"
+}

@@ -1,0 +1,23 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-"
+  ],
+  "cwd": "/private/tmp",
+  "timeout_seconds": 15,
+  "idempotency_key": "hepta-cp09-owned-dir-probe-acceptanceaudit-01-4b572de398a74ce0",
+  "stdin_file": "/workspace/scratch/2438ae2c67d8/acceptance-audit/checkpoint09-readonly/mac_owned_dir_probe.py",
+  "stdin_bytes": 5744,
+  "stdin_sha256": "85b3642a54b7685447d080d908a83b26843be8d311d146ceac363bf8485aedf6",
+  "mutations": "One absent private directory and one create-only synthetic INTENT; all retained; no historical writes",
+  "bounds": {
+    "inner_seconds": 8,
+    "cpu_seconds": 3,
+    "file_size": 16384,
+    "created_directories": 1,
+    "created_files": 1
+  }
+}

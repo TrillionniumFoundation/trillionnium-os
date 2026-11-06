@@ -1,0 +1,34 @@
+{
+  "deadline_validity": "this_running_coordinator_only",
+  "execution_deadline_monotonic": 24405.914154255,
+  "identity_missing_only_if_actual_child_already_joined": false,
+  "maximum_starts": 1,
+  "original_output_identities": {
+    "stderr": {
+      "st_ctime_ns": 1793860397332444756,
+      "st_dev": 27,
+      "st_gid": 0,
+      "st_ino": 3409553,
+      "st_mode": 33152,
+      "st_mtime_ns": 1793860397332444756,
+      "st_nlink": 1,
+      "st_size": 0,
+      "st_uid": 0
+    },
+    "stdout": {
+      "st_ctime_ns": 1793860397331619103,
+      "st_dev": 27,
+      "st_gid": 0,
+      "st_ino": 3409552,
+      "st_mode": 33152,
+      "st_mtime_ns": 1793860397331619103,
+      "st_nlink": 1,
+      "st_size": 0,
+      "st_uid": 0
+    }
+  },
+  "pgid": 17,
+  "pid": 17,
+  "sid": 17,
+  "source_intent_sha256": "7dffef3435391b2ac2b97b401a7ff8b183a2e60b5508c5c0dea652184122cd4e"
+}

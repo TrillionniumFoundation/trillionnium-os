@@ -1,0 +1,21 @@
+{
+  "baseline": {
+    "bytes": 30233,
+    "commit": "a87b2fc4b99880e3820d2fffd285943777ac4057",
+    "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint09/reviewable/audit_policy_history_once.py",
+    "sha256": "039f442f855ce27dc8c6f517785a4ca763b7729f1a5f17151f6a3deb2a99ef21"
+  },
+  "candidate": {
+    "bytes": 30473,
+    "path": "source/audit_policy_history_once.py",
+    "sha256": "88d441ff38197993e4b0b08812f68c8729bd61f5a4c53027f5617a1187cbadf6"
+  },
+  "historical_failure_cause_proven": false,
+  "mac_probe_stdout": {
+    "bytes": 1821,
+    "path": "evidence/MAC-PROBE-stdout.original",
+    "sha256": "ca9f9df8ff993ad3a2f3390d88a6a51a8a290783385d7432a9d97f035f3eb3af"
+  },
+  "schema": "hepta.owned-output-directory-source-candidate.v1",
+  "source_scope": "guard-only review candidate; fixed production entry paths and original pins retained, no audit dispatch"
+}

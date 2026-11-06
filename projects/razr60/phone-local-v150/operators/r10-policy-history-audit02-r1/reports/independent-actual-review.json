@@ -1,0 +1,177 @@
+{
+  "actual_child": {
+    "both_eof": true,
+    "originals": {
+      "capture": {
+        "bytes": 2535,
+        "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/originals/caller/policy-history-audit/OUTPUT-CAPTURE.json",
+        "sha256": "55e9452e2f55ba5cb289ac223bf581f465c4155efdf08c92af57601cd696f647"
+      },
+      "result": {
+        "bytes": 821,
+        "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/originals/caller/policy-history-audit/RESULT.json",
+        "sha256": "49c4dba10d08b119ebf326ac17a4382ea3d239d4306357f512dbd426a3da43ca"
+      }
+    },
+    "pid": 44954,
+    "reader_worker_joined": true,
+    "returncode": 0,
+    "signals_sent": 0,
+    "wait_returned": true
+  },
+  "actual_sources": [
+    {
+      "bytes": 608,
+      "full9": [
+        16777233,
+        591774343,
+        33152,
+        501,
+        20,
+        1,
+        608,
+        1793922934765715656,
+        1793922934765715656
+      ],
+      "name": "SOURCE-MANIFEST.json",
+      "sha256": "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f"
+    },
+    {
+      "bytes": 30525,
+      "full9": [
+        16777233,
+        591774344,
+        33152,
+        501,
+        20,
+        1,
+        30525,
+        1793922934765968121,
+        1793922934765968121
+      ],
+      "name": "audit_policy_history_once.py",
+      "sha256": "4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86"
+    },
+    {
+      "bytes": 54516,
+      "full9": [
+        16777233,
+        591774345,
+        33152,
+        501,
+        20,
+        1,
+        54516,
+        1793922934766190544,
+        1793922934766190544
+      ],
+      "name": "run_policy_history_owned_once.py",
+      "sha256": "9f5c8555c781bde2950bd44b7659225ebc6889027f6bc26c64a72c9d9b25235c"
+    }
+  ],
+  "audit_result": {
+    "bytes": 4169,
+    "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/originals/audit/RESULT.json",
+    "sha256": "d3d223102dc613acd90caf15da1b86349f5b1e2b2a8b5ad098437e970162707e"
+  },
+  "budgets": {
+    "auditor_complete_physical_read_bytes": 64571299,
+    "auditor_elapsed_seconds": 8.530015708999999,
+    "auditor_seconds_limit": 90,
+    "caller_physical_read_total_upper": 1726986,
+    "combined_known_upper": 66298285,
+    "combined_margin": 810579,
+    "controller_seconds_limit": 150,
+    "metadata_limit": 524288,
+    "metadata_total_charged_bytes": 276049,
+    "read_limit": 67108864
+  },
+  "caller_result": {
+    "bytes": 5951,
+    "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/originals/caller/CALLER-RESULT.json",
+    "sha256": "e644a0335534f514a9263b45d790500e449342037911fdb33b9b1c85b24265cb"
+  },
+  "case_credit": 0,
+  "classification": "Historical host reconciliation of fixed adoption originals; no current-live-policy or fresh-phone clearance is inferred.",
+  "current_policy_hash_authorization": false,
+  "fresh_phone_clearance": false,
+  "historical_inputs": {
+    "all_two_complete_read_bookends_full9_equal": true,
+    "all_verifier_callbacks_positive": true,
+    "descriptor_path_bytes": 31518321,
+    "held_through_entire_audit": false,
+    "input_paths_including_adoption": 555,
+    "peak_owned_read_fds": 35,
+    "readset": {
+      "bytes": 496793,
+      "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/originals/audit/READSET.json",
+      "sha256": "ab1c083c188e6b2b7f6898adcfa56eb4595e2b89971107fd1a3ca08cf854dae5"
+    },
+    "unique_bytes": 23893406,
+    "unique_sha_objects": 332,
+    "verification_originals": 554
+  },
+  "historical_verifier_reruns_by_reviewer": 0,
+  "originals_pin_manifest": {
+    "bytes": 3820,
+    "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/RETRIEVAL-PINS.json",
+    "sha256": "465d88a291eaaac70d4b8bd1718adbd4eb20ebac391afc4940cd8f24edd1c3c3"
+  },
+  "originals_retrieval_verified": 12,
+  "owned_controller": {
+    "both_eof": true,
+    "controller_elapsed_ms": 8959,
+    "exit_code": 0,
+    "job_id": "1a1ae2ae6c3-fc05-5ddb",
+    "key": "hepta-cp09-policy-history-audit02-dirguard-4b572de398a74ce0",
+    "stderr_bytes": 0,
+    "stdout_bytes": 5147,
+    "terminal_publication_confirmed": true
+  },
+  "parent_transition": {
+    "added_names": [
+      "epoch-policy-history-audit-1ad3-02-dirguard-4b572de398a74ce0"
+    ],
+    "after_name_count": 1628,
+    "base_all_time_full9_stable_claim": false,
+    "base_first5_equal": true,
+    "before_name_count": 1627,
+    "both_full_name_encodings_losslessly_verified": true,
+    "ordinary_ancestors_full9_equal": true,
+    "removed_names": [],
+    "source_observations": {
+      "bytes": 110621,
+      "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/originals/caller/SOURCE-OBSERVATIONS.json",
+      "sha256": "ce67846a79c383208378ddf58b57b397d7591e95d87d3660e7cef007d127f644"
+    }
+  },
+  "phone_calls_by_reviewer": 0,
+  "remote_actions_by_reviewer": 0,
+  "schema": "hepta.audit02-actual-host-reconciliation-independent-review.v1",
+  "source_authority": {
+    "bytes": 2007,
+    "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-owned-run/ROOT-EXECUTION-AUTHORITY.json",
+    "sha256": "d289fb8dea598325bfb8e32963c8c5af4c567fae83dbecb6c61b234c5ff08a20"
+  },
+  "source_readback": {
+    "both_eof": true,
+    "controller_elapsed_ms": 6108,
+    "exit_code": 0,
+    "job_id": "1a1ae27645a-fc05-5dcc",
+    "key": "hepta-cp09-audit02-independent-source-readback-4b572de398a74ce0",
+    "stderr_bytes": 0,
+    "stdout_bytes": 118851,
+    "terminal_publication_confirmed": true
+  },
+  "source_stage": {
+    "both_eof": true,
+    "controller_elapsed_ms": 359,
+    "exit_code": 0,
+    "job_id": "1a1ae23a6b0-fc05-5db1",
+    "key": "hepta-cp09-audit02-source-stage-dirguard-4b572de398a74ce0",
+    "stderr_bytes": 0,
+    "stdout_bytes": 98719,
+    "terminal_publication_confirmed": true
+  },
+  "state": "PASS_ACTUAL_HISTORICAL_HOST_RECONCILIATION_CHAIN"
+}

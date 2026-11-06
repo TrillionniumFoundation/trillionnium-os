@@ -1,0 +1,23 @@
+{
+  "actor_label": null,
+  "capture_label": null,
+  "case_id": null,
+  "expected_boot": null,
+  "nonce": null,
+  "out": null,
+  "probe_component": null,
+  "qualify_physical_case": null,
+  "registration_template": null,
+  "require_image_cancel": null,
+  "runtime_binding": null,
+  "schema": "hepta.cpu-cancel.coordinator-plan.v1",
+  "sender_inputs": {
+    "preserved_draft": null,
+    "previous": null,
+    "request": null,
+    "retirement_resolution": null
+  },
+  "sender_label": null,
+  "state": "ROOT_REVIEWED_REGISTERED_UNCONSUMED_CASE_ONCE",
+  "wait_seconds": null
+}

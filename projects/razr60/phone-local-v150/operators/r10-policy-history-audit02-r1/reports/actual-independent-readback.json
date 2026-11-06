@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.audit02-external-source-authority.v1",
+  "state": "INDEPENDENT_COMPLETE_SOURCE_BYTES_AND_FULL9_VERIFIED",
+  "job_id": "1a1ae27645a-fc05-5dcc",
+  "exit_code": 0,
+  "stdout": {
+    "bytes": 118851,
+    "sha256": "d1c9f70fc4027579348b686037c977029a2cc69916781a07f050106b244bc2ca"
+  },
+  "stderr_bytes": 0,
+  "both_eof": true,
+  "source_files": [
+    {
+      "bytes": 608,
+      "full9": [
+        16777233,
+        591774343,
+        33152,
+        501,
+        20,
+        1,
+        608,
+        1793922934765715656,
+        1793922934765715656
+      ],
+      "name": "SOURCE-MANIFEST.json",
+      "sha256": "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f"
+    },
+    {
+      "bytes": 30525,
+      "full9": [
+        16777233,
+        591774344,
+        33152,
+        501,
+        20,
+        1,
+        30525,
+        1793922934765968121,
+        1793922934765968121
+      ],
+      "name": "audit_policy_history_once.py",
+      "sha256": "4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86"
+    },
+    {
+      "bytes": 54516,
+      "full9": [
+        16777233,
+        591774345,
+        33152,
+        501,
+        20,
+        1,
+        54516,
+        1793922934766190544,
+        1793922934766190544
+      ],
+      "name": "run_policy_history_owned_once.py",
+      "sha256": "9f5c8555c781bde2950bd44b7659225ebc6889027f6bc26c64a72c9d9b25235c"
+    }
+  ],
+  "stage_source_leaf_and_directory_full9_preserved": true,
+  "parent_chain_before_after_equal": true,
+  "exact_member_set": [
+    "SOURCE-MANIFEST.json",
+    "audit_policy_history_once.py",
+    "run_policy_history_owned_once.py"
+  ],
+  "physical_read_bytes": 85649,
+  "duration_ns": 518791,
+  "not_an_atomic_all_time_snapshot": true,
+  "source_review_basis": "root full source review and independent cp09 audit02 mechanical review, plus actual external readback",
+  "phone_calls": 0,
+  "case_credit": 0
+}

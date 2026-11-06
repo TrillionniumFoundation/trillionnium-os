@@ -1,0 +1,219 @@
+{
+  "case_credit": 0,
+  "context_injection_only": [
+    "common binding and verified stage selection",
+    "stage source context and fixed source binding",
+    "already-verified manifest/anchor/initialization/generation inputs",
+    "preclaim observation dependency",
+    "existing stage binding dependency"
+  ],
+  "current_authority_bound": false,
+  "new_native_nonces": 0,
+  "not_verified_here": [
+    "actual whole32 runtime load",
+    "historical anchor/initialization/source catalog proof",
+    "preclaim observation semantic proof",
+    "existing stage binding semantic proof",
+    "installed runtime",
+    "native or physical case"
+  ],
+  "passed": 35,
+  "phone_calls": 0,
+  "schema": "hepta.prepare-epoch-v2.local-regressions.v1",
+  "scope": "Actual unchanged common/resource/allocation/launch pure validators plus actual preparer replay control flow in explicitly synthetic upstream context.",
+  "source": {
+    "bytes": 130365,
+    "sha256": "27ad2b5f39dcfc24f600d2890d4d9a81d7c1eaf0561b9fb00b6df5294dc65b13"
+  },
+  "state": "PASS",
+  "tests": [
+    {
+      "detail": true,
+      "name": "actual unbound protocol remains closed before fixture injection",
+      "passed": true
+    },
+    {
+      "detail": "hepta.native-guard.epoch-reservation.v2",
+      "name": "v2 structured reservation passes actual unchanged common and resource validators",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "old preparer descriptor loop demonstrably rejects the valid v2 value",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "new replay accepts v2 claim without inventing native identity",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject old v1 schema",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject authorization digest mismatch",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject duplicate nonce substitution",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject boolean native-call count",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject unknown resource field",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject changed runtime source manifest",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject changed producer bound",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject changed source profile",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject changed repeated copy charge",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject stale arithmetic",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual validators reject over-capacity measurement",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "replay rejects changed origin",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "replay rejects changed generation",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "replay rejects changed nul",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual identity replay preserves exact Chinese emoji newline authorization",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "replay rejects rehashed owner bytes outside authorization",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "replay rejects identity/resource case mismatch",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "replay rejects retained failed native nonce from the third domain",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "replay rejects retained prelaunch nonce from the fourth domain",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "preidentity allocation record is rejected",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "stage without allocation admission is rejected",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "role launch without completed stage is rejected",
+      "passed": true
+    },
+    {
+      "detail": {
+        "allocation_validator_executed": true,
+        "independent_dependency_boundaries": [
+          "preclaim-observation-dependency",
+          "existing-stage-binding-dependency"
+        ],
+        "native_scope": null,
+        "role_validator_executed": true
+      },
+      "name": "both new records call actual validators and preserve original fields",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual launch validator rejects multiple forks",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual launch validator rejects boolean fork count",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual launch validator rejects invented scope",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual launch validator rejects wrong actual identity",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "actual launch validator rejects missing original",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "lifecycle admission cannot precede original role intent",
+      "passed": true
+    },
+    {
+      "detail": true,
+      "name": "slot closed-set still rejects unknown members",
+      "passed": true
+    },
+    {
+      "detail": {
+        "candidate_bytes": 130365,
+        "source_limit": 131072,
+        "whole_original_bytes": 130768
+      },
+      "name": "complete derivation reverses to fixed parent bytes under unchanged source cap",
+      "passed": true
+    }
+  ],
+  "total": 35
+}

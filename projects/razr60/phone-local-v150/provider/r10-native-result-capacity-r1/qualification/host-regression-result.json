@@ -1,0 +1,2823 @@
+{
+  "elapsed_seconds": 2.0640413189976243,
+  "failed": 0,
+  "fixed19_qualification": false,
+  "groups": {
+    "audit": {
+      "result": {
+        "native_dispatches": 0,
+        "native_pipeline": [
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "valid",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone result does not contain its original ordered accepted/start/output/terminal events",
+              "type": "ProviderError"
+            },
+            "scenario": "output_before_started",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone result does not contain its original ordered accepted/start/output/terminal events",
+              "type": "ProviderError"
+            },
+            "scenario": "unknown_event",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone semantic tool is not confirmed successful and complete",
+              "type": "ProviderError"
+            },
+            "scenario": "boolean_exit_code",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone semantic tool is not confirmed successful and complete",
+              "type": "ProviderError"
+            },
+            "scenario": "floating_exit_code",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone result does not contain its original ordered accepted/start/output/terminal events",
+              "type": "ProviderError"
+            },
+            "scenario": "nested_boolean_exit_code",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone result does not contain its original ordered accepted/start/output/terminal events",
+              "type": "ProviderError"
+            },
+            "scenario": "nested_floating_count",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone result does not contain its original ordered accepted/start/output/terminal events",
+              "type": "ProviderError"
+            },
+            "scenario": "nested_integer_truncation",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone result does not contain its original ordered accepted/start/output/terminal events",
+              "type": "ProviderError"
+            },
+            "scenario": "nested_floating_truncation",
+            "verified_fact_count": 0
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "phone result does not contain its original ordered accepted/start/output/terminal events",
+              "type": "ProviderError"
+            },
+            "scenario": "missing_kind",
+            "verified_fact_count": 0
+          }
+        ],
+        "phone_calls": 0,
+        "real_model_requests": 0,
+        "rename_helpers": [
+          {
+            "accepted": true,
+            "error": null,
+            "returned_size": 27,
+            "scenario": "rename"
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "[Errno 2] No such file or directory: 'local-01.request.json'",
+              "type": "FileNotFoundError"
+            },
+            "returned_size": null,
+            "scenario": "unlink"
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "evidence contains a hard-linked or unlinked file",
+              "type": "RuntimeError"
+            },
+            "returned_size": null,
+            "scenario": "unlink_with_old_canonical"
+          }
+        ],
+        "source_pins_checked": 15
+      },
+      "returncode": 0,
+      "stderr": ""
+    },
+    "baseline_audit": {
+      "result": {
+        "native_dispatches": 0,
+        "native_pipeline": [
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "valid",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "output_before_started",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "unknown_event",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "boolean_exit_code",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "floating_exit_code",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "nested_boolean_exit_code",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "nested_floating_count",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "nested_integer_truncation",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "scenario": "nested_floating_truncation",
+            "verified_fact_count": 1
+          },
+          {
+            "accepted": false,
+            "error": {
+              "message": "'kind'",
+              "type": "KeyError"
+            },
+            "scenario": "missing_kind",
+            "verified_fact_count": 0
+          }
+        ],
+        "phone_calls": 0,
+        "real_model_requests": 0,
+        "rename_helpers": [
+          {
+            "accepted": true,
+            "error": null,
+            "returned_size": null,
+            "scenario": "rename"
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "returned_size": null,
+            "scenario": "unlink"
+          },
+          {
+            "accepted": true,
+            "error": null,
+            "returned_size": null,
+            "scenario": "unlink_with_old_canonical"
+          }
+        ],
+        "source_pins_checked": 15
+      },
+      "returncode": 0,
+      "stderr": ""
+    },
+    "components": {
+      "result": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "single and turn image byte limits unchanged",
+                "passed": true
+              },
+              {
+                "name": "byte_budget rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "byte_budget exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "byte_budget no semantic mapping or fact admission",
+                "passed": true
+              },
+              {
+                "name": "expired_image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "expired_image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "expired_image no semantic mapping or fact admission",
+                "passed": true
+              },
+              {
+                "name": "foreign_call rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "foreign_call exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "foreign_call no semantic mapping or fact admission",
+                "passed": true
+              },
+              {
+                "name": "old_round rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "old_round exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "old_round no semantic mapping or fact admission",
+                "passed": true
+              },
+              {
+                "name": "file descriptor baseline restored",
+                "passed": true
+              },
+              {
+                "name": "thread baseline restored",
+                "passed": true
+              },
+              {
+                "name": "no socket/process/outside-write attempt",
+                "passed": true
+              }
+            ],
+            "error": null,
+            "id": "NEG-10",
+            "observations": [
+              {
+                "elapsed_seconds": 0.00013170199235901237,
+                "error": "turn screenshot byte budget exhausted; no capture dispatched",
+                "exception_type": "ProviderError",
+                "label": "byte_budget",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 4.816699947696179e-05,
+                "error": "phone.tap screenshot expired; no input dispatched",
+                "exception_type": "ProviderError",
+                "label": "expired_image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 2.736900933086872e-05,
+                "error": "phone.tap requires the current completion's latest valid screenshot",
+                "exception_type": "ProviderError",
+                "label": "foreign_call",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 2.4859007680788636e-05,
+                "error": "phone.tap requires the current completion's latest valid screenshot",
+                "exception_type": "ProviderError",
+                "label": "old_round",
+                "rejected": true
+              }
+            ],
+            "passed": true,
+            "resources": {
+              "after": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21348,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83572.725908864,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.017065,
+                "self_cpu_user_seconds": 0.170517,
+                "thread_count": 1
+              },
+              "before": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21220,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83572.710705017,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.016686,
+                "self_cpu_user_seconds": 0.166727,
+                "thread_count": 1
+              }
+            }
+          },
+          {
+            "assertions": [
+              {
+                "name": "original native_streams accepts valid synthetic control",
+                "passed": true
+              },
+              {
+                "name": "successful native lifecycle permits no output events",
+                "passed": true
+              },
+              {
+                "name": "successful native lifecycle permits multiple output events",
+                "passed": true
+              },
+              {
+                "name": "call_id rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "call_id-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "call_id-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "call_id-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "call_id-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "call_id-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "call_id-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "call_id-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "call_id-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "call_id-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "call_id-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "call_id-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "call_id-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "event_call_id rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "event_call_id-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "sequence rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "sequence-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "sequence-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "sequence-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "sequence-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "sequence-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "sequence-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "sequence-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "sequence-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "sequence-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "sequence-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "sequence-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "sequence-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "byte_count rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "byte_count-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "byte_count-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "byte_count-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "byte_count-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "byte_count-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "byte_count-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "byte_count-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "byte_count-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "byte_count-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "byte_count-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "byte_count-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "byte_count-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "terminal_exit-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "truncation rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "truncation-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "truncation-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "truncation-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "truncation-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "truncation-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "truncation-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "truncation-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "truncation-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "truncation-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "truncation-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "truncation-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "truncation-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "base64 rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "base64-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "base64-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "base64-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "base64-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "base64-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "base64-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "base64-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "base64-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "base64-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "base64-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "base64-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "base64-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "wire_tool rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "wire_tool-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "output_before_started rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "output_before_started-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "unknown_event rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "unknown_event-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "boolean_exit_code-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "floating_exit_code-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_boolean_exit_code-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_count-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_integer_truncation-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "nested_floating_truncation-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "missing_kind rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-image rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-image exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-image admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-text rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-text exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-text admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-return rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-return exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-return admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-input rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-input exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "missing_kind-input admits no fact or image",
+                "passed": true
+              },
+              {
+                "name": "image_hash rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "image_hash no image/fact accepted",
+                "passed": true
+              },
+              {
+                "name": "png_hash_format rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "png_hash_format no image/fact accepted",
+                "passed": true
+              },
+              {
+                "name": "capture_identity rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "capture_identity no image/fact accepted",
+                "passed": true
+              },
+              {
+                "name": "retained_source_hash positive control accepted one synthetic image",
+                "passed": true
+              },
+              {
+                "name": "retained_source_hash rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "retained_source_hash exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "retained_source_hash no new fact or image admission",
+                "passed": true
+              },
+              {
+                "name": "retained_image_hash positive control accepted one synthetic image",
+                "passed": true
+              },
+              {
+                "name": "retained_image_hash rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "retained_image_hash exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "retained_image_hash no new fact or image admission",
+                "passed": true
+              },
+              {
+                "name": "public_identity rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "public_identity admits no text/return fact",
+                "passed": true
+              },
+              {
+                "name": "public_invalid_utf8 rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "public_invalid_utf8 admits no text/return fact",
+                "passed": true
+              },
+              {
+                "name": "public_wrong_package rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "public_wrong_package admits no text/return fact",
+                "passed": true
+              },
+              {
+                "name": "return_identity rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "return_identity admits no text/return fact",
+                "passed": true
+              },
+              {
+                "name": "return_wrong_activity rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "return_wrong_activity admits no text/return fact",
+                "passed": true
+              },
+              {
+                "name": "file descriptor baseline restored",
+                "passed": true
+              },
+              {
+                "name": "thread baseline restored",
+                "passed": true
+              },
+              {
+                "name": "no socket/process/outside-write attempt",
+                "passed": true
+              }
+            ],
+            "error": null,
+            "id": "NEG-11",
+            "observations": [
+              {
+                "elapsed_seconds": 7.213006028905511e-06,
+                "error": "phone result lacks matching terminal identity",
+                "exception_type": "ProviderError",
+                "label": "call_id",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00039407899021171033,
+                "error": "phone result lacks matching terminal identity",
+                "exception_type": "ProviderError",
+                "label": "call_id-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0002862410037778318,
+                "error": "phone result lacks matching terminal identity",
+                "exception_type": "ProviderError",
+                "label": "call_id-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00013541299267672002,
+                "error": "phone result lacks matching terminal identity",
+                "exception_type": "ProviderError",
+                "label": "call_id-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00014270101382862777,
+                "error": "phone result lacks matching terminal identity",
+                "exception_type": "ProviderError",
+                "label": "call_id-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 1.5011013601906598e-05,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "event_call_id",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0003187889960827306,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "event_call_id-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010882600327022374,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "event_call_id-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.695000724401325e-05,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "event_call_id-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010269100312143564,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "event_call_id-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 1.397899177391082e-05,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "sequence",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.000320314007694833,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "sequence-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00027556499117054045,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "sequence-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.817699563223869e-05,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "sequence-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.644200326874852e-05,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "sequence-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 1.6707999748177826e-05,
+                "error": "phone output byte count differs",
+                "exception_type": "ProviderError",
+                "label": "byte_count",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0003555289877112955,
+                "error": "phone output byte count differs",
+                "exception_type": "ProviderError",
+                "label": "byte_count-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010539100912865251,
+                "error": "phone output byte count differs",
+                "exception_type": "ProviderError",
+                "label": "byte_count-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00011013000039383769,
+                "error": "phone output byte count differs",
+                "exception_type": "ProviderError",
+                "label": "byte_count-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010408299567643553,
+                "error": "phone output byte count differs",
+                "exception_type": "ProviderError",
+                "label": "byte_count-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 5.270994734019041e-06,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "terminal_exit",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0002966299944091588,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "terminal_exit-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.92590032890439e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "terminal_exit-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 7.503900269512087e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "terminal_exit-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 7.179100066423416e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "terminal_exit-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 5.230991519056261e-06,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "truncation",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0002896140067605302,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "truncation-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.388799662701786e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "truncation-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.919999527279288e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "truncation-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 7.384699711110443e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "truncation-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 1.962699752766639e-05,
+                "error": "phone output base64 is invalid",
+                "exception_type": "ProviderError",
+                "label": "base64",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.76430019363761e-05,
+                "error": "phone output base64 is invalid",
+                "exception_type": "ProviderError",
+                "label": "base64-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010339599975850433,
+                "error": "phone output base64 is invalid",
+                "exception_type": "ProviderError",
+                "label": "base64-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00012155000877100974,
+                "error": "phone output base64 is invalid",
+                "exception_type": "ProviderError",
+                "label": "base64-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.64030041359365e-05,
+                "error": "phone output base64 is invalid",
+                "exception_type": "ProviderError",
+                "label": "base64-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 1.2347998563200235e-05,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "wire_tool",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00034079799661412835,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "wire_tool-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0001053509913617745,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "wire_tool-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010057899635285139,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "wire_tool-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010774401016533375,
+                "error": "phone result event scope or sequence differs",
+                "exception_type": "ProviderError",
+                "label": "wire_tool-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 2.4591005058027804e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "output_before_started",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0004025490052299574,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "output_before_started-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00012063200119882822,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "output_before_started-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.959199815057218e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "output_before_started-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010109099093824625,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "output_before_started-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 2.0282997866161168e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "unknown_event",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0003952999977627769,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "unknown_event-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010892799764405936,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "unknown_event-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010900899360422045,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "unknown_event-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0003044360055355355,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "unknown_event-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 5.843001417815685e-06,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "boolean_exit_code",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00027633800345938653,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "boolean_exit_code-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00013670799671672285,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "boolean_exit_code-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.176499977707863e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "boolean_exit_code-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.371799776796252e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "boolean_exit_code-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 4.654997610487044e-06,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "floating_exit_code",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00026686400815378875,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "floating_exit_code-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.117499575950205e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "floating_exit_code-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.288199023809284e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "floating_exit_code-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.770400017965585e-05,
+                "error": "phone semantic tool is not confirmed successful and complete",
+                "exception_type": "ProviderError",
+                "label": "floating_exit_code-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 2.4581997422501445e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_boolean_exit_code",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0004212280036881566,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_boolean_exit_code-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0001293560053454712,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_boolean_exit_code-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00014084999565966427,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_boolean_exit_code-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00014038699737284333,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_boolean_exit_code-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 2.3176005925051868e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_count",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0003786729939747602,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_count-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00011600700963754207,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_count-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00011575399548746645,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_count-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010934700549114496,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_count-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 2.2648004232905805e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_integer_truncation",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0004530520091066137,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_integer_truncation-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00013729800411965698,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_integer_truncation-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00010023900540545583,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_integer_truncation-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.652599692344666e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_integer_truncation-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 1.838000025600195e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_truncation",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0003847210027743131,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_truncation-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00014079100219532847,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_truncation-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00011814299796242267,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_truncation-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00012518800213001668,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "nested_floating_truncation-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 4.081999941263348e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "missing_kind",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0003684089897433296,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "missing_kind-image",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00011770598939619958,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "missing_kind-text",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 9.773499914444983e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "missing_kind-return",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 8.687000081408769e-05,
+                "error": "phone result does not contain its original ordered accepted/start/output/terminal events",
+                "exception_type": "ProviderError",
+                "label": "missing_kind-input",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0014320559857878834,
+                "error": "screenshot bytes or provenance hash differs",
+                "exception_type": "ProviderError",
+                "label": "image_hash",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0006605270027648658,
+                "error": "screenshot bytes or provenance hash differs",
+                "exception_type": "ProviderError",
+                "label": "png_hash_format",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0004202249983791262,
+                "error": "screenshot page envelope differs",
+                "exception_type": "ProviderError",
+                "label": "capture_identity",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 3.444300091359764e-05,
+                "error": "retained screenshot observation changed",
+                "exception_type": "ProviderError",
+                "label": "retained_source_hash",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00018827099120244384,
+                "error": "retained screenshot observation changed",
+                "exception_type": "ProviderError",
+                "label": "retained_image_hash",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00017202300659846514,
+                "error": "[phone_postcondition] public text receipt identity differs",
+                "exception_type": "ProviderError",
+                "label": "public_identity",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00021999698947183788,
+                "error": "[phone_postcondition] public UI hierarchy is not canonical UTF8/base64",
+                "exception_type": "ProviderError",
+                "label": "public_invalid_utf8",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00015287801215890795,
+                "error": "[phone_postcondition] public text receipt identity differs",
+                "exception_type": "ProviderError",
+                "label": "public_wrong_package",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00017093599308282137,
+                "error": "[phone_postcondition] return receipt identity or launch exit status differs",
+                "exception_type": "ProviderError",
+                "label": "return_identity",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0004263150040060282,
+                "error": "[phone_postcondition] HEPTA is not the actual focused and resumed activity",
+                "exception_type": "ProviderError",
+                "label": "return_wrong_activity",
+                "rejected": true
+              }
+            ],
+            "passed": true,
+            "resources": {
+              "after": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21348,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83572.912612609,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.04548,
+                "self_cpu_user_seconds": 0.221665,
+                "thread_count": 1
+              },
+              "before": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21348,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83572.726086772,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.017082,
+                "self_cpu_user_seconds": 0.17068,
+                "thread_count": 1
+              }
+            }
+          },
+          {
+            "assertions": [
+              {
+                "name": "input_only exact original admission",
+                "passed": true
+              },
+              {
+                "name": "input_only only verified synthetic parser facts used",
+                "passed": true
+              },
+              {
+                "name": "input_only no actual native/tool frame dispatched",
+                "passed": true
+              },
+              {
+                "name": "input_only actual wire downgraded to turn.fail",
+                "passed": true
+              },
+              {
+                "name": "input_only persisted terminal matches wire",
+                "passed": true
+              },
+              {
+                "name": "input_only business remains false",
+                "passed": true
+              },
+              {
+                "name": "input_only exact missing conditions",
+                "passed": true
+              },
+              {
+                "name": "input_only claims and consumed binding retained",
+                "passed": true
+              },
+              {
+                "name": "missing_return exact original admission",
+                "passed": true
+              },
+              {
+                "name": "missing_return only verified synthetic parser facts used",
+                "passed": true
+              },
+              {
+                "name": "missing_return no actual native/tool frame dispatched",
+                "passed": true
+              },
+              {
+                "name": "missing_return actual wire downgraded to turn.fail",
+                "passed": true
+              },
+              {
+                "name": "missing_return persisted terminal matches wire",
+                "passed": true
+              },
+              {
+                "name": "missing_return business remains false",
+                "passed": true
+              },
+              {
+                "name": "missing_return exact missing conditions",
+                "passed": true
+              },
+              {
+                "name": "missing_return claims and consumed binding retained",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage exact original admission",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage only verified synthetic parser facts used",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage no actual native/tool frame dispatched",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage actual wire downgraded to turn.fail",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage persisted terminal matches wire",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage business remains false",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage exact missing conditions",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage coverage-only barrier preserved",
+                "passed": true
+              },
+              {
+                "name": "partial_coverage claims and consumed binding retained",
+                "passed": true
+              },
+              {
+                "name": "file descriptor baseline restored",
+                "passed": true
+              },
+              {
+                "name": "thread baseline restored",
+                "passed": true
+              },
+              {
+                "name": "no socket/process/outside-write attempt",
+                "passed": true
+              }
+            ],
+            "error": null,
+            "id": "NEG-12",
+            "observations": [],
+            "passed": true,
+            "resources": {
+              "after": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21732,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83573.050712428,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.069426,
+                "self_cpu_user_seconds": 0.243807,
+                "thread_count": 1
+              },
+              "before": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21348,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83572.912836512,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.045517999999999996,
+                "self_cpu_user_seconds": 0.221854,
+                "thread_count": 1
+              }
+            }
+          },
+          {
+            "assertions": [
+              {
+                "name": "wrong-session_id rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "wrong-session_id exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "wrong session_id does not consume template",
+                "passed": true
+              },
+              {
+                "name": "wrong-profile_id rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "wrong-profile_id exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "wrong profile_id does not consume template",
+                "passed": true
+              },
+              {
+                "name": "both original race threads joined",
+                "passed": true
+              },
+              {
+                "name": "exactly one real O_EXCL binding won",
+                "passed": true
+              },
+              {
+                "name": "loser rejected by original one-use guard",
+                "passed": true
+              },
+              {
+                "name": "new_semantic_turn rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "new_semantic_turn exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "replacement_stream rejects through original ProviderError",
+                "passed": true
+              },
+              {
+                "name": "replacement_stream exact guard reason",
+                "passed": true
+              },
+              {
+                "name": "original binding and template retained unchanged",
+                "passed": true
+              },
+              {
+                "name": "file descriptor baseline restored",
+                "passed": true
+              },
+              {
+                "name": "thread baseline restored",
+                "passed": true
+              },
+              {
+                "name": "no socket/process/outside-write attempt",
+                "passed": true
+              }
+            ],
+            "error": null,
+            "id": "NEG-13",
+            "observations": [
+              {
+                "elapsed_seconds": 0.00032305700005963445,
+                "error": "task contract: template request, nonce or known scope differs",
+                "exception_type": "ProviderError",
+                "label": "wrong-session_id",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00027811501058749855,
+                "error": "task contract: template request, nonce or known scope differs",
+                "exception_type": "ProviderError",
+                "label": "wrong-profile_id",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.00034256299841217697,
+                "error": "task contract: one-time request template already consumed; no task dispatch",
+                "exception_type": "ProviderError",
+                "label": "new_semantic_turn",
+                "rejected": true
+              },
+              {
+                "elapsed_seconds": 0.0002940980048151687,
+                "error": "task contract: one-time request template already consumed; no task dispatch",
+                "exception_type": "ProviderError",
+                "label": "replacement_stream",
+                "rejected": true
+              }
+            ],
+            "passed": true,
+            "resources": {
+              "after": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21732,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83573.082132666,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.07757499999999999,
+                "self_cpu_user_seconds": 0.24775799999999998,
+                "thread_count": 1
+              },
+              "before": {
+                "children_cpu_system_seconds": 0.0,
+                "children_cpu_user_seconds": 0.0,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_raw": 21732,
+                "maxrss_raw_unit": "KiB",
+                "monotonic": 83573.050928938,
+                "open_fd_count": 4,
+                "self_cpu_system_seconds": 0.069475,
+                "self_cpu_user_seconds": 0.243979,
+                "thread_count": 1
+              }
+            }
+          }
+        ],
+        "native_dispatches": 0,
+        "phone_calls": 0,
+        "real_model_requests": 0,
+        "scope": "retained component case functions with extended native mutations",
+        "source_pins_checked": 15,
+        "source_unchanged": true
+      },
+      "returncode": 0,
+      "stderr": ""
+    },
+    "service": {
+      "result": {
+        "cases": [
+          {
+            "assertions": [
+              {
+                "name": "local-01.request.json.new actual pathname enumerated and pinned",
+                "passed": true
+              },
+              {
+                "name": "local-01.request.json.new proven rename counts canonical bytes",
+                "passed": true
+              },
+              {
+                "name": "health-outcome.json.new actual pathname enumerated and pinned",
+                "passed": true
+              },
+              {
+                "name": "health-outcome.json.new proven rename counts canonical bytes",
+                "passed": true
+              },
+              {
+                "name": "stable capacity counts both renamed records exactly once",
+                "passed": true
+              },
+              {
+                "name": "rename_only counts surviving target bytes and file exactly once",
+                "passed": true
+              },
+              {
+                "name": "rename_only actually retried after proved rename",
+                "passed": true
+              },
+              {
+                "name": "rename_only preserves original inode",
+                "passed": true
+              },
+              {
+                "name": "rename_only restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "rename_over_existing counts surviving target bytes and file exactly once",
+                "passed": true
+              },
+              {
+                "name": "rename_over_existing actually retried after proved rename",
+                "passed": true
+              },
+              {
+                "name": "rename_over_existing preserves original inode",
+                "passed": true
+              },
+              {
+                "name": "rename_over_existing restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "unlink_only fails before a capacity result",
+                "passed": true
+              },
+              {
+                "name": "unlink_only restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "unlink_with_existing fails before a capacity result",
+                "passed": true
+              },
+              {
+                "name": "unlink_with_existing restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "missing_target fails before a capacity result",
+                "passed": true
+              },
+              {
+                "name": "missing_target restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "wrong_inode fails before a capacity result",
+                "passed": true
+              },
+              {
+                "name": "wrong_inode restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "canonical_symlink fails before a capacity result",
+                "passed": true
+              },
+              {
+                "name": "canonical_symlink restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "canonical_hardlink fails before a capacity result",
+                "passed": true
+              },
+              {
+                "name": "canonical_hardlink restores snapshot descriptors",
+                "passed": true
+              },
+              {
+                "name": "rename_after_canonical_count actual replacement after counting observed",
+                "passed": true
+              },
+              {
+                "name": "rename_after_canonical_count discards old canonical and temporary alias counts",
+                "passed": true
+              },
+              {
+                "name": "rename_after_temporary_count actual replacement after counting observed",
+                "passed": true
+              },
+              {
+                "name": "rename_after_temporary_count discards old canonical and temporary alias counts",
+                "passed": true
+              },
+              {
+                "name": "missing temporary without captured identity is rejected",
+                "passed": true
+              },
+              {
+                "name": "enumerated inode replaced before pin is rejected",
+                "passed": true
+              },
+              {
+                "name": "actual enumerate to open substitution occurred",
+                "passed": true
+              },
+              {
+                "name": "temporary_symlink scanner rejects linked temporary",
+                "passed": true
+              },
+              {
+                "name": "temporary_hardlink scanner rejects linked temporary",
+                "passed": true
+              },
+              {
+                "name": "symlink ancestor is rejected",
+                "passed": true
+              },
+              {
+                "name": "continuous real renames hit bounded retry exit",
+                "passed": true
+              },
+              {
+                "name": "exact configured scan bound observed",
+                "passed": true
+              },
+              {
+                "name": "global budget stops a tree spread over small directories",
+                "passed": true
+              },
+              {
+                "name": "entry budget rejects before unbounded accumulation",
+                "passed": true
+              },
+              {
+                "name": "temporary descriptor budget is enforced",
+                "passed": true
+              },
+              {
+                "name": "partial snapshot acquisition closes all descriptors",
+                "passed": true
+              },
+              {
+                "name": "daily_adapter_atomic_record writer joins outside snapshot acquisition lock",
+                "passed": true
+              },
+              {
+                "name": "daily_adapter_atomic_record generation forces a new pass and counts the real callback output",
+                "passed": true
+              },
+              {
+                "name": "daily_replace_json writer joins outside snapshot acquisition lock",
+                "passed": true
+              },
+              {
+                "name": "daily_replace_json generation forces a new pass and counts the real callback output",
+                "passed": true
+              },
+              {
+                "name": "real writer reached the bounded fsync pause",
+                "passed": true
+              },
+              {
+                "name": "in-progress writer fails closed without deadlocking scanner",
+                "passed": true
+              },
+              {
+                "name": "scanner reached its bound while writer remained paused",
+                "passed": true
+              },
+              {
+                "name": "paused writer joins and clears active writer state",
+                "passed": true
+              },
+              {
+                "name": "unknown canonical missing is rejected",
+                "passed": true
+              },
+              {
+                "name": "recognized name without real parent rejected",
+                "passed": true
+              },
+              {
+                "name": "symlink evidence is rejected",
+                "passed": true
+              },
+              {
+                "name": "real unreadable path EACCES propagates",
+                "passed": true
+              },
+              {
+                "name": "real kernel EACCES observed",
+                "passed": true
+              },
+              {
+                "name": "actual scandir error propagates through original callback",
+                "passed": true
+              },
+              {
+                "name": "capacity scanner also propagates real unreadable directory EACCES",
+                "passed": true
+              },
+              {
+                "name": "orphan exact entry rejects at intended gate",
+                "passed": true
+              },
+              {
+                "name": "orphan daemon actual wait and group absence",
+                "passed": true
+              },
+              {
+                "name": "orphan retained consumed seed not deleted",
+                "passed": true
+              },
+              {
+                "name": "orphan no model worker or typed action spawned",
+                "passed": true
+              },
+              {
+                "name": "orphan original intent preserved",
+                "passed": true
+              },
+              {
+                "name": "orphan daemon ownership lock released",
+                "passed": true
+              },
+              {
+                "name": "capacity exact entry rejects at intended gate",
+                "passed": true
+              },
+              {
+                "name": "capacity daemon actual wait and group absence",
+                "passed": true
+              },
+              {
+                "name": "capacity retained consumed seed not deleted",
+                "passed": true
+              },
+              {
+                "name": "capacity no model worker or typed action spawned",
+                "passed": true
+              },
+              {
+                "name": "capacity original sparse input preserved and service nonaccepting",
+                "passed": true
+              },
+              {
+                "name": "capacity daemon ownership lock released",
+                "passed": true
+              },
+              {
+                "name": "file descriptor baseline restored",
+                "passed": true
+              },
+              {
+                "name": "thread baseline restored",
+                "passed": true
+              },
+              {
+                "name": "all owned children waited and process groups absent",
+                "passed": true
+              }
+            ],
+            "error": null,
+            "id": "NEG-14",
+            "observations": [
+              {
+                "errno": 2,
+                "error": "[Errno 2] No such file or directory: 'local-01.request.json'",
+                "label": "unlink_only fails before a capacity result",
+                "type": "FileNotFoundError"
+              },
+              {
+                "errno": null,
+                "error": "evidence contains a hard-linked or unlinked file",
+                "label": "unlink_with_existing fails before a capacity result",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": 2,
+                "error": "[Errno 2] No such file or directory: 'local-01.request.json'",
+                "label": "missing_target fails before a capacity result",
+                "type": "FileNotFoundError"
+              },
+              {
+                "errno": null,
+                "error": "evidence contains a hard-linked or unlinked file",
+                "label": "wrong_inode fails before a capacity result",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": null,
+                "error": "evidence contains a non-regular file",
+                "label": "canonical_symlink fails before a capacity result",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": null,
+                "error": "evidence contains a hard-linked or unlinked file",
+                "label": "canonical_hardlink fails before a capacity result",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": 2,
+                "error": "[Errno 2] No such file or directory: '/tmp/hepta-native-capacity-regression-vhcnz5yi/service/NEG-14/unproved_missing_temporary/20261105-000000-0919fa55b02e6c6431e0e43f7d70a8b0/terminal.json.new'",
+                "label": "missing temporary without captured identity is rejected",
+                "type": "FileNotFoundError"
+              },
+              {
+                "errno": null,
+                "error": "enumerated evidence temporary identity changed",
+                "label": "enumerated inode replaced before pin is rejected",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": 40,
+                "error": "[Errno 40] Too many levels of symbolic links: 'terminal.json.new'",
+                "label": "temporary_symlink scanner rejects linked temporary",
+                "type": "OSError"
+              },
+              {
+                "errno": null,
+                "error": "evidence contains a hard-linked or unlinked file",
+                "label": "temporary_hardlink scanner rejects linked temporary",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": null,
+                "error": "evidence directory has a symlink ancestor",
+                "label": "symlink ancestor is rejected",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": null,
+                "error": "evidence changed during capacity scan; bounded retry exhausted",
+                "label": "continuous real renames hit bounded retry exit",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": null,
+                "error": "evidence scan entry capacity reached",
+                "label": "global budget stops a tree spread over small directories",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": null,
+                "error": "evidence temporary descriptor capacity reached",
+                "label": "temporary descriptor budget is enforced",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": null,
+                "error": "evidence changed during capacity scan; bounded retry exhausted",
+                "label": "in-progress writer fails closed without deadlocking scanner",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": 2,
+                "error": "[Errno 2] No such file or directory: '/tmp/hepta-native-capacity-regression-vhcnz5yi/service/NEG-14/evidence-race/20261104-000000-6b7cc2e2acb80cb96b3096a738977aee/unknown.json'",
+                "label": "unknown canonical missing is rejected",
+                "type": "FileNotFoundError"
+              },
+              {
+                "errno": 2,
+                "error": "[Errno 2] No such file or directory: '/tmp/hepta-native-capacity-regression-vhcnz5yi/service/NEG-14/evidence-race/20261104-000000-edd6adee6a8308d2944c1a82629e4196/terminal.json.new'",
+                "label": "recognized name without real parent rejected",
+                "type": "FileNotFoundError"
+              },
+              {
+                "errno": null,
+                "error": "evidence contains a non-regular file",
+                "label": "symlink evidence is rejected",
+                "type": "RuntimeError"
+              },
+              {
+                "errno": 13,
+                "error": "[Errno 13] Permission denied: '/tmp/hepta-native-capacity-regression-vhcnz5yi/service/NEG-14/evidence-race/20261104-000000-6b7cc2e2acb80cb96b3096a738977aee/unreadable/evidence.json'",
+                "label": "real unreadable path EACCES propagates",
+                "type": "PermissionError"
+              },
+              {
+                "errno": 13,
+                "error": "[Errno 13] Permission denied: '/tmp/hepta-native-capacity-regression-vhcnz5yi/service/NEG-14/evidence-race/20261104-000000-6b7cc2e2acb80cb96b3096a738977aee/unreadable'",
+                "label": "actual scandir error propagates through original callback",
+                "type": "PermissionError"
+              },
+              {
+                "errno": 13,
+                "error": "[Errno 13] Permission denied: '/tmp/hepta-native-capacity-regression-vhcnz5yi/service/NEG-14/evidence-race/20261104-000000-6b7cc2e2acb80cb96b3096a738977aee/unreadable'",
+                "label": "capacity scanner also propagates real unreadable directory EACCES",
+                "type": "PermissionError"
+              }
+            ],
+            "passed": true,
+            "resources": {
+              "after": {
+                "available_bytes": 50155335680,
+                "children_cpu_system": 0.063091,
+                "children_cpu_user": 0.557232,
+                "cpu_system": 0.043917,
+                "cpu_user": 0.209315,
+                "fd_count": 4,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_KiB": 23264,
+                "monotonic": 83574.140940021,
+                "thread_count": 1
+              },
+              "before": {
+                "available_bytes": 50156183552,
+                "children_cpu_system": 0.0,
+                "children_cpu_user": 0.0,
+                "cpu_system": 0.024940999999999998,
+                "cpu_user": 0.17465999999999998,
+                "fd_count": 4,
+                "maxrss_is_case_peak": false,
+                "maxrss_lifetime_KiB": 23008,
+                "monotonic": 83573.321983127,
+                "thread_count": 1
+              }
+            }
+          }
+        ],
+        "deployment_config_loader_exercised": false,
+        "native_dispatches": 0,
+        "new_namespace_created": false,
+        "owned_process_count": 2,
+        "permission_test_effective_uid": 0,
+        "phone_calls": 0,
+        "real_model_requests": 0,
+        "scope": "extended retained NEG14 plus original orphan/sparse-capacity serve gates",
+        "source_pins_checked": 15,
+        "source_unchanged": true
+      },
+      "returncode": 0,
+      "stderr": ""
+    }
+  },
+  "native_dispatches": 0,
+  "new_namespace_created": false,
+  "passed": 5,
+  "phone_calls": 0,
+  "real_model_requests": 0,
+  "schema": "hepta.native-result-capacity.regression.v1",
+  "scope": "Local synthetic parser/admission/capacity regressions; actual source pins and filesystem/process cleanup.",
+  "source_manifest_sha256": "0ad8930fdf767832d56d52a3f7e9a61c1f6c979d6f6067b57456c8207cae50fa",
+  "source_unchanged": true,
+  "status": "PASS",
+  "strict_native_pipeline_audit_passed": true
+}

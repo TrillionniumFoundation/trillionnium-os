@@ -1,0 +1,171 @@
+{
+  "baseline": {
+    "commit": "cd156bebb6b883497877f17821738d0a9bf3e774",
+    "material_reference": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint08/archive/COMPLETED-WORK.tar.xz:actual_epoch_material_generation01/output-readback01/originals/provider/source/",
+    "production_files": [
+      {
+        "bytes": 15587,
+        "path": "source/action_ledger.py",
+        "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+      },
+      {
+        "bytes": 22059,
+        "path": "source/daily_phone_local.py",
+        "sha256": "d6571db8f0b536467b3fda9c90eaf0138e9a88fa8bf6d7201b263f1fbc268ae7"
+      },
+      {
+        "bytes": 11439,
+        "path": "source/health_contracts.py",
+        "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+      },
+      {
+        "bytes": 15135,
+        "path": "source/ledger_round_evidence.py",
+        "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+      },
+      {
+        "bytes": 8251,
+        "path": "source/model_health.py",
+        "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+      },
+      {
+        "bytes": 37375,
+        "path": "source/model_slot_cleanup.py",
+        "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+      },
+      {
+        "bytes": 10453,
+        "path": "source/phone_local_http_worker.py",
+        "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+      },
+      {
+        "bytes": 13813,
+        "path": "source/phone_local_tools.py",
+        "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+      },
+      {
+        "bytes": 38898,
+        "path": "source/phone_observation_tools.py",
+        "sha256": "5e4745e0d1f69e31f12e6a00a595ea080d8821dacbb9d704a3cf11487c5e6eb7"
+      },
+      {
+        "bytes": 26441,
+        "path": "source/phone_task_guards.py",
+        "sha256": "1e14b8dd4eb4fa3e0d785c1663d376ff634116b904a72a9a38001febad1b4e6e"
+      },
+      {
+        "bytes": 41510,
+        "path": "source/provider_codex_host.py",
+        "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+      },
+      {
+        "bytes": 17730,
+        "path": "source/provider_openai_compatible.py",
+        "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+      },
+      {
+        "bytes": 70237,
+        "path": "source/provider_phone_local.py",
+        "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+      },
+      {
+        "bytes": 9808,
+        "path": "source/retirement_recovery.py",
+        "sha256": "dadea4bc0aed0afc3f46ebf714964ad529bc68670cc5a7892cbccc2a84c78ee3"
+      },
+      {
+        "bytes": 23211,
+        "path": "source/task_postconditions.py",
+        "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+      }
+    ]
+  },
+  "deployment_configs_copied": false,
+  "frozen_history_modified": false,
+  "pin_cascade": [
+    "daily_phone_local.py:PARENTS.phone_observation_tools.py"
+  ],
+  "production_files": [
+    {
+      "bytes": 15587,
+      "path": "source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 32489,
+      "path": "source/daily_phone_local.py",
+      "sha256": "2f7ed36036394485e6099256588867a5538616f4a97bd24bb0ce4a04291b7031"
+    },
+    {
+      "bytes": 11439,
+      "path": "source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "path": "source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "path": "source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "path": "source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "path": "source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13813,
+      "path": "source/phone_local_tools.py",
+      "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+    },
+    {
+      "bytes": 39421,
+      "path": "source/phone_observation_tools.py",
+      "sha256": "17b8530680fd5cc76406d3249aecf077083bad107c54cd864ae83af298eae8ff"
+    },
+    {
+      "bytes": 26441,
+      "path": "source/phone_task_guards.py",
+      "sha256": "1e14b8dd4eb4fa3e0d785c1663d376ff634116b904a72a9a38001febad1b4e6e"
+    },
+    {
+      "bytes": 41510,
+      "path": "source/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "path": "source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70237,
+      "path": "source/provider_phone_local.py",
+      "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+    },
+    {
+      "bytes": 9808,
+      "path": "source/retirement_recovery.py",
+      "sha256": "dadea4bc0aed0afc3f46ebf714964ad529bc68670cc5a7892cbccc2a84c78ee3"
+    },
+    {
+      "bytes": 23211,
+      "path": "source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "schema": "hepta.provider-source-seal.v150.r10-native-result-capacity-r1",
+  "scope": "candidate source only; not a deployment or fixed19 qualification",
+  "substantive_changes": [
+    "phone_observation_tools.py",
+    "daily_phone_local.py"
+  ]
+}

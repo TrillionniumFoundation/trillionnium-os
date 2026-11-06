@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "bytes": 30525,
+      "path": "audit_policy_history_once.py",
+      "sha256": "4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86"
+    },
+    {
+      "bytes": 54516,
+      "path": "run_policy_history_owned_once.py",
+      "sha256": "9f5c8555c781bde2950bd44b7659225ebc6889027f6bc26c64a72c9d9b25235c"
+    }
+  ],
+  "schema": "hepta.native-guard.policy-history-owned-source.v1",
+  "target_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-source-1ad3-02-dirguard-4b572de398a74ce0"
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.audit02-targeted-g1-discovery.v1",
+  "recorded_at": "2026-11-06T00:10:11.086243+00:00",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-p",
+    "test_razr60_policy_history_audit02.py",
+    "-v"
+  ],
+  "scope": "New audit02 wrapper only; not the whole repository suite",
+  "returncode": 0,
+  "stdout": "test_prepared_auditor_and_source_cascade (test_razr60_policy_history_audit02.Razr60PolicyHistoryAudit02.test_prepared_auditor_and_source_cascade) ... ok\ntest_stager_including_interrupted_fd_ownership (test_razr60_policy_history_audit02.Razr60PolicyHistoryAudit02.test_stager_including_interrupted_fd_ownership) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 1.422s\n\nOK\n",
+  "elapsed_seconds": 1.6484311930107651,
+  "candidate_input_files": 32,
+  "candidate_files_byte_unchanged": true,
+  "new_case_credit": 0,
+  "phone_calls": 0,
+  "mac_jobs_started_by_tests": 0
+}

@@ -1,0 +1,74 @@
+{
+  "automatic_retry": false,
+  "captured": {
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 65,
+      "sha256": "cc567eec932079ca2c4a7c635b018c464d51c71afaaccbdaf77c1d2f3ef8a6f9"
+    }
+  },
+  "child_join_observed_monotonic": 24403.936274141,
+  "child_returncode": 0,
+  "child_wait_returned": true,
+  "deadline_validity": "this_running_coordinator_only",
+  "eof_observed_monotonic": {
+    "stderr": 24403.935307486,
+    "stdout": 24403.935334318
+  },
+  "error": null,
+  "execution_deadline_monotonic": 24405.914154255,
+  "files": {
+    "stderr": {
+      "bytes": 0,
+      "metadata": {
+        "st_ctime_ns": 1793860397332444756,
+        "st_dev": 27,
+        "st_gid": 0,
+        "st_ino": 3409553,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793860397332444756,
+        "st_nlink": 1,
+        "st_size": 0,
+        "st_uid": 0
+      },
+      "original_created_inode_bound": true,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 65,
+      "metadata": {
+        "st_ctime_ns": 1793860397360444427,
+        "st_dev": 27,
+        "st_gid": 0,
+        "st_ino": 3409552,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793860397360444427,
+        "st_nlink": 1,
+        "st_size": 65,
+        "st_uid": 0
+      },
+      "original_created_inode_bound": true,
+      "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stdout.original",
+      "sha256": "cc567eec932079ca2c4a7c635b018c464d51c71afaaccbdaf77c1d2f3ef8a6f9"
+    }
+  },
+  "output_limit_bytes_per_stream": 67108864,
+  "persist_errors": [],
+  "phase": "phase",
+  "pid": 17,
+  "pipe_close_errors": [],
+  "pipe_reader_owner": "closed_by_worker",
+  "prefix_only_or_unknown": false,
+  "remote_terminal_or_cleanup_proven": false,
+  "schema": "hepta.native-guard.host-output-capture.v1",
+  "signals_sent": 0,
+  "source_intent_sha256": "7dffef3435391b2ac2b97b401a7ff8b183a2e60b5508c5c0dea652184122cd4e",
+  "stderr_eof": true,
+  "stdout_eof": true,
+  "worker_joined": true,
+  "worker_started": true
+}

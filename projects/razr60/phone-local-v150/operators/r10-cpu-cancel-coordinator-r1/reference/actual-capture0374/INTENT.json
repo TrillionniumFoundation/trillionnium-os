@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-I",
+    "-B",
+    "-c",
+    "import sys,hashlib; b=sys.stdin.buffer.read(); sys.stdout.write(hashlib.sha256(b).hexdigest()+\"\\n\")"
+  ],
+  "automatic_retry": false,
+  "deadline_scope": "popen_start_through_child_join_pipe_eof_and_output_verification",
+  "hard_bound_on_filesystem_spawn_or_cleanup": false,
+  "input_transport": "retained_readonly_regular_fd_child_reads_within_execution_budget",
+  "maximum_starts": 1,
+  "maximum_wait_seconds": 2,
+  "output_limit_bytes_per_stream": 67108864,
+  "output_transport": "owned_nonblocking_pipe_capture_worker_bounded_memory_main_thread_persistence",
+  "phase": "phase",
+  "schema": "hepta.native-guard.root-host-command.v1",
+  "signals_on_timeout": false,
+  "stdin_sha256": "3b4aca549e2f432ef1c9332ecf07b3aed71a646efda9870673cb7a6ab207dceb"
+}

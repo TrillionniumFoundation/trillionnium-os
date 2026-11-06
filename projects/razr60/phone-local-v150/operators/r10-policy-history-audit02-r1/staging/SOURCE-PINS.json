@@ -1,0 +1,26 @@
+{
+  "files": [
+    {
+      "bytes": 608,
+      "path": "SOURCE-MANIFEST.json",
+      "sha256": "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f"
+    },
+    {
+      "bytes": 30525,
+      "path": "audit_policy_history_once.py",
+      "sha256": "4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86"
+    },
+    {
+      "bytes": 54516,
+      "path": "run_policy_history_owned_once.py",
+      "sha256": "9f5c8555c781bde2950bd44b7659225ebc6889027f6bc26c64a72c9d9b25235c"
+    }
+  ],
+  "payload": {
+    "bytes": 114386,
+    "path": "SOURCE-PAYLOAD.json",
+    "sha256": "75213e221fe5366946f16894f69354e70c9a205e5f1679429f9308875615e71e"
+  },
+  "prepared_package_inventory_sha256": "21326b074b83ac512eea55a33fdb097caa720e88c288c2ab60f7a7548eb55b8e",
+  "schema": "hepta.fixed-source-stage-pins.v1"
+}

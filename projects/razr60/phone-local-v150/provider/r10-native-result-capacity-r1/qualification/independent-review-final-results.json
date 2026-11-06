@@ -1,0 +1,82 @@
+{
+  "source": "/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/independent-review/source-final",
+  "source_sha256": {
+    "action_ledger.py": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+    "daily_phone_local.py": "2f7ed36036394485e6099256588867a5538616f4a97bd24bb0ce4a04291b7031",
+    "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "ledger_round_evidence.py": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+    "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+    "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+    "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "phone_local_tools.py": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54",
+    "phone_observation_tools.py": "17b8530680fd5cc76406d3249aecf077083bad107c54cd864ae83af298eae8ff",
+    "phone_task_guards.py": "1e14b8dd4eb4fa3e0d785c1663d376ff634116b904a72a9a38001febad1b4e6e",
+    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+    "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+    "provider_phone_local.py": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6",
+    "retirement_recovery.py": "dadea4bc0aed0afc3f46ebf714964ad529bc68670cc5a7892cbccc2a84c78ee3",
+    "task_postconditions.py": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+  },
+  "tests_run": 12,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 0.2739378050027881,
+  "evidence": [
+    {
+      "test": "test_atomic_rename_counts_current_target_once",
+      "totals": [
+        35,
+        1
+      ],
+      "directory_passes": 2
+    },
+    {
+      "test": "test_native_all_event_permutations",
+      "permutations": 24,
+      "accepted": [
+        [
+          0,
+          1,
+          2,
+          3
+        ]
+      ],
+      "zero_output_success": true
+    },
+    {
+      "test": "test_native_numeric_copies_and_unknown_event",
+      "rejected": 29
+    },
+    {
+      "test": "test_real_tree_over_one_thousand_files",
+      "actual": [
+        57702,
+        1200
+      ],
+      "seconds": 0.08703911799238995,
+      "process_peak_rss_before_kib": 24652,
+      "process_peak_rss_after_kib": 25292,
+      "platform": "linux",
+      "scope": "host Linux process, not phone memory qualification"
+    },
+    {
+      "test": "test_temporary_count_then_rename_then_canonical_count",
+      "totals": [
+        41,
+        1
+      ],
+      "first_observations": [
+        "terminal.json.new",
+        "terminal.json"
+      ],
+      "directory_passes": 2
+    },
+    {
+      "test": "test_writer_lock_does_not_cover_data_fsync",
+      "lock_acquired_during_data_fsync": true,
+      "active_write_scan": "bounded fail closed",
+      "final_total_correct": true
+    }
+  ],
+  "scope": "host-only independent review; no whole-case or phone credit"
+}

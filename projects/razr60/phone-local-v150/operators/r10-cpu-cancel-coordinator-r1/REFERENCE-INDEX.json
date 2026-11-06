@@ -1,0 +1,139 @@
+{
+  "files": [
+    {
+      "bytes": 71820,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cpu-closure/reference/root-capture-r8-50a5.original.py",
+      "path": "reference/root-capture-r8.original.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    {
+      "bytes": 45952,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cpu-closure/reference/root-Q2-53b5.original.py",
+      "path": "reference/root-Q2.original.py",
+      "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+    },
+    {
+      "bytes": 44221,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cpu-closure/source/negative_originals.py",
+      "path": "reference/negative_originals.original.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    {
+      "bytes": 31418,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cpu-generation/validation/parent-source-fixtures/p4/source.original.py",
+      "path": "reference/p4_capture.original.py",
+      "sha256": "a66d5e4de27912716748f53a599c513ea46bb81415d64ec184e91e4744c122c2"
+    },
+    {
+      "bytes": 44102,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cpu-generation/validation/parent-source-fixtures/phone/source.original.py",
+      "path": "reference/phone_capture.original.py",
+      "sha256": "79ed15ea8b23662c091bd64bcdc63d972b18cd9552f5af9fa2d825ddd75cd082"
+    },
+    {
+      "bytes": 31813,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/active_runtime_r10.py",
+      "path": "reference/cancel-base/active_runtime_r10.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 6701,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/native_journal_audit.py",
+      "path": "reference/cancel-base/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 8053,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/cancel_phase.py",
+      "path": "reference/cancel-base/cancel_phase.py",
+      "sha256": "36890bfb9dbbf324963a92c93e45d211a574fcb8e360c8e413669ce2ce607ed2"
+    },
+    {
+      "bytes": 26407,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/cancel_native_once_r10.py",
+      "path": "reference/cancel-base/cancel_native_once_r10.py",
+      "sha256": "d973891aa125ce2deb2237064fbc101d5d9d915d9e4bd75e25e4da298eecd5f1"
+    },
+    {
+      "bytes": 4116,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/decode_client_state.py",
+      "path": "reference/cancel-base/decode_client_state.py",
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+    },
+    {
+      "bytes": 17449,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/observe_cancel_phase_r10.py",
+      "path": "reference/cancel-base/observe_cancel_phase_r10.py",
+      "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+    },
+    {
+      "bytes": 3977,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/reviewed_page_projection.py",
+      "path": "reference/cancel-base/reviewed_page_projection.py",
+      "sha256": "96a1af463b205adf5baa544a9a27122fc7424e72fcc38e2fd4bcf26533ea7c93"
+    },
+    {
+      "bytes": 1438,
+      "original": "acceptance-audit/full19-dependency-r1/inputs/downstream-source-snapshot01/cancel-base/source/production-pins.json",
+      "path": "reference/cancel-base/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 31609,
+      "original": "acceptance-audit/full19-dependency-r1/active-runtime-current-materials-r1/source/active_runtime_r10.py",
+      "path": "reference/active-current-template.py",
+      "sha256": "9ac3d3957a2f0769817aae505d5f9a49e2e6549e4f0bd964ea268b8b5781ed6d"
+    },
+    {
+      "bytes": 1438,
+      "original": "acceptance-audit/full19-dependency-r1/active-runtime-current-materials-r1/source/production-pins.json",
+      "path": "reference/production-pins-current.json",
+      "sha256": "ee4362447744673df4ac5d051df283c47bd0ee382a8f3a9742ba1a4bd0b917c7"
+    },
+    {
+      "bytes": 889,
+      "original": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/INTENT.json",
+      "path": "reference/actual-capture0374/INTENT.json",
+      "sha256": "7dffef3435391b2ac2b97b401a7ff8b183a2e60b5508c5c0dea652184122cd4e"
+    },
+    {
+      "bytes": 878,
+      "original": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/CHILD.json",
+      "path": "reference/actual-capture0374/CHILD.json",
+      "sha256": "7aa2638dd4d3ac8f53dbee9d667d0eec13c6d9f3ed295845550b810548d5b644"
+    },
+    {
+      "bytes": 619,
+      "original": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/RESULT.json",
+      "path": "reference/actual-capture0374/RESULT.json",
+      "sha256": "911b715e75042d8da514ecab895f95b72efdee274446f5b8ac11696e1d74e264"
+    },
+    {
+      "bytes": 65,
+      "original": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stdout.original",
+      "path": "reference/actual-capture0374/stdout.original",
+      "sha256": "cc567eec932079ca2c4a7c635b018c464d51c71afaaccbdaf77c1d2f3ef8a6f9"
+    },
+    {
+      "bytes": 0,
+      "original": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stderr.original",
+      "path": "reference/actual-capture0374/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 294912,
+      "original": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stdin.original",
+      "path": "reference/actual-capture0374/stdin.original",
+      "sha256": "3b4aca549e2f432ef1c9332ecf07b3aed71a646efda9870673cb7a6ab207dceb"
+    },
+    {
+      "bytes": 2325,
+      "original": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/OUTPUT-CAPTURE.json",
+      "path": "reference/actual-capture0374/OUTPUT-CAPTURE.json",
+      "sha256": "1cc7a4183b35ee9c55393b4af27a9af72deafd56579460887d4f40e0a97552b6"
+    }
+  ],
+  "schema": "hepta.cpu-cancel.coordinator-reference-index.v1",
+  "scope": "Immutable source review and regression fixtures; old pins are not final execution authority.",
+  "upstream_restoration_sha256": "662bd3a1de9e786b43f5fabcec611bde9874a3b309701e0bbf326a7b80333e98"
+}

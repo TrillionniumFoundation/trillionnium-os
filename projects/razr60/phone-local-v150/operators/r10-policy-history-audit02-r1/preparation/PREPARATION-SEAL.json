@@ -1,0 +1,82 @@
+{
+  "audit_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-1ad3-02-dirguard-4b572de398a74ce0",
+  "baseline_commit": "a87b2fc4b99880e3820d2fffd285943777ac4057",
+  "baseline_sources": [
+    {
+      "bytes": 30233,
+      "path": "audit_policy_history_once.py",
+      "sha256": "039f442f855ce27dc8c6f517785a4ca763b7729f1a5f17151f6a3deb2a99ef21"
+    },
+    {
+      "bytes": 54438,
+      "path": "run_policy_history_owned_once.py",
+      "sha256": "0aa5342c32d28105b5229ad0f4128068f45ffc80c79498fa29c09cad6b96f4e1"
+    }
+  ],
+  "caller_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-owned-1ad3-02-dirguard-4b572de398a74ce0",
+  "guard_candidate": {
+    "bytes": 30473,
+    "seal_sha256": "683d57671d8a13cfaa187ebcd881a657c773be9ed70d0f825bed60f72709d91e",
+    "sha256": "88d441ff38197993e4b0b08812f68c8729bd61f5a4c53027f5617a1187cbadf6"
+  },
+  "historical_verifier_called": false,
+  "idempotency_key_consumed": false,
+  "local_test_support": {
+    "guard_regression_cases": {
+      "bytes": 13114,
+      "path": "tests/guard_regression_cases.py",
+      "sha256": "e07d8717051bf34eb4af309b2a8f1de13230530493611217d5a59a18b76a475c"
+    },
+    "mac_probe_stdout": {
+      "bytes": 1821,
+      "path": "evidence/MAC-PROBE-stdout.original",
+      "sha256": "ca9f9df8ff993ad3a2f3390d88a6a51a8a290783385d7432a9d97f035f3eb3af"
+    }
+  },
+  "pre_execution_facts_missing": [
+    "current same-family auditor/caller processes and coordination status",
+    "create-only target source directory absence and identity observation",
+    "create-only audit/caller output absence",
+    "independent staging complete body/full9 readback of both sources and manifest",
+    "reviewed caller/source authority bound to actual staged bytes and controller request"
+  ],
+  "prepared_sources": [
+    {
+      "bytes": 30525,
+      "path": "audit_policy_history_once.py",
+      "sha256": "4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86"
+    },
+    {
+      "bytes": 54516,
+      "path": "run_policy_history_owned_once.py",
+      "sha256": "9f5c8555c781bde2950bd44b7659225ebc6889027f6bc26c64a72c9d9b25235c"
+    }
+  ],
+  "preserved_constraints": {
+    "auditor_seconds": 90,
+    "automatic_retry": false,
+    "caller_seconds": 120,
+    "case_credit": 0,
+    "child_seconds": 100,
+    "controller_seconds": 150,
+    "original_paths": 555,
+    "phone_calls": 0,
+    "physical_read_bytes": 67108864,
+    "unique_original_bytes": 33554432,
+    "verification_originals": 554
+  },
+  "process_start_template": {
+    "bytes": 674,
+    "path": "process-start.NOT-EXECUTED.json",
+    "sha256": "69fe33ba5dbdcf8a687854520d9b330d28ffda8812d41b6d762e7eaa418648e8"
+  },
+  "schema": "hepta.policy-history-audit02-preparation.v1",
+  "self_report_is_not_authority": true,
+  "source_manifest": {
+    "bytes": 608,
+    "path": "source/SOURCE-MANIFEST.json",
+    "sha256": "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f"
+  },
+  "source_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-source-1ad3-02-dirguard-4b572de398a74ce0",
+  "state": "PREPARED_NOT_STAGED_NOT_EXECUTED"
+}
