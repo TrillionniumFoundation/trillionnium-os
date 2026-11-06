@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "bytes": 115376,
+      "path": "source/derive_final_cascade_property_r8.py",
+      "sha256": "7c1cd475ffcb48ccdcb8bed064fd0de84425b778a97c9e1d010466384416bb59"
+    },
+    {
+      "bytes": 81450,
+      "path": "source/write_final_seal_interface_property_r8.py",
+      "sha256": "ee1833976574f371b021612c7fb151bee8ee8ec6fc10601af7908e2cc2fed7e0"
+    }
+  ],
+  "schema": "hepta.inventory-prefix.final-generators.source-package.v1",
+  "state": "SOURCE_ONLY_FINALIZATION_AND_DELIVERY_UNFILLED",
+  "template_overrides": {
+    "make_component_boundary_inputs.py": {
+      "parent": {
+        "bytes": 34626,
+        "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+      },
+      "successor": {
+        "bytes": 44302,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-external-recipe-consumers-2438-r1/templates/make_component_boundary_inputs.py",
+        "sha256": "709a4dadd9612a8865ed581d3e266df4c03aec637a9ecd655353d243a6c99915"
+      }
+    },
+    "release_boundaries.py": {
+      "parent": {
+        "bytes": 77700,
+        "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+      },
+      "successor": {
+        "bytes": 125123,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-external-recipe-consumers-2438-r1/templates/release_boundaries.py",
+        "sha256": "cbb99d004d3e0f498749a33b3f01f2ba39ff00e9822789c6fc278b0967c9bf6c"
+      }
+    }
+  },
+  "template_source_manifest": {
+    "bytes": 24857,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json",
+    "sha256": "81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54"
+  }
+}

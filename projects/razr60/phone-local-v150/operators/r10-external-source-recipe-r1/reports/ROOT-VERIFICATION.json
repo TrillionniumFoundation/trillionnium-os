@@ -1,0 +1,11 @@
+{
+  "case_credit": 0,
+  "exit": 0,
+  "phone_cases_executed": 0,
+  "result_bytes": 3551,
+  "result_sha256": "db176505d5a255b49fe0c4d8bd7ef09961b0ddb2e3494579fa8d2fcd5a102e08",
+  "seconds": 4.597824836993823,
+  "source_file_count": 68,
+  "source_snapshot_unchanged": true,
+  "state": "INDEPENDENT_LOCAL_RECIPE_REGRESSION_EXECUTED"
+}

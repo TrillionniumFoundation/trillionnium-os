@@ -1,0 +1,1073 @@
+--- preview22/templates/release_boundaries.py
++++ external-recipe-r1/templates/release_boundaries.py
+@@ -46,7 +46,7 @@
+ 'component_shared_material_manifest', 'component_shared_material_files',
+ 'publish_result', 'retirement', 'originals', 'pre_policy_ancestor', 'non_native_sidebranch',
+ 'environment_parent_ancestor', 'property_parent_ancestors',
+-'epoch_publication_inputs', 'epoch_publication_originals'}
++'epoch_publication_inputs', 'epoch_publication_originals', 'source_recipe'}
+ POLICY_FIELDS = {'schema', 'release_id', 'boot_id', 'comparison_route', 'parent',
+ 'candidate', 'actual_export', 'parent_rule', 'delta_rule', 'full_rule',
+ 'offline_result', 'offline_comparison', 'pre_live_expectation',
+@@ -223,6 +223,8 @@
+   raw, metadata = read_pinned(row)
+   observed[row['path']] = (row, metadata)
+   value = strict(raw)
++  if name == 'component':
++   _esi_recipe_match(value.get('source_recipe'))
+   inputs[name] = {'descriptor': row, 'raw_b64': base64.b64encode(raw).decode()}
+   for source in descriptors(value):
+    budget_check()
+@@ -295,6 +297,8 @@
+   need(type(source[name]) is bytes
+   and descriptor(source[name]) == {key:row[key] for key in ('bytes','sha256')},
+   'runtime source bytes changed before the first module exec: '+name)
++ verify_epoch_runtime_increment(manifest_raw, source, state.get('component_combination_raw'),
++ state.get('shared_runtime_originals'), recipe_raw=state.get('epoch_source_recipe_raw'))
+  prior = {name: sys.modules.get(name) for name in names}
+  path_before = sys.path[:]
+  modules = {}
+@@ -653,22 +657,29 @@
+ import json as _esi_json
+ import re as _esi_re
+ import zlib as _esi_zlib
+-EPOCH_SOURCE_RECIPE = None
++
++EPOCH_SOURCE_RECIPE_DESCRIPTOR = None
+ _ESI_HASH = _esi_re.compile(r'[0-9a-f]{64}')
+-_ESI_PROOF_FIELDS = ('schema','state','runtime','combination','shared_materials',
+-'parent_runtime','parent_combination','historical_runtime','historical_combination',
+-'runtime_source_count','shared_material_count','production_source_count',
+-'changed_runtime_members','unchanged_runtime_members','changed_shared_members',
+-'inverse_stages','whole_manifest_and_source_inverses_verified',
+-'whole_production_service_config_combination_inverses_verified',
+-'source_execution_performed','live_originals_read','root02_prelaunch_admission_verified_here',
+-'current_head_admission_verified_here','epoch_resource_admission_verified_here',
+-'phone_calls','nonces_generated','component_qualified','business_qualified')
++_ESI_PROOF_FIELDS = ('schema','state','runtime','combination','shared_materials','source_recipe',
++ 'parent_runtime','parent_combination','historical_runtime','historical_combination',
++ 'runtime_source_count','shared_material_count','production_source_count',
++ 'changed_runtime_members','unchanged_runtime_members','changed_shared_members',
++ 'inverse_stages','whole_manifest_and_source_inverses_verified',
++ 'whole_production_service_config_combination_inverses_verified',
++ 'source_execution_performed','live_originals_read','root02_prelaunch_admission_verified_here',
++ 'current_head_admission_verified_here','epoch_resource_admission_verified_here',
++ 'phone_calls','nonces_generated','component_qualified','business_qualified')
++
++
+ def _esi_need(value, reason):
+  if not value:raise ValueError(reason)
++
++
+ def _esi_json_bytes(value):
+  return (_esi_json.dumps(value,sort_keys=True,separators=(',',':'),
+- ensure_ascii=False,allow_nan=False)+'\n').encode()
++       ensure_ascii=False,allow_nan=False)+'\n').encode()
++
++
+ def _esi_strict(raw):
+  def pairs(items):
+   result={}
+@@ -676,27 +687,68 @@
+    _esi_need(key not in result,'duplicate source-proof JSON key');result[key]=value
+   return result
+  return _esi_json.loads(raw,object_pairs_hook=pairs,
+- parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite source-proof JSON')))
++  parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite source-proof JSON')))
++
++
+ def _esi_bare(raw):
+  _esi_need(type(raw) is bytes,'complete immutable source bytes required')
+  return {'bytes':len(raw),'sha256':_esi_hashlib.sha256(raw).hexdigest()}
++
++
+ def _esi_same(left,right):
+  return _esi_json_bytes(left)==_esi_json_bytes(right)
++
++
+ def _esi_exact(value,fields,reason):
+  _esi_need(type(value) is dict and set(value)==set(fields),reason)
++
++
+ def _esi_pin(raw,pin,maximum=16*1024*1024):
+  _esi_exact(pin,('bytes','sha256'),'exact source data pin required')
+  _esi_need(type(pin['bytes']) is int and 0<=pin['bytes']<=maximum
+- and type(pin['sha256']) is str and _ESI_HASH.fullmatch(pin['sha256'])
+- and _esi_same(_esi_bare(raw),pin),'complete source data size or digest differs')
++  and type(pin['sha256']) is str and _ESI_HASH.fullmatch(pin['sha256'])
++  and _esi_same(_esi_bare(raw),pin),'complete source data size or digest differs')
+  return raw
+-def _esi_data():
+- packet=EPOCH_SOURCE_RECIPE
++
++
++def _esi_recipe_descriptor():
++ row=EPOCH_SOURCE_RECIPE_DESCRIPTOR
++ _esi_exact(row,('path','bytes','sha256'),'final source recipe descriptor is not frozen')
++ path=row['path']
++ _esi_need(type(path) is str and path.startswith('/') and '\0' not in path
++  and all(part not in ('','.','..') for part in path.split('/')[1:])
++  and type(row['bytes']) is int and 0<row['bytes']<=65536
++  and type(row['sha256']) is str and _ESI_HASH.fullmatch(row['sha256']),
++  'canonical absolute bounded source-frozen recipe descriptor required')
++ return dict(row)
++
++
++def _esi_recipe_match(row):
++ fixed=_esi_recipe_descriptor()
++ _esi_need(_esi_same(row,fixed),'caller cannot substitute source recipe authority')
++ return fixed
++
++
++def epoch_recipe_original(frozen, read_original):
++ """Use the enclosing original reader and its unchanged bookend/budget."""
++ _esi_need(type(frozen) is dict and 'source_recipe' in frozen and callable(read_original),
++   'explicit source recipe field and original reader required')
++ row=_esi_recipe_match(frozen['source_recipe'])
++ raw=read_original(row)
++ _esi_data(raw)
++ return raw
++
++
++def _esi_data(recipe_raw):
++ row=_esi_recipe_descriptor()
++ _esi_pin(recipe_raw,{key:row[key] for key in ('bytes','sha256')},65536)
++ packet=_esi_strict(recipe_raw)
++ _esi_need(_esi_json_bytes(packet)==recipe_raw,'source recipe packet canonical JSON differs')
+  _esi_exact(packet,('schema','compressed','decoded','base85'),
+- 'final exact source recipe is not frozen')
++   'final exact source recipe is not frozen')
+  _esi_need(packet['schema']=='hepta.native-guard.epoch-source-data-capsule.v1'
+- and type(packet['base85']) is str and len(packet['base85'])<=65536,
+- 'bounded data-only source recipe required')
++  and type(packet['base85']) is str and len(packet['base85'])<=65536,
++  'bounded data-only source recipe required')
+  encoded=packet['base85'].encode('ascii','strict')
+  compressed=_esi_base64.b85decode(encoded)
+  _esi_need(_esi_base64.b85encode(compressed)==encoded,'noncanonical data capsule encoding')
+@@ -707,48 +759,55 @@
+  stream=_esi_zlib.decompressobj()
+  raw=stream.decompress(compressed,size+1)
+  _esi_need(stream.eof and not stream.unused_data and not stream.unconsumed_tail
+- and len(raw)==size,'source recipe must be one exact bounded complete stream')
++  and len(raw)==size,'source recipe must be one exact bounded complete stream')
+  _esi_pin(raw,packet['decoded'],262144)
+  value=_esi_strict(raw)
+  _esi_need(_esi_json_bytes(value)==raw,'source recipe canonical JSON differs')
+  _esi_exact(value,('schema','current','stages','historical'),
+- 'source recipe complete finite fields differ')
++   'source recipe complete finite fields differ')
+  _esi_need(value['schema']=='hepta.native-guard.epoch-whole-byte-inverse.v2'
+- and type(value['stages']) is list and len(value['stages'])==2,
+- 'final-to-reviewed-codec and reviewed-codec-to-actual902 stages required')
++  and type(value['stages']) is list and len(value['stages'])==2,
++  'final-to-reviewed-codec and reviewed-codec-to-actual902 stages required')
+  return value
++
++
+ def _esi_source_name(name):
+  _esi_need(type(name) is str and name.startswith(('source/','reference/'))
+- and len(name.split('/'))==2 and name.split('/')[1] not in ('','.','..')
+- and '\0' not in name and name.endswith(('.py','.json')),
+- 'exact two-level runtime member name required')
+-def _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,expected):
++  and len(name.split('/'))==2 and name.split('/')[1] not in ('','.','..')
++  and '\0' not in name and name.endswith(('.py','.json')),
++  'exact two-level runtime member name required')
++
++
++def _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,expected,*,recipe_bytes=0):
++ # The complete original manifest and COMBO are themselves fixed authority.
++ # Their exact rows are checked again; a duplicate copy of all pins is not
++ # needed in the inverse recipe and is never accepted from a caller instead.
+  _esi_exact(expected,('runtime','combination'),'fixed whole source-generation pins required')
+  _esi_pin(runtime_raw,expected['runtime'],262144)
+  _esi_pin(combination_raw,expected['combination'],262144)
+  manifest=_esi_strict(runtime_raw);rows=manifest.get('files')
+  combination=_esi_strict(combination_raw)
+  _esi_exact(combination,('schema','state','source_seal','configuration','service_inputs',
+- 'production_files','artifacts','live_policy_sha256'),'exact fixed COMBO fields differ')
++  'production_files','artifacts','live_policy_sha256'),'exact fixed COMBO fields differ')
+  _esi_need(combination['schema']=='hepta.native-guard.component-combination.v150.r10.1'
+- and combination['state']=='REVIEWED_COMPONENT_BYTES_NOT_FOUR_ROLE_READY'
+- and manifest.get('schema')=='hepta.native-guard.adapter-package.v1'
+- and manifest.get('state')=='HOST_REVIEWED_NOT_PHONE_QUALIFIED'
+- and type(rows) is list and len(rows)==32
+- and type(source_files) is dict and len(source_files)==32
+- and type(shared_files) is dict and len(shared_files)==17,
+- 'exact32 runtime and exact17 shared bodies required')
+- names=[];total=len(runtime_raw)+len(combination_raw)
++  and combination['state']=='REVIEWED_COMPONENT_BYTES_NOT_FOUR_ROLE_READY'
++  and manifest.get('schema')=='hepta.native-guard.adapter-package.v1'
++  and manifest.get('state')=='HOST_REVIEWED_NOT_PHONE_QUALIFIED'
++  and type(rows) is list and len(rows)==32
++  and type(source_files) is dict and len(source_files)==32
++  and type(shared_files) is dict and len(shared_files)==17,
++  'exact32 runtime and exact17 shared bodies required')
++ names=[];total=len(runtime_raw)+len(combination_raw)+recipe_bytes
+  for row in rows:
+   _esi_exact(row,('path','bytes','sha256'),'runtime member row fields differ')
+   name=row['path'];_esi_source_name(name);names.append(name)
+   _esi_need(name in source_files,'fixed runtime member body is missing')
+   raw=source_files[name]
+   _esi_pin(raw,{k:row[k] for k in ('bytes','sha256')},
+-  131072 if name.endswith('.py') else 16*1024*1024)
++    131072 if name.endswith('.py') else 16*1024*1024)
+   total+=len(raw)
+  _esi_need(len(set(names))==32 and set(names)==set(source_files),
+- 'runtime has an omitted, duplicate or extra original member')
++   'runtime has an omitted, duplicate or extra original member')
+  production=combination['production_files']
+  _esi_need(type(production) is list and len(production)==15,'fixed production15 rows required')
+  shared={}
+@@ -756,8 +815,8 @@
+   _esi_exact(row,('path','bytes','sha256'),'fixed production row fields differ')
+   name=row['path']
+   _esi_need(type(name) is str and name.startswith('production/') and len(name.split('/'))==2
+-  and name.split('/')[1] not in ('','.','..') and name.endswith('.py') and '\0' not in name,
+-  'exact production member name differs')
++   and name.split('/')[1] not in ('','.','..') and name.endswith('.py') and '\0' not in name,
++   'exact production member name differs')
+   key='provider/source/'+name.split('/')[1]
+   _esi_need(key not in shared,'duplicate fixed production member')
+   shared[key]={k:row[k] for k in ('bytes','sha256')}
+@@ -768,46 +827,50 @@
+   _esi_pin(shared_files[name],pin);total+=len(shared_files[name])
+  _esi_need(total<=32*1024*1024,'source gate actual decoded inputs exceed the original whole pool')
+  return manifest
++
++
+ def _esi_inverse(raw,recipe):
+  _esi_exact(recipe,('input','output','operations'),'exact finite byte inverse required')
+  _esi_pin(raw,recipe['input'])
+  operations=recipe['operations']
+  _esi_need(type(operations) is list and 0<len(operations)<=1024,
+- 'finite continuous whole-source inverse required')
++   'finite continuous whole-source inverse required')
+  cursor=0;result=bytearray()
+  for operation in operations:
+   _esi_need(type(operation) is dict and operation.get('kind') in ('copy','replace'),
+-  'unreviewed inverse operation')
++    'unreviewed inverse operation')
+   fields=('kind','start','bytes') if operation['kind']=='copy' else (
+-  'kind','start','bytes','removed_sha256','literal_utf8')
++   'kind','start','bytes','removed_sha256','literal_utf8')
+   _esi_exact(operation,fields,'exact inverse operation fields required')
+   size=operation['bytes']
+   _esi_need(type(operation['start']) is int and operation['start']==cursor
+-  and type(size) is int and 0<=size<=len(raw)-cursor,
+-  'inverse ranges overlap, omit, reorder or exceed complete input')
++   and type(size) is int and 0<=size<=len(raw)-cursor,
++   'inverse ranges overlap, omit, reorder or exceed complete input')
+   part=raw[cursor:cursor+size]
+   if operation['kind']=='copy':
+    _esi_need(size>0,'empty inverse copy range')
+   else:
+    _esi_need(type(operation['removed_sha256']) is str
+-   and _ESI_HASH.fullmatch(operation['removed_sha256'])
+-   and _esi_bare(part)['sha256']==operation['removed_sha256']
+-   and type(operation['literal_utf8']) is str
+-   and len(operation['literal_utf8'])<=131072,
+-   'removed full source span or bounded old literal differs')
++    and _ESI_HASH.fullmatch(operation['removed_sha256'])
++    and _esi_bare(part)['sha256']==operation['removed_sha256']
++    and type(operation['literal_utf8']) is str
++    and len(operation['literal_utf8'])<=131072,
++    'removed full source span or bounded old literal differs')
+    part=operation['literal_utf8'].encode('utf-8','strict')
+    _esi_need(len(part)<=131072,'complete old literal exceeds the fixed source bound')
+   _esi_need(len(result)+len(part)<=16*1024*1024,'reconstructed parent exceeds original read bound')
+   result.extend(part);cursor+=size
+  _esi_need(cursor==len(raw),'whole inverse did not consume the complete original input')
+  return _esi_pin(bytes(result),recipe['output'])
++
++
+ def _esi_stage(data,stage):
+  _esi_exact(stage,('name','expected','runtime','sources','combination','shared'),
+- 'exact manifest/source/shared inverse stage required')
++   'exact manifest/source/shared inverse stage required')
+  runtime,sources,combo,shared=data
+  _esi_need(type(stage['name']) is str and type(stage['sources']) is dict
+- and set(stage['sources'])<=set(sources) and type(stage['shared']) is dict
+- and set(stage['shared'])<=set(shared),'inverse stage names or changed member set differ')
++  and set(stage['sources'])<=set(sources) and type(stage['shared']) is dict
++  and set(stage['shared'])<=set(shared),'inverse stage names or changed member set differ')
+  result_sources=dict(sources);result_shared=dict(shared)
+  for name,recipe in stage['sources'].items():result_sources[name]=_esi_inverse(sources[name],recipe)
+  for name,recipe in stage['shared'].items():result_shared[name]=_esi_inverse(shared[name],recipe)
+@@ -815,55 +878,64 @@
+  result_combo=_esi_inverse(combo,stage['combination'])
+  _esi_dataset(result_runtime,result_sources,result_combo,result_shared,stage['expected'])
+  return result_runtime,result_sources,result_combo,result_shared
+-def _esi_checked(runtime_raw,source_files,combination_raw,shared_files):
+- recipe=_esi_data();_esi_dataset(runtime_raw,source_files,combination_raw,shared_files,recipe['current'])
++
++
++def _esi_checked(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++ recipe=_esi_data(recipe_raw)
++ _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,recipe['current'],
++    recipe_bytes=len(recipe_raw))
+  current=(runtime_raw,source_files,combination_raw,shared_files);data=current;checked=[]
+  for stage in recipe['stages']:
+   data=_esi_stage(data,stage)
+   checked.append({'name':stage['name'],'runtime':_esi_bare(data[0]),
+-  'combination':_esi_bare(data[2])})
++      'combination':_esi_bare(data[2])})
+  _esi_need(checked[0]['name']=='exact_pre_epoch_codec_source'
+- and checked[1]['name']=='actual_closed902_runtime'
+- and checked[1]['runtime']=={'bytes':16808,'sha256':
+- '31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb'},
+- 'source inverse does not terminate at the fixed actual902 runtime')
++  and checked[1]['name']=='actual_closed902_runtime'
++  and checked[1]['runtime']=={'bytes':16808,'sha256':
++  '31da1d92d2d9c833cd053db15b0cc40824e750705d315a320206a2f7a52a6bfb'},
++  'source inverse does not terminate at the fixed actual902 runtime')
+  historical=recipe['historical']
+  _esi_exact(historical,('runtime','late','expected'),'exact historical67 proof inverse required')
+  base_files=dict(data[1]);base_files['source/late_boundary.py']=_esi_inverse(
+- base_files['source/late_boundary.py'],historical['late'])
++  base_files['source/late_boundary.py'],historical['late'])
+  base_raw=_esi_inverse(data[0],historical['runtime'])
+  base_value=_esi_dataset(base_raw,base_files,data[2],data[3],historical['expected'])
+  _esi_need(_esi_bare(base_raw)=={'bytes':16808,'sha256':
+- '67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c'}
+- and _esi_bare(base_files['source/late_boundary.py'])=={'bytes':66996,'sha256':
+- 'c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add'}
+- and _esi_bare(data[2])=={'bytes':4702,'sha256':
+- '54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e'},
+- 'historical proof view must be exact67dc/c50a/54b1 bytes')
++  '67dc40470b8ecb1e10cb57f8953a3d0b6db309b45079216eb24cd65f0760107c'}
++  and _esi_bare(base_files['source/late_boundary.py'])=={'bytes':66996,'sha256':
++  'c50a219efd992ce1353494ace2656af20c932cbc32530b0085e38a79975d8add'}
++  and _esi_bare(data[2])=={'bytes':4702,'sha256':
++  '54b1d9aef4c16ebc0989b3e13345238bfbd4e400e5bfc9a97e27648a2385057e'},
++  'historical proof view must be exact67dc/c50a/54b1 bytes')
+  return recipe,data,checked,(base_raw,base_value,base_files,data[2],data[3])
+-def verify_epoch_runtime_increment(runtime_raw,source_files,combination_raw,shared_files):
+- recipe,parent,stages,history=_esi_checked(runtime_raw,source_files,combination_raw,shared_files)
++
++
++def verify_epoch_runtime_increment(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++ recipe,parent,stages,history=_esi_checked(runtime_raw,source_files,combination_raw,shared_files,recipe_raw=recipe_raw)
+  changed=sorted(name for name in source_files if source_files[name]!=parent[1][name])
+  changed_shared=sorted(name for name in shared_files if shared_files[name]!=parent[3][name])
+- value={'schema':'hepta.native-guard.epoch-runtime-increment-verification.v1',
+- 'state':'EXACT_SOURCE_INCREMENT_VERIFIED_NO_CASE_OR_LIVE_ADMISSION',
+- 'runtime':_esi_bare(runtime_raw),'combination':_esi_bare(combination_raw),
+- 'shared_materials':{name:_esi_bare(raw) for name,raw in sorted(shared_files.items())},
+- 'parent_runtime':_esi_bare(parent[0]),'parent_combination':_esi_bare(parent[2]),
+- 'historical_runtime':_esi_bare(history[0]),'historical_combination':_esi_bare(history[3]),
+- 'runtime_source_count':32,'shared_material_count':17,'production_source_count':15,
+- 'changed_runtime_members':changed,'unchanged_runtime_members':32-len(changed),
+- 'changed_shared_members':changed_shared,'inverse_stages':stages,
+- 'whole_manifest_and_source_inverses_verified':True,
+- 'whole_production_service_config_combination_inverses_verified':True,
+- 'source_execution_performed':False,'live_originals_read':False,
+- 'root02_prelaunch_admission_verified_here':False,'current_head_admission_verified_here':False,
+- 'epoch_resource_admission_verified_here':False,'phone_calls':0,'nonces_generated':0,
+- 'component_qualified':False,'business_qualified':False}
++ value={'schema':'hepta.native-guard.epoch-runtime-increment-verification.v2',
++  'state':'EXACT_SOURCE_INCREMENT_VERIFIED_NO_CASE_OR_LIVE_ADMISSION',
++  'runtime':_esi_bare(runtime_raw),'combination':_esi_bare(combination_raw),
++  'shared_materials':{name:_esi_bare(raw) for name,raw in sorted(shared_files.items())},
++  'source_recipe':_esi_recipe_descriptor(),
++  'parent_runtime':_esi_bare(parent[0]),'parent_combination':_esi_bare(parent[2]),
++  'historical_runtime':_esi_bare(history[0]),'historical_combination':_esi_bare(history[3]),
++  'runtime_source_count':32,'shared_material_count':17,'production_source_count':15,
++  'changed_runtime_members':changed,'unchanged_runtime_members':32-len(changed),
++  'changed_shared_members':changed_shared,'inverse_stages':stages,
++  'whole_manifest_and_source_inverses_verified':True,
++  'whole_production_service_config_combination_inverses_verified':True,
++  'source_execution_performed':False,'live_originals_read':False,
++  'root02_prelaunch_admission_verified_here':False,'current_head_admission_verified_here':False,
++  'epoch_resource_admission_verified_here':False,'phone_calls':0,'nonces_generated':0,
++  'component_qualified':False,'business_qualified':False}
+  _esi_exact(value,_ESI_PROOF_FIELDS,'source proof output fields differ')
+  return value
+-def epoch_historical_runtime_view(runtime_raw,source_files,combination_raw,shared_files):
+- return _esi_checked(runtime_raw,source_files,combination_raw,shared_files)[3]
++
++
++def epoch_historical_runtime_view(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++ return _esi_checked(runtime_raw,source_files,combination_raw,shared_files,recipe_raw=recipe_raw)[3]
+ def verify_shared_runtime_originals(manifest_raw, files, reviewed_production):
+  """Pure closed shared17 byte verification before loading any runtime source."""
+  need(type(manifest_raw) is bytes and 0 < len(manifest_raw) <= 65536
+@@ -1251,7 +1323,7 @@
+  and isinstance(CURRENT_COMBINATION_SHA,str) and HASH.fullmatch(CURRENT_COMBINATION_SHA),
+  'current policy component runtime has not been frozen and reviewed')
+  need(isinstance(value, dict) and set(value) == COMPONENT_FIELDS
+- and value['schema'] == 'hepta.r10.component-boundary-inputs.v7'
++ and value['schema'] == 'hepta.r10.component-boundary-inputs.v8'
+  and value['release_id'] == RELEASE and value['boot_id'] == BOOT,
+  'explicit component input schema/identity differs')
+  manifest_raw = original_from(bundle, value['component_package_manifest'])
+@@ -1276,7 +1348,8 @@
+  combination_raw = original_from(bundle, value['component_combination'])
+  need(sha(combination_raw)==CURRENT_COMBINATION_SHA,'current reviewed policy combination differs')
+  shared_files = shared_runtime_originals(bundle, value, source)
+- verify_epoch_runtime_increment(manifest_raw, source, combination_raw, shared_files)
++ recipe_raw = original_from(bundle, _esi_recipe_match(value['source_recipe']))
++ verify_epoch_runtime_increment(manifest_raw, source, combination_raw, shared_files, recipe_raw=recipe_raw)
+  combination = strict(combination_raw)
+  need(set(combination) == {'schema', 'state', 'source_seal', 'configuration',
+  'service_inputs', 'production_files', 'artifacts', 'live_policy_sha256'}
+@@ -1310,7 +1383,8 @@
+  state = {'actual_context': actual_context, 'package_sources': source,
+  'package_manifest_raw': manifest_raw, 'component_input': value,
+  'component_combination': combination, 'component_originals': copies,
+- 'shared_runtime_originals': shared_files}
++ 'shared_runtime_originals': shared_files, 'component_combination_raw': combination_raw,
++ 'epoch_source_recipe_raw': recipe_raw}
+  used = set(); chain = []; legacy_chain = []; captures = []
+  with component_modules(state, actual_context=state['actual_context']) as modules:
+   late = modules['late_boundary']; common = modules['component_common']
+--- preview22/templates/make_component_boundary_inputs.py
++++ external-recipe-r1/templates/make_component_boundary_inputs.py
+@@ -24,7 +24,7 @@
+ PACKAGE_SHA = None
+ RETIREMENT_SHA = 'e3c8411f3d85440018392597d4f9f8795cfd7a60c44fc1680068a60949d20999'
+ SHARED_SHA = 'af0d3e6b15a4eab40a52573db1ba5a24f1f1051f3965cad1b78039d889c0b8a5'
+-SCHEMA = 'hepta.r10.component-boundary-construction-plan.v8'
++SCHEMA = 'hepta.r10.component-boundary-construction-plan.v9'
+ 
+ 
+ def need(value, reason):
+@@ -277,7 +277,7 @@
+     need(set(plan) == {'schema', 'package_manifest', 'combination', 'retirement_descriptor',
+             'retirement_originals', 'shared_materials', 'policy_adoption', 'policy_history_input', 'cases',
+             'legacy_ancestor', 'pre_policy_ancestor', 'environment_parent_ancestor', 'property_parent_ancestors',
+-            'epoch_publication_inputs', 'epoch_publication_originals'}
++            'epoch_publication_inputs', 'epoch_publication_originals', 'source_recipe'}
+          and plan['schema'] == SCHEMA, 'exact construction plan fields required')
+     need(type(plan['cases']) is list and 1 <= len(plan['cases']) <= 8,
+          'one to eight actually closed active native ordinals, separate from legacy six, are required')
+@@ -310,6 +310,7 @@
+         row = dict(path=str(path), bytes=phone['bytes'], sha256=phone['sha256'])
+         return row, collect(row)
+ 
++    recipe_raw = collect(h._esi_recipe_match(plan['source_recipe']))
+     manifest_raw = collect(plan['package_manifest'])
+     need(sha(manifest_raw) == PACKAGE_SHA, 'reviewed frozen component package required')
+     manifest = h.strict(manifest_raw)
+@@ -346,9 +347,9 @@
+     runtime_files = {item['path']: bodies[item['sha256']] for item in manifest['files']}
+     reviewed_production = h.strict(runtime_files['reference/REVIEWED-PRODUCTION-PINS.json'])
+     h.verify_shared_runtime_originals(shared_raw, shared_files, reviewed_production)
+-    # The final four-argument epoch capsule must be inserted before this source can run.
+-    # Every new runtime byte, combination and shared17 original precedes the first exec.
+-    h.verify_epoch_runtime_increment(manifest_raw, runtime_files, combination_raw, shared_files)
++    # The fixed external recipe joins the same charged original pool before exec.
++    h.verify_epoch_runtime_increment(manifest_raw, runtime_files, combination_raw, shared_files,
++                                     recipe_raw=recipe_raw)
+     # Every body hidden behind the publication packet is an explicit member of
+     # the same decoded pool. The packet is never an uncharged nested archive.
+     publication_rows = plan['epoch_publication_originals']
+@@ -363,7 +364,9 @@
+     publication_value = {'epoch_publication_inputs':plan['epoch_publication_inputs'],
+                          'epoch_publication_originals':publication_rows}
+     package_state = {'actual_context':'mac', 'package_sources':runtime_files,
+-                     'package_manifest_raw':manifest_raw}
++                     'package_manifest_raw':manifest_raw,
++                     'component_combination_raw':combination_raw,
++                     'shared_runtime_originals':shared_files,'epoch_source_recipe_raw':recipe_raw}
+     publication_pool = {'originals':{digest:h.pack_original(raw) for digest,raw in bodies.items()}}
+     with h.component_modules(package_state, actual_context='mac') as modules:
+         publication = h.epoch_publication_context(publication_pool, publication_value,
+@@ -567,11 +570,12 @@
+         need(boundary['prior_boundary'] == expected, 'complete actual boundary chain must be supplied latest first')
+     publish_copy = dict(path=str(output/'PUBLISH-RESULT.original.json'), **h.descriptor(publish_raw))
+     bodies[publish_copy['sha256']] = publish_raw
+-    value = dict(schema='hepta.r10.component-boundary-inputs.v7', release_id=h.RELEASE, boot_id=h.BOOT,
++    value = dict(schema='hepta.r10.component-boundary-inputs.v8', release_id=h.RELEASE, boot_id=h.BOOT,
+         component_package_manifest=plan['package_manifest'], component_package_files=package_files,
+         component_shared_material_manifest=plan['shared_materials'],
+         component_shared_material_files=shared_package_files,
+-        component_combination=combination_copy, latest_boundary=boundary_rows[0],
++        component_combination=combination_copy, source_recipe=h._esi_recipe_descriptor(),
++        latest_boundary=boundary_rows[0],
+         epoch_publication_inputs=plan['epoch_publication_inputs'],
+         epoch_publication_originals=publication_rows,
+         publish_result=publish_copy, retirement=retirement, originals=originals,
+@@ -612,7 +616,7 @@
+         need(after == identity, 'host original changed before input publication')
+         budget_check()
+     return raw, publish_raw, observed, {
+-        'schema':'hepta.r10.component-boundary-construction-result.v7',
++        'schema':'hepta.r10.component-boundary-construction-result.v8',
+         'state':'ACTUAL_CLOSED_COMPONENT_ORIGINALS_AND_ROOT_ADOPTION_VERIFIED',
+         'component_input':component_copy, 'original_root_results':[item['root_result'] for item in plan['cases']],
+         'component_case_count':len(results), 'active_native_components':len(results),
+--- preview22/source/derive_final_cascade_property_r8.py
++++ external-recipe-r1/source/derive_final_cascade_property_r8.py
+@@ -79,7 +79,7 @@
+                    'export_originals_r10.py', 'read_archive_chunk_r10.py',
+                    'registration_phone_r10.py')
+ OBSERVED = {}
+-TEMPLATE_PINS = {'build_release_r10.py': {'bytes': 40822, 'sha256': '79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9'}, 'close_component.py': {'bytes': 99120, 'sha256': '9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1'}, 'collect_r10_readiness.py': {'bytes': 16343, 'sha256': 'f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af'}, 'component_activation_gate.fragment.py': {'bytes': 4492, 'sha256': '140b7591781a3e487ef7b3ee5b7187fc95058a8b49c28eb3db0c7d8b630fa922'}, 'component_common.py': {'bytes': 19138, 'sha256': '1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab'}, 'component_common_r5.py': {'bytes': 18133, 'sha256': '8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02'}, 'component_lifecycle.py': {'bytes': 40261, 'sha256': '144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2'}, 'component_snapshot.py': {'bytes': 24187, 'sha256': '2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa'}, 'environment_parent_late_boundary_r6.py': {'bytes': 53502, 'sha256': '1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c'}, 'install_phone_release_r10.py': {'bytes': 34038, 'sha256': '3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1'}, 'late_boundary.py': {'bytes': 66816, 'sha256': 'f42cf7da63df8e3ecd31e984b2deac5d5fc7e1ee0f2bdbb095a8268243a133d4'}, 'make_component_boundary_inputs.py': {'bytes': 34843, 'sha256': '41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5'}, 'materialize_case_r10.py': {'bytes': 24834, 'sha256': 'b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290'}, 'non_native_attempt05.py': {'bytes': 19740, 'sha256': 'a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4'}, 'policy_parent_late_boundary_r4.py': {'bytes': 35730, 'sha256': 'bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b'}, 'property_parent_late_boundary_r7.py': {'bytes': 62434, 'sha256': '3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd'}, 'release_boundaries.py': {'bytes': 84972, 'sha256': '57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0'}, 'root_acceptance_r10.py': {'bytes': 27473, 'sha256': '70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d'}, 'stage_component.py': {'bytes': 19116, 'sha256': '4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340'}}
++TEMPLATE_PINS = {'build_release_r10.py': {'bytes': 40822, 'sha256': '79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9'}, 'close_component.py': {'bytes': 99120, 'sha256': '9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1'}, 'collect_r10_readiness.py': {'bytes': 16343, 'sha256': 'f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af'}, 'component_activation_gate.fragment.py': {'bytes': 4492, 'sha256': '140b7591781a3e487ef7b3ee5b7187fc95058a8b49c28eb3db0c7d8b630fa922'}, 'component_common.py': {'bytes': 19138, 'sha256': '1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab'}, 'component_common_r5.py': {'bytes': 18133, 'sha256': '8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02'}, 'component_lifecycle.py': {'bytes': 40261, 'sha256': '144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2'}, 'component_snapshot.py': {'bytes': 24187, 'sha256': '2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa'}, 'environment_parent_late_boundary_r6.py': {'bytes': 53502, 'sha256': '1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c'}, 'install_phone_release_r10.py': {'bytes': 34038, 'sha256': '3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1'}, 'late_boundary.py': {'bytes': 66816, 'sha256': 'f42cf7da63df8e3ecd31e984b2deac5d5fc7e1ee0f2bdbb095a8268243a133d4'}, 'make_component_boundary_inputs.py': {'bytes': 44302, 'sha256': '709a4dadd9612a8865ed581d3e266df4c03aec637a9ecd655353d243a6c99915'}, 'materialize_case_r10.py': {'bytes': 24834, 'sha256': 'b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290'}, 'non_native_attempt05.py': {'bytes': 19740, 'sha256': 'a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4'}, 'policy_parent_late_boundary_r4.py': {'bytes': 35730, 'sha256': 'bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b'}, 'property_parent_late_boundary_r7.py': {'bytes': 62434, 'sha256': '3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd'}, 'release_boundaries.py': {'bytes': 125123, 'sha256': 'cbb99d004d3e0f498749a33b3f01f2ba39ff00e9822789c6fc278b0967c9bf6c'}, 'root_acceptance_r10.py': {'bytes': 27473, 'sha256': '70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d'}, 'stage_component.py': {'bytes': 19116, 'sha256': '4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340'}}
+ 
+ 
+ def need(value, reason):
+@@ -227,7 +227,7 @@
+     files['MANIFEST.json'] = encode(value)
+ 
+ 
+-def actual_tail_check(helper_raw, constructor_raw, runtime_raw, runtime_files, package_sha, combination_sha):
++def actual_tail_check(helper_raw, constructor_raw, runtime_raw, runtime_files, package_sha, combination_sha, *, epoch_sources):
+     raw = read(PUBLICATION/'PUBLICATION-RESULT.json', PUBLICATION_SHA, 13450)
+     publication = strict(raw)
+     need(publication['state'] == 'EXTERNAL_FAILED_BOUNDARY_PUBLISHED_AND_THREE_ORIGINALS_EXPORTED'
+@@ -268,7 +268,10 @@
+     constructor.__file__ = str(CC/'source/make_component_boundary_inputs.py')
+     exec(compile(constructor_raw, constructor.__file__, 'exec'), constructor.__dict__)
+     runtime_state = {'actual_context':'mac','package_manifest_raw':runtime_raw,
+-                     'package_sources':runtime_files}
++                     'package_sources':runtime_files,
++                     'component_combination_raw':epoch_sources['combination_raw'],
++                     'shared_runtime_originals':epoch_sources['shared_files'],
++                     'epoch_source_recipe_raw':epoch_sources['source_recipe_raw']}
+     prior_input = {
+         'root_result': {'path':str(B/'native-guard-root-chains-r10-r1/root-r10-neg01-20261104-04/ROOT-RESULT.json'),
+                         'bytes':10980,'sha256':'c92382e0841375fc0a1fb19ff0271381ac044f1dad01427342fca4e4f6e9c638'},
+@@ -362,11 +365,11 @@
+     value = FINALIZATION
+     need(isinstance(value, dict) and set(value) == {'schema', 'runtime_manifest',
+          'component_combination', 'policy_adoption', 'policy_verifier', 'actual_policy',
+-         'scope_decision', 'full_rule', 'shared_material_manifest', 'policy_history_input'}
+-         and value['schema'] == 'hepta.property-policy.final-pin-freeze.v3',
++         'scope_decision', 'full_rule', 'shared_material_manifest', 'policy_history_input', 'source_recipe'}
++         and value['schema'] == 'hepta.property-policy.final-pin-freeze.v4',
+          'new property-policy runtime, adoption, scope and rule pins are not frozen')
+     for key in ('runtime_manifest', 'component_combination', 'policy_adoption',
+-                'policy_verifier', 'scope_decision', 'full_rule', 'shared_material_manifest', 'policy_history_input'):
++                'policy_verifier', 'scope_decision', 'full_rule', 'shared_material_manifest', 'policy_history_input', 'source_recipe'):
+         row = value[key]
+         need(isinstance(row, dict) and set(row) == {'path', 'bytes', 'sha256'}
+              and isinstance(row['path'], str) and Path(row['path']).is_absolute()
+@@ -378,6 +381,7 @@
+          and value['policy_history_input']['bytes'] <= 65536
+          and value['policy_verifier']['bytes'] <= 131072,
+          'future manifest or verifier source exceeds its reviewed source bound')
++    _esi_recipe_match(value['source_recipe'])
+     policy = value['actual_policy']
+     need(isinstance(policy, dict) and set(policy) == {'bytes', 'sha256'}
+          and type(policy['bytes']) is int and 0 < policy['bytes'] <= 16*1024*1024
+@@ -541,9 +545,9 @@
+ import re as _esi_re
+ import zlib as _esi_zlib
+ 
+-EPOCH_SOURCE_RECIPE = None
++EPOCH_SOURCE_RECIPE_DESCRIPTOR = None
+ _ESI_HASH = _esi_re.compile(r'[0-9a-f]{64}')
+-_ESI_PROOF_FIELDS = ('schema','state','runtime','combination','shared_materials',
++_ESI_PROOF_FIELDS = ('schema','state','runtime','combination','shared_materials','source_recipe',
+     'parent_runtime','parent_combination','historical_runtime','historical_combination',
+     'runtime_source_count','shared_material_count','production_source_count',
+     'changed_runtime_members','unchanged_runtime_members','changed_shared_members',
+@@ -594,8 +598,39 @@
+     return raw
+ 
+ 
+-def _esi_data():
+-    packet=EPOCH_SOURCE_RECIPE
++def _esi_recipe_descriptor():
++    row=EPOCH_SOURCE_RECIPE_DESCRIPTOR
++    _esi_exact(row,('path','bytes','sha256'),'final source recipe descriptor is not frozen')
++    path=row['path']
++    _esi_need(type(path) is str and path.startswith('/') and '\0' not in path
++        and all(part not in ('','.','..') for part in path.split('/')[1:])
++        and type(row['bytes']) is int and 0<row['bytes']<=65536
++        and type(row['sha256']) is str and _ESI_HASH.fullmatch(row['sha256']),
++        'canonical absolute bounded source-frozen recipe descriptor required')
++    return dict(row)
++
++
++def _esi_recipe_match(row):
++    fixed=_esi_recipe_descriptor()
++    _esi_need(_esi_same(row,fixed),'caller cannot substitute source recipe authority')
++    return fixed
++
++
++def epoch_recipe_original(frozen, read_original):
++    """Use the enclosing original reader and its unchanged bookend/budget."""
++    _esi_need(type(frozen) is dict and 'source_recipe' in frozen and callable(read_original),
++              'explicit source recipe field and original reader required')
++    row=_esi_recipe_match(frozen['source_recipe'])
++    raw=read_original(row)
++    _esi_data(raw)
++    return raw
++
++
++def _esi_data(recipe_raw):
++    row=_esi_recipe_descriptor()
++    _esi_pin(recipe_raw,{key:row[key] for key in ('bytes','sha256')},65536)
++    packet=_esi_strict(recipe_raw)
++    _esi_need(_esi_json_bytes(packet)==recipe_raw,'source recipe packet canonical JSON differs')
+     _esi_exact(packet,('schema','compressed','decoded','base85'),
+                'final exact source recipe is not frozen')
+     _esi_need(packet['schema']=='hepta.native-guard.epoch-source-data-capsule.v1'
+@@ -630,7 +665,7 @@
+         'exact two-level runtime member name required')
+ 
+ 
+-def _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,expected):
++def _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,expected,*,recipe_bytes=0):
+     # The complete original manifest and COMBO are themselves fixed authority.
+     # Their exact rows are checked again; a duplicate copy of all pins is not
+     # needed in the inverse recipe and is never accepted from a caller instead.
+@@ -649,7 +684,7 @@
+         and type(source_files) is dict and len(source_files)==32
+         and type(shared_files) is dict and len(shared_files)==17,
+         'exact32 runtime and exact17 shared bodies required')
+-    names=[];total=len(runtime_raw)+len(combination_raw)
++    names=[];total=len(runtime_raw)+len(combination_raw)+recipe_bytes
+     for row in rows:
+         _esi_exact(row,('path','bytes','sha256'),'runtime member row fields differ')
+         name=row['path'];_esi_source_name(name);names.append(name)
+@@ -732,8 +767,10 @@
+     return result_runtime,result_sources,result_combo,result_shared
+ 
+ 
+-def _esi_checked(runtime_raw,source_files,combination_raw,shared_files):
+-    recipe=_esi_data();_esi_dataset(runtime_raw,source_files,combination_raw,shared_files,recipe['current'])
++def _esi_checked(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++    recipe=_esi_data(recipe_raw)
++    _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,recipe['current'],
++                 recipe_bytes=len(recipe_raw))
+     current=(runtime_raw,source_files,combination_raw,shared_files);data=current;checked=[]
+     for stage in recipe['stages']:
+         data=_esi_stage(data,stage)
+@@ -760,14 +797,15 @@
+     return recipe,data,checked,(base_raw,base_value,base_files,data[2],data[3])
+ 
+ 
+-def verify_epoch_runtime_increment(runtime_raw,source_files,combination_raw,shared_files):
+-    recipe,parent,stages,history=_esi_checked(runtime_raw,source_files,combination_raw,shared_files)
++def verify_epoch_runtime_increment(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++    recipe,parent,stages,history=_esi_checked(runtime_raw,source_files,combination_raw,shared_files,recipe_raw=recipe_raw)
+     changed=sorted(name for name in source_files if source_files[name]!=parent[1][name])
+     changed_shared=sorted(name for name in shared_files if shared_files[name]!=parent[3][name])
+-    value={'schema':'hepta.native-guard.epoch-runtime-increment-verification.v1',
++    value={'schema':'hepta.native-guard.epoch-runtime-increment-verification.v2',
+         'state':'EXACT_SOURCE_INCREMENT_VERIFIED_NO_CASE_OR_LIVE_ADMISSION',
+         'runtime':_esi_bare(runtime_raw),'combination':_esi_bare(combination_raw),
+         'shared_materials':{name:_esi_bare(raw) for name,raw in sorted(shared_files.items())},
++        'source_recipe':_esi_recipe_descriptor(),
+         'parent_runtime':_esi_bare(parent[0]),'parent_combination':_esi_bare(parent[2]),
+         'historical_runtime':_esi_bare(history[0]),'historical_combination':_esi_bare(history[3]),
+         'runtime_source_count':32,'shared_material_count':17,'production_source_count':15,
+@@ -783,8 +821,8 @@
+     return value
+ 
+ 
+-def epoch_historical_runtime_view(runtime_raw,source_files,combination_raw,shared_files):
+-    return _esi_checked(runtime_raw,source_files,combination_raw,shared_files)[3]
++def epoch_historical_runtime_view(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++    return _esi_checked(runtime_raw,source_files,combination_raw,shared_files,recipe_raw=recipe_raw)[3]
+ 
+ 
+ 
+@@ -1022,6 +1060,7 @@
+ def epoch_cascade_source_inputs(frozen, runtime_raw, runtime_files, read_original):
+     """Read a fixed shared17, then verify all four pure inputs before runtime exec."""
+     need(callable(read_original), 'fixed original byte reader required')
++    recipe_raw=epoch_recipe_original(frozen,read_original)
+     history_input_raw,history_input=epoch_policy_history_source_input(frozen,runtime_raw,read_original)
+     shared_row = frozen['shared_material_manifest']
+     need(shared_row==REVIEWED_EPOCH_GENERATED_SHARED,
+@@ -1057,9 +1096,9 @@
+     combo_raw = read_original(frozen['component_combination'])
+     gate = globals().get('verify_epoch_runtime_increment'); history_gate = globals().get('epoch_historical_runtime_view')
+     need(callable(gate) and callable(history_gate), 'the reviewed pure four-input source gates are not installed')
+-    proof = gate(runtime_raw,runtime_files,combo_raw,shared)
+-    history = history_gate(runtime_raw,runtime_files,combo_raw,shared)
+-    fields = {'schema','state','runtime','combination','shared_materials','parent_runtime','parent_combination',
++    proof = gate(runtime_raw,runtime_files,combo_raw,shared,recipe_raw=recipe_raw)
++    history = history_gate(runtime_raw,runtime_files,combo_raw,shared,recipe_raw=recipe_raw)
++    fields = {'schema','state','runtime','combination','shared_materials','source_recipe','parent_runtime','parent_combination',
+               'historical_runtime','historical_combination','runtime_source_count','shared_material_count',
+               'production_source_count','changed_runtime_members','unchanged_runtime_members','changed_shared_members',
+               'inverse_stages','whole_manifest_and_source_inverses_verified',
+@@ -1068,9 +1107,10 @@
+               'epoch_resource_admission_verified_here','phone_calls','nonces_generated','component_qualified','business_qualified'}
+     def bare(raw):return {'bytes':len(raw),'sha256':sha(raw)}
+     need(type(proof) is dict and set(proof) == fields
+-         and proof['schema'] == 'hepta.native-guard.epoch-runtime-increment-verification.v1'
++         and proof['schema'] == 'hepta.native-guard.epoch-runtime-increment-verification.v2'
+          and proof['state'] == 'EXACT_SOURCE_INCREMENT_VERIFIED_NO_CASE_OR_LIVE_ADMISSION'
+          and proof['runtime'] == bare(runtime_raw) and proof['combination'] == bare(combo_raw)
++         and proof['source_recipe'] == _esi_recipe_descriptor()
+          and proof['shared_materials'] == {name:bare(body) for name,body in sorted(shared.items())}
+          and proof['runtime_source_count'] == 32 and proof['shared_material_count'] == 17
+          and proof['production_source_count'] == 15
+@@ -1094,6 +1134,7 @@
+          and type(old_shared) is dict and set(old_shared) == expected,
+          'historical proof view is not the exact verified67/54b1 source domain')
+     return {'proof':proof,'combination_raw':combo_raw,'shared_manifest_raw':shared_raw,
++            'source_recipe_raw':recipe_raw,
+             'policy_history_input_raw':history_input_raw,'policy_history_input':history_input,
+             'shared_manifest':shared_manifest,'shared_files':shared,'historical_runtime_raw':old_raw,
+             'historical_runtime':old_value,'historical_files':old_files,
+@@ -1341,7 +1382,8 @@
+         'POLICY_VERIFIER_BYTES':frozen['policy_verifier']['bytes'],
+         'CURRENT_POLICY_SHA':frozen['actual_policy']['sha256'],
+         'CURRENT_POLICY_ADOPTION_SHA':frozen['policy_adoption']['sha256'],
+-        'CURRENT_SCOPE_DECISION_SHA':frozen['scope_decision']['sha256']}
++        'CURRENT_SCOPE_DECISION_SHA':frozen['scope_decision']['sha256'],
++        'EPOCH_SOURCE_RECIPE_DESCRIPTOR':_esi_recipe_match(frozen['source_recipe'])}
+     counts = [ast.literal_eval(n.value) for n in ast.parse(final['release_boundaries.py']).body
+         if isinstance(n, ast.Assign) and len(n.targets) == 1
+         and isinstance(n.targets[0], ast.Name) and n.targets[0].id == 'PACKAGE_FILE_COUNT']
+@@ -1435,6 +1477,7 @@
+     current_as_parent = copy.deepcopy(frozen)
+     current_as_parent.pop('shared_material_manifest')
+     current_as_parent.pop('policy_history_input')
++    current_as_parent.pop('source_recipe')
+     current_as_parent['schema'] = 'hepta.property-policy.final-pin-freeze.v1'
+     current_as_parent['runtime_manifest'] = dict(RUNTIME_SOURCE_INCREMENT['base_runtime_manifest'])
+     historical_combo_descriptor = parent_finalization['component_combination']
+@@ -1451,7 +1494,8 @@
+     h = final['release_boundaries.py']; hs = sha(h)
+     publication_raw, tail_result = actual_tail_check(h,
+         final['make_component_boundary_inputs.py'], runtime_raw, runtime_files,
+-        frozen['runtime_manifest']['sha256'], frozen['component_combination']['sha256'])
++        frozen['runtime_manifest']['sha256'], frozen['component_combination']['sha256'],
++        epoch_sources=epoch_sources)
+     checks = {'schema':'hepta.property-policy.final-source-original-checks.v1',
+         'actual_policy_adoption':policy_summary, 'actual_tail':tail_result,
+         'runtime_source_increment_proof':runtime_increment,
+@@ -1564,7 +1608,7 @@
+         'component_package_sha256':frozen['runtime_manifest']['sha256'],
+         'actual_policy_adoption_sha256':frozen['policy_adoption']['sha256'],
+         'pre_policy_ancestor_sha256':PRE_POLICY_BOUNDARY_SHA, 'external_ancestor_sha256':BOUNDARY_SHA,
+-        'component_input_schema':'hepta.r10.component-boundary-inputs.v7',
++        'component_input_schema':'hepta.r10.component-boundary-inputs.v8',
+         'property_parent_ancestors':tail_result['property_parent_ancestors'],
+         'property_parent_boundary_sha256':PROPERTY_PARENT_BOUNDARY_SHAS[0],
+         'property_parent_failed_ancestor_count':2,
+@@ -1635,8 +1679,8 @@
+         'boundary_consumer':descriptor(h),
+         'component_package_sha256':frozen['runtime_manifest']['sha256'],
+         'pre_policy_ancestor_sha256':PRE_POLICY_BOUNDARY_SHA, 'external_ancestor_sha256':BOUNDARY_SHA,
+-        'plan_schema':'hepta.r10.component-boundary-construction-plan.v8',
+-        'output_schema':'hepta.r10.component-boundary-inputs.v7',
++        'plan_schema':'hepta.r10.component-boundary-construction-plan.v9',
++        'output_schema':'hepta.r10.component-boundary-inputs.v8',
+         'actual_new_case_inputs_still_required':True,
+         'old_failed_tail_counts_as_new_case_credit':False,
+         'property_parent_ancestors':tail_result['property_parent_ancestors'],
+@@ -1654,8 +1698,8 @@
+         'state':'HOST_SOURCE_ONLY_WAITING_ACTUAL_CURRENT_COMPONENT_ORIGINALS',
+         'component_package_sha256':frozen['runtime_manifest']['sha256'],
+         'boundary_consumer_sha256':hs,
+-        'plan_schema':'hepta.r10.component-boundary-construction-plan.v8',
+-        'output_schema':'hepta.r10.component-boundary-inputs.v7',
++        'plan_schema':'hepta.r10.component-boundary-construction-plan.v9',
++        'output_schema':'hepta.r10.component-boundary-inputs.v8',
+         'phone_calls':0, 'real_case_inputs_created':False})
+     recheck()
+     publish(FC, fc); publish(AC, ac); publish(CC, cc)
+--- preview22/source/write_final_seal_interface_property_r8.py
++++ external-recipe-r1/source/write_final_seal_interface_property_r8.py
+@@ -137,9 +137,9 @@
+ import re as _esi_re
+ import zlib as _esi_zlib
+ 
+-EPOCH_SOURCE_RECIPE = None
++EPOCH_SOURCE_RECIPE_DESCRIPTOR = None
+ _ESI_HASH = _esi_re.compile(r'[0-9a-f]{64}')
+-_ESI_PROOF_FIELDS = ('schema','state','runtime','combination','shared_materials',
++_ESI_PROOF_FIELDS = ('schema','state','runtime','combination','shared_materials','source_recipe',
+     'parent_runtime','parent_combination','historical_runtime','historical_combination',
+     'runtime_source_count','shared_material_count','production_source_count',
+     'changed_runtime_members','unchanged_runtime_members','changed_shared_members',
+@@ -190,8 +190,39 @@
+     return raw
+ 
+ 
+-def _esi_data():
+-    packet=EPOCH_SOURCE_RECIPE
++def _esi_recipe_descriptor():
++    row=EPOCH_SOURCE_RECIPE_DESCRIPTOR
++    _esi_exact(row,('path','bytes','sha256'),'final source recipe descriptor is not frozen')
++    path=row['path']
++    _esi_need(type(path) is str and path.startswith('/') and '\0' not in path
++        and all(part not in ('','.','..') for part in path.split('/')[1:])
++        and type(row['bytes']) is int and 0<row['bytes']<=65536
++        and type(row['sha256']) is str and _ESI_HASH.fullmatch(row['sha256']),
++        'canonical absolute bounded source-frozen recipe descriptor required')
++    return dict(row)
++
++
++def _esi_recipe_match(row):
++    fixed=_esi_recipe_descriptor()
++    _esi_need(_esi_same(row,fixed),'caller cannot substitute source recipe authority')
++    return fixed
++
++
++def epoch_recipe_original(frozen, read_original):
++    """Use the enclosing original reader and its unchanged bookend/budget."""
++    _esi_need(type(frozen) is dict and 'source_recipe' in frozen and callable(read_original),
++              'explicit source recipe field and original reader required')
++    row=_esi_recipe_match(frozen['source_recipe'])
++    raw=read_original(row)
++    _esi_data(raw)
++    return raw
++
++
++def _esi_data(recipe_raw):
++    row=_esi_recipe_descriptor()
++    _esi_pin(recipe_raw,{key:row[key] for key in ('bytes','sha256')},65536)
++    packet=_esi_strict(recipe_raw)
++    _esi_need(_esi_json_bytes(packet)==recipe_raw,'source recipe packet canonical JSON differs')
+     _esi_exact(packet,('schema','compressed','decoded','base85'),
+                'final exact source recipe is not frozen')
+     _esi_need(packet['schema']=='hepta.native-guard.epoch-source-data-capsule.v1'
+@@ -226,7 +257,7 @@
+         'exact two-level runtime member name required')
+ 
+ 
+-def _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,expected):
++def _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,expected,*,recipe_bytes=0):
+     # The complete original manifest and COMBO are themselves fixed authority.
+     # Their exact rows are checked again; a duplicate copy of all pins is not
+     # needed in the inverse recipe and is never accepted from a caller instead.
+@@ -245,7 +276,7 @@
+         and type(source_files) is dict and len(source_files)==32
+         and type(shared_files) is dict and len(shared_files)==17,
+         'exact32 runtime and exact17 shared bodies required')
+-    names=[];total=len(runtime_raw)+len(combination_raw)
++    names=[];total=len(runtime_raw)+len(combination_raw)+recipe_bytes
+     for row in rows:
+         _esi_exact(row,('path','bytes','sha256'),'runtime member row fields differ')
+         name=row['path'];_esi_source_name(name);names.append(name)
+@@ -328,8 +359,10 @@
+     return result_runtime,result_sources,result_combo,result_shared
+ 
+ 
+-def _esi_checked(runtime_raw,source_files,combination_raw,shared_files):
+-    recipe=_esi_data();_esi_dataset(runtime_raw,source_files,combination_raw,shared_files,recipe['current'])
++def _esi_checked(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++    recipe=_esi_data(recipe_raw)
++    _esi_dataset(runtime_raw,source_files,combination_raw,shared_files,recipe['current'],
++                 recipe_bytes=len(recipe_raw))
+     current=(runtime_raw,source_files,combination_raw,shared_files);data=current;checked=[]
+     for stage in recipe['stages']:
+         data=_esi_stage(data,stage)
+@@ -356,14 +389,15 @@
+     return recipe,data,checked,(base_raw,base_value,base_files,data[2],data[3])
+ 
+ 
+-def verify_epoch_runtime_increment(runtime_raw,source_files,combination_raw,shared_files):
+-    recipe,parent,stages,history=_esi_checked(runtime_raw,source_files,combination_raw,shared_files)
++def verify_epoch_runtime_increment(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++    recipe,parent,stages,history=_esi_checked(runtime_raw,source_files,combination_raw,shared_files,recipe_raw=recipe_raw)
+     changed=sorted(name for name in source_files if source_files[name]!=parent[1][name])
+     changed_shared=sorted(name for name in shared_files if shared_files[name]!=parent[3][name])
+-    value={'schema':'hepta.native-guard.epoch-runtime-increment-verification.v1',
++    value={'schema':'hepta.native-guard.epoch-runtime-increment-verification.v2',
+         'state':'EXACT_SOURCE_INCREMENT_VERIFIED_NO_CASE_OR_LIVE_ADMISSION',
+         'runtime':_esi_bare(runtime_raw),'combination':_esi_bare(combination_raw),
+         'shared_materials':{name:_esi_bare(raw) for name,raw in sorted(shared_files.items())},
++        'source_recipe':_esi_recipe_descriptor(),
+         'parent_runtime':_esi_bare(parent[0]),'parent_combination':_esi_bare(parent[2]),
+         'historical_runtime':_esi_bare(history[0]),'historical_combination':_esi_bare(history[3]),
+         'runtime_source_count':32,'shared_material_count':17,'production_source_count':15,
+@@ -379,8 +413,8 @@
+     return value
+ 
+ 
+-def epoch_historical_runtime_view(runtime_raw,source_files,combination_raw,shared_files):
+-    return _esi_checked(runtime_raw,source_files,combination_raw,shared_files)[3]
++def epoch_historical_runtime_view(runtime_raw,source_files,combination_raw,shared_files,*,recipe_raw):
++    return _esi_checked(runtime_raw,source_files,combination_raw,shared_files,recipe_raw=recipe_raw)[3]
+ 
+ 
+ # Current-source and historical-proof domains remain separate throughout.
+@@ -595,6 +629,7 @@
+ def epoch_cascade_source_inputs(frozen, runtime_raw, runtime_files, read_original):
+     """Read a fixed shared17, then verify all four pure inputs before runtime exec."""
+     need(callable(read_original), 'fixed original byte reader required')
++    recipe_raw=epoch_recipe_original(frozen,read_original)
+     history_input_raw,history_input=epoch_policy_history_source_input(frozen,runtime_raw,read_original)
+     shared_row = frozen['shared_material_manifest']
+     need(shared_row==REVIEWED_EPOCH_GENERATED_SHARED,
+@@ -630,9 +665,9 @@
+     combo_raw = read_original(frozen['component_combination'])
+     gate = globals().get('verify_epoch_runtime_increment'); history_gate = globals().get('epoch_historical_runtime_view')
+     need(callable(gate) and callable(history_gate), 'the reviewed pure four-input source gates are not installed')
+-    proof = gate(runtime_raw,runtime_files,combo_raw,shared)
+-    history = history_gate(runtime_raw,runtime_files,combo_raw,shared)
+-    fields = {'schema','state','runtime','combination','shared_materials','parent_runtime','parent_combination',
++    proof = gate(runtime_raw,runtime_files,combo_raw,shared,recipe_raw=recipe_raw)
++    history = history_gate(runtime_raw,runtime_files,combo_raw,shared,recipe_raw=recipe_raw)
++    fields = {'schema','state','runtime','combination','shared_materials','source_recipe','parent_runtime','parent_combination',
+               'historical_runtime','historical_combination','runtime_source_count','shared_material_count',
+               'production_source_count','changed_runtime_members','unchanged_runtime_members','changed_shared_members',
+               'inverse_stages','whole_manifest_and_source_inverses_verified',
+@@ -641,9 +676,10 @@
+               'epoch_resource_admission_verified_here','phone_calls','nonces_generated','component_qualified','business_qualified'}
+     def bare(raw):return {'bytes':len(raw),'sha256':sha(raw)}
+     need(type(proof) is dict and set(proof) == fields
+-         and proof['schema'] == 'hepta.native-guard.epoch-runtime-increment-verification.v1'
++         and proof['schema'] == 'hepta.native-guard.epoch-runtime-increment-verification.v2'
+          and proof['state'] == 'EXACT_SOURCE_INCREMENT_VERIFIED_NO_CASE_OR_LIVE_ADMISSION'
+          and proof['runtime'] == bare(runtime_raw) and proof['combination'] == bare(combo_raw)
++         and proof['source_recipe'] == _esi_recipe_descriptor()
+          and proof['shared_materials'] == {name:bare(body) for name,body in sorted(shared.items())}
+          and proof['runtime_source_count'] == 32 and proof['shared_material_count'] == 17
+          and proof['production_source_count'] == 15
+@@ -667,6 +703,7 @@
+          and type(old_shared) is dict and set(old_shared) == expected,
+          'historical proof view is not the exact verified67/54b1 source domain')
+     return {'proof':proof,'combination_raw':combo_raw,'shared_manifest_raw':shared_raw,
++            'source_recipe_raw':recipe_raw,
+             'policy_history_input_raw':history_input_raw,'policy_history_input':history_input,
+             'shared_manifest':shared_manifest,'shared_files':shared,'historical_runtime_raw':old_raw,
+             'historical_runtime':old_value,'historical_files':old_files,
+@@ -776,10 +813,10 @@
+          and d['module_replacement_reapplied'] is False,
+          'actual source cascade delivery differs')
+     frozen=d['reviewed_finalization']
+-    need(frozen['schema']=='hepta.property-policy.final-pin-freeze.v3'
++    need(frozen['schema']=='hepta.property-policy.final-pin-freeze.v4'
+          and set(frozen)=={'schema','runtime_manifest','component_combination',
+                          'policy_adoption','policy_verifier','actual_policy','scope_decision','full_rule',
+-                         'shared_material_manifest','policy_history_input'},
++                         'shared_material_manifest','policy_history_input','source_recipe'},
+          'reviewed future pin record differs')
+     manifest,mraw=original(frozen['runtime_manifest']);runtime=strict(mraw)
+     need(runtime['schema']=='hepta.native-guard.adapter-package.v1'
+@@ -819,7 +856,10 @@
+          and {k:historical_rows['reference/property_parent_late_boundary_r7.py'][k] for k in ('bytes','sha256')}==
+              {k:parent_rows['source/late_boundary.py'][k] for k in ('bytes','sha256')},
+          'the verified historical view must retain all30 R7 bodies and the exact original reader reference')
+-    runtime_state={'actual_context':'mac','package_sources':runtime_files,'package_manifest_raw':mraw}
++    runtime_state={'actual_context':'mac','package_sources':runtime_files,'package_manifest_raw':mraw,
++        'component_combination_raw':epoch_sources['combination_raw'],
++        'shared_runtime_originals':epoch_sources['shared_files'],
++        'epoch_source_recipe_raw':epoch_sources['source_recipe_raw']}
+     need(encode(d.get('runtime_source_increment_proof'))==encode(increment_proof),
+          'actual delivery did not retain the exact32 source increment proof')
+     fc_manifest,fcraw=original(d['consumer']);fc=strict(fcraw)
+@@ -852,7 +892,7 @@
+         if isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name)
+         and n.targets[0].id in {'PACKAGE_SHA','PACKAGE_FILE_COUNT','CURRENT_COMBINATION_SHA','SHARED_MATERIALS_SHA',
+                               'POLICY_VERIFIER_SHA','POLICY_VERIFIER_BYTES','CURRENT_POLICY_SHA',
+-                               'CURRENT_POLICY_ADOPTION_SHA','CURRENT_SCOPE_DECISION_SHA'}}
++                               'CURRENT_POLICY_ADOPTION_SHA','CURRENT_SCOPE_DECISION_SHA','EPOCH_SOURCE_RECIPE_DESCRIPTOR'}}
+     bound_nodes=[n.value for n in ast.parse(hraw).body
+         if isinstance(n,ast.Assign) and len(n.targets)==1 and isinstance(n.targets[0],ast.Name)
+         and n.targets[0].id=='MAX_BUNDLE']
+@@ -865,10 +905,11 @@
+         'POLICY_VERIFIER_BYTES':frozen['policy_verifier']['bytes'],
+          'CURRENT_POLICY_SHA':frozen['actual_policy']['sha256'],
+          'CURRENT_POLICY_ADOPTION_SHA':frozen['policy_adoption']['sha256'],
+-         'CURRENT_SCOPE_DECISION_SHA':frozen['scope_decision']['sha256']},
++         'CURRENT_SCOPE_DECISION_SHA':frozen['scope_decision']['sha256'],
++         'EPOCH_SOURCE_RECIPE_DESCRIPTOR':_esi_recipe_match(frozen['source_recipe'])},
+         'final helper does not contain the independently reviewed new pins and unchanged capacity')
+-    need(b"SCHEMA = 'hepta.r10.component-boundary-construction-plan.v8'" in craw
+-         and b"schema='hepta.r10.component-boundary-inputs.v7'" in craw,
++    need(b"SCHEMA = 'hepta.r10.component-boundary-construction-plan.v9'" in craw
++         and b"schema='hepta.r10.component-boundary-inputs.v8'" in craw,
+          'current component constructor must separate the old failed tail')
+     need(b"component_package_sha256=state['component_input']['component_package_manifest']['sha256']" in braw,
+          'builder activation must use the consumer-verified actual current package')
+@@ -876,7 +917,8 @@
+     module.__file__=helper['path']
+     exec(compile(hraw,module.__file__,'exec',optimize=0),module.__dict__)
+     need(encode(module.verify_epoch_runtime_increment(mraw,runtime_files,
+-             epoch_sources['combination_raw'],epoch_sources['shared_files']))==encode(increment_proof),
++             epoch_sources['combination_raw'],epoch_sources['shared_files'],
++             recipe_raw=epoch_sources['source_recipe_raw']))==encode(increment_proof),
+          'delivered consumer pure four-input runtime increment gate differs')
+     with module.component_modules(runtime_state, actual_context='mac') as modules:
+         late=modules['late_boundary']
+@@ -1086,8 +1128,8 @@
+          and pre['component_qualified'] is False and pre['native_status']=='provider_failed',
+          'fixed old04 Root result was changed or upgraded')
+     pre_policy={'root_result':pre_root,'package_manifest':old_manifest}
+-    template=dict(schema='hepta.r10.component-boundary-construction-plan.v8',package_manifest=manifest,
+-        combination=combo,
++    template=dict(schema='hepta.r10.component-boundary-construction-plan.v9',package_manifest=manifest,
++        combination=combo,source_recipe=_esi_recipe_descriptor(),
+         retirement_descriptor=retirement,retirement_originals=retirement_originals,
+         shared_materials=shared,policy_adoption=adoption,policy_history_input=history_input,cases=[],
+         epoch_publication_inputs=None,epoch_publication_originals=[],
+@@ -1139,7 +1181,7 @@
+         old_tail_separate_from_current_cases=True,old_tail_qualification=False,
+         constructor_preview_argv=preview,constructor_execute_argv=preview+['--execute-host-inputs'],
+         constructor_outputs=['PUBLISH-RESULT.original.json','COMPONENT-BOUNDARY-INPUTS.json','PREPARATION-RESULT.json'],
+-        component_input_schema='hepta.r10.component-boundary-inputs.v7',
++        component_input_schema='hepta.r10.component-boundary-inputs.v8',
+         pre_seal_checks=['Actual active qualified_component_cases must include NEG-01 and NEG-02',
+             'Six fixed failed native ancestors and their21 roles plus retired4 preserve historical identity without current credit',
+             'Actual release_bundle_preview bytes <= 33554432, only the exact aggregate evidence member',
+--- preview22/preparer/prepare_final_cascade.py
++++ external-recipe-r1/preparer/prepare_final_cascade.py
+@@ -16,11 +16,11 @@
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ PARENT = B/'property-r8-lossless-bundle-generators-candidate01'
+-SOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/source/derive_final_cascade_property_r8.py', 'bytes': 66393, 'sha256': '843a0d59c30ff751df834f53c602641fc38ac78117dc7d9b9cfddaa34be1ae54'}
+-INTERFACE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/source/write_final_seal_interface_property_r8.py', 'bytes': 40887, 'sha256': '1d88947679e6bb01a24762aa0b86e9875928f836b97eb9a4aff216ee6de0b500'}
+-GENERATOR_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/GENERATOR-SOURCE-MANIFEST.json', 'bytes': 2634, 'sha256': 'f58abcc530bffdddfd4f8cbaa38985a9de9e8e55b14728fa324504ef81041a0e'}
++SOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-external-recipe-consumers-2438-r1/source/derive_final_cascade_property_r8.py', 'bytes': 115376, 'sha256': '7c1cd475ffcb48ccdcb8bed064fd0de84425b778a97c9e1d010466384416bb59'}
++INTERFACE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-external-recipe-consumers-2438-r1/source/write_final_seal_interface_property_r8.py', 'bytes': 81450, 'sha256': 'ee1833976574f371b021612c7fb151bee8ee8ec6fc10601af7908e2cc2fed7e0'}
++GENERATOR_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-external-recipe-consumers-2438-r1/GENERATOR-SOURCE-MANIFEST.json', 'bytes': 1912, 'sha256': '1f43e4492c412591e150d7185af78da6c92e05b932fef1549be2a25f662e2760'}
+ TEMPLATE_MANIFEST = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-lossless-bundle-generators-candidate01/SOURCE-MANIFEST.json', 'bytes': 24857, 'sha256': '81663c38554d20335928c4de2980036aa090babef33ab8d1a070efbbface3e54'}
+-TEMPLATE_OVERRIDES = {'release_boundaries.py': {'parent': {'bytes': 77700, 'sha256': '619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1'}, 'successor': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/templates/release_boundaries.py', 'bytes': 84972, 'sha256': '57e78e803d5136cacb24f96f2ef08762d0ee1910a887ca526a8b0ef7d67526f0'}}, 'make_component_boundary_inputs.py': {'parent': {'bytes': 34626, 'sha256': 'ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc'}, 'successor': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-inventory-prefix-consumers-1ad3-candidate01/templates/make_component_boundary_inputs.py', 'bytes': 34843, 'sha256': '41f457e8564a39dce3ea4b2347bca9a294b5973a247b2b5e0f130e6519f324d5'}}}
++TEMPLATE_OVERRIDES = {'release_boundaries.py': {'parent': {'bytes': 77700, 'sha256': '619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1'}, 'successor': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-external-recipe-consumers-2438-r1/templates/release_boundaries.py', 'bytes': 125123, 'sha256': 'cbb99d004d3e0f498749a33b3f01f2ba39ff00e9822789c6fc278b0967c9bf6c'}}, 'make_component_boundary_inputs.py': {'parent': {'bytes': 34626, 'sha256': 'ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc'}, 'successor': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-external-recipe-consumers-2438-r1/templates/make_component_boundary_inputs.py', 'bytes': 44302, 'sha256': '709a4dadd9612a8865ed581d3e266df4c03aec637a9ecd655353d243a6c99915'}}}
+ META = ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ 
+ 
+@@ -148,18 +148,20 @@
+     parser.add_argument('--component-combination-desc', required=True)
+     parser.add_argument('--shared-material-manifest-desc', required=True)
+     parser.add_argument('--policy-history-input-desc', required=True)
++    parser.add_argument('--source-recipe-desc', required=True)
+     parser.add_argument('--out', type=Path, required=True)
+     parser.add_argument('--execute-host-preparation', action='store_true')
+     args = parser.parse_args()
+     fixed = EPOCH_SOURCE_INPUTS
+     need(type(fixed) is dict and set(fixed) == {
+-        'runtime_manifest','component_combination','shared_material_manifest','policy_history_input'},
+-        'the four actual current epoch source inputs are not independently frozen')
++        'runtime_manifest','component_combination','shared_material_manifest','policy_history_input','source_recipe'},
++        'the five actual current epoch source inputs are not independently frozen')
+     supplied = {'runtime_manifest':strict(args.runtime_successor_manifest_desc),
+                 'component_combination':strict(args.component_combination_desc),
+                 'shared_material_manifest':strict(args.shared_material_manifest_desc),
+-                'policy_history_input':strict(args.policy_history_input_desc)}
+-    need(enc(supplied) == enc(fixed), 'caller cannot select another epoch runtime, combination, shared manifest or history input')
++                'policy_history_input':strict(args.policy_history_input_desc),
++                'source_recipe':strict(args.source_recipe_desc)}
++    need(enc(supplied) == enc(fixed), 'caller cannot select another epoch runtime, combination, shared manifest, history input or recipe')
+     for name,row in fixed.items():
+         need(type(row) is dict and set(row) == {'path','bytes','sha256'}
+              and type(row['path']) is str and Path(row['path']).is_absolute()
+@@ -230,12 +232,12 @@
+     scope_row = derivation['finalization']['scope_decision']
+     need(scope_row['sha256']==verified['root_scope_decision_sha256'], 'actual scope mismatch')
+     originals.read(scope_row); originals.read(adoption['full_rule'])
+-    frozen = {'schema':'hepta.property-policy.final-pin-freeze.v3',
++    frozen = {'schema':'hepta.property-policy.final-pin-freeze.v4',
+         'runtime_manifest':runtime_row, 'component_combination':combination_row,
+         'policy_adoption':adoption_row, 'policy_verifier':verifier_row,
+         'actual_policy':verified['runtime_policy'], 'scope_decision':scope_row,
+         'full_rule':adoption['full_rule'], 'shared_material_manifest':fixed['shared_material_manifest'],
+-        'policy_history_input':fixed['policy_history_input']}
++        'policy_history_input':fixed['policy_history_input'],'source_recipe':fixed['source_recipe']}
+     before = b'FINALIZATION = None\n'
+     after = ('FINALIZATION = '+repr(frozen)+'\n').encode()
+     need(source_raw.count(before)==1, 'one unchanged finalization slot required')
+@@ -253,6 +255,7 @@
+              'EPOCH-CURRENT-SOURCE-INPUTS.json':enc(fixed),
+              'SHARED-MATERIALS.original.json':epoch_sources['shared_manifest_raw'],
+              'POLICY-HISTORY-INPUT.original.json':epoch_sources['policy_history_input_raw'],
++             'EPOCH-SOURCE-RECIPE.original.json':epoch_sources['source_recipe_raw'],
+              'RUNTIME-SOURCE-INCREMENT-PROOF.json':enc(increment_proof)}
+     for name, pin in template_module.TEMPLATE_PINS.items():
+         need(Path(name).name==name, 'simple template filename required')

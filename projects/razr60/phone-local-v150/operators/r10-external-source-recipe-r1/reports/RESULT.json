@@ -1,0 +1,22 @@
+{
+  "candidate_unchanged": true,
+  "case_credit": 0,
+  "elapsed_seconds": 4.414118717002566,
+  "failed": 0,
+  "fixture_runtime_members": 32,
+  "fixture_shared_members": 17,
+  "full_consumer_files_imported": [
+    "templates/release_boundaries.py",
+    "source/derive_final_cascade_property_r8.py",
+    "source/write_final_seal_interface_property_r8.py"
+  ],
+  "log": "test_01_unbound_all_three_refuse (__main__.ExternalRecipeTests.test_01_unbound_all_three_refuse) ... ok\ntest_02_full32_shared17_inverse_all_three (__main__.ExternalRecipeTests.test_02_full32_shared17_inverse_all_three) ... ok\ntest_03_wrong_or_mutable_recipe_rejected (__main__.ExternalRecipeTests.test_03_wrong_or_mutable_recipe_rejected) ... ok\ntest_04_descriptor_fields_types_and_path (__main__.ExternalRecipeTests.test_04_descriptor_fields_types_and_path) ... ok\ntest_05_packet_strict_canonical_and_exact_fields (__main__.ExternalRecipeTests.test_05_packet_strict_canonical_and_exact_fields) ... ok\ntest_06_existing_decoder_bounds_and_one_stream_remain (__main__.ExternalRecipeTests.test_06_existing_decoder_bounds_and_one_stream_remain) ... ok\ntest_07_closed32_and17_unchanged (__main__.ExternalRecipeTests.test_07_closed32_and17_unchanged) ... ok\ntest_08_recipe_is_charged_to_existing_decoded_pool (__main__.ExternalRecipeTests.test_08_recipe_is_charged_to_existing_decoded_pool) ... ok\ntest_09_caller_recipe_substitution_refused_before_reader (__main__.ExternalRecipeTests.test_09_caller_recipe_substitution_refused_before_reader) ... ok\ntest_10_real_readers_full_bytes_and_bookends (__main__.ExternalRecipeTests.test_10_real_readers_full_bytes_and_bookends) ... ok\ntest_11_real_readers_symlink_hardlink_and_replacement (__main__.ExternalRecipeTests.test_11_real_readers_symlink_hardlink_and_replacement) ... ok\ntest_12_prepare_bundle_recipe_transport_and_recheck (__main__.ExternalRecipeTests.test_12_prepare_bundle_recipe_transport_and_recheck) ... ok\ntest_13_prepare_bundle_detects_recipe_replacement_at_bookend (__main__.ExternalRecipeTests.test_13_prepare_bundle_detects_recipe_replacement_at_bookend) ... ok\ntest_14_bundle_rejects_undeclared_original_before_runtime (__main__.ExternalRecipeTests.test_14_bundle_rejects_undeclared_original_before_runtime) ... ok\ntest_15_module_loader_repeats_pure_gate_before_first_exec (__main__.ExternalRecipeTests.test_15_module_loader_repeats_pure_gate_before_first_exec) ... ok\ntest_16_cascade_and_interface_reject_recipe_before_history_gate (__main__.ExternalRecipeTests.test_16_cascade_and_interface_reject_recipe_before_history_gate) ... ok\ntest_17_constructor_gate_precedes_publication_and_exec (__main__.ExternalRecipeTests.test_17_constructor_gate_precedes_publication_and_exec) ... ok\ntest_18_mechanical_pins_and_existing19_template_manifest (__main__.ExternalRecipeTests.test_18_mechanical_pins_and_existing19_template_manifest) ... ok\ntest_19_all_gate_calls_supply_recipe_and_helpers_fit (__main__.ExternalRecipeTests.test_19_all_gate_calls_supply_recipe_and_helpers_fit) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 4.391s\n\nOK\n",
+  "passed": 19,
+  "phone_calls": 0,
+  "ready_claim": false,
+  "runtime_or_provider_source_executions": 0,
+  "schema": "hepta.external-recipe-local-regressions.v1",
+  "state": "PASS",
+  "test_scope": "Pure byte gate, unchanged real original readers/bookends, constructor pre-exec refusal, transport isolation and mechanical source pin cascade; no successful complete release/cascade/interface run.",
+  "tests_run": 19
+}

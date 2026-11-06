@@ -1,0 +1,99 @@
+{
+  "files": [
+    {
+      "bytes": 15587,
+      "path": "provider/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 32489,
+      "path": "provider/source/daily_phone_local.py",
+      "sha256": "2f7ed36036394485e6099256588867a5538616f4a97bd24bb0ce4a04291b7031"
+    },
+    {
+      "bytes": 11439,
+      "path": "provider/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "path": "provider/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "path": "provider/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "path": "provider/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "path": "provider/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13813,
+      "path": "provider/source/phone_local_tools.py",
+      "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+    },
+    {
+      "bytes": 39421,
+      "path": "provider/source/phone_observation_tools.py",
+      "sha256": "17b8530680fd5cc76406d3249aecf077083bad107c54cd864ae83af298eae8ff"
+    },
+    {
+      "bytes": 26441,
+      "path": "provider/source/phone_task_guards.py",
+      "sha256": "1e14b8dd4eb4fa3e0d785c1663d376ff634116b904a72a9a38001febad1b4e6e"
+    },
+    {
+      "bytes": 41510,
+      "path": "provider/source/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "path": "provider/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70237,
+      "path": "provider/source/provider_phone_local.py",
+      "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+    },
+    {
+      "bytes": 9808,
+      "path": "provider/source/retirement_recovery.py",
+      "sha256": "dadea4bc0aed0afc3f46ebf714964ad529bc68670cc5a7892cbccc2a84c78ee3"
+    },
+    {
+      "bytes": 23211,
+      "path": "provider/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    },
+    {
+      "bytes": 1514,
+      "path": "local-config-r10-r1.json",
+      "sha256": "c1a952f55dd6eb43081e5816d9f719e9491b700c779b978b9a12cde7f620be8a"
+    },
+    {
+      "bytes": 10843,
+      "path": "PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+      "sha256": "92f484ed72ce01a287d41ed763d11632e9d89d8972cd3c66034bbecb0cb633f3"
+    }
+  ],
+  "parent_configuration_sha256": "d528e66d7bf496727b17257124d35f9e84f3c5c2252299757633afdc667ff09d",
+  "parent_service_inputs_sha256": "c9bbf5ac291b8f7e69ee5e6f692cd1ef445ad2b4f46f87b9e9a5419c0a8a5f1f",
+  "phone_calls": 0,
+  "phone_qualification": false,
+  "policy_adoption_inferred": false,
+  "production_source_count": 15,
+  "release_id": "v150-r10-r1",
+  "schema": "hepta.r10.shared-production-materials.v1",
+  "source_input_sha256": "5417a341c890eedfa5e7d7dc63041585a882618231545fd6f308fa3f1b9f1359",
+  "state": "HOST_SHARED_PRODUCTION_BYTES_NOT_INSTALLABLE"
+}

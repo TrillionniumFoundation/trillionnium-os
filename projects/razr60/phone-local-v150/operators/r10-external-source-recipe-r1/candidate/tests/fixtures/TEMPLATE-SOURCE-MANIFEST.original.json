@@ -1,0 +1,666 @@
+{
+  "actual_output_generation": 0,
+  "all_future_finalization_values_null": true,
+  "all_generator_function_class_bytes_unchanged": true,
+  "codec_gates_repeated": 0,
+  "files": [
+    {
+      "bytes": 20790,
+      "path": "DERIVE.original.py",
+      "sha256": "385526f40a8fcf7191645a0675ece9288307a63b41aa5c347119fee22a0de3bf"
+    },
+    {
+      "bytes": 10698,
+      "path": "INTERFACE.json",
+      "sha256": "95b509c2cb68b3bf8c19fc9ccc5b7cd5b3fee3d58506a9275bc4c9602b823307"
+    },
+    {
+      "bytes": 9184,
+      "path": "reference/parent-cascade-SOURCE-MANIFEST.original.json",
+      "sha256": "86649e24375ba78ee22ba779ced5a1b8ae4e5d444e89b552fe9ba48284191cd9"
+    },
+    {
+      "bytes": 56190,
+      "path": "reference/parent-generators/derive_final_cascade_property_r8.py",
+      "sha256": "5196112d9d3469eefbbd1b564eb29ee41169dab428346d275ed8f1dd18f0a717"
+    },
+    {
+      "bytes": 41783,
+      "path": "reference/parent-generators/derive_negative_operator_sources.py",
+      "sha256": "160cb8d82ecaddaafc73ee18f56cbe24c13937d45bf058816bb06bbb4c311cb2"
+    },
+    {
+      "bytes": 17114,
+      "path": "reference/parent-generators/derive_six_host_property_pins.py",
+      "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+    },
+    {
+      "bytes": 33096,
+      "path": "reference/parent-generators/write_final_seal_interface_property_r8.py",
+      "sha256": "8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb"
+    },
+    {
+      "bytes": 3902,
+      "path": "reference/parent-six-MANIFEST.original.json",
+      "sha256": "3eedff8e162886085493527ee686108b683e734d63bdeb40707ed7af60cd9038"
+    },
+    {
+      "bytes": 34673,
+      "path": "reference/parent-templates/make_component_boundary_inputs.py",
+      "sha256": "887c247b1578e78ab3b1591c399d3ad33dcdf5efe64b7a0796e181daed1c22e3"
+    },
+    {
+      "bytes": 76433,
+      "path": "reference/parent-templates/release_boundaries.py",
+      "sha256": "c844b4924397ffcdd30500c395395ade0bd0ad3eaa746f0a007c1b8ae274b0d6"
+    },
+    {
+      "bytes": 56190,
+      "path": "source/derive_final_cascade_property_r8.py",
+      "sha256": "a4341c41c26c4327c6d5a8c6ba9ec86f59e4e220b8d84e80e35b443fcd11096f"
+    },
+    {
+      "bytes": 41788,
+      "path": "source/derive_negative_operator_sources.py",
+      "sha256": "6adbfa234b88c1f9d6ab247e97fa40e98115c584a3d67c41975b06cf0739da4d"
+    },
+    {
+      "bytes": 17114,
+      "path": "source/derive_six_host_property_pins.py",
+      "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+    },
+    {
+      "bytes": 33096,
+      "path": "source/write_final_seal_interface_property_r8.py",
+      "sha256": "8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb"
+    },
+    {
+      "bytes": 40822,
+      "path": "templates/build_release_r10.py",
+      "sha256": "79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9"
+    },
+    {
+      "bytes": 99120,
+      "path": "templates/close_component.py",
+      "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+    },
+    {
+      "bytes": 16343,
+      "path": "templates/collect_r10_readiness.py",
+      "sha256": "f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af"
+    },
+    {
+      "bytes": 4492,
+      "path": "templates/component_activation_gate.fragment.py",
+      "sha256": "140b7591781a3e487ef7b3ee5b7187fc95058a8b49c28eb3db0c7d8b630fa922"
+    },
+    {
+      "bytes": 19138,
+      "path": "templates/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 18133,
+      "path": "templates/component_common_r5.py",
+      "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02"
+    },
+    {
+      "bytes": 40261,
+      "path": "templates/component_lifecycle.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 24187,
+      "path": "templates/component_snapshot.py",
+      "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+    },
+    {
+      "bytes": 53502,
+      "path": "templates/environment_parent_late_boundary_r6.py",
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+    },
+    {
+      "bytes": 34038,
+      "path": "templates/install_phone_release_r10.py",
+      "sha256": "3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1"
+    },
+    {
+      "bytes": 66816,
+      "path": "templates/late_boundary.py",
+      "sha256": "f42cf7da63df8e3ecd31e984b2deac5d5fc7e1ee0f2bdbb095a8268243a133d4"
+    },
+    {
+      "bytes": 34626,
+      "path": "templates/make_component_boundary_inputs.py",
+      "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+    },
+    {
+      "bytes": 24834,
+      "path": "templates/materialize_case_r10.py",
+      "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+    },
+    {
+      "bytes": 19740,
+      "path": "templates/non_native_attempt05.py",
+      "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4"
+    },
+    {
+      "bytes": 35730,
+      "path": "templates/policy_parent_late_boundary_r4.py",
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+    },
+    {
+      "bytes": 62434,
+      "path": "templates/property_parent_late_boundary_r7.py",
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+    },
+    {
+      "bytes": 77700,
+      "path": "templates/release_boundaries.py",
+      "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+    },
+    {
+      "bytes": 27473,
+      "path": "templates/root_acceptance_r10.py",
+      "sha256": "70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d"
+    },
+    {
+      "bytes": 19116,
+      "path": "templates/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    },
+    {
+      "bytes": 2057,
+      "path": "validation/GENERATOR-PIN-INCREMENT.patch",
+      "sha256": "d09a083e55de6cd1f4a4c600c12e4a886a649d001c4a543c17d2c23744407586"
+    },
+    {
+      "bytes": 968,
+      "path": "validation/HOST-SOURCE-CHECKS.json",
+      "sha256": "e2ec0f805c597865a87c26f7b20f7df74e35c723fb844e917e15ae71f2305204"
+    },
+    {
+      "bytes": 36796,
+      "path": "validation/SOURCE-DERIVATION.json",
+      "sha256": "10011c63032ed71a78ac03eec0bea2e358d61989fb6672352b8ba4ab73a2f545"
+    },
+    {
+      "bytes": 4814,
+      "path": "validation/TEMPLATE-CODEC-INCREMENT.patch",
+      "sha256": "45f4920ed1ac099d11181ef97fd563398d3ce1e44307401f78ddd581808eedad"
+    }
+  ],
+  "new_cases": 0,
+  "new_codec_source_pins": [
+    {
+      "bytes": 77700,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/release-boundary-lossless-bundle-v2-candidate01/source/release_boundaries.py",
+      "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+    },
+    {
+      "bytes": 34626,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/release-boundary-lossless-bundle-v2-candidate01/source/make_component_boundary_inputs.py",
+      "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+    }
+  ],
+  "parent_source_originals": [
+    {
+      "bytes": 3902,
+      "metadata": {
+        "st_ctime_ns": 1793861935593872645,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588172316,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793861935593872645,
+        "st_nlink": 1,
+        "st_size": 3902,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-property-r8-generation-candidate01/MANIFEST.json",
+      "sha256": "3eedff8e162886085493527ee686108b683e734d63bdeb40707ed7af60cd9038"
+    },
+    {
+      "bytes": 17114,
+      "metadata": {
+        "st_ctime_ns": 1793861935589913970,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588172289,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793861935589913970,
+        "st_nlink": 1,
+        "st_size": 17114,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fixed19-six-host-property-r8-generation-candidate01/source/derive_six_host_property_pins.py",
+      "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+    },
+    {
+      "bytes": 9184,
+      "metadata": {
+        "st_ctime_ns": 1793858247677980615,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106010,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247677980615,
+        "st_nlink": 1,
+        "st_size": 9184,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/SOURCE-MANIFEST.json",
+      "sha256": "86649e24375ba78ee22ba779ced5a1b8ae4e5d444e89b552fe9ba48284191cd9"
+    },
+    {
+      "bytes": 56190,
+      "metadata": {
+        "st_ctime_ns": 1793858247680990836,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106032,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247680990836,
+        "st_nlink": 1,
+        "st_size": 56190,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/source/derive_final_cascade_property_r8.py",
+      "sha256": "5196112d9d3469eefbbd1b564eb29ee41169dab428346d275ed8f1dd18f0a717"
+    },
+    {
+      "bytes": 33096,
+      "metadata": {
+        "st_ctime_ns": 1793858247681154339,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106033,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247681154339,
+        "st_nlink": 1,
+        "st_size": 33096,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/source/write_final_seal_interface_property_r8.py",
+      "sha256": "8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb"
+    },
+    {
+      "bytes": 40822,
+      "metadata": {
+        "st_ctime_ns": 1793858247681337468,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106035,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247681337468,
+        "st_nlink": 1,
+        "st_size": 40822,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/build_release_r10.py",
+      "sha256": "79f1788977d8d2f06168351e61969eda8f557ea339df1a4987455c002b8e3be9"
+    },
+    {
+      "bytes": 99120,
+      "metadata": {
+        "st_ctime_ns": 1793858247681496012,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106036,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247681496012,
+        "st_nlink": 1,
+        "st_size": 99120,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/close_component.py",
+      "sha256": "9025acca896c501aef584a92e93af833a342c48731161a6ec10a4a1cae4278d1"
+    },
+    {
+      "bytes": 16343,
+      "metadata": {
+        "st_ctime_ns": 1793858247681709599,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106037,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247681709599,
+        "st_nlink": 1,
+        "st_size": 16343,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/collect_r10_readiness.py",
+      "sha256": "f17198b30d287ede04665179522a81d010839a60e1549c959410daf0605628af"
+    },
+    {
+      "bytes": 4492,
+      "metadata": {
+        "st_ctime_ns": 1793858247681868977,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106038,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247681868977,
+        "st_nlink": 1,
+        "st_size": 4492,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/component_activation_gate.fragment.py",
+      "sha256": "140b7591781a3e487ef7b3ee5b7187fc95058a8b49c28eb3db0c7d8b630fa922"
+    },
+    {
+      "bytes": 19138,
+      "metadata": {
+        "st_ctime_ns": 1793858247682022980,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106039,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247682022980,
+        "st_nlink": 1,
+        "st_size": 19138,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 18133,
+      "metadata": {
+        "st_ctime_ns": 1793858247682157024,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106040,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247682157024,
+        "st_nlink": 1,
+        "st_size": 18133,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/component_common_r5.py",
+      "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02"
+    },
+    {
+      "bytes": 40261,
+      "metadata": {
+        "st_ctime_ns": 1793858247682287360,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106041,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247682287360,
+        "st_nlink": 1,
+        "st_size": 40261,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/component_lifecycle.py",
+      "sha256": "144836347482b8871703b882283ffac63d5df480e3333a9bd631409f890fc1c2"
+    },
+    {
+      "bytes": 24187,
+      "metadata": {
+        "st_ctime_ns": 1793858247682423654,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106042,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247682423654,
+        "st_nlink": 1,
+        "st_size": 24187,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/component_snapshot.py",
+      "sha256": "2d624aaafb7df75ad3c78b35e866a44022ee4f5205b20aaeb4515458e05eaffa"
+    },
+    {
+      "bytes": 53502,
+      "metadata": {
+        "st_ctime_ns": 1793858247682580282,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106043,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247682580282,
+        "st_nlink": 1,
+        "st_size": 53502,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/environment_parent_late_boundary_r6.py",
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+    },
+    {
+      "bytes": 34038,
+      "metadata": {
+        "st_ctime_ns": 1793858247682741451,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106044,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247682741451,
+        "st_nlink": 1,
+        "st_size": 34038,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/install_phone_release_r10.py",
+      "sha256": "3ce2207e1f195c95b7424690a870e4c556e9eccc802e2265c00af78a464f38b1"
+    },
+    {
+      "bytes": 66816,
+      "metadata": {
+        "st_ctime_ns": 1793858247682895454,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106045,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247682895454,
+        "st_nlink": 1,
+        "st_size": 66816,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/late_boundary.py",
+      "sha256": "f42cf7da63df8e3ecd31e984b2deac5d5fc7e1ee0f2bdbb095a8268243a133d4"
+    },
+    {
+      "bytes": 34673,
+      "metadata": {
+        "st_ctime_ns": 1793858247683051290,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106046,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247683051290,
+        "st_nlink": 1,
+        "st_size": 34673,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/make_component_boundary_inputs.py",
+      "sha256": "887c247b1578e78ab3b1591c399d3ad33dcdf5efe64b7a0796e181daed1c22e3"
+    },
+    {
+      "bytes": 24834,
+      "metadata": {
+        "st_ctime_ns": 1793858247683221210,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106047,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247683221210,
+        "st_nlink": 1,
+        "st_size": 24834,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/materialize_case_r10.py",
+      "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+    },
+    {
+      "bytes": 19740,
+      "metadata": {
+        "st_ctime_ns": 1793858247683374379,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106048,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247683374379,
+        "st_nlink": 1,
+        "st_size": 19740,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/non_native_attempt05.py",
+      "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4"
+    },
+    {
+      "bytes": 35730,
+      "metadata": {
+        "st_ctime_ns": 1793858247683515548,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106049,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247683515548,
+        "st_nlink": 1,
+        "st_size": 35730,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/policy_parent_late_boundary_r4.py",
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+    },
+    {
+      "bytes": 62434,
+      "metadata": {
+        "st_ctime_ns": 1793858247683663134,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106050,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247683663134,
+        "st_nlink": 1,
+        "st_size": 62434,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/property_parent_late_boundary_r7.py",
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+    },
+    {
+      "bytes": 76433,
+      "metadata": {
+        "st_ctime_ns": 1793858247683824429,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106051,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247683824429,
+        "st_nlink": 1,
+        "st_size": 76433,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/release_boundaries.py",
+      "sha256": "c844b4924397ffcdd30500c395395ade0bd0ad3eaa746f0a007c1b8ae274b0d6"
+    },
+    {
+      "bytes": 27473,
+      "metadata": {
+        "st_ctime_ns": 1793858247683975140,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106052,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247683975140,
+        "st_nlink": 1,
+        "st_size": 27473,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/root_acceptance_r10.py",
+      "sha256": "70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d"
+    },
+    {
+      "bytes": 19116,
+      "metadata": {
+        "st_ctime_ns": 1793858247684118893,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588106053,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793858247684118893,
+        "st_nlink": 1,
+        "st_size": 19116,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-policy-final-cascade-r8-candidate03/templates/stage_component.py",
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    },
+    {
+      "bytes": 41783,
+      "metadata": {
+        "st_ctime_ns": 1793864360099236878,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588235056,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793864360099236878,
+        "st_nlink": 1,
+        "st_size": 41783,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/property-r8-negative-generation-candidate01/source/derive_negative_operator_sources.py",
+      "sha256": "160cb8d82ecaddaafc73ee18f56cbe24c13937d45bf058816bb06bbb4c311cb2"
+    },
+    {
+      "bytes": 34626,
+      "metadata": {
+        "st_ctime_ns": 1793868096548037764,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588312179,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793868096548037764,
+        "st_nlink": 1,
+        "st_size": 34626,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/release-boundary-lossless-bundle-v2-candidate01/source/make_component_boundary_inputs.py",
+      "sha256": "ed12bbeb717c19a4608ee402fa45b575a78ecbd664cb24eef1bf29bbe331f5fc"
+    },
+    {
+      "bytes": 77700,
+      "metadata": {
+        "st_ctime_ns": 1793868096547290143,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 588312177,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793868096547290143,
+        "st_nlink": 1,
+        "st_size": 77700,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/release-boundary-lossless-bundle-v2-candidate01/source/release_boundaries.py",
+      "sha256": "619589ce59c209d491f1994d67008327604ce07894d101a278c3ebc06052a5f1"
+    }
+  ],
+  "phone_operations": 0,
+  "schema": "hepta.r8.lossless-bundle-generator-source-package.v1",
+  "source_generator_mains_executed": 0,
+  "sources": [
+    {
+      "bytes": 56190,
+      "path": "source/derive_final_cascade_property_r8.py",
+      "sha256": "a4341c41c26c4327c6d5a8c6ba9ec86f59e4e220b8d84e80e35b443fcd11096f"
+    },
+    {
+      "bytes": 33096,
+      "path": "source/write_final_seal_interface_property_r8.py",
+      "sha256": "8d8f75698296cecd9dcc6e302bbfa1546e47401bde74235872c7192da73615bb"
+    },
+    {
+      "bytes": 17114,
+      "path": "source/derive_six_host_property_pins.py",
+      "sha256": "67effbc6a2134a57db81a9d9583e5ff2fd26de48f3d938e236c3acd72b4b530e"
+    },
+    {
+      "bytes": 41788,
+      "path": "source/derive_negative_operator_sources.py",
+      "sha256": "6adbfa234b88c1f9d6ab247e97fa40e98115c584a3d67c41975b06cf0739da4d"
+    }
+  ],
+  "state": "SOURCE_ONLY_FUTURE_FINALIZATION_NONE"
+}

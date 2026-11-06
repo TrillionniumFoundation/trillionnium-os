@@ -1,0 +1,17 @@
+{
+  "action_ledger.py": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+  "daily_phone_local.py": "2f7ed36036394485e6099256588867a5538616f4a97bd24bb0ce4a04291b7031",
+  "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+  "ledger_round_evidence.py": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+  "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+  "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+  "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+  "phone_local_tools.py": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54",
+  "phone_observation_tools.py": "17b8530680fd5cc76406d3249aecf077083bad107c54cd864ae83af298eae8ff",
+  "phone_task_guards.py": "1e14b8dd4eb4fa3e0d785c1663d376ff634116b904a72a9a38001febad1b4e6e",
+  "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+  "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+  "provider_phone_local.py": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6",
+  "retirement_recovery.py": "dadea4bc0aed0afc3f46ebf714964ad529bc68670cc5a7892cbccc2a84c78ee3",
+  "task_postconditions.py": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+}

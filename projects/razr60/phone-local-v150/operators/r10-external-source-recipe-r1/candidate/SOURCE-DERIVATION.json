@@ -1,0 +1,251 @@
+{
+  "candidate_sources": {
+    "preparer/prepare_final_cascade.py": {
+      "bytes": 18583,
+      "sha256": "f2822751979e93fde6af2d5353e34cb3561b9833dedc3c3a7a43175ad8797d55"
+    },
+    "reference/epoch_runtime_source_increment.py": {
+      "bytes": 16184,
+      "sha256": "cbb28751b4789a552882cb5210e900c5a0a4bd06f5d255ab988b8c99addaeccc"
+    },
+    "source/derive_final_cascade_property_r8.py": {
+      "bytes": 115376,
+      "sha256": "7c1cd475ffcb48ccdcb8bed064fd0de84425b778a97c9e1d010466384416bb59"
+    },
+    "source/write_final_seal_interface_property_r8.py": {
+      "bytes": 81450,
+      "sha256": "ee1833976574f371b021612c7fb151bee8ee8ec6fc10601af7908e2cc2fed7e0"
+    },
+    "templates/make_component_boundary_inputs.py": {
+      "bytes": 44302,
+      "sha256": "709a4dadd9612a8865ed581d3e266df4c03aec637a9ecd655353d243a6c99915"
+    },
+    "templates/release_boundaries.py": {
+      "bytes": 125123,
+      "sha256": "cbb99d004d3e0f498749a33b3f01f2ba39ff00e9822789c6fc278b0967c9bf6c"
+    }
+  },
+  "case_credit": 0,
+  "existing_decoded_original_pool_limit": 33554432,
+  "fixture_source_pins": {
+    "tests/fixtures/runtime32/reference/component_common_r5.py": {
+      "bytes": 18133,
+      "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02"
+    },
+    "tests/fixtures/runtime32/reference/component_core.py": {
+      "bytes": 13238,
+      "sha256": "705b982a46de0fd4427cd6a233687381c592ef74459f9818f3da15e20c03916f"
+    },
+    "tests/fixtures/runtime32/reference/component_once_r9.py": {
+      "bytes": 30647,
+      "sha256": "1c27b548e42c91391e12db125c23608a2d5fb9e28ae2713df17c271bddc58fa2"
+    },
+    "tests/fixtures/runtime32/reference/decode_client_state.py": {
+      "bytes": 4116,
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+    },
+    "tests/fixtures/runtime32/reference/environment_parent_late_boundary_r6.py": {
+      "bytes": 53502,
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c"
+    },
+    "tests/fixtures/runtime32/reference/native_guard_session.py": {
+      "bytes": 28109,
+      "sha256": "77dacc52468de95b68f30baafbb1cbf7dd7452c3d9ce652980dbb4af0ca62d8b"
+    },
+    "tests/fixtures/runtime32/reference/native_journal_audit.py": {
+      "bytes": 6701,
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    "tests/fixtures/runtime32/reference/non_native_attempt05.py": {
+      "bytes": 19740,
+      "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4"
+    },
+    "tests/fixtures/runtime32/reference/policy_parent_late_boundary_r4.py": {
+      "bytes": 35730,
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b"
+    },
+    "tests/fixtures/runtime32/reference/property_parent_late_boundary_r7.py": {
+      "bytes": 62434,
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd"
+    },
+    "tests/fixtures/runtime32/reference/send_new_native_task_r5.py": {
+      "bytes": 40788,
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+    },
+    "tests/fixtures/runtime32/reference/tool_client_r6.py": {
+      "bytes": 17390,
+      "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f"
+    },
+    "tests/fixtures/runtime32/source/close_component.py": {
+      "bytes": 123113,
+      "sha256": "fe9d4b04f0c6924cc3b783a23f924a6fd1c9153eba1582856a21a4d194cf4985"
+    },
+    "tests/fixtures/runtime32/source/component_common.py": {
+      "bytes": 114881,
+      "sha256": "844150745bd5855e4ef6c769d58931c57c9e7eb93ae4e09bc3ea329ffab7c8e1"
+    },
+    "tests/fixtures/runtime32/source/component_lifecycle.py": {
+      "bytes": 126722,
+      "sha256": "a1e9d56fa5ada757c9ad70aa43f748336d7f2bd90d716378987dbc15497cd482"
+    },
+    "tests/fixtures/runtime32/source/component_listener.py": {
+      "bytes": 84748,
+      "sha256": "4131eb98a4aa0e5b99c090e63fafe6f8dd05e84a9c8fee2947d19d98420aed88"
+    },
+    "tests/fixtures/runtime32/source/component_snapshot.py": {
+      "bytes": 126651,
+      "sha256": "e421f827e8ae86ca5d94212d6f692372b2b8483e1004efd5c5ef58bdf95b3220"
+    },
+    "tests/fixtures/runtime32/source/late_boundary.py": {
+      "bytes": 123791,
+      "sha256": "352703c0f47ecbd55563e252f8c09b2825a147d2d9a2c42a04ac1c35e8facad0"
+    },
+    "tests/fixtures/runtime32/source/native_guard_session_r2.py": {
+      "bytes": 28878,
+      "sha256": "5fe50be4dccbe655a39124876d1f9c2199de20d80ec0a84f08a63d88e7f1a931"
+    },
+    "tests/fixtures/runtime32/source/native_proc_profile.py": {
+      "bytes": 123179,
+      "sha256": "f0ce643c0cf66e3bd4a4ebef8b278c4b2e0f1d9049dcb11282e5e673907c9f28"
+    },
+    "tests/fixtures/runtime32/source/prepare_component.py": {
+      "bytes": 128772,
+      "sha256": "8fc621ff4bbb7c35e33bb74c093211bd95405a95f79bd25924f25d6d64b99457"
+    },
+    "tests/fixtures/runtime32/source/root_fixture_once.py": {
+      "bytes": 78290,
+      "sha256": "3641197e92de93f0dcefc4de183ceccecec5be2d2df5b1f2a37a7eae7758b47c"
+    },
+    "tests/fixtures/runtime32/source/root_fixture_originals.py": {
+      "bytes": 39149,
+      "sha256": "c1cd1402888de5bc4176255269014995e9d39dc658912d3c28a117ec51010f9e"
+    },
+    "tests/fixtures/runtime32/source/run_root_fixture_phase.py": {
+      "bytes": 62097,
+      "sha256": "139c9c31fcd8e84ffaac05b01f3a89a8c9a9126d91eb2e0a63c18b9843149dc7"
+    },
+    "tests/fixtures/runtime32/source/send_new_native_guard_task_r10_r4.py": {
+      "bytes": 40952,
+      "sha256": "aafd40345c6dc35b7b7d34ab8b04c860ebf17d326d842ed733d0404cd0a051ad"
+    },
+    "tests/fixtures/runtime32/source/sender_native_guard_ready_r10_r4.py": {
+      "bytes": 18666,
+      "sha256": "f3b83e55a07edd370946c40cec8694f310c9713082604646d264b625e7314d99"
+    },
+    "tests/fixtures/runtime32/source/stage_component.py": {
+      "bytes": 19116,
+      "sha256": "4d4692a284ddce37aae383fc537cac1e49e2fbb05ede4321f57d8f022dd62340"
+    },
+    "tests/fixtures/runtime32/source/witness_bundle.py": {
+      "bytes": 30317,
+      "sha256": "7f875695cbe17f8c51dd1b4af94aa29dfcdfb862af375ddac46803b1ffe579f6"
+    },
+    "tests/fixtures/shared17/provider/source/action_ledger.py": {
+      "bytes": 15587,
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    "tests/fixtures/shared17/provider/source/daily_phone_local.py": {
+      "bytes": 32489,
+      "sha256": "2f7ed36036394485e6099256588867a5538616f4a97bd24bb0ce4a04291b7031"
+    },
+    "tests/fixtures/shared17/provider/source/health_contracts.py": {
+      "bytes": 11439,
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    "tests/fixtures/shared17/provider/source/ledger_round_evidence.py": {
+      "bytes": 15135,
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    "tests/fixtures/shared17/provider/source/model_health.py": {
+      "bytes": 8251,
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    "tests/fixtures/shared17/provider/source/model_slot_cleanup.py": {
+      "bytes": 37375,
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    "tests/fixtures/shared17/provider/source/phone_local_http_worker.py": {
+      "bytes": 10453,
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    "tests/fixtures/shared17/provider/source/phone_local_tools.py": {
+      "bytes": 13813,
+      "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+    },
+    "tests/fixtures/shared17/provider/source/phone_observation_tools.py": {
+      "bytes": 39421,
+      "sha256": "17b8530680fd5cc76406d3249aecf077083bad107c54cd864ae83af298eae8ff"
+    },
+    "tests/fixtures/shared17/provider/source/phone_task_guards.py": {
+      "bytes": 26441,
+      "sha256": "1e14b8dd4eb4fa3e0d785c1663d376ff634116b904a72a9a38001febad1b4e6e"
+    },
+    "tests/fixtures/shared17/provider/source/provider_codex_host.py": {
+      "bytes": 41510,
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    "tests/fixtures/shared17/provider/source/provider_openai_compatible.py": {
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    "tests/fixtures/shared17/provider/source/provider_phone_local.py": {
+      "bytes": 70237,
+      "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+    },
+    "tests/fixtures/shared17/provider/source/retirement_recovery.py": {
+      "bytes": 9808,
+      "sha256": "dadea4bc0aed0afc3f46ebf714964ad529bc68670cc5a7892cbccc2a84c78ee3"
+    },
+    "tests/fixtures/shared17/provider/source/task_postconditions.py": {
+      "bytes": 23211,
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  },
+  "new_global_physical_read_limit_introduced": false,
+  "parent_sources": {
+    "preparer/prepare_final_cascade.py": {
+      "bytes": 18385,
+      "sha256": "5349d570f5b4044754b94450d6d2c7c99d6c5579953f359efe93904d513500bb"
+    },
+    "source/derive_final_cascade_property_r8.py": {
+      "bytes": 113008,
+      "sha256": "a172da9ad3a6a610485a92d994c5f6eac437ba66c22797ac1f5a633bf547747d"
+    },
+    "source/write_final_seal_interface_property_r8.py": {
+      "bytes": 79151,
+      "sha256": "4082d8f26590959c37ebcc11f2754438437efe671db01bc25889d44533425730"
+    },
+    "templates/make_component_boundary_inputs.py": {
+      "bytes": 44037,
+      "sha256": "a6be58b0c6bdeef1e161fb3bd617e3f413db8cfa56c299267767e9e6741f80c2"
+    },
+    "templates/release_boundaries.py": {
+      "bytes": 122789,
+      "sha256": "175363000309400259a0813f087a3c92a81c997232ce565e9bfde877343715ac"
+    }
+  },
+  "phone_calls": 0,
+  "policy_authority_fabricated": false,
+  "recipe_original_limit": 65536,
+  "remaining_binding": [
+    "source_recipe descriptor in three pure consumers",
+    "EPOCH_SOURCE_INPUTS and FINALIZATION including actual source_recipe",
+    "actual policy/apply/adoption and all prior unbound authority slots",
+    "remaining whole-runtime and root/template19 integration beyond this recipe-only change"
+  ],
+  "runtime_member_count_unchanged": 32,
+  "runtime_source_executions": 0,
+  "runtime_source_members_added": 0,
+  "schema": "hepta.epoch-external-recipe-source-candidate.v1",
+  "source_pin_cascade": [
+    "release template + constructor template -> cascade TEMPLATE_PINS",
+    "cascade + interface -> preparer source descriptors + generator manifest",
+    "generator manifest -> preparer manifest descriptor"
+  ],
+  "source_recipe_descriptor_bound": false,
+  "state": "UNBOUND_SOURCE_ONLY_NOT_INSTALLABLE",
+  "test_only_recipe": {
+    "bytes": 37393,
+    "sha256": "d3ea467ad7d706cbbb200e4607cc0f6bd74a1791212b584a59b6a7398836ea86"
+  }
+}
