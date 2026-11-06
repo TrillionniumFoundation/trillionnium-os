@@ -1,0 +1,346 @@
+{
+  "actual_new_phone_cases_executed_by_packaging": 0,
+  "archive": {
+    "all_selected_body_bytes_retained": true,
+    "archive": {
+      "bytes": 3852952,
+      "sha256": "5d6d002aba82489c161561d230eb4122f2ff8d44956337d3f51f32fabadfebe4"
+    },
+    "archive_members": 770,
+    "local_source_identity_bookends_equal": true,
+    "no_new_remote_observation_by_packaging": true,
+    "parts": [
+      {
+        "bytes": 524288,
+        "offset": 0,
+        "path": "archive/COMPLETED-WORK.tar.xz.part000",
+        "sha256": "ec8dabd126042ef6d65457f4b07c12ffb88a702a9ed7745ac752217aaa2e05ad"
+      },
+      {
+        "bytes": 524288,
+        "offset": 524288,
+        "path": "archive/COMPLETED-WORK.tar.xz.part001",
+        "sha256": "392a801101d8b901c8388310f8ea32694b539e572a4ffa52130cfae58d9670c8"
+      },
+      {
+        "bytes": 524288,
+        "offset": 1048576,
+        "path": "archive/COMPLETED-WORK.tar.xz.part002",
+        "sha256": "070e1f55a87b2c13456789fb810a223d79fd9cc72411a0f555082f97f1e0f5e7"
+      },
+      {
+        "bytes": 524288,
+        "offset": 1572864,
+        "path": "archive/COMPLETED-WORK.tar.xz.part003",
+        "sha256": "f6461f9afd02dc791af3f2d8d08a599e100bf1dccbb19e948d3528c27f342153"
+      },
+      {
+        "bytes": 524288,
+        "offset": 2097152,
+        "path": "archive/COMPLETED-WORK.tar.xz.part004",
+        "sha256": "2b94208c796a7f43bff5114acbc830b3c0b04a5854786b60877e4b4c072b4de4"
+      },
+      {
+        "bytes": 524288,
+        "offset": 2621440,
+        "path": "archive/COMPLETED-WORK.tar.xz.part005",
+        "sha256": "db5598270851783dcc5680e548f4f4bcbe1a15843cb549cba19f4c35fb843661"
+      },
+      {
+        "bytes": 524288,
+        "offset": 3145728,
+        "path": "archive/COMPLETED-WORK.tar.xz.part006",
+        "sha256": "9f669739df8d043a8c2883737ea425134c7257765cccbe64e0d6004feddc326e"
+      },
+      {
+        "bytes": 182936,
+        "offset": 3670016,
+        "path": "archive/COMPLETED-WORK.tar.xz.part007",
+        "sha256": "deb31d46bb1bf9f4212e1ad7f0bee04db2ba9784e2b4091baa8ec87520dc98c9"
+      }
+    ],
+    "schema": "hepta.fixed19.checkpoint11.lossless-archive.v1",
+    "source_execution": false,
+    "source_index": {
+      "bytes": 388382,
+      "sha256": "9218abe9019c7806b5ae287ec08cafb52968aee078945ce95920d97bb39a2410"
+    },
+    "source_index_parts": [
+      {
+        "bytes": 388382,
+        "offset": 0,
+        "path": "archive/SOURCE-INDEX.json.part000",
+        "sha256": "9218abe9019c7806b5ae287ec08cafb52968aee078945ce95920d97bb39a2410"
+      }
+    ],
+    "source_members": 769,
+    "tar": {
+      "bytes": 34129920,
+      "sha256": "b266a1fba319b03f11183411ed92ad97b624db47d05cbe722949c74ff6bf69c8"
+    },
+    "uncompressed_source_bytes": 32922608,
+    "whole_cases_qualified": 0
+  },
+  "base_commit": "f972e1f41f7aca6f74407edc5293b3850d069748",
+  "base_tree": "b5b7b1584be452e00caf430f76c419779a436495",
+  "final_runtime_ready": false,
+  "host_layer_passes": 5,
+  "not_in_this_frozen_checkpoint": [
+    "current common06/stage operations and final bindings",
+    "live prepublication observation implementation",
+    "shared-GNU inventory v6 local checks and final package",
+    "later active CPU physical candidates",
+    "any future native initialization allocation or case"
+  ],
+  "phone_native_deployment": false,
+  "policy_comparison_passes": 16,
+  "published_files": [
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "e0d7155f752508778c23ebd71f746f9bf3a9745a",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part000",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 0
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part000",
+      "sha256": "ec8dabd126042ef6d65457f4b07c12ffb88a702a9ed7745ac752217aaa2e05ad"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "0bae2a9e3d37007d1f5cd9f25e68b80138890d17",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part001",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 524288
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part001",
+      "sha256": "392a801101d8b901c8388310f8ea32694b539e572a4ffa52130cfae58d9670c8"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "ae4a9876cb2e877c8ce96b449b93b05768679ab7",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part002",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 1048576
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part002",
+      "sha256": "070e1f55a87b2c13456789fb810a223d79fd9cc72411a0f555082f97f1e0f5e7"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "97f11cd1a1a71ff53f829e0cb125b8c2af67d3e0",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part003",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 1572864
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part003",
+      "sha256": "f6461f9afd02dc791af3f2d8d08a599e100bf1dccbb19e948d3528c27f342153"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "80e551c1edd4d0aea0d0b853c4697bbb03f1cbe5",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part004",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 2097152
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part004",
+      "sha256": "2b94208c796a7f43bff5114acbc830b3c0b04a5854786b60877e4b4c072b4de4"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "47201b899ac0499bd3d8f32222693f6aae17ad8f",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part005",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 2621440
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part005",
+      "sha256": "db5598270851783dcc5680e548f4f4bcbe1a15843cb549cba19f4c35fb843661"
+    },
+    {
+      "bytes": 524288,
+      "encoding": "base64",
+      "git_blob_sha": "98407592b6a548d0b2d9268fee654721a841d35b",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part006",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 3145728
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part006",
+      "sha256": "9f669739df8d043a8c2883737ea425134c7257765cccbe64e0d6004feddc326e"
+    },
+    {
+      "bytes": 182936,
+      "encoding": "base64",
+      "git_blob_sha": "74526a98c02edcea7c34da7f665a923bebb11535",
+      "local": "git_checkpoint11_delivery/final01/files/archive/COMPLETED-WORK.tar.xz.part007",
+      "origin": {
+        "kind": "lossless-storage-part",
+        "offset": 3670016
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/COMPLETED-WORK.tar.xz.part007",
+      "sha256": "deb31d46bb1bf9f4212e1ad7f0bee04db2ba9784e2b4091baa8ec87520dc98c9"
+    },
+    {
+      "bytes": 388382,
+      "encoding": "base64",
+      "git_blob_sha": "ee9855700fe6ac474bcda607de6c78cf4e049ce9",
+      "local": "git_checkpoint11_delivery/final01/files/archive/SOURCE-INDEX.json.part000",
+      "origin": {
+        "kind": "complete-source-index-part",
+        "offset": 0
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/SOURCE-INDEX.json.part000",
+      "sha256": "9218abe9019c7806b5ae287ec08cafb52968aee078945ce95920d97bb39a2410"
+    },
+    {
+      "bytes": 2549,
+      "encoding": "base64",
+      "git_blob_sha": "2e57ca46141eea2154c14ec813e3d05f7e13618a",
+      "local": "git_checkpoint11_delivery/final01/files/archive/ARCHIVE-MANIFEST.json",
+      "origin": {
+        "kind": "archive-closed-set-descriptor"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/archive/ARCHIVE-MANIFEST.json",
+      "sha256": "39a1fca53d4d9594520223d1624a830d385b28f28e223e3a46c6a0e6a1f91e84"
+    },
+    {
+      "bytes": 37025,
+      "encoding": "base64",
+      "git_blob_sha": "6ccd1462e57dedbd8d940c4a5b9861b845114d2b",
+      "local": "git_checkpoint11_delivery/final01/files/reviewable/material/epoch_host_materializer.fragment.py",
+      "origin": {
+        "bytes": 37025,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_host_materializer_candidate01/delivery-source-only02/package/source/epoch_host_materializer.fragment.py",
+        "sha256": "928b7747db245af7f456f0ecc556f4fa7b01601b1d46e5ccac47905297e506f1"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/reviewable/material/epoch_host_materializer.fragment.py",
+      "sha256": "928b7747db245af7f456f0ecc556f4fa7b01601b1d46e5ccac47905297e506f1"
+    },
+    {
+      "bytes": 123179,
+      "encoding": "base64",
+      "git_blob_sha": "2267801bc5c758740d532168b8bdbd75ea26d8d1",
+      "local": "git_checkpoint11_delivery/final01/files/reviewable/profile/native_proc_profile.py",
+      "origin": {
+        "bytes": 123179,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_native_candidate01/history-reconciliation-candidate01/profile-source-draft05/source/native_proc_profile.py",
+        "sha256": "f0ce643c0cf66e3bd4a4ebef8b278c4b2e0f1d9049dcb11282e5e673907c9f28"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/reviewable/profile/native_proc_profile.py",
+      "sha256": "f0ce643c0cf66e3bd4a4ebef8b278c4b2e0f1d9049dcb11282e5e673907c9f28"
+    },
+    {
+      "bytes": 37759,
+      "encoding": "base64",
+      "git_blob_sha": "643315a468831ec1def9f61d2e1c5f69c6f93ee6",
+      "local": "git_checkpoint11_delivery/final01/files/reviewable/protocol/epoch_protocol_collection.fragment.py",
+      "origin": {
+        "bytes": 37759,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_prepare_frontier_candidate01/source-draft03/source/epoch_protocol_collection.fragment.py",
+        "sha256": "de2661bc383d8bc4978daaa5cfabd08383981cf3c4a649bbb7e11ee864626f6a"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/reviewable/protocol/epoch_protocol_collection.fragment.py",
+      "sha256": "de2661bc383d8bc4978daaa5cfabd08383981cf3c4a649bbb7e11ee864626f6a"
+    },
+    {
+      "bytes": 125575,
+      "encoding": "base64",
+      "git_blob_sha": "6daa8d8ebe2fb923a98b851c6430a9fe5ef0981f",
+      "local": "git_checkpoint11_delivery/final01/files/reviewable/protocol/late_boundary.py",
+      "origin": {
+        "bytes": 125575,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_prepare_frontier_candidate01/source-draft03/source/late_boundary.py",
+        "sha256": "8b24f74e7a55655938409a723db307411100024e5d6d4f1d150c366f0a6c5f23"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/reviewable/protocol/late_boundary.py",
+      "sha256": "8b24f74e7a55655938409a723db307411100024e5d6d4f1d150c366f0a6c5f23"
+    },
+    {
+      "bytes": 127306,
+      "encoding": "base64",
+      "git_blob_sha": "6ecff13781c37c7f6f25a4344907e4be6584797b",
+      "local": "git_checkpoint11_delivery/final01/files/reviewable/protocol/prepare_component.py",
+      "origin": {
+        "bytes": 127306,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_prepare_frontier_candidate01/source-draft03/source/prepare_component.py",
+        "sha256": "c7111567ae9d966354a638d723fc2aa4b226b365b7f8d2e757a84cb5c858eff5"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/reviewable/protocol/prepare_component.py",
+      "sha256": "c7111567ae9d966354a638d723fc2aa4b226b365b7f8d2e757a84cb5c858eff5"
+    },
+    {
+      "bytes": 90444,
+      "encoding": "base64",
+      "git_blob_sha": "5f3de1bc8a2360b3a281907806c135487fa8ebe8",
+      "local": "git_checkpoint11_delivery/final01/files/reviewable/root/phone_chain_bridge.py",
+      "origin": {
+        "bytes": 90444,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_root_workflow_candidate01/source-draft06/source/phone_chain_bridge.py",
+        "sha256": "e9a9f860af8375a54d7b723ac8bdca76f3e52c8fd7513561aba644d3c541b2ed"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/reviewable/root/phone_chain_bridge.py",
+      "sha256": "e9a9f860af8375a54d7b723ac8bdca76f3e52c8fd7513561aba644d3c541b2ed"
+    },
+    {
+      "bytes": 126536,
+      "encoding": "base64",
+      "git_blob_sha": "58c8203a71e6662b6cb05db35eafeae6f94f90ab",
+      "local": "git_checkpoint11_delivery/final01/files/reviewable/root/run_component_root_once.py",
+      "origin": {
+        "bytes": 126536,
+        "kind": "exact-reviewable-copy",
+        "original": "epoch_root_workflow_candidate01/source-draft06/source/run_component_root_once.py",
+        "sha256": "377e72f168ca874eab021183f71c6336e37e32c8bd43cc9af6357b36b3e7fee2"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/reviewable/root/run_component_root_once.py",
+      "sha256": "377e72f168ca874eab021183f71c6336e37e32c8bd43cc9af6357b36b3e7fee2"
+    },
+    {
+      "bytes": 3423,
+      "encoding": "base64",
+      "git_blob_sha": "c41bda9e3a275ea2bfe17f1c1c7c9d6bc4c0ea4b",
+      "local": "git_checkpoint11_delivery/final01/files/README.md",
+      "origin": {
+        "kind": "honest-progress-description"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/README.md",
+      "sha256": "11131fcbd69d32247f6058db071810d6ae2f1ee2361042420e3a91f15a820ec8"
+    },
+    {
+      "bytes": 4367,
+      "encoding": "base64",
+      "git_blob_sha": "087934c555fca0b12559bc13121719aeb3cb5fef",
+      "local": "git_checkpoint11_delivery/final01/files/restore_checkpoint.py",
+      "origin": {
+        "kind": "unchanged-reviewed-lossless-archive-verifier"
+      },
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11/restore_checkpoint.py",
+      "sha256": "c467f60fa4193ef804f197abba9b36443453334563fa9cae6280edb25458a87d"
+    }
+  ],
+  "schema": "hepta.fixed19.checkpoint11.progress-manifest.v1",
+  "source_selection": {
+    "bytes": 2885,
+    "sha256": "969034f6ddfec338784b2afcc469a06d9244a794f9a0464bcf3a931c6443267e"
+  },
+  "state": "COMPLETED_SOURCE_STAGES_AND_SOURCE_ONLY_SUCCESSORS_PRESERVED_NOT_RUNTIME_READY",
+  "whole_cases_qualified": 0,
+  "whole_cases_total": 19
+}

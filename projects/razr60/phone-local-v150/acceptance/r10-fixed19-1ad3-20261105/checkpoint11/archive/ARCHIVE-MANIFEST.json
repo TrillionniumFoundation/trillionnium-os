@@ -1,0 +1,81 @@
+{
+  "all_selected_body_bytes_retained": true,
+  "archive": {
+    "bytes": 3852952,
+    "sha256": "5d6d002aba82489c161561d230eb4122f2ff8d44956337d3f51f32fabadfebe4"
+  },
+  "archive_members": 770,
+  "local_source_identity_bookends_equal": true,
+  "no_new_remote_observation_by_packaging": true,
+  "parts": [
+    {
+      "bytes": 524288,
+      "offset": 0,
+      "path": "archive/COMPLETED-WORK.tar.xz.part000",
+      "sha256": "ec8dabd126042ef6d65457f4b07c12ffb88a702a9ed7745ac752217aaa2e05ad"
+    },
+    {
+      "bytes": 524288,
+      "offset": 524288,
+      "path": "archive/COMPLETED-WORK.tar.xz.part001",
+      "sha256": "392a801101d8b901c8388310f8ea32694b539e572a4ffa52130cfae58d9670c8"
+    },
+    {
+      "bytes": 524288,
+      "offset": 1048576,
+      "path": "archive/COMPLETED-WORK.tar.xz.part002",
+      "sha256": "070e1f55a87b2c13456789fb810a223d79fd9cc72411a0f555082f97f1e0f5e7"
+    },
+    {
+      "bytes": 524288,
+      "offset": 1572864,
+      "path": "archive/COMPLETED-WORK.tar.xz.part003",
+      "sha256": "f6461f9afd02dc791af3f2d8d08a599e100bf1dccbb19e948d3528c27f342153"
+    },
+    {
+      "bytes": 524288,
+      "offset": 2097152,
+      "path": "archive/COMPLETED-WORK.tar.xz.part004",
+      "sha256": "2b94208c796a7f43bff5114acbc830b3c0b04a5854786b60877e4b4c072b4de4"
+    },
+    {
+      "bytes": 524288,
+      "offset": 2621440,
+      "path": "archive/COMPLETED-WORK.tar.xz.part005",
+      "sha256": "db5598270851783dcc5680e548f4f4bcbe1a15843cb549cba19f4c35fb843661"
+    },
+    {
+      "bytes": 524288,
+      "offset": 3145728,
+      "path": "archive/COMPLETED-WORK.tar.xz.part006",
+      "sha256": "9f669739df8d043a8c2883737ea425134c7257765cccbe64e0d6004feddc326e"
+    },
+    {
+      "bytes": 182936,
+      "offset": 3670016,
+      "path": "archive/COMPLETED-WORK.tar.xz.part007",
+      "sha256": "deb31d46bb1bf9f4212e1ad7f0bee04db2ba9784e2b4091baa8ec87520dc98c9"
+    }
+  ],
+  "schema": "hepta.fixed19.checkpoint11.lossless-archive.v1",
+  "source_execution": false,
+  "source_index": {
+    "bytes": 388382,
+    "sha256": "9218abe9019c7806b5ae287ec08cafb52968aee078945ce95920d97bb39a2410"
+  },
+  "source_index_parts": [
+    {
+      "bytes": 388382,
+      "offset": 0,
+      "path": "archive/SOURCE-INDEX.json.part000",
+      "sha256": "9218abe9019c7806b5ae287ec08cafb52968aee078945ce95920d97bb39a2410"
+    }
+  ],
+  "source_members": 769,
+  "tar": {
+    "bytes": 34129920,
+    "sha256": "b266a1fba319b03f11183411ed92ad97b624db47d05cbe722949c74ff6bf69c8"
+  },
+  "uncompressed_source_bytes": 32922608,
+  "whole_cases_qualified": 0
+}

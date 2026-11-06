@@ -1,0 +1,27 @@
+# Checkpoint11 — 原文载体、有限操作源与发布前协议增量
+
+E2E01–04、COMP01、NEG01–14 的19整项验收仍为0/19。旧host层NEG04/05/07/08/09的5/5及policy comparison16/16各自保留，不能替代物理或业务验收。
+
+## 完成证据
+
+6077分支58个Mac实际数据文件已create-only暂存，54个公开验证回调共读2,227,621字节；52组来源和实际载体逐体一致，完整58文件原文、实际full9、版本与回读都保留。最早两次E2BIG未知回执原样保留。该分支继续是provider_failed、native1、组件与业务资格false。旧137输入/277捕获记录的深层审计没有重新跑。
+
+Policy当前三份原文的完整回读、公开29回调及固定载体绑定已完成。保留实际原adoption与live policy身份、独立报告和此前失败；不将此前554读集再次扩大到新手机消费者域。
+
+P4有限operation的3个源码已实际暂存并独立全量回读：源161,301字节，暂存器双读322,602字节；实际stage02控制器0、双EOF与完整full9闭合。首次regular stdin错误在写入前拒绝，stage01失败完整保留。独立publication的2个源105,561字节也已完成实际stage01及双读211,122字节。以上仅源码暂存，未调用手机有限operation，未新建native案例。
+
+## 新源码包与完整数据
+
+实际CLAIM绑定的Mac材料构造器已经冻结两代。最新增量加入CLAIM及ALLOCATION-ADMISSION两份实际原文，归档闭集56增至58；五份分配原件与独立先前边界保持手机来源身份和Mac载体身份分开。旧独立审查、15个局部IO检查、实际shared17/COMBINATION完整重构和必要修正均保留。
+
+Root/bridge draft04、05、06失败与后继完整保留，当前draft06实际操作程序56,462字节。主机接收归档改为原64MiB独立有限流，4项EOF/FD检查已闭合；普通小文件读池仍16MiB，510秒真实租约不延长。
+
+协议draft03将prepublication单独作为显式状态：最高已分配slot必须有实际CLOSURE、AFTER-INVENTORY与authority完整闭集，BOUNDARY与COMMIT必须不存在。纯验证核实际捕获与主机执行来源后才准写边界；已发布回放不接纳半发布状态。pre-admission frontier使用真实完整已提交前缀和原33历史语义，不虚构未来lease/admission。辅助代码放在现有root_fixture_originals成员，旧前缀逐字不变，无新增第33模块。
+
+固定metadata union的数据包保留624静态行与556正文；历史canonical链仍6。6077留存分支与13ed预启动缺席是独立子域；18个client receipt来源于已完成深审，未标成新frontier直读。后继whole GNU父扫描实现及其必要局部检查仍在本包之外。
+
+## 未完成边界与恢复
+
+本包只保存ROOT-SELECTION明确的30个目录、5个文件以及选择/构建器。common06/stage全部实际操作、统一fresh prepublication/封口观测、最终runtime32与所有后继绑定尚在工作中；未声称可initialize或已完成任何新物理案例。所有未绑定None仍应硬拒。
+
+XZ仅为持久化压缩，不降低运行时物理读取或源码预算。完整SOURCE-INDEX逐件保留bytes/SHA和当时本地full9；恢复不声称复制原文件系统身份。恢复工具先核全体文件和闭集再可选create-only恢复，不导入或执行任何归档源码。Git更新只追加checkpoint11路径，既有内容保持。
