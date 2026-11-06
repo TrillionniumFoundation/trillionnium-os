@@ -1,10 +1,15 @@
+> Rendering note (2026-11-04): The [previously published bytes](README-as-published-4f7f0886.raw.txt)
+> remain unchanged. This display copy adds this note and rebases navigation
+> links from the former project-root location to this history directory.
+> Historical results and qualification statements are unchanged.
+
 # RAZR60 phone-local model — r7-r1 measured checkpoint
 
 **Phone-local model health passed. Both new real phone business tasks failed. The formal nineteen-case result is 7 PASS / 2 FAIL / 10 BLOCKED; daily-use qualification has not been established.**
 
 The model and inference runtime are installed on the phone. The current failure is in the first Android application operation: both original workers reached execution and timed out while their stderr reported denied servicemanager property reads. Original actions and drafts have been independently closed without replay. A future property-permission correction is a separate combination, not a retroactive pass for this one.
 
-Read the [complete quality and cost report](qualification/r7-r1-checkpoint/README.md) and [machine-readable result](qualification/r7-r1-checkpoint/actual-01/QUALITY-PUBLIC.json).
+Read the [complete quality and cost report](../r7-r1-checkpoint/README.md) and [machine-readable result](../r7-r1-checkpoint/actual-01/QUALITY-PUBLIC.json).
 
 ## Current source and execution boundary
 
@@ -35,7 +40,7 @@ The formal acceptance protocol is the r7 metadata adaptation of the current r6-r
 
 ## Actual health cutoff
 
-[HEALTH-v150-r7-stage01.json](qualification/checkpoints/HEALTH-v150-r7-stage01.json) is an immutable cutoff after the first r7 health request and before admission of any r7 business result. It records one health pass and zero business samples at that cutoff.
+[HEALTH-v150-r7-stage01.json](../checkpoints/HEALTH-v150-r7-stage01.json) is an immutable cutoff after the first r7 health request and before admission of any r7 business result. It records one health pass and zero business samples at that cutoff.
 
 The native task completed after one local HTTP/model round and zero phone tools. The original worker joined, the slot was idle, and the exact original draft was restored without submission. Root checked the actual host/actor/phone/collector exit statuses and the original task evidence. Three selected native records and two visible predecessor links passed hash verification; this is not a complete-global-journal claim.
 
@@ -76,7 +81,7 @@ The r7 host results are new samples on this exact source and combination:
 - NEG-04/05/07/08/09 passed their host-isolated layers once: 154 checks. These five cases retain separate physical lifecycle requirements. Host success does not close their full protocol cases.
 - Synthetic host HTTP responses and disposable subprocess counters are identified as fixtures. They are not phone actions or actual GUI-Owl predictions.
 
-The previous r6-r2 [stage02 quality report](qualification/checkpoints/QUALITY-v150-r6-r2-stage02.json) stays under its own frozen combination: 7 PASS / 3 FAIL / 9 BLOCKED. Its two model business tasks failed with no phone tools. Its physical cancellation task ended cancelled but the model slot was still busy; the physical lifecycle case failed and the service stopped. The independent original-task/draft/retirement closure is not a retroactive success. None of these old samples is relabelled as an r7 result.
+The previous r6-r2 [stage02 quality report](../checkpoints/QUALITY-v150-r6-r2-stage02.json) stays under its own frozen combination: 7 PASS / 3 FAIL / 9 BLOCKED. Its two model business tasks failed with no phone tools. Its physical cancellation task ended cancelled but the model slot was still busy; the physical lifecycle case failed and the service stopped. The independent original-task/draft/retirement closure is not a retroactive success. None of these old samples is relabelled as an r7 result.
 
 ## Preserved execution rules
 
@@ -96,7 +101,7 @@ The sealed business-export README contains a historical four-phase instruction e
 2. capture, which already performs export before returning
 3. collect
 
-Read [WORKFLOW-ERRATA.md](acceptance/r7/business-original-export/WORKFLOW-ERRATA.md). A separate export command is not a fourth normal step. It is only an independently reviewed incomplete-transfer recovery. A duplicate export refuses an existing archive with O_EXCL and preserves that original; do not recapture or replay the task to work around the refusal.
+Read [WORKFLOW-ERRATA.md](../../acceptance/r7/business-original-export/WORKFLOW-ERRATA.md). A separate export command is not a fourth normal step. It is only an independently reviewed incomplete-transfer recovery. A duplicate export refuses an existing archive with O_EXCL and preserves that original; do not recapture or replay the task to work around the refusal.
 
 Successful transfer is not business success. The original capture actor and phone exits, complete evidence, actual collector exit and business postconditions all remain necessary.
 

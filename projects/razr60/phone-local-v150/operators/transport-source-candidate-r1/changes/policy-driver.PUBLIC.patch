@@ -1,0 +1,90 @@
+--- a/run_runtime_properties_policy_once.py
++++ b/run_runtime_properties_policy_once.py
+@@ -4,7 +4,8 @@
+ """One Root policy transaction; no native case nonce and no automatic replay.
+ 
+ The immutable plan and pre-live expectation are fsynced before any phone phase.
+-Every actual phase uses the original frozen phone_once transport. Unknown work
++Every actual phase uses the reviewed r4-derived transport. Original phone_once
++semantics and the closed04 validation namespace are preserved. Unknown work
+ must be reconciled under its original operation identity before continuation.
+ """
+ import argparse
+@@ -21,8 +22,11 @@
+ B=Path('/REQUIRED_PRIVATE_WORKSPACE')
+ BOOT='REQUIRED_PRIVATE_BOOT_ID_001'
+ NONCE='REQUIRED_PRIVATE_NONCE_001'
+-TRANSPORT_SOURCE=B/'REQUIRED_PRIVATE_ORIGINAL_R4_SOURCE.py'
+-TRANSPORT_SHA='REQUIRED_PRIVATE_SHA256_013'
++ORIGINAL_TRANSPORT_SOURCE=B/'REQUIRED_PRIVATE_ORIGINAL_R4_SOURCE.py'
++ORIGINAL_TRANSPORT_SHA='REQUIRED_PRIVATE_SHA256_013'
++TRANSPORT_SOURCE=Path(__file__).resolve().parent.parent/'reference/REQUIRED_PRIVATE_FIXED_R4_SOURCE.py'
++TRANSPORT_SHA='REQUIRED_PRIVATE_SHA256_015'
++TRANSPORT_BYTES=51032
+ TRANSPORT_PLAN=B/'REQUIRED_PRIVATE_CLOSED04_PLAN.json'
+ TRANSPORT_PLAN_SHA='REQUIRED_PRIVATE_SHA256_014'
+ OUT=B/'REQUIRED_PRIVATE_POLICY_OUTPUT'
+@@ -43,12 +47,24 @@
+     return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite JSON')))
+ def load_transport():
+     raw=TRANSPORT_SOURCE.read_bytes()
+-    need(len(raw)==43438 and sha(raw)==TRANSPORT_SHA,'frozen original transport source differs')
++    need(len(raw)==TRANSPORT_BYTES and sha(raw)==TRANSPORT_SHA,'reviewed r4 transport repair source differs')
+     sys.dont_write_bytecode=True
+-    module=types.ModuleType('reviewed_original_root_phone_transport')
++    module=types.ModuleType('reviewed_r4_transport_fixed')
+     module.__file__=str(TRANSPORT_SOURCE)
+     exec(compile(raw,str(TRANSPORT_SOURCE),'exec'),module.__dict__)
+-    need(module.read(TRANSPORT_SOURCE)==raw,'transport source changed')
++    need(module.read(TRANSPORT_SOURCE)==raw,'transport repair source changed')
++    original=module.read(ORIGINAL_TRANSPORT_SOURCE)
++    need(len(original)==43438 and sha(original)==ORIGINAL_TRANSPORT_SHA,
++         'original closed04 transport source differs')
++    need(module.read(HERE.parent/'reference/run_component_root_once.r4.original.py')==original,
++         'retained r4 transport original differs')
++    # The closed04 plan binds the old coordinator's exact package and namespace.
++    # Preserve that read-only validation anchor; source provenance remains the
++    # explicitly pinned repaired reference above. No old source or pin is changed.
++    module.HERE=ORIGINAL_TRANSPORT_SOURCE.parent
++    module.__reviewed_source_path__=str(TRANSPORT_SOURCE)
++    module.__reviewed_source_sha256__=TRANSPORT_SHA
++    module.__legacy_validation_source_path__=str(ORIGINAL_TRANSPORT_SOURCE)
+     return module,raw
+ 
+ def validate(m,raw):
+@@ -62,16 +78,22 @@
+     need(sources['schema']=='hepta.root.runtime-properties-live-source-package.v1'
+          and Path(p['source_package']['path']).parent==HERE.parent
+          and {r['path'] for r in sources['files']}=={
+-             'source/run_runtime_properties_policy_once.py','reference/run_component_root_once.r4.original.py'}
+-         and len(sources['files'])==2,'exact reviewed Root policy source package required')
++             'source/run_runtime_properties_policy_once.py','reference/run_component_root_once.r4.original.py',
++             'reference/run_component_root_once.r4.transport_fixed.py'}
++         and len(sources['files'])==3,'exact reviewed Root policy source package required')
+     for row in sources['files']:
+         source=m.read(HERE.parent/row['path'])
+         need(len(source)==row['bytes'] and sha(source)==row['sha256'],'Root driver source changed')
+     need(p['driver_source']['path']==str(HERE/'run_runtime_properties_policy_once.py')
+          and m.pin(p['driver_source'])==m.read(HERE/'run_runtime_properties_policy_once.py'),
+          'explicit current driver original differs')
+-    need(m.read(HERE.parent/'reference/run_component_root_once.r4.original.py')==m.read(TRANSPORT_SOURCE),
++    need(m.read(HERE.parent/'reference/run_component_root_once.r4.original.py')==m.read(ORIGINAL_TRANSPORT_SOURCE),
+          'reviewed original transport reference differs')
++    need(m.read(HERE.parent/'reference/run_component_root_once.r4.transport_fixed.py')==m.read(TRANSPORT_SOURCE)
++         and m.__reviewed_source_path__==str(TRANSPORT_SOURCE) and m.__reviewed_source_sha256__==TRANSPORT_SHA
++         and m.__legacy_validation_source_path__==str(ORIGINAL_TRANSPORT_SOURCE)
++         and m.HERE==ORIGINAL_TRANSPORT_SOURCE.parent,
++         'reviewed repaired transport or original validation namespace differs')
+     need(p['transport_root_plan']=={'path':str(TRANSPORT_PLAN),'bytes':4715,'sha256':TRANSPORT_PLAN_SHA},
+          'only the original closed04 transport namespace is authorized')
+     original=m.pin(p['transport_root_plan']);transport_plan,_=m.validate_plan(original)
+@@ -253,7 +275,9 @@
+             'new_native_case_nonces':0,'native_case_sends':0},sort_keys=True))
+         return 0 if clean else 2
+     except BaseException as error:
++        host_cleanup=c.close_owned_host_outputs()
+         m.put(OUT/'ROOT-FAILURE.json',encode({'schema':'hepta.root.runtime-properties-live-failure.v1',
++            'host_cleanup':host_cleanup,
+             'state':'ORIGINAL_TRANSACTION_STOPPED_NO_REPLAY','error_type':type(error).__name__,
+             'detail':str(error)[:2048],'root_plan':root_plan,'root_intent':intent_row,
+             'policy_apply_calls':apply_calls,'phone_phase_names':phases,'steps':c.steps,
