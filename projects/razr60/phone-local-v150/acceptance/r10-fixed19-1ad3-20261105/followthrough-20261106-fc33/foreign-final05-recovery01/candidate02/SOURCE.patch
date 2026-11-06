@@ -1,0 +1,15 @@
+--- candidate01/recovery_extension.py
++++ candidate02/recovery_extension.py
+@@ -228,8 +228,10 @@
+     for h in groups.values():exact_directory(h)
+     RECOVERY['preflight']=compressed_preflight();RECOVERY['output_reservation']=reserve_output(RECOVERY['preflight'],files,dirs,parents)
+     # Original capture retains its160MiB limit. These additional reads are the
+-    # exact97 files once more and one complete44 inventory plus bounded roles.
+-    extra=C.BASELINE_FILE_BYTES+sum(r['bytes'] for r in files.values())+128*1024
++    # exact97 files, one complete44 inventory, both pinned input re-reads,
++    # and bounded known-role/boot reads are reserved explicitly.
++    extra=(C.BASELINE_FILE_BYTES+sum(r['bytes'] for r in files.values())
++           +C.INPUTS['baseline']['bytes']+C.INPUTS['boundary']['bytes']+128*1024)
+     RECOVERY['additional_read_allowance']=extra;C.MAX_READ_BYTES+=extra
+     require(C.proc_bytes('/proc/sys/kernel/random/boot_id',128).decode().strip()==C.BOOT,'boot changed before mutation')
+     RECOVERY['preflight_complete']=True

@@ -1,0 +1,343 @@
+{
+  "actual_api_publication": {
+    "bytes": 38517,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/ACTUAL-GITHUB-PUBLICATION.json",
+    "sha256": "f1c3e554c220c909428559ba10e343d2aa1943901a2295606964e400f03f0058"
+  },
+  "count": 41,
+  "files": [
+    {
+      "blob_sha": "62be774af3a06ca63bf4f3f8ae135a4dd4f889e6",
+      "bytes": 15474,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/ARCHIVE-MANIFEST.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/ARCHIVE-MANIFEST.json",
+      "relative_path": "ARCHIVE-MANIFEST.json",
+      "sha256": "919f0c460366024e0b773e9657302509e640aec7dd230ab78e63afeb67f7d2f8"
+    },
+    {
+      "blob_sha": "571b5f72f4dc22d58217015bc19920d556ab60b4",
+      "bytes": 5461,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/BINDING-PROOF.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/BINDING-PROOF.json",
+      "relative_path": "binding/BINDING-PROOF.json",
+      "sha256": "a0e0b9bd483d280dda5f4a32a70a3c671f9c7054790f7bce74520a569113511d"
+    },
+    {
+      "blob_sha": "292a27efcf311c389cc07f56b4b445a4174b1e79",
+      "bytes": 2548,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/DERIVATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/DERIVATION.json",
+      "relative_path": "binding/DERIVATION.json",
+      "sha256": "5699b0817fd6d4de93eafdc5ff9bb444620f0b097a18c3fcd6a7c2d9f2f1710c"
+    },
+    {
+      "blob_sha": "f4c792baa2dbb8ed15902ff83f1bb523aeec4d83",
+      "bytes": 440,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/PUBLISHER-DERIVATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/PUBLISHER-DERIVATION.json",
+      "relative_path": "binding/PUBLISHER-DERIVATION.json",
+      "sha256": "f27ee64b45eae429027d323e01be3fdd04e4d988dc5e5f8c2c5e2b92d4b46d26"
+    },
+    {
+      "blob_sha": "5ed2c80eff3e863972d133bd5eaa7fac758d9116",
+      "bytes": 33827,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/reference/derive_reviewed_release_sources_UNBOUND.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/reference/derive_reviewed_release_sources_UNBOUND.py",
+      "relative_path": "binding/reference/derive_reviewed_release_sources_UNBOUND.py",
+      "sha256": "4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835"
+    },
+    {
+      "blob_sha": "56029d45831dd41df45b592128c49ef17527fe8f",
+      "bytes": 249798,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/reference/release_boundaries.UNBOUND.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/reference/release_boundaries.UNBOUND.py",
+      "relative_path": "binding/reference/release_boundaries.UNBOUND.py",
+      "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+    },
+    {
+      "blob_sha": "b52d83fc544639712d2c8a4182038b2f9f74fc4e",
+      "bytes": 3515,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/SOURCE-CHAIN-INPUTS.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/SOURCE-CHAIN-INPUTS.json",
+      "relative_path": "binding/SOURCE-CHAIN-INPUTS.json",
+      "sha256": "e3cc22536e42074ba3fe662101dd4a4c98224de285b0a5c13c32f84d2fac322b"
+    },
+    {
+      "blob_sha": "19e2da92744af9e6f3af5aa499937e39d62d313a",
+      "bytes": 34103,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/source/derive_reviewed_release_sources_BOUND.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/source/derive_reviewed_release_sources_BOUND.py",
+      "relative_path": "binding/source/derive_reviewed_release_sources_BOUND.py",
+      "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a"
+    },
+    {
+      "blob_sha": "2715e38dd0803c86741427bc56d1018e0933ef82",
+      "bytes": 249860,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/binding/source/release_boundaries.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/binding/source/release_boundaries.py",
+      "relative_path": "binding/source/release_boundaries.py",
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+    },
+    {
+      "blob_sha": "81517fa6c84d1a07aa358f459e6e6d7f699ff86a",
+      "bytes": 29790,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/COPY-MAP.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/COPY-MAP.json",
+      "relative_path": "COPY-MAP.json",
+      "sha256": "d38d8916e48ed5242396a1946e895930b736c809ec4bf0ec28506fa5d0b0d15a"
+    },
+    {
+      "blob_sha": "19e2da92744af9e6f3af5aa499937e39d62d313a",
+      "bytes": 34103,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/CONSTRUCTOR-SOURCE.original.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/CONSTRUCTOR-SOURCE.original.py",
+      "relative_path": "derived/CONSTRUCTOR-SOURCE.original.py",
+      "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a"
+    },
+    {
+      "blob_sha": "1cbe3f09d59412ab4ab03d46d281f5350d9b7d64",
+      "bytes": 162,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/CONSUMER-RUNTIME.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/CONSUMER-RUNTIME.json",
+      "relative_path": "derived/CONSUMER-RUNTIME.json",
+      "sha256": "fd7dcdfd8dea7d9258f8d0830511e7a624d2ccc5d55ab7e083ca4d07de458d15"
+    },
+    {
+      "blob_sha": "602098caa735ca483fb68a67787dde8ab3469600",
+      "bytes": 28952,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/contracts/FINAL-INTEGRATION-INPUTS.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/contracts/FINAL-INTEGRATION-INPUTS.json",
+      "relative_path": "derived/contracts/FINAL-INTEGRATION-INPUTS.json",
+      "sha256": "7dd91169507d30d803357a8b4ac3688a206a4bcdeed2dd63973a023f312ce9e8"
+    },
+    {
+      "blob_sha": "f872aed8698d3b4072735309801cd6335f0f637c",
+      "bytes": 44922,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/DERIVATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/DERIVATION.json",
+      "relative_path": "derived/DERIVATION.json",
+      "sha256": "09ea015625df33e992160a2b58569079586a2b501087a6c23e51e3f869b1ca37"
+    },
+    {
+      "blob_sha": "cba3875386469831ee3ccc53d7c1bf602cd8b374",
+      "bytes": 3354,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/preview-module/RESIDENT-OWNER-FINALIZER.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/preview-module/RESIDENT-OWNER-FINALIZER.json",
+      "relative_path": "derived/preview-module/RESIDENT-OWNER-FINALIZER.json",
+      "sha256": "199a83e1b8e4ab7b1cf92050a450e04cf5f4eda133a97730a3ba4f46319a50ac"
+    },
+    {
+      "blob_sha": "a1f961925f31ff039c032e7acb67151b99a43dd2",
+      "bytes": 21310,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/preview-module/service.sh",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/preview-module/service.sh",
+      "relative_path": "derived/preview-module/service.sh",
+      "sha256": "72bc91083db2827fafa8aef11ed1e09c764f87b02ef8623a8106c7399bd49620"
+    },
+    {
+      "blob_sha": "8e81a3d50d1bff2e6e48ee85a551bae47a3a18f1",
+      "bytes": 458,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/PUBLISHER-DERIVATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/PUBLISHER-DERIVATION.json",
+      "relative_path": "derived/PUBLISHER-DERIVATION.json",
+      "sha256": "088a869ad8c17499c39d9a285e6fe3384e1138c01c1e529abb4fa21807cb2714"
+    },
+    {
+      "blob_sha": "85ca4ede3b7a69166240c73f3c6df61ef525e714",
+      "bytes": 3608,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/SOURCE-BINDING.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/SOURCE-BINDING.json",
+      "relative_path": "derived/SOURCE-BINDING.json",
+      "sha256": "c7b074b529b4bbe258303842b3d0b2f3912d8cdf606f803522775b79ba147003"
+    },
+    {
+      "blob_sha": "b52d83fc544639712d2c8a4182038b2f9f74fc4e",
+      "bytes": 3515,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/SOURCE-CHAIN-INPUTS.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/SOURCE-CHAIN-INPUTS.original.json",
+      "relative_path": "derived/SOURCE-CHAIN-INPUTS.original.json",
+      "sha256": "e3cc22536e42074ba3fe662101dd4a4c98224de285b0a5c13c32f84d2fac322b"
+    },
+    {
+      "blob_sha": "03ff6c5beb466c96e73f672f358c8ee5cafc660d",
+      "bytes": 32694,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/SOURCE-CHANGES.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/SOURCE-CHANGES.json",
+      "relative_path": "derived/SOURCE-CHANGES.json",
+      "sha256": "8ab57738e04995f7b35fcf5a5afc0cdc400d0171950007571800e565a6ca3c20"
+    },
+    {
+      "blob_sha": "bf06d8c9a0b738db211a69ba3d3e92cfbf63874e",
+      "bytes": 65767,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/build_release_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/build_release_r10.py",
+      "relative_path": "derived/source/build_release_r10.py",
+      "sha256": "d69cb02bead77625f5930922a99faf705a0d239849210f528a5b0a048b2238a1"
+    },
+    {
+      "blob_sha": "d50529c1861258f9788539ebdb2f6284293118a7",
+      "bytes": 16407,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/collect_r10_readiness.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/collect_r10_readiness.py",
+      "relative_path": "derived/source/collect_r10_readiness.py",
+      "sha256": "8fcf151ebeeeeaa38f0d8e057b4340f7c681f402d6a5a9670ca95f79737935e5"
+    },
+    {
+      "blob_sha": "1b60251f93b9984becdb68fe52997b5037e91012",
+      "bytes": 4554,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/component_activation_gate.fragment.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/component_activation_gate.fragment.py",
+      "relative_path": "derived/source/component_activation_gate.fragment.py",
+      "sha256": "96a7b275fa615701c25e903607561902fb67b40139b791a0f38b31a4dee3090a"
+    },
+    {
+      "blob_sha": "4f6033f55b02b1cae45a641c3a3b08e1ad0582d9",
+      "bytes": 34100,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/install_phone_release_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/install_phone_release_r10.py",
+      "relative_path": "derived/source/install_phone_release_r10.py",
+      "sha256": "22a04f452d86a1d02e66b227acfc12e3e119fe4fdc9b0d39b5656a415bc9d40b"
+    },
+    {
+      "blob_sha": "c1ee1f4642946508cbed4a439b41b1d40c4154e8",
+      "bytes": 12782,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/install_ready_execution_protocol.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/install_ready_execution_protocol.py",
+      "relative_path": "derived/source/install_ready_execution_protocol.py",
+      "sha256": "3bd9828de506511fd6ef48d83a08bc150433904d3480bd1d70f8d42aba729e2d"
+    },
+    {
+      "blob_sha": "033e821c9ef81e6f7f9b7420e1a6145257f23518",
+      "bytes": 20851,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/install_retention_protocol_UNBOUND.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/install_retention_protocol_UNBOUND.py",
+      "relative_path": "derived/source/install_retention_protocol_UNBOUND.py",
+      "sha256": "280df226c4bde2294bfaefec93da40fcbc0c685e7c20a2359444e856fbd0bb7a"
+    },
+    {
+      "blob_sha": "2715e38dd0803c86741427bc56d1018e0933ef82",
+      "bytes": 249860,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/release_boundaries.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/release_boundaries.py",
+      "relative_path": "derived/source/release_boundaries.py",
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+    },
+    {
+      "blob_sha": "208f1d926b0ac6e444c8748493e9d510f3d4d069",
+      "bytes": 29091,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/verify_final_release_inputs.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/verify_final_release_inputs.py",
+      "relative_path": "derived/source/verify_final_release_inputs.py",
+      "sha256": "384c00b5c210ae7d020381c1a523d6dc25e4246130b178d482f4d9d869c0cbbe"
+    },
+    {
+      "blob_sha": "7f310ea6061fd2026dedd3f371582abc1ad47a48",
+      "bytes": 22061,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/verify_install_retention_UNBOUND.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/verify_install_retention_UNBOUND.py",
+      "relative_path": "derived/source/verify_install_retention_UNBOUND.py",
+      "sha256": "6367978b0359124dcdd922a38a30263900605ab70f059de3334a8e8c3a1c039f"
+    },
+    {
+      "blob_sha": "2f30699bb3649cf6ae794876ab2dcef46d3a8c31",
+      "bytes": 35272,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/verify_install_start_ready_UNBOUND.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/verify_install_start_ready_UNBOUND.py",
+      "relative_path": "derived/source/verify_install_start_ready_UNBOUND.py",
+      "sha256": "11dc1a130bbec45fd65767707fea354532f7ba18b53b3b227d1eaea4babedd2b"
+    },
+    {
+      "blob_sha": "d0b3617468510c115670ae07cd7d4b31d5f2c1a1",
+      "bytes": 29038,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/derived/source/verify_resident_output_bindings.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/derived/source/verify_resident_output_bindings.py",
+      "relative_path": "derived/source/verify_resident_output_bindings.py",
+      "sha256": "3e2afebdcb6f881a358fc70e42864277b8ba58da48967b78d7134da2006691e5"
+    },
+    {
+      "blob_sha": "79e0f77c9d83487d894285cb3be332d0f3f41fd1",
+      "bytes": 1159030,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/evidence/original-read-controller.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/evidence/original-read-controller.original.json",
+      "relative_path": "evidence/original-read-controller.original.json",
+      "sha256": "c85b528feb31930703dfe3ecc1659b4ffde0e2db01add18ec86516ad9c51a6d2"
+    },
+    {
+      "blob_sha": "f3500f341c537c9ee8ed90f2da72b1d676cd97c1",
+      "bytes": 378277,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/evidence/original-transfer.stdout.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/evidence/original-transfer.stdout.original.json",
+      "relative_path": "evidence/original-transfer.stdout.original.json",
+      "sha256": "3abff7bd5f1713c9f6b32d75a480c1d103741766d5ea5cac60581bb23383033a"
+    },
+    {
+      "blob_sha": "79c8539b1f34976344e8218dea729a9a48b5f524",
+      "bytes": 151515,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/evidence/publication-controller.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/evidence/publication-controller.original.json",
+      "relative_path": "evidence/publication-controller.original.json",
+      "sha256": "26412c474994786feb739160705ec740fc6d42ef96c9dda04d1f5bb4d3dae4af"
+    },
+    {
+      "blob_sha": "28518ebe73d850d588830d591c9df85ce15aaa47",
+      "bytes": 1336549,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/evidence/PUBLISHED-SOURCE-ORIGINALS.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/evidence/PUBLISHED-SOURCE-ORIGINALS.original.json",
+      "relative_path": "evidence/PUBLISHED-SOURCE-ORIGINALS.original.json",
+      "sha256": "92bc6c8470c789f3a4d6e8f2300ddfd56277a71bcda9f9e5f466762b4531d75c"
+    },
+    {
+      "blob_sha": "5b31d384f00fbbded2732d0724d08db99371120b",
+      "bytes": 76825,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/evidence/root-source-original-read.original.mcp.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/evidence/root-source-original-read.original.mcp.json",
+      "relative_path": "evidence/root-source-original-read.original.mcp.json",
+      "sha256": "04c0ab73e3ab2c694e290657285318078577bb318bb429d5f722a251d9ed839c"
+    },
+    {
+      "blob_sha": "fead37517f4e5524cee025e630e2d243ef507544",
+      "bytes": 7963,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/observe_published_sources.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/observe_published_sources.py",
+      "relative_path": "observe_published_sources.py",
+      "sha256": "e70ad6384e7384529346b1fa3e3dbaf54baaf507c521d23d15a90d8628729fbd"
+    },
+    {
+      "blob_sha": "c295dc754c9e76415d2d1a74e17913523812a4c4",
+      "bytes": 1577,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/README.md",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/README.md",
+      "relative_path": "README.md",
+      "sha256": "39f59ef8c41088474724daab078b742b7f9ab9f665e8246e12fd1ef949cbe55d"
+    },
+    {
+      "blob_sha": "123973dc1b4a826632d33d4c8b6d83027572984f",
+      "bytes": 16570,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/reference/verify_host_controller_originals.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/reference/verify_host_controller_originals.py",
+      "relative_path": "reference/verify_host_controller_originals.py",
+      "sha256": "be2b96db92bb456a798c3f8be6c1425a81e3afeadf782940bd695cf4cb3c714a"
+    },
+    {
+      "blob_sha": "19ced8114ef94da51bda097b1b4779df38ad3ae2",
+      "bytes": 4952,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/VERIFICATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/VERIFICATION.json",
+      "relative_path": "VERIFICATION.json",
+      "sha256": "1c4a28c6778ad4294e50ebb84e68d0f8486740108757a89109280868c70b0044"
+    },
+    {
+      "blob_sha": "309d641acd646c363fff3992a31fc277879cd929",
+      "bytes": 7572,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain/verify_actual_archive.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-release-source-chain/verify_actual_archive.py",
+      "relative_path": "verify_actual_archive.py",
+      "sha256": "ff374784f6b3d9eb24cb2672643202d1a93c83e1fa43a3ecaa2915e377e599ab"
+    }
+  ],
+  "remote_prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-release-source-chain",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "schema": "hepta.fc33.verified-git-blob-map.v1",
+  "total_bytes": 4458507,
+  "tree_or_ref_changed": false
+}

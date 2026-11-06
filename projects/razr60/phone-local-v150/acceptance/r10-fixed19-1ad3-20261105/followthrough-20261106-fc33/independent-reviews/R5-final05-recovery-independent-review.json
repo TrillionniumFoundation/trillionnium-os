@@ -1,0 +1,74 @@
+{
+  "authority": {
+    "bytes": 2265,
+    "sha256": "549a6ba79bad8b28b53b8e8c66955034933a6ae6f23f287dd29bc08cbf896a07"
+  },
+  "business_qualified": false,
+  "candidate": {
+    "bytes": 275947,
+    "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery01/candidate02/SOURCE.py",
+    "sha256": "30172f90d4cd2cb3042a6c998a3e501d0eaba1ba3bf83bf1198a6fa19821a622"
+  },
+  "cleanup_executed": false,
+  "component_qualified": false,
+  "conclusion": "NO_FURTHER_CONCRETE_SOURCE_BLOCKER_IDENTIFIED_AFTER_EXACT_READ_ALLOWANCE_FIX",
+  "execution_authorized_by_this_review": false,
+  "extension": {
+    "bytes": 23959,
+    "sha256": "4e1d4053c73af74543a15beb03b536e45eb5f857e673bc2babc55502c8078f30"
+  },
+  "identified_read_allowance_gap": {
+    "additional_read_allowance_bytes": 52164713,
+    "baseline_bytes": 1345535,
+    "boundary_bytes": 29342,
+    "candidate01_complete_inverse": true,
+    "fixed_by_only_expression_and_comment_change": true,
+    "old_budget_may_have_slack_not_a_claim_of_observed_device_failure": true,
+    "omitted_bytes": 1374877,
+    "total_read_limit_bytes": 219936873
+  },
+  "original_capture": {
+    "bytes": 63646,
+    "full_embedded_bytes_equal": true,
+    "old_main_not_invoked": true,
+    "sha256": "70c4dc710368da58f609208879f1fb83af5e0b428b712cfd31b8bced1907bc44"
+  },
+  "phone_calls": 0,
+  "remaining_execution_conditions": [
+    "Root-reviewed host preservation guard must re-read all pinned private originals before exec of the selected actor.",
+    "Root independently verifies complete actual phone/controller output; static review does not prove deletion or restoration."
+  ],
+  "review_type": "static_complete_source_and_pinned_plan_no_phone_no_new_mutation_tests",
+  "reviewed_actual_plan": {
+    "directories": 10,
+    "file_bytes": 6305191,
+    "files": 97,
+    "only_retained_non_target": "baseline original 1345535 bytes",
+    "retained_unique_blob_count": 88,
+    "shared_parent_first_and_xml_parent_last_verified": true,
+    "surviving_parent_aliases": 5,
+    "unique_target_sha256": 87,
+    "xml11_link_count": 1,
+    "xml11_owner_uid_gid": [
+      2000,
+      2000
+    ],
+    "xml11_permissions": "0666"
+  },
+  "reviewed_constraints": [
+    "Same pinned failed scope, boot and nonce; exact82private+4transport+11XML membership, original10 owned directories only.",
+    "Unchanged capture verifies both complete original44 inventories,37runtime/61stage,28lockaliases/15groups,private tree and both known role process/kernel absence windows.",
+    "Every file is retained by open descriptor, fully read before first mutation and fully re-read with byte/SHA/full9/label/canonical identity immediately before its unlink.",
+    "Each parent permits exactly one specified member removal with identity/mode/owner/label fixed and exact file/dir nlink delta; held removed inodes verified and parent fsynced.",
+    "97 file unlink and10 directory rmdir only; directories must be empty with nlink2; server.lock file remains held and is unlinked last among files.",
+    "Afterward18 exact absences,all5surviving parent bookends and all44historical roots full byte/hash/full9/label projection are required.",
+    "No other task signals: only own SIGALRM and negative knownPGID signal0 queries; no UI,model,native dispatch or scope/qualification credit.",
+    "Any first-operation attempt followed by uncertainty is partial/unknown/no retry; final resource mismatch and output failure are not successful recovery.",
+    "Complete compressed preflight plus finite107operations,5parents,18absences and bounded roles/errors are reserved before mutation under8MiB; held files/directories/locks close in finally."
+  ],
+  "schema": "hepta.fc33.final05-recovery-independent-source-review.v1",
+  "targets": {
+    "bytes": 183176,
+    "sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1"
+  }
+}

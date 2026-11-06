@@ -1,0 +1,13 @@
+{
+  "after": "directories=('', 'source', 'contracts', 'preview-module')",
+  "before": "directories=('', 'shared', 'shared/provider', 'shared/provider/source', 'reference')",
+  "candidate_function": {
+    "bytes": 3851,
+    "sha256": "d42ecae21697d5ca878dc8864c4493d7c29b89b5118ce48d29a3634747b76229"
+  },
+  "full_inverse": true,
+  "parent_function": {
+    "bytes": 3878,
+    "sha256": "f4bf22d18592763c6a60b71f39fea384e8c51b5b62dba074a7028c0aab75163a"
+  }
+}

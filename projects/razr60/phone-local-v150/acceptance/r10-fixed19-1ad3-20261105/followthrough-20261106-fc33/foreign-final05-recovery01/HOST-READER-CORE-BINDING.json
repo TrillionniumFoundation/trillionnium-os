@@ -1,0 +1,21 @@
+{
+  "FROZEN": null,
+  "core": {
+    "bytes": 16500,
+    "sha256": "29520d5dcfa5f9eaeac033689869cea08cbc620b5eb16e5b5a2a91c1879286df"
+  },
+  "core_bound": {
+    "bytes": 41084,
+    "path": "review/R5-final05-recovery01/verify_recovery_result_CORE_BOUND.py",
+    "sha256": "f58ca1b8878d945cc41d8c55f78f0afbfc3b7e0cb059eed92e1adecbbef2da50"
+  },
+  "full_inverse": true,
+  "host_execution": false,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.recovery-host-reader-core-binding.v2",
+  "template": {
+    "bytes": 23555,
+    "path": "review/R5-final05-recovery01/verify_recovery_result_UNBOUND.py",
+    "sha256": "d4ca0e0fdf87890df86055fa1361ce1ea4c884e9200248cdcf007c1112d0d575"
+  }
+}

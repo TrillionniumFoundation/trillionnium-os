@@ -1,0 +1,13 @@
+{
+  "actual_recovery_result": null,
+  "authority_source_bytes_exact": true,
+  "complete_request_XZ_source_equal": true,
+  "finite_dirs": 10,
+  "finite_files": 97,
+  "finite_surviving_aliases": 5,
+  "phone_calls": 0,
+  "qualification_credit": 0,
+  "reader_sha256": "01c5ec7fdba2395b96dcf8339aee90dec5fa8aef0e5ea5709edf599eab8e987e",
+  "schema": "hepta.fc33.recovery-reader-concrete-source-interface-check.v1",
+  "source_sha256": "30172f90d4cd2cb3042a6c998a3e501d0eaba1ba3bf83bf1198a6fa19821a622"
+}

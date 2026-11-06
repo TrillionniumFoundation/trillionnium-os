@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.fc33.final05.recovery-root-execution-decision.v1",
+  "authorization": "User requested full fixed19 completion and necessary recovery; Root is sole phone dispatcher.",
+  "scope": "Only 97 exact previously preserved owned files and 10 exact directories of failed root-r10-neg02-a1055-final05",
+  "old_nonce_replayed": false,
+  "failed_case_qualification": false,
+  "source": {
+    "bytes": 275947,
+    "sha256": "30172f90d4cd2cb3042a6c998a3e501d0eaba1ba3bf83bf1198a6fa19821a622"
+  },
+  "request": {
+    "bytes": 43834,
+    "sha256": "243f961660aab37fa2c8e7b23e6936379fabddc42d5304704b05907f30f8898a"
+  },
+  "guard": {
+    "bytes": 14670,
+    "sha256": "52f29b97c655b96106a2220b8f6a6f689fda53a0cfff992e439186d2e9468bca"
+  },
+  "reader": {
+    "bytes": 41863,
+    "sha256": "01c5ec7fdba2395b96dcf8339aee90dec5fa8aef0e5ea5709edf599eab8e987e"
+  },
+  "host_preview": {
+    "job": "1a1b23b62b7-fc05-7d13",
+    "exit_code": 0,
+    "stdout_bytes": 290,
+    "stderr_bytes": 0,
+    "full_eof": true,
+    "complete_durable": true,
+    "checked_originals": 121,
+    "read_bytes": 45109499,
+    "phone_calls": 0
+  },
+  "independent_source_review": "37fe0617bbb6b63cc210ac8ff8528a5ced7a1abcde4beff6e799fdac023dcb9f",
+  "independent_guard_review": "a8a3a48740db34eba3ad2e733b2a79bee2b5f2a1027e38117c9f9a285777fe22",
+  "independent_reader_review": "e94dad105d6859be28a80a4087e17cb40a8de7d3d621cceab24dcb36969c0c62",
+  "maximum_actor_executions": 1,
+  "automatic_retry": false,
+  "fresh_phone_preflight_under_existing_locks": true,
+  "preflight_or_partial_failure_does_not_authorize_continuation": true
+}

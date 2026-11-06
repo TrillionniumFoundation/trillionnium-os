@@ -1,0 +1,28 @@
+{
+  "all_other_reader_bytes_unchanged": true,
+  "candidate_function": {
+    "bytes": 1052,
+    "sha256": "a36ad5aaffa142b7f23129c5da4727e579c97ca1ba1f0851d7bb530b71be905a"
+  },
+  "complete_function_inverse": true,
+  "no_changes_to": [
+    "frozen material source",
+    "production15",
+    "phone",
+    "actor8MiB",
+    "image budgets"
+  ],
+  "not_executed": true,
+  "one_literal_after": "<=16777216",
+  "one_literal_before": "<=1048576",
+  "parent_full_source": {
+    "bytes": 16399,
+    "sha256": "842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82"
+  },
+  "parent_function": {
+    "bytes": 1051,
+    "sha256": "cb57f96ca4260c9cc3b1166c754af84d05d00b48cddc8b3db255daa62e8ce5ed"
+  },
+  "schema": "hepta.fc33.negative-source-caller-reader-bound-review.v1",
+  "scope": "Only this source-only publisher caller; constructor MAX_FILE remains16MiB."
+}

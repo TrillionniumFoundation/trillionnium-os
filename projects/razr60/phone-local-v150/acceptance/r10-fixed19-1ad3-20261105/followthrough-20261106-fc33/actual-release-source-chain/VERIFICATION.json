@@ -1,0 +1,149 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_execution_slots_None": [
+    "verify_install_start_ready_UNBOUND.py:FROZEN_INPUTS",
+    "verify_install_start_ready_UNBOUND.py:FROZEN_EXECUTION_PLAN",
+    "verify_install_retention_UNBOUND.py:FROZEN_PHASE_AUTHORITY",
+    "verify_install_retention_UNBOUND.py:FROZEN_RETENTION_INPUTS",
+    "install_retention_protocol_UNBOUND.py:FROZEN_SCOPE"
+  ],
+  "actual_install": null,
+  "all_actual_streams_complete_durable_and_EOF": true,
+  "all_original_full9_and_exact_directory_sets_verified": true,
+  "complete_actual_read_pages": 24,
+  "current_case_qualified": false,
+  "fixed19_credit": 0,
+  "full_source_inverse_count": 11,
+  "new_controls_executed": 0,
+  "phone_calls_by_archive": 0,
+  "publication_job": "1a1b1ff0f2e-fc05-7bef",
+  "read_only_observation_job": "1a1b205a071-fc05-7c0f",
+  "schema": "hepta.fc33.actual-source-archive-verification.v1",
+  "source_file_bytes": 1272413,
+  "source_file_count": 29,
+  "source_inverses": [
+    {
+      "candidate": {
+        "bytes": 249860,
+        "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+      },
+      "parent": {
+        "bytes": 249798,
+        "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+      },
+      "source": "binding/source/release_boundaries.py"
+    },
+    {
+      "candidate": {
+        "bytes": 34103,
+        "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a"
+      },
+      "parent": {
+        "bytes": 33827,
+        "sha256": "4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835"
+      },
+      "source": "binding/source/derive_reviewed_release_sources_BOUND.py"
+    },
+    {
+      "candidate": {
+        "bytes": 65767,
+        "sha256": "d69cb02bead77625f5930922a99faf705a0d239849210f528a5b0a048b2238a1"
+      },
+      "parent": {
+        "bytes": 61822,
+        "sha256": "991465020b2012372d677cc4c7cf9fc02c668a406a0af0fc6fc08514d3f0073e"
+      },
+      "source": "derived/source/build_release_r10.py"
+    },
+    {
+      "candidate": {
+        "bytes": 16407,
+        "sha256": "8fcf151ebeeeeaa38f0d8e057b4340f7c681f402d6a5a9670ca95f79737935e5"
+      },
+      "parent": {
+        "bytes": 16407,
+        "sha256": "2b4ff90f7078af2481feb8a2d33c39d1a0e260102cd769a4ee3b46d9bec47e11"
+      },
+      "source": "derived/source/collect_r10_readiness.py"
+    },
+    {
+      "candidate": {
+        "bytes": 4554,
+        "sha256": "96a7b275fa615701c25e903607561902fb67b40139b791a0f38b31a4dee3090a"
+      },
+      "parent": {
+        "bytes": 4568,
+        "sha256": "6c0a0ffb21c7aa89adf18e8a6ee9f2c2920238fb156e10fe0ad9349383449b97"
+      },
+      "source": "derived/source/component_activation_gate.fragment.py"
+    },
+    {
+      "candidate": {
+        "bytes": 34100,
+        "sha256": "22a04f452d86a1d02e66b227acfc12e3e119fe4fdc9b0d39b5656a415bc9d40b"
+      },
+      "parent": {
+        "bytes": 34100,
+        "sha256": "714a2916680e2313bfcee5a4319d6484b3c6ea5539854818c1134ad84ea02446"
+      },
+      "source": "derived/source/install_phone_release_r10.py"
+    },
+    {
+      "candidate": {
+        "bytes": 12782,
+        "sha256": "3bd9828de506511fd6ef48d83a08bc150433904d3480bd1d70f8d42aba729e2d"
+      },
+      "parent": {
+        "bytes": 12782,
+        "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+      },
+      "source": "derived/source/install_ready_execution_protocol.py"
+    },
+    {
+      "candidate": {
+        "bytes": 29091,
+        "sha256": "384c00b5c210ae7d020381c1a523d6dc25e4246130b178d482f4d9d869c0cbbe"
+      },
+      "parent": {
+        "bytes": 28483,
+        "sha256": "e947a3b2de75a0820fcc3cb5cfe758f874cd85625cb11bac793b38256a670c43"
+      },
+      "source": "derived/source/verify_final_release_inputs.py"
+    },
+    {
+      "candidate": {
+        "bytes": 22061,
+        "sha256": "6367978b0359124dcdd922a38a30263900605ab70f059de3334a8e8c3a1c039f"
+      },
+      "parent": {
+        "bytes": 22066,
+        "sha256": "a95977c049b1d1a079014480cd37b9a52414bc60c2f584c4a36e21f5f8791144"
+      },
+      "source": "derived/source/verify_install_retention_UNBOUND.py"
+    },
+    {
+      "candidate": {
+        "bytes": 35272,
+        "sha256": "11dc1a130bbec45fd65767707fea354532f7ba18b53b3b227d1eaea4babedd2b"
+      },
+      "parent": {
+        "bytes": 35031,
+        "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f"
+      },
+      "source": "derived/source/verify_install_start_ready_UNBOUND.py"
+    },
+    {
+      "candidate": {
+        "bytes": 29038,
+        "sha256": "3e2afebdcb6f881a358fc70e42864277b8ba58da48967b78d7134da2006691e5"
+      },
+      "parent": {
+        "bytes": 29027,
+        "sha256": "24db28bee38671322b11ce4c2afd5dd47425381101dd85f887141f567811b490"
+      },
+      "source": "derived/source/verify_resident_output_bindings.py"
+    }
+  ],
+  "state": "ACTUAL_SOURCE_PUBLICATION_AND_COMPLETE_29_ORIGINALS_VERIFIED"
+}

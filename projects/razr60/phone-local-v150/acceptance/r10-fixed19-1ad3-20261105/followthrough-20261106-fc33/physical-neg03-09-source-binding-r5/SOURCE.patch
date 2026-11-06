@@ -1,0 +1,11 @@
+--- reference/derive_negative_sources_UNBOUND.py
++++ source/derive_negative_sources_BOUND.py
+@@ -18,7 +18,7 @@
+ import re
+ import types
+ 
+-FROZEN_INPUTS = None
++FROZEN_INPUTS = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-01/SOURCE-INPUTS.json', 'bytes': 2537, 'sha256': '639a157ab7609bfad53d910216ed5fc8f86b973962b908af463ac876628ee694'}
+ INPUT_SCHEMA = 'hepta.fc33.negative-source-inputs.v1'
+ REFERENCE_INDEX = (38100, '1a7f17faf1d6705dac356076ce1d0df0292a35a805bceb117eeea50f52f15e32')
+ CHAIN_TEMPLATE = (33827, '4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835')

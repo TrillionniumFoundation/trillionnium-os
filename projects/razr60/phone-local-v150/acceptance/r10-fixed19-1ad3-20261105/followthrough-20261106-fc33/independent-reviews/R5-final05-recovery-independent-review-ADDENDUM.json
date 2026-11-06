@@ -1,0 +1,112 @@
+{
+  "actual_difference_original": {
+    "bytes": 28403,
+    "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery01/FAILURE-DIFF-HOST-STDOUT.original.json",
+    "sha256": "558dadfa2dfb2bc6d9ab6970ef12f2ef4969cfa6aa9c33d7df8485ac4b0dac16"
+  },
+  "actual_differences": {
+    "complete_original44_legacy_projection_equal": true,
+    "foreign_android_upload_names_removed": [
+      "hepta-native-guard-root-r10-neg01-74ec-final05.stage.py",
+      "hepta-native-guard-root-r10-neg01-74ec-final05.tar.gz"
+    ],
+    "foreign_staging_names_added": [
+      "root-r10-neg01-74ec-final05.SECONDARY4-CLEANUP-INTENT-74ec02.json",
+      "root-r10-neg01-74ec-final05.SECONDARY4-CLEANUP-RESULT-74ec02.json"
+    ],
+    "foreign_staging_names_removed": [
+      "root-r10-neg01-74ec-final05.stage.py",
+      "root-r10-neg01-74ec-final05.tar.gz"
+    ],
+    "fresh_android_upload_parent_mtime_ctime": 1793991296771872762,
+    "fresh_private_absent_parent_mtime_ctime": 1793990871563872924,
+    "fresh_staging_parent_mtime_ctime": 1793991298719872761,
+    "home_aliases_before_after_differ": false,
+    "present_private_rows_unchanged": true,
+    "transport_differences": []
+  },
+  "current_recovery_qualified": false,
+  "discovery_credit": "Root identified the conflicting parent full9 profiles; source_audit independently confirmed the exact fields and accepts that its earlier cross-profile audit missed this contradiction.",
+  "observed_boundary": {
+    "no_current_xml11_reread_claim": "check_capture rejected before open_bound_handles; this failed call did not reach fresh97 file reads, so its preserved original subset does not prove all11 external XML were re-read.",
+    "operation_count": 0,
+    "recovery_complete": false,
+    "resources": {
+      "close_errors": [],
+      "closed_directory_descriptors": 0,
+      "closed_file_descriptors": 0,
+      "closed_lock_descriptors": 15,
+      "final_fd_names": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "initial_fd_names": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    }
+  },
+  "phone_calls_by_this_agent": 0,
+  "prior_review": {
+    "bytes": 3854,
+    "sha256": "37fe0617bbb6b63cc210ac8ff8528a5ced7a1abcde4beff6e799fdac023dcb9f"
+  },
+  "prior_review_bytes_preserved_unchanged": true,
+  "required_followthrough": [
+    "Keep old TARGETS, failed request/result and original no-blocker review intact; this addendum records the discovered limitation.",
+    "Obtain complete current parent observations and explain the exact foreign changes using retained originals; do not treat a new observation as authority to delete foreign members.",
+    "Any independent successor may derive an absent-root parent profile only from an explicitly pinned complete observation while preserving all97 target file descriptors and10 owned directory full9 identities.",
+    "Keep all unknown changes rejecting; no blind timestamp relaxation or replay of this one-use operation."
+  ],
+  "schema": "hepta.fc33.final05-recovery-independent-review-addendum.v1",
+  "source_candidate": {
+    "bytes": 275947,
+    "sha256": "30172f90d4cd2cb3042a6c998a3e501d0eaba1ba3bf83bf1198a6fa19821a622"
+  },
+  "source_modified_by_this_agent": false,
+  "state": "PRIOR_NO_BLOCKER_CONCLUSION_SUPERSEDED_BY_STATIC_TARGET_CONTRADICTION_AND_ACTUAL_PRE_MUTATION_REJECTION",
+  "static_target_contradiction": {
+    "absent_fixture": "/proc/1/root/data/local/tmp/hepta-native-guard-9b37081161d7bcbc3adf76d2e6ec7841",
+    "later_xml_surviving_parent_metadata": [
+      65086,
+      101,
+      16889,
+      2000,
+      2000,
+      40,
+      249856,
+      1793988549039873810,
+      1793988549039873810
+    ],
+    "prior_private_tree_parent_metadata": [
+      65086,
+      101,
+      16889,
+      2000,
+      2000,
+      40,
+      249856,
+      1793985863735874834,
+      1793985863735874834
+    ],
+    "reason": "check_capture compares the fresh private projection to the old absent parent full9, then requires the same fresh XML parent to equal a different later full9. The unchanged physical parent cannot satisfy both.",
+    "same_first_seven": true,
+    "same_label": true,
+    "unequal_indices": [
+      7,
+      8
+    ]
+  },
+  "transport_source_review": {
+    "actor_sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22",
+    "claim_about_unreviewed_system_internals": null,
+    "direct_adb_shell_v2_raw": true,
+    "loader_entirely_in_memory": true,
+    "no_reviewed_source_path_writes_phone_temporary_file_before_capture": true,
+    "shell_helper_sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b"
+  }
+}

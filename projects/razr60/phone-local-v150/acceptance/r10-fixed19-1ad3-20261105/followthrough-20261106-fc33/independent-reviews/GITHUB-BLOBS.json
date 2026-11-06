@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.fc33.source-audit-independent-review-blobs.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "suggested_prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/independent-reviews/",
+  "files": [
+    {
+      "local_path": "review/R5-final05-recovery-independent-review.json",
+      "path": "R5-final05-recovery-independent-review.json",
+      "bytes": 3854,
+      "sha256": "37fe0617bbb6b63cc210ac8ff8528a5ced7a1abcde4beff6e799fdac023dcb9f",
+      "blob_sha": "77e7106be56d1ffd5af925505fcff7c4f8db0e25"
+    },
+    {
+      "local_path": "review/R5-final05-recovery-reader-independent-review.json",
+      "path": "R5-final05-recovery-reader-independent-review.json",
+      "bytes": 2730,
+      "sha256": "e94dad105d6859be28a80a4087e17cb40a8de7d3d621cceab24dcb36969c0c62",
+      "blob_sha": "405e4e25e1b902bb1d4ffdd90baa236ccc91c42b"
+    },
+    {
+      "local_path": "review/R5-final05-recovery-host-guard-independent-review.json",
+      "path": "R5-final05-recovery-host-guard-independent-review.json",
+      "bytes": 2189,
+      "sha256": "a8a3a48740db34eba3ad2e733b2a79bee2b5f2a1027e38117c9f9a285777fe22",
+      "blob_sha": "4040a153566237f6f00ea87aa802abc870e1295d"
+    },
+    {
+      "local_path": "review/R5-final05-recovery-independent-review-ADDENDUM.json",
+      "path": "R5-final05-recovery-independent-review-ADDENDUM.json",
+      "bytes": 4608,
+      "sha256": "bc4ca64f63e603e968e51ad7ca2ee0ffe672d1f1a9724fc73cbdbe53cd690d3c",
+      "blob_sha": "b9081ba6f5e5215223784e81250b8e7464f242a7"
+    },
+    {
+      "local_path": "review/R5-component-build-constructor-independent-review.json",
+      "path": "R5-component-build-constructor-independent-review.json",
+      "bytes": 1687,
+      "sha256": "2c813042c620a3fc19205e65731ba5df9a712a789880b382e9e3edd1bcdde15b",
+      "blob_sha": "cb5a74c6d82cc5f92c0b61df732a11b74608f942"
+    }
+  ],
+  "mandatory_pairing": "The recovery independent review is superseded by its ADDENDUM; preserve both, never present the old no-blocker conclusion as current.",
+  "tree_commit_or_ref_updated": false
+}

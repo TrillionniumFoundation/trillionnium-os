@@ -1,0 +1,50 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_external_display_tested": false,
+  "case_qualified": false,
+  "component_direct_fixtures": "Unqualified display/rotation receipts through actual current mapper/parser must reject screenshot/tap/public-return before any input. Synthetic fixtures remain labelled synthetic.",
+  "exact_original_case": {
+    "automatic_execution": false,
+    "contract_recipe": null,
+    "executed_in_this_set": false,
+    "expected_business_verified": false,
+    "fresh_inputs": {
+      "isolated_fixture_or_new_component_identity_required": true,
+      "old_task_replay": false
+    },
+    "id": "NEG-03",
+    "layer": "component_direct",
+    "negative_case": true,
+    "operator_steps": [
+      "Supply an unqualified display/rotation observation to the frozen mapper/parser, or conduct one explicitly scheduled physical negative."
+    ],
+    "pass_postconditions": [
+      "Screenshot/tap/public-return qualification rejects anything outside the qualified display 0 portrait geometry.",
+      "No input is injected on another display.",
+      "Fixture and physical-device outcomes remain separately labelled."
+    ],
+    "planned_status": "NOT_RUN_FIXED_SET",
+    "required_metrics": [
+      "latency",
+      "usage",
+      "cost",
+      "resources",
+      "evidence",
+      "restoration"
+    ],
+    "setup": [
+      "Prefer an isolated replay of original-shaped read-only display receipts first.",
+      "Any physical fold/rotation test needs separate operator scheduling and restoration of this run baseline."
+    ],
+    "title": "外屏或旋转：拒绝未资格显示配置"
+  },
+  "interpretation": "Original protocol explicitly allows frozen mapper/parser component_direct receipts OR an explicitly scheduled physical negative; it does not require an actual external display.",
+  "physical_rotation_branch": "Actual baseline, rotated observation, rejection/no input, and restoration receipts remain necessary for the scheduled physical branch; fixture results cannot close an unfinished physical branch.",
+  "protocol": {
+    "bytes": 37318,
+    "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+  },
+  "same_release_fixture_and_actual_physical_rotation_not_yet_run": true,
+  "schema": "hepta.fc33.neg03.protocol-boundary.v1"
+}

@@ -1,37 +1,19 @@
-# Fixed19 全量推进：检查点 07
+# RAZR60 fixed19 — checkpoint08
 
-当前正式组合尚未新增整项通过。目标仍是把全部 19 项在同一最终组合下闭合；历史成功、源码控制、当前实机结果分别保留其实际范围。
+当前冻结组合仍未取得新的完整用例资格。用户要求继续完成全部19项；本检查点保留实际进展、失败和下一必要步骤。
 
-## 当前实际进展
+## 本次保留的实际证据
 
-最终 R5 runtime manifest 为 `990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a`，组合为 `7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411`。既有失败 bound01 和消费过的 nonce 保留不变；没有重放。
+- 发布链29份实际原件已独立逐字核验，41文件归档已取得Git blob回执。BUILD、安装、READY仍未执行。
+- 原final05发送器的同步返回与原主机wait已从原件证实：发送0次、草稿恢复1次，原远端返回2；未补造历史supervisor wait。
+- 11份XML和144份sender原件已私下保全。公开文件只含描述符、校验结果、源码及原控制器载体。
+- recovery01确实执行，手机返回1，完整检查阶段拒绝；删除尝试0、删除文件0、删除目录0，15个锁释放，FD回到原基线。
+- 失败揭示原恢复候选将两个时点的父目录full9同时作为门槛。原审查结论由ADDENDUM明确更正；原报告与更正一同保留。
+- 新parent-readonly02已在手机完成，返回0。它只观察5个父目录、11份XML、2份外部审计原件和fixture ENOENT；独立host导入仍在进行，不代表恢复完成。
+- NEG03–09源码派发入口实际发布失败于过时adoption格式校验。旧输入树已独立确认181文件、177 payload成员逐字相同，derived目录实际ENOENT；原失败保留，当前实际adoption以及production15源码不改动。
 
-下游 release 源码发布第二次运行成功：精确单行修复只统一 descriptor 顺序，原四份 payload 和完整字节逆向校验保留。第一版写入前拒绝和两个目录实际 ENOENT 的证据仍在。实际发布 binding 8 份、derived 21 份（14 个源码），未执行 BUILD/install/READY。E2E/COMP 绑定器随后实际发布 49 份当前源码；未生成业务身份或调用手机。
+## 下一步骤
 
-后继 NEG-01 bound02 源码已发布并通过实际主机 preview，输出明确为无身份的冻结组合验证成功。它显式排除本次和旧 final05 的已消费 nonce。尚未创建新任务身份，继续等待精确恢复。
+用新只读原件建立同一当前父目录投影，保留原TARGETS，重新审查一次新的恢复操作。完成后只生成一次NEG-01 bound02身份，再按真实闭环产生NEG-02 bound01。两个当前闭环成立后才构造实际BUILD、安装和READY，然后完成业务E2E、生产原生返回及协议要求的负例层。
 
-## 旧 final05 的新鲜只读证据
-
-完整范围 probe 在手机 exit 0。独立主机导入验证了两个窗口的 44 个原基线根、3,823 个条目、3,495 个文件及每窗口 44,353,573 字节；37 个旧 runtime 成员、61 个 stage 成员、私有树 98 个条目亦完整读取和核对。两个已知进程的完整 proc census 与四次内核 signal-0 检查均得到 ESRCH。claims/operator/actions 为空，fixture 实际 ENOENT。
-
-11 个已知 sender XML 路径的补充只读采集也在手机 exit 0，独立主机私有归档和最终精确清理计划尚在完成。两次 probe 均未输入、调用模型、派发 native 或删除文件；不能据此推断历史效果次数，也不构成清理闭合。核心私有原件已保存在 Pocket4；私有 sender/XML 正文不进入此 Git 证据包。
-
-## 本检查点材料
-
-| 路径 | 内容 | 资格边界 |
-| --- | --- | --- |
-| actual-source-chain-r5/ | 实际 release source 发布 controller 与完整小原件读回 | BUILD/install/READY 未执行 |
-| actual-e2e-source-r5/ | 实际 E2E/COMP 绑定器、输入、controller 与 BINDING 读回 | 业务、模型、手机执行为零 |
-| source-publisher-v2/ | 15 份修复和两个实际主机控制，所有 blob 已实际创建 | 单行源码派生修复，无生产源码变更 |
-| foreign-final05-readonly/ | 完整范围 probe、公开输入、控制和独立主机核验 | 无删除，无整项资格 |
-| foreign-final05-xml-readonly/ | 11 个有限路径的只读 probe 和 controller | 私有 XML 正文不公开 |
-| neg10-14-final-source-summary/ | 165 份最终源码主机证据、23 条件映射和实际 blob 回执 | 待绑定实际 sealed BUILD 与安装/READY |
-| runtime-r5/successor02/ | 后继源和实际无身份 preview | 新 nonce 尚未生成 |
-
-NEG-14 原协议层为 host_isolated，要求确认 worker/child/file-descriptor 回到实测基线；没有追加 RSS 或真实模型槽门槛。新增四项实际控制覆盖 lstat/scandir errno 13、生产 daily 逻辑字节容量边界、孤儿 intent 保留拒绝和两个自有 child 的原 wait/进程组/FD 收尾。稀疏逻辑容量不冒充磁盘 ENOSPC；各回归组不相加为新测试总数。
-
-## 后续执行
-
-先完成 final05 精确恢复：原 sender host 终态、全部目标、原 44 根和已知进程在持锁窗口重新核对，保留完整原件后只移除归属于该失败任务的有限路径，并独立核验恢复结果。恢复后依次执行新 NEG-01、NEG-02，取得当前组件闭合再 BUILD/安装/READY，随后运行 E2E/COMP 与物理 NEG03–09，最终绑定 NEG10–14。
-
-旧 NEG-01 成功仍只属于原组合。旧 final02 UNKNOWN 不变；旧 final04 清理成功及本次 bound01 失败也不改写。
+所有来源限定和未知项见STATE.json。源码正控、主机回归及只读采样均未计作完整业务成功。

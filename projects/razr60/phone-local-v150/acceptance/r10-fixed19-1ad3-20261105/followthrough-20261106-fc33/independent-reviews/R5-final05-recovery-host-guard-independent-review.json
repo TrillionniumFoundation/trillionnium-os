@@ -1,0 +1,27 @@
+{
+  "actual_guard_verify_only_result": null,
+  "conclusion": "NO_CONCRETE_ADMISSION_TO_ACTOR_INTERFACE_BLOCKER_IDENTIFIED",
+  "execute_mode": "--execute-once invokes the same complete verification, publishes one O_EXCL/fsynced/readback admission, then os.execv runs the exact existing179a phone_once actor once with original selected label/request.",
+  "execute_once_run": false,
+  "host_guard_success_is_not_phone_or_recovery_success": true,
+  "limits": [
+    "No new positive fixtures or live host originals were run in this review; Root must obtain actual guard/controller result.",
+    "The existing actor preserves its own one-use label mkdir, fixed baseline, pinned transport and original result contract; the separate reader determines complete recovery."
+  ],
+  "phone_calls_by_reviewer": 0,
+  "read_only_mode": "--verify-only fully verifies private originals and emits only a summary; no file publication/actor/process signal.",
+  "reviewed_gates": [
+    "P4 uid/gid1000,canonical BASE-only paths,regular single-link originals,exact bytes/SHA/full9 and expected modes; actor alone explicitly pinned0660/full9.",
+    "Originals106+9,88 retained hashes,97 file byte/hash pairs,144 complete sender originals and original terminal/draft restoration/zero-Send proofs are rechecked before actor.",
+    "Actual selected request243f decompresses to selected SOURCE3017; embedded CAP/TARGETS/authority and full9 target original match existing preservation.",
+    "Complete set canonical/full9 bookend plus operation/admission absence are checked before create-only admission.",
+    "Admission preserves its pre-actor status and explicitly does not claim execution success; actor stdout/exit semantics are preserved by execv.",
+    "No fallback,retry,existing file overwrite,cleanup,model/native source invocation or new transport path is present in the guard."
+  ],
+  "schema": "hepta.fc33.final05-recovery-host-admission-independent-static-review.v1",
+  "source": {
+    "bytes": 14670,
+    "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery01/candidate02/HOST-PRE-DISPATCH.py",
+    "sha256": "52f29b97c655b96106a2220b8f6a6f689fda53a0cfff992e439186d2e9468bca"
+  }
+}

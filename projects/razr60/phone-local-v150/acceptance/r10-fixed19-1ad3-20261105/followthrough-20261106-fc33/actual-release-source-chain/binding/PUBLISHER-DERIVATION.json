@@ -1,0 +1,13 @@
+{
+  "after": "directories=('', 'source', 'reference')",
+  "before": "directories=('', 'shared', 'shared/provider', 'shared/provider/source', 'reference')",
+  "candidate_function": {
+    "bytes": 3833,
+    "sha256": "39e5f39e3799269fed7789480ae349f6a09dcfef9e8abf381d3c710442cac7b0"
+  },
+  "full_inverse": true,
+  "parent_function": {
+    "bytes": 3878,
+    "sha256": "f4bf22d18592763c6a60b71f39fea384e8c51b5b62dba074a7028c0aab75163a"
+  }
+}

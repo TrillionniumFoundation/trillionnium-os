@@ -1,0 +1,45 @@
+{
+  "actual_current_recovery_verified": false,
+  "actual_request": {
+    "bytes": 43834,
+    "sha256": "243f961660aab37fa2c8e7b23e6936379fabddc42d5304704b05907f30f8898a"
+  },
+  "actual_result": null,
+  "actual_selected_source": {
+    "bytes": 275947,
+    "sha256": "30172f90d4cd2cb3042a6c998a3e501d0eaba1ba3bf83bf1198a6fa19821a622"
+  },
+  "cleanup_executed": false,
+  "conclusion": "NO_CONCRETE_INTERFACE_OR_LOGIC_BLOCKER_IDENTIFIED_IN_REVIEWED_CURRENT_SOURCE",
+  "core_bound": {
+    "bytes": 41084,
+    "sha256": "f58ca1b8878d945cc41d8c55f78f0afbfc3b7e0cb059eed92e1adecbbef2da50"
+  },
+  "full_inverse": {
+    "FROZEN_and_two_CORE_literals_to_UNBOUND": true,
+    "FROZEN_only_to_CORE_BOUND": true
+  },
+  "new_fixtures_or_positive_controls": 0,
+  "phone_calls": 0,
+  "post_inventory_boundary": "The producer reads the entire after44 tree, checks exact byte/full9/labels against before, then emits its canonical projection hash and counts. The reader verifies that digest and the complete before graph; it does not claim an emitted raw after-inventory.",
+  "reader": {
+    "bytes": 41863,
+    "sha256": "01c5ec7fdba2395b96dcf8339aee90dec5fa8aef0e5ea5709edf599eab8e987e"
+  },
+  "request_xz_complete_decode_matches_selected_source": true,
+  "reviewed_compatibility": [
+    "Actual phone_once179a root=true wraps the selected command with /debug_ramdisk/su -c and shlex.quote; intent request/SHA and fixed baseline field shapes match reader.",
+    "The exact recovery source is loaded as definitions in an independent module, with no old or new main invocation.",
+    "Pure original validator29520d5d takes the explicitly labelled preflight adapter plus C.__dict__ and preserved byte blobs; its STATE reassignment is host-only and supplies unchanged archive/private checks.",
+    "Producer finite_plan/reserve_output are pure under this reader and match candidate02 read allowance including final baseline/boundary rereads.",
+    "All107 exact events match producer deterministic order, held inode full9, chained parent identity/nlink/member removal, and fsync/absence flags.",
+    "All18 exact_absence field shapes and GNU/Android alias parent identities match; final44 canonical projection fields are compared to full preflight graph.",
+    "Role dictionaries and FD closure fields match producer; false scope/component/business/source-parent flags remain false.",
+    "Actual result/request/actor originals are preserved before detailed validation; error paths do not report owned_recovery_closed and do not dispatch/retry."
+  ],
+  "schema": "hepta.fc33.final05-recovery-reader-independent-static-review.v1",
+  "template": {
+    "bytes": 23555,
+    "sha256": "d4ca0e0fdf87890df86055fa1361ce1ea4c884e9200248cdcf007c1112d0d575"
+  }
+}

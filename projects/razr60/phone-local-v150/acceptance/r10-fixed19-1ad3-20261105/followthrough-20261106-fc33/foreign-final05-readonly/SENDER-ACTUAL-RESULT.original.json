@@ -1,0 +1,5 @@
+{
+  "rc": 2,
+  "stdout": "{\"state\": \"PRE_SEND_OR_ACTOR_FAILURE\", \"native_status\": null, \"out\": \"/home/alex/codex-hepta-natural-root-r10-neg02-a1055-final05-root-v150\", \"route\": [5037, \"23\"], \"prompt_sha256\": \"99dc5822937e8d50b604e39bd9da678d4ae80d2fab8cf3d32d61fd27ebe5ac8f\", \"draft_restore\": {\"state\": \"ORIGINAL_DRAFT_RESTORED\", \"restore_attempts\": 1, \"original_draft_submitted\": false}, \"send_attempt_count\": 0, \"automatic_replay\": false, \"business_success_verified\": false, \"independent_collector_required\": true, \"retirement_resolution_sha256\": \"7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433\"}\n",
+  "stderr": ""
+}

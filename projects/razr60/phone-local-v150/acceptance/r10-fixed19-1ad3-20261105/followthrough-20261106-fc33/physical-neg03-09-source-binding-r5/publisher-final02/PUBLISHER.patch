@@ -1,0 +1,18 @@
+--- candidate01/publish_negative_sources_once.py
++++ publisher-final02/publish_negative_sources_once.py
+@@ -256,6 +256,7 @@
+     })
+     for old in list(material.BOOK.values()):
+         material.read({key: old[key] for key in ('path', 'bytes', 'sha256')})
++    directories(files)  # Recheck final bytes/count including terminal/proof records.
+     publish_binding(binding_root, files)
+     need(material.read(EXPECTED_INPUTS) == inputs_raw
+          and material.read(proof['constructor']) == bound_raw, 'complete published source input readback')
+@@ -301,6 +302,7 @@
+     out['DERIVATION.json'] = material.enc(report)
+     for old in list(material.BOOK.values()):
+         material.read({key: old[key] for key in ('path', 'bytes', 'sha256')})
++    directories(out)  # Recheck final bytes/count including terminal/proof records.
+     publish_derived(derived_root, out)
+     need(material.read(located(derived_root, 'DERIVATION.json', out['DERIVATION.json'])) == out['DERIVATION.json'],
+          'complete final source-only terminal readback')

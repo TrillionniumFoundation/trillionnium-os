@@ -1,0 +1,27 @@
+{
+  "actual_current_positive": null,
+  "conclusion": "NO_CONCRETE_COMPATIBILITY_BLOCKER_IDENTIFIED",
+  "findings": [
+    "The projected two original parser functions use the same64MiB MAX and all required globals; PurePosixPath supplies the only consumed pure path attributes.",
+    "The actual root producer ROOT-RESULT,ACTUAL-PREVIOUS and late-publication descriptor/field shapes agree with collect_case.",
+    "Complete original CAPTURE and every original_file_bytes record are byte/full9 pinned; selected LEASE must come from that same archive.",
+    "PhoneOriginals retains exact4 descriptors; traversal collects the actual chain plus two current LEASEs and original retirement/retained bodies, while omitted descriptors reject.",
+    "The exact existing release consumer independently validates the complete component+policy bundle and exact used original set; current case slots reject the old package/combination."
+  ],
+  "limits": [
+    "No future current archive was available or fabricated. Actual full archive completeness remains subject to the same runtime reader.",
+    "No public constructor positive,fixture,BUILD,phone or deployment was executed by this review."
+  ],
+  "phone_calls": 0,
+  "schema": "hepta.fc33.component-build-constructor-independent-static-review.v1",
+  "scope": [
+    "collect_case",
+    "archive_projection against frozen close_component.archive_files",
+    "consumer.validate_bundle connection"
+  ],
+  "source": {
+    "bytes": 34048,
+    "local_path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/derive_component_build_inputs_UNBOUND.py",
+    "sha256": "766f6b933b4982088925669f327e0c7c2d03855b8c3f140052d7fbfd088d1b5f"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "actual_result": null,
+  "core": {
+    "bytes": 16500,
+    "sha256": "29520d5dcfa5f9eaeac033689869cea08cbc620b5eb16e5b5a2a91c1879286df"
+  },
+  "core_bound": {
+    "bytes": 41084,
+    "sha256": "f58ca1b8878d945cc41d8c55f78f0afbfc3b7e0cb059eed92e1adecbbef2da50"
+  },
+  "frozen": {
+    "authority": {
+      "bytes": 2265,
+      "sha256": "549a6ba79bad8b28b53b8e8c66955034933a6ae6f23f287dd29bc08cbf896a07"
+    },
+    "operation_label": "ng-fc33-final05-owned-scope-recovery01",
+    "request": {
+      "bytes": 43834,
+      "path": "/home/alex/razr60-local-model-v150/requests/ng-fc33-final05-owned-scope-recovery01.json",
+      "sha256": "243f961660aab37fa2c8e7b23e6936379fabddc42d5304704b05907f30f8898a"
+    },
+    "source": {
+      "bytes": 275947,
+      "sha256": "30172f90d4cd2cb3042a6c998a3e501d0eaba1ba3bf83bf1198a6fa19821a622"
+    },
+    "targets": {
+      "bytes": 183176,
+      "metadata": [
+        66306,
+        39846600,
+        33152,
+        1000,
+        1000,
+        1,
+        183176,
+        1793990364709986368,
+        1793990364709986368
+      ],
+      "path": "/home/alex/razr60-local-model-v150/fc33-final05-recovery-inputs01/TARGETS.json",
+      "sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1"
+    }
+  },
+  "full_inverse": true,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.exact-recovery-host-reader-binding.v1",
+  "source": {
+    "bytes": 41863,
+    "path": "review/R5-final05-recovery01/verify_recovery_result_BOUND.py",
+    "sha256": "01c5ec7fdba2395b96dcf8339aee90dec5fa8aef0e5ea5709edf599eab8e987e"
+  },
+  "template": {
+    "bytes": 23555,
+    "sha256": "d4ca0e0fdf87890df86055fa1361ce1ea4c884e9200248cdcf007c1112d0d575"
+  }
+}

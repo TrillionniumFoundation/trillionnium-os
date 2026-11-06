@@ -1,0 +1,10 @@
+--- reference/read.original.py
++++ source/read_projected.py
+@@ -1,6 +1,6 @@
+ def read(desc):
+  need(type(desc)is dict and set(desc)=={'path','bytes','sha256'},'exact source descriptor')
+- need(type(desc['path'])is str and type(desc['bytes'])is int and 0<desc['bytes']<=1048576
++ need(type(desc['path'])is str and type(desc['bytes'])is int and 0<desc['bytes']<=16777216
+   and type(desc['sha256'])is str and re.fullmatch('[0-9a-f]{64}',desc['sha256']),'bounded typed source descriptor')
+  p=Path(desc['path']);need(p.is_absolute()and p.parent.resolve(strict=True)==p.parent,'canonical source parent')
+  fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)

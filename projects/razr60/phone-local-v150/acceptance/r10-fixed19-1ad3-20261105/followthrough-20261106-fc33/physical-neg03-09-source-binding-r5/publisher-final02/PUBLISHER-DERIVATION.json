@@ -1,0 +1,50 @@
+{
+  "candidate": {
+    "bytes": 19652,
+    "sha256": "581efadeed85af47e98c68c4037cee4b2599d00987df1f78ca753e917e729335"
+  },
+  "changes": [
+    "Recheck the same existing finite file/count/directory bound after terminal/proof records are added to each output tree."
+  ],
+  "complete_inverse": true,
+  "copied_function_bytes_unchanged": {
+    "initial": {
+      "bytes": 752,
+      "sha256": "c0c81f5cf81920382ad020a88da61b0a472dbf522d54203d954b3252c5e63f12"
+    },
+    "located": {
+      "bytes": 80,
+      "sha256": "57101531e69153b4f44942f48b9028739d263ee49cbd6c8a52a283a9339642d2"
+    },
+    "meta": {
+      "bytes": 58,
+      "sha256": "9b8cd7dc90cd990592569017007fea3496a45d6eedeb525d2ec40d943bcfb686"
+    },
+    "module": {
+      "bytes": 170,
+      "sha256": "8510263a1825fd5e71f65730efcbf5aada20d020a9a351b23d9f78e9051dadf5"
+    },
+    "need": {
+      "bytes": 70,
+      "sha256": "68cd107d6ae94713488baa77d90865ff83797c9b0fee3e4fca109c703fc795ef"
+    },
+    "pin": {
+      "bytes": 88,
+      "sha256": "e2f49bfc66882ce5606960ec6cdf95d9536e846ae55a4196b9868326f31c8bbd"
+    },
+    "writer": {
+      "bytes": 1208,
+      "sha256": "c40d8c4c16fe40a8def3f224e31c77f163e16a8fbfdfd097bcf5353c4ba7b38c"
+    }
+  },
+  "parent": {
+    "bytes": 19482,
+    "sha256": "67f91f8c92161d5e7c63fa8e01a0d5b902355a61f1867cba84e4136f73189152"
+  },
+  "phone_calls": 0,
+  "public_constructor_executed": false,
+  "schema": "hepta.fc33.negative-source-publisher-final-bound-review.v1",
+  "source_publication_executed": false,
+  "source_reader_projection": "SOURCE-READER-DERIVATION.json",
+  "syntax_compiled_only": true
+}

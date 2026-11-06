@@ -1,0 +1,47 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "files": [
+    {
+      "bytes": 5461,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/BINDING-PROOF.json",
+      "sha256": "a0e0b9bd483d280dda5f4a32a70a3c671f9c7054790f7bce74520a569113511d"
+    },
+    {
+      "bytes": 440,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/PUBLISHER-DERIVATION.json",
+      "sha256": "f27ee64b45eae429027d323e01be3fdd04e4d988dc5e5f8c2c5e2b92d4b46d26"
+    },
+    {
+      "bytes": 3515,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/SOURCE-CHAIN-INPUTS.json",
+      "sha256": "e3cc22536e42074ba3fe662101dd4a4c98224de285b0a5c13c32f84d2fac322b"
+    },
+    {
+      "bytes": 33827,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/reference/derive_reviewed_release_sources_UNBOUND.py",
+      "sha256": "4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835"
+    },
+    {
+      "bytes": 249798,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/reference/release_boundaries.UNBOUND.py",
+      "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+    },
+    {
+      "bytes": 34103,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/source/derive_reviewed_release_sources_BOUND.py",
+      "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a"
+    },
+    {
+      "bytes": 249860,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/source/release_boundaries.py",
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+    }
+  ],
+  "full_source_inverse": true,
+  "new_current_case_originals": null,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.reviewed-source-binding-publication.v1",
+  "state": "SOURCE_BINDING_ONLY_NO_NEW_CASE_QUALIFICATION"
+}
