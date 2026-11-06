@@ -1,0 +1,343 @@
+--- prepare_component.parent.py
++++ prepare_component.py
+@@ -1,9 +1,4 @@
+-"""Host-only material preparation from explicit Root identities and byte pins.
+-
+-No nonce is generated, no phone command is run, and no provider/model is
+-started. The source seal is an independent component seal, never a final
+-integration seal or four-role readiness claim.
+-"""
++"""Host-only preparation; no nonce, phone action or qualification."""
+ import argparse
+ import ast
+ import base64
+@@ -246,18 +241,18 @@
+  epoch_scope_binding_value(value,identity,identity_pin,accepted,accepted_pin)
+  home=_ep_slot_paths(identity)[1]
+  _ep_need(accepted_pin['path']==home+'/ACCEPTED.json',
+- 'native scope must come from the original accepted file in this actual home')
++ 'accepted scope path differs')
+  _ep_exact(accepted,{'scope','run_dir','contract_sha256','native_tools_dispatched'},
+- 'actual accepted original fields differ')
++ 'accepted fields differ')
+  _ep_need(type(accepted['native_tools_dispatched']) is int
+  and accepted['native_tools_dispatched']==0,
+- 'scope binding cannot fabricate a prior dispatch')
++ 'unexpected prior dispatch')
+  bound_record=_ep_required_record(index,originals,home+'/BOUND-CONTRACT.json')
+  claim_record=_ep_required_record(index,originals,home+'/claims/'+identity['nonce']+'.json')
+  bound=bound_record['value'];claim=claim_record['value']
+  _ep_need(bound.get('schema')=='hepta.native-guard.bound-contract.v1'
+  and type(bound.get('contract')) is dict,
+- 'scope lacks its actual original bound component contract')
++ 'bound contract missing')
+  contract=bound['contract'];scope=value['scope']
+  run=str(COMPONENT_EVIDENCE)+'/'+bound['run_basename']
+  _ep_need(accepted['run_dir']==run
+@@ -268,17 +263,17 @@
+  and contract.get('owner_request_sha256')==identity['owner_request']['sha256']
+  and all(contract.get('selected_'+k)==scope[k]==identity['selected_'+k]
+  for k in ('session_id','profile_id')),
+- 'actual accepted native scope changed its one-use identity or owner contract')
++ 'accepted identity/contract differs')
+  _ep_need(_ep_same(claim,{'schema':'hepta.native-guard-component.claim.v1',
+  'scope':scope,'contract_sha256':accepted['contract_sha256'],
+  'state':'accepted_never_reuse','run_dir':run,'model_requests':0}),
+- 'actual native claim is not the original once-only zero-model claim')
++ 'native claim differs')
+  local=_ep_required_record(index,originals,run+'/accepted.json')['value']
+  _ep_need(local.get('state')=='accepted_never_replay'
+  and _ep_same(local.get('identity'),scope)
+  and local.get('owner_request_sha256')==identity['owner_request']['sha256']
+  and local.get('contract_sha256')==accepted['contract_sha256'],
+- 'original native run acceptance differs from the home scope binding')
++ 'run acceptance differs')
+  return value
+ def _ep_launch_originals(record, identity, identity_pin, scope_record, generation,
+ index, originals):
+@@ -286,7 +281,7 @@
+  _ep_exact(value,{'schema','epoch_id','ordinal','identity','scope_binding',
+  'root_fixture_plan','bound_contract','accepted','root_source_authorization',
+  'fixture_namespace','fixture_may_exist','state'},
+- 'explicit original accepted-scope fixture authorization required')
++ 'fixture authorization fields differ')
+  _ep_need(value['schema']=='hepta.native-guard.epoch-fixture-phase-binding.v1'
+  and value['epoch_id']==EPOCH_ID and type(value['ordinal']) is int
+  and value['ordinal']==identity['ordinal']
+@@ -295,14 +290,14 @@
+  and value['state']=='EXACT_ACCEPTED_SCOPE_FIXTURE_PHASE_AUTHORIZED'
+  and value['fixture_may_exist'] is True
+  and value['fixture_namespace']==_ep_slot_paths(identity)[2],
+- 'fixture phase permission changed its actual scope, ordinal or fixed namespace')
++ 'fixture scope/ordinal/path differs')
+  for key in ('root_fixture_plan','bound_contract','accepted','root_source_authorization'):
+   _ep_pin(value[key],original=True);_ep_manifest_raw(value[key],index,originals)
+  home=_ep_slot_paths(identity)[1]
+  _ep_need(value['root_fixture_plan']['path']==home+'/ROOT-SETUP-PLAN.json'
+  and value['bound_contract']['path']==home+'/BOUND-CONTRACT.json'
+  and _ep_same(value['accepted'],scope_record['value']['accepted']),
+- 'fixture permission is not the actual native setup original')
++ 'fixture setup original differs')
+  plan=_ep_strict(originals[value['root_fixture_plan']['path']])
+  accepted=_ep_strict(originals[value['accepted']['path']])
+  bound=_ep_strict(originals[value['bound_contract']['path']])
+@@ -313,19 +308,19 @@
+  and plan.get('automatic_retry') is False
+  and bound.get('contract',{}).get('nonce')==identity['nonce']
+  and bound.get('contract',{}).get('case_id')==identity['case_id'],
+- 'fixture original belongs to another native scope or bound contract')
++ 'fixture scope/contract differs')
+  return value
+ def _ep_retired_admission(record, identity, index, originals, observation_verifier):
+  value=record['value']
+  _ep_exact(value,{'schema','epoch_id','ordinal','retired_original'},
+- 'complete immutable lifecycle admission binding required')
++ 'lifecycle binding fields differ')
+  home=_ep_slot_paths(identity)[1]
+  pin=value['retired_original'];_ep_pin(pin,original=True)
+  _ep_need(value['schema']=='hepta.native-guard.epoch-lifecycle-admission-binding.v1'
+  and value['epoch_id']==EPOCH_ID and type(value['ordinal']) is int
+  and value['ordinal']==identity['ordinal']
+  and pin['path']==home+'/RETIRED-BASELINE-VERIFIED.json',
+- 'lifecycle admission is not this actual original home observation')
++ 'lifecycle home differs')
+  retired=_ep_strict(_ep_manifest_raw(pin,index,originals))
+  proof=retired.get('explicit_late_boundary_verification')
+  _ep_need(type(proof) is dict
+@@ -335,7 +330,7 @@
+  and proof.get('ordinal')==identity['ordinal']
+  and proof.get('boot_id')==identity['boot_id']
+  and proof.get('nonce')==identity['nonce'],
+- 'actual lifecycle did not record a complete new-domain current verification')
++ 'current verification missing')
+  for key in ('inventory_spec','inventory','control_inventory','inventory_observation',
+  'predecessor_context','legacy_semantic','active_semantic',
+  'role_absence','endpoint_observations','initial_manifest','final_manifest'):
+@@ -344,17 +339,19 @@
+  proof['control_inventory'],proof['inventory_observation'])
+  _ep_need(proof.get('native_boundary_created') is False
+  and proof.get('model_requests')==0 and type(proof['model_requests']) is int,
+- 'current admission invented a native result or model request')
++ 'unexpected native/model result')
+  return {'retired_original':pin,'retired':retired,'proof':proof}
+ def epoch_registry_replay(lease, manifest, originals, *, mode,
+ inventory_validator, observation_verifier):
+  _ep_need(mode in ('preclose','published') and callable(inventory_validator)
+- and callable(observation_verifier),'explicit protocol mode and complete inventory gates required')
++ and callable(observation_verifier),'protocol mode/gates differ')
++ import component_common as common
++ api=common._epoch_stage_api();source_binding=api._est_binding(common)
+  binding=epoch_binding_value();index=epoch_manifest_value(manifest,originals,binding=binding)
+  if mode=='preclose':epoch_lease_protocol_value(lease)
+- else:_ep_need(lease is None,'postpublication replay cannot substitute a current preclose lease')
++ else:_ep_need(lease is None,'published lease forbidden')
+  anchor_pin=index['files'].get(binding['anchor']['path'])
+- _ep_need(anchor_pin is not None,'actual immutable epoch anchor is missing')
++ _ep_need(anchor_pin is not None,'epoch anchor missing')
+  anchor=epoch_anchor_value(originals[anchor_pin['path']],anchor_pin,binding=binding)
+  initial_record=_ep_required_record(index,originals,EPOCH_REGISTRY_ROOT+'/INITIALIZATION.json')
+  initialization=epoch_initialization_value(initial_record['value'],
+@@ -363,14 +360,14 @@
+  generations=_ep_generation_records(index,originals,binding,lease)
+  generation_by_pin={_ep_encoded(r['original']):r for r in generations}
+  _ep_need(_ep_encoded(initial_record['value']['generation']) in generation_by_pin,
+- 'initialization has an unreviewed source catalog')
++ 'initial catalog unreviewed')
+  root_names={'ANCHOR.json','INITIALIZATION.json','REGISTRY.lock','ROOT-AUTHORIZATION.json',
+  'generations','initialization','slots'}
+  seal=_ep_optional_record(index,originals,EPOCH_REGISTRY_ROOT+'/SEALED.json')
+  if seal is not None:root_names.add('SEALED.json')
+  _ep_complete_directory(index,EPOCH_REGISTRY_ROOT,root_names)
+  _ep_need(initial_record['value']['root_authorization']['path']==EPOCH_REGISTRY_ROOT+'/ROOT-AUTHORIZATION.json',
+- 'source authority must retain its one actual create-only namespace')
++ 'authority path differs')
+  _ep_complete_directory(index,EPOCH_REGISTRY_ROOT+'/initialization',
+  {'BASELINE-BUSINESS.json','BASELINE-CONTROL.json','INVENTORY-SPEC.json',
+  'INVENTORY-OBSERVATION.json','carriers'})
+@@ -378,18 +375,18 @@
+  _ep_complete_directory(index,EPOCH_REGISTRY_ROOT+'/initialization/carriers',carrier_names)
+  slot_root=EPOCH_REGISTRY_ROOT+'/slots'
+  parent=index['directories'].get(slot_root)
+- _ep_need(parent is not None,'complete actual slot namespace is missing')
++ _ep_need(parent is not None,'slot namespace missing')
+  claims=[name for name in parent['names'] if _ep_re.fullmatch(r'0[1-8]\.CLAIM\.json',name)]
+  count=len(claims)
+  _ep_need(0<=count<=EPOCH_MAX_SLOTS and claims==['%02d.CLAIM.json'%n for n in range(1,count+1)]
+  and set(parent['names'])==set(claims+['%02d'%n for n in range(1,count+1)]),
+- 'partial, unknown, duplicate or noncontiguous slot allocation blocks replay')
++ 'slot sequence incomplete')
+  if mode=='preclose':
+   _ep_need(seal is None and count==lease['epoch']['ordinal'] and count>0,
+-  'capture is not the sole highest unsealed ordinal')
++  'capture ordinal/seal differs')
+   for key,wanted in (('anchor',anchor_pin),('initialization',initial_record['original'])):
+    _ep_need(_ep_same(lease['epoch'][key],wanted),'lease changed its immutable '+key)
+- slots=[];closed=[];nonce_set=set(binding['legacy_nonces']+binding['failed_nonces'])
++ slots=[];closed=[];nonce_set=set(common.epoch_forbidden_nonces(binding))
+  labels=set();scope_set=set();prior_terminal=None;prior_boundary=anchor['legacy']['native_chain'][0]['boundary']
+  for n in range(1,count+1):
+   prefix=slot_root+'/%02d/'%n
+@@ -397,60 +394,79 @@
+   reservation=epoch_reservation_value(claim['value'],binding=binding,
+   ordinal=n,previous_terminal=prior_terminal)
+   generation=generation_by_pin.get(_ep_encoded(reservation['generation']))
+-  _ep_need(generation is not None,'slot selected a catalog outside the finite reviewed generation set')
+-  for key in ('authorization_request','resource_reservation'):
+-   _ep_manifest_raw(reservation[key],index,originals)
++  _ep_need(generation is not None,'slot catalog unreviewed')
++  resource=reservation['resource_reservation'];authorization=reservation['authorization_request']
++  _ep_need(_ep_same(resource['generation'],reservation['generation'])
++  and _ep_same(authorization['origin'],source_binding['authorization_requests'][resource['case_id']])
++  and '\0' not in authorization['utf8'],'reservation source or authorization differs')
+   directory=_ep_required_record(index,originals,prefix+'DIRECTORY-BINDING.json')
+   directory_row=index['directories'].get(prefix[:-1])
+-  _ep_need(directory_row is not None,'actual exclusively claimed slot directory is missing')
++  _ep_need(directory_row is not None,'claimed directory missing')
+   epoch_directory_claim_value(directory['value'],ordinal=n,claim=claim['original'],directory=directory_row)
+-  records={key:_ep_optional_record(index,originals,prefix+filename) for key,filename in (
+-  ('identity','IDENTITY.json'),('admission','ADMISSION.json'),('stage','STAGE.json'),
+-  ('scope_binding','SCOPE-BINDING.json'),('launch','LAUNCH.json'),('terminal','COMMIT.json'))}
+-  names={'DIRECTORY-BINDING.json'}|{filename for key,filename in (
+-  ('identity','IDENTITY.json'),('admission','ADMISSION.json'),('stage','STAGE.json'),
++  record_files=(('identity','IDENTITY.json'),('allocation','ALLOCATION-ADMISSION.json'),
++  ('role_launch','ROLE-LAUNCH-INTENT.json'),('admission','ADMISSION.json'),('stage','STAGE.json'),
+   ('scope_binding','SCOPE-BINDING.json'),('launch','LAUNCH.json'),('terminal','COMMIT.json'))
+-  if records[key] is not None}
++  records={key:_ep_optional_record(index,originals,prefix+filename) for key,filename in record_files}
++  names={'DIRECTORY-BINDING.json'}|{filename for key,filename in record_files if records[key] is not None}
+   identity_record=records['identity'];identity=None;inventory_roots=[];required_absence=[]
+   if identity_record is None:
+    _ep_need(all(records[k] is None for k in records),
+-   'a later phase cannot exist before the actual durable identity')
++   'phase lacks identity')
+    _ep_need(n==count and mode=='preclose',
+-   'unknown preidentity claim cannot become a terminal or authorize a next ordinal')
++   'unidentified claim blocks advance')
+   else:
+    identity=epoch_identity_value(identity_record['value'],reservation,claim['original'],
+    forbidden_nonces=nonce_set)
+    _ep_need(identity['label'] not in labels and _ep_same(identity['prior_boundary'],prior_boundary),
+-   'slot repeats a label or skips the actual previous native boundary')
++   'label/prior boundary differs')
+    nonce_set.add(identity['nonce']);labels.add(identity['label'])
+-   _ep_manifest_raw(identity['owner_request'],index,originals)
++   owner=_ep_manifest_raw(identity['owner_request'],index,originals)
++   _ep_need(identity['case_id']==resource['case_id']
++   and owner==authorization['utf8'].replace('{{EPOCH_NONCE}}',identity['nonce']).encode('utf-8'),
++   'owner bytes differ from reserved authorization')
+    _ep_need(identity['owner_request']['path']==prefix+'owner-request.original.txt',
+-   'owner request must already be an actual create-only slot original')
++   'owner original path differs')
+    names.add('owner-request.original.txt')
+    roots=_ep_slot_paths(identity);required_absence=list(roots)
++   allocation=records['allocation']
++   if allocation is not None:
++    api.epoch_allocation_admission_value(allocation['value'],identity=identity,
++    identity_pin=identity_record['original'],reservation=reservation,reservation_pin=claim['original'],
++    initialization=initialization,index=index,originals=originals)
++   else:
++    _ep_need(all(records[k] is None for k in ('stage','role_launch','admission','scope_binding','launch','terminal')),
++    'later phase lacks allocation admission')
+    stage=records['stage']
+    if stage is not None:
+     epoch_stage_binding_value(stage['value'],identity=identity,identity_pin=identity_record['original'],
+     generation_value=generation['value'],index=index,originals=originals)
+     inventory_roots=roots[:2];required_absence=roots[2:]
+    else:
++    _ep_need(all(records[k] is None for k in ('role_launch','admission','scope_binding','launch','terminal')),
++    'later phase lacks stage completion')
++   role=records['role_launch']
++   if role is not None:
++    api.epoch_role_launch_intent_value(role['value'],identity=identity,
++    identity_pin=identity_record['original'],lease_pin=stage['value']['lease'],
++    generation=generation['original'],index=index,originals=originals)
++   else:
+     _ep_need(all(records[k] is None for k in ('admission','scope_binding','launch','terminal')),
+-    'later actual phases cannot be inferred before private stage completion')
++    'later phase lacks role launch intent')
+    if records['admission'] is not None:
+     _ep_retired_admission(records['admission'],identity,index,originals,observation_verifier)
+    if records['scope_binding'] is not None:
+-    _ep_need(records['admission'] is not None,'native accepted scope omitted actual lifecycle admission')
++    _ep_need(records['admission'] is not None,'accepted scope lacks admission')
+     scope_value=_ep_scope_originals(records['scope_binding'],identity,identity_record['original'],index,originals)
+     scope_key=tuple(scope_value['scope'][k] for k in EPOCH_SCOPE_KEYS)
+-    _ep_need(scope_key not in scope_set,'active slots repeat a native scope')
++    _ep_need(scope_key not in scope_set,'native scope repeated')
+     scope_set.add(scope_key)
+    if records['launch'] is not None:
+-    _ep_need(records['scope_binding'] is not None,'fixture phase precedes actual accepted scope')
++    _ep_need(records['scope_binding'] is not None,'fixture lacks accepted scope')
+     _ep_launch_originals(records['launch'],identity,identity_record['original'],
+     records['scope_binding'],generation['value'],index,originals)
+     inventory_roots=roots;required_absence=[]
+    if records['terminal'] is not None:
+-    _ep_need(records['launch'] is not None,'native terminal lacks its actual fixture phase')
++    _ep_need(records['launch'] is not None,'terminal lacks fixture')
+     terminal=epoch_terminal_value(records['terminal']['value'],original=records['terminal']['original'],
+     identity=identity,identity_pin=identity_record['original'],
+     scope_binding=records['scope_binding']['value'],scope_pin=records['scope_binding']['original'],
+@@ -463,31 +479,31 @@
+     'closure':terminal['closure'],'terminal':records['terminal']['original']})
+     prior_terminal=records['terminal']['original'];prior_boundary=terminal['boundary']
+    else:
+-    _ep_need(mode=='preclose' and n==count,'a consumed unknown slot forbids further allocation/publication')
++    _ep_need(mode=='preclose' and n==count,'unknown slot blocks advance')
+    if n==count and mode=='preclose':
+     _ep_need(records['terminal'] is None
+     and _ep_same(lease['epoch']['identity'],identity_record['original'])
+     and _ep_same(lease['epoch']['reservation'],claim['original'])
+     and lease['nonce']==identity['nonce'] and lease['label']==identity['label'],
+-    'capture lease does not belong to this current uncommitted identity')
++    'capture lease identity differs')
+   if prefix+'transport' in index['directories']:
+    names.add('transport')
+    actual=index['directories'][prefix+'transport']['names']
+    _ep_need(set(actual)<=set(EPOCH_TRANSPORT_FILES),
+-   'new transport contains an unreviewed phase filename')
++   'transport phase unreviewed')
+   _ep_complete_directory(index,prefix[:-1],names)
+   slots.append({'ordinal':n,'claim':claim,'directory_binding':directory,**records,
+   'inventory_roots':inventory_roots,'required_absence_roots':required_absence})
+  if seal is not None:
+   _ep_need(mode=='published' and count>0,
+-  'an empty or active epoch cannot claim a sealed production boundary')
++  'empty/active epoch cannot seal')
+   _ep_exact(seal['value'],{'schema','epoch_id','boot_id','last_terminal',
+-  'qualified_boundaries','source_authorization','native_epoch_closed'},'complete explicit epoch seal required')
++  'qualified_boundaries','source_authorization','native_epoch_closed'},'seal fields differ')
+   value=seal['value']
+   _ep_need(value['schema']=='hepta.native-guard.epoch-seal.v1'
+   and value['epoch_id']==EPOCH_ID and value['boot_id']==binding['boot_id']
+   and value['native_epoch_closed'] is True and _ep_same(value['last_terminal'],prior_terminal),
+-  'epoch seal changed its actual terminal frontier')
++  'seal terminal differs')
+  current=slots[-1] if slots and mode=='preclose' else None
+  active={'schema':'hepta.native-guard.epoch-active-domain.v1','epoch_id':EPOCH_ID,
+  'current_ordinal':count,'consumed_reservations':[r['claim']['original'] for r in slots],
+@@ -1613,11 +1629,7 @@
+  return {'inventory_spec':directory+'/EPOCH-INVENTORY-SPEC.json',
+  'control_inventory':directory+'/CONTROL-INVENTORY.json'}
+ def _epoch_collect_saved_inventory_inputs(common,collector,label,saved_paths):
+- """Retain both derived actual bodies, pinned by their saved CAPTURE rows.
+-
+-    They have their own current phone full9 descriptors. A derived CAPTURE row
+-    has no origin metadata and is never passed off as that physical identity.
+-    """
++ """Retain both actual bodies under saved CAPTURE pins and phone full9."""
+  capture=common._ep_strict(collector.raw[saved_paths['capture']])
+  common._ep_need(capture.get('schema')=='hepta.native-guard.epoch-original-capture.v1'
+  and type(capture.get('files')) is dict,
+@@ -1728,11 +1740,7 @@
+  'reviewed_source_bindings':sorted(checked,key=lambda r:r['path']),
+  'physical_full9_observation_claimed':False}
+ def epoch_verify_phone_active_source_observation(value,manifest,originals_by_path,verified):
+- """Pure binding of captured phone proof to the same complete32 actual map.
+-
+-    This does not recompute active semantics; the independent mandatory active
+-    semantic gate must still compare the complete semantic value separately.
+-    """
++ """Bind phone proof to whole32; independent active verification remains mandatory."""
+  common,_lifecycle=_epoch_inventory_module()
+  common._ep_exact(value,common.EPOCH_ACTIVE_SOURCE_OBSERVATION_FIELDS,
+  'captured active source-binding fields differ')

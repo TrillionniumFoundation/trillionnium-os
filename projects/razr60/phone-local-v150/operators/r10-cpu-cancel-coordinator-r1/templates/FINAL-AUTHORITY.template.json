@@ -1,0 +1,39 @@
+{
+  "closure_sources": {
+    "close_cpu_negative": null,
+    "ledger_prefix_negative": null,
+    "negative_originals": null,
+    "root_cpu_negative": null
+  },
+  "derivation_evidence": [],
+  "final_dependencies": null,
+  "operator_manifest": null,
+  "operator_sources": {
+    "active_runtime_r10.py": null,
+    "cancel_native_once_r10.py": null,
+    "cancel_phase.py": null,
+    "decode_client_state.py": null,
+    "native_journal_audit.py": null,
+    "observe_cancel_phase_r10.py": null,
+    "production-pins.json": null,
+    "reviewed_page_projection.py": null
+  },
+  "schema": "hepta.cpu-cancel.coordinator-final-authority.v1",
+  "sources": {
+    "business": null,
+    "cleanup": null,
+    "configuration": null,
+    "cpu": null,
+    "ledger_negative": null,
+    "ledger_parent": null,
+    "p4": null,
+    "phone": null,
+    "positive_closer": null,
+    "postconditions": null,
+    "protocol": null,
+    "root_transport": null,
+    "root_transport_parent": null,
+    "sender": null,
+    "service": null
+  }
+}

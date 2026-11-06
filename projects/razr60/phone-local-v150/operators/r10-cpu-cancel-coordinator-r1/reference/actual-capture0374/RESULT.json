@@ -1,0 +1,17 @@
+{
+  "automatic_retry": false,
+  "phase": "phase",
+  "pid": 17,
+  "returncode": 0,
+  "state": "ORIGINAL_HOST_CHILD_JOINED",
+  "stderr": {
+    "bytes": 0,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stderr.original",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 65,
+    "path": "/workspace/scratch/1ad3d6f55439/transport_fix/capture0374-review01/evidence/utf8-binary-input/phase/stdout.original",
+    "sha256": "cc567eec932079ca2c4a7c635b018c464d51c71afaaccbdaf77c1d2f3ef8a6f9"
+  }
+}

@@ -1,0 +1,306 @@
+{
+  "authority_frozen": false,
+  "host_isolated_acceptance_case_credit": 0,
+  "native_cases_run": 0,
+  "passed": 25,
+  "phone_calls": 0,
+  "physical_case_pass": false,
+  "schema": "hepta.cpu-cancel.coordinator-local-regressions.v1",
+  "scope": "Implementation source and local transport regressions. Synthetic READY and case data are not actual runtime authority.",
+  "source": {
+    "bytes": 50546,
+    "sha256": "59449fc7839504143a08c4acec1e6ab7bd2321012e3b21a5835d19592aa73086"
+  },
+  "state": "PASS",
+  "tests": [
+    {
+      "detail": {
+        "private_reads": 0,
+        "remote_calls": 0
+      },
+      "name": "unfrozen authority rejects before private input or remote action",
+      "passed": true
+    },
+    {
+      "detail": {
+        "preview": {
+          "actual_authority_frozen": false,
+          "allowed_cases": [
+            "NEG-08",
+            "NEG-09"
+          ],
+          "automatic_retry": false,
+          "cancel_starts": 0,
+          "case_credit": 0,
+          "new_native_nonces": 0,
+          "phone_calls": 0,
+          "schema": "hepta.cpu-cancel.coordinator-preview.v1",
+          "sender_starts": 0,
+          "state": "SOURCE_ONLY_NO_PRIVATE_CASE_READ"
+        }
+      },
+      "name": "preview contains no case credit or native allocation",
+      "passed": true
+    },
+    {
+      "detail": {
+        "complete_reference_files": 22
+      },
+      "name": "all retained upstream reference bytes stay exact",
+      "passed": true
+    },
+    {
+      "detail": {
+        "bytes": 72194
+      },
+      "name": "whole actual Root source inverses through only seven original RHS slots",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "actual_R8_root_not_exact_reviewed_capture_template_with_seven_slots"
+      },
+      "name": "extra Root source byte is rejected before transport use",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_validator": "cancel_phase.validate_plan",
+        "cases": [
+          "NEG-08",
+          "NEG-09"
+        ],
+        "synthetic_data_only": true
+      },
+      "name": "both generated plans use actual unchanged Actor validator",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "same actual source/policy generation"
+      },
+      "name": "mixed source generation rejects before staging",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "finite wait/image flag required"
+      },
+      "name": "original Actor stricter wait bound is not silently widened",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "original closer wait contract"
+      },
+      "name": "boolean wait cannot impersonate an integer",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "actual registered template/previous binding"
+      },
+      "name": "wrong registered nonce never produces an Actor plan",
+      "passed": true
+    },
+    {
+      "detail": {
+        "fields": [
+          "app_scope_sha256",
+          "case_id",
+          "combination_sha256",
+          "native_request_sha256",
+          "nonce",
+          "operator_label",
+          "operator_package_sha256",
+          "operator_plan_sha256",
+          "owner_request_sha256",
+          "release_pins",
+          "request_b64",
+          "runtime",
+          "runtime_binding",
+          "schema",
+          "sender_label",
+          "sender_run",
+          "sender_scope",
+          "state",
+          "task_template_sha256"
+        ],
+        "scope_not_generated": true
+      },
+      "name": "phone capture plan derives scope and run only from actual-result fields",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "scope comes only from matching actual original Actor observations"
+      },
+      "name": "Actor and final observation scope disagreement rejects",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "single original Cancel and drain must be observed"
+      },
+      "name": "boolean cancellation count cannot produce capture plan",
+      "passed": true
+    },
+    {
+      "detail": {
+        "fixture_is_historical_host_capture": true,
+        "original_paths": 7,
+        "stdout_bytes": 65
+      },
+      "name": "actual historical complete Root phase is accepted by unchanged CPU closer",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "capture_not_complete_or_unknown"
+      },
+      "name": "actual closer rejects missing stdout EOF",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "capture_not_complete_or_unknown"
+      },
+      "name": "actual closer rejects unjoined reader",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "created_output_inode_not_retained_through_complete_capture"
+      },
+      "name": "actual closer rejects created inode substitution",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "child_join_or_EOF_after_original_deadline"
+      },
+      "name": "actual closer rejects late EOF beyond original deadline",
+      "passed": true
+    },
+    {
+      "detail": {
+        "rejection": "original_host_terminal_not_joined_zero"
+      },
+      "name": "successful RESULT remains exact7 and excludes sidecar fields",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actor_host_timeout": 330,
+        "actor_inner_timeout": 300,
+        "generated_original_remote_code_bytes": 2454,
+        "sender_host_timeout": 660,
+        "sender_stdin": null
+      },
+      "name": "original sender and Actor argv plus per-phase deadlines remain exact",
+      "passed": true
+    },
+    {
+      "detail": {
+        "complete_sources": 6,
+        "phone_calls": 0,
+        "request_bytes": 35838
+      },
+      "name": "preflight request retains exact six-source payload and no dispatch action",
+      "passed": true
+    },
+    {
+      "detail": {
+        "binary_and_utf8_exact": true,
+        "bytes": 540141,
+        "chunks": 2
+      },
+      "name": "full binary archive transport rejects changed inode and preserves complete bytes",
+      "passed": true
+    },
+    {
+      "detail": {
+        "calls": 1,
+        "unknown_ticket_retained": true
+      },
+      "name": "failed dispatch ticket prevents same-identity replay",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_stage_function_executed_on_private_local_fixture": true,
+        "replay_overwrites": 0
+      },
+      "name": "actual create-only stager retains bytes and refuses existing namespace",
+      "passed": true
+    },
+    {
+      "detail": {
+        "actual_closer_host_phase_accepted": true,
+        "actual_original_Root_methods": [
+          "execute_process",
+          "join_host_capture",
+          "persist_host_capture",
+          "verify_host_capture_outputs"
+        ],
+        "all_seven_originals": {
+          "child": {
+            "descriptor": {
+              "bytes": 873,
+              "path": "/tmp/tmpw68fck1b/negative-sender/CHILD.json",
+              "sha256": "0e3963426b4ba02e9d997df797ea0a5d5d6c97bbf52e68a3b30a1ddce3abcf18"
+            },
+            "raw_base64": "ewogICJkZWFkbGluZV92YWxpZGl0eSI6ICJ0aGlzX3J1bm5pbmdfY29vcmRpbmF0b3Jfb25seSIsCiAgImV4ZWN1dGlvbl9kZWFkbGluZV9tb25vdG9uaWMiOiA5MjQ2My45NTQyNDgwMzMsCiAgImlkZW50aXR5X21pc3Npbmdfb25seV9pZl9hY3R1YWxfY2hpbGRfYWxyZWFkeV9qb2luZWQiOiBmYWxzZSwKICAibWF4aW11bV9zdGFydHMiOiAxLAogICJvcmlnaW5hbF9vdXRwdXRfaWRlbnRpdGllcyI6IHsKICAgICJzdGRlcnIiOiB7CiAgICAgICJzdF9jdGltZV9ucyI6IDE3OTM5Mjg0MzczNzgzNzY2ODMsCiAgICAgICJzdF9kZXYiOiAyNywKICAgICAgInN0X2dpZCI6IDAsCiAgICAgICJzdF9pbm8iOiA2NjIzOTcsCiAgICAgICJzdF9tb2RlIjogMzMxNTIsCiAgICAgICJzdF9tdGltZV9ucyI6IDE3OTM5Mjg0MzczNzgzNzY2ODMsCiAgICAgICJzdF9ubGluayI6IDEsCiAgICAgICJzdF9zaXplIjogMCwKICAgICAgInN0X3VpZCI6IDAKICAgIH0sCiAgICAic3Rkb3V0IjogewogICAgICAic3RfY3RpbWVfbnMiOiAxNzkzOTI4NDM3Mzc4Mzc2NjgzLAogICAgICAic3RfZGV2IjogMjcsCiAgICAgICJzdF9naWQiOiAwLAogICAgICAic3RfaW5vIjogNjYyMzk2LAogICAgICAic3RfbW9kZSI6IDMzMTUyLAogICAgICAic3RfbXRpbWVfbnMiOiAxNzkzOTI4NDM3Mzc4Mzc2NjgzLAogICAgICAic3RfbmxpbmsiOiAxLAogICAgICAic3Rfc2l6ZSI6IDAsCiAgICAgICJzdF91aWQiOiAwCiAgICB9CiAgfSwKICAicGdpZCI6IDMsCiAgInBpZCI6IDMsCiAgInNpZCI6IDMsCiAgInNvdXJjZV9pbnRlbnRfc2hhMjU2IjogIjcwZTRhODAxOWE4YmJlNzAzNzI3MDQwNjBmMzRlMmY1NjBkM2YyM2FmMmM5YTJkNWZlMWRlY2EwMWE3ODA2MzIiCn0K"
+          },
+          "intent": {
+            "descriptor": {
+              "bytes": 741,
+              "path": "/tmp/tmpw68fck1b/negative-sender/INTENT.json",
+              "sha256": "70e4a8019a8bbe70372704060f34e2f560d3f23af2c9a2d5fe1deca01a780632"
+            },
+            "raw_base64": "ewogICJhcmd2IjogWwogICAgIi91c3IvYmluL3B5dGhvbjMiLAogICAgIi1JIiwKICAgICItQiIsCiAgICAiLWMiLAogICAgImltcG9ydCBzeXM7c3lzLnN0ZG91dC5idWZmZXIud3JpdGUoXCLkuK3mlofwn5mCXFxuXCIuZW5jb2RlKCkpIgogIF0sCiAgImF1dG9tYXRpY19yZXRyeSI6IGZhbHNlLAogICJkZWFkbGluZV9zY29wZSI6ICJwb3Blbl9zdGFydF90aHJvdWdoX2NoaWxkX2pvaW5fcGlwZV9lb2ZfYW5kX291dHB1dF92ZXJpZmljYXRpb24iLAogICJoYXJkX2JvdW5kX29uX2ZpbGVzeXN0ZW1fc3Bhd25fb3JfY2xlYW51cCI6IGZhbHNlLAogICJpbnB1dF90cmFuc3BvcnQiOiAicmV0YWluZWRfcmVhZG9ubHlfcmVndWxhcl9mZF9jaGlsZF9yZWFkc193aXRoaW5fZXhlY3V0aW9uX2J1ZGdldCIsCiAgIm1heGltdW1fc3RhcnRzIjogMSwKICAibWF4aW11bV93YWl0X3NlY29uZHMiOiAyMCwKICAib3V0cHV0X2xpbWl0X2J5dGVzX3Blcl9zdHJlYW0iOiA2NzEwODg2NCwKICAib3V0cHV0X3RyYW5zcG9ydCI6ICJvd25lZF9ub25ibG9ja2luZ19waXBlX2NhcHR1cmVfd29ya2VyX2JvdW5kZWRfbWVtb3J5X21haW5fdGhyZWFkX3BlcnNpc3RlbmNlIiwKICAicGhhc2UiOiAibmVnYXRpdmUtc2VuZGVyIiwKICAic2NoZW1hIjogImhlcHRhLm5hdGl2ZS1ndWFyZC5yb290LWhvc3QtY29tbWFuZC52MSIsCiAgInNpZ25hbHNfb25fdGltZW91dCI6IGZhbHNlLAogICJzdGRpbl9zaGEyNTYiOiBudWxsCn0K"
+          },
+          "output_capture": {
+            "descriptor": {
+              "bytes": 2198,
+              "path": "/tmp/tmpw68fck1b/negative-sender/OUTPUT-CAPTURE.json",
+              "sha256": "0e57498526875c2840a60487e1863ce6f48ffc5477b58feab10ff0351183f3ea"
+            },
+            "raw_base64": "ewogICJhdXRvbWF0aWNfcmV0cnkiOiBmYWxzZSwKICAiY2FwdHVyZWQiOiB7CiAgICAic3RkZXJyIjogewogICAgICAiYnl0ZXMiOiAwLAogICAgICAic2hhMjU2IjogImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiCiAgICB9LAogICAgInN0ZG91dCI6IHsKICAgICAgImJ5dGVzIjogMTEsCiAgICAgICJzaGEyNTYiOiAiMGMyMDRjZjE0YjJhN2VmOGY4MDRhOWEyMjk5YzNmY2RmNDQzODNmNDU0YzExZDQxMjZkMTJmMmQzYjAzZDM2NCIKICAgIH0KICB9LAogICJjaGlsZF9qb2luX29ic2VydmVkX21vbm90b25pYyI6IDkyNDQzLjk4ODgzNzQzNiwKICAiY2hpbGRfcmV0dXJuY29kZSI6IDAsCiAgImNoaWxkX3dhaXRfcmV0dXJuZWQiOiB0cnVlLAogICJkZWFkbGluZV92YWxpZGl0eSI6ICJ0aGlzX3J1bm5pbmdfY29vcmRpbmF0b3Jfb25seSIsCiAgImVvZl9vYnNlcnZlZF9tb25vdG9uaWMiOiB7CiAgICAic3RkZXJyIjogOTI0NDMuOTc2MTkzMDI2LAogICAgInN0ZG91dCI6IDkyNDQzLjk3NjIyMzE4NwogIH0sCiAgImVycm9yIjogbnVsbCwKICAiZXhlY3V0aW9uX2RlYWRsaW5lX21vbm90b25pYyI6IDkyNDYzLjk1NDI0ODAzMywKICAiZmlsZXMiOiB7CiAgICAic3RkZXJyIjogewogICAgICAiYnl0ZXMiOiAwLAogICAgICAibWV0YWRhdGEiOiB7CiAgICAgICAgInN0X2N0aW1lX25zIjogMTc5MzkyODQzNzM3ODM3NjY4MywKICAgICAgICAic3RfZGV2IjogMjcsCiAgICAgICAgInN0X2dpZCI6IDAsCiAgICAgICAgInN0X2lubyI6IDY2MjM5NywKICAgICAgICAic3RfbW9kZSI6IDMzMTUyLAogICAgICAgICJzdF9tdGltZV9ucyI6IDE3OTM5Mjg0MzczNzgzNzY2ODMsCiAgICAgICAgInN0X25saW5rIjogMSwKICAgICAgICAic3Rfc2l6ZSI6IDAsCiAgICAgICAgInN0X3VpZCI6IDAKICAgICAgfSwKICAgICAgIm9yaWdpbmFsX2NyZWF0ZWRfaW5vZGVfYm91bmQiOiB0cnVlLAogICAgICAicGF0aCI6ICIvdG1wL3RtcHc2OGZjazFiL25lZ2F0aXZlLXNlbmRlci9zdGRlcnIub3JpZ2luYWwiLAogICAgICAic2hhMjU2IjogImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiCiAgICB9LAogICAgInN0ZG91dCI6IHsKICAgICAgImJ5dGVzIjogMTEsCiAgICAgICJtZXRhZGF0YSI6IHsKICAgICAgICAic3RfY3RpbWVfbnMiOiAxNzkzOTI4NDM3NDEzMzkzMjc3LAogICAgICAgICJzdF9kZXYiOiAyNywKICAgICAgICAic3RfZ2lkIjogMCwKICAgICAgICAic3RfaW5vIjogNjYyMzk2LAogICAgICAgICJzdF9tb2RlIjogMzMxNTIsCiAgICAgICAgInN0X210aW1lX25zIjogMTc5MzkyODQzNzQxMzM5MzI3NywKICAgICAgICAic3RfbmxpbmsiOiAxLAogICAgICAgICJzdF9zaXplIjogMTEsCiAgICAgICAgInN0X3VpZCI6IDAKICAgICAgfSwKICAgICAgIm9yaWdpbmFsX2NyZWF0ZWRfaW5vZGVfYm91bmQiOiB0cnVlLAogICAgICAicGF0aCI6ICIvdG1wL3RtcHc2OGZjazFiL25lZ2F0aXZlLXNlbmRlci9zdGRvdXQub3JpZ2luYWwiLAogICAgICAic2hhMjU2IjogIjBjMjA0Y2YxNGIyYTdlZjhmODA0YTlhMjI5OWMzZmNkZjQ0MzgzZjQ1NGMxMWQ0MTI2ZDEyZjJkM2IwM2QzNjQiCiAgICB9CiAgfSwKICAib3V0cHV0X2xpbWl0X2J5dGVzX3Blcl9zdHJlYW0iOiA2NzEwODg2NCwKICAicGVyc2lzdF9lcnJvcnMiOiBbXSwKICAicGhhc2UiOiAibmVnYXRpdmUtc2VuZGVyIiwKICAicGlkIjogMywKICAicGlwZV9jbG9zZV9lcnJvcnMiOiBbXSwKICAicGlwZV9yZWFkZXJfb3duZXIiOiAiY2xvc2VkX2J5X3dvcmtlciIsCiAgInByZWZpeF9vbmx5X29yX3Vua25vd24iOiBmYWxzZSwKICAicmVtb3RlX3Rlcm1pbmFsX29yX2NsZWFudXBfcHJvdmVuIjogZmFsc2UsCiAgInNjaGVtYSI6ICJoZXB0YS5uYXRpdmUtZ3VhcmQuaG9zdC1vdXRwdXQtY2FwdHVyZS52MSIsCiAgInNpZ25hbHNfc2VudCI6IDAsCiAgInNvdXJjZV9pbnRlbnRfc2hhMjU2IjogIjcwZTRhODAxOWE4YmJlNzAzNzI3MDQwNjBmMzRlMmY1NjBkM2YyM2FmMmM5YTJkNWZlMWRlY2EwMWE3ODA2MzIiLAogICJzdGRlcnJfZW9mIjogdHJ1ZSwKICAic3Rkb3V0X2VvZiI6IHRydWUsCiAgIndvcmtlcl9qb2luZWQiOiB0cnVlLAogICJ3b3JrZXJfc3RhcnRlZCI6IHRydWUKfQo="
+          },
+          "result": {
+            "descriptor": {
+              "bytes": 494,
+              "path": "/tmp/tmpw68fck1b/negative-sender/RESULT.json",
+              "sha256": "781e1de93ee5dd320737bfe1afc13b017a23b8f0e0f3d6055805d0a4baa54e7a"
+            },
+            "raw_base64": "ewogICJhdXRvbWF0aWNfcmV0cnkiOiBmYWxzZSwKICAicGhhc2UiOiAibmVnYXRpdmUtc2VuZGVyIiwKICAicGlkIjogMywKICAicmV0dXJuY29kZSI6IDAsCiAgInN0YXRlIjogIk9SSUdJTkFMX0hPU1RfQ0hJTERfSk9JTkVEIiwKICAic3RkZXJyIjogewogICAgImJ5dGVzIjogMCwKICAgICJwYXRoIjogIi90bXAvdG1wdzY4ZmNrMWIvbmVnYXRpdmUtc2VuZGVyL3N0ZGVyci5vcmlnaW5hbCIsCiAgICAic2hhMjU2IjogImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiCiAgfSwKICAic3Rkb3V0IjogewogICAgImJ5dGVzIjogMTEsCiAgICAicGF0aCI6ICIvdG1wL3RtcHc2OGZjazFiL25lZ2F0aXZlLXNlbmRlci9zdGRvdXQub3JpZ2luYWwiLAogICAgInNoYTI1NiI6ICIwYzIwNGNmMTRiMmE3ZWY4ZjgwNGE5YTIyOTljM2ZjZGY0NDM4M2Y0NTRjMTFkNDEyNmQxMmYyZDNiMDNkMzY0IgogIH0KfQo="
+          },
+          "stderr": {
+            "descriptor": {
+              "bytes": 0,
+              "path": "/tmp/tmpw68fck1b/negative-sender/stderr.original",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "raw_base64": ""
+          },
+          "stdin": null,
+          "stdout": {
+            "descriptor": {
+              "bytes": 11,
+              "path": "/tmp/tmpw68fck1b/negative-sender/stdout.original",
+              "sha256": "0c204cf14b2a7ef8f804a9a2299c3fcdf44383f454c11d4126d12f2d3b03d364"
+            },
+            "raw_base64": "5Lit5paH8J+Zggo="
+          }
+        },
+        "new_async_finalizer": true,
+        "phone_calls": 0,
+        "test_child_exit": 0
+      },
+      "name": "actual local asynchronous Root capture joins and satisfies exact CPU phase verifier",
+      "passed": true
+    }
+  ],
+  "total": 25
+}

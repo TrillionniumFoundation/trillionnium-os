@@ -1,0 +1,50 @@
+{
+  "candidate_source": {
+    "bytes": 130365,
+    "sha256": "27ad2b5f39dcfc24f600d2890d4d9a81d7c1eaf0561b9fb00b6df5294dc65b13"
+  },
+  "case_credit": 0,
+  "findings": {
+    "allocation_call": "initialization argument is the existing verified record containing value/original; identity/reservation exact original pins passed",
+    "closed_members": "ALLOCATION-ADMISSION.json and ROLE-LAUNCH-INTENT.json are explicit members; missing identity/allocation/stage/role-intent blocks every later corresponding phase; unexpected names remain rejected",
+    "nonce_union": "delegates existing common.epoch_forbidden_nonces across the existing four domains",
+    "original_read_guards": "existing _ep_manifest_raw reads and complete directory closed-set checks retained",
+    "reservation_v2_authorization_resource_structure": "source-bound authorization origin, exact substituted owner UTF8, resource generation and case identity retained",
+    "role_intent_call": "uses stage.value.lease and generation.original, then the actual validator consumes all original pins",
+    "size_reduction": "39 local diagnostic strings and 3 docstrings shortened; diff shows no condition deletion for size reduction"
+  },
+  "fixed_admission_validator": {
+    "bytes": 9812,
+    "sha256": "6d3b3d1ab5fd10e23b125f99c216141d4d341dc116c4eb5387571f6fffb5959d"
+  },
+  "independent_execution_performed": false,
+  "not_verified_here": [
+    "complete source32 assembly",
+    "historical initialization semantics",
+    "actual preclaim observation semantics",
+    "actual stage operation semantics",
+    "physical phone execution"
+  ],
+  "parent_source": {
+    "bytes": 130768,
+    "sha256": "b5cfdd8a909ff06a2e8f15d71b33f6e8db5641c9dbb9e763f96528beeeee4fba"
+  },
+  "phone_calls": 0,
+  "remote_calls": 0,
+  "reviewed_scope": [
+    "complete source diff",
+    "epoch_registry_replay changed control flow",
+    "epoch_allocation_admission_value signature and original binding",
+    "epoch_role_launch_intent_value signature and original binding",
+    "common05 epoch_reservation_value v2 contract"
+  ],
+  "reviewer": "acceptance_audit",
+  "root_reported_regression_groups": 35,
+  "root_reported_regressions_not_reexecuted_here": true,
+  "schema": "hepta.prepare-epoch-reservation-v2.independent-static-review.v1",
+  "source_seal": {
+    "bytes": 2069,
+    "sha256": "93f4ddc0e1d734bc775ad929924a99834b2df57a40d9f6539880cfd205a25abe"
+  },
+  "state": "NO_BLOCKING_MISMATCH_FOUND_IN_REVIEWED_DIFF_AND_CALL_SIGNATURES"
+}

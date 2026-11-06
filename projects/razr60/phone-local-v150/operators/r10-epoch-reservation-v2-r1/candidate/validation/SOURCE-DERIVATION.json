@@ -1,0 +1,293 @@
+{
+  "candidate": {
+    "bytes": 130365,
+    "sha256": "27ad2b5f39dcfc24f600d2890d4d9a81d7c1eaf0561b9fb00b6df5294dc65b13"
+  },
+  "case_credit": 0,
+  "diagnostic_only_replacements": 39,
+  "documentation_only_replacements": 3,
+  "edits": [
+    {
+      "after": " import component_common as common\n api=common._epoch_stage_api();source_binding=api._est_binding(common)\n binding=epoch_binding_value();index=epoch_manifest_value(manifest,originals,binding=binding)\n",
+      "before": " binding=epoch_binding_value();index=epoch_manifest_value(manifest,originals,binding=binding)\n",
+      "kind": "semantic"
+    },
+    {
+      "after": " slots=[];closed=[];nonce_set=set(common.epoch_forbidden_nonces(binding))\n",
+      "before": " slots=[];closed=[];nonce_set=set(binding['legacy_nonces']+binding['failed_nonces'])\n",
+      "kind": "semantic"
+    },
+    {
+      "after": "  resource=reservation['resource_reservation'];authorization=reservation['authorization_request']\n  _ep_need(_ep_same(resource['generation'],reservation['generation'])\n  and _ep_same(authorization['origin'],source_binding['authorization_requests'][resource['case_id']])\n  and '\\0' not in authorization['utf8'],'reservation source or authorization differs')\n",
+      "before": "  for key in ('authorization_request','resource_reservation'):\n   _ep_manifest_raw(reservation[key],index,originals)\n",
+      "kind": "semantic"
+    },
+    {
+      "after": "  record_files=(('identity','IDENTITY.json'),('allocation','ALLOCATION-ADMISSION.json'),\n  ('role_launch','ROLE-LAUNCH-INTENT.json'),('admission','ADMISSION.json'),('stage','STAGE.json'),\n  ('scope_binding','SCOPE-BINDING.json'),('launch','LAUNCH.json'),('terminal','COMMIT.json'))\n  records={key:_ep_optional_record(index,originals,prefix+filename) for key,filename in record_files}\n  names={'DIRECTORY-BINDING.json'}|{filename for key,filename in record_files if records[key] is not None}\n",
+      "before": "  records={key:_ep_optional_record(index,originals,prefix+filename) for key,filename in (\n  ('identity','IDENTITY.json'),('admission','ADMISSION.json'),('stage','STAGE.json'),\n  ('scope_binding','SCOPE-BINDING.json'),('launch','LAUNCH.json'),('terminal','COMMIT.json'))}\n  names={'DIRECTORY-BINDING.json'}|{filename for key,filename in (\n  ('identity','IDENTITY.json'),('admission','ADMISSION.json'),('stage','STAGE.json'),\n  ('scope_binding','SCOPE-BINDING.json'),('launch','LAUNCH.json'),('terminal','COMMIT.json'))\n  if records[key] is not None}\n",
+      "kind": "semantic"
+    },
+    {
+      "after": "   owner=_ep_manifest_raw(identity['owner_request'],index,originals)\n   _ep_need(identity['case_id']==resource['case_id']\n   and owner==authorization['utf8'].replace('{{EPOCH_NONCE}}',identity['nonce']).encode('utf-8'),\n   'owner bytes differ from reserved authorization')\n",
+      "before": "   _ep_manifest_raw(identity['owner_request'],index,originals)\n",
+      "kind": "semantic"
+    },
+    {
+      "after": "   allocation=records['allocation']\n   if allocation is not None:\n    api.epoch_allocation_admission_value(allocation['value'],identity=identity,\n    identity_pin=identity_record['original'],reservation=reservation,reservation_pin=claim['original'],\n    initialization=initialization,index=index,originals=originals)\n   else:\n    _ep_need(all(records[k] is None for k in ('stage','role_launch','admission','scope_binding','launch','terminal')),\n    'later phase lacks allocation admission')\n   stage=records['stage']\n   if stage is not None:\n",
+      "before": "   stage=records['stage']\n   if stage is not None:\n",
+      "kind": "semantic"
+    },
+    {
+      "after": "    _ep_need(all(records[k] is None for k in ('role_launch','admission','scope_binding','launch','terminal')),\n    'later phase lacks stage completion')\n",
+      "before": "    _ep_need(all(records[k] is None for k in ('admission','scope_binding','launch','terminal')),\n    'later actual phases cannot be inferred before private stage completion')\n",
+      "kind": "semantic"
+    },
+    {
+      "after": "   role=records['role_launch']\n   if role is not None:\n    api.epoch_role_launch_intent_value(role['value'],identity=identity,\n    identity_pin=identity_record['original'],lease_pin=stage['value']['lease'],\n    generation=generation['original'],index=index,originals=originals)\n   else:\n    _ep_need(all(records[k] is None for k in ('admission','scope_binding','launch','terminal')),\n    'later phase lacks role launch intent')\n   if records['admission'] is not None:\n    _ep_retired_admission(records['admission'],identity,index,originals,observation_verifier)\n",
+      "before": "   if records['admission'] is not None:\n    _ep_retired_admission(records['admission'],identity,index,originals,observation_verifier)\n",
+      "kind": "semantic"
+    },
+    {
+      "after": "'accepted scope path differs'",
+      "before": "'native scope must come from the original accepted file in this actual home'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'accepted fields differ'",
+      "before": "'actual accepted original fields differ'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'unexpected prior dispatch'",
+      "before": "'scope binding cannot fabricate a prior dispatch'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'bound contract missing'",
+      "before": "'scope lacks its actual original bound component contract'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'accepted identity/contract differs'",
+      "before": "'actual accepted native scope changed its one-use identity or owner contract'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'native claim differs'",
+      "before": "'actual native claim is not the original once-only zero-model claim'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'run acceptance differs'",
+      "before": "'original native run acceptance differs from the home scope binding'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'fixture authorization fields differ'",
+      "before": "'explicit original accepted-scope fixture authorization required'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'fixture scope/ordinal/path differs'",
+      "before": "'fixture phase permission changed its actual scope, ordinal or fixed namespace'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'fixture setup original differs'",
+      "before": "'fixture permission is not the actual native setup original'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'fixture scope/contract differs'",
+      "before": "'fixture original belongs to another native scope or bound contract'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'lifecycle binding fields differ'",
+      "before": "'complete immutable lifecycle admission binding required'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'lifecycle home differs'",
+      "before": "'lifecycle admission is not this actual original home observation'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'current verification missing'",
+      "before": "'actual lifecycle did not record a complete new-domain current verification'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'unexpected native/model result'",
+      "before": "'current admission invented a native result or model request'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'protocol mode/gates differ'",
+      "before": "'explicit protocol mode and complete inventory gates required'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'epoch anchor missing'",
+      "before": "'actual immutable epoch anchor is missing'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'initial catalog unreviewed'",
+      "before": "'initialization has an unreviewed source catalog'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'authority path differs'",
+      "before": "'source authority must retain its one actual create-only namespace'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'slot namespace missing'",
+      "before": "'complete actual slot namespace is missing'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'slot sequence incomplete'",
+      "before": "'partial, unknown, duplicate or noncontiguous slot allocation blocks replay'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'published lease forbidden'",
+      "before": "'postpublication replay cannot substitute a current preclose lease'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'capture ordinal/seal differs'",
+      "before": "'capture is not the sole highest unsealed ordinal'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'slot catalog unreviewed'",
+      "before": "'slot selected a catalog outside the finite reviewed generation set'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'claimed directory missing'",
+      "before": "'actual exclusively claimed slot directory is missing'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'empty/active epoch cannot seal'",
+      "before": "'an empty or active epoch cannot claim a sealed production boundary'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'seal fields differ'",
+      "before": "'complete explicit epoch seal required'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'seal terminal differs'",
+      "before": "'epoch seal changed its actual terminal frontier'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'phase lacks identity'",
+      "before": "'a later phase cannot exist before the actual durable identity'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'unidentified claim blocks advance'",
+      "before": "'unknown preidentity claim cannot become a terminal or authorize a next ordinal'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'label/prior boundary differs'",
+      "before": "'slot repeats a label or skips the actual previous native boundary'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'owner original path differs'",
+      "before": "'owner request must already be an actual create-only slot original'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'transport phase unreviewed'",
+      "before": "'new transport contains an unreviewed phase filename'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'accepted scope lacks admission'",
+      "before": "'native accepted scope omitted actual lifecycle admission'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'native scope repeated'",
+      "before": "'active slots repeat a native scope'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'fixture lacks accepted scope'",
+      "before": "'fixture phase precedes actual accepted scope'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'terminal lacks fixture'",
+      "before": "'native terminal lacks its actual fixture phase'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'unknown slot blocks advance'",
+      "before": "'a consumed unknown slot forbids further allocation/publication'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "'capture lease identity differs'",
+      "before": "'capture lease does not belong to this current uncommitted identity'",
+      "kind": "diagnostic_only"
+    },
+    {
+      "after": "\"\"\"Host-only preparation; no nonce, phone action or qualification.\"\"\"",
+      "before": "\"\"\"Host-only material preparation from explicit Root identities and byte pins.\n\nNo nonce is generated, no phone command is run, and no provider/model is\nstarted. The source seal is an independent component seal, never a final\nintegration seal or four-role readiness claim.\n\"\"\"",
+      "kind": "documentation_only"
+    },
+    {
+      "after": "\"\"\"Retain both actual bodies under saved CAPTURE pins and phone full9.\"\"\"",
+      "before": "\"\"\"Retain both derived actual bodies, pinned by their saved CAPTURE rows.\n\n    They have their own current phone full9 descriptors. A derived CAPTURE row\n    has no origin metadata and is never passed off as that physical identity.\n    \"\"\"",
+      "kind": "documentation_only"
+    },
+    {
+      "after": "\"\"\"Bind phone proof to whole32; independent active verification remains mandatory.\"\"\"",
+      "before": "\"\"\"Pure binding of captured phone proof to the same complete32 actual map.\n\n    This does not recompute active semantics; the independent mandatory active\n    semantic gate must still compare the complete semantic value separately.\n    \"\"\"",
+      "kind": "documentation_only"
+    }
+  ],
+  "parent": {
+    "bytes": 130768,
+    "sha256": "b5cfdd8a909ff06a2e8f15d71b33f6e8db5641c9dbb9e763f96528beeeee4fba"
+  },
+  "phone_calls": 0,
+  "references": {
+    "component_common.py": {
+      "bytes": 118140,
+      "sha256": "dd9374251800637f6269fba0745653d1f23c0944e9c436ad89913f838456b7a2",
+      "source": "/workspace/scratch/2438ae2c67d8/acceptance-audit/full19-dependency-r1/inputs/final32-source-snapshot02/common05/source/component_common.py"
+    },
+    "epoch_admission_values.fragment.py": {
+      "bytes": 9812,
+      "sha256": "6d3b3d1ab5fd10e23b125f99c216141d4d341dc116c4eb5387571f6fffb5959d",
+      "source": "/workspace/scratch/2438ae2c67d8/acceptance-audit/full19-dependency-r1/inputs/final32-entry-fragments04/source/epoch_admission_values.fragment.py"
+    },
+    "epoch_stage_operations.fragment.py": {
+      "bytes": 105202,
+      "sha256": "3704b0918d0a5e51f2761630a947ee8b394e96330bad4699836b69bcd4d93c25",
+      "source": "/workspace/scratch/2438ae2c67d8/acceptance-audit/full19-dependency-r1/inputs/final32-entry-fragments04/source/epoch_stage_operations.fragment.py"
+    },
+    "prepare_component.parent.py": {
+      "bytes": 130768,
+      "sha256": "b5cfdd8a909ff06a2e8f15d71b33f6e8db5641c9dbb9e763f96528beeeee4fba",
+      "source": "/workspace/scratch/2438ae2c67d8/acceptance-audit/full19-dependency-r1/inputs/final32-source-snapshot02/publication-producer/source/prepare_component.py"
+    }
+  },
+  "remaining_bytes": 707,
+  "schema": "hepta.prepare-epoch-v2.source-derivation.v1",
+  "semantic_candidate_bytes_before_local_diagnostic_shrink": 132152,
+  "source_limit": 131072,
+  "whole_byte_inverse_equal": true
+}
