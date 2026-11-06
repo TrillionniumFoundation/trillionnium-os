@@ -1,0 +1,38 @@
+{
+  "BUILD_executed": false,
+  "actual_R6_case_controller_success": false,
+  "actual_binder": {
+    "bytes": 9462,
+    "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1"
+  },
+  "actual_freeze_or_source_stage_rerun": false,
+  "callback_count_in_unbound_control": 0,
+  "candidate": {
+    "bytes": 45121,
+    "sha256": "27db832a529f59d46e25b02eaecf2b9ac5c8ac9675c5bb91387a6fed4a8ee9b9"
+  },
+  "control_count": 5,
+  "controls": [
+    "actual_original_callsite_reproduces_whole_binder_byte_mismatch",
+    "difference_is_nested_descriptor_order_in_semantically_identical_SOURCES",
+    "corrected_exact_callsite_reconstructs_actual_published_binder_whole_bytes",
+    "successor_rebinder_and_binding_helper_have_complete_source_inverses",
+    "unbound_successor_refuses_before_parse_or_original_callback"
+  ],
+  "corrected_binder": {
+    "bytes": 9462,
+    "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1"
+  },
+  "fixed19_credit": 0,
+  "native_dispatches": 0,
+  "new_nonces": 0,
+  "parent": {
+    "bytes": 45097,
+    "sha256": "3d6cf7e6c7129f7433762de03bbe612c4181e5b63835e692c02604415bf5cef4"
+  },
+  "passed": true,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.r6.case-controller-source-compatibility-controls.v1",
+  "source_controls_from_previous_candidate_not_added": true,
+  "state": "ACTUAL_BINDER_BYTE_ORDER_FAILURE_REPRODUCED_SUCCESSOR_SOURCE_CHECKED_ONLY"
+}

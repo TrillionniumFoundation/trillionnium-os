@@ -1,0 +1,134 @@
+{
+  "schema": "hepta.fc33.bound02.cleanup-independent-reader-completion.v1",
+  "state": "EXACT_UNSTARTED_RECOVERY_INDEPENDENTLY_VERIFIED_NO_CASE_CREDIT",
+  "host_job_id": "1a1b29fbca1-fc05-7f00",
+  "actual_phone_result": {
+    "bytes": 944391,
+    "metadata": [
+      66306,
+      59122498,
+      33152,
+      1000,
+      1000,
+      1,
+      944391,
+      1793997767234334448,
+      1793997767234334448
+    ],
+    "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-bound02-owned-recovery01/result.json",
+    "sha256": "5859a357678c5b56988d1001bf81f1aa90adb3638c532e75f1abf69269d7c466"
+  },
+  "reader_source": {
+    "bytes": 50587,
+    "sha256": "5dbfc54a06b97dda7b9080d161054ace3167cc12f215b972d5d0baca8b217642"
+  },
+  "actual_public_report": {
+    "path": "/home/alex/razr60-local-model-v150/fc33-neg01-bound02-owned-recovery01-import01/HOST-VERIFICATION.PUBLIC.json",
+    "bytes": 37983,
+    "sha256": "51d5a01c932a2e9e14b1b19158d0b36ccc387ac068d726d853956a4d5db25023"
+  },
+  "host_controller_success": {
+    "exit_code": 0,
+    "stdout_bytes": 482,
+    "stderr_bytes": 0,
+    "full_durable_both_EOF": true,
+    "automatic_retry": false
+  },
+  "checks": {
+    "actual_final_resource_observation": {
+      "close_errors": [],
+      "closed_directory_descriptors": 13,
+      "closed_file_descriptors": 78,
+      "closed_lock_descriptors": 14,
+      "final_fd_names": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "initial_fd_names": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "after_inventory_representation": "Complete post-read projection hash matches the independently checked complete preflight graph; no separate raw after-inventory was emitted.",
+    "after_projection": {
+      "absent_fixture_parents_match_actual_surviving_parent": true,
+      "all_present_labels_exact": true,
+      "canonical_projection_bytes": 1345403,
+      "canonical_projection_sha256": "f072bf74423e9b449b3b23d01b9b5910a10f1c51950fbf949431dd91811dfe9a",
+      "complete_entries": 3823,
+      "complete_file_bytes_hashed": 44353573,
+      "complete_roots": 44,
+      "equal_to_complete_preflight_projection": true
+    },
+    "all14_original_locks_held_during_effects": true,
+    "business_or_component_credit": false,
+    "current_process_liveness_measured": false,
+    "exact_directories_removed": 9,
+    "exact_files_removed": 78,
+    "exact_final_absences": 18,
+    "fresh_component_admission_required": true,
+    "historical_supervisor_wait_proven": false,
+    "measured_fd_baseline_restored": true,
+    "ordered_operations_checked": 87,
+    "original44_bytes_read_per_complete_window": 44353573,
+    "original44_entries": 3823,
+    "original44_roots": 44,
+    "owned_recovery_closed": true,
+    "preflight_adapter_changes_only_resource_phase_validation": true,
+    "preflight_adapter_is_original": false,
+    "preflight_checks": {
+      "actual_FD_baseline_restored": false,
+      "archive_members": 62,
+      "baseline_file_bytes_per_window": 44353573,
+      "case_credit": false,
+      "claims_operator_executor_empty": true,
+      "current_role_liveness_measured": false,
+      "exact_file_bytes": 5844057,
+      "exact_owned_file_count": 78,
+      "fixture_absent_same_complete_parent": true,
+      "held_preflight_resources_verified": true,
+      "lease_expiry_observed_by_pinned_producer_not_extended": true,
+      "lock_aliases": 26,
+      "lock_inode_groups": 14,
+      "original44_entries": 3823,
+      "original44_full_inventory_equal": true,
+      "original44_roots": 44,
+      "original_lease_unchanged": true,
+      "private_home_files": 63,
+      "role_generation_invented": false,
+      "runtime_files": 38,
+      "scope_closure": false,
+      "sender_xml_files": 11,
+      "transport_files": 4,
+      "unique_private_directories": 9,
+      "window_count": 2
+    },
+    "producer_scope_closure_flag": false,
+    "producer_source_executed_by_reader": false,
+    "role_generation_invented": false,
+    "whole_operation_was_readonly": false
+  },
+  "independence": {
+    "producer_source_only_AST_literal_inspection": true,
+    "producer_source_imported_or_executed": false,
+    "preflight_validator_held_resource_phase_explicit": true,
+    "original_post_resource_claim_not_fabricated": true,
+    "full74_private_blobs_read_twice": true,
+    "actual_authority_originals_read_twice": 11
+  },
+  "limits": [
+    "This closes exact owned recovery only, not original NEG01 success or whole-case qualification.",
+    "No current process liveness or historical role wait is inferred for a scope whose original coordinator never launched roles.",
+    "The post-read inventory is the producer's complete canonical projection hash, checked against independently validated full preflight originals; a separate raw post-inventory was not emitted.",
+    "The host reader makes no phone, model, native, signal or subprocess calls.",
+    "Original result, target, authority, request and readonly source are immutable."
+  ],
+  "source_controls": {
+    "count": 3,
+    "scope": "UNBOUND rejection and actual source/input/finite-target wiring only; not physical task tests"
+  }
+}

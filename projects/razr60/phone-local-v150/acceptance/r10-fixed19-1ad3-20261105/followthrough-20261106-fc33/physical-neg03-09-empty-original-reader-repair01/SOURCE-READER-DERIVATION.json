@@ -1,0 +1,16 @@
+{
+  "after": "0<=desc['bytes']<=16777216",
+  "before": "0<desc['bytes']<=1048576",
+  "candidate_function": {
+    "bytes": 1053,
+    "sha256": "529da5df943c53763a07cc232f0bf585250ba76b6b88f76643900224dfb94b03"
+  },
+  "exact3_full9_single_link_no_follow_and_BOOK_body_unchanged": true,
+  "full_inverse": true,
+  "individual_original_max_bytes": 16777216,
+  "individual_original_min_bytes": 0,
+  "parent_function": {
+    "bytes": 1051,
+    "sha256": "cb57f96ca4260c9cc3b1166c754af84d05d00b48cddc8b3db255daa62e8ce5ed"
+  }
+}

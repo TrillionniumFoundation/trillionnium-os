@@ -1,0 +1,17 @@
+{
+  "automatic_retry": false,
+  "phase": "01-register",
+  "pid": 5,
+  "returncode": 0,
+  "state": "ORIGINAL_HOST_CHILD_JOINED",
+  "stderr": {
+    "bytes": 0,
+    "path": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/control01/owned-probe/01-register/stderr.original",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 40,
+    "path": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/control01/owned-probe/01-register/stdout.original",
+    "sha256": "3f08b3a4b08d1405150cf9621257134c46abaac74d45424726417c43ae4c8b1b"
+  }
+}

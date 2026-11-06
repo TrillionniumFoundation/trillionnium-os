@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.fc33.bound02.cleanup-reader-source-derivation.v1",
+  "parents": [
+    {
+      "path": "review/R5-final05-recovery02/verify_recovery02_result_UNBOUND.py",
+      "bytes": 29656,
+      "sha256": "3228d058bebd9f847b86760655978c265295a6de3bdd80898396d85419766060"
+    },
+    {
+      "path": "review/R5-neg01-bound02-probe01/verify_probe_result_host.py",
+      "bytes": 30372,
+      "sha256": "ecbd43463baf351301116e7e26151d34d22001d54a226849dcd18354e74909c7"
+    }
+  ],
+  "old_recovery_helpers_identical": [
+    "need",
+    "sha",
+    "enc",
+    "strict",
+    "full9",
+    "metadata",
+    "read_exact",
+    "read_row",
+    "observe_input",
+    "write_new",
+    "decompress_frame"
+  ],
+  "readonly_pure_helpers_identical": [
+    "check_metadata_row",
+    "tree_complete",
+    "projection",
+    "legacy_rows",
+    "regular_row",
+    "directory_row",
+    "independent_archive"
+  ],
+  "held_preflight_function_exact_changes": [
+    [
+      "def validate_bound02(value,inputs,blobs):",
+      "def validate_bound02_held_preflight(value,inputs,blobs):"
+    ],
+    [
+      "resources=value['resources'];need(resources['closed_lock_descriptors']==14 and resources['close_errors']==[] and resources['initial_fd_names']==resources['final_fd_names'],'all14 locks closed/actual FD baseline restored')",
+      "resources=value['resources'];need(enc(resources)==enc({'held_lock_descriptors':14,'closed_lock_descriptors':0,'held_file_descriptors':78,'held_directory_descriptors':13}),'actual held-preflight descriptor counts, no fabricated release')"
+    ],
+    [
+      "'actual_FD_baseline_restored':True",
+      "'actual_FD_baseline_restored':False,'held_preflight_resources_verified':True"
+    ]
+  ],
+  "producer_source_execution": false,
+  "actual_result_yet_validated": false,
+  "extract_source_change": {
+    "old": "memlimit=32*1024*1024",
+    "new": "memlimit=128*1024*1024",
+    "basis": "exact current actual request XZ loader uses128MiB; source output219894/hash/end unchanged",
+    "old32MiB_host_source_check_rejected": "LZMAError Memory usage limit exceeded",
+    "actual_result_IO_before_repair": false
+  }
+}

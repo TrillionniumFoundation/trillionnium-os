@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793995419379,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b275aef3-fc05-7e16\",\n    \"idempotency_key\": \"fc33-negative-source-publication02-readonly-reconcile-01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b275aef3-fc05-7e16\",\n    \"request_digest\": \"e66c2d46d2a7b467c5794cdc9a3a3cce14820c3559eb2708f464e37277991380\",\n    \"request_fingerprint\": 16603695708413342823,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b275aef3-fc05-7e16\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 59782,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b275aef3-fc05-7e16\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

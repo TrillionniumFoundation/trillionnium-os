@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01/source/bind_r6_source_input.py\",\n      \"--input\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-ACTUAL01.json\",\n      \"--input-bytes\",\n      \"921\",\n      \"--input-sha256\",\n      \"31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8\",\n      \"--output\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01\",\n      \"--operation-key\",\n      \"fc33-r6-case-controller-source-derive-fix01\",\n      \"--timeout-seconds\",\n      \"300\"\n    ],\n    \"created_unix_ms\": 1793999041464,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b2acf3b8-fc05-7f41\",\n    \"idempotency_key\": \"fc33-r6-case-controller-source-input-binding-fix01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b2acf3b8-fc05-7f41\",\n    \"request_digest\": \"879b276e7bbfe08a9354ba2548172bb7308f016d7839122c2fd508045f002261\",\n    \"request_fingerprint\": 9771447171986481290,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b2acf3b8-fc05-7f41\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 85719,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b2acf3b8-fc05-7f41\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

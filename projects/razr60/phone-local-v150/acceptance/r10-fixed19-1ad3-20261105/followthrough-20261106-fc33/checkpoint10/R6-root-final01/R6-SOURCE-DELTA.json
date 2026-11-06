@@ -1,0 +1,141 @@
+{
+  "budgets": {
+    "before_after_bridge_seconds_unchanged": 25,
+    "before_after_phone_request_seconds_unchanged": 40,
+    "component_pre_send_seconds": 240,
+    "component_sender_total_seconds": 660,
+    "current_launch_and_READY_time_not_yet_measured": true,
+    "existing_common_unused_MAX_LEASE_SECONDS_declaration_preserved": 600,
+    "existing_leases_modified": false,
+    "historical_retained_stage_600_unchanged": true,
+    "initial_lease_seconds": 900,
+    "launch_p4_actor_wait_seconds": 110,
+    "launch_phone_request_seconds": 90,
+    "launch_root_remote_seconds": 145,
+    "lease_extension": false,
+    "listener_seconds_unchanged": 420,
+    "native_turn_seconds_unchanged": 300,
+    "non_component_pre_send_seconds_unchanged": 150,
+    "non_component_sender_total_seconds_unchanged": 600,
+    "prelaunch_remaining_required_seconds_unchanged": 510,
+    "prior_initial_lease_seconds": 600,
+    "root_sender_async_seconds": 660,
+    "schema": "hepta.fc33.new-identity-preparation-budget.v1",
+    "setup_bridge_observation_seconds": 120,
+    "setup_p4_actor_wait_seconds": 155,
+    "setup_phone_request_seconds": 135,
+    "setup_root_remote_seconds": 190,
+    "single_send_single_fork_unchanged": true,
+    "timeout_is_UNKNOWN_not_no_effect_proof": true
+  },
+  "case_credit": 0,
+  "complete_manifest_files_rehashed": true,
+  "new_nonces": 0,
+  "original_production15_and_combination_unchanged": true,
+  "phone_calls": 0,
+  "prior_launch_observation_metadata": {
+    "automatic_retry": false,
+    "lease_seconds_unchanged": 600,
+    "listener_service_seconds_unchanged": 420,
+    "minimum_prelaunch_reserve_relative_to_listener_seconds": 90,
+    "native_turn_seconds_unchanged": 300,
+    "p4_actor_wait_seconds": 80,
+    "prelaunch_remaining_required_strictly_greater_than_seconds": 510,
+    "request_seconds": 60,
+    "root_remote_seconds": 115,
+    "waits_are_observation_budgets_not_no_effect_proofs": true
+  },
+  "root_files_changed": 2,
+  "root_parent": {
+    "bytes": 50107,
+    "sha256": "f9145ce2f0e5864a78ed8bece2d926187dc83e8baf15799758200bb646057282"
+  },
+  "runtime_files_changed": 4,
+  "runtime_parent": {
+    "bytes": 57078,
+    "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+  },
+  "schema": "hepta.fc33.runtime-r6.sender-ui-and-initial-budget-delta.v1",
+  "source_files_changed": [
+    {
+      "candidate": {
+        "bytes": 41745,
+        "sha256": "de6c90187ad15995cbd85c662fb7d0a0ee40809bc54d9c1a51c46e164d75b354"
+      },
+      "complete_byte_inverse": true,
+      "parent": {
+        "bytes": 41080,
+        "sha256": "53a6e9149cf768211c3c8ba74d3c422f95d78f14efdb8751af1ac55d1a9225d5"
+      },
+      "path": "runtime/source/send_new_native_guard_task_r10_r4.py",
+      "segment_count": 3
+    },
+    {
+      "candidate": {
+        "bytes": 14256,
+        "sha256": "1528a3124de8c2977e493100a61e594143d56b4af9df2d1532d79c46770710f2"
+      },
+      "complete_byte_inverse": true,
+      "parent": {
+        "bytes": 14256,
+        "sha256": "96bd29f1e98615f26ea43e2c6101a555c72eff7268ce318151a4ab1f667174f4"
+      },
+      "path": "runtime/source/prepare_component.py",
+      "segment_count": 2
+    },
+    {
+      "candidate": {
+        "bytes": 19085,
+        "sha256": "74ff4865d2021e42ae5022d606cfe5732d924e8038d00c3a99b89ebcd4c77d72"
+      },
+      "complete_byte_inverse": true,
+      "parent": {
+        "bytes": 19085,
+        "sha256": "e87dcf806f66a87ffbf4cbdfb00bac9280fb220268a9f3ee5e17f53ee35f07b9"
+      },
+      "path": "runtime/source/stage_component.py",
+      "segment_count": 1
+    },
+    {
+      "candidate": {
+        "bytes": 40451,
+        "sha256": "5968facb7879582051f102fe63064ec3c01616b150089d17c010ccf4f873b234"
+      },
+      "complete_byte_inverse": true,
+      "parent": {
+        "bytes": 40451,
+        "sha256": "99fd57b058e6e49ea4a8a9f7145641752acd3a4bc7727d7ba34710cb48aa8ae7"
+      },
+      "path": "runtime/source/component_lifecycle.py",
+      "segment_count": 2
+    },
+    {
+      "candidate": {
+        "bytes": 78567,
+        "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257"
+      },
+      "complete_byte_inverse": true,
+      "parent": {
+        "bytes": 78566,
+        "sha256": "2af78597f211b8b7de32d5f40591e46c4ea5ff7caa3c4a2547ac4325666c2032"
+      },
+      "path": "root-chain/source/run_component_root_once.py",
+      "segment_count": 10
+    },
+    {
+      "candidate": {
+        "bytes": 8101,
+        "sha256": "0d5e073ba4e31f896e1234a3896b281108e0272ba5e3476adb01c7dde307fa15"
+      },
+      "complete_byte_inverse": true,
+      "parent": {
+        "bytes": 8100,
+        "sha256": "c2df3f727b444fa2137b2392446f603731961118f92b1309a900a1ad4a086607"
+      },
+      "path": "root-chain/source/phone_chain_bridge.py",
+      "segment_count": 3
+    }
+  ],
+  "source_parent_and_all_legacy_bytes_unchanged": true,
+  "state": "SOURCE_CANDIDATE_NOT_PHONE_QUALIFIED"
+}

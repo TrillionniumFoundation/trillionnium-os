@@ -1,0 +1,436 @@
+{
+  "schema": "hepta.fc33.fixed19-followthrough.checkpoint10.v1",
+  "scope": "USER_REQUESTED_ALL_19_CURRENT_TUPLE_QUALIFICATION_CONTINUES",
+  "recorded_at": "2026-11-06T21:07:07.454703+00:00",
+  "repository_base_commit": "53df13a34a4281e18fd6d7153a338ae57a78c418",
+  "prior_immutable_state": {
+    "path": "review/checkpoint09/STATE.json",
+    "bytes": 41856,
+    "sha256": "959f59e6cdad5ca8bac22874adee54387b3fc308582aaa5c68ca68f7d6d7378b"
+  },
+  "prior_states_and_failures_not_rewritten": true,
+  "current_tuple": {
+    "combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+    "runtime_manifest": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/runtime/MANIFEST.json",
+      "bytes": 59400,
+      "sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5"
+    },
+    "root_manifest": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/root-chain/SOURCE-MANIFEST.json",
+      "bytes": 51678,
+      "sha256": "9da8d53ebfba3e11f2406c0a59964923ff4709052fad2d5df3d2eaff8b7ec8a4"
+    },
+    "shared_manifest_sha256": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1",
+    "production15_unchanged_from_R5": true,
+    "runtime_members": 38,
+    "shared_members": 17,
+    "source_parent_count": 1,
+    "maximum_native_chain": 12,
+    "maximum_component_roles": 42,
+    "inventory_roots_before_new_cases": 44,
+    "inventory_roots_after_two_new_cases": 50
+  },
+  "actual_R6_runtime_freeze": {
+    "job_id": "1a1b293f721-fc05-7ebd",
+    "exit_code": 0,
+    "stdout_bytes": 1329,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "controller": {
+      "path": "review/R6-runtime-freeze01/ROOT-ACTUAL-FREEZE-CONTROLLER.original.json",
+      "bytes": 7594,
+      "sha256": "68b5f1972b19682c57abbf3e9791feb7672ff66d81abf5c202b1f7ffc0d0b0ac"
+    },
+    "actual_output": {
+      "combination": {
+        "bytes": 4695,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/COMBINATION.json",
+        "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+      },
+      "complete_directory_bytes": 19484543,
+      "freeze": {
+        "bytes": 1049221,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/FREEZE-RESULT.json",
+        "sha256": "0d466c2bf183aabb96da0b80a59542ebc410ba757b76fe99149f653397f86f1d"
+      },
+      "full19_qualified": false,
+      "phone_calls": 0,
+      "root_chain_manifest": {
+        "bytes": 51678,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/root-chain/SOURCE-MANIFEST.json",
+        "sha256": "9da8d53ebfba3e11f2406c0a59964923ff4709052fad2d5df3d2eaff8b7ec8a4"
+      },
+      "runtime_manifest": {
+        "bytes": 59400,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/runtime/MANIFEST.json",
+        "sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5"
+      },
+      "state": "FROZEN_FOR_NEW_NEG01_THEN_NEG02_NOT_QUALIFIED"
+    },
+    "actual_argv_isolated_flag": false,
+    "actual_argv_review": {
+      "path": "review/R6-lease-budget-review/R6-FREEZE-ACTUAL-ARGV-REVIEW.json",
+      "bytes": 2675,
+      "sha256": "7a45d2599867c1f2cbf8d927278db78f420fcd042ec2aaf23d5ad7859e67e327"
+    }
+  },
+  "R6_source_review": {
+    "assembly": {
+      "path": "review/R6-root-final01/ASSEMBLY.json",
+      "bytes": 9976,
+      "sha256": "a299c6c520d34bd92a4b43812c97ca0b575824692fec2e08f2993b1c04d42e74"
+    },
+    "six_source_changes_only": true,
+    "initial_scope_lease_seconds": 900,
+    "minimum_prelaunch_margin_seconds": 510,
+    "component_sender_timeout_seconds": 660,
+    "listener_seconds": 420,
+    "native_turn_seconds": 300,
+    "native_setup_bridge_seconds": 120,
+    "native_setup_root_seconds": 135,
+    "one_send_one_fork_unchanged": true,
+    "business_sender": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/send_new_native_task_r5_fc33_r6.py",
+      "bytes": 41355,
+      "sha256": "f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73"
+    }
+  },
+  "closed_R5_bound02_owned_recovery": {
+    "state": "EXACT_UNSTARTED_RECOVERY_INDEPENDENTLY_VERIFIED_NO_CASE_CREDIT",
+    "owned_recovery_closed": true,
+    "public": {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/HOST-VERIFICATION.PUBLIC.original.json",
+      "bytes": 37983,
+      "sha256": "51d5a01c932a2e9e14b1b19158d0b36ccc387ac068d726d853956a4d5db25023"
+    },
+    "phone_job": "1a1b29971ae-fc05-7ed9",
+    "independent_reader_job": "1a1b29fbca1-fc05-7f00",
+    "actual_result": {
+      "bytes": 944391,
+      "metadata": [
+        66306,
+        59122498,
+        33152,
+        1000,
+        1000,
+        1,
+        944391,
+        1793997767234334448,
+        1793997767234334448
+      ],
+      "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-bound02-owned-recovery01/result.json",
+      "sha256": "5859a357678c5b56988d1001bf81f1aa90adb3638c532e75f1abf69269d7c466"
+    },
+    "checks": {
+      "actual_final_resource_observation": {
+        "close_errors": [],
+        "closed_directory_descriptors": 13,
+        "closed_file_descriptors": 78,
+        "closed_lock_descriptors": 14,
+        "final_fd_names": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "initial_fd_names": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      "after_inventory_representation": "Complete post-read projection hash matches the independently checked complete preflight graph; no separate raw after-inventory was emitted.",
+      "after_projection": {
+        "absent_fixture_parents_match_actual_surviving_parent": true,
+        "all_present_labels_exact": true,
+        "canonical_projection_bytes": 1345403,
+        "canonical_projection_sha256": "f072bf74423e9b449b3b23d01b9b5910a10f1c51950fbf949431dd91811dfe9a",
+        "complete_entries": 3823,
+        "complete_file_bytes_hashed": 44353573,
+        "complete_roots": 44,
+        "equal_to_complete_preflight_projection": true
+      },
+      "all14_original_locks_held_during_effects": true,
+      "business_or_component_credit": false,
+      "current_process_liveness_measured": false,
+      "exact_directories_removed": 9,
+      "exact_files_removed": 78,
+      "exact_final_absences": 18,
+      "fresh_component_admission_required": true,
+      "historical_supervisor_wait_proven": false,
+      "measured_fd_baseline_restored": true,
+      "ordered_operations_checked": 87,
+      "original44_bytes_read_per_complete_window": 44353573,
+      "original44_entries": 3823,
+      "original44_roots": 44,
+      "owned_recovery_closed": true,
+      "preflight_adapter_changes_only_resource_phase_validation": true,
+      "preflight_adapter_is_original": false,
+      "preflight_checks": {
+        "actual_FD_baseline_restored": false,
+        "archive_members": 62,
+        "baseline_file_bytes_per_window": 44353573,
+        "case_credit": false,
+        "claims_operator_executor_empty": true,
+        "current_role_liveness_measured": false,
+        "exact_file_bytes": 5844057,
+        "exact_owned_file_count": 78,
+        "fixture_absent_same_complete_parent": true,
+        "held_preflight_resources_verified": true,
+        "lease_expiry_observed_by_pinned_producer_not_extended": true,
+        "lock_aliases": 26,
+        "lock_inode_groups": 14,
+        "original44_entries": 3823,
+        "original44_full_inventory_equal": true,
+        "original44_roots": 44,
+        "original_lease_unchanged": true,
+        "private_home_files": 63,
+        "role_generation_invented": false,
+        "runtime_files": 38,
+        "scope_closure": false,
+        "sender_xml_files": 11,
+        "transport_files": 4,
+        "unique_private_directories": 9,
+        "window_count": 2
+      },
+      "producer_scope_closure_flag": false,
+      "producer_source_executed_by_reader": false,
+      "role_generation_invented": false,
+      "whole_operation_was_readonly": false
+    },
+    "files_removed": 78,
+    "directories_removed": 9,
+    "operations": 87,
+    "final_absences": 18,
+    "protected_roots": 44,
+    "protected_entries": 3823,
+    "protected_complete_bytes": 44353573,
+    "fd_baseline_restored": true,
+    "fixed19_credit": 0,
+    "original_failed_case_qualification": false
+  },
+  "current_attempt": {
+    "label": "root-r10-neg01-fc33-r6-bound01",
+    "nonce": "5f94c6a88805eefb0e2320cae5265d46",
+    "nonce_permanently_consumed": true,
+    "plan_sha256": "c702b537ef3dc894b1f6b4dd6691a995fb0763ab6fa83613711d75e90a587109",
+    "root": {
+      "job_id": "1a1b2a27ad4-fc05-7f12",
+      "exit_code": 1,
+      "stdout_bytes": 0,
+      "stderr_bytes": 2066,
+      "output_complete": true,
+      "output_durable": true,
+      "automatic_retry": false,
+      "controller": {
+        "path": "review/R6-component-preparer01/ROOT-NEG01-EXECUTION-CONTROLLER.original.json",
+        "bytes": 10118,
+        "sha256": "154cec58b10810b0147eaba4acb443ebd4e73314fb3f6a07707c25d5b3352494"
+      }
+    },
+    "state": "FAILED_BEFORE_SENDER_PREPARED_AT_INITIAL_UI_DUMP",
+    "actor_failure": {
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound01-root-v150/ACTOR-FAILURE.json",
+      "size": 424,
+      "sha256": "f613e78e05b8ff8cadfb0cd8aabca905aabc5338f130ffbc17205a7f0d4717eb"
+    },
+    "actor_failure_detail": {
+      "error_type": "AssertionError",
+      "error": "{'command': 'test ! -e /data/local/tmp/hepta-natural-root-r10-neg01-fc33-r6-bound01-v150-1.xml && uiautomator dump /data/local/tmp/hepta-natural-root-r10-neg01-fc33-r6-bound01-v150-1.xml && cat /data/local/tmp/hepta-natural-root-r10-neg01-fc33-r6-bound01-v150-1.xml', 'rc': 137, 'route': [5037, '23'], 'stdout': '', 'stderr': 'Killed \\n'}",
+      "automatic_send_retry": false
+    },
+    "root_failure": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-r6-bound01/ROOT-FAILURE.json",
+      "size": 12135,
+      "sha256": "65afd8ef31e181f29e3832b5a7a2bfa4556ee5b2139ab44a9c31500cd8797cc0"
+    },
+    "root_fixture_attempts": [],
+    "initial_wake_collapse_and_activity_launch_occurred": true,
+    "sender_reported_send_attempts": 0,
+    "sender_reported_restore_attempts": 0,
+    "sender_reported_restore_state": "RESTORE_NOT_AUTOMATED_INPUT_OUTCOME_UNCONFIRMED",
+    "no_zero_effect_inference_from_absent_receipts": true,
+    "exit137_cause_unknown": true,
+    "owned_recovery_closed": false,
+    "independent_host_original_preservation_and_exact_scope_recovery_in_progress": true,
+    "no_old_identity_replay": true,
+    "current_runtime_tuple_unchanged": true,
+    "component_qualified": false,
+    "business_qualified": false
+  },
+  "actual_R6_source_stages": {
+    "release": {
+      "job_id": "1a1b29c82c3-fc05-7eec",
+      "exit_code": 0,
+      "derivation_sha256": "d965569c4f53d2835b442c9e2c5edc5a7a85f1fbab24a50769033dcf876954db",
+      "consumer_sha256": "95e37e85471ee88042126aca0c0a9c878689e1d5c08256f471457d161bafc6d0",
+      "readiness_sha256": "87d9302eb80b04d80b973d50c44302c2f831a617ba797e63b4f0472cec58c611"
+    },
+    "controllers": {
+      "job_id": "1a1b29f7d36-fc05-7efd",
+      "exit_code": 0,
+      "derivation_sha256": "897294862510d7805bd92d4fd24544f185e23d8dd75532aada3643b5c5c4d514",
+      "files": 7
+    },
+    "e2e_sources": {
+      "job_id": "1a1b29fa87e-fc05-7eff",
+      "exit_code": 0,
+      "binding_sha256": "6e770848dcebe85a5bdbd3bdb49a8e70e7baceea99ad54edbe09a00b6c2a8827",
+      "files": 49,
+      "coordinator_sha256": "69bdd4e00b364d9e8451d0c3306f29474240478d8e992064e3d4b4e99f48c30b"
+    },
+    "case_controller": {
+      "job_id": "1a1b2adfd34-fc05-7f44",
+      "exit_code": 0,
+      "stdout_bytes": 1276,
+      "stderr_bytes": 0,
+      "output_complete": true,
+      "output_durable": true,
+      "automatic_retry": false,
+      "controller": {
+        "path": "review/R6-case-controller-source-fix01/publication/ROOT-ACTUAL-DERIVE-CONTROLLER.original.json",
+        "bytes": 7575,
+        "sha256": "5783db67df15cf9489d39794e5c05871e7f05389ac425acf904d097df6540d5b"
+      },
+      "actual_output": {
+        "BUILD_executed": false,
+        "actual_READY": null,
+        "actual_install": null,
+        "all_complete_originals_bookended": true,
+        "automatic_retry": false,
+        "case_controller_derivation": {
+          "bytes": 2834,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-execution-controller-r6-01/DERIVATION.json",
+          "sha256": "c0284fb518d19341c19a6864773f4e5c6f1c04f38189d18421b8d1e472f84b8b"
+        },
+        "constructor": {
+          "bytes": 29377,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-execution-controller-r6-01/source/derive_e2e_requests_UNBOUND.py",
+          "sha256": "7b35b9a0f57ddd9e56948bbcab012b662fd84628d9502e9350d012a2de126acf"
+        },
+        "fixed19_credit": 0,
+        "new_acceptance_nonces": 0,
+        "original_source_bytes": 26941621,
+        "original_source_count": 329,
+        "phone_calls": 0,
+        "published_source_terminals": [
+          {
+            "bytes": 2834,
+            "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-execution-controller-r6-01/DERIVATION.json",
+            "sha256": "c0284fb518d19341c19a6864773f4e5c6f1c04f38189d18421b8d1e472f84b8b"
+          }
+        ],
+        "state": "FOUR_ORIGINAL_E2E_REQUEST_ENTRIES_BOUND_ACTUAL_CASE_INPUTS_UNBOUND"
+      },
+      "prior_failed_job_retained": "1a1b2a31057-fc05-7f16",
+      "whole_source_inverse": true,
+      "independent_archive_pending": true
+    },
+    "all_actual_BUILD_READY_and_case_inputs_unbound": true,
+    "phone_calls": 0
+  },
+  "actual_NEG03_09_source03": {
+    "job_id": "1a1b2abb939-fc05-7f3c",
+    "exit_code": 0,
+    "stdout_bytes": 1764,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "controller": {
+      "path": "review/R6-negative-source-binding03/ROOT-ACTUAL-PUBLICATION-CONTROLLER.original.json",
+      "bytes": 9230,
+      "sha256": "46e4ec35f4a8080f7d8bd120c49d5c7d8a9a455d3b1b7c4d87bad54510ef929c"
+    },
+    "actual_output": {
+      "actual_BUILD": null,
+      "actual_READY": null,
+      "actual_case_plans": null,
+      "binding_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r6-03",
+      "derivation": {
+        "bytes": 265294,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fc33-negative-sources-native-v3-r6-03/DERIVATION.json",
+        "sha256": "ffe296944f74b77696604f1ea8651c70aecabf499833c4a6395570591542d382"
+      },
+      "family_count": 11,
+      "input_publication": {
+        "bytes": 68621,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r6-03/DERIVATION.json",
+        "sha256": "7126024859e58e6f80515c0c02b4520fb7486cb217b30edfa96263e1520c7d32"
+      },
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "published_file_count": 178,
+      "source_changes": {
+        "bytes": 26485,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fc33-negative-sources-native-v3-r6-03/SOURCE-CHANGES.json",
+        "sha256": "421798f28738bc4cb03f2b28379f3c0ce7154c50e3a0d84f1f7f2b28e0769667"
+      },
+      "source_families": {
+        "bytes": 28152,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fc33-negative-sources-native-v3-r6-03/SOURCE-FAMILIES.json",
+        "sha256": "da9b5c425f18d769a1c0547b141d001a5e358696bf0250d235ad752c812e85c9"
+      },
+      "source_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fc33-negative-sources-native-v3-r6-03",
+      "state": "NEG03_09_SOURCE_FAMILIES_PUBLISHED_ALL_ACTUAL_TASKS_UNBOUND",
+      "unbound_case_count": 7
+    },
+    "independent_full_source_archive_pending": true
+  },
+  "final_source_NEG10_NEG14": {
+    "state": "ACTUAL_FINAL_SOURCE_HOST_EVIDENCE_COMPLETE_PENDING_ACTUAL_BUILD_AND_INSTALLED_READY_BINDING",
+    "evidence_prefix": "neg10-14-final-source-summary/",
+    "actual_git_files": 165,
+    "bytes": 3557728,
+    "condition_map_rows": 23,
+    "protocol_NEG14_layer": "host_isolated",
+    "baseline_requirement": "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline.",
+    "added_RSS_or_model_slot_gate": false,
+    "groups_must_not_be_summed": true,
+    "additional_required_NEG14_controls": {
+      "job_id": "1a1b1f12896-fc05-7b9d",
+      "exit_code": 0,
+      "count": 4,
+      "actual_lstat_scandir_errno": 13,
+      "actual_daily_byte_budget_boundary": 939524096,
+      "sparse_logical_size_not_disk_ENOSPC": true,
+      "orphan_intent_preserved_and_refused": true,
+      "two_original_children_waited_and_groups_absent": true,
+      "fd_and_thread_baseline_restored": true
+    },
+    "actual_BUILD": null,
+    "actual_installed_READY": null,
+    "whole_cases_closed": [],
+    "R6_production15_unchanged": true
+  },
+  "historical_NEG01": {
+    "state": "QUALIFIED_ON_ORIGINAL_COMPONENT_ONLY",
+    "combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
+    "package_sha256": "72d6dcb4c20547549debad6ef55001aa5c8d115574ac222312b158f9722e2515",
+    "actual_previous": {
+      "bytes": 1426,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-a1055-final04/ACTUAL-PREVIOUS-INPUT.json",
+      "sha256": "fcdf8a456f663d6963d3cd9caf231a210aad92d8f5e192a71917381d10ea10f0"
+    },
+    "new_tuple_credit": false
+  },
+  "new_whole_cases_closed": [],
+  "current_tuple_component_cases_closed": [],
+  "full19_qualified": false,
+  "actual_BUILD": null,
+  "actual_install": null,
+  "actual_READY": null,
+  "remaining_actual_dependencies": [
+    "Complete preservation and exact recovery of R6 bound01 unstarted scope without upgrading failed/unknown states",
+    "New R6 NEG01 and ordered NEG02 real guard/closure/late inventory",
+    "Actual sealed BUILD, installation and complete four-role READY originals",
+    "Four original E2E tasks with their complete requested conditions and same real native COMP01 return evidence",
+    "NEG03-09 original protocol layers, cancellation/disconnect/timeout results and cleanup",
+    "Bind complete NEG10-14 host evidence to actual BUILD and independently observed installed15 sources"
+  ]
+}

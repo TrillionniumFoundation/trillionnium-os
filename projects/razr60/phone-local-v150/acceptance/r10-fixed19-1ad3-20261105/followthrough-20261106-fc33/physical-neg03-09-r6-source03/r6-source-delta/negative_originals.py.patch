@@ -1,0 +1,11 @@
+--- R5/negative_originals.py
++++ R6/negative_originals.py
+@@ -19,7 +19,7 @@
+ import zlib
+ 
+ FINAL_DEPENDENCIES = None
+-ROOT_CAPTURE_TEMPLATE = (78193, 'ea1c1f4b016a4d7f69adb1c76ad811f95520b7172c66c6cb75e8fbe0397cf3b6')
++ROOT_CAPTURE_TEMPLATE = (78194, 'dc7975c9c20c41ff2c495c1270a52cf2a41534722c7f15f785c065ab3d43dcbe')
+ ROOT_CAPTURE_SLOTS = ('PKG','COMBINATION','VERIFIER_SHA','VERIFIER_BYTES','POLICY_SHA','ADOPTION_SHA','ROOT_SCOPE_SHA')
+ SCHEMA = 'hepta.r10.cpu-negative-closure-plan.v1'
+ BASE = '/var/lib/trillionnium/owner-open/phone-local-v150'

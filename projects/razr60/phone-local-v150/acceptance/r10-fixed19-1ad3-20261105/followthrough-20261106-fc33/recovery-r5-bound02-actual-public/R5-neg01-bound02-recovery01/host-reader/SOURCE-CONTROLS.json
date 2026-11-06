@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.fc33.bound02.cleanup-reader-source-checks.v1",
+  "checks": [
+    {
+      "name": "unbound_rejected_before_IO",
+      "passed": true
+    },
+    {
+      "name": "actual_request_XZ_source219894_full_bytes_and_literal_context",
+      "passed": true
+    },
+    {
+      "name": "actual78_9_5_targets_single_parent_projection",
+      "passed": true
+    }
+  ],
+  "phone_or_actual_result_validation_performed": false,
+  "producer_source_executed": false
+}

@@ -1,0 +1,13 @@
+{
+  "actual_freeze_argv_preserved": true,
+  "all21_preterminal_payload_files_full_bytes_verified": true,
+  "case_credit": 0,
+  "four_source_stages_only": true,
+  "phone_calls": 0,
+  "production15_unchanged": true,
+  "rebinder": {
+    "bytes": 45097,
+    "sha256": "3d6cf7e6c7129f7433762de03bbe612c4181e5b63835e692c02604415bf5cef4"
+  },
+  "state": "ROOT_REVIEWED_FULL_SOURCE_REBINDER_BINDER_PUBLISHER"
+}

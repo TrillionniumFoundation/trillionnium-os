@@ -1,0 +1,46 @@
+{
+  "actor_constructions": 0,
+  "actual_BUILD": null,
+  "actual_E2E": null,
+  "actual_READY": null,
+  "actual_runtime_R6": null,
+  "basename_must_be_published_directly_under_original_B": true,
+  "candidate": {
+    "bytes": 41355,
+    "path": "send_new_native_task_r5_fc33_r6.py",
+    "sha256": "f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73"
+  },
+  "changed_generated_actor_string_count": 1,
+  "component_candidate": {
+    "bytes": 41647,
+    "path": "/workspace/scratch/fc33eac909ab/review/R6-sender-ui/candidate02/send_new_native_guard_task_r10_r4.py",
+    "sha256": "546010c5ef2c8f99d2be71a9f99d608c41186bdfc9a70e7d64b286fe133e3045"
+  },
+  "fixed19_credit": 0,
+  "full_byte_inverse": true,
+  "last_iteration_owner_editor_check_present": true,
+  "model_requests": 0,
+  "native_sends": 0,
+  "new_block": {
+    "bytes": 818,
+    "sha256": "5c88d8b8c4c88fe2605abb55239d21c233e97037ebfdcfb9346f4c4ee2e528f5"
+  },
+  "new_nonces": 0,
+  "old_block": {
+    "bytes": 251,
+    "sha256": "c22be16b96afaa791e75cf8531854bf0064e8cb9b830e87bd85e4c2bbaabbcd5"
+  },
+  "operator_still_requires_two_path_literals_and_SENDER_SHA_propagation": true,
+  "original_exact_text_assertion_unchanged": true,
+  "original_outer_sender_AST_other_than_that_string_unchanged": true,
+  "original_single_Send_site_unchanged": true,
+  "parent": {
+    "bytes": 40788,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-e2e-plan/references/send_new_native_task_r5.py",
+    "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+  },
+  "phone_calls": 0,
+  "root_host_XML_controls": "Root owns the actual 23-original XML control; not duplicated or claimed here.",
+  "schema": "hepta.fc33.business-sender.same-reviewed-dialog-block.v1",
+  "state": "HOST_SOURCE_CANDIDATE_ONLY_NOT_PUBLISHED_OR_RUN"
+}

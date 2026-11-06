@@ -1,0 +1,28 @@
+--- R5/REVIEWED-INPUTS.json
++++ R6/REVIEWED-INPUTS.json
+@@ -844,7 +844,7 @@
+     {
+       "bytes": 44221,
+       "path": "candidate/templates/closure/negative_originals.py",
+-      "sha256": "7ab22a7f8dbcb4fa3149d7254b88de273dc9f585f3d4d9c893bbab0b1daed7dd"
++      "sha256": "bcd391c143d8e9ff85cf4d46e0a2817a78cf316795c6dc6d871483264fc15e0c"
+     },
+     {
+       "bytes": 30055,
+@@ -852,9 +852,14 @@
+       "sha256": "c5910c42d28b43872f510f1eac2cecfd9f6cf2653675baf3fbc728f85bcfbc8e"
+     },
+     {
+-      "bytes": 28157,
++      "bytes": 28166,
+       "path": "candidate/templates/physical-fault/physical_fault_common.py",
+-      "sha256": "60f5a7b64cf055db153fc20e49951866fabf3e7c0b2b28d29290fec4d722eae9"
++      "sha256": "32e57adc20cfc0d9de9073bbace24a328ce6409a89e0396772331900089a687b"
++    },
++    {
++      "bytes": 41355,
++      "path": "candidate/templates/sender/send_new_native_task_r5_fc33_r6.py",
++      "sha256": "f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73"
+     }
+   ],
+   "historical_git_commit": "744fc422a28bd6f505701503bf0d113ab49d4634",

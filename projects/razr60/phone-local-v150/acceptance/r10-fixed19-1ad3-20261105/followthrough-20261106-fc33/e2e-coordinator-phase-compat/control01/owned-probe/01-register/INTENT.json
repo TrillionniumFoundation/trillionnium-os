@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-I",
+    "-B",
+    "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/control01/probe.py"
+  ],
+  "argv_sha256": "4066671e2c473c1798fdc6dfd175baf548f713517ee5e05280ca24f8984fdb31",
+  "automatic_retry": false,
+  "deadline_scope": "popen_start_through_child_join_pipe_eof_and_output_verification",
+  "execution_binding": {
+    "case_id": "E2E-01",
+    "context_sha256": "6ff5aabb3f2f6eab25978454bd0b34e3277758cc109372d45e4b8e4f3da0080c",
+    "expected_result_state": "ORIGINAL_HOST_CHILD_JOINED",
+    "input_originals": [
+      {
+        "bytes": 49,
+        "path": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/control01/probe.py",
+        "sha256": "c4fe7a25f3ff099b826097a2fe3e17126c0d002e5e2c85bf92ddc54168c21669"
+      }
+    ],
+    "manifest": null,
+    "owner_request_sha256": "101a5f19352453ef29ba42cf637ad46401bb7239f8716983ae62aa42d935d156",
+    "phase_kind": "register",
+    "plan": null,
+    "schema": "hepta.fixed19.e2e.phase-command.v1",
+    "source": {
+      "bytes": 49,
+      "path": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/control01/probe.py",
+      "sha256": "c4fe7a25f3ff099b826097a2fe3e17126c0d002e5e2c85bf92ddc54168c21669"
+    }
+  },
+  "hard_bound_on_filesystem_spawn_or_cleanup": false,
+  "input_transport": "retained_readonly_regular_fd_child_reads_within_execution_budget",
+  "maximum_starts": 1,
+  "maximum_wait_seconds": 20,
+  "output_limit_bytes_per_stream": 67108864,
+  "output_transport": "owned_nonblocking_pipe_capture_worker_bounded_memory_main_thread_persistence",
+  "phase": "01-register",
+  "schema": "hepta.native-guard.root-host-command.v1",
+  "signals_on_timeout": false,
+  "stdin_original": null,
+  "stdin_sha256": null
+}

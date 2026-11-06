@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.fc33.negative-R6-source03-reviewable-handoff.v1",
+  "state": "PREPARED_FOR_ROOT_REVIEW_AND_SINGLE_HOST_SOURCE_PUBLICATION",
+  "production_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+  "runtime_package_sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5",
+  "root_manifest_sha256": "9da8d53ebfba3e11f2406c0a59964923ff4709052fad2d5df3d2eaff8b7ec8a4",
+  "publisher": {
+    "path": "review/R6-negative-source-binding03/transport/publish_negative_sources_once.py",
+    "bytes": 19716,
+    "sha256": "10d85d8dc24c57905a46e40a97f67cbb5d40414b88933f7202b1bc39dddd9040"
+  },
+  "publisher_delta": {
+    "path": "review/R6-negative-source-binding03/PUBLISHER.patch",
+    "bytes": 7599,
+    "sha256": "69dc8d3dd952114b64960812468533007ee3eb9a7286f048ad1bd9f390025c39"
+  },
+  "constructor": {
+    "path": "review/R6-negative-source-binding03/source/derive_negative_sources_BOUND.py",
+    "bytes": 44140,
+    "sha256": "d676e7b2ecf2ceadbdf6055da8fb97098d80f11246a519246cc3b87f199126d4"
+  },
+  "inputs": {
+    "path": "review/R6-negative-source-binding03/SOURCE-INPUTS.json",
+    "bytes": 2537,
+    "sha256": "b7cb09d2083e8a055dd4d62f11a54a0bf8ea2ac6b506dc6072f109204f6855ee"
+  },
+  "payload": {
+    "path": "review/R6-negative-source-binding03/transport/SOURCE-PAYLOAD.zlib",
+    "bytes": 722584,
+    "sha256": "f4d63e80c8df5307434aa0d217327369946351f1beef3222522554719210f67d"
+  },
+  "request": {
+    "path": "review/R6-negative-source-binding03/PROCESS-REQUEST.UNEXECUTED.json",
+    "bytes": 498,
+    "sha256": "2ecf41e7a193b6324118b4ea113c9a36f8fbdd3f913dff25d228c44b488f3888"
+  },
+  "exact_bounds": {
+    "path": "review/R6-negative-source-binding03/BYTE-BOUNDS.json",
+    "bytes": 46104,
+    "sha256": "ed54c411db5962bc894a70cd4007fac9aaf07be4ef7775da9eba0fade28ccd8c"
+  },
+  "reviewed_reference_sources": 172,
+  "prepared_payload_files": 178,
+  "prepared_payload_member_bytes": 3553519,
+  "source_families_to_derive": 11,
+  "actual_case_templates_to_remain_unbound": 7,
+  "old_source01_and_source02_actual_failure_preserved": true,
+  "new_code_semantic_changes_in_publisher": [
+    "Previously verified exact empty-original read lower bound; individual cap16MiB unchanged from prior source02."
+  ],
+  "new_source_binding_changes": [
+    "Exact R6 runtime/root/sourcechain/readiness/consumer originals.",
+    "Actual published business sender f90c one-UI-block successor.",
+    "Independent R6 closure normalized-root pin and precise sender dependency projections."
+  ],
+  "complete_constructor_binding_inverse": true,
+  "complete_publisher_inverse": true,
+  "actual_source_publication": null,
+  "actual_BUILD": null,
+  "actual_installed_READY": null,
+  "actual_phone_case_runs": null,
+  "phone_calls": 0,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "no_new_optional_regressions": true,
+  "NEG03_boundary": {
+    "path": "review/R6-negative-source-binding03/NEG03-PROTOCOL-BOUNDARY.json",
+    "bytes": 2305,
+    "sha256": "e27684afe43a341a2a84d32dc7c44c89a1126fa0b353f4252b7788ab4236ff24"
+  },
+  "parent_transport_directory_observed": false,
+  "one_use_namespaces_and_partial_output_retention": true
+}

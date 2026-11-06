@@ -1,0 +1,11 @@
+--- actual-published/derive_r6_source_rebindings_UNBOUND.py
++++ successor/derive_r6_source_rebindings_UNBOUND.py
+@@ -591,7 +591,7 @@
+     gate, unused = ctx.change(ctx.pool.read(GATE_PARENT), {'STAGE': report['stage']})
+     need(ctx.pool.read(report['case_install_gate']) == gate, 'actual installation gate whole source inverse')
+     binder, unused = ctx.change(ctx.pool.read(BINDER_PARENT), {'PACKAGE_ROOT': str(root),
+-        'SOURCES': {'component_build': report['helper'], 'release_install_stage': report['stage']}})
++        'SOURCES': {'component_build': descriptor(report['helper']), 'release_install_stage': descriptor(report['stage'])}})
+     need(ctx.pool.read(report['binder']) == binder, 'actual binding helper whole source inverse')
+     for item in report['files']:
+         need(path(item['path']).is_relative_to(root), 'controller file under its exact published root')

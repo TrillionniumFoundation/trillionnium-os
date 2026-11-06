@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.fc33.negative-R6-source03-public-files.v1",
+  "prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-r6-source03/",
+  "files": [
+    {
+      "path": "BINDING-PROOF.json",
+      "local_path": "review/R6-negative-source-binding03/BINDING-PROOF.json",
+      "bytes": 8815,
+      "sha256": "ba8b0fcfa7989ca6fc0474bd42a1de4f48411611cba32fa7eae0625439e6fa53",
+      "git_blob_sha1": "a14d23e8af4d41a1b464aa620631685f3177d22f"
+    },
+    {
+      "path": "BYTE-BOUNDS.json",
+      "local_path": "review/R6-negative-source-binding03/BYTE-BOUNDS.json",
+      "bytes": 46104,
+      "sha256": "ed54c411db5962bc894a70cd4007fac9aaf07be4ef7775da9eba0fade28ccd8c",
+      "git_blob_sha1": "4c7be1a422f4ee8942d8ff2c9bcb2f508736f262"
+    },
+    {
+      "path": "HANDOFF.json",
+      "local_path": "review/R6-negative-source-binding03/HANDOFF.json",
+      "bytes": 3189,
+      "sha256": "07bb84e184d14f2d4ac705212b45879249f869742d21c66b893794a9513354a1",
+      "git_blob_sha1": "9d6afdf5e737ccff830e38e7c898cdf84d48cbd1"
+    },
+    {
+      "path": "NEG03-PROTOCOL-BOUNDARY.json",
+      "local_path": "review/R6-negative-source-binding03/NEG03-PROTOCOL-BOUNDARY.json",
+      "bytes": 2305,
+      "sha256": "e27684afe43a341a2a84d32dc7c44c89a1126fa0b353f4252b7788ab4236ff24",
+      "git_blob_sha1": "bd43ac8fdaaad2888a5249df465244c4e7e8a3d4"
+    },
+    {
+      "path": "PROCESS-REQUEST.UNEXECUTED.json",
+      "local_path": "review/R6-negative-source-binding03/PROCESS-REQUEST.UNEXECUTED.json",
+      "bytes": 498,
+      "sha256": "2ecf41e7a193b6324118b4ea113c9a36f8fbdd3f913dff25d228c44b488f3888",
+      "git_blob_sha1": "b33e3aaedb70f49dc879246ef2e9afc27d24e2c9"
+    },
+    {
+      "path": "PUBLISHER-DERIVATION.json",
+      "local_path": "review/R6-negative-source-binding03/PUBLISHER-DERIVATION.json",
+      "bytes": 1350,
+      "sha256": "4580be1d8d2616b8e7f44fa7624807fdc18d359469a480612cdeb61b87eda897",
+      "git_blob_sha1": "04ce87702e1532e2f7e97cbd09dd877bee064c4b"
+    },
+    {
+      "path": "PUBLISHER.patch",
+      "local_path": "review/R6-negative-source-binding03/PUBLISHER.patch",
+      "bytes": 7599,
+      "sha256": "69dc8d3dd952114b64960812468533007ee3eb9a7286f048ad1bd9f390025c39",
+      "git_blob_sha1": "aa0ad8d9c8f315a08592d30d9bf069247cc058c3"
+    },
+    {
+      "path": "SOURCE-INPUTS.json",
+      "local_path": "review/R6-negative-source-binding03/SOURCE-INPUTS.json",
+      "bytes": 2537,
+      "sha256": "b7cb09d2083e8a055dd4d62f11a54a0bf8ea2ac6b506dc6072f109204f6855ee",
+      "git_blob_sha1": "6e8a5138271dc9b8903d659e1ad7e8cca0f453b5"
+    },
+    {
+      "path": "SOURCE.patch",
+      "local_path": "review/R6-negative-source-binding03/SOURCE.patch",
+      "bytes": 653,
+      "sha256": "b27842f6265227739b9ed8bbea6d066ce796e0af6e02a7554c19018730d96aa8",
+      "git_blob_sha1": "75208b013226ce4b01b45630752dfcacc58f985e"
+    },
+    {
+      "path": "TRANSPORT-PLAN.UNEXECUTED.json",
+      "local_path": "review/R6-negative-source-binding03/TRANSPORT-PLAN.UNEXECUTED.json",
+      "bytes": 4056,
+      "sha256": "6f9b507f71f4ab01f802d209c67945cbae4e041040f18e0b7287ccc4e176a437",
+      "git_blob_sha1": "332e762db3b7c5c2f414ff10ede8381c35f448fc"
+    },
+    {
+      "path": "prepare_r6_negative_binding.py",
+      "local_path": "review/R6-negative-source-binding03/prepare_r6_negative_binding.py",
+      "bytes": 18219,
+      "sha256": "68a7beeb9846427bdfea2b9bc5c39ed1e751411e1f123bfa064d7a779857317c",
+      "git_blob_sha1": "4b00f35424e207fb966d3ef1e40cb4d52e8eb2f8"
+    },
+    {
+      "path": "r6-source-delta/REVIEWED-INPUTS.json.patch",
+      "local_path": "review/R6-negative-source-binding03/r6-source-delta/REVIEWED-INPUTS.json.patch",
+      "bytes": 1079,
+      "sha256": "16a8aea5437b9bac5aeb56c349b76268850dc321a402dedc437441c66a51fb5e",
+      "git_blob_sha1": "b6fc768d3fd13240a022ea606b469e9a86fcab8c"
+    },
+    {
+      "path": "r6-source-delta/derive_negative_sources_UNBOUND.py.patch",
+      "local_path": "review/R6-negative-source-binding03/r6-source-delta/derive_negative_sources_UNBOUND.py.patch",
+      "bytes": 6458,
+      "sha256": "1e6642e4b2b9256e3c2115573b8b24f3c4db72f7525aec2d21fe254f5fa0a09a",
+      "git_blob_sha1": "9566bd35d25ee4a74d06de8ecb2e5dc819ab9a55"
+    },
+    {
+      "path": "r6-source-delta/negative_originals.py.patch",
+      "local_path": "review/R6-negative-source-binding03/r6-source-delta/negative_originals.py.patch",
+      "bytes": 552,
+      "sha256": "8a052e3669c7db5c54200295d83ac162cb9c2c3018c08f69b19605d50f39cb98",
+      "git_blob_sha1": "447d22b56c3730cd24e46b171e9ef6df79e4b1f1"
+    },
+    {
+      "path": "r6-source-delta/physical_fault_common.py.patch",
+      "local_path": "review/R6-negative-source-binding03/r6-source-delta/physical_fault_common.py.patch",
+      "bytes": 2296,
+      "sha256": "a917cd54384c60bf4cf8bf9d6ac892709bfe03ef52128614e4a4f77f0c5288ee",
+      "git_blob_sha1": "33a02467d3b5a6a83f021e060bc3923bc51d51c0"
+    },
+    {
+      "path": "reference/R6-CANDIDATE-DERIVATION.original.json",
+      "local_path": "review/R6-negative-source-binding03/reference/R6-CANDIDATE-DERIVATION.original.json",
+      "bytes": 4214,
+      "sha256": "0225fb39d95efb94523be407f98a5e3757b5a594ec206aea0da1ce07e663b250",
+      "git_blob_sha1": "28207d762466dde1eec09edca435542ac085638d"
+    },
+    {
+      "path": "reference/publish_negative_sources_r5_02.original.py",
+      "local_path": "review/R6-negative-source-binding03/reference/publish_negative_sources_r5_02.original.py",
+      "bytes": 19652,
+      "sha256": "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81",
+      "git_blob_sha1": "d030a00ec53333973927f3128074fbd1706d2458"
+    },
+    {
+      "path": "reference/release_actual_read.original.mcp.json",
+      "local_path": "review/R6-negative-source-binding03/reference/release_actual_read.original.mcp.json",
+      "bytes": 15638,
+      "sha256": "742fc065c20f72bed0a11afb3e18b4bd49fb230312eab46dd7acffa73364364e",
+      "git_blob_sha1": "f89044eaca674440a86c1c15b64e45c6b53a35a2"
+    },
+    {
+      "path": "reference/release_source_DERIVATION.original.json",
+      "local_path": "review/R6-negative-source-binding03/reference/release_source_DERIVATION.original.json",
+      "bytes": 9587,
+      "sha256": "d965569c4f53d2835b442c9e2c5edc5a7a85f1fbab24a50769033dcf876954db",
+      "git_blob_sha1": "86eb87e604fb6ed4d4e1a497849cca1dfb6dc684"
+    },
+    {
+      "path": "reference/runtime_freeze_controller.original.json",
+      "local_path": "review/R6-negative-source-binding03/reference/runtime_freeze_controller.original.json",
+      "bytes": 7594,
+      "sha256": "68b5f1972b19682c57abbf3e9791feb7672ff66d81abf5c202b1f7ffc0d0b0ac",
+      "git_blob_sha1": "0bf68f3324bc7732ce54819b4645a75c60baed1c"
+    },
+    {
+      "path": "reference/source_reader.candidate.py",
+      "local_path": "review/R6-negative-source-binding03/reference/source_reader.candidate.py",
+      "bytes": 1345,
+      "sha256": "ecd6139f9161bc18d59eee16bd58f3f3de478f39643e3967d12c84167ad753c8",
+      "git_blob_sha1": "305a6226d51a79191a3319b948f21f25c9aa8073"
+    },
+    {
+      "path": "source/REVIEWED-INPUTS.json",
+      "local_path": "review/R6-negative-source-binding03/source/REVIEWED-INPUTS.json",
+      "bytes": 38297,
+      "sha256": "9a1138f1a843814588107054057048810183f94ecb29725b46ebc40f8b560bed",
+      "git_blob_sha1": "a1446bbcf9daeeee19052b06f907711c03f06b64"
+    },
+    {
+      "path": "source/derive_negative_sources_BOUND.py",
+      "local_path": "review/R6-negative-source-binding03/source/derive_negative_sources_BOUND.py",
+      "bytes": 44140,
+      "sha256": "d676e7b2ecf2ceadbdf6055da8fb97098d80f11246a519246cc3b87f199126d4",
+      "git_blob_sha1": "99be96ad05a01d69ad87e1734a1a1f54da53479b"
+    },
+    {
+      "path": "source/derive_negative_sources_UNBOUND.py",
+      "local_path": "review/R6-negative-source-binding03/source/derive_negative_sources_UNBOUND.py",
+      "bytes": 43869,
+      "sha256": "12103136651db4868850352bc07fa27b7ae73f386385553128399dfd58152e57",
+      "git_blob_sha1": "3bc0ad988a926aa08affa4363f5edeb20b61dddb"
+    },
+    {
+      "path": "source/negative_originals.py",
+      "local_path": "review/R6-negative-source-binding03/source/negative_originals.py",
+      "bytes": 44221,
+      "sha256": "bcd391c143d8e9ff85cf4d46e0a2817a78cf316795c6dc6d871483264fc15e0c",
+      "git_blob_sha1": "e9cb700e479e0a12a6c5fede82bf90dbb00800ad"
+    },
+    {
+      "path": "source/physical_fault_common.py",
+      "local_path": "review/R6-negative-source-binding03/source/physical_fault_common.py",
+      "bytes": 28166,
+      "sha256": "32e57adc20cfc0d9de9073bbace24a328ce6409a89e0396772331900089a687b",
+      "git_blob_sha1": "c87d3399a9a17ae0a4afc80fe85a44ac400eb5c1"
+    },
+    {
+      "path": "source/send_new_native_task_r5_fc33_r6.py",
+      "local_path": "review/R6-negative-source-binding03/source/send_new_native_task_r5_fc33_r6.py",
+      "bytes": 41355,
+      "sha256": "f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73",
+      "git_blob_sha1": "2bd85c893705f799f8afe78718276bd8c87c6df5"
+    },
+    {
+      "path": "transport/PAYLOAD-MANIFEST.json",
+      "local_path": "review/R6-negative-source-binding03/transport/PAYLOAD-MANIFEST.json",
+      "bytes": 40939,
+      "sha256": "ef98c6a7332c54e17fed3201f72a0a5d5702ef18c5cd1ddd780703193718e270",
+      "git_blob_sha1": "a215ebe83fde4ec8106970dc79d6aefb819b35f4"
+    },
+    {
+      "path": "transport/SOURCE-PAYLOAD.zlib",
+      "local_path": "review/R6-negative-source-binding03/transport/SOURCE-PAYLOAD.zlib",
+      "bytes": 722584,
+      "sha256": "f4d63e80c8df5307434aa0d217327369946351f1beef3222522554719210f67d",
+      "git_blob_sha1": "20ce887e1d864886e188a5b536eb2b75a4a6741a"
+    },
+    {
+      "path": "transport/publish_negative_sources_once.py",
+      "local_path": "review/R6-negative-source-binding03/transport/publish_negative_sources_once.py",
+      "bytes": 19716,
+      "sha256": "10d85d8dc24c57905a46e40a97f67cbb5d40414b88933f7202b1bc39dddd9040",
+      "git_blob_sha1": "53527d11c2ac37ee7421203c19bd8c981d73ee6d"
+    }
+  ],
+  "private_originals_included": false,
+  "transport_chunks_omitted_as_reproducible_slices_of_complete_payload": true
+}

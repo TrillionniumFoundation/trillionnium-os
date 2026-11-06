@@ -1,0 +1,11 @@
+--- preserved-parent
++++ independent-R6-source03
+@@ -18,7 +18,7 @@
+ import re
+ import types
+ 
+-FROZEN_INPUTS = None
++FROZEN_INPUTS = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r6-03/SOURCE-INPUTS.json', 'bytes': 2537, 'sha256': 'b7cb09d2083e8a055dd4d62f11a54a0bf8ea2ac6b506dc6072f109204f6855ee'}
+ INPUT_SCHEMA = 'hepta.fc33.negative-source-inputs.v1'
+ REFERENCE_INDEX = (38297, '9a1138f1a843814588107054057048810183f94ecb29725b46ebc40f8b560bed')
+ CHAIN_TEMPLATE = (33827, '4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835')

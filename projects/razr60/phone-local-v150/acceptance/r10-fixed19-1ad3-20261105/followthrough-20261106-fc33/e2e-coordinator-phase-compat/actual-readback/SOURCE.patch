@@ -1,0 +1,31 @@
+--- review/install-build-controller/actual-readback/observe_controller_source_originals.py
++++ observe_compat_originals.py
+@@ -1,4 +1,4 @@
+-"""Read the exact 27 actual published unbound controller host source originals."""
++"""Read the exact eight actual published compatibility host source originals."""
+ import base64
+ import hashlib
+ import json
+@@ -9,7 +9,7 @@
+ from pathlib import Path
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-SPECS = (('controllers', B / 'followthrough-fc33-install-build-controller01', ('', 'originals', 'source', 'requests', 'reference'), 27, {'bytes': 9265, 'sha256': '8d7df81d1c3da3ce4f87e68c33e3b31aafa2503e658acb203655083e6505719d'}),)
++SPECS = (('compat', B / 'followthrough-fc33-e2e-coordinator-compat01', ('', 'originals', 'source', 'requests', 'reference'), 8, {'bytes': 3737, 'sha256': 'ddfc9ba276fac6cf71c79e0d93b16677580b2e78b88b8653a27e2c381d2b13ec'}),)
+ META = ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink',
+         'st_size', 'st_mtime_ns', 'st_ctime_ns')
+ ALL = []
+@@ -125,10 +125,10 @@
+         bookend()
+         result = {
+             'schema': 'hepta.fc33.actual-published-source-originals.v1',
+-            'state': 'COMPLETE_27_PUBLISHED_CONTROLLER_HOST_SOURCE_ORIGINALS_READ',
+-            'publication_job_id': '1a1b25d70f9-fc05-7db5',
++            'state': 'COMPLETE_8_PUBLISHED_COORDINATOR_COMPAT_HOST_SOURCE_ORIGINALS_READ',
++            'publication_job_id': '1a1b278051c-fc05-7e23',
+             'started_unix_ns': started, 'finished_unix_ns': time.time_ns(),
+-            'groups': groups, 'file_count': 27, 'file_bytes': sum(group['file_bytes'] for group in groups),
++            'groups': groups, 'file_count': 8, 'file_bytes': sum(group['file_bytes'] for group in groups),
+             'all_original_files_read_to_EOF': True, 'all_directory_and_file_full9_bookended': True,
+             'phone_calls': 0, 'project_modules_executed': 0, 'host_file_writes': 0,
+             'current_case_qualified': False, 'actual_BUILD': None, 'actual_install': None, 'actual_READY': None,

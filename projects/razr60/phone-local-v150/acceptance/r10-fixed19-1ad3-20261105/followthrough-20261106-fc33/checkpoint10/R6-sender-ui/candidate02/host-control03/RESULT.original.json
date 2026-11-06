@@ -1,0 +1,196 @@
+{
+  "actual_archive_members_rechecked": 23,
+  "actual_private_archive": {
+    "bytes": 275964,
+    "path": "/home/alex/razr60-local-model-v150/fc33-neg01-bound02-sender-preservation01/ORIGINALS.PRIVATE.json.gz",
+    "sha256": "a8f987d6886a405550050e0ade474971f7e4b81773b4f4d81eee8861237d41c9"
+  },
+  "candidate_source": {
+    "bytes": 41647,
+    "sha256": "546010c5ef2c8f99d2be71a9f99d608c41186bdfc9a70e7d64b286fe133e3045"
+  },
+  "case_nonces": 0,
+  "cases": [
+    {
+      "actual_original_state_sequence": true,
+      "id": "old_actual_two_observations_reproduce_failure",
+      "result": {
+        "dump_count": 2,
+        "dump_tags": [
+          "CLOSE-DETAILS-0",
+          "CLOSE-DETAILS-1"
+        ],
+        "error": {
+          "message": "('org.trillionnium.owneropen:id/ui_prompt', 0)",
+          "type": "AssertionError"
+        },
+        "native_sends": 0,
+        "tap_count": 2
+      }
+    },
+    {
+      "actual_restore_snapshot_reused_only_as_a_control_input": true,
+      "id": "known_actual_prefix_with_explicit_hypothetical_following_editor",
+      "result": {
+        "dump_count": 3,
+        "dump_tags": [
+          "CLOSE-DETAILS-0",
+          "CLOSE-DETAILS-1",
+          "CLOSE-DETAILS-2"
+        ],
+        "error": null,
+        "native_sends": 0,
+        "tap_count": 3
+      },
+      "third_close_outcome_is_hypothetical": true
+    },
+    {
+      "id": "already_exact_editor_zero_taps",
+      "result": {
+        "dump_count": 0,
+        "dump_tags": [],
+        "error": null,
+        "native_sends": 0,
+        "tap_count": 0
+      }
+    },
+    {
+      "explicit_repeated_state_control": true,
+      "id": "stuck_dialog_bounded_failure",
+      "result": {
+        "dump_count": 4,
+        "dump_tags": [
+          "CLOSE-DETAILS-0",
+          "CLOSE-DETAILS-1",
+          "CLOSE-DETAILS-2",
+          "CLOSE-DETAILS-3"
+        ],
+        "error": {
+          "message": "('org.trillionnium.owneropen:id/ui_prompt', 0)",
+          "type": "AssertionError"
+        },
+        "native_sends": 0,
+        "tap_count": 4
+      }
+    },
+    {
+      "explicit_attribute_mutation": true,
+      "id": "foreign_modal_zero_taps",
+      "result": {
+        "dump_count": 0,
+        "dump_tags": [],
+        "error": {
+          "message": "Unknown details dialog retained; no task sent",
+          "type": "AssertionError"
+        },
+        "native_sends": 0,
+        "tap_count": 0
+      }
+    },
+    {
+      "explicit_duplicate_control": true,
+      "id": "ambiguous_editor_zero_taps",
+      "result": {
+        "dump_count": 0,
+        "dump_tags": [],
+        "error": {
+          "message": "Ambiguous owner editor; no task sent",
+          "type": "AssertionError"
+        },
+        "native_sends": 0,
+        "tap_count": 0
+      }
+    },
+    {
+      "explicit_attribute_mutation": true,
+      "id": "different_draft_rejected",
+      "result": {
+        "dump_count": 0,
+        "dump_tags": [],
+        "error": {
+          "message": "",
+          "type": "AssertionError"
+        },
+        "native_sends": 0,
+        "tap_count": 0
+      }
+    },
+    {
+      "explicit_attribute_and_sequence_mutation": true,
+      "id": "foreign_editor_only_after_fourth_close_rejected",
+      "result": {
+        "dump_count": 4,
+        "dump_tags": [
+          "CLOSE-DETAILS-0",
+          "CLOSE-DETAILS-1",
+          "CLOSE-DETAILS-2",
+          "CLOSE-DETAILS-3"
+        ],
+        "error": {
+          "message": "Foreign owner editor; no task sent",
+          "type": "AssertionError"
+        },
+        "native_sends": 0,
+        "tap_count": 4
+      }
+    }
+  ],
+  "complete_byte_inverse": true,
+  "control_count": 8,
+  "fixed19_credit": 0,
+  "lease_budget_changes": false,
+  "model_requests": 0,
+  "native_sends": 0,
+  "new_block": {
+    "bytes": 818,
+    "sha256": "5c88d8b8c4c88fe2605abb55239d21c233e97037ebfdcfb9346f4c4ee2e528f5"
+  },
+  "old_block": {
+    "bytes": 251,
+    "sha256": "c22be16b96afaa791e75cf8531854bf0064e8cb9b830e87bd85e4c2bbaabbcd5"
+  },
+  "originals": [
+    {
+      "bytes": 41080,
+      "metadata": [
+        66306,
+        56796645,
+        33152,
+        1000,
+        1000,
+        1,
+        41080,
+        1793995027269744839,
+        1793995027269744839
+      ],
+      "path": "/home/alex/codex-native-guard-chain-r10-r1/4fce1e327941e723a4f1d4c838acf684/material/tree/package/source/send_new_native_guard_task_r10_r4.py",
+      "sha256": "53a6e9149cf768211c3c8ba74d3c422f95d78f14efdb8751af1ac55d1a9225d5"
+    },
+    {
+      "bytes": 275964,
+      "metadata": [
+        66306,
+        39846815,
+        33152,
+        1000,
+        1000,
+        1,
+        275964,
+        1793995557970176401,
+        1793995557970176401
+      ],
+      "path": "/home/alex/razr60-local-model-v150/fc33-neg01-bound02-sender-preservation01/ORIGINALS.PRIVATE.json.gz",
+      "sha256": "a8f987d6886a405550050e0ade474971f7e4b81773b4f4d81eee8861237d41c9"
+    }
+  ],
+  "parent_source": {
+    "bytes": 41080,
+    "path": "/home/alex/codex-native-guard-chain-r10-r1/4fce1e327941e723a4f1d4c838acf684/material/tree/package/source/send_new_native_guard_task_r10_r4.py",
+    "sha256": "53a6e9149cf768211c3c8ba74d3c422f95d78f14efdb8751af1ac55d1a9225d5"
+  },
+  "passed": true,
+  "phone_calls": 0,
+  "private_UI_text_exported": false,
+  "schema": "hepta.fc33.sender-ui-close.actual-original-host-controls.v1",
+  "state": "NECESSARY_SOURCE_CONTROLS_PASSED_NO_PHONE_EXECUTION"
+}

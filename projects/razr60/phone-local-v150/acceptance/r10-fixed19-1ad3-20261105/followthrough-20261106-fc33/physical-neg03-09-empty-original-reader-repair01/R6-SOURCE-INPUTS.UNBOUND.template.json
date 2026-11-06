@@ -1,0 +1,19 @@
+{
+  "actual_policy": {
+    "bytes": 2667752,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/phone-originals/original-014.bin",
+    "sha256": "69aa6433a11ac4cffb2f1d349cc9f36ec2349a601911c173ebe7d92fff9e0c5b"
+  },
+  "host_neg06_namespace": null,
+  "materializer": null,
+  "output_root": null,
+  "policy_adoption": {
+    "bytes": 32638,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/POLICY-ADOPTION.json",
+    "sha256": "98b5db3d2c9680fff13e50bf64b18ddf9822689641427d204fded84f690d04c7"
+  },
+  "reference_root": null,
+  "release_source_chain": null,
+  "root_manifest": null,
+  "schema": "hepta.fc33.negative-source-r6-input-template.NOT_EXECUTABLE.v1"
+}

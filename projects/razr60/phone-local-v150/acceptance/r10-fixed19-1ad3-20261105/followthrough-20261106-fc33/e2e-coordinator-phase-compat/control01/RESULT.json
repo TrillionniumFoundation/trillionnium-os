@@ -1,0 +1,89 @@
+{
+  "actual_E2E": false,
+  "actual_host_probe_count": 1,
+  "actual_host_probe_result": {
+    "automatic_retry": false,
+    "phase": "01-register",
+    "pid": 5,
+    "returncode": 0,
+    "state": "ORIGINAL_HOST_CHILD_JOINED",
+    "stderr": {
+      "bytes": 0,
+      "path": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/control01/owned-probe/01-register/stderr.original",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 40,
+      "path": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/control01/owned-probe/01-register/stdout.original",
+      "sha256": "3f08b3a4b08d1405150cf9621257134c46abaac74d45424726417c43ae4c8b1b"
+    }
+  },
+  "candidate": {
+    "bytes": 20206,
+    "sha256": "54f7a6c1fd7e9ff1b82e82f4947639bca1745d334f7512bbf92d796bb32987fa"
+  },
+  "capture": {
+    "bytes": 37720,
+    "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29"
+  },
+  "control_count": 10,
+  "controls": [
+    {
+      "name": "exact_two_frozen_sources",
+      "passed": true
+    },
+    {
+      "name": "one_line_full_byte_inverse",
+      "passed": true
+    },
+    {
+      "name": "candidate_compiles",
+      "passed": true
+    },
+    {
+      "name": "actual_owned_child_completed_with_two_full_streams",
+      "passed": true
+    },
+    {
+      "name": "actual_child_result_includes_phase",
+      "passed": true
+    },
+    {
+      "name": "original_line_reproduces_duplicate_keyword_TypeError",
+      "passed": true
+    },
+    {
+      "name": "replacement_accepts_actual_original_result",
+      "passed": true
+    },
+    {
+      "name": "only_logical_phase_changes_in_receipt",
+      "passed": true
+    },
+    {
+      "name": "original_child_result_not_mutated",
+      "passed": true
+    },
+    {
+      "name": "owned_resources_released",
+      "passed": true
+    }
+  ],
+  "fixed19_credit": 0,
+  "model_requests": 0,
+  "native_sends": 0,
+  "new_nonces": 0,
+  "original": {
+    "bytes": 20208,
+    "sha256": "d1959bfc46c0dc0e347a1a438062f6f6259d85bd6f17cf0b4aae967f1e488b53"
+  },
+  "original_failure": {
+    "message": "dict() got multiple values for keyword argument 'phase'",
+    "original_receipts": [],
+    "type": "TypeError"
+  },
+  "phone_calls": 0,
+  "registrations": 0,
+  "schema": "hepta.fc33.e2e.coordinator-phase-compatibility.source-control.v1",
+  "state": "SOURCE_INTERFACE_DEFECT_REPRODUCED_AND_ONE_LINE_CANDIDATE_VERIFIED"
+}

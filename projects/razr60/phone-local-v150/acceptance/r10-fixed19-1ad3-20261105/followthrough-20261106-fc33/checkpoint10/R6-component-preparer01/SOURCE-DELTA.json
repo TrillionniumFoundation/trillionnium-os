@@ -1,0 +1,39 @@
+{
+  "actual_freeze_argv_without_I_B_preserved": true,
+  "actual_freeze_inputs": {
+    "controller": {
+      "bytes": 7594,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r6-review01/ROOT-ACTUAL-FREEZE-CONTROLLER.original.json",
+      "sha256": "68b5f1972b19682c57abbf3e9791feb7672ff66d81abf5c202b1f7ffc0d0b0ac"
+    },
+    "freeze": {
+      "bytes": 1049221,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/FREEZE-RESULT.json",
+      "sha256": "0d466c2bf183aabb96da0b80a59542ebc410ba757b76fe99149f653397f86f1d"
+    },
+    "source": {
+      "bytes": 24094,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r6-review01/freeze_native_bound_runtime_r6_fc33.py",
+      "sha256": "cbb8997c66172054afbd57acb349257d1a8804eff024dbbcb6deb0b438ebcdf3"
+    }
+  },
+  "candidate": {
+    "bytes": 20867,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/prepare_native_bound_components_r6_fc33.py",
+    "sha256": "e01b79abf093cefdb7e47786d037900ec147a0dc48d513e49927a5892ea0aeb4"
+  },
+  "case_credit": 0,
+  "current_bound02_nonce_consumed": true,
+  "exact_complete_byte_inverse": true,
+  "full_validator_bodies_unchanged_except_exact_freeze_transport_binding": true,
+  "isolated_freezer_interpreter_claimed": false,
+  "new_nonces": 0,
+  "parent": {
+    "bytes": 20772,
+    "sha256": "90edc36bb790641b39e3a81d938237e48506976fcf1bd37c51fdf567416a7c1b"
+  },
+  "phone_calls": 0,
+  "preparer_and_root_will_use_I_B": true,
+  "schema": "hepta.fc33.r6-component-preparer.exact-derivation.v1",
+  "segment_count": 7
+}

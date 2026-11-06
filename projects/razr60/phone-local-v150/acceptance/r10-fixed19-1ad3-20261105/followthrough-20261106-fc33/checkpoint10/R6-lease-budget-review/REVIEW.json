@@ -1,0 +1,231 @@
+{
+  "assessment": {
+    "basis": "Old success contains28.05s launch and34.04s after fork. Current actual61.697s stage repeats the retirement reader used by both phases. Fixed90s launch observation,240s component rendezvous and120s setup original wait address concrete old limits. 240+335 leaves85s within660 for startup/cleanup; arithmetic never replaces complete terminal/EOF evidence.",
+    "current_launcher_or_supervisor_elapsed_measured": false,
+    "prefer_new_fixed900_to_lowering510": true,
+    "stage61_seconds_is_not_launcher_measurement": true,
+    "timeout_semantics": "Preserve UNKNOWN and originals; no replay, new key, signal or existing lease extension. No claim that finite observation budgets guarantee completion."
+  },
+  "current_sender_observation": {
+    "bytes": 27864,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-neg01-bound02-failure/SENDER-PUBLIC-OBSERVATION.original.json",
+    "sha256": "79b261a4e6c65b747f983bda939d32ef3aed7a6be523f1d85db5796e8a67a1b2"
+  },
+  "current_stage_carrier": {
+    "bytes": 50572,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-SUCCESSOR02-STAGE-TIMING-READ.original.mcp.json",
+    "sha256": "70b61910b9c07761c9eb8e0d2cf3e7082b2d0bf8b72f7475025603de9b3f3079"
+  },
+  "evidence": {
+    "ARCHIVE-STAGE-READ-CONTROLLER.original.json": {
+      "bytes": 68268,
+      "path": "/workspace/scratch/fc33eac909ab/review/R6-lease-budget-review/ARCHIVE-STAGE-READ-CONTROLLER.original.json",
+      "sha256": "a8dd0eacad0ad3ed19f799bb56bb87e2495634cf47bb5d66026bf0cab7232782"
+    },
+    "LIFECYCLE-READ-UNKNOWN.original.json": {
+      "bytes": 5941,
+      "path": "/workspace/scratch/fc33eac909ab/review/R6-lease-budget-review/LIFECYCLE-READ-UNKNOWN.original.json",
+      "sha256": "fee6672ffe04ab75c72a6eeaa08aac9e28ac40e5ce27762868a7a9579be26863"
+    },
+    "OLD-ARCHIVE-STAGE-TIMING.original.json": {
+      "bytes": 19206,
+      "path": "/workspace/scratch/fc33eac909ab/review/R6-lease-budget-review/OLD-ARCHIVE-STAGE-TIMING.original.json",
+      "sha256": "d2dcf566e14d3a1c02d5d2d9223507f6b0385bfb977b73801262bfc3c9dad4a1"
+    },
+    "OLD-SUCCESS-TIMING.original.json": {
+      "bytes": 3948,
+      "path": "/workspace/scratch/fc33eac909ab/review/R6-lease-budget-review/OLD-SUCCESS-TIMING.original.json",
+      "sha256": "0badc9ffad82fbeda766b3dfa71d7a984dc85574d2628eedce414d2e491e3154"
+    },
+    "READ-CONTROLLER.original.json": {
+      "bytes": 18094,
+      "path": "/workspace/scratch/fc33eac909ab/review/R6-lease-budget-review/READ-CONTROLLER.original.json",
+      "sha256": "48615fd672e26e9d1b6f792c1c50b4f34a94102777a7aedb9c323f3966b2daf0"
+    }
+  },
+  "findings": [
+    {
+      "finding": "Complete verify_retired occurs before the sole fork. Parent actor completion does not prove detached supervisor readiness.",
+      "source": "component_lifecycle.detached_launch"
+    },
+    {
+      "finding": "A second complete verify_retired precedes baseline, sidecar/provider startup, health and READY.",
+      "source": "component_lifecycle.supervise"
+    },
+    {
+      "finding": "The original150s deadline starts before UI, includes both launch phases, preserves25s before READY polling, then performs final retirement/identity/UI/READY checks. Terminal observation is335s from the sole Send.",
+      "source": "component sender"
+    },
+    {
+      "finding": "The original60s internal/75s request starts after launcher return and also waits for supervisor READY, final sender guards, Send, turn.start and ROOT-SETUP-PLAN.",
+      "source": "phone_chain_bridge setup"
+    },
+    {
+      "finding": "The90s difference from listener420 is a prelaunch threshold, not a proof that both complete reads fit90s. The original independent420 gate remains enforced.",
+      "source": "remaining510"
+    }
+  ],
+  "four_active_initial_live_lease_locations": [
+    {
+      "from_ms": 600000,
+      "location": "run expiry",
+      "source": "root-chain/source/run_component_root_once.py",
+      "to_ms": 900000
+    },
+    {
+      "from_ms": 600000,
+      "location": "prepare initial expiry upper bound",
+      "source": "runtime/source/prepare_component.py",
+      "to_ms": 900000
+    },
+    {
+      "from_ms": 600000,
+      "location": "stage live upper bound",
+      "source": "runtime/source/stage_component.py",
+      "to_ms": 900000
+    },
+    {
+      "from_ms": 600000,
+      "location": "load_lease require_live upper bound",
+      "source": "runtime/source/component_lifecycle.py",
+      "to_ms": 900000
+    }
+  ],
+  "observed_current_failed_scope": {
+    "clock_caveat": "Expiry versus observed file wall-clock timestamps is the actual gate arithmetic; no new clock synchronization or current launch duration is claimed.",
+    "last_stage_directory_mtime_ns": 1793995093295871313,
+    "launch_occurred": false,
+    "lease_expires_unix_ms": 1793995626355,
+    "remaining_at_last_stage_directory_mtime_seconds": 533.059128687,
+    "remaining_at_sender_failure_mtime_seconds": 506.436806871,
+    "send_attempt_count": 0,
+    "sender_failure_mtime_ns": 1793995119918193129,
+    "stage_actor_elapsed_seconds": 61.69740428903606
+  },
+  "observed_old_success": {
+    "archive_all_members_verified": true,
+    "launch_actor_elapsed_seconds": 28.05130976892542,
+    "launch_result_is_ready": false,
+    "launch_result_to_ready_metadata_seconds": 34.03999996185303,
+    "lease_expiry_unix_ms": 1793954540545,
+    "listener_service_seconds": 420.0,
+    "remaining_at_ready_metadata_seconds": 456.90511322021484,
+    "retired_verified_to_ready_metadata_seconds": 1.440000057220459,
+    "stage_actor_elapsed_seconds": 46.90666899003554,
+    "supervisor_to_ready_metadata_seconds": 33.69199991226196,
+    "timing_method": "Actual actor elapsed and same-phone full9 mtime differences; READY monotonic service deadline is420s."
+  },
+  "phone_calls": 0,
+  "propagation": {
+    "common_declaration_only_occurrence": [
+      {
+        "line": 41,
+        "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/component_common.py",
+        "source": "MAX_LEASE_SECONDS = 600"
+      }
+    ],
+    "common_source_unchanged": {
+      "bytes": 19138,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    "final_r6_pins": null,
+    "historical600_unchanged": [
+      "runtime/reference/component_common_r5.py",
+      "runtime/reference/retained_unstarted_stage_final02.py",
+      "all old LEASE/CHAIN-INTENT/source manifests"
+    ],
+    "manifest_changes": [
+      "new runtime and source member pins",
+      "new initial900 with automatic extension false",
+      "launch90/110/145",
+      "component240/660 and root660",
+      "setup120/135/155/190"
+    ],
+    "production15_and_combination_unchanged": true,
+    "root_members": [
+      "run_component_root_once.py",
+      "phone_chain_bridge.py"
+    ],
+    "runtime_file_count_unchanged": 38,
+    "runtime_members": [
+      "prepare_component.py",
+      "stage_component.py",
+      "component_lifecycle.py",
+      "send_new_native_guard_task_r10_r4.py"
+    ]
+  },
+  "qualification_granted": false,
+  "recommended_new_identity_budget": {
+    "automatic_lease_extension": false,
+    "before_after_guard_internal_seconds_unchanged": 25,
+    "before_after_guard_phone_seconds_unchanged": 40,
+    "component_pre_send_seconds": 240,
+    "component_ssh_total_seconds": 660,
+    "initial_lease_seconds": 900,
+    "launch_p4_actor_wait_seconds": 110,
+    "launch_phone_seconds": 90,
+    "launch_root_remote_seconds": 145,
+    "listener_accept_seconds_unchanged": 120,
+    "listener_service_seconds_unchanged": 420,
+    "maximum_detached_forks_unchanged": 1,
+    "maximum_sends_unchanged": 1,
+    "native_turn_seconds_unchanged": 300,
+    "prelaunch_remaining_strictly_greater_than_seconds": 510,
+    "production_mode_pre_send_seconds_unchanged": 150,
+    "production_mode_ssh_seconds_unchanged": 600,
+    "root_component_async_seconds": 660,
+    "sender_final_accept_margin_seconds_unchanged": 15,
+    "sender_ready_remaining_seconds_unchanged": 25,
+    "sender_terminal_seconds_unchanged": 335,
+    "setup_internal_original_wait_seconds": 120,
+    "setup_p4_actor_wait_seconds": 155,
+    "setup_phone_seconds": 135,
+    "setup_root_remote_seconds": 190
+  },
+  "reviewed_sources": [
+    {
+      "bytes": 78566,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/root-chain/source/run_component_root_once.py",
+      "sha256": "2af78597f211b8b7de32d5f40591e46c4ea5ff7caa3c4a2547ac4325666c2032"
+    },
+    {
+      "bytes": 8100,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/root-chain/source/phone_chain_bridge.py",
+      "sha256": "c2df3f727b444fa2137b2392446f603731961118f92b1309a900a1ad4a086607"
+    },
+    {
+      "bytes": 14256,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/prepare_component.py",
+      "sha256": "96bd29f1e98615f26ea43e2c6101a555c72eff7268ce318151a4ab1f667174f4"
+    },
+    {
+      "bytes": 19085,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/stage_component.py",
+      "sha256": "e87dcf806f66a87ffbf4cbdfb00bac9280fb220268a9f3ee5e17f53ee35f07b9"
+    },
+    {
+      "bytes": 40451,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/component_lifecycle.py",
+      "sha256": "99fd57b058e6e49ea4a8a9f7145641752acd3a4bc7727d7ba34710cb48aa8ae7"
+    },
+    {
+      "bytes": 19138,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 39012,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/component_listener.py",
+      "sha256": "6db4eb9f55bc3313b635bdd05584901706213a9d47ac2f48b81a28cdb91313ec"
+    },
+    {
+      "bytes": 41080,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-root/runtime/source/send_new_native_guard_task_r10_r4.py",
+      "sha256": "53a6e9149cf768211c3c8ba74d3c422f95d78f14efdb8751af1ac55d1a9225d5"
+    }
+  ],
+  "schema": "hepta.fc33.r6.new-identity-budget-independent-review.v1",
+  "source_mutations": 0,
+  "state": "READ_ONLY_REVIEW_RECOMMENDATION_AWAITING_EXACT_R6_DELTA"
+}

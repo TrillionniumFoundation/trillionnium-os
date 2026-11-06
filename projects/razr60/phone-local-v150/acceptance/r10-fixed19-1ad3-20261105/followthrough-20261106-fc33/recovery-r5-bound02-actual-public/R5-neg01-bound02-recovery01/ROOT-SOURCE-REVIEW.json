@@ -1,0 +1,18 @@
+{
+  "actual_readonly_source_and_targets_and_authority_complete_byte_equal": true,
+  "after_absence_paths": 18,
+  "complete_extension_and_guard_read": true,
+  "eleven_successful_core_helpers_complete_byte_equal": true,
+  "fixed19_credit": 0,
+  "fixed_directory_count": 9,
+  "fixed_owned_file_count": 78,
+  "operations": 87,
+  "original_protected_roots": 44,
+  "phone_dispatch_by_this_review": false,
+  "source": {
+    "bytes": 219894,
+    "sha256": "c9a87756b951e504e74165975aa5aa2cad8e904bd6b64ce99efb6a25888949dc"
+  },
+  "state": "ROOT_REVIEWED_EXACT_OWNED_RECOVERY_AND_HOST_GUARD_SOURCE",
+  "unknown_parent_or_inode_or_content_rejected": true
+}

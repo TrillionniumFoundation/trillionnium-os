@@ -1,0 +1,17 @@
+{
+  "after": "   receipts.append({**result,'phase':phase})\n",
+  "before": "   receipts.append(dict(phase=phase,**result))\n",
+  "candidate": {
+    "bytes": 20206,
+    "sha256": "54f7a6c1fd7e9ff1b82e82f4947639bca1745d334f7512bbf92d796bb32987fa"
+  },
+  "child_phase_program_changes": 0,
+  "complete_byte_inverse": true,
+  "operator_manifest_changes": 0,
+  "original": {
+    "bytes": 20208,
+    "sha256": "d1959bfc46c0dc0e347a1a438062f6f6259d85bd6f17cf0b4aae967f1e488b53"
+  },
+  "production_source_changes": 0,
+  "replaced_line": 209
+}

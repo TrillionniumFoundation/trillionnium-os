@@ -1,0 +1,14 @@
+{
+  "state": "ONE_LINE_COMPATIBILITY_CHANGE_REVIEWED_FOR_CREATE_ONLY_PUBLICATION",
+  "source_bytes": 11279,
+  "source_sha256": "43c908a87d0a4d760e9bbea2ef03be1108349a9671f265e910680e8abd00a73a",
+  "reviewed_actual_execute_body_and_actual_probe_result": true,
+  "replaced_line": 209,
+  "original_child_result_preserved": true,
+  "logical_phase_in_aggregate_only": true,
+  "full_byte_inverse": true,
+  "actual_parent_48_members_and_binding_read_before_new_output": true,
+  "production15_changed": false,
+  "phone_calls": 0,
+  "fixed19_credit": 0
+}

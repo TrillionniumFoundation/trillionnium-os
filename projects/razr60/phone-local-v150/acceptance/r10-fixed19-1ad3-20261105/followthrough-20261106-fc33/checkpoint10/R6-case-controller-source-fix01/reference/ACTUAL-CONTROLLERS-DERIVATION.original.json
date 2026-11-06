@@ -1,0 +1,75 @@
+{
+  "actor_dispatches": 0,
+  "actual_BUILD": null,
+  "actual_LEASE_originals": null,
+  "actual_NEG01": null,
+  "actual_NEG02": null,
+  "actual_READY": null,
+  "all_source_inverses_complete": true,
+  "binder": {
+    "bytes": 9462,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/bind_actual_controller_input.py",
+    "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1"
+  },
+  "case_install_gate": {
+    "bytes": 7083,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/verify_actual_installation_for_cases.py",
+    "sha256": "3235dafa57e077e5e8b56063eece6ea5c551d101ce770b440d7161fb0cf3b99f"
+  },
+  "files": [
+    {
+      "bytes": 5269,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/SOURCE-INVERSES.json",
+      "sha256": "a8eb4148367e007b249c7564c1a3b1ee41658f212f0dfc7b4411ff7044f9d249"
+    },
+    {
+      "bytes": 9587,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/reference/RELEASE-DERIVATION.original.json",
+      "sha256": "d965569c4f53d2835b442c9e2c5edc5a7a85f1fbab24a50769033dcf876954db"
+    },
+    {
+      "bytes": 9462,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/bind_actual_controller_input.py",
+      "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1"
+    },
+    {
+      "bytes": 34376,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_component_build_inputs_UNBOUND.py",
+      "sha256": "07c243da62566e77c4695d650470487706a49d9992089d74fa894a5ce491d198"
+    },
+    {
+      "bytes": 64815,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_release_install_stages_UNBOUND.py",
+      "sha256": "71a4b6598c2d8907410fe1a2b69d49979aa193c76e85684124334c653d1f405d"
+    },
+    {
+      "bytes": 7083,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/verify_actual_installation_for_cases.py",
+      "sha256": "3235dafa57e077e5e8b56063eece6ea5c551d101ce770b440d7161fb0cf3b99f"
+    }
+  ],
+  "helper": {
+    "bytes": 34376,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_component_build_inputs_UNBOUND.py",
+    "sha256": "07c243da62566e77c4695d650470487706a49d9992089d74fa894a5ce491d198"
+  },
+  "phone_calls": 0,
+  "release_derivation": {
+    "bytes": 9587,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-chain-r6-derived01/DERIVATION.json",
+    "sha256": "d965569c4f53d2835b442c9e2c5edc5a7a85f1fbab24a50769033dcf876954db"
+  },
+  "runtime": {
+    "bytes": 59400,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/runtime/MANIFEST.json",
+    "sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5"
+  },
+  "schema": "hepta.fc33.r6.controller-source-rebinding.v1",
+  "stage": {
+    "bytes": 64815,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_release_install_stages_UNBOUND.py",
+    "sha256": "71a4b6598c2d8907410fe1a2b69d49979aa193c76e85684124334c653d1f405d"
+  },
+  "state": "HOST_SOURCE_CONTROLLERS_BOUND_ACTUAL_CASE_BUILD_INSTALL_INPUTS_UNBOUND",
+  "unchanged_P4_observer_and_controller_reader_reused": true
+}

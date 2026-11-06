@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.fc33.bound02.cleanup-reader-public-whitelist.v1",
+  "files": [
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/reader_base.py",
+      "relative_path": "host-reader/reader_base.py",
+      "bytes": 25101,
+      "sha256": "db311589b12ee3d622193d4c725b39e1efff3546ac702911a8a13860db370d7a"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/reader_extension.py",
+      "relative_path": "host-reader/reader_extension.py",
+      "bytes": 24676,
+      "sha256": "629abbb41b07987b7209ffbe1b43f7a69adcf1df9e35e627dc3558922bacf317"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/build_host_reader.py",
+      "relative_path": "host-reader/build_host_reader.py",
+      "bytes": 1972,
+      "sha256": "63464a683f2f67495b854800bb86422f33b13155eeb40451e497c6e24455398b"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/verify_bound02_cleanup_result_UNBOUND.py",
+      "relative_path": "host-reader/verify_bound02_cleanup_result_UNBOUND.py",
+      "bytes": 49777,
+      "sha256": "35691809edb3cf3c89009b8942b5a13fddd6cdfdfc23a1f9ec2dc5db901f4315"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/verify_bound02_cleanup_result_BOUND.py",
+      "relative_path": "host-reader/verify_bound02_cleanup_result_BOUND.py",
+      "bytes": 50587,
+      "sha256": "5dbfc54a06b97dda7b9080d161054ace3167cc12f215b972d5d0baca8b217642"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/VALIDATOR-DERIVATION.json",
+      "relative_path": "host-reader/VALIDATOR-DERIVATION.json",
+      "bytes": 2124,
+      "sha256": "a27f17054254068a4513b3de7d37f31ddb7d656a41c3fe1935a88d498bad9840"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/SOURCE-CONTROLS.json",
+      "relative_path": "host-reader/SOURCE-CONTROLS.json",
+      "bytes": 468,
+      "sha256": "5759ca5cdeb43fa00f1e704f0e1c9b6fc74a6ae4d429481bbbe6b9907542e68b"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/ACTUAL-INPUTS.template.json",
+      "relative_path": "host-reader/ACTUAL-INPUTS.template.json",
+      "bytes": 186,
+      "sha256": "3585cbf61d0bdcbfd270ddf6d5a7a37b62fa816f28672c171c1828a6148ce6b3"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/ACTUAL-READER-REQUEST.json",
+      "relative_path": "host-reader/ACTUAL-READER-REQUEST.json",
+      "bytes": 51847,
+      "sha256": "3c30adc861ff489dc04816c6c97f52868fffb24d4fc50802f33052e7edab0abd"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/ACTUAL-READER-CONTROLLER.original.json",
+      "relative_path": "host-reader/ACTUAL-READER-CONTROLLER.original.json",
+      "bytes": 56679,
+      "sha256": "e5dc6345677fb05ef60b1f21f3698e7633cddc93944a3b804315f6622b1eab8d"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/ACTUAL-REPORT-READ.original.mcp.json",
+      "relative_path": "host-reader/ACTUAL-REPORT-READ.original.mcp.json",
+      "bytes": 43007,
+      "sha256": "887353a4f8b666834e6e7f295e8aaf3261e4fede9939cb58acdb1a804f346a72"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/HOST-VERIFICATION.PUBLIC.original.json",
+      "relative_path": "host-reader/HOST-VERIFICATION.PUBLIC.original.json",
+      "bytes": 37983,
+      "sha256": "51d5a01c932a2e9e14b1b19158d0b36ccc387ac068d726d853956a4d5db25023"
+    },
+    {
+      "path": "review/R5-neg01-bound02-recovery01/host-reader/COMPLETION.json",
+      "relative_path": "host-reader/COMPLETION.json",
+      "bytes": 5131,
+      "sha256": "ca9b0ce50450f2cc0e0b3bd5ccb916bdf54fb11ed90f210d7912c7fa96e08395"
+    }
+  ],
+  "private_packet_or_bodies_included": false
+}

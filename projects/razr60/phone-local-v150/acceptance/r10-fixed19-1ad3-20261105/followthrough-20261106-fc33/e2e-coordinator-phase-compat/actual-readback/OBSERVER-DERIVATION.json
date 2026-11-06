@@ -1,0 +1,12 @@
+{
+  "candidate": {
+    "bytes": 7748,
+    "sha256": "5486f3401173e4caacc3731bf8eefbbe0c7b9b8df18330bf8c2e769df2744a90"
+  },
+  "only_identity_inventory_and_terminal_binding_changes": true,
+  "parent": {
+    "bytes": 7752,
+    "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/observe_controller_source_originals.py",
+    "sha256": "8a59f1ccb4cc3d24e866c5be23b6c82f1d69f45a67bd0db4c7289730f8ce1e38"
+  }
+}

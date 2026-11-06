@@ -1,0 +1,35 @@
+--- R5/physical_fault_common.py
++++ R6/physical_fault_common.py
+@@ -10,7 +10,7 @@
+ MAX_ORIGINAL=64*1024*1024
+ FINAL_DEPENDENCIES=None
+ CASE_IDS=('NEG-04','NEG-05','NEG-07')
+-SENDER_PIN=(40788,'5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281')
++SENDER_PIN=(41355, 'f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73')
+ CAPTURE_PIN=(29065,'f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3')
+ PROTOCOL_PIN=(37318,'c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0')
+ def need(value,message):
+@@ -155,12 +155,12 @@
+     policy=originals.read(plan['actual_policy'],16*1024*1024)
+     adoption_raw=originals.read(plan['policy_adoption'],16*1024*1024)
+     adoption=strict(adoption_raw)
+-    need(runtime.get('revision')=='r10-r1-fc33-native-bound-v3-r5' and len(runtime['files'])==38 and
++    need(runtime.get('revision')=='r10-r1-fc33-native-bound-v3-r6' and len(runtime['files'])==38 and
+          runtime.get('actual_combination_generated') is True and
+          runtime.get('current_policy_sha256')==sha(policy) and
+          runtime.get('current_combination_sha256')==plan['combination_sha256'] and
+          runtime.get('explicit_policy_adoption_sha256')==plan['policy_adoption']['sha256'],
+-         'actual_reviewed_R5_runtime_manifest_generation')
++         'actual_reviewed_R6_runtime_manifest_generation')
+     need(literal(consumer,'PACKAGE_SHA')==plan['runtime_package']['sha256'] and
+          literal(consumer,'CURRENT_POLICY_SHA')==sha(policy) and
+          literal(consumer,'CURRENT_POLICY_ADOPTION_SHA')==plan['policy_adoption']['sha256'] and
+@@ -236,7 +236,7 @@
+          len(files['source/owned_capture.py'])==CAPTURE_PIN[0],'unchanged_owned_capture_source')
+     sender=originals.read(plan['sender_source'],65536)
+     need((len(sender),sha(sender))==SENDER_PIN and
+-         plan['sender_source']['path']==str(B/'send_new_native_task_r5.py'),'unchanged_production_sender')
++         plan['sender_source']['path']==str(B/'send_new_native_task_r5_fc33_r6.py'),'unchanged_production_sender')
+     watch_raw=originals.read(plan['watch_plan'],65536);watch=strict(watch_raw)
+     W=module(files['source/watch_physical_fault_once.py'],'watch_physical_fault_once.py','fault_watch_admission')
+     owner=W.validate_plan(watch)

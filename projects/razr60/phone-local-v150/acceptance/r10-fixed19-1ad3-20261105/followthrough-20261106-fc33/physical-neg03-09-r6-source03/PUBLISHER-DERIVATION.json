@@ -1,0 +1,35 @@
+{
+  "actual_execution": null,
+  "all_remaining_publisher_bytes_identical": true,
+  "already_controlled_source_reader": {
+    "bytes": 1345,
+    "sha256": "ecd6139f9161bc18d59eee16bd58f3f3de478f39643e3967d12c84167ad753c8"
+  },
+  "candidate": {
+    "bytes": 19716,
+    "sha256": "10d85d8dc24c57905a46e40a97f67cbb5d40414b88933f7202b1bc39dddd9040"
+  },
+  "changed_constant_assignments": [
+    "SOURCE_PAYLOAD",
+    "PAYLOAD_RAW",
+    "EXPECTED_INPUTS",
+    "EXISTING_SOURCE_BINDING",
+    "SOURCE_PARENT",
+    "REFERENCE_INDEX"
+  ],
+  "changed_literal_namespaces": [
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r6-03",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fc33-negative-sources-native-v3-r6-03"
+  ],
+  "complete_inverse": true,
+  "parent": {
+    "bytes": 19652,
+    "sha256": "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81"
+  },
+  "phone_calls": 0,
+  "prepared_member_count": 178,
+  "production15_source_changes": 0,
+  "reviewed_reference_count": 172,
+  "schema": "hepta.fc33.negative-R6-source03-publisher-derivation.v1",
+  "source_reader_only_change": "exact existing read() envelope 0<bytes<=1MiB to0<=bytes<=16MiB; full9/SHA/singlelink/book unchanged"
+}

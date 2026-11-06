@@ -1,0 +1,23 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01/source/bind_r6_source_input.py",
+    "--input",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-ACTUAL01.json",
+    "--input-bytes",
+    "921",
+    "--input-sha256",
+    "31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8",
+    "--output",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01",
+    "--operation-key",
+    "fc33-r6-case-controller-source-derive-fix01",
+    "--timeout-seconds",
+    "300"
+  ],
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "fc33-r6-case-controller-source-input-binding-fix01",
+  "timeout_seconds": 120
+}

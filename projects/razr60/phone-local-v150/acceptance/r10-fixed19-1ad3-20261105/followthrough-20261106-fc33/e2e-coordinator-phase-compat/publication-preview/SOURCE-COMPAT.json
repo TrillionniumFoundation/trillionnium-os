@@ -1,0 +1,79 @@
+{
+  "COMP01": null,
+  "actual_BUILD": null,
+  "actual_E2E": null,
+  "actual_READY": null,
+  "actual_context": null,
+  "actual_material": null,
+  "actual_native_scope": null,
+  "automatic_retry": false,
+  "capture_source": {
+    "bytes": 37720,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/reference/owned_capture.source.original.py",
+    "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29"
+  },
+  "child_phase_program_changed": false,
+  "collector_manifest": {
+    "bytes": 4270,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/collector-package/MANIFEST.json",
+    "sha256": "ec593e1b8c97eb979ee1059cca8629861e896c38088973764a984b590cc47517"
+  },
+  "coordinator": {
+    "bytes": 20206,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/source/run_fixed19_e2e_root_once.py",
+    "sha256": "54f7a6c1fd7e9ff1b82e82f4947639bca1745d334f7512bbf92d796bb32987fa"
+  },
+  "fixed19_credit": 0,
+  "historical_pass_inherited": false,
+  "materializer": {
+    "bytes": 24834,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/operator/materialize_case_r10.py",
+    "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+  },
+  "maximum_new_sends_unchanged": 1,
+  "model_requests": 0,
+  "native_sends": 0,
+  "new_coordinator_only": true,
+  "new_nonces": 0,
+  "operator_manifest": {
+    "bytes": 5011,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/operator-chain/SOURCE-MANIFEST.json",
+    "sha256": "f078a6ccaac60874a37ef269aed4ca168c599eaf1e5b184067b6e47533fbab3f"
+  },
+  "parent_binding": {
+    "bytes": 60062,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/BINDING.json",
+    "sha256": "00a6cc4850c40cc710d348480f0d6b2871a145c89ee6801bd195432659a8da15"
+  },
+  "parent_coordinator": {
+    "bytes": 20208,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/source/run_fixed19_e2e_root_once.py",
+    "sha256": "d1959bfc46c0dc0e347a1a438062f6f6259d85bd6f17cf0b4aae967f1e488b53"
+  },
+  "patch": {
+    "bytes": 737,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/SOURCE.patch",
+    "sha256": "e7ec15964c9d447ce77b0ba82f5b6e6b7ef3cd6be90522ba1254f0f67a5ebc6e"
+  },
+  "phone_calls": 0,
+  "production_source_changes": 0,
+  "registrations": 0,
+  "schema": "hepta.fc33.e2e.coordinator-compat-source.v1",
+  "shared_materials": {
+    "bytes": 3519,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/shared/SHARED-MATERIALS.json",
+    "sha256": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1"
+  },
+  "source_control_result": {
+    "bytes": 2463,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/SOURCE-CONTROL-RESULT.json",
+    "sha256": "9af639a431ef44c3a9d5b9efc5aac095b145514cca3cb006413b6f767464c582"
+  },
+  "source_inverse": {
+    "bytes": 534,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/SOURCE-INVERSE.json",
+    "sha256": "09df1b6daa6b93661a86a5014a9a0b059c1e7c8df8f5e24663207af2a6bfd7da"
+  },
+  "state": "ONE_LINE_HOST_COORDINATOR_COMPATIBILITY_SOURCE_ONLY",
+  "unchanged_parent_member_count": 47
+}

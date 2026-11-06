@@ -1,0 +1,154 @@
+[
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/DERIVATION.json",
+    "original": {
+      "bytes": 3737,
+      "metadata": {
+        "st_ctime_ns": 1793995576441148523,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543304,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576441148523,
+        "st_nlink": 1,
+        "st_size": 3737,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/DERIVATION.json",
+      "sha256": "ddfc9ba276fac6cf71c79e0d93b16677580b2e78b88b8653a27e2c381d2b13ec"
+    }
+  },
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/SOURCE-COMPAT.json",
+    "original": {
+      "bytes": 4167,
+      "metadata": {
+        "st_ctime_ns": 1793995576438514069,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543297,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576438514069,
+        "st_nlink": 1,
+        "st_size": 4167,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/SOURCE-COMPAT.json",
+      "sha256": "0ff89af8e719536aa08bba674b9e2dc439afade9d93b7d9aad0dde3536d04dd6"
+    }
+  },
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/SOURCE-CONTROL-RESULT.json",
+    "original": {
+      "bytes": 2463,
+      "metadata": {
+        "st_ctime_ns": 1793995576438817286,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543298,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576438817286,
+        "st_nlink": 1,
+        "st_size": 2463,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/SOURCE-CONTROL-RESULT.json",
+      "sha256": "9af639a431ef44c3a9d5b9efc5aac095b145514cca3cb006413b6f767464c582"
+    }
+  },
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/SOURCE-INVERSE.json",
+    "original": {
+      "bytes": 534,
+      "metadata": {
+        "st_ctime_ns": 1793995576439107378,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543299,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576439107378,
+        "st_nlink": 1,
+        "st_size": 534,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/SOURCE-INVERSE.json",
+      "sha256": "09df1b6daa6b93661a86a5014a9a0b059c1e7c8df8f5e24663207af2a6bfd7da"
+    }
+  },
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/SOURCE.patch",
+    "original": {
+      "bytes": 737,
+      "metadata": {
+        "st_ctime_ns": 1793995576439343969,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543300,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576439343969,
+        "st_nlink": 1,
+        "st_size": 737,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/SOURCE.patch",
+      "sha256": "e7ec15964c9d447ce77b0ba82f5b6e6b7ef3cd6be90522ba1254f0f67a5ebc6e"
+    }
+  },
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/reference/PARENT-BINDING.original.json",
+    "original": {
+      "bytes": 60062,
+      "metadata": {
+        "st_ctime_ns": 1793995576439591934,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543301,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576439591934,
+        "st_nlink": 1,
+        "st_size": 60062,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/reference/PARENT-BINDING.original.json",
+      "sha256": "00a6cc4850c40cc710d348480f0d6b2871a145c89ee6801bd195432659a8da15"
+    }
+  },
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/reference/PARENT-COORDINATOR.original.py",
+    "original": {
+      "bytes": 20208,
+      "metadata": {
+        "st_ctime_ns": 1793995576439846067,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543302,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576439846067,
+        "st_nlink": 1,
+        "st_size": 20208,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/reference/PARENT-COORDINATOR.original.py",
+      "sha256": "d1959bfc46c0dc0e347a1a438062f6f6259d85bd6f17cf0b4aae967f1e488b53"
+    }
+  },
+  {
+    "local": "/workspace/scratch/fc33eac909ab/review/e2e-coordinator-phase-compat/actual-readback/actual/source/run_fixed19_e2e_root_once.py",
+    "original": {
+      "bytes": 20206,
+      "metadata": {
+        "st_ctime_ns": 1793995576440093783,
+        "st_dev": 16777233,
+        "st_gid": 20,
+        "st_ino": 593543303,
+        "st_mode": 33152,
+        "st_mtime_ns": 1793995576440093783,
+        "st_nlink": 1,
+        "st_size": 20206,
+        "st_uid": 501
+      },
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-coordinator-compat01/source/run_fixed19_e2e_root_once.py",
+      "sha256": "54f7a6c1fd7e9ff1b82e82f4947639bca1745d334f7512bbf92d796bb32987fa"
+    }
+  }
+]

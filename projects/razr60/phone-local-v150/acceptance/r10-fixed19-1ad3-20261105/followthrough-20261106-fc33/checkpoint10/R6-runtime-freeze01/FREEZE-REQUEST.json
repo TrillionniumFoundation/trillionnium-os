@@ -1,0 +1,11 @@
+{
+  "args": [
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r6-review01/freeze_native_bound_runtime_r6_fc33.py",
+    "--freeze-reviewed-host-runtime",
+    "cbb8997c66172054afbd57acb349257d1a8804eff024dbbcb6deb0b438ebcdf3"
+  ],
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "fc33-native-bound-runtime-r6-freeze-once01",
+  "timeout_seconds": 180
+}

@@ -1,0 +1,12 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01/source/derive_r6_source_rebindings_BOUND.py",
+    "--publish-host-sources-once"
+  ],
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "fc33-r6-case-controller-source-derive-fix01",
+  "timeout_seconds": 300
+}

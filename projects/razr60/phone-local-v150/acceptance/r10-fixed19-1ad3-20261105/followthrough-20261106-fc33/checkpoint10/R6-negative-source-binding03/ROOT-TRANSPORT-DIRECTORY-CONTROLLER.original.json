@@ -1,0 +1,44 @@
+{
+  "request": {
+    "host": "mac",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "stdin": "import os,json,stat\nfrom pathlib import Path\nB=Path(\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1\")\np=B/'followthrough-fc33-negative-source-transport-r6-03'\nassert B.resolve(strict=True)==B and not os.path.lexists(p)\np.mkdir(mode=0o700)\nfd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)\nos.fsync(fd)\ns=os.fstat(fd)\nassert stat.S_ISDIR(s.st_mode)\nos.close(fd)\nprint(json.dumps({'state':'CREATED_NEW_NEG_R6_SOURCE03_TRANSPORT_DIRECTORY','path':str(p),'mode':oct(stat.S_IMODE(s.st_mode)),'phone_calls':0,'source_execution':False}))\n",
+    "idempotency_key": "fc33-negative-r6-source03-transport-dir-once01",
+    "timeout_seconds": 30
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793998912367,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b2aafb6f-fc05-7f39\",\n    \"idempotency_key\": \"fc33-negative-r6-source03-transport-dir-once01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b2aafb6f-fc05-7f39\",\n    \"request_digest\": \"355abfa698d8395dd56afb793e5b2fb0074859938accb55f82c336463f39f0aa\",\n    \"request_fingerprint\": 3844595954163923293,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b2aafb6f-fc05-7f39\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 84930,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b2aafb6f-fc05-7f39\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793998912624,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b2aafb6f-fc05-7f39\",\n  \"launch_nonce\": \"3c3d3f6ba98e871203803a7f29ea1b38\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 288,\n      \"stored\": 288\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b2aafb6f-fc05-7f39\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b227374617465223a2022435245415445445f4e45575f4e45475f52365f534f5552434530335f5452414e53504f52545f4449524543544f5259222c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6e656761746976652d736f757263652d7472616e73706f72742d72362d3033222c20226d6f6465223a2022306f373030222c202270686f6e655f63616c6c73223a20302c2022736f757263655f657865637574696f6e223a2066616c73657d0a\",\n    \"eof\": true,\n    \"next_offset\": 288,\n    \"offset\": 0,\n    \"size\": 288,\n    \"text\": \"{\\\"state\\\": \\\"CREATED_NEW_NEG_R6_SOURCE03_TRANSPORT_DIRECTORY\\\", \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r6-03\\\", \\\"mode\\\": \\\"0o700\\\", \\\"phone_calls\\\": 0, \\\"source_execution\\\": false}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

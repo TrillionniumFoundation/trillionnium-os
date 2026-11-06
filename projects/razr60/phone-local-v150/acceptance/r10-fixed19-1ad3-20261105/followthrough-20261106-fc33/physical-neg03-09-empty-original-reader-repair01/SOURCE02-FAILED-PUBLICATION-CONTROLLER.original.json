@@ -1,0 +1,111 @@
+{
+  "request": {
+    "args": [
+      "-I",
+      "-B",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/publish_negative_sources_once.py",
+      "--publish-negative-source-candidate-once",
+      "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81"
+    ],
+    "executable": "/usr/bin/python3",
+    "host": "mac",
+    "idempotency_key": "fc33-negative-source-only-native-v3-r5-02",
+    "timeout_seconds": 120
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/publish_negative_sources_once.py\",\n      \"--publish-negative-source-candidate-once\",\n      \"b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81\"\n    ],\n    \"created_unix_ms\": 1793995080414,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b27082de-fc05-7e06\",\n    \"idempotency_key\": \"fc33-negative-source-only-native-v3-r5-02\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b27082de-fc05-7e06\",\n    \"request_digest\": \"f5ee850081cf7f5cd9f18d6a0dbc8a84010403c52defc7b040572672788c25ca\",\n    \"request_fingerprint\": 17721247820973834076,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b27082de-fc05-7e06\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 58463,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b27082de-fc05-7e06\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793995081660,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 1,\n  \"job_id\": \"1a1b27082de-fc05-7e06\",\n  \"launch_nonce\": \"c2f5f366d6eb4d21545357435a54dcd3\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 3742,\n      \"stored\": 3742\n    },\n    \"stdout\": {\n      \"seen\": 0,\n      \"stored\": 0\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"failed\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b27082de-fc05-7e06\",\n  \"stderr\": {\n    \"bytes_hex\": \"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6e656761746976652d736f757263652d7472616e73706f72742d72352d30322f7075626c6973685f6e656761746976655f736f75726365735f6f6e63652e7079222c206c696e65203332332c20696e203c6d6f64756c653e0a202020206d61696e28290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6e656761746976652d736f757263652d7472616e73706f72742d72352d30322f7075626c6973685f6e656761746976655f736f75726365735f6f6e63652e7079222c206c696e65203236362c20696e206d61696e0a20202020726573756c74203d20626f756e642e6465726976655f6e656761746976655f736f757263657328696e707574735f7261772c20726561645f70696e6e65643d6d6174657269616c2e72656164290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6e656761746976652d736f757263652d62696e64696e672d72352d30322f736f757263652f6465726976655f6e656761746976655f736f75726365735f424f554e442e7079222c206c696e65203635302c20696e206465726976655f6e656761746976655f736f75726365730a20202020726573756c74203d205f636f6e737472756374285f61646d69745f736f75726365732873747269637428696e707574735f726177292c20706f6f6c29290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6e656761746976652d736f757263652d62696e64696e672d72352d30322f736f757263652f6465726976655f6e656761746976655f736f75726365735f424f554e442e7079222c206c696e65203239392c20696e205f61646d69745f736f75726365730a20202020636f6d6d6f6e2e67656e65726174696f6e5f696e707574732867656e65726174696f6e2c20706f6f6c290a202046696c6520223c70696e6e65642d736f757263652f6e656761746976655f67656e65726174696f6e5f61646d697373696f6e3e222c206c696e65203138382c20696e2067656e65726174696f6e5f696e707574730a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f6172742d736f757263652d61313035352d706172656e742d676574617474722d726573756d6530312f61637475616c5f61646f7074696f6e5f63616e64696461746530332f61637475616c30312f706f73742d70726f6f662f6f726967696e616c732f70726f6f662d3034312e62696e222c206c696e65203832372c20696e207665726966795f61646f7074696f6e0a2020202076616c75653d7374726963742861646f7074696f6e5f726177293b726573756c743d76616c69646174655f61646f7074696f6e5f76616c75652876616c75652c726561645f70696e6e65643d726561645f70696e6e6564290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f6172742d736f757263652d61313035352d706172656e742d676574617474722d726573756d6530312f61637475616c5f61646f7074696f6e5f63616e64696461746530332f61637475616c30312f706f73742d70726f6f662f6f726967696e616c732f70726f6f662d3034312e62696e222c206c696e65203830342c20696e2076616c69646174655f61646f7074696f6e5f76616c75650a202020206c6976655f7261773d6765742876616c75655b276c6976655f70726f76656e616e6365275d293b6c6976653d7665726966795f6c6976655f63617074757265286c6976655f7261772c726561645f70696e6e65643d676574290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f6172742d736f757263652d61313035352d706172656e742d676574617474722d726573756d6530312f61637475616c5f61646f7074696f6e5f63616e64696461746530332f61637475616c30312f706f73742d70726f6f662f6f726967696e616c732f70726f6f662d3034312e62696e222c206c696e65203436312c20696e207665726966795f6c6976655f636170747572650a20202020643d7b6b3a726f775b6b5d20666f72206b20696e20282770617468272c276279746573272c27736861323536272c276d6574616461746127297d3b7261773d6f726967696e616c2864293b66756c6c3928726f775b276d65746164617461275d2c6c656e2872617729290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f6172742d736f757263652d61313035352d706172656e742d676574617474722d726573756d6530312f61637475616c5f61646f7074696f6e5f63616e64696461746530332f61637475616c30312f706f73742d70726f6f662f6f726967696e616c732f70726f6f662d3034312e62696e222c206c696e65203435352c20696e206f726967696e616c0a2020202072657475726e206765742862795f6f726967696e5b6b5d290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f6172742d736f757263652d61313035352d706172656e742d676574617474722d726573756d6530312f61637475616c5f61646f7074696f6e5f63616e64696461746530332f61637475616c30312f706f73742d70726f6f662f6f726967696e616c732f70726f6f662d3034312e62696e222c206c696e65203433352c20696e206765740a2020202072657475726e2062797465735f6d6174636828726561645f70696e6e656428726f77292c726f77290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f6172742d736f757263652d61313035352d706172656e742d676574617474722d726573756d6530312f61637475616c5f61646f7074696f6e5f63616e64696461746530332f61637475616c30312f706f73742d70726f6f662f6f726967696e616c732f70726f6f662d3034312e62696e222c206c696e65203738362c20696e206765740a2020202072657475726e2062797465735f6d6174636828726561645f70696e6e6564286f726967696e616c735b6b5d292c726f77290a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6e656761746976652d736f757263652d62696e64696e672d72352d30322f736f757263652f6465726976655f6e656761746976655f736f75726365735f424f554e442e7079222c206c696e65203131352c20696e20726561640a20202020726177203d2073656c662e63616c6c6261636b286469637428726f7729290a202046696c6520223c72657669657765642d736f757263652d7265616465722d626f756e642d6f6e6c793e222c206c696e6520332c20696e20726561640a202046696c6520222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f666f6c6c6f777468726f7567682d32303236313130362d666333332d736f757263652d70726f7061676174696f6e30312f6465726976655f72657669657765645f736f757263655f6d6174657269616c5f76332e7079222c206c696e652031372c20696e206e6565640a202020206966206e6f7420763a72616973652056616c75654572726f7228776879290a56616c75654572726f723a20626f756e64656420747970656420736f757263652064657363726970746f720a\",\n    \"eof\": true,\n    \"next_offset\": 3742,\n    \"offset\": 0,\n    \"size\": 3742,\n    \"text\": \"Traceback (most recent call last):\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/publish_negative_sources_once.py\\\", line 323, in <module>\\n    main()\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/publish_negative_sources_once.py\\\", line 266, in main\\n    result = bound.derive_negative_sources(inputs_raw, read_pinned=material.read)\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02/source/derive_negative_sources_BOUND.py\\\", line 650, in derive_negative_sources\\n    result = _construct(_admit_sources(strict(inputs_raw), pool))\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02/source/derive_negative_sources_BOUND.py\\\", line 299, in _admit_sources\\n    common.generation_inputs(generation, pool)\\n  File \\\"<pinned-source/negative_generation_admission>\\\", line 188, in generation_inputs\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/post-proof/originals/proof-041.bin\\\", line 827, in verify_adoption\\n    value=strict(adoption_raw);result=validate_adoption_value(value,read_pinned=read_pinned)\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/post-proof/originals/proof-041.bin\\\", line 804, in validate_adoption_value\\n    live_raw=get(value['live_provenance']);live=verify_live_capture(live_raw,read_pinned=get)\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/post-proof/originals/proof-041.bin\\\", line 461, in verify_live_capture\\n    d={k:row[k] for k in ('path','bytes','sha256','metadata')};raw=original(d);full9(row['metadata'],len(raw))\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/post-proof/originals/proof-041.bin\\\", line 455, in original\\n    return get(by_origin[k])\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/post-proof/originals/proof-041.bin\\\", line 435, in get\\n    return bytes_match(read_pinned(row),row)\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/post-proof/originals/proof-041.bin\\\", line 786, in get\\n    return bytes_match(read_pinned(originals[k]),row)\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02/source/derive_negative_sources_BOUND.py\\\", line 115, in read\\n    raw = self.callback(dict(row))\\n  File \\\"<reviewed-source-reader-bound-only>\\\", line 3, in read\\n  File \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v3.py\\\", line 17, in need\\n    if not v:raise ValueError(why)\\nValueError: bounded typed source descriptor\\n\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "transport": {
+    "directory": {
+      "request": {
+        "host": "mac",
+        "executable": "/usr/bin/python3",
+        "args": [
+          "-I",
+          "-B",
+          "-c",
+          "import os,stat,json\nb=\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1\"\np=b+'/followthrough-fc33-negative-source-transport-r5-02'\nassert os.path.realpath(b)==b and stat.S_ISDIR(os.lstat(b).st_mode)\nos.mkdir(p,0o700)\ns=os.lstat(p)\nassert stat.S_ISDIR(s.st_mode) and stat.S_IMODE(s.st_mode)==0o700 and os.listdir(p)==[]\nprint(json.dumps({'state':'NEW_EMPTY_CREATE_ONLY_TRANSPORT_DIRECTORY','path':p,'mode':stat.S_IMODE(s.st_mode)}))"
+        ],
+        "idempotency_key": "fc33-negative-source-transport-directory-once02",
+        "timeout_seconds": 60
+      },
+      "start": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-c\",\n      \"import os,stat,json\\nb=\\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1\\\"\\np=b+'/followthrough-fc33-negative-source-transport-r5-02'\\nassert os.path.realpath(b)==b and stat.S_ISDIR(os.lstat(b).st_mode)\\nos.mkdir(p,0o700)\\ns=os.lstat(p)\\nassert stat.S_ISDIR(s.st_mode) and stat.S_IMODE(s.st_mode)==0o700 and os.listdir(p)==[]\\nprint(json.dumps({'state':'NEW_EMPTY_CREATE_ONLY_TRANSPORT_DIRECTORY','path':p,'mode':stat.S_IMODE(s.st_mode)}))\"\n    ],\n    \"created_unix_ms\": 1793995046589,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b26ffebd-fc05-7e04\",\n    \"idempotency_key\": \"fc33-negative-source-transport-directory-once02\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b26ffebd-fc05-7e04\",\n    \"request_digest\": \"fd5d95ec6b10c2e1b93e0be3cf5e6deec6f8b949e87ec170cd8c2d43508e59de\",\n    \"request_fingerprint\": 18256913307070939873,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b26ffebd-fc05-7e04\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 58323,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b26ffebd-fc05-7e04\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "status": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"at_unix_ms\": 1793995046847,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b26ffebd-fc05-7e04\",\n  \"launch_nonce\": \"65a79775932da4179391a500579c8e27\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 233,\n      \"stored\": 233\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "read": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b26ffebd-fc05-7e04\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b227374617465223a20224e45575f454d5054595f4352454154455f4f4e4c595f5452414e53504f52545f4449524543544f5259222c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6e656761746976652d736f757263652d7472616e73706f72742d72352d3032222c20226d6f6465223a203434387d0a\",\n    \"eof\": true,\n    \"next_offset\": 233,\n    \"offset\": 0,\n    \"size\": 233,\n    \"text\": \"{\\\"state\\\": \\\"NEW_EMPTY_CREATE_ONLY_TRANSPORT_DIRECTORY\\\", \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02\\\", \\\"mode\\\": 448}\\n\"\n  }\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    "payload": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"mode\":384,\"sha256\":\"6fb4b534935bd54e165245fdc090b95270a31810307ab63ee5183f40109e8964\",\"size\":710094,\"version\":\"16777233:593540564:710094:1793995065273682645:1793995065274279538\",\"written\":710094}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "publisher": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"mode\":384,\"sha256\":\"b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81\",\"size\":19652,\"version\":\"16777233:593540584:19652:1793995066822389561:1793995066822987288\",\"written\":19652}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  }
+}

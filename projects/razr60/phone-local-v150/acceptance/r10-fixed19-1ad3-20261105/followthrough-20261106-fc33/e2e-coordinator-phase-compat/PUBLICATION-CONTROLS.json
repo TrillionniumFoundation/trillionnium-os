@@ -1,0 +1,47 @@
+{
+  "actual_Mac_publication": false,
+  "actual_parent_mirror_files": 50,
+  "controls": [
+    {
+      "name": "all50_exact_retained_parent_files_bookended",
+      "passed": true
+    },
+    {
+      "name": "source_candidate_matches_real_owned_capture_probe_candidate",
+      "passed": true
+    },
+    {
+      "name": "empty_helper_refused",
+      "passed": true
+    },
+    {
+      "name": "empty_parent_binding_refused",
+      "passed": true
+    },
+    {
+      "name": "empty_parent_coordinator_refused",
+      "passed": true
+    }
+  ],
+  "expected_terminal": {
+    "bytes": 3737,
+    "sha256": "ddfc9ba276fac6cf71c79e0d93b16677580b2e78b88b8653a27e2c381d2b13ec"
+  },
+  "file_count": 8,
+  "fixed19_credit": 0,
+  "model_requests": 0,
+  "native_sends": 0,
+  "new_nonces": 0,
+  "phone_calls": 0,
+  "publisher": {
+    "bytes": 11279,
+    "sha256": "43c908a87d0a4d760e9bbea2ef03be1108349a9671f265e910680e8abd00a73a"
+  },
+  "registrations": 0,
+  "schema": "hepta.fc33.e2e.compat-publisher.source-control.v1",
+  "source_compat": {
+    "bytes": 4167,
+    "sha256": "0ff89af8e719536aa08bba674b9e2dc439afade9d93b7d9aad0dde3536d04dd6"
+  },
+  "state": "LOCAL_PURE_DERIVATION_ONLY_MAC_REQUEST_NOT_RUN"
+}

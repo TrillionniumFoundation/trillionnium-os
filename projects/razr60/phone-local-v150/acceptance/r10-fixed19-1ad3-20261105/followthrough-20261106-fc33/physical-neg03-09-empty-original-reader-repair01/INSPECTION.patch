@@ -1,0 +1,65 @@
+--- source01/inspect_failed_publication.py
++++ source02/inspect_failed_publication02.py
+@@ -8,9 +8,9 @@
+ import zlib
+ 
+ B=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-BINDING=B/'followthrough-fc33-negative-source-binding-r5-01'
+-DERIVED=B/'fc33-negative-sources-native-v3-r5-01'
+-TRANSPORT=B/'followthrough-fc33-negative-source-transport-r5-01'
++BINDING=B/'followthrough-fc33-negative-source-binding-r5-02'
++DERIVED=B/'fc33-negative-sources-native-v3-r5-02'
++TRANSPORT=B/'followthrough-fc33-negative-source-transport-r5-02'
+ META=('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+ BOOK={}
+ 
+@@ -54,10 +54,10 @@
+     return sorted(result),directories
+ 
+ def main():
+-    compressed=read(TRANSPORT/'SOURCE-PAYLOAD.zlib',{'bytes':711272,'sha256':'324bf65adb34b22e870ab8d791216ffcc50f360685934ab7696694b866b5a873'})
+-    decoder=zlib.decompressobj();raw=decoder.decompress(compressed,2521096)
++    compressed=read(TRANSPORT/'SOURCE-PAYLOAD.zlib',{'bytes':710094,'sha256':'6fb4b534935bd54e165245fdc090b95270a31810307ab63ee5183f40109e8964'})
++    decoder=zlib.decompressobj();raw=decoder.decompress(compressed,2523408)
+     need(decoder.eof and not decoder.unused_data and not decoder.unconsumed_tail and
+-         pin(raw)=={'bytes':2521095,'sha256':'0d178167de8e3e983b64bc116d8a87d4d04b305d58668a69da5eec670570cf7e'},'whole original prepared payload')
++         pin(raw)=={'bytes':2523407,'sha256':'fd609d1093a85ec4c60ea3aee900e13d84e489f1a48f6188958abba817a827d6'},'whole original prepared payload')
+     payload=strict(raw);need(len(payload['files'])==177 and payload['binding_root']==str(BINDING),'same prepared177 input set')
+     names,directories=listing(BINDING)
+     expected={row['path']:row for row in payload['files']}
+@@ -71,7 +71,7 @@
+             value=payload['blobs'][row['sha256']]
+             original=value['content'].encode()if value['encoding']=='utf-8'else base64.b64decode(value['content'],validate=True)
+             need(body==original,'published input differs from complete retained prepared bytes')
+-    need(pin(bodies['PUBLISHER-SOURCE.executed.py'])=={'bytes':19652,'sha256':'581efadeed85af47e98c68c4037cee4b2599d00987df1f78ca753e917e729335'},'exact actually executed publisher')
++    need(pin(bodies['PUBLISHER-SOURCE.executed.py'])=={'bytes':19652,'sha256':'b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81'},'exact actually executed publisher')
+     derivation=strict(bodies['DERIVATION.json'])
+     need(derivation['state']=='COMPLETE_SOURCE_INPUT_COPIES_ONLY_NO_ACTUAL_TASK'and
+          derivation['reference_sources']==171 and derivation['whole_constructor_inverse']is True,'input publication only, not derived completion')
+@@ -82,6 +82,9 @@
+     adoption_raw=read(source_inputs['policy_adoption']['path'],{k:source_inputs['policy_adoption'][k]for k in('bytes','sha256')})
+     adoption=strict(adoption_raw)
+     need(adoption['actual_export']==source_inputs['actual_policy'],'actual export exact3 path/bytes/hash relationship')
++    empty_originals=[row for row in adoption['verification_originals'] if row['bytes']==0]
++    need(len(empty_originals)==3 and all(row['sha256']==sha(b'')for row in empty_originals),'three exact retained empty originals')
++    for row in empty_originals:need(read(row['path'],{k:row[k]for k in('bytes','sha256')})==b'','whole legitimate empty original')
+     first=B.stat()
+     try:DERIVED.lstat()
+     except OSError as error:need(error.errno==2,'unknown derived namespace absence');derived='ENOENT'
+@@ -90,7 +93,7 @@
+     need(listing(BINDING)==(names,directories),'whole input directory/full9/membership bookend')
+     for row in list(BOOK.values()):read(row['path'],{k:row[k]for k in('bytes','sha256')})
+     print(json.dumps({'schema':'hepta.fc33.failed-negative-source-publication-inspection.v1',
+-        'failed_job_id':'1a1b2488d00-fc05-7d52','failed_operation_replayed':False,
++        'failed_job_id':'1a1b27082de-fc05-7e06','failed_operation_replayed':False,
+         'binding':{'path':str(BINDING),'files':len(names),'directory_count':len(directories),
+             'all177_prepared_members_equal':True,'all180_terminal_members_verified':True,
+             'derivation':BOOK[str(BINDING/'DERIVATION.json')],
+@@ -100,6 +103,7 @@
+             'schema':adoption['schema'],'release_id':adoption['release_id'],
+             'root_decision_schema':adoption['root_decision']['schema'],
+             'top_level_delta_atom_count':len(adoption['root_decision']['permission_atoms'])},
++        'empty_adoption_originals':[BOOK[row['path']]for row in empty_originals],
+         'complete_original_count':len(BOOK),'complete_unique_path_bytes':sum(r['bytes']for r in BOOK.values()),
+         'phone_calls':0,'model_requests':0,'native_dispatches':0,'source_publication_performed':False,
+         'source_constructor_positive_run':False,'actual_BUILD':None,'actual_READY':None},sort_keys=True))

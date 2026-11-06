@@ -1,0 +1,122 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_case_controller": null,
+  "candidate_source": {
+    "bytes": 45121,
+    "sha256": "27db832a529f59d46e25b02eaecf2b9ac5c8ac9675c5bb91387a6fed4a8ee9b9"
+  },
+  "control_count": 5,
+  "existing_release_controllers_E2E_sources_changed": false,
+  "files": [
+    {
+      "bytes": 1820,
+      "path": "ACTUAL-BINDER-MISMATCH.patch",
+      "sha256": "376267a84999f7dcd0f1bc48c6e01c35cff5ed38e724bea97c5e3dc50bcbad76"
+    },
+    {
+      "bytes": 2925,
+      "path": "README.md",
+      "sha256": "7d7d39bc22fc044c74b37196f50c510bd1797c19c859f8793864bea6f8e4eefd"
+    },
+    {
+      "bytes": 1411,
+      "path": "RESULT.json",
+      "sha256": "31de849e6682fc431af3273ed9fed7d1b81592cf9f0ee0f834c10a6bc9e07995"
+    },
+    {
+      "bytes": 2733,
+      "path": "SOURCE-INVERSE.json",
+      "sha256": "6dfd723078444bbbd475c2555c18036fde30fcf57ee7a619070def7cd7e0b0c7"
+    },
+    {
+      "bytes": 888,
+      "path": "SOURCE.patch",
+      "sha256": "420f05faaf7973fe6f29373f453e35ca0a41a3ee7222304adfca228283f1e58f"
+    },
+    {
+      "bytes": 5243,
+      "path": "build_publication.py",
+      "sha256": "35c90ae4f16c7927728656a86408b3aab45419c11f867cc852b45110e580a428"
+    },
+    {
+      "bytes": 921,
+      "path": "inputs/04-case-controller.ACTUAL.json",
+      "sha256": "31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8"
+    },
+    {
+      "bytes": 22856,
+      "path": "reference/ABSENCE-CONTROLLER.original.json",
+      "sha256": "c30240391ac60f352ccd7f03418b424289677513102fd981020a1c0fff2592e4"
+    },
+    {
+      "bytes": 5528,
+      "path": "reference/ABSENCE-STDOUT.original.json",
+      "sha256": "01b6143798936b1f0e92416bf2b1bc04b2f7d30b15237623800c93849cf91f18"
+    },
+    {
+      "bytes": 15846,
+      "path": "reference/ACTUAL-BINDER-READ.original.mcp.json",
+      "sha256": "1981d19e45b975b10426bca1c0a8c64b30a2239b18ca61e4adce7cf08a2e50c1"
+    },
+    {
+      "bytes": 9462,
+      "path": "reference/ACTUAL-BINDER.original.py",
+      "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1"
+    },
+    {
+      "bytes": 4380,
+      "path": "reference/ACTUAL-CONTROLLERS-DERIVATION.original.json",
+      "sha256": "897294862510d7805bd92d4fd24544f185e23d8dd75532aada3643b5c5c4d514"
+    },
+    {
+      "bytes": 6277,
+      "path": "reference/BINDING-HELPER.PARENT.original.py",
+      "sha256": "31d2a83a9912d916530b3aca7e09a87b30347bcc8df42ea1d91428f19f971993"
+    },
+    {
+      "bytes": 3880,
+      "path": "reference/FIRST-RELEASE-INPUT-BINDING.original.json",
+      "sha256": "85068afb749682d50e08896457d912cbfa7004973775e3d07c1841cbead9ce28"
+    },
+    {
+      "bytes": 45097,
+      "path": "reference/REBINDER.PARENT.original.py",
+      "sha256": "3d6cf7e6c7129f7433762de03bbe612c4181e5b63835e692c02604415bf5cef4"
+    },
+    {
+      "bytes": 8833,
+      "path": "reference/ROOT-PRIOR-CASE-DERIVE-FAILURE.original.json",
+      "sha256": "bd704822e460fdc08745bd947d14b0feb7fb5336a2d436b5f6b7b26e64b0ec12"
+    },
+    {
+      "bytes": 8844,
+      "path": "reproduce_and_derive.py",
+      "sha256": "f0ed623840caf9a22e49e4a493c7781f3008173d243e47bd612adc0e70c3cff4"
+    },
+    {
+      "bytes": 6411,
+      "path": "source/bind_r6_source_input.py",
+      "sha256": "06a6ba81796c1dff54b4224c4a549061deed27deb5a26cb56ede118b5a420d31"
+    },
+    {
+      "bytes": 45121,
+      "path": "source/derive_r6_source_rebindings_UNBOUND.py",
+      "sha256": "27db832a529f59d46e25b02eaecf2b9ac5c8ac9675c5bb91387a6fed4a8ee9b9"
+    }
+  ],
+  "new_nonces": 0,
+  "output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01",
+  "parent_publisher_template": {
+    "bytes": 9570,
+    "sha256": "bb9bdd6e6f031f9c50a80234a1c2d98f5dbb93fe4103879f23a72064ed7cd834"
+  },
+  "phone_calls": 0,
+  "prior_failed_job": "1a1b2a31057-fc05-7f16",
+  "schema": "hepta.fc33.r6.case-controller-source-fix-package.v1",
+  "source_controls": {
+    "bytes": 1411,
+    "sha256": "31de849e6682fc431af3273ed9fed7d1b81592cf9f0ee0f834c10a6bc9e07995"
+  },
+  "state": "SOURCE_SUCCESSOR_CANDIDATE_NO_EXECUTION"
+}

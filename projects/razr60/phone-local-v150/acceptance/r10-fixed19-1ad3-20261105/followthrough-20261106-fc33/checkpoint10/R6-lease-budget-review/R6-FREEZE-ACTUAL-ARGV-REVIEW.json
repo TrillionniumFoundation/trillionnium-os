@@ -1,0 +1,49 @@
+{
+  "actual_controller": {
+    "bytes": 7594,
+    "path": "/workspace/scratch/fc33eac909ab/review/R6-runtime-freeze01/ROOT-ACTUAL-FREEZE-CONTROLLER.original.json",
+    "sha256": "68b5f1972b19682c57abbf3e9791feb7672ff66d81abf5c202b1f7ffc0d0b0ac"
+  },
+  "boundaries": [
+    "This actual process did not request Python -I or -B and must not be described as isolated-interpreter startup.",
+    "Source sets sys.dont_write_bytecode=True after initial standard-library imports; that is not an assertion that startup already used -B.",
+    "The source audit hook is installed in main before pinned application-helper loads and publication. It does not attest interpreter startup before main.",
+    "Job env_keys=[] records no explicit supplied variables. It does not establish that inherited environment or startup hooks were empty.",
+    "No evidence of an altered import or payload was observed. No new isolation gate is added to the fixed acceptance protocol.",
+    "Actual host source publication does not award phone, model, business or installed READY qualification."
+  ],
+  "changes_to_controller": false,
+  "changes_to_source": false,
+  "independent_preparer_requirement": "Bind exactly the observed three args and actual key/controller. Retain complete source/full9, self digest, stdout descriptor, all manifest files and equal FREEZE/DERIVATION terminal copies. Do not substitute an unexecuted -I/-B argv.",
+  "job_id": "1a1b293f721-fc05-7ebd",
+  "new_tests_executed": 0,
+  "observed": {
+    "complete_durable_terminal_and_both_eof": true,
+    "cwd": null,
+    "env_keys": [],
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "stdout_bytes": 1329,
+    "stdout_sha256": "2ba5871fc9bfd9c2406ecbebec7ff17ea504b4ebcb61861687a604cef87ddfbf"
+  },
+  "phone_calls": 0,
+  "replay_requested": false,
+  "request": {
+    "args": [
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r6-review01/freeze_native_bound_runtime_r6_fc33.py",
+      "--freeze-reviewed-host-runtime",
+      "cbb8997c66172054afbd57acb349257d1a8804eff024dbbcb6deb0b438ebcdf3"
+    ],
+    "executable": "/usr/bin/python3",
+    "host": "mac",
+    "idempotency_key": "fc33-native-bound-runtime-r6-freeze-once01",
+    "timeout_seconds": 180
+  },
+  "schema": "hepta.fc33.r6.freeze-actual-argv-independent-review.v1",
+  "source": {
+    "bytes": 24094,
+    "path": "/workspace/scratch/fc33eac909ab/review/R6-runtime-freeze01/freeze_native_bound_runtime_r6_fc33.py",
+    "sha256": "cbb8997c66172054afbd57acb349257d1a8804eff024dbbcb6deb0b438ebcdf3"
+  },
+  "state": "NO_CONCRETE_SOURCE_PUBLICATION_BLOCKER_ACTUAL_ARGV_MUST_BE_PRESERVED"
+}

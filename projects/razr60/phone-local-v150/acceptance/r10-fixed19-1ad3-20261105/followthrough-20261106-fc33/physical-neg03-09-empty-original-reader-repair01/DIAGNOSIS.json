@@ -1,0 +1,109 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_first_rejected_descriptor": {
+    "bytes": 0,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/phone-originals/original-016.bin",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "actual_readonly_inspection": {
+    "exit_code": 0,
+    "job_id": "1a1b275aef3-fc05-7e16",
+    "result": {
+      "bytes": 3408,
+      "sha256": "e329dc05dc7a084137b62db8448dc3fdba62c79771e7e1d131f8ba28c51e3cd0"
+    },
+    "stderr_bytes": 0,
+    "stdout_bytes": 3408
+  },
+  "actual_same_reader_controls": {
+    "constructor_report": {
+      "bytes": 854,
+      "sha256": "d9217973904f580b824adc37b0106e602c545b381ed7ce3e666cecdc559549a7"
+    },
+    "exit_code": 0,
+    "job_id": "1a1b278cf52-fc05-7e28",
+    "originals": {
+      "bytes": 172333,
+      "sha256": "e26df10680664d00e6f6043b76eb93d243f9f2b9aafb87dfb7b8ff7a39a26b6b"
+    },
+    "passed": 4,
+    "result": {
+      "bytes": 5749,
+      "sha256": "d7d2fd5a91839e66ca2816ffc6b8273239280caccb2e8287e898fde267bc64b7"
+    },
+    "stderr_bytes": 0,
+    "stdout_bytes": 1022
+  },
+  "actual_source02_derived": {
+    "parent_metadata": [
+      16777233,
+      586512240,
+      16832,
+      501,
+      20,
+      1925,
+      61600,
+      1793995123040979136,
+      1793995123040979136
+    ],
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fc33-negative-sources-native-v3-r5-02",
+    "state": "ENOENT"
+  },
+  "actual_source02_tree": {
+    "all177_prepared_members_equal": true,
+    "all180_terminal_members_verified": true,
+    "derivation": {
+      "bytes": 68265,
+      "metadata": [
+        16777233,
+        593540902,
+        33152,
+        501,
+        20,
+        1,
+        68265,
+        1793995081333912212,
+        1793995081333912212
+      ],
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02/DERIVATION.json",
+      "sha256": "0ff96cd5c32759b0ffe08db0200f31ac135af1e4ec64104c5b55292787599cec"
+    },
+    "directory_count": 55,
+    "files": 181,
+    "member_book_sha256": "64e653657b6534dc5b6ebfbc49f86e2f5ab5c85313996ed55b62f9522dd70b20",
+    "member_byte_total": 3599838,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02"
+  },
+  "current_successor_status": "WAIT_FOR_ACTUAL_R6_RUNTIME_AND_RELEASE_SOURCE_CHAIN_NO_GUESSED_HASH",
+  "exact_cause": {
+    "candidate_predicate": "type(desc['bytes']) is int and 0 <= desc['bytes'] <= 16777216",
+    "constructor_and_adoption_original_contract": "Exact typed integer allows zero-byte originals, requiring complete original bytes and corresponding SHA256.",
+    "full9_no_follow_single_link_hash_exact3_book_and_upper_bound_unchanged": true,
+    "previous_three_control_path": "physical_fault_common.Originals.read permitted zero; that control did not execute publisher material.read.",
+    "source02_reader_predicate": "type(desc['bytes']) is int and 0 < desc['bytes'] <= 16777216",
+    "whole_function_inverse": true
+  },
+  "failed_publication": {
+    "controller": {
+      "bytes": 20889,
+      "sha256": "e5d9e9d82c8c641fd117c805672365f44baf5a6efd1af91aa858d5ecfe338154"
+    },
+    "exit_code": 1,
+    "failure": "bounded typed source descriptor",
+    "job_id": "1a1b27082de-fc05-7e06",
+    "stderr_bytes": 3742,
+    "stdout_bytes": 0,
+    "whole_streams_durable": true
+  },
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "no_previous_control_reclassified": true,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.negative-source-reader-empty-original-diagnosis.v1",
+  "scope": "Host source publication reader only; production15, runtime package, policy and original adoption unchanged.",
+  "source02_preserved": true,
+  "source03_generated": false,
+  "source03_published": false,
+  "whole_case_pass": false
+}

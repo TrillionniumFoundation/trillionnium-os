@@ -1,0 +1,11 @@
+--- actual-published/bind_actual_controller_input.py
++++ old-controller-context/recomputed.py
+@@ -16,7 +16,7 @@
+ 
+ B = '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1'
+ PACKAGE_ROOT = '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01'
+-SOURCES = {'component_build': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_component_build_inputs_UNBOUND.py', 'bytes': 34376, 'sha256': '07c243da62566e77c4695d650470487706a49d9992089d74fa894a5ce491d198'}, 'release_install_stage': {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_release_install_stages_UNBOUND.py', 'bytes': 64815, 'sha256': '71a4b6598c2d8907410fe1a2b69d49979aa193c76e85684124334c653d1f405d'}}
++SOURCES = {'component_build': {'bytes': 34376, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_component_build_inputs_UNBOUND.py', 'sha256': '07c243da62566e77c4695d650470487706a49d9992089d74fa894a5ce491d198'}, 'release_install_stage': {'bytes': 64815, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_release_install_stages_UNBOUND.py', 'sha256': '71a4b6598c2d8907410fe1a2b69d49979aa193c76e85684124334c653d1f405d'}}
+ SCHEMA='hepta.fc33.actual-constructor-input-binding.v1'
+ 
+ def need(ok,reason):

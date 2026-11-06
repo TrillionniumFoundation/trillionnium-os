@@ -1,0 +1,10 @@
+ for index in range(4):
+  editors=[n for n in nodes if n.attrib.get('resource-id')=='org.trillionnium.owneropen:id/ui_prompt']
+  if editors:
+   assert len(editors)==1 and editors[0].attrib.get('package')=='org.trillionnium.owneropen','Ambiguous owner editor; no task sent'
+   break
+  done=node(nodes,'android:id/button2')
+  assert done.attrib.get('package')=='org.trillionnium.owneropen' and done.attrib.get('text') in ('关闭','完成') and done.attrib.get('clickable')=='true','Unknown details dialog retained; no task sent'
+  tap(done);nodes=dump('CLOSE-DETAILS-'+str(index))
+ assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib.get('package')=='org.trillionnium.owneropen','Foreign owner editor; no task sent'
+ assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib['text']==expected

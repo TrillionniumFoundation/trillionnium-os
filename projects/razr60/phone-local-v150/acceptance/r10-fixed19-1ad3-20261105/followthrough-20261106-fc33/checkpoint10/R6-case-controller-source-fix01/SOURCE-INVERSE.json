@@ -1,0 +1,63 @@
+{
+  "actual_BUILD": null,
+  "actual_R6_case_controller_publication": null,
+  "actual_READY": null,
+  "actual_nested_input_order": [
+    "bytes",
+    "path",
+    "sha256"
+  ],
+  "actual_published_binder": {
+    "bytes": 9462,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/bind_actual_controller_input.py",
+    "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1"
+  },
+  "binding_helper_inverse": {
+    "candidate": {
+      "bytes": 6411,
+      "sha256": "06a6ba81796c1dff54b4224c4a549061deed27deb5a26cb56ede118b5a420d31"
+    },
+    "changes": [
+      {
+        "after": "SOURCE = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01/source/derive_r6_source_rebindings_UNBOUND.py', 'bytes': 45121, 'sha256': '27db832a529f59d46e25b02eaecf2b9ac5c8ac9675c5bb91387a6fed4a8ee9b9'}",
+        "before": "SOURCE = {'path': PACKAGE + '/source/derive_r6_source_rebindings_UNBOUND.py',\n    'bytes': 45097, 'sha256': '3d6cf7e6c7129f7433762de03bbe612c4181e5b63835e692c02604415bf5cef4'}"
+      }
+    ],
+    "complete_inverse": true,
+    "parent": {
+      "bytes": 6277,
+      "sha256": "31d2a83a9912d916530b3aca7e09a87b30347bcc8df42ea1d91428f19f971993"
+    }
+  },
+  "candidate": {
+    "bytes": 45121,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01/source/derive_r6_source_rebindings_UNBOUND.py",
+    "sha256": "27db832a529f59d46e25b02eaecf2b9ac5c8ac9675c5bb91387a6fed4a8ee9b9"
+  },
+  "corrected_recomputed_binder": {
+    "bytes": 9462,
+    "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1"
+  },
+  "exact_source_descriptor_order": [
+    "path",
+    "bytes",
+    "sha256"
+  ],
+  "existing_release_controllers_E2E_sources_changed": false,
+  "full_source_inverse": true,
+  "old_recomputed_binder": {
+    "bytes": 9462,
+    "sha256": "99e25b779a693223a1830751575e2928661ae90ba81924b62b9bca15798ad492"
+  },
+  "one_complete_source_replacement": {
+    "after": "'SOURCES': {'component_build': descriptor(report['helper']), 'release_install_stage': descriptor(report['stage'])}})",
+    "before": "'SOURCES': {'component_build': report['helper'], 'release_install_stage': report['stage']}})"
+  },
+  "parent": {
+    "bytes": 45097,
+    "sha256": "3d6cf7e6c7129f7433762de03bbe612c4181e5b63835e692c02604415bf5cef4"
+  },
+  "phone_calls": 0,
+  "prior_failed_job": "1a1b2a31057-fc05-7f16",
+  "schema": "hepta.fc33.r6.case-controller-nested-descriptor-inverse.v1"
+}

@@ -1,0 +1,39 @@
+{
+  "BUILD_executed": false,
+  "actual_case_controller": null,
+  "actual_successor_publication": null,
+  "case_binding_request": {
+    "bytes": 977,
+    "sha256": "e50dbb047af0c7040001889ec6d4d352450ad983589e3509b3ac2c2126f2589c"
+  },
+  "new_nonces": 0,
+  "output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01",
+  "package_file_count": 21,
+  "payload": {
+    "bytes": 271104,
+    "sha256": "2dbd52c375e33797b8d6eb61d64889fb91aa4fa2dc9a33d4b2fc3c401297c841"
+  },
+  "phone_calls": 0,
+  "publication_request": {
+    "bytes": 109946,
+    "sha256": "33ed9e3259f25ef7883d4b0c5f006efc3938e32ab35b7933f321e7566b8d2b89"
+  },
+  "publisher": {
+    "bytes": 109565,
+    "sha256": "378d04b95701471db83ac7dd45ca381d05757869510c3fbf55a5132840e1be5a"
+  },
+  "publisher_template_parent": {
+    "bytes": 9570,
+    "sha256": "bb9bdd6e6f031f9c50a80234a1c2d98f5dbb93fe4103879f23a72064ed7cd834"
+  },
+  "same_actual_case_source_input": {
+    "bytes": 921,
+    "sha256": "31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8"
+  },
+  "schema": "hepta.fc33.r6.case-controller-source-fix-publication-preparation.v1",
+  "source_package": {
+    "bytes": 4152,
+    "sha256": "727e97bfffdb41ad722f3315c4a89b2a482ad7104247f8f6c830122f7aa73a35"
+  },
+  "state": "SOURCE_SUCCESSOR_AND_NEW_REQUESTS_PREPARED_NOT_DISPATCHED"
+}

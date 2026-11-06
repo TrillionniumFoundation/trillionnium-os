@@ -1,0 +1,96 @@
+--- preserved-parent
++++ independent-R6-source03
+@@ -15,19 +15,16 @@
+ import types
+ import zlib
+ 
+-SOURCE_PAYLOAD = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/SOURCE-PAYLOAD.zlib', 'bytes': 710094, 'sha256': '6fb4b534935bd54e165245fdc090b95270a31810307ab63ee5183f40109e8964'}
+-PAYLOAD_RAW = {'bytes': 2523407, 'sha256': 'fd609d1093a85ec4c60ea3aee900e13d84e489f1a48f6188958abba817a827d6'}
+-EXPECTED_INPUTS = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02/SOURCE-INPUTS.json', 'bytes': 2537, 'sha256': 'b922c80e3e0d212167b164aed3d044d416439510368aa4b02998be2b3dbe9567'}
++SOURCE_PAYLOAD = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r6-03/SOURCE-PAYLOAD.zlib', 'bytes': 722584, 'sha256': 'f4d63e80c8df5307434aa0d217327369946351f1beef3222522554719210f67d'}
++PAYLOAD_RAW = {'bytes': 2570466, 'sha256': '10d60d576948e0fc18d33bb8500ad184345b9722a52c2604091469f9f3a33317'}
++EXPECTED_INPUTS = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r6-03/SOURCE-INPUTS.json', 'bytes': 2537, 'sha256': 'b7cb09d2083e8a055dd4d62f11a54a0bf8ea2ac6b506dc6072f109204f6855ee'}
+ PUBLISHER_SOURCE = {
+     'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v3.py',
+     'bytes': 16399, 'sha256': '842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82',
+ }
+-EXISTING_SOURCE_BINDING = {
+-    'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-chain-r5-derived01/SOURCE-BINDING.json',
+-    'bytes': 3608, 'sha256': 'c7b074b529b4bbe258303842b3d0b2f3912d8cdf606f803522775b79ba147003',
+-}
+-SOURCE_PARENT = {'bytes': 43126, 'sha256': '3c64904a631b8987fa6626e2575a5e1e8046dde9ac6f6cef22273e5c86d1f982'}
+-REFERENCE_INDEX = {'bytes': 38100, 'sha256': 'bccd3fb4c6d785ea1edbca3442430f041e0e86b4df95be60c8882eba7ef3000c'}
++EXISTING_SOURCE_BINDING = {'bytes': 3608, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-chain-r6-derived01/SOURCE-BINDING.json', 'sha256': '8706410b9cd97ddea3aedf045b4fde3bbf3d024a91497c56f78b998c4bdc1803'}
++SOURCE_PARENT = {'bytes': 43869, 'sha256': '12103136651db4868850352bc07fa27b7ae73f386385553128399dfd58152e57'}
++REFERENCE_INDEX = {'bytes': 38297, 'sha256': '9a1138f1a843814588107054057048810183f94ecb29725b46ebc40f8b560bed'}
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ META = ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink',
+         'st_size', 'st_mtime_ns', 'st_ctime_ns')
+@@ -105,21 +102,21 @@
+ 
+ def source_reader(source_raw, material):
+     # This caller reads the already selected 2,667,752-byte policy original.
+-    # Keep the complete reviewed read() body; change only its individual-file
+-    # envelope to the negative constructor's existing MAX_FILE (16 MiB).
++    # Match the complete constructor and adoption API's 0..MAX_FILE envelope:
++    # empty pinned originals still require the exact empty SHA and full9 checks.
+     nodes = [node for node in ast.parse(source_raw).body
+              if isinstance(node, ast.FunctionDef) and node.name == 'read']
+     need(len(nodes) == 1, 'one reviewed complete source reader')
+     node = nodes[0]
+     original = b''.join(source_raw.splitlines(keepends=True)[node.lineno - 1:node.end_lineno])
+-    before, after = b'<=1048576', b'<=16777216'
++    before, after = b"0<desc['bytes']<=1048576", b"0<=desc['bytes']<=16777216"
+     need(original.count(before) == 1 and after not in original, 'one source-reader size literal')
+     candidate = original.replace(before, after, 1)
+     need(candidate.replace(after, before, 1) == original, 'complete source-reader inverse')
+     exec(compile(candidate, '<reviewed-source-reader-bound-only>', 'exec'), material.__dict__)
+     return {'parent_function': pin(original), 'candidate_function': pin(candidate),
+             'before': before.decode(), 'after': after.decode(), 'full_inverse': True,
+-            'individual_original_max_bytes': 16777216,
++            'individual_original_min_bytes': 0, 'individual_original_max_bytes': 16777216,
+             'exact3_full9_single_link_no_follow_and_BOOK_body_unchanged': True}
+ 
+ 
+@@ -138,8 +135,8 @@
+     need(type(value) is dict and set(value) == {'schema', 'binding_root', 'derived_root', 'files', 'blobs'}
+          and value['schema'] == 'hepta.fc33.negative-source-publication-payload.v1',
+          'exact prepared source payload contract')
+-    need(type(value['files']) is list and len(value['files']) == 177
+-         and type(value['blobs']) is dict and len(value['blobs']) <= 177,
++    need(type(value['files']) is list and len(value['files']) == 178
++         and type(value['blobs']) is dict and len(value['blobs']) <= 178,
+          'complete reviewed input file inventory')
+     files = {}
+     used = set()
+@@ -188,8 +185,8 @@
+     payload, files = decode_payload(payload_raw, material)
+     binding_root, derived_root = Path(payload['binding_root']), Path(payload['derived_root'])
+     need(binding_root.parent == derived_root.parent == B and binding_root != derived_root
+-         and B.resolve(strict=True) == B and binding_root.name == 'followthrough-fc33-negative-source-binding-r5-02'
+-         and derived_root.name == 'fc33-negative-sources-native-v3-r5-02',
++         and B.resolve(strict=True) == B and binding_root.name == 'followthrough-fc33-negative-source-binding-r6-03'
++         and derived_root.name == 'fc33-negative-sources-native-v3-r6-03',
+          'two exact independent new source namespaces')
+     need(not os.path.lexists(binding_root) and not os.path.lexists(derived_root),
+          'both one-use source outputs must be absent; no automatic retry or overwrite')
+@@ -213,8 +210,8 @@
+     index_raw = files['inputs/REVIEWED-INPUTS.json']
+     need(pin(index_raw) == REFERENCE_INDEX, 'exact complete reviewed reference inventory')
+     index = material.strict(index_raw)
+-    need(len(index['files']) == len({row['path'] for row in index['files']}) == 171,
+-         'all 171 reviewed sources must be retained')
++    need(len(index['files']) == len({row['path'] for row in index['files']}) == 172,
++         'all 172 reviewed sources must be retained')
+     expected_names = {'source/derive_negative_sources_BOUND.py', 'reference/derive_negative_sources_UNBOUND.py',
+                       'SOURCE-INPUTS.json', 'SOURCE.patch', 'BINDING-PROOF.json', 'inputs/REVIEWED-INPUTS.json'}
+     for row in index['files']:
+@@ -250,7 +247,7 @@
+         'schema': 'hepta.fc33.negative-source-input-publication.v1',
+         'state': 'COMPLETE_SOURCE_INPUT_COPIES_ONLY_NO_ACTUAL_TASK',
+         'files': [located(binding_root, name, body) for name, body in sorted(files.items())],
+-        'whole_constructor_inverse': True, 'reference_sources': 171,
++        'whole_constructor_inverse': True, 'reference_sources': 172,
+         'actual_BUILD': None, 'actual_READY': None, 'actual_case_plans': None,
+         'phone_calls': 0, 'model_requests': 0, 'native_dispatches': 0,
+     })

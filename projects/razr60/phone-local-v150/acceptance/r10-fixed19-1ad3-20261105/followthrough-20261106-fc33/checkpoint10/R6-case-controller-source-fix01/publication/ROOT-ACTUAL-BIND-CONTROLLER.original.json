@@ -1,0 +1,55 @@
+{
+  "request": {
+    "args": [
+      "-I",
+      "-B",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01/source/bind_r6_source_input.py",
+      "--input",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-ACTUAL01.json",
+      "--input-bytes",
+      "921",
+      "--input-sha256",
+      "31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8",
+      "--output",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01",
+      "--operation-key",
+      "fc33-r6-case-controller-source-derive-fix01",
+      "--timeout-seconds",
+      "300"
+    ],
+    "executable": "/usr/bin/python3",
+    "host": "mac",
+    "idempotency_key": "fc33-r6-case-controller-source-input-binding-fix01",
+    "timeout_seconds": 120
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-source-rebind-casefix01/source/bind_r6_source_input.py\",\n      \"--input\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-ACTUAL01.json\",\n      \"--input-bytes\",\n      \"921\",\n      \"--input-sha256\",\n      \"31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8\",\n      \"--output\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01\",\n      \"--operation-key\",\n      \"fc33-r6-case-controller-source-derive-fix01\",\n      \"--timeout-seconds\",\n      \"300\"\n    ],\n    \"created_unix_ms\": 1793999041464,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b2acf3b8-fc05-7f41\",\n    \"idempotency_key\": \"fc33-r6-case-controller-source-input-binding-fix01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b2acf3b8-fc05-7f41\",\n    \"request_digest\": \"879b276e7bbfe08a9354ba2548172bb7308f016d7839122c2fd508045f002261\",\n    \"request_fingerprint\": 9771447171986481290,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b2acf3b8-fc05-7f41\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 85719,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b2acf3b8-fc05-7f41\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793999041758,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b2acf3b8-fc05-7f41\",\n  \"launch_nonce\": \"a4add4ad2c486f210e4e5744dc93296f\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 728,\n      \"stored\": 728\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b2acf3b8-fc05-7f41\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b2264657269766174696f6e223a207b226279746573223a20333934352c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d72362d636173652d636f6e74726f6c6c65722d696e7075742d62696e64696e672d66697830312f44455249564154494f4e2e6a736f6e222c2022736861323536223a202261393335386531663435623136656433373932663334386138666630653831636364313161356130653562393335313863616438656161336337666366373431227d2c202270686f6e655f63616c6c73223a20302c202272657175657374223a207b226279746573223a203433332c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d72362d636173652d636f6e74726f6c6c65722d696e7075742d62696e64696e672d66697830312f72657175657374732f5055424c4953482d534f55524345532e6a736f6e222c2022736861323536223a202233393530616531396261303162356530336561613031613566353234623562396433386264613539306638323732666239643437316362646538643535623832227d2c20227374616765223a2022636173655f636f6e74726f6c6c6572222c20227374617465223a20224f4e455f4e4f4e455f4c49544552414c5f424f554e445f534f555243455f5055424c49434154494f4e5f524551554553545f4e4f545f44495350415443484544227d0a\",\n    \"eof\": true,\n    \"next_offset\": 728,\n    \"offset\": 0,\n    \"size\": 728,\n    \"text\": \"{\\\"derivation\\\": {\\\"bytes\\\": 3945, \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01/DERIVATION.json\\\", \\\"sha256\\\": \\\"a9358e1f45b16ed3792f348a8ff0e81ccd11a5a0e5b93518cad8eaa3c7fcf741\\\"}, \\\"phone_calls\\\": 0, \\\"request\\\": {\\\"bytes\\\": 433, \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01/requests/PUBLISH-SOURCES.json\\\", \\\"sha256\\\": \\\"3950ae19ba01b5e03eaa01a5f524b5b9d38bda590f8272fb9d471cbde8d55b82\\\"}, \\\"stage\\\": \\\"case_controller\\\", \\\"state\\\": \\\"ONE_NONE_LITERAL_BOUND_SOURCE_PUBLICATION_REQUEST_NOT_DISPATCHED\\\"}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

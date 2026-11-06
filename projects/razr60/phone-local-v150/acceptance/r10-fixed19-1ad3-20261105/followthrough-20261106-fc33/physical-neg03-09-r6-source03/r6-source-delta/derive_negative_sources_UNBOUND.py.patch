@@ -1,0 +1,84 @@
+--- R5/derive_negative_sources_UNBOUND.py
++++ R6/derive_negative_sources_UNBOUND.py
+@@ -20,12 +20,12 @@
+ 
+ FROZEN_INPUTS = None
+ INPUT_SCHEMA = 'hepta.fc33.negative-source-inputs.v1'
+-REFERENCE_INDEX = (38100, 'bccd3fb4c6d785ea1edbca3442430f041e0e86b4df95be60c8882eba7ef3000c')
++REFERENCE_INDEX = (38297, '9a1138f1a843814588107054057048810183f94ecb29725b46ebc40f8b560bed')
+ CHAIN_TEMPLATE = (33827, '4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835')
+ CONSUMER_TEMPLATE = (249798, '016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349')
+-RUNTIME_PIN = (57078, '990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a')
+-ROOT_MANIFEST_PIN = (50107, 'f9145ce2f0e5864a78ed8bece2d926187dc83e8baf15799758200bb646057282')
+-ROOT_SOURCE_PIN = (78566, '2af78597f211b8b7de32d5f40591e46c4ea5ff7caa3c4a2547ac4325666c2032')
++RUNTIME_PIN = (59400, '270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5')
++ROOT_MANIFEST_PIN = (51678, '9da8d53ebfba3e11f2406c0a59964923ff4709052fad2d5df3d2eaff8b7ec8a4')
++ROOT_SOURCE_PIN = (78567, '53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257')
+ COMBINATION_SHA = '7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411'
+ POLICY_SHA = '69aa6433a11ac4cffb2f1d349cc9f36ec2349a601911c173ebe7d92fff9e0c5b'
+ ADOPTION_SHA = '98b5db3d2c9680fff13e50bf64b18ddf9822689641427d204fded84f690d04c7'
+@@ -208,7 +208,7 @@
+              and value['historical_git_commit'] == '744fc422a28bd6f505701503bf0d113ab49d4634'
+              and value['candidate_sources_are_not_qualification'] is True, 'reviewed reference family')
+         members = value['files']
+-        need(len(members) == 171 and len({r['path'] for r in members}) == 171, 'complete reviewed input inventory')
++        need(len(members) == 172 and len({r['path'] for r in members}) == 172, 'complete reviewed input inventory')
+         self.index = {r['path']: r for r in members}
+ 
+     def read(self, name):
+@@ -254,14 +254,14 @@
+     runtime_row = chain_inputs['consumer']['runtime_package']
+     runtime_raw, runtime, runtime_files = manifest_members(pool, runtime_row)
+     exact_pin(runtime_raw, RUNTIME_PIN)
+-    need(runtime['revision'] == 'r10-r1-fc33-native-bound-v3-r5' and len(runtime_files) == 38,
+-         'exact reviewed R5 runtime graph')
++    need(runtime['revision'] == 'r10-r1-fc33-native-bound-v3-r6' and len(runtime_files) == 38,
++         'exact reviewed R6 runtime graph')
+     consumer_raw = constructed['files']['source/release_boundaries.py']
+     inverse = Changes(consumer_raw)
+     inverse.rhs('PACKAGE_SHA', None)
+     exact_pin(inverse.finish()[0], CONSUMER_TEMPLATE)
+     need(constructed['consumer_runtime'] == {'runtime_sha256': RUNTIME_PIN[1], 'package_file_count': 38,
+-         'chain_length': 12, 'role_budget': 42}, 'reviewed R5 counters cannot be inferred from an old graph')
++         'chain_length': 12, 'role_budget': 42}, 'reviewed R6 counters cannot be inferred from an old graph')
+     chain_out = absolute(chain_inputs['output_root'])
+     consumer = located(chain_out / 'source/release_boundaries.py', consumer_raw)
+     readiness = constructed['source_binding']['readiness']
+@@ -436,11 +436,13 @@
+             'state': 'SOURCE_PINS_BOUND_ACTUAL_CASE_AND_CAPTURE_NOT_EXECUTED', 'files': rows(files),
+             'physical_qualification': False, 'phone_calls': 0, 'model_requests': 0, 'new_nonces': 0})
+         packages[family] = files
+-    sender = r.read(FAULT + 'reference/send_new_native_task_r5.py')
++    sender = r.read('candidate/templates/sender/send_new_native_task_r5_fc33_r6.py')
++    sender_source = located(B / 'send_new_native_task_r5_fc33_r6.py', sender)
++    need(r.pool.read(sender_source) == sender, 'actual complete reviewed R6 sender publication')
+     source_rows = {family: generated_descriptor(family, name, body) for family, name, body in (
+         ('cpu', 'source/cpu_cancel_originals.py', cpu), ('phone', 'source/capture_negative_originals.py', phone),
+         ('p4', 'source/capture_p4_cancel_originals.py', p4))}
+-    source_rows.update(sender=located(B / 'send_new_native_task_r5.py', sender),
++    source_rows.update(sender=sender_source,
+         root_transport=located(absolute(binding['root_manifest']['path']).parent / 'source/run_component_root_once.py', binding['root_source']))
+     final = {'schema': 'hepta.r10.cpu-negative-final-dependencies.v1',
+         'sources': {name: {k: row[k] for k in ('bytes', 'sha256')} for name, row in source_rows.items()},
+@@ -486,6 +488,9 @@
+     packages['closure'] = closure
+     fault_mf, physical_fault, fault_source_old = r.package(FAULT, 'SOURCE-MANIFEST.json')
+     physical_fault['source/physical_fault_common.py'] = r.read('candidate/templates/physical-fault/physical_fault_common.py')
++    name = 'source/prepare_physical_fault.py'
++    physical_fault[name] = changed('physical-fault/' + name, physical_fault[name], {},
++        [("S.B/'send_new_native_task_r5.py'", "S.B/'send_new_native_task_r5_fc33_r6.py'")])
+     final = {'fault_package_sha256': pin(fault['MANIFEST.json'])['sha256'], 'active_source_sha256': pin(active)['sha256'],
+         'runtime_package_sha256': RUNTIME_PIN[1], 'consumer_sha256': binding['consumer']['sha256'],
+         'readiness_sha256': binding['readiness']['sha256'], 'policy_adoption_sha256': binding['adoption']['sha256'],
+@@ -499,7 +504,10 @@
+                         'capture_fault_phone.py': phone_final, 'capture_fault_p4.py': {'sender_sha256': pin(sender)['sha256']}}.items():
+         path = 'source/' + name
+         need(literal(physical_fault[path], 'FINAL_DEPENDENCIES') is None, 'original unbound source slot')
+-        physical_fault[path] = changed('physical-fault/' + path, physical_fault[path], {'FINAL_DEPENDENCIES': value})
++        substitutions = [("FINAL_DEPENDENCIES['sender_sha256']=='5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281'",
++                          "FINAL_DEPENDENCIES['sender_sha256']=='f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73'")] if name == 'capture_fault_p4.py' else ()
++        physical_fault[path] = changed('physical-fault/' + path, physical_fault[path],
++                                       {'FINAL_DEPENDENCIES': value}, substitutions)
+     # The unchanged registered-plan preparer reads this exact source-only
+     # dependency contract.  It is generated here from retained actual source
+     # descriptors, not copied from a historical freeze/READY receipt.

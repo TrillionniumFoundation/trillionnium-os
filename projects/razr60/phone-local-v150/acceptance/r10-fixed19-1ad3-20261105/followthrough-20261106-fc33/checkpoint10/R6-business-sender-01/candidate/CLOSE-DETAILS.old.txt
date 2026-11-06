@@ -1,0 +1,3 @@
+ for index in range(2):
+  done=node(nodes,'android:id/button2');assert done.attrib['text'] in ('关闭','完成');tap(done);nodes=dump('CLOSE-DETAILS-'+str(index))
+ assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib['text']==expected

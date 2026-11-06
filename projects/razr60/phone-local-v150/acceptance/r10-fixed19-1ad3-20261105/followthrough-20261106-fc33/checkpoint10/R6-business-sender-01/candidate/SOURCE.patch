@@ -1,0 +1,20 @@
+--- actual-called/send_new_native_task_r5.py
++++ send_new_native_task_r5_fc33_r6.py
+@@ -237,8 +237,15 @@
+  qualified['retirement_prior_admission']=retirement_prior
+  qualified['retirement_gate']=retirement_before
+  qualified['prompt_sha256']=hashlib.sha256(expected.encode()).hexdigest();save('PRE-SEND-QUALIFIED.json',qualified)
+- for index in range(2):
+-  done=node(nodes,'android:id/button2');assert done.attrib['text'] in ('关闭','完成');tap(done);nodes=dump('CLOSE-DETAILS-'+str(index))
++ for index in range(4):
++  editors=[n for n in nodes if n.attrib.get('resource-id')=='org.trillionnium.owneropen:id/ui_prompt']
++  if editors:
++   assert len(editors)==1 and editors[0].attrib.get('package')=='org.trillionnium.owneropen','Ambiguous owner editor; no task sent'
++   break
++  done=node(nodes,'android:id/button2')
++  assert done.attrib.get('package')=='org.trillionnium.owneropen' and done.attrib.get('text') in ('关闭','完成') and done.attrib.get('clickable')=='true','Unknown details dialog retained; no task sent'
++  tap(done);nodes=dump('CLOSE-DETAILS-'+str(index))
++ assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib.get('package')=='org.trillionnium.owneropen','Foreign owner editor; no task sent'
+  assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib['text']==expected
+  assert f.read('cat /proc/sys/kernel/random/boot_id',c,t)=='f8019f83-20a7-4f18-bea1-51c980621e4d'
+  send=node(nodes,'org.trillionnium.owneropen:id/ui_send')

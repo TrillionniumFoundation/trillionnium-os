@@ -1,0 +1,11 @@
+--- actual49/source/run_fixed19_e2e_root_once.py
++++ candidate/source/run_fixed19_e2e_root_once.py
+@@ -206,7 +206,7 @@
+    result=capture.run_phase_original('%02d-%s'%(index,phase.replace('_','-')),
+     ['/usr/bin/python3','-I','-B','-c',PHASE_PROGRAM],budget,input_raw=encoded(payload),command_binding=binding)
+    need(result['state']=='ORIGINAL_HOST_CHILD_JOINED','original phase not joined')
+-   receipts.append(dict(phase=phase,**result))
++   receipts.append({**result,'phase':phase})
+    need(type(result['returncode'])is int and result['returncode'] in ((0,2)if phase=='collect'else(0,)),
+     'original E2E phase failed; inspect existing originals: '+phase)
+   closure_path=Path(ctx['closure_dir'])/'CLOSURE-CHECK.private.json'

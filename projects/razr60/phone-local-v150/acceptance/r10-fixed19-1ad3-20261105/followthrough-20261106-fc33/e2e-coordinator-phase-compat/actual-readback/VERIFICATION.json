@@ -1,0 +1,27 @@
+{
+  "actual_BUILD": null,
+  "actual_E2E": null,
+  "actual_READY": null,
+  "all_actual_files_equal_reviewed_preview": true,
+  "all_full9_EOF_and_directory_membership_verified": true,
+  "file_bytes": 112114,
+  "file_count": 8,
+  "fixed19_credit": 0,
+  "full_byte_inverse": true,
+  "independent_read_job": "1a1b27b8628-fc05-7e38",
+  "native_sends": 0,
+  "phone_calls": 0,
+  "publication_job": "1a1b278051c-fc05-7e23",
+  "registrations": 0,
+  "schema": "hepta.fc33.e2e.compat-actual-archive.verification.v1",
+  "source": {
+    "bytes": 20206,
+    "sha256": "54f7a6c1fd7e9ff1b82e82f4947639bca1745d334f7512bbf92d796bb32987fa"
+  },
+  "source_compat": {
+    "bytes": 4167,
+    "sha256": "0ff89af8e719536aa08bba674b9e2dc439afade9d93b7d9aad0dde3536d04dd6"
+  },
+  "source_controls_rerun_during_readback": false,
+  "state": "ACTUAL_EIGHT_PUBLISHED_HOST_SOURCE_ORIGINALS_VERIFIED"
+}

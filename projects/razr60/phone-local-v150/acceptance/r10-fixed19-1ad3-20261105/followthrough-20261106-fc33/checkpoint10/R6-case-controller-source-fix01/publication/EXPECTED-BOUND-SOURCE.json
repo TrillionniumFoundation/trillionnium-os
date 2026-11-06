@@ -1,0 +1,37 @@
+{
+  "actual_case_controller": null,
+  "actual_input": {
+    "bytes": 921,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-ACTUAL01.json",
+    "sha256": "31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8"
+  },
+  "bound_source": {
+    "bytes": 45375,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-input-binding-fix01/source/derive_r6_source_rebindings_BOUND.py",
+    "sha256": "509a289f77605c64f283edf6ddea2d6fd6adc14d23c542de8341f3158440f029"
+  },
+  "full_source_inverse": {
+    "candidate": {
+      "bytes": 45375,
+      "sha256": "509a289f77605c64f283edf6ddea2d6fd6adc14d23c542de8341f3158440f029"
+    },
+    "changes": [
+      {
+        "after": "FROZEN_INPUTS = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-r6-case-controller-ACTUAL01.json', 'bytes': 921, 'sha256': '31bf47df14325d24de5ab1814d938550e543907a615761234f753e738ee144e8'}\n",
+        "before": "FROZEN_INPUTS = None\n",
+        "line": 20
+      }
+    ],
+    "complete_inverse": true,
+    "parent": {
+      "bytes": 45121,
+      "sha256": "27db832a529f59d46e25b02eaecf2b9ac5c8ac9675c5bb91387a6fed4a8ee9b9"
+    }
+  },
+  "phone_calls": 0,
+  "request": {
+    "bytes": 433,
+    "sha256": "3950ae19ba01b5e03eaa01a5f524b5b9d38bda590f8272fb9d471cbde8d55b82"
+  },
+  "state": "EXACT_SOURCE_BYTES_PREPARED_NOT_PUBLISHED"
+}

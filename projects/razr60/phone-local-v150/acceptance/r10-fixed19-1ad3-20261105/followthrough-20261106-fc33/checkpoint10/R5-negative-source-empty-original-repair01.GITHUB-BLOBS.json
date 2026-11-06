@@ -1,0 +1,255 @@
+{
+  "schema": "hepta.fc33.github-immutable-blob-map.v1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/",
+  "files": [
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/CONSTRUCTOR-REPORT.json",
+      "blob_sha": "c2c2be02cd4e2d4f356afd085b04267cecd44619",
+      "bytes": 854,
+      "sha256": "d9217973904f580b824adc37b0106e602c545b381ed7ce3e666cecdc559549a7",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/CONSTRUCTOR-REPORT.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/CONTROL-READ.original.mcp.json",
+      "blob_sha": "52841601c2b85b6d1765de13c9f2a27e74c2625d",
+      "bytes": 3719,
+      "sha256": "bcd763a84c7fa750f0f465b709c6273216136a29e02b91b63b598d5761869c03",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/CONTROL-READ.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/CONTROL-REQUEST.json",
+      "blob_sha": "25104f10c85606d0644ae7e0bf9449165b4bafc5",
+      "bytes": 13956,
+      "sha256": "976c85abbf764f56d60af7a8710d8f0723cc8cd1de3c26243455359d7c4dfc59",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/CONTROL-REQUEST.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/CONTROL-RESULT-READ.original.mcp.json",
+      "blob_sha": "1317fd95a8a4d55d1140cf6a51e2f5ab21e14adc",
+      "bytes": 9888,
+      "sha256": "945a616ddd9aea819d44285e0c06c634a6af3bf64d9c5cc8665347ef2a219487",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/CONTROL-RESULT-READ.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/CONTROL-START.original.mcp.json",
+      "blob_sha": "0b942d7174b97074eb9a7652df2691d007efb963",
+      "bytes": 1308,
+      "sha256": "29a343c8a075aeb294d03190fe90c51ee9c71529b5b7660c42784eb982b14d43",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/CONTROL-START.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/CONTROL-STATUS.original.mcp.json",
+      "blob_sha": "f52f031b176409cde8e35daa5b95e844f85a4495",
+      "bytes": 954,
+      "sha256": "d7eec968a738a6fef1f7271701689183e6c88fbb53fcaac2454029b8e4fe0c01",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/CONTROL-STATUS.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/CONTROL-STDOUT.original.json",
+      "blob_sha": "d7dfc33a60385d958c90776c12dbd70e18ab83cc",
+      "bytes": 1022,
+      "sha256": "3125e47760203d08e93017ab6d318362efa0431e18bb2716b413ed71b73b49c6",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/CONTROL-STDOUT.original.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/DIAGNOSIS.json",
+      "blob_sha": "11710ccfb100c5d353388c252f5efcfa5111dfdb",
+      "bytes": 4140,
+      "sha256": "fa92ae78170aab139e47c012533d2106fd92fa9d556ce5f9fa91b227868657e5",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/DIAGNOSIS.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/INSPECTION-READ.original.mcp.json",
+      "blob_sha": "8a65b86ccce2e07c89436db6da3ef2ce9f16226d",
+      "bytes": 11159,
+      "sha256": "407eba32858485f8d80816bca826421a8197ff4db5ab8548d6b1af6f17a85279",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/INSPECTION-READ.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/INSPECTION-REQUEST.json",
+      "blob_sha": "1369abc9b37fd6e6ad604d25d5733d6c16ddfbfd",
+      "bytes": 8054,
+      "sha256": "c3fe3b70d1b1d6d33b1caf1af07a8fa0e663d74839cf0ddccb5203d39e6b825c",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/INSPECTION-REQUEST.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/INSPECTION-RESULT.original.json",
+      "blob_sha": "04336ecfb048d6668c0d00dbcda708b0071749f6",
+      "bytes": 3408,
+      "sha256": "e329dc05dc7a084137b62db8448dc3fdba62c79771e7e1d131f8ba28c51e3cd0",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/INSPECTION-RESULT.original.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/INSPECTION-START.original.mcp.json",
+      "blob_sha": "5bd016ebdb423ec54e0059571c52674c60ff780a",
+      "bytes": 1313,
+      "sha256": "f2062ce6265dd983aaf1c0faf9fe0f632d7a8b86f86a8d78257dc33cb6230942",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/INSPECTION-START.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/INSPECTION-STATUS.original.mcp.json",
+      "blob_sha": "5eb22dab6292ea660b0b051aec076436b8840bb4",
+      "bytes": 954,
+      "sha256": "00947193b7dd03b9d087d9aad4669bc45e844cec254d0a333f933602b187d9a6",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/INSPECTION-STATUS.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/INSPECTION.patch",
+      "blob_sha": "37b348352b09c658cb9ebcc55f1fc8c124094eec",
+      "bytes": 4991,
+      "sha256": "53cfeb3f1fb8cf072582b7dd34d7649e3996de85fc7f498da12a6f1860650e45",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/INSPECTION.patch"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/ORIGINALS-CHUNK0.original.mcp.json",
+      "blob_sha": "6d47b99ed236451b05c867ee6f54e9c50d2eb66a",
+      "bytes": 87952,
+      "sha256": "e51048d5cc82c254f94b63b6c87c81b248b7d050997f8321806e4a4fbe7b9b3b",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/ORIGINALS-CHUNK0.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/ORIGINALS-CHUNK1.original.mcp.json",
+      "blob_sha": "db4b4d1ed9e48e52d82f0c55163a1ee8adeed48a",
+      "bytes": 87957,
+      "sha256": "0cad49ec1f57790559cfb7c26d7e4d6735a9046bf4ac841add385d74ed85b436",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/ORIGINALS-CHUNK1.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/ORIGINALS-CHUNK2.original.mcp.json",
+      "blob_sha": "6e6574c373cfcd0873dbd367471dc00be7e50c80",
+      "bytes": 55589,
+      "sha256": "65243577c76a1d317204cfcff64d0d95e264a0c4e532f0e777d1ea49f93b7952",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/ORIGINALS-CHUNK2.original.mcp.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/ORIGINALS.json",
+      "blob_sha": "ae1edb06351b7f862285853efc73d5f023906b7d",
+      "bytes": 172333,
+      "sha256": "e26df10680664d00e6f6043b76eb93d243f9f2b9aafb87dfb7b8ff7a39a26b6b",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/ORIGINALS.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/R6-REBINDING-REQUIREMENTS.json",
+      "blob_sha": "feba35f09092e8e0addf86c3d8facfc2880363ae",
+      "bytes": 5140,
+      "sha256": "44a739a7166c0386fb9a94734df55287a8c0218b9c08518e0ff5244cf243804e",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/R6-REBINDING-REQUIREMENTS.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/R6-SOURCE-INPUTS.UNBOUND.template.json",
+      "blob_sha": "5c55c1800da13c3ee77d1b7bd754854bafd01ceb",
+      "bytes": 947,
+      "sha256": "8c4092d876d20722caa5502f8fb3bc3979e4a97e57fac53f3aa20bc9b20b9688",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/R6-SOURCE-INPUTS.UNBOUND.template.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/README.md",
+      "blob_sha": "87faa6746bb56e45e88f6a2212e27a73b33f7293",
+      "bytes": 7506,
+      "sha256": "1265d289b3135332f4946c682495eed54791de45dedf7f29256ee24f0caf1b1f",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/README.md"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/RESULT.json",
+      "blob_sha": "496f51cf6407579a49fcf94430814c547c26c66e",
+      "bytes": 5749,
+      "sha256": "d7d2fd5a91839e66ca2816ffc6b8273239280caccb2e8287e898fde267bc64b7",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/RESULT.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/SOURCE-READER-DERIVATION.json",
+      "blob_sha": "7ce2694302b1a1ab86f44af0ebbb552af4f2361d",
+      "bytes": 520,
+      "sha256": "6640399b3bb0b12846b6e0d09d578680e6ebf06ed98841b5522ec433a397173f",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/SOURCE-READER-DERIVATION.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/SOURCE-READER-PROJECTOR.patch",
+      "blob_sha": "dab54afda62dab0874d8806f533eac41ac5a5493",
+      "bytes": 1744,
+      "sha256": "76e08c9c18f42cb59bc88a7923abbcb0503892c8e178b9a737b3956405967b75",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/SOURCE-READER-PROJECTOR.patch"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/SOURCE-READER.patch",
+      "blob_sha": "139007e937bdc5bd7fb9810eeda78714985be188",
+      "bytes": 682,
+      "sha256": "2f7f65f30912fd5030188d865034a54c443ad3f9cac5d097bdb4e19fb7db6280",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/SOURCE-READER.patch"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/SOURCE02-FAILED-PUBLICATION-CONTROLLER.original.json",
+      "blob_sha": "3776dcb78e1c85cb43140c094cba70b07463fb32",
+      "bytes": 20889,
+      "sha256": "e5d9e9d82c8c641fd117c805672365f44baf5a6efd1af91aa858d5ecfe338154",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/SOURCE02-FAILED-PUBLICATION-CONTROLLER.original.json"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/inspect_failed_publication02.py",
+      "blob_sha": "7b61ccf702fbdc659e031c3fe9389e335f85d1f8",
+      "bytes": 7714,
+      "sha256": "2d3a46238f12dd3a9e0df7910fe133f171ad22717b74836916e715e71fe4af36",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/inspect_failed_publication02.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/publish_negative_sources_once.source02.original.py",
+      "blob_sha": "d030a00ec53333973927f3128074fbd1706d2458",
+      "bytes": 19652,
+      "sha256": "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/publish_negative_sources_once.source02.original.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/read.candidate.py",
+      "blob_sha": "3ed7a726e99b53897f49b78734b742f24c7551b2",
+      "bytes": 1053,
+      "sha256": "529da5df943c53763a07cc232f0bf585250ba76b6b88f76643900224dfb94b03",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/read.candidate.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/read.original.py",
+      "blob_sha": "ce78dd8aff320f32a89bfb451d75c4b84bcea78a",
+      "bytes": 1052,
+      "sha256": "a36ad5aaffa142b7f23129c5da4727e579c97ca1ba1f0851d7bb530b71be905a",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/read.original.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/source_reader.candidate.py",
+      "blob_sha": "305a6226d51a79191a3319b948f21f25c9aa8073",
+      "bytes": 1345,
+      "sha256": "ecd6139f9161bc18d59eee16bd58f3f3de478f39643e3967d12c84167ad753c8",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/source_reader.candidate.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/source_reader.original.py",
+      "blob_sha": "2c92e9032239dcb56a698f772faf352923bf6af3",
+      "bytes": 1270,
+      "sha256": "1c1478a2a68dc994cec09471c53d551b79dcde935e4f78736a54d97221747578",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/source_reader.original.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/test_publisher_reader.py",
+      "blob_sha": "02754c29d1dbd9b18f31982a9e62f4642a14829b",
+      "bytes": 13463,
+      "sha256": "21b38bb81d414cffddf9ae052255947fd8136f8f1d426a7e7041c49f92322914",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/test_publisher_reader.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/test_publisher_reader.template.py",
+      "blob_sha": "ff40d0bfadc4f4bde22d6cf394a4abdbb41d7040",
+      "bytes": 11888,
+      "sha256": "0f10a4c29e5f33fea2d1f4c77d6cf3a8388a68fe19e9dc38fc7380cb7447f6b0",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/test_publisher_reader.template.py"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-empty-original-reader-repair01/PACKAGE-MANIFEST.json",
+      "blob_sha": "5c102df6d63ad7d22bcf91c6be9fac8dc8577766",
+      "bytes": 5887,
+      "sha256": "3102f1c9287b31532b659ba02cf28d7603993c7ea8918a77c86e05352b85b2f7",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-empty-original-repair01/PACKAGE-MANIFEST.json"
+    }
+  ],
+  "total_files": 35,
+  "total_bytes": 576052,
+  "tree_commit_ref_written": false
+}

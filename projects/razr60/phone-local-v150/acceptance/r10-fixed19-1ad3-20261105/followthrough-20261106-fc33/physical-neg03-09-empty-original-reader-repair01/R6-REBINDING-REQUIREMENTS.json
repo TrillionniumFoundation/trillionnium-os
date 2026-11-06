@@ -1,0 +1,131 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_case_plans": null,
+  "actual_installed_tuple": null,
+  "actual_r6_freeze": null,
+  "basis": {
+    "negative_constructor": {
+      "bytes": 43126,
+      "sha256": "3c64904a631b8987fa6626e2575a5e1e8046dde9ac6f6cef22273e5c86d1f982"
+    },
+    "physical_fault_common": {
+      "bytes": 28157,
+      "sha256": "60f5a7b64cf055db153fc20e49951866fabf3e7c0b2b28d29290fec4d722eae9"
+    },
+    "source02_publisher": {
+      "bytes": 19652,
+      "sha256": "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81"
+    }
+  },
+  "fixed_authorities": {
+    "adoption_sha256": "98b5db3d2c9680fff13e50bf64b18ddf9822689641427d204fded84f690d04c7",
+    "combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+    "policy_sha256": "69aa6433a11ac4cffb2f1d349cc9f36ec2349a601911c173ebe7d92fff9e0c5b",
+    "production_source_count": 15
+  },
+  "no_unknown_hash_filled": true,
+  "phone_calls": 0,
+  "required_actual_inputs": [
+    {
+      "descriptor": null,
+      "id": "r6_runtime",
+      "required_checks": [
+        "Whole actual R6 runtime MANIFEST and every member exact bytes/SHA.",
+        "Exact reviewed R6 revision string, actual file count and combination7969.",
+        "Frozen result dual copies and authoritative controller success remain actual gates, separate from source propagation."
+      ],
+      "source_edits": [
+        "constructor.RUNTIME_PIN",
+        "constructor._admit_sources exact runtime revision",
+        "common.generation_inputs exact runtime revision"
+      ]
+    },
+    {
+      "descriptor": null,
+      "id": "r6_root_manifest_and_source",
+      "required_checks": [
+        "Complete root SOURCE-MANIFEST and run_component_root_once.py.",
+        "Root package pin equals exact R6 runtime; combination remains7969.",
+        "Compare full R5-to-R6 source diff and seven-slot root normalization."
+      ],
+      "source_edits": [
+        "constructor.ROOT_MANIFEST_PIN",
+        "constructor.ROOT_SOURCE_PIN",
+        "closure.ROOT_CAPTURE_TEMPLATE only if full normalized body actually changes and is reviewed"
+      ]
+    },
+    {
+      "descriptor": null,
+      "id": "r6_release_source_chain",
+      "required_checks": [
+        "Actual bound source-chain constructor and exact source inputs.",
+        "UNBOUND inverse must equal reviewed4c8 parent or separately reviewed exact successor.",
+        "Re-run complete pure derive_reviewed_source_chain and read actual published consumer/readiness bodies."
+      ],
+      "source_edits": [
+        "SOURCE-INPUTS.release_source_chain",
+        "constructor.CHAIN_TEMPLATE only if actual UNBOUND body changes"
+      ]
+    },
+    {
+      "descriptor": null,
+      "id": "r6_consumer_readiness",
+      "required_checks": [
+        "Consumer PACKAGE pin is actual R6 runtime.",
+        "Whole PACKAGE inverse must equal016d template or separately reviewed exact successor.",
+        "Readiness BOUNDARY_CONSUMER_SHA256 equals actual whole consumer."
+      ],
+      "source_edits": [
+        "constructor.CONSUMER_TEMPLATE only if actual UNBOUND body changes",
+        "Derived six active source pins and final dependency manifests are recomputed, never hand-filled"
+      ]
+    },
+    {
+      "descriptor": null,
+      "id": "materializer_source",
+      "known_reviewed_body": {
+        "bytes": 24834,
+        "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+      },
+      "required_checks": [
+        "Use an observed actual published source descriptor, not a guessed R6 location.",
+        "The business sender40788/5ab0 is distinct from the component sender UI fix; do not mutate or substitute it by name similarity."
+      ],
+      "source_edits": [
+        "SOURCE-INPUTS.materializer actual observed path only if relocated"
+      ]
+    },
+    {
+      "descriptor": null,
+      "id": "reference_index",
+      "required_checks": [
+        "Exact171 member reference set with every source byte pin.",
+        "Recompute index after reviewed common revision or normalized root template change; all other members unchanged."
+      ],
+      "source_edits": [
+        "constructor.REFERENCE_INDEX",
+        "copied inputs/REVIEWED-INPUTS.json"
+      ]
+    },
+    {
+      "descriptor": null,
+      "id": "source03_fresh_outputs",
+      "required_checks": [
+        "New three exact binding/derived/transport namespaces; source01 and02 preserved.",
+        "Same complete create-only held-dirfd publisher and terminal-last checks.",
+        "Only selected source-reader lower bound adds legitimate pinned empty originals.",
+        "All seven actual case slots and actual BUILD/READY remain None at publication."
+      ],
+      "source_edits": [
+        "FROZEN_INPUTS exact3",
+        "publisher payload/input descriptors and namespace checks",
+        "source_reader candidate ecd6139f function",
+        "future host NEG06 namespace literal only"
+      ]
+    }
+  ],
+  "schema": "hepta.fc33.negative-source-r6-rebinding-requirements.v1",
+  "source_publication": false,
+  "state": "HOST_ONLY_REQUIRED_INPUTS_UNBOUND_NO_R5_SOURCE03_PUBLICATION"
+}

@@ -1,0 +1,164 @@
+{
+  "all6_exact_inverse": true,
+  "all_manifest_members_full_bytes_verified": true,
+  "all_other_manifest_fields_including_source_parent_equal": true,
+  "case_credit": 0,
+  "manifest_changed_keys": {
+    "root-chain/SOURCE-MANIFEST.json": [
+      "files",
+      "fixed_shared_material_root",
+      "frozen_component_package_sha256",
+      "launch_observation_budget",
+      "new_identity_preparation_budget",
+      "preceding_unqualified_root_source_manifest",
+      "revision"
+    ],
+    "runtime/MANIFEST.json": [
+      "files",
+      "new_identity_preparation_budget",
+      "preceding_unqualified_source_package",
+      "revision",
+      "sender_ui_completion"
+    ]
+  },
+  "member_counts": {
+    "root-chain": 3,
+    "runtime": 38
+  },
+  "phase_wait_manifest_matches_source": false,
+  "phase_wait_manifest_observed": {
+    "after-guard": {
+      "reader_seconds": 25,
+      "request_seconds": 40
+    },
+    "before-guard": {
+      "reader_seconds": 25,
+      "request_seconds": 40
+    },
+    "setup": {
+      "reader_seconds": 60,
+      "request_seconds": 75
+    }
+  },
+  "phone_calls": 0,
+  "schema": "hepta.fc33.r6.exact-delta-independent-control.v1",
+  "source_files": [
+    {
+      "candidate": {
+        "bytes": 14256,
+        "sha256": "1528a3124de8c2977e493100a61e594143d56b4af9df2d1532d79c46770710f2"
+      },
+      "complete_byte_inverse": true,
+      "independent_exact_replacements": 2,
+      "original": {
+        "bytes": 14256,
+        "sha256": "96bd29f1e98615f26ea43e2c6101a555c72eff7268ce318151a4ab1f667174f4"
+      },
+      "path": "runtime/source/prepare_component.py"
+    },
+    {
+      "candidate": {
+        "bytes": 19085,
+        "sha256": "74ff4865d2021e42ae5022d606cfe5732d924e8038d00c3a99b89ebcd4c77d72"
+      },
+      "complete_byte_inverse": true,
+      "independent_exact_replacements": 1,
+      "original": {
+        "bytes": 19085,
+        "sha256": "e87dcf806f66a87ffbf4cbdfb00bac9280fb220268a9f3ee5e17f53ee35f07b9"
+      },
+      "path": "runtime/source/stage_component.py"
+    },
+    {
+      "candidate": {
+        "bytes": 40451,
+        "sha256": "5968facb7879582051f102fe63064ec3c01616b150089d17c010ccf4f873b234"
+      },
+      "complete_byte_inverse": true,
+      "independent_exact_replacements": 2,
+      "original": {
+        "bytes": 40451,
+        "sha256": "99fd57b058e6e49ea4a8a9f7145641752acd3a4bc7727d7ba34710cb48aa8ae7"
+      },
+      "path": "runtime/source/component_lifecycle.py"
+    },
+    {
+      "candidate": {
+        "bytes": 41745,
+        "sha256": "de6c90187ad15995cbd85c662fb7d0a0ee40809bc54d9c1a51c46e164d75b354"
+      },
+      "complete_byte_inverse": true,
+      "independent_exact_replacements": 3,
+      "original": {
+        "bytes": 41080,
+        "sha256": "53a6e9149cf768211c3c8ba74d3c422f95d78f14efdb8751af1ac55d1a9225d5"
+      },
+      "path": "runtime/source/send_new_native_guard_task_r10_r4.py"
+    },
+    {
+      "candidate": {
+        "bytes": 78567,
+        "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257"
+      },
+      "complete_byte_inverse": true,
+      "independent_exact_replacements": 9,
+      "original": {
+        "bytes": 78566,
+        "sha256": "2af78597f211b8b7de32d5f40591e46c4ea5ff7caa3c4a2547ac4325666c2032"
+      },
+      "path": "root-chain/source/run_component_root_once.py"
+    },
+    {
+      "candidate": {
+        "bytes": 8101,
+        "sha256": "0d5e073ba4e31f896e1234a3896b281108e0272ba5e3476adb01c7dde307fa15"
+      },
+      "complete_byte_inverse": true,
+      "independent_exact_replacements": 2,
+      "original": {
+        "bytes": 8100,
+        "sha256": "c2df3f727b444fa2137b2392446f603731961118f92b1309a900a1ad4a086607"
+      },
+      "path": "root-chain/source/phone_chain_bridge.py"
+    }
+  ],
+  "source_mutations": 0,
+  "unchanged_member_count": 35,
+  "unchanged_member_names": [
+    "runtime/reference/REVIEWED-PRODUCTION-PINS.json",
+    "runtime/reference/attempt05-AFTER-INVENTORY.original.json",
+    "runtime/reference/attempt05-CLOSURE.original.json",
+    "runtime/reference/attempt05-SIDE-PROOF.original.json",
+    "runtime/reference/component_common_r5.py",
+    "runtime/reference/component_core.py",
+    "runtime/reference/component_once_r9.py",
+    "runtime/reference/decode_client_state.py",
+    "runtime/reference/diag02-AFTER-INVENTORY.original.json",
+    "runtime/reference/diag02-CLOSURE.original.json",
+    "runtime/reference/diag02-SIDE-PROOF.original.json",
+    "runtime/reference/environment_parent_late_boundary_r6.py",
+    "runtime/reference/native_guard_session.py",
+    "runtime/reference/native_journal_audit.py",
+    "runtime/reference/non_native_attempt05.py",
+    "runtime/reference/non_native_diag02.py",
+    "runtime/reference/policy_parent_late_boundary_r4.py",
+    "runtime/reference/property_parent_late_boundary_r7.py",
+    "runtime/reference/retained_unstarted_stage_final02.py",
+    "runtime/reference/send_new_native_task_r5.py",
+    "runtime/reference/source_parent_late_boundary_r4.py",
+    "runtime/reference/tool_client_r6.py",
+    "runtime/source/close_component.py",
+    "runtime/source/component_common.py",
+    "runtime/source/component_listener.py",
+    "runtime/source/component_snapshot.py",
+    "runtime/source/late_boundary.py",
+    "runtime/source/native_guard_session_r2.py",
+    "runtime/source/native_proc_profile.py",
+    "runtime/source/root_fixture_once.py",
+    "runtime/source/root_fixture_originals.py",
+    "runtime/source/run_root_fixture_phase.py",
+    "runtime/source/sender_native_guard_ready_r10_r4.py",
+    "runtime/source/witness_bundle.py",
+    "root-chain/reference/actual_policy_adoption.py"
+  ]
+}
