@@ -102,15 +102,15 @@
       ]
     },
     {
-      "bytes": 16961,
+      "bytes": 18249,
       "exact_original_bytes": false,
-      "git_blob_sha": "8030830dcf795b39a115b048cb8723cef7f5818d",
+      "git_blob_sha": "2916fbea38a3fa136abfd6d7a13f6d80efd48b0c",
       "mode": "100644",
       "origin": "reviewed_http_observation_and_sender_failure_source_candidates",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "README.md",
-      "sha256": "14bdce018f0989fba791f547549797b0c3a7e6b7af37d2ea175e0e2f1d062c54",
+      "sha256": "8b4ece916eca80c62acd9d52079958a35335e567023ef5cf32535d32fbc7e572",
       "transformations": [
         {
           "rule": "explicit-selected-source-only-public-projection-or-generated-safe-fixture"
@@ -7682,6 +7682,193 @@
       ]
     },
     {
+      "bytes": 622,
+      "exact_original_bytes": false,
+      "git_blob_sha": "820186abff07687697d99d5d94b06970d219f8b5",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/CANDIDATE-BINDING.PUBLIC.json",
+      "sha256": "378bc5ea95fb4abb9f539cc30bd7b634631edada821cb4028b7a694d77bd70b3",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 9322,
+      "exact_original_bytes": false,
+      "git_blob_sha": "8a7d0d37b90047d7e6363466272a006480d3d1fe",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/HOST-TEST-SUMMARY.PUBLIC.json",
+      "sha256": "6db0fcba5830c4c694ff3cad6b78698cb9c85306eebab0dc78e86a58a61e0474",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 8372,
+      "exact_original_bytes": false,
+      "git_blob_sha": "768f1ee72e40966f9ba39207e8b4a7318a078038",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/PROJECTION-RULES.PUBLIC.json",
+      "sha256": "17d4c5cfcd33d2424489028fe3463576f1bd10c6a7c8333991b89531e524e519",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 3099,
+      "exact_original_bytes": false,
+      "git_blob_sha": "8648735e914f0706900e58d8a5039dd97ba0086f",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/PUBLISH-ALLOWLIST.PUBLIC.json",
+      "sha256": "733a78730de8d9b19ae7e814e92d4874540b9156c5f022797d7c1ac93ac2c85a",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 6898,
+      "exact_original_bytes": false,
+      "git_blob_sha": "434ab74785ef718227424614b13e2e87c4f91590",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/README-PUBLIC.md",
+      "sha256": "c7f9941664b05c67bbc8d18863a6bd19e0dc1081187906ac5a51b343cedb50ba",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 937,
+      "exact_original_bytes": false,
+      "git_blob_sha": "fd641d4028eeddbb9771bf88b56a0fdef6588d5b",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/SHA256SUMS.PUBLIC",
+      "sha256": "1b60d787da4fe553e8374dfe1ece21b621f489d97c23e24094cb9318b47c23a1",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 3488,
+      "exact_original_bytes": false,
+      "git_blob_sha": "aa0a178cb97e428e82992a68f85e9c71737233d7",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/SOURCE-SEAL.PUBLIC.json",
+      "sha256": "d2fd1b9d4f9d95760f2535dbe29157761933e37606d8c810498183087384f38c",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 15081,
+      "exact_original_bytes": false,
+      "git_blob_sha": "e29adc0e0d3588a0192f8d44a15d6ae51de41f28",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/TRANSPORT.PUBLIC.patch",
+      "sha256": "dfe5eed6e269bf46ed283f551337b08c087b135bfa07c7e0c22952589d8c353a",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 46176,
+      "exact_original_bytes": false,
+      "git_blob_sha": "15978ab9f663bd81759ca5c2f881929687802620",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/base/run_component_root_once.py",
+      "sha256": "3eacd09518e4a729bab879fa63dff327a6e3e192d89722dc27d955333c7cce8d",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 54762,
+      "exact_original_bytes": false,
+      "git_blob_sha": "9c83ae89b4eb014046bf9a34e4ee20dd2e828427",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/candidate/run_component_root_once.py",
+      "sha256": "88a37c17ceda4664e1d8a1b6d5f14351526cd8288ceed7bc00b863084ef095da",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
+      "bytes": 16691,
+      "exact_original_bytes": false,
+      "git_blob_sha": "4541d0112b88d9e86c6deb43cf0e7890bdb3a849",
+      "mode": "100644",
+      "origin": "native_guard_r8_review_only_public_projection_or_generated_fixture",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "operators/native-guard-property-root-r8-transport-r1/test_transport_public.py",
+      "sha256": "141a67e624f97ddc2ab911b50efbb6e1090a80176a83adf202f130b956488c6a",
+      "transformations": [
+        {
+          "rule": "unchanged_sealed_public_package_import",
+          "source_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368"
+        }
+      ]
+    },
+    {
       "bytes": 23910,
       "exact_original_bytes": false,
       "git_blob_sha": "8ebb1e24912727ec54125263cca3ee05fe750b41",
@@ -11261,7 +11448,29 @@
   "new_scope": "Two selected-source review candidates; existing sources, checkpoints and phone qualification remain unchanged.",
   "previous_publication": "8cccf753229eb53d666a6eae5a330552a2d110cc",
   "private_values_list_not_published": true,
-  "projected_or_generated_files": 296,
+  "projected_or_generated_files": 307,
   "runtime_sources_modified": false,
-  "schema": "hepta.public-projection-index.v150.r7.r3.checkpoint1"
+  "schema": "hepta.public-projection-index.v150.r7.r3.checkpoint1",
+  "source_integration_update": {
+    "base_commit": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+    "complete_private_combination_created": false,
+    "component_qualification_credits_added": 0,
+    "cumulative_inventory_gap_closed": true,
+    "fixed19_credits_added": 0,
+    "historical_measurement_fields_unchanged": true,
+    "import_commit": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+    "imported_files": 11,
+    "imported_package": "operators/native-guard-property-root-r8-transport-r1",
+    "package_bytes_unchanged": true,
+    "phone_or_model_requests": 0,
+    "physical_qualification_credits_added": 0,
+    "private_source_application": "Each existing helper still requires its own exact full baseline; this import does not compose executable private sources.",
+    "runtime_adopted": false,
+    "shared_documentation_and_parser_repairs": "already_byte_identical_in_base_and_import_heads",
+    "source_only": true,
+    "source_seal": {
+      "path": "operators/native-guard-property-root-r8-transport-r1/SOURCE-SEAL.PUBLIC.json",
+      "sha256": "d2fd1b9d4f9d95760f2535dbe29157761933e37606d8c810498183087384f38c"
+    }
+  }
 }

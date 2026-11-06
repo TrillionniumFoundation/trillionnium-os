@@ -1,0 +1,14 @@
+{
+  "base_path": "base/run_component_root_once.py",
+  "base_sha256": "3eacd09518e4a729bab879fa63dff327a6e3e192d89722dc27d955333c7cce8d",
+  "candidate_bytes": 54762,
+  "candidate_path": "candidate/run_component_root_once.py",
+  "candidate_sha256": "88a37c17ceda4664e1d8a1b6d5f14351526cd8288ceed7bc00b863084ef095da",
+  "execution_ready": false,
+  "patch_path": "TRANSPORT.PUBLIC.patch",
+  "patch_sha256": "dfe5eed6e269bf46ed283f551337b08c087b135bfa07c7e0c22952589d8c353a",
+  "phone_qualification": false,
+  "private_bindings_required": true,
+  "projected": true,
+  "schema": "razr60.r8-transport-public-source-binding.v1"
+}

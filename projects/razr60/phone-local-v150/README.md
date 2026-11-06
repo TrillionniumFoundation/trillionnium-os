@@ -172,3 +172,25 @@ stay outside the public packages. No current runtime, policy, source seal,
 device task, nonce or qualification is changed by publication. These packages
 add zero phone, fixed-nineteen, component, model-health, business or daily-use
 credits. The historical r7 sources and measured results above remain unchanged.
+
+## Combined review-only source inventory
+
+The [r8 host transport projection](operators/native-guard-property-root-r8-transport-r1/README-PUBLIC.md)
+is now included alongside the r4 transport, HTTP-observation and sender-drain
+packages. Its eleven sealed public files are copied byte for byte from source
+commit `fed5452e8a94939c6d88bc24c47844b37f8f7368` and are listed in both cumulative
+publication inventories. The shared documentation rendering and email-autolink
+repairs were already byte-identical in the selected base and are retained.
+
+The r8 and r4 transport helper definitions agree for retained input, child
+ownership, the original execution deadline and owned stream cleanup. Their
+whole launchers have different admission and historical bindings. The later
+sender-drain source also depends on a newer capture implementation. Each
+source-application helper therefore retains its own exact-input requirement;
+this inventory does not authorize substituting one launcher or private source
+for another.
+
+This integration adds no private production combination, live adoption, phone
+request or qualification credit. The historical checkpoint above retains its
+original meaning. Fresh CI, a protected integration path and non-author review
+remain required for this new source head.

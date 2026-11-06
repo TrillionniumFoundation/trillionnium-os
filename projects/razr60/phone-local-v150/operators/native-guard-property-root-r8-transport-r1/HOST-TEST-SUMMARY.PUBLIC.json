@@ -1,0 +1,315 @@
+{
+  "automatic_replays": 0,
+  "base_public_sha256": "3eacd09518e4a729bab879fa63dff327a6e3e192d89722dc27d955333c7cce8d",
+  "baseline_defect_reproductions_confirmed": 2,
+  "business_qualification": false,
+  "candidate_public_sha256": "88a37c17ceda4664e1d8a1b6d5f14351526cd8288ceed7bc00b863084ef095da",
+  "candidate_regressions_passed": 31,
+  "cases": [
+    {
+      "case": "original-nonreader-2m",
+      "observed_error_type": "BrokenPipeError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_baseline"
+    },
+    {
+      "case": "original-earlyexit-2m",
+      "observed_error_type": "BrokenPipeError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_baseline"
+    },
+    {
+      "case": "fixed-nonreader-2m",
+      "observed_error_type": "RuntimeError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fixed-earlyexit-2m",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fixed-readback",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fixed-empty-input",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fixed-no-input",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fixed-earlyclose",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-popen",
+      "observed_error_type": "FileNotFoundError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-stderr-open",
+      "observed_error_type": "OSError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-stream-create-fsync",
+      "observed_error_type": "OSError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-identity",
+      "observed_error_type": "OSError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-child-record",
+      "observed_error_type": "OSError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-child-unknown-record",
+      "observed_error_type": "OSError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-stdin-mutate",
+      "observed_error_type": "ValueError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-stdin-replace",
+      "observed_error_type": "ValueError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-stdin-mode",
+      "observed_error_type": "ValueError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-postjoin-mutate",
+      "observed_error_type": "ValueError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-stdout-fsync",
+      "observed_error_type": "ValueError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-record-delay",
+      "observed_error_type": "RuntimeError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "fault-late-join",
+      "observed_error_type": "ValueError",
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "async-abi-exact-readback",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "async-real-caller-readback",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "async-real-caller-fsync-failure",
+      "observed_error_type": null,
+      "observed_join_error_type": "ValueError",
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "async-real-caller-timeout-and-fsync",
+      "observed_error_type": null,
+      "observed_join_error_type": "RuntimeError",
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "async-late-join-known-child",
+      "observed_error_type": null,
+      "observed_join_error_type": "ValueError",
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "async-outer-failure-cleanup",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "async-outer-fsync-failure",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "invalid-budget-nan",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "invalid-budget-inf",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "invalid-budget-zero",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "invalid-budget-bool",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    },
+    {
+      "case": "invalid-budget-negative",
+      "observed_error_type": null,
+      "observed_join_error_type": null,
+      "passed": true,
+      "source": "projected_candidate"
+    }
+  ],
+  "deployment_or_policy_adoption": false,
+  "failed": 0,
+  "fd_inventory_directory": "/proc/self/fd",
+  "local_children_naturally_joined": true,
+  "network_calls": 0,
+  "original_source_macos_host_crosscheck": {
+    "baseline_defect_reproductions_confirmed": 2,
+    "candidate_regressions_passed": 31,
+    "elapsed_includes_input_preparation_not_a_hard_realtime_total_deadline": true,
+    "failed": 0,
+    "fd_inventory_directory": "/dev/fd",
+    "observations": [
+      {
+        "case": "original-nonreader-2m",
+        "child_record_present": false,
+        "elapsed_to_return_seconds": 1.5375,
+        "observed_error_type": "BrokenPipeError",
+        "parent_outputs_closed_at_return": false,
+        "unknown_record_present": false
+      },
+      {
+        "case": "original-earlyexit-2m",
+        "child_record_present": false,
+        "elapsed_to_return_seconds": 0.0421,
+        "observed_error_type": "BrokenPipeError",
+        "parent_outputs_closed_at_return": false,
+        "unknown_record_present": false
+      },
+      {
+        "case": "fixed-nonreader-2m",
+        "child_record_present": true,
+        "elapsed_to_return_seconds": 0.0554,
+        "observed_error_type": "RuntimeError",
+        "parent_outputs_closed_at_return": true,
+        "unknown_record_present": true
+      },
+      {
+        "case": "fixed-earlyexit-2m",
+        "child_record_present": true,
+        "elapsed_to_return_seconds": 0.0562,
+        "observed_error_type": null,
+        "parent_outputs_closed_at_return": true,
+        "unknown_record_present": false
+      }
+    ],
+    "original_baseline_full_source_sha256": "5263e9a19c8f6d2f7a60d560db7cce3a1c234ca79c77c04c3465323bc0bd9ca2",
+    "original_candidate_full_source_sha256": "033b8351450946392fdfb0cea14775af726eb4d1dfb2e70a0f8b54fd44ddbb27",
+    "phone_execution_or_qualification": false,
+    "platform": "darwin",
+    "public_projection_run_on_macos": false,
+    "python_version": [
+      3,
+      9,
+      6
+    ],
+    "raw_records_paths_and_raw_result_hash_not_published": true,
+    "scope": "ORIGINAL_FULL_PRIVATE_SOURCE_SYNTHETIC_HOST_TESTS_ONLY",
+    "total_checks_passed": 33
+  },
+  "phone_calls": 0,
+  "physical_acceptance_credit": 0,
+  "platform": "linux",
+  "public_projection_executed_on_macos": false,
+  "python_version": [
+    3,
+    12,
+    14
+  ],
+  "raw_process_records_paths_effects_and_hashes_excluded": true,
+  "schema": "razr60.public-projected-transport-host-summary.v1",
+  "scope": "PUBLIC_SOURCE_PROJECTION_SYNTHETIC_HOST_TESTS_ONLY",
+  "signals_sent": 0,
+  "test_harness_public_sha256": "141a67e624f97ddc2ab911b50efbb6e1090a80176a83adf202f130b956488c6a",
+  "total_checks_passed": 33
+}

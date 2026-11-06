@@ -84,5 +84,40 @@ class Razr60PublicationDocumentationTest(unittest.TestCase):
                     self.assertEqual(manifest["projected_or_generated_files"], len(entries) - exact)
 
 
+    def test_integrated_r8_package_is_complete_in_both_publication_inventories(self) -> None:
+        prefix = "operators/native-guard-property-root-r8-transport-r1/"
+        package = PROJECT / prefix
+        allowlist = json.loads((package / "PUBLISH-ALLOWLIST.PUBLIC.json").read_text())
+        expected = {prefix + row["path"] for row in allowlist["files"]}
+        expected.update(prefix + path for path in allowlist["additional_manifest_files"])
+        self.assertEqual(len(expected), 11)
+        self.assertEqual(
+            {prefix + path.relative_to(package).as_posix()
+             for path in package.rglob("*") if path.is_file()},
+            expected,
+        )
+        for name in ("PUBLISH-MANIFEST.json", "PUBLIC-PROJECTION-INDEX.json"):
+            with self.subTest(manifest=name):
+                manifest = json.loads((PROJECT / name).read_text())
+                self.assertEqual(
+                    {row["path"] for row in manifest["files"]
+                     if row["path"].startswith(prefix)},
+                    expected,
+                )
+                update = manifest["source_integration_update"]
+                self.assertEqual(update["import_commit"],
+                                 "fed5452e8a94939c6d88bc24c47844b37f8f7368")
+                self.assertEqual(update["imported_files"], len(expected))
+                self.assertTrue(update["source_only"])
+                self.assertFalse(update["runtime_adopted"])
+                self.assertFalse(update["complete_private_combination_created"])
+                self.assertEqual(update["phone_or_model_requests"], 0)
+                self.assertEqual(update["fixed19_credits_added"], 0)
+                seal = update["source_seal"]
+                self.assertEqual(seal["path"], prefix + "SOURCE-SEAL.PUBLIC.json")
+                self.assertEqual(hashlib.sha256((PROJECT / seal["path"]).read_bytes()).hexdigest(),
+                                 seal["sha256"])
+
+
 if __name__ == "__main__":
     unittest.main()
