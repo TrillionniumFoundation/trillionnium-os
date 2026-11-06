@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.install-original-retention.source-contract.v1",
+  "state": "UNBOUND_SOURCE_ONLY",
+  "actual": {
+    "phase_authority": null,
+    "retention_inputs": null,
+    "scope": null,
+    "phone_original_capture": null,
+    "BUILD": null,
+    "installation": null,
+    "READY": null
+  },
+  "source_pins": {
+    "install_retention_protocol_UNBOUND.py": {
+      "bytes": 20851,
+      "sha256": "280df226c4bde2294bfaefec93da40fcbc0c685e7c20a2359444e856fbd0bb7a"
+    },
+    "verify_install_retention_UNBOUND.py": {
+      "bytes": 22066,
+      "sha256": "a95977c049b1d1a079014480cd37b9a52414bc60c2f584c4a36e21f5f8791144"
+    }
+  },
+  "public_entries": [
+    "derive_scope_from_actual_phase",
+    "verify_retention_inputs",
+    "retain_installation_originals"
+  ],
+  "producer_entry": "run_bound",
+  "scope_schema": "hepta.install-original-retention.scope.v1",
+  "phase_authority_schema": "hepta.install-original-retention.phase-authority-inputs.v1",
+  "retention_inputs_schema": "hepta.install-original-retention.original-inputs.v1",
+  "phase_roles": {
+    "stage": [
+      "install_intent",
+      "staged",
+      "preservation"
+    ],
+    "start": [
+      "start_intent",
+      "started"
+    ]
+  },
+  "limits": {
+    "chunk_bytes": 1048576,
+    "preservation_bytes": 33554432,
+    "other_file_bytes": 65536,
+    "record_bytes": 2097152,
+    "scope_bytes": 32768,
+    "operation_bytes": 32768,
+    "capture_seconds": 30,
+    "selected_actor_timeout_seconds": 120,
+    "unchanged_actor_timeout_max_seconds": 300,
+    "unchanged_combined_phone_stream_bytes": 8388608,
+    "unchanged_adb_service_exclusive_bytes": 65536
+  },
+  "current_validation": {
+    "transport_and_binding": 82,
+    "constructor": 10,
+    "combined_with_previous_candidates": false,
+    "actual_authority_positive_executed": false,
+    "phone_root_observer_executed": false
+  },
+  "phone_calls": 0,
+  "actual_install": 0,
+  "actual_READY": 0,
+  "new_acceptance_nonces": 0,
+  "fixed19_credit": 0,
+  "no_forecast_inventory_count": true,
+  "no_qualification_from_source_controls": true
+}

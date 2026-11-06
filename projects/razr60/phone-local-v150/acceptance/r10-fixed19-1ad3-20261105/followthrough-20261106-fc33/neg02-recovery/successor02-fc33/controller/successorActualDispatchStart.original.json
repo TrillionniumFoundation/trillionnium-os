@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/home/alex/razr60-local-model-v150/ops/phone_once.py\",\n      \"ng-a1055-neg02-final04-owned-cleanup02-fc33\",\n      \"/home/alex/razr60-local-model-v150/requests/ng-a1055-neg02-final04-owned-cleanup02-fc33.json\"\n    ],\n    \"created_unix_ms\": 1793977927290,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1b16ac67a-fc05-7887\",\n    \"idempotency_key\": \"a1055-neg02-final04-owned-cleanup02-fc33\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b16ac67a-fc05-7887\",\n    \"request_digest\": \"470fda497f73a7db7e3152617b6ece064efd20de576ef7520715d3cf8b571eed\",\n    \"request_fingerprint\": 5120551310549297115,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b16ac67a-fc05-7887\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b16ac67a-fc05-7887\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

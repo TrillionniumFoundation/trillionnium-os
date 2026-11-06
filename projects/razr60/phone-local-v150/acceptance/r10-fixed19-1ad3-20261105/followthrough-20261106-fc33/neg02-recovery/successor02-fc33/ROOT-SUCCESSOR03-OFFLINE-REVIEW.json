@@ -1,0 +1,17 @@
+{
+  "capture_scope_nonce_lease_audit_paths_and_limits_unchanged": true,
+  "launcher_except_measured_compression_bindings_exact": true,
+  "only_three_source_bindings_changed": true,
+  "phone_dispatches_in_this_review": 0,
+  "schema": "hepta.root.successor03.offline-review.v1",
+  "service_bytes_with_nul": 65214,
+  "service_headroom": 321,
+  "service_limit": 65535,
+  "service_sha256": "f259e6dfff87ed4f31c0a48bc5df27e7d1e38bbd4d42d51a9cb72030c8b62a8c",
+  "source_bytes": 57089,
+  "source_sha256": "ab604ac3db2d5f908ce1c064b04ebda61ab593b1f66766498c384eabf895e32f",
+  "target_inverse_exact": true,
+  "whole_neg02_pass": false,
+  "xz_bytes": 44600,
+  "xz_sha256": "29df5d4219db9280a4979be860b505ce154ac646e3c1b178de6ed54d152ca209"
+}

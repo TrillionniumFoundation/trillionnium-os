@@ -1,0 +1,116 @@
+{
+  "actual_BUILD": false,
+  "actual_READY": false,
+  "actual_install": false,
+  "actual_material_derivation_in_controls": false,
+  "builder": {
+    "bytes": 16348,
+    "sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8"
+  },
+  "controls_job": "1a1b16a9075-fc05-7884",
+  "files": [
+    {
+      "bytes": 2286,
+      "git_blob_sha1": "489f4db322aa2746e379ccb8b4ee1c5678fcf889",
+      "path": "README.md",
+      "sha256": "fe6dd0ad037a903af81b739564bcd93e77e0b0b9c5828b62d6b128b5e29a4b7c"
+    },
+    {
+      "bytes": 695,
+      "git_blob_sha1": "0e970353f07af23edd2a4036304d1f013718566c",
+      "path": "SOURCE-DERIVATION.json",
+      "sha256": "b3ccef4f48d803192b372c80b20475f4e9c9989695cd88a015a267cf9ffffdb6"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "evidence/controls01.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2636,
+      "git_blob_sha1": "d50c7a9caf303d1ea786324e74f330931ef38d4d",
+      "path": "evidence/controls01.stdout",
+      "sha256": "f0f93e68142386b7b55cb676e1cfaead7f77ebcecc278097e336905ba312a644"
+    },
+    {
+      "bytes": 3200,
+      "git_blob_sha1": "39a48a65219273f390c724f899ebf2c49b69c7c3",
+      "path": "evidence/controls01/RESULT.json",
+      "sha256": "a327921fb8260ce02c116bdb7ccd11e989d6319620c984a857efd403a4c32a90"
+    },
+    {
+      "bytes": 8460,
+      "git_blob_sha1": "d8b40a2fc5acf23b42cebf393d70425e82bf4451",
+      "path": "evidence/process-read.original.json",
+      "sha256": "b92baf988e87e2c9390535ba736c8140797fa2271c29a8c756cdc77a5848af2e"
+    },
+    {
+      "bytes": 1061,
+      "git_blob_sha1": "b80cbd1781c88e456de69fb46d7185f0f3019f58",
+      "path": "evidence/process-start.original.json",
+      "sha256": "ccd1daf9cf71ee404c048e7ac278123dca265fc751d368ba2d6799eb732be7ac"
+    },
+    {
+      "bytes": 731,
+      "git_blob_sha1": "80b8814905a85ae209341a328c7e2a875278e5a4",
+      "path": "evidence/process-status.original.json",
+      "sha256": "b71a08900659fcb10ee0529596ea81d6232254e1b97c485efd77a6341cc47263"
+    },
+    {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "evidence/source-inverse.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 146,
+      "git_blob_sha1": "19f6f8dfc82d5a262bd606d6d5a943661641dc20",
+      "path": "evidence/source-inverse.stdout",
+      "sha256": "8d0cc08dac680590d1d017e9cc271c9da296366a097b6b1d91dab8a27a3a8d2b"
+    },
+    {
+      "bytes": 6271,
+      "git_blob_sha1": "23746308254ef28d3ffb132cc2aa16e7334cbbc3",
+      "path": "patch/publication_v2.patch",
+      "sha256": "142195d814125acac12e2f58ea140c89166ac1378a4d1e0f688337f6d212cc5c"
+    },
+    {
+      "bytes": 13037,
+      "git_blob_sha1": "20dac8f34b6a5f19be47a37f96e1ac71e8020001",
+      "path": "references/derive_reviewed_source_material.original.py",
+      "sha256": "324e2a0cde4a3436284c56e7ddb3d7ab0ec51a9fab02a2af460175527030907b"
+    },
+    {
+      "bytes": 16348,
+      "git_blob_sha1": "231f669f60534bc62a3c2d3c87f376639f2c74d7",
+      "path": "source/derive_reviewed_source_material_v2.py",
+      "sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8"
+    },
+    {
+      "bytes": 4993,
+      "git_blob_sha1": "56efd3c0955852efa415a8b86442515d22e978a0",
+      "path": "validation/run_publisher_controls.py",
+      "sha256": "b02efe96218a34394c6479d9df5e17137a03e5df686b0b9310fe2fed2919e46c"
+    },
+    {
+      "bytes": 4624,
+      "git_blob_sha1": "f00d56dcbd0e5fad9ba0eb7518ea7093951fbef1",
+      "path": "validation/source-transforms.json",
+      "sha256": "0be4d05722f0bfc8b4c46cdd072aaec20bd3596eb3b7c4ce7d923a038d3ef8ac"
+    },
+    {
+      "bytes": 1529,
+      "git_blob_sha1": "0ea8651e67458e6177002dafab221262fa81a85c",
+      "path": "validation/verify_exact_source_derivation.py",
+      "sha256": "65c0adc11358393b30058be8ba6a8e8e2fb5ceef7c819be65bf2798bff471636"
+    }
+  ],
+  "fixed19_credit": 0,
+  "phone_calls": 0,
+  "publisher_controls": 18,
+  "runtime_freeze": false,
+  "schema": "hepta.material-builder.source-package.v1",
+  "source_inverse_checked": true,
+  "state": "SOURCE_ONLY_HOST_PUBLISHER_CONTROLS"
+}

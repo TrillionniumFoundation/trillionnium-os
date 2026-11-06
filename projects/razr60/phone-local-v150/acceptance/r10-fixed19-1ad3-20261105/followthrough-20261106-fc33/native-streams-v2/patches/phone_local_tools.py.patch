@@ -1,0 +1,11 @@
+--- native-v1/phone_local_tools.py
++++ native-v2/phone_local_tools.py
+@@ -202,7 +202,7 @@
+                 updated.append(projected)
+                 continue
+             actual = strict_json(original['content'])
+-            value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec')))
++            value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']))
+             token = call['capture_id']
+             if call['semantic_tool'] == 'phone.open_app':
+                 observed, viewport = verify_app_open(value, token, call['component'])

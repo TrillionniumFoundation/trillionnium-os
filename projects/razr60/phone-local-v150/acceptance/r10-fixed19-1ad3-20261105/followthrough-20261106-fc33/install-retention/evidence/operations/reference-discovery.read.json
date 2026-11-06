@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b139a2f2-fc05-7714\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226d61746368696e67223a205b5d2c20227363616e6e6564223a203739357d0a\",\n    \"eof\": true,\n    \"next_offset\": 33,\n    \"offset\": 0,\n    \"size\": 33,\n    \"text\": \"{\\\"matching\\\": [], \\\"scanned\\\": 795}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

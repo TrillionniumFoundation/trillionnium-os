@@ -1,0 +1,21 @@
+{
+  "actual_material_derivation": false,
+  "candidate": {
+    "bytes": 16348,
+    "sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8"
+  },
+  "entire_rest_of_source_inverse_exact": true,
+  "only_changes": [
+    "held-directory FD publisher inserted",
+    "early path-based output directory creation removed",
+    "path-based sorted publication replaced; DERIVATION now last"
+  ],
+  "parent": {
+    "bytes": 13037,
+    "sha256": "324e2a0cde4a3436284c56e7ddb3d7ab0ec51a9fab02a2af460175527030907b"
+  },
+  "phone_calls": 0,
+  "runtime_freeze": false,
+  "schema": "hepta.material-builder.dirfd-source-derivation.v1",
+  "state": "HOST_SOURCE_ONLY_NOT_RUN_ON_ACTUAL_MATERIAL"
+}

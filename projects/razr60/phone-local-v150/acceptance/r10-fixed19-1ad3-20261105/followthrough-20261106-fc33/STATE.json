@@ -1,8 +1,8 @@
 {
-  "schema": "hepta.fixed19.followthrough-checkpoint.v2",
-  "recorded_at": "2026-11-06 14:23:52 UTC",
-  "repository_base_commit": "095a0604ce94d0f3f33819ef8df95478ca0223e8",
-  "scope": "Independent source candidates and reconciled cleanup attempt; no new final-combination qualification",
+  "schema": "hepta.fixed19.followthrough-checkpoint.v3",
+  "recorded_at": "2026-11-06 15:25:40 UTC",
+  "repository_base_commit": "647dc84b4ccd7d37c323871de9c6efed03540645",
+  "scope": "Reviewed host candidates, actual shared-material derivation and retained fail-closed physical cleanup; final tuple and whole cases remain unqualified",
   "current_component": {
     "combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
     "source_seal_sha256": "78c39b4cc4afd438bb149013fff20bbecc0a78241c3ed979e101320736eadcc0",
@@ -12,29 +12,6 @@
     "four_role_ready": false
   },
   "candidates": {
-    "native_streams": {
-      "source_sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409",
-      "daily_loader_sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f",
-      "mac_checks_passed": 42,
-      "mac_checks_total": 42,
-      "job_id": "1a1b10f1643-fc05-7572",
-      "deployed": false,
-      "adopted_into_formal_combination": false,
-      "additional_metadata_probe": {
-        "source_candidate_modified": false,
-        "script_sha256": "20ec976d8dd5d5df755f366284f0f04e114fffc51d3748d0ee205bed904a6e34",
-        "result_sha256": "37c0215cd9837d4028c91da0c52cd6b12e14c985ebd111cffca39038695f74a8",
-        "job_id": "1a1b12fda88-fc05-76ba",
-        "unchecked_metadata_reproductions": 7,
-        "controls": 2,
-        "all_inputs_synthetic": true,
-        "semantic_fixture_promoted_to_turn_complete": true,
-        "outer_tool_result_receive_exercised": false,
-        "installed_attack_ingress_demonstrated": false,
-        "v2_fix_supplied": false,
-        "whole_NEG11_qualified": false
-      }
-    },
     "install_ready_reader": {
       "source_sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681",
       "protocol_sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35",
@@ -70,6 +47,86 @@
       "executor_gate_bypassed": false,
       "whole_NEG12_qualified": false,
       "whole_NEG13_qualified": false
+    },
+    "native_streams_v1": {
+      "source_sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409",
+      "daily_loader_sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f",
+      "mac_checks_passed": 42,
+      "mac_checks_total": 42,
+      "job_id": "1a1b10f1643-fc05-7572",
+      "deployed": false,
+      "adopted_into_formal_combination": false,
+      "additional_metadata_probe": {
+        "source_candidate_modified": false,
+        "script_sha256": "20ec976d8dd5d5df755f366284f0f04e114fffc51d3748d0ee205bed904a6e34",
+        "result_sha256": "37c0215cd9837d4028c91da0c52cd6b12e14c985ebd111cffca39038695f74a8",
+        "job_id": "1a1b12fda88-fc05-76ba",
+        "unchecked_metadata_reproductions": 7,
+        "controls": 2,
+        "all_inputs_synthetic": true,
+        "semantic_fixture_promoted_to_turn_complete": true,
+        "outer_tool_result_receive_exercised": false,
+        "installed_attack_ingress_demonstrated": false,
+        "v2_fix_supplied": false,
+        "whole_NEG11_qualified": false
+      }
+    },
+    "native_streams_v2": {
+      "source_sha256": "ec015260f64e2c61c8f9953f6abe0d8dc4a7a62ce86943ce3c9cfcd250c35162",
+      "local_tools_sha256": "6621f3463e525aa9eedeff927671045daca1065b3210ac0e34e0c2e9867afcd2",
+      "daily_sha256": "203862a29023c827804d4e2a7ccc0217f917f789f49272dc09f4ab64ec029027",
+      "candidate_pin_manifest_sha256": "8c15ed8eabefe9c2587cd4bbadd2738461b592eb30b103bd0c52ac14de83114a",
+      "parser_cases_passed": 73,
+      "outer_receive_semantic_business_cases_passed": 12,
+      "job_id": "1a1b15bf0df-fc05-77fc",
+      "same_shared_scenarios_rerun": 14,
+      "shared_job_id": "1a1b154242e-fc05-77c6",
+      "actual_neg01_archived_bytes_verified": true,
+      "new_native_dispatches": 0,
+      "new_phone_calls": 0,
+      "whole_NEG11_qualified": false,
+      "whole_NEG12_qualified": false,
+      "whole_NEG13_qualified": false,
+      "remaining_consumer_integrity_fields": [
+        "canonical request digest",
+        "configuration fingerprint",
+        "generation integrity boundary",
+        "complete observation SHA256"
+      ],
+      "not_final_source_tuple": true
+    },
+    "install_retention": {
+      "producer_sha256": "280df226c4bde2294bfaefec93da40fcbc0c685e7c20a2359444e856fbd0bb7a",
+      "reader_sha256": "a95977c049b1d1a079014480cd37b9a52414bc60c2f584c4a36e21f5f8791144",
+      "host_controls_passed": 82,
+      "constructor_controls_passed": 10,
+      "host_job_id": "1a1b155bca8-fc05-77d3",
+      "actual_file_bytes": 9900047,
+      "exact_chunk_count": 12,
+      "maximum_response_bytes": 1399399,
+      "actual_phase_authority_bound": false,
+      "actual_phone_observer": false,
+      "actual_install": false,
+      "synthetic_uid_gid_projection_disclosed": true
+    },
+    "material_builder_v2": {
+      "source_sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8",
+      "publication_controls_passed": 18,
+      "held_dirfd_output": true,
+      "derivation_result_last": true,
+      "actual_derivation_job": "1a1b16ec976-fc05-78ae",
+      "actual_derivation_exit": 0,
+      "actual_result_bytes": 18047,
+      "actual_result_sha256": "3e4edee129a0047e8c01ce8a16450818a00f9239302b6aed6f849c34c3450cd7",
+      "changed_source_count": 3,
+      "source_count": 15,
+      "daily_dependency_count": 14,
+      "shared_member_count": 17,
+      "derived_combination_sha256": "9025ea9c9a185ba471b0d13662e1ee932b316062bddfb656a4dcfa8bdbe4c3c4",
+      "runtime_freeze": false,
+      "actual_BUILD": false,
+      "actual_READY": false,
+      "phone_calls": 0
     }
   },
   "new_whole_cases_closed": [],
@@ -125,21 +182,57 @@
       "archive_member_count": 111,
       "host_analysis_sha256": "89e80ff36d170b1ec8b1fcaea01086b2e83ee01eb1651709ef2c4f617c931a13",
       "cleanup_performed": false
-    }
+    },
+    "successor02_fc33": {
+      "source_sha256": "ab604ac3db2d5f908ce1c064b04ebda61ab593b1f66766498c384eabf895e32f",
+      "binding_sha256": "8aa3f7f9c9dc73b1839c197e650bec719a03aa72913fd2dbed245088af18f674",
+      "phone_request_bytes": 63151,
+      "phone_request_sha256": "7ae81b72c833dc2ddc7733a8249cf27f0f529ea70e8418e527858a5d690e1353",
+      "publication": "ACTUAL_BINARY_WRITE_ABSENT_VERIFIED",
+      "job_id": "1a1b16ac67a-fc05-7887",
+      "actor_exit_code": 0,
+      "phone_rc": 1,
+      "actor_output_complete": true,
+      "result_bytes": 68497,
+      "result_sha256": "f33dd1aafe7975faf3f8d99c478a82dc89a10fd32178d3b01264dacfa3af8452",
+      "phone_stderr_sha256": "0738b0f8c924a8f1513a3dc088fc48bb106a7f2254b97aed41c3554d54033bba",
+      "phase": "same_locked_original_capture_preflight",
+      "error_type": "FileNotFoundError",
+      "missing_name": "root-r10-neg02-a1055-final04",
+      "completed_removal_count": 0,
+      "completed_removed_paths": [],
+      "durable_intent": null,
+      "durable_result": null,
+      "automatic_retry": false,
+      "cleanup_success": false,
+      "root_offline_review": "only three literal source bindings changed; exact old/new launch wrapper apart from measured compression pins; targets differ only by preservation descriptor and two observed XML parent times"
+    },
+    "other_existing_operation_under_review": {
+      "operation": "ng-a1055-neg02-final04-owned-cleanup02",
+      "result_bytes": 6151995,
+      "result_sha256": "9bae925fe62ad40039b1b915d309c14c1d58a5f36067ad4d1b77fae719fe6fd0",
+      "reported_phone_rc": 0,
+      "whole_original_closure_independently_verified": false,
+      "adopted_as_our_success": false,
+      "current_baseline_not_assumed": true
+    },
+    "latest_recovery_closure": "PENDING_INDEPENDENT_RECONCILIATION_OF_ALREADY_EXISTING_CLEANUP"
   },
   "limits": [
-    "42 parser/provider controls and 67 reader controls are distinct host regressions; neither is a physical acceptance count.",
-    "The original runtime hash verification was read-only and is time-bound to its recorded observation.",
-    "Frozen historical inputs and original failed operations remain unchanged.",
-    "No E2E, COMP, or remaining NEG whole case is promoted to passed by this checkpoint.",
-    "An earlier unrelated final02 wait remains UNKNOWN_UNCHANGED."
+    "All original source versions, failed phone operations and their nonces remain preserved.",
+    "Host parser/consumer/retention/publisher controls are not physical acceptance counts; repeated fourteen scenarios are counted once per stated candidate.",
+    "The v2 material graph is a host derivation only, not a frozen runtime, BUILD, installation or READY.",
+    "The root successor actor exited zero but the actual phone exited one. It is recorded as a pre-mutation rejection, not cleanup success.",
+    "A separate already-existing cleanup result is under independent verification; no existing phone task has been replayed.",
+    "No new E2E, COMP or NEG whole case is promoted to pass; original NEG01 component evidence is not inherited by changed sources.",
+    "The unrelated prior final02 sender wait remains UNKNOWN_UNCHANGED."
   ],
   "remaining_actual_dependencies": [
-    "Reviewed independent successor cleanup from the fresh exact XML-parent profile; the first failed request remains consumed.",
-    "Successful actual cleanup closure and fresh current44 admission.",
-    "Final reviewed source tuple and successor freezer/preparer/build reader propagation.",
-    "Current-tuple NEG-01 and NEG-02 physical component qualification and full closure before formal BUILD.",
-    "Actual BUILD/install/start/READY plus installation-specific complete large-original retention.",
-    "Remaining same-tuple E2E, COMP and NEG physical evidence."
+    "Independently verify the already-existing cleanup and current phone baseline without replay.",
+    "Close native consumer request/configuration/observation integrity before final tuple freeze.",
+    "Propagate final source tuple through runtime/history/preparer/build and read-only proof readers.",
+    "Current final-tuple NEG01/NEG02 physical component execution and complete closure.",
+    "Actual BUILD/install/start/four-role READY plus complete installation originals.",
+    "Remaining same-tuple E2E, COMP and negative physical cases."
   ]
 }

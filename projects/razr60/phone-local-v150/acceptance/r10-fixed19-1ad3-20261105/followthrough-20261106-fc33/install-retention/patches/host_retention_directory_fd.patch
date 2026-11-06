@@ -1,0 +1,79 @@
+--- references/verify_install_retention.pre_dirfd.py
++++ source/verify_install_retention_UNBOUND.py
+@@ -256,33 +256,51 @@
+                 actual_install_or_READY_qualified=False)
+ 
+ def _save_verified(value,output):
+-    """Only called after full verification. Fresh host directory, no overwrite or rename."""
++    """Publish only into the same newly created host directory, through its held FD."""
+     need(isinstance(output,Path) and output.is_absolute(),"absolute new retained host directory")
+-    output.mkdir(mode=0o700);rows=[]
+-    for original in value["files"]:
+-        path=output/PurePosixPath(original["path"]).name;raw=value["bodies"][original["role"]]
+-        need(pin(raw)=={k:original[k]for k in("bytes","sha256")},"full original before publication")
+-        fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+-        with os.fdopen(fd,"wb")as f:f.write(raw);f.flush();os.fsync(f.fileno())
+-        fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
+-        try:
+-            before=os.fstat(fd);meta=[getattr(before,k)for k in("st_dev","st_ino","st_mode","st_uid","st_gid","st_nlink","st_size","st_mtime_ns","st_ctime_ns")]
+-            need(stat.S_ISREG(before.st_mode)and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600,"private retained host file")
+-            with os.fdopen(fd,"rb",closefd=False)as f:again=f.read(len(raw)+1)
+-            need(again==raw and meta==[getattr(os.fstat(fd),k)for k in("st_dev","st_ino","st_mode","st_uid","st_gid","st_nlink","st_size","st_mtime_ns","st_ctime_ns")]
+-                 and meta==[getattr(path.lstat(),k)for k in("st_dev","st_ino","st_mode","st_uid","st_gid","st_nlink","st_size","st_mtime_ns","st_ctime_ns")],
+-                 "retained original complete bytes/full9 bookends")
+-        finally:os.close(fd)
+-        rows.append(dict(namespace="phone_gnu",original={k:original[k]for k in("path","bytes","sha256","metadata")},
+-                         retained=dict(path=str(path),**pin(raw),metadata=meta)))
+-    result=dict(schema="hepta.install-original-retention.retained.v1",state="COMPLETE_INSTALLATION_ORIGINAL_BYTES_RETAINED",
+-                scope=value["scope_pin"],installation_generation=value["scope"]["installation_generation"],original_map=rows,
+-                original_operation_count=value["original_operation_count"],actual_install_or_READY_qualified=False)
+-    with(output/"RETENTION-RESULT.json").open("xb")as f:f.write(canonical(result));f.flush();os.fsync(f.fileno())
+-    directory=os.open(output,os.O_RDONLY|os.O_DIRECTORY)
+-    try:os.fsync(directory)
++    output.mkdir(mode=0o700)
++    created=output.lstat()
++    directory=os.open(output,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
++    rows=[];published=set()
++    fields=("st_dev","st_ino","st_mode","st_uid","st_gid","st_nlink","st_size","st_mtime_ns","st_ctime_ns")
++    def meta(info):return [getattr(info,k)for k in fields]
++    def check_directory():
++        observed=os.fstat(directory);path_info=output.lstat()
++        need(stat.S_ISDIR(path_info.st_mode)and stat.S_IMODE(path_info.st_mode)==0o700
++             and meta(observed)[:6]==meta(path_info)[:6]==meta(created)[:6],
++             "same newly created retained directory identity")
++        need(set(os.listdir(directory))==published,"only selected retained files in owned directory")
++    try:
++        check_directory()
++        for original in value["files"]:
++            name=PurePosixPath(original["path"]).name;path=output/name;raw=value["bodies"][original["role"]]
++            need(pin(raw)=={k:original[k]for k in("bytes","sha256")},"full original before publication")
++            check_directory()
++            fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
++            with os.fdopen(fd,"wb")as f:f.write(raw);f.flush();os.fsync(f.fileno())
++            published.add(name);check_directory()
++            fd=os.open(name,os.O_RDONLY|os.O_NOFOLLOW,dir_fd=directory)
++            try:
++                before=os.fstat(fd);observed=meta(before)
++                need(stat.S_ISREG(before.st_mode)and before.st_nlink==1 and stat.S_IMODE(before.st_mode)==0o600,
++                     "private retained host file")
++                with os.fdopen(fd,"rb",closefd=False)as f:again=f.read(len(raw)+1)
++                need(again==raw and observed==meta(os.fstat(fd))
++                     and observed==meta(os.stat(name,dir_fd=directory,follow_symlinks=False)),
++                     "retained original complete bytes/full9 bookends")
++            finally:os.close(fd)
++            check_directory()
++            rows.append(dict(namespace="phone_gnu",original={k:original[k]for k in("path","bytes","sha256","metadata")},
++                             retained=dict(path=str(path),**pin(raw),metadata=observed)))
++        result=dict(schema="hepta.install-original-retention.retained.v1",state="COMPLETE_INSTALLATION_ORIGINAL_BYTES_RETAINED",
++                    scope=value["scope_pin"],installation_generation=value["scope"]["installation_generation"],original_map=rows,
++                    original_operation_count=value["original_operation_count"],actual_install_or_READY_qualified=False)
++        check_directory()
++        fd=os.open("RETENTION-RESULT.json",os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=directory)
++        with os.fdopen(fd,"wb")as f:f.write(canonical(result));f.flush();os.fsync(f.fileno())
++        published.add("RETENTION-RESULT.json");os.fsync(directory);check_directory()
++        return result
+     finally:os.close(directory)
+-    return result
+ 
+ def retain_installation_originals(inputs_raw,output,*,read_pinned):
+     value=verify_retention_inputs(inputs_raw,read_pinned=read_pinned)

@@ -1,0 +1,80 @@
+{
+  "files": [
+    {
+      "bytes": 84387,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualPublishRequest.original.json",
+      "sha256": "45b05203505084b1946bf8100be5d6721f2da1888638928dc3f2aecf0a83d69f"
+    },
+    {
+      "bytes": 327,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualPublishResponse.original.json",
+      "sha256": "6de94be05da32703df47e4c78e68870d7e333276a7cb0ae82b61a79bc8dbc2b5"
+    },
+    {
+      "bytes": 641,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualPublishReadback.original.json",
+      "sha256": "290344cf0628915b6818e2306951f5df7f33fe74b54ab69d03a58e7e576266cb"
+    },
+    {
+      "bytes": 372,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualDispatchRequest.original.json",
+      "sha256": "997e3c0c5a1a749ec8b7377e94f8fed0657bbb5f4e1a258460685531870fd0c7"
+    },
+    {
+      "bytes": 1428,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualDispatchStart.original.json",
+      "sha256": "47fd5dbccbaedf168ce4783cb43665702ad1a6ebb5778812fe8f93c66af33c5a"
+    },
+    {
+      "bytes": 952,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualDispatchStatus.original.json",
+      "sha256": "7c2b5aa61394d78e96401cb751861d4e88bcb8d5cdbb2c406c28bccd780c9709"
+    },
+    {
+      "bytes": 1455,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualDispatchRead.original.json",
+      "sha256": "cca78336190676630f000beba4d856494807dcc2a59bedcfd8762eaea91eee50"
+    },
+    {
+      "bytes": 650,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/successorActualResultInfo.original.json",
+      "sha256": "36c65e77a9e8acf878061ffbe3be84f911b8873785f4ec9a411ebdfdc6b38fbd"
+    },
+    {
+      "bytes": 1240,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/actualSharedMaterialInput.original.json",
+      "sha256": "0b5d564850e04c3a4bc80601023616fe1d28178e7c20c88cf88f3b494cf025b1"
+    },
+    {
+      "bytes": 1544,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/actualSharedMaterialRequest.original.json",
+      "sha256": "ecb86e6a8be97b5c6d4df2e0bd97299b422b99e46639440914f1065a84e72bc3"
+    },
+    {
+      "bytes": 1499,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/actualSharedMaterialStart.original.json",
+      "sha256": "0ae7518739b2f553e61f6143b5d9797e8bee63ff30df2d28ad447d854a244ee4"
+    },
+    {
+      "bytes": 952,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/actualSharedMaterialStatus.original.json",
+      "sha256": "e0668487d880463fd6093556f1acbdc9e94f3a0c1756b87445e83390d0bfda08"
+    },
+    {
+      "bytes": 2334,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/actualSharedMaterialRead.original.json",
+      "sha256": "eb9bd89012b1bc1aa72a07b7f20e6473f1bb70583e6be9e70510198e9150cc21"
+    },
+    {
+      "bytes": 3797,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/review_successor03.py",
+      "sha256": "8633c9dff1f958560723632ebae3c9ac57a0f828d8068fd8d2b6a75b4e7442fa"
+    },
+    {
+      "bytes": 731,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01/SUCCESSOR02-ROOT-ORIGINALS/ROOT-SUCCESSOR03-OFFLINE-REVIEW.json",
+      "sha256": "4856ffa0d3ac619165ab826660ac0b2e751e4bd9e7f4bf35ba91a8dd3d6e3b56"
+    }
+  ],
+  "state": "EXACT_CONTROLLER_ORIGINALS_RETAINED"
+}

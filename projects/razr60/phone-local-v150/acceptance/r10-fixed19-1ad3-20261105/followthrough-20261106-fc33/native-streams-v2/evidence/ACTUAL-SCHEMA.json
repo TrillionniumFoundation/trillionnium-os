@@ -1,0 +1,467 @@
+{
+  "accepted_scope": {
+    "profile_id": "owner-open",
+    "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+    "task_id": "task-d3f61033-5b61-40e4-b8c6-7ea00d6b2d56",
+    "turn_id": "turn-ee9559cb-2540-46b3-91ba-4b4ce427e4bc",
+    "turn_stream_id": "r5-stream-b885cb9bcf82355ed1f0e85e91f4afa2af3ac5a70acd9e0ab95f5221a83d241b"
+  },
+  "actual_calls": [
+    {
+      "argv_count": 9,
+      "argv_prefix": [
+        "/usr/bin/python3",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py",
+        "execute"
+      ],
+      "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+      "call_keys": [
+        "argv",
+        "call_id",
+        "tool"
+      ],
+      "envelope_keys": [
+        "call",
+        "kind",
+        "protocol",
+        "seq"
+      ],
+      "member": "run/provider-out-00.jsonl",
+      "seq": 0,
+      "target": null,
+      "target_id": null,
+      "target_id_present": false,
+      "target_present": false,
+      "tool": "shell.exec"
+    },
+    {
+      "argv_count": 9,
+      "argv_prefix": [
+        "/usr/bin/python3",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py",
+        "execute"
+      ],
+      "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+      "call_keys": [
+        "argv",
+        "call_id",
+        "tool"
+      ],
+      "envelope_keys": [
+        "call",
+        "kind",
+        "protocol",
+        "seq"
+      ],
+      "member": "run/provider-out-01.jsonl",
+      "seq": 1,
+      "target": null,
+      "target_id": null,
+      "target_id_present": false,
+      "target_present": false,
+      "tool": "shell.exec"
+    }
+  ],
+  "actual_component_request_sha256": "1a358e904a40bf65da409d0efb044fa0133c65aa81ac632af02542ded4c7f8c5",
+  "actual_results_without_output_data": [
+    {
+      "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+      "event_count": 8,
+      "events": [
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 0,
+          "event": {
+            "kind": "accepted"
+          },
+          "event_keys": [
+            "kind"
+          ],
+          "seq": 0,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 1,
+          "event": {
+            "kind": "started",
+            "pid": 28756
+          },
+          "event_keys": [
+            "kind",
+            "pid"
+          ],
+          "seq": 1,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 1871,
+          "event": {
+            "byte_count": 16384,
+            "encoding": "base64",
+            "kind": "output",
+            "stream": "stdout"
+          },
+          "event_keys": [
+            "byte_count",
+            "data",
+            "encoding",
+            "kind",
+            "stream"
+          ],
+          "seq": 2,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 1873,
+          "event": {
+            "byte_count": 16384,
+            "encoding": "base64",
+            "kind": "output",
+            "stream": "stdout"
+          },
+          "event_keys": [
+            "byte_count",
+            "data",
+            "encoding",
+            "kind",
+            "stream"
+          ],
+          "seq": 3,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 1876,
+          "event": {
+            "byte_count": 16384,
+            "encoding": "base64",
+            "kind": "output",
+            "stream": "stdout"
+          },
+          "event_keys": [
+            "byte_count",
+            "data",
+            "encoding",
+            "kind",
+            "stream"
+          ],
+          "seq": 4,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 1877,
+          "event": {
+            "byte_count": 16384,
+            "encoding": "base64",
+            "kind": "output",
+            "stream": "stdout"
+          },
+          "event_keys": [
+            "byte_count",
+            "data",
+            "encoding",
+            "kind",
+            "stream"
+          ],
+          "seq": 5,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 1878,
+          "event": {
+            "byte_count": 5829,
+            "encoding": "base64",
+            "kind": "output",
+            "stream": "stdout"
+          },
+          "event_keys": [
+            "byte_count",
+            "data",
+            "encoding",
+            "kind",
+            "stream"
+          ],
+          "seq": 6,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+          "elapsed_ms": 1882,
+          "event": {
+            "kind": "terminal",
+            "terminal": {
+              "elapsed_ms": 1882,
+              "error": null,
+              "exit_code": 0,
+              "kind": "exited",
+              "output_truncated": false,
+              "signal": null,
+              "stderr_bytes": 0,
+              "stdout_bytes": 71365
+            }
+          },
+          "event_keys": [
+            "kind",
+            "terminal"
+          ],
+          "seq": 7,
+          "target_id": null,
+          "tool": "shell.exec"
+        }
+      ],
+      "keys": [
+        "call_id",
+        "events",
+        "generation",
+        "kind",
+        "observation_sha256",
+        "protocol",
+        "registry",
+        "seq",
+        "status",
+        "terminal"
+      ],
+      "member": "run/provider-in-01.jsonl",
+      "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+      "registry": {
+        "binding_fingerprint": "47c726ccbb9e433417f5f8bbe0a18aef909d93046dc58d398143e3d24db1de5d",
+        "call_id": "guard_ac03e3864c1798742c472957b06ca843_capture",
+        "cancellation_requested": false,
+        "connection_lost": false,
+        "earliest_history_seq": 0,
+        "next_event_seq": 4,
+        "request_sha256": "a14dd1639fb18afe951f3c573d937da8dac9b21a42bb248c86aa7858d5149929",
+        "state": "Terminal { generation: 73, terminal: TerminalRecord { terminal_kind: \"exited\", exit_code: Some(0), signal: None, observation_sha256: \"43c402751c27b374286dfa9d39fc16cf52ae802e4c5fd2d3b4bd52506b541542\", stdout_bytes: 71365, stderr_bytes: 0 } }",
+        "target_id": null,
+        "tool": "shell.exec"
+      },
+      "seq": 1,
+      "status": "terminal",
+      "terminal": {
+        "elapsed_ms": 1882,
+        "error": null,
+        "exit_code": 0,
+        "kind": "exited",
+        "output_truncated": false,
+        "signal": null,
+        "stderr_bytes": 0,
+        "stdout_bytes": 71365
+      }
+    },
+    {
+      "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+      "event_count": 4,
+      "events": [
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+          "elapsed_ms": 0,
+          "event": {
+            "kind": "accepted"
+          },
+          "event_keys": [
+            "kind"
+          ],
+          "seq": 0,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+          "elapsed_ms": 2,
+          "event": {
+            "kind": "started",
+            "pid": 29732
+          },
+          "event_keys": [
+            "kind",
+            "pid"
+          ],
+          "seq": 1,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+          "elapsed_ms": 491,
+          "event": {
+            "byte_count": 3095,
+            "encoding": "base64",
+            "kind": "output",
+            "stream": "stderr"
+          },
+          "event_keys": [
+            "byte_count",
+            "data",
+            "encoding",
+            "kind",
+            "stream"
+          ],
+          "seq": 2,
+          "target_id": null,
+          "tool": "shell.exec"
+        },
+        {
+          "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+          "elapsed_ms": 499,
+          "event": {
+            "kind": "terminal",
+            "terminal": {
+              "elapsed_ms": 499,
+              "error": null,
+              "exit_code": 70,
+              "kind": "exited",
+              "output_truncated": false,
+              "signal": null,
+              "stderr_bytes": 3095,
+              "stdout_bytes": 0
+            }
+          },
+          "event_keys": [
+            "kind",
+            "terminal"
+          ],
+          "seq": 3,
+          "target_id": null,
+          "tool": "shell.exec"
+        }
+      ],
+      "keys": [
+        "call_id",
+        "events",
+        "generation",
+        "kind",
+        "observation_sha256",
+        "protocol",
+        "registry",
+        "seq",
+        "status",
+        "terminal"
+      ],
+      "member": "run/provider-in-02.jsonl",
+      "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+      "registry": {
+        "binding_fingerprint": "47c726ccbb9e433417f5f8bbe0a18aef909d93046dc58d398143e3d24db1de5d",
+        "call_id": "guard_ac03e3864c1798742c472957b06ca843_guard",
+        "cancellation_requested": false,
+        "connection_lost": false,
+        "earliest_history_seq": 0,
+        "next_event_seq": 4,
+        "request_sha256": "bd7517a414e889fa1d2ae747dff9a421212661a3f56ad1c8b11917b143c679f8",
+        "state": "Terminal { generation: 74, terminal: TerminalRecord { terminal_kind: \"exited\", exit_code: Some(70), signal: None, observation_sha256: \"34c8404d0c79c322dae8b0dfc0488e8170010b539e7f63da15e63e712a634889\", stdout_bytes: 0, stderr_bytes: 3095 } }",
+        "target_id": null,
+        "tool": "shell.exec"
+      },
+      "seq": 2,
+      "status": "terminal",
+      "terminal": {
+        "elapsed_ms": 499,
+        "error": null,
+        "exit_code": 70,
+        "kind": "exited",
+        "output_truncated": false,
+        "signal": null,
+        "stderr_bytes": 3095,
+        "stdout_bytes": 0
+      }
+    }
+  ],
+  "archive": {
+    "bytes": 5855216,
+    "sha256": "60904669449d1cc6a66707e6efc3cbaf98d22c4260d90255309dab277df3d978"
+  },
+  "closure_sha256": "cdd271173ae84ea9d52a844eed86b08fac0def4bb6e175da3edcb6777728d288",
+  "files": [
+    {
+      "bytes": 293394,
+      "member": "CAPTURE.json",
+      "sha256": "216079cb762588dbb6832f69debdc9ce17b5160baef1454072a8a8d7e9ccda0a"
+    },
+    {
+      "bytes": 552,
+      "member": "home/ACCEPTED.json",
+      "sha256": "eb5f530ec1d77b07f88d1afb4fa03345f61dc9bdb3644d77b3c8442d8e821758"
+    },
+    {
+      "bytes": 556,
+      "member": "run/accepted.json",
+      "sha256": "0406d9d4900c4e9530abb6f6beeee3ef6c8260c6919eb7c4f3b908523eb5bcf5"
+    },
+    {
+      "bytes": 716,
+      "member": "run/provider-in-00.jsonl",
+      "sha256": "bdd399f4df71e2b87c1ba24891efecee006f75d7d4c12adfeae04486f97872ab"
+    },
+    {
+      "bytes": 97928,
+      "member": "run/provider-in-01.jsonl",
+      "sha256": "4cb54ae2927ab0be2527b0206282b10942e9d104b4f87c72ead3703b7571e59f"
+    },
+    {
+      "bytes": 6008,
+      "member": "run/provider-in-02.jsonl",
+      "sha256": "fae61bc4e72ea8cc9f3bed25753e7be86cb9415669f4f2f318c92fa6f0bff4de"
+    },
+    {
+      "bytes": 8299,
+      "member": "run/provider-out-00.jsonl",
+      "sha256": "3232395014a821a626d63e28754c6847cf8459301d5228bc1df1efdf5230cb44"
+    },
+    {
+      "bytes": 5117,
+      "member": "run/provider-out-01.jsonl",
+      "sha256": "c23cc458f969d9b33229b6db3d95823959b1ca5ac226f0311d666374f9d19f2c"
+    },
+    {
+      "bytes": 221,
+      "member": "run/provider-out-02.jsonl",
+      "sha256": "414b0ddb19326942d145f7e70bacf8f16280f2fac0377b244169f18c6bee3f64"
+    },
+    {
+      "bytes": 17135,
+      "member": "run/capture.dispatch-intent.json",
+      "sha256": "73a151e1f15bec927c23c78b12bc6e42aa0339fba4cc0d4319de98dac59334c3"
+    },
+    {
+      "bytes": 10767,
+      "member": "run/guard.dispatch-intent.json",
+      "sha256": "94482a57a71fdec2c1ab3ae10f072a2e35f37af21510880810dd34f5cbc337e1"
+    },
+    {
+      "bytes": 4565,
+      "member": "native/ORIGINS.json",
+      "sha256": "2d8e751c8a86589a9bca5debf1a4a95a557dece15bb5fb117e738202f8b7beba"
+    },
+    {
+      "bytes": 124661,
+      "member": "native/selected.jsonl",
+      "sha256": "53369f777ae2212502c4fdd7a75d5ef421551a975d70b88093db6a59df7ffcfd"
+    }
+  ],
+  "historical_originals_only": true,
+  "limits": [
+    "All raw screenshot/native originals remain privately retained; this report exposes shape and exact byte/hash references only.",
+    "The two archived native calls are historical NEG01 component evidence; no new phone request or UI success is claimed.",
+    "Both mapped calls omit target/target_id; all corresponding original event and registry target_id values are null.",
+    "Current tool_client_r6 emits stdout/stderr, not the outer event/terminal format."
+  ],
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "phone_calls": 0,
+  "private_schema_manifest": {
+    "bytes": 16924,
+    "sha256": "76ec7ca00770c6ec66db6fb9919bfb15145de670d690b5f61b30a3b047df695c"
+  },
+  "schema": "hepta.native_v2.public-actual-schema.v1"
+}

@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1793977913461,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b16a9075-fc05-7884",
+    "idempotency_key": "fc33-material-builder-dirfd-v2-source-controls01",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b16a9075-fc05-7884",
+    "request_digest": "48caa1f7d0ac9569f9efeaf43bca0b9c60b759bd5d60b5ad3def7bb0d0d7a831",
+    "request_fingerprint": 5245182801756329321,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b16a9075-fc05-7884"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 28548,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1b16a9075-fc05-7884"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

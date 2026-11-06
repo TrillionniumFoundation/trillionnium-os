@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v2.py",
+    "--derive-reviewed-host-material"
+  ],
+  "stdin": "{\"reviewed_builder_sha256\":\"2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8\",\"candidate_sources\":{\"phone_observation_tools.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/candidate/source/phone_observation_tools.py\",\"bytes\":46743,\"sha256\":\"ec015260f64e2c61c8f9953f6abe0d8dc4a7a62ce86943ce3c9cfcd250c35162\"},\"phone_local_tools.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/candidate/source/phone_local_tools.py\",\"bytes\":13846,\"sha256\":\"6621f3463e525aa9eedeff927671045daca1065b3210ac0e34e0c2e9867afcd2\"},\"daily_phone_local.py\":{\"path\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/candidate/source/daily_phone_local.py\",\"bytes\":22059,\"sha256\":\"203862a29023c827804d4e2a7ccc0217f917f789f49272dc09f4ab64ec029027\"}},\"output_dir\":\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-shared-material-v2-01\"}\n",
+  "idempotency_key": "fc33-derive-reviewed-shared-material-native-v2-01"
+}

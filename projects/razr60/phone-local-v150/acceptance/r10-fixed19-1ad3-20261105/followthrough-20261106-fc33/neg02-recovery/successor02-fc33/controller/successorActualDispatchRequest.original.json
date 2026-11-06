@@ -1,0 +1,12 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/home/alex/razr60-local-model-v150/ops/phone_once.py",
+    "ng-a1055-neg02-final04-owned-cleanup02-fc33",
+    "/home/alex/razr60-local-model-v150/requests/ng-a1055-neg02-final04-owned-cleanup02-fc33.json"
+  ],
+  "executable": "/usr/bin/python3",
+  "host": "pocket4",
+  "idempotency_key": "a1055-neg02-final04-owned-cleanup02-fc33"
+}

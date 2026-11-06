@@ -1,0 +1,113 @@
+{
+  "R4_originals_read": false,
+  "actual_BUILD": false,
+  "actual_READY": false,
+  "actual_install": false,
+  "actual_material_derivation": false,
+  "fixed19_credit": 0,
+  "new_acceptance_nonces": 0,
+  "passed": 18,
+  "phone_calls": 0,
+  "qualified_success_requires_original_host_process_success_and_complete_outputs": true,
+  "runtime_freeze": false,
+  "schema": "hepta.material-source.host-publisher-controls.v1",
+  "source": {
+    "bytes": 16348,
+    "sha256": "2102adcc334c3c0a2c284a7bdd4cbfabb280ef08e3f22d4effbb923fdb8a03d8"
+  },
+  "state": "PASS_SOURCE_ONLY",
+  "tests": [
+    {
+      "name": "all_complete_nested_material_bytes_read_back",
+      "passed": true
+    },
+    {
+      "name": "terminal_DERIVATION_written_last",
+      "passed": true
+    },
+    {
+      "name": "success_all_directory_and_file_fds_closed",
+      "passed": true
+    },
+    {
+      "exception": "FileExistsError",
+      "name": "existing_output_not_reused",
+      "passed": true,
+      "rejection": "[Errno 17] File exists: '/private/var/folders/4b/3k3pz4g52rqf29hjr083nzd00000gn/T/fc33-material-publisher-m66abpt_/valid'"
+    },
+    {
+      "exception": "ValueError",
+      "name": "unqualified_member_0",
+      "passed": true,
+      "rejection": "closed relative material file"
+    },
+    {
+      "exception": "ValueError",
+      "name": "unqualified_member_1",
+      "passed": true,
+      "rejection": "closed relative material file"
+    },
+    {
+      "exception": "ValueError",
+      "name": "unqualified_member_2",
+      "passed": true,
+      "rejection": "closed relative material file"
+    },
+    {
+      "exception": "ValueError",
+      "name": "unqualified_member_3",
+      "passed": true,
+      "rejection": "closed relative material file"
+    },
+    {
+      "exception": "ValueError",
+      "name": "root_directory_symlink_replacement_rejected",
+      "passed": true,
+      "rejection": "same owned material directory identity"
+    },
+    {
+      "name": "root_replacement_gets_zero_files_and_no_fd_leak",
+      "passed": true
+    },
+    {
+      "exception": "ValueError",
+      "name": "nested_directory_symlink_replacement_rejected",
+      "passed": true,
+      "rejection": "exact known material directory membership"
+    },
+    {
+      "name": "nested_replacement_gets_zero_files_and_no_fd_leak",
+      "passed": true
+    },
+    {
+      "exception": "OSError",
+      "name": "unknown_payload_io_not_accepted",
+      "passed": true,
+      "rejection": "[Errno 5] HOST_SOURCE_CONTROL"
+    },
+    {
+      "name": "payload_failure_has_no_terminal_and_all_fds_closed",
+      "passed": true
+    },
+    {
+      "exception": "ValueError",
+      "name": "created_payload_readback_corruption_rejected",
+      "passed": true,
+      "rejection": "complete created material full9/byte readback"
+    },
+    {
+      "name": "corrupt_payload_never_publishes_terminal",
+      "passed": true
+    },
+    {
+      "exception": "OSError",
+      "name": "late_directory_sync_error_not_inferred_success",
+      "passed": true,
+      "rejection": "[Errno 5] HOST_SOURCE_CONTROL_LATE_DURABILITY_UNKNOWN"
+    },
+    {
+      "name": "late_unknown_closes_fds_and_result_presence_is_not_success",
+      "passed": true
+    }
+  ]
+}

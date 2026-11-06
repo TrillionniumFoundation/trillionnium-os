@@ -1,0 +1,180 @@
+--- native-v1/phone_observation_tools.py
++++ native-v2/phone_observation_tools.py
+@@ -74,55 +74,92 @@
+     return base64.b64encode(raw).decode() if raw else '-'
+ 
+ 
+-def native_streams(reply, call_id, expected_tool='adb.exec'):
+-    require(expected_tool in {'adb.exec', 'shell.exec'}, 'unqualified phone result wire tool')
+-    require(reply.get('call_id') == call_id and reply.get('status') == 'terminal',
++def native_streams(reply, call_id, expected_tool='adb.exec', *, expected_call):
++    # Bind returned routing metadata to the trusted mapped call, never to the
++    # result's own (possibly self-consistent) target assertions.
++    require(type(expected_tool) is str and expected_tool in {'adb.exec', 'shell.exec'},
++            'unqualified phone result wire tool')
++    require(isinstance(expected_call, dict) and type(call_id) is str
++            and expected_call.get('call_id') == call_id
++            and expected_call.get('tool') == expected_tool,
++            'phone result lacks its trusted mapped wire call')
++    target_alias, target_id = expected_call.get('target'), expected_call.get('target_id')
++    require((target_alias is None or type(target_alias) is str)
++            and (target_id is None or type(target_id) is str)
++            and (target_alias is None or target_id is None or target_alias == target_id),
++            'phone mapped target aliases or types differ')
++    expected_target = target_id if target_id is not None else target_alias
++    require(isinstance(reply, dict) and reply.get('call_id') == call_id
++            and reply.get('status') == 'terminal',
+             'phone result lacks matching terminal identity')
++    registry = reply.get('registry')
++    require(isinstance(registry, dict) and registry.get('call_id') == call_id
++            and registry.get('tool') == expected_tool and 'target_id' in registry
++            and type(registry['target_id']) is type(expected_target)
++            and registry['target_id'] == expected_target,
++            'phone registry identity differs from the mapped wire call')
+     terminal = reply.get('terminal')
+-    require(isinstance(terminal, dict) and terminal.get('kind') == 'exited'
+-            and type(terminal.get('exit_code')) is int
+-            and terminal.get('exit_code') == 0 and terminal.get('error') is None
+-            and terminal.get('output_truncated') is False,
+-            'phone semantic tool is not confirmed successful and complete')
++    require(isinstance(terminal, dict) and set(terminal) == {
++                'kind', 'exit_code', 'signal', 'stdout_bytes', 'stderr_bytes',
++                'output_truncated', 'elapsed_ms', 'error'}
++            and terminal.get('kind') == 'exited'
++            and type(terminal.get('exit_code')) is int and terminal['exit_code'] == 0
++            and terminal['signal'] is None and terminal['error'] is None
++            and terminal['output_truncated'] is False
++            and type(terminal['elapsed_ms']) is int
++            and 0 <= terminal['elapsed_ms'] <= 18446744073709551615,
++            'phone semantic tool is not confirmed successful in the qualified terminal schema')
+     streams = {'stdout': bytearray(), 'stderr': bytearray()}
+     events = reply.get('events')
+     require(isinstance(events, list), 'phone result events are missing')
+     for index, record in enumerate(events):
+-        require(isinstance(record, dict) and record.get('call_id') == call_id and record.get('tool') == expected_tool
+-                and type(record.get('seq')) is int and record['seq'] == index,
+-                'phone result event scope or sequence differs')
+-        event = record.get('event')
+-        require(isinstance(event, dict), 'phone result event is malformed')
+-        require(type(event.get('kind')) is str
++        require(isinstance(record, dict) and set(record) == {
++                    'call_id', 'target_id', 'tool', 'seq', 'elapsed_ms', 'event'}
++                and record['call_id'] == call_id and record['tool'] == expected_tool
++                and type(record['target_id']) is type(expected_target)
++                and record['target_id'] == expected_target
++                and type(record['seq']) is int and record['seq'] == index
++                and type(record['elapsed_ms']) is int
++                and 0 <= record['elapsed_ms'] <= 18446744073709551615,
++                'phone result event schema, scope, target, sequence or elapsed time differs')
++        event = record['event']
++        require(isinstance(event, dict) and type(event.get('kind')) is str
+                 and event['kind'] in {'accepted', 'started', 'output', 'terminal'},
+                 'phone result contains an unqualified event kind')
++        fields = {'accepted': {'kind'}, 'started': {'kind', 'pid'},
++                  'output': {'kind', 'stream', 'encoding', 'data', 'byte_count'},
++                  'terminal': {'kind', 'terminal'}}
++        require(set(event) == fields[event['kind']], 'phone result event fields differ')
++        if event['kind'] == 'started':
++            require(type(event['pid']) is int and 1 <= event['pid'] <= 4294967295,
++                    'phone started event lacks a qualified process ID')
+         if event['kind'] != 'output':
+             continue
+-        name = event.get('stream')
+-        require(name in streams and event.get('encoding') == 'base64'
+-                and isinstance(event.get('data'), str), 'phone output stream differs')
++        name = event['stream']
++        require(type(name) is str and name in streams and event['encoding'] == 'base64'
++                and type(event['data']) is str, 'phone output stream differs')
+         try:
+             raw = base64.b64decode(event['data'], validate=True)
+         except (ValueError, TypeError) as error:
+             raise ProviderError('phone output base64 is invalid') from error
+-        require(type(event.get('byte_count')) is int and event['byte_count'] == len(raw),
+-                'phone output byte count differs')
++        require(base64.b64encode(raw).decode() == event['data']
++                and type(event['byte_count']) is int and event['byte_count'] == len(raw),
++                'phone output encoding or byte count differs')
+         streams[name].extend(raw)
+     kinds = [record['event']['kind'] for record in events]
+     require(len(kinds) >= 3 and kinds[:2] == ['accepted', 'started']
+             and kinds[-1] == 'terminal' and all(kind == 'output' for kind in kinds[2:-1]),
+             'phone result does not contain its original accepted/start/terminal events')
+-    observed_terminal = events[-1]['event'].get('terminal')
++    observed_terminal = events[-1]['event']['terminal']
+     require(isinstance(observed_terminal, dict) and observed_terminal == terminal
+             and all(type(observed_terminal[key]) is type(value)
+                     for key, value in terminal.items()),
+             'phone terminal event differs in value or field type')
+     for name, raw in streams.items():
+-        require(type(terminal.get(name + '_bytes')) is int
++        require(type(terminal[name + '_bytes']) is int
+                 and terminal[name + '_bytes'] == len(raw), 'phone terminal count differs')
+     require(not streams['stderr'], 'phone semantic tool reported stderr')
+     return bytes(streams['stdout'])
+-
+ 
+ def validate_viewport(text):
+     require(isinstance(text, str) and 0 < len(text.encode()) <= 16384 and '\0' not in text,
+@@ -447,7 +484,7 @@
+                     and sha(self._read_image(Path(old['path']))) == old['image_sha256'],
+                     'retained screenshot observation changed')
+             return old
+-        raw = native_streams(reply, call_id, call.get('wire_tool', 'adb.exec'))
++        raw = native_streams(reply, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
+         require(len(raw) <= 600000, 'screenshot JSON exceeds its transport bound')
+         envelope = strict_json(raw)
+         require(set(envelope) == {'schema', 'capture_id', 'page_before_b64', 'page_after_b64', 'screenshot'}
+@@ -566,7 +603,7 @@
+                     attached.append(image)
+             elif call['semantic_tool'] == 'phone.focus_input_text':
+                 actual = strict_json(original['content'])
+-                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec')))
++                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']))
+                 readback = verify_focus_input(value, call_id, call['package'], call['view_id'],
+                                               call['expected_text'], call['requested_text'])
+                 reply['_hepta_verified_text_input'] = {'call_id': call_id, 'package': call['package'],
+@@ -581,7 +618,7 @@
+                     'input_contract': 'hepta.focused-unicode-input.v2', 'focus_verified': True,
+                     'evidence_type': 'native_focus_then_unicode_exact_readback'}
+             elif call['semantic_tool'] == 'phone.input_text':
+-                actual = strict_json(original['content']); raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec')); value = strict_json(raw)
++                actual = strict_json(original['content']); raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']); value = strict_json(raw)
+                 expected = call['requested_text'].encode()
+                 require(value.get('schema') == 'hepta.focused-unicode-input.v1'
+                         and value.get('status') in {'set_verified', 'already_exact'}
+@@ -614,7 +651,7 @@
+                     'evidence_type': 'focused_unicode_helper_exact_readback'}
+             elif call['semantic_tool'] == 'phone.tap':
+                 actual = strict_json(original['content'])
+-                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'))
++                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
+                 require(raw == b'', 'qualified tap produced unexpected output')
+                 self.verified_facts[call_id] = {'kind': 'visual_tap_executed', 'call_id': call_id,
+                     'package': call['package'], 'source_image_call_id': call['source_image_call_id'],
+@@ -623,7 +660,7 @@
+                     'exact_pixel_and_focus_guard': True}
+             elif call['semantic_tool'] == 'phone.read_text':
+                 actual = strict_json(original['content'])
+-                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'))
++                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
+                 require(len(raw) <= 400000, 'public text receipt exceeds transport bound')
+                 observation, viewport = verify_public_text(strict_json(raw), call['capture_id'],
+                                                             call['package'], call['view_ids'])
+@@ -635,7 +672,7 @@
+                 reply['_hepta_verified_public_text'] = fact
+             elif call['semantic_tool'] == 'phone.read_text_anchor':
+                 actual = strict_json(original['content'])
+-                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'))
++                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
+                 require(len(raw) <= 400000, 'public anchor receipt exceeds transport bound')
+                 observation, viewport = verify_public_text_anchor(strict_json(raw), call['capture_id'],
+                     call['package'], call['title_view_id'], call['anchor_text'], call['value_view_id'])
+@@ -647,7 +684,7 @@
+                 reply['_hepta_verified_public_anchor'] = fact
+             elif call['semantic_tool'] == 'phone.return_hepta':
+                 actual = strict_json(original['content'])
+-                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec')))
++                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']))
+                 observed, viewport = verify_return(value, call['capture_id'])
+                 validate_viewport(viewport)
+                 fact = {'kind': 'foreground_hepta', 'call_id': call_id,

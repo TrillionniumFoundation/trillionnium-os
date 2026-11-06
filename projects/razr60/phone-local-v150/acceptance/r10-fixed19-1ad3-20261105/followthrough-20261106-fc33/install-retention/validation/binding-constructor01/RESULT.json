@@ -1,0 +1,65 @@
+{
+  "actual_READY": 0,
+  "actual_install": 0,
+  "actual_manifest_generated": false,
+  "actual_scopes_bound": 0,
+  "fixed19_credit": 0,
+  "parent_source": {
+    "bytes": 22066,
+    "sha256": "a95977c049b1d1a079014480cd37b9a52414bc60c2f584c4a36e21f5f8791144"
+  },
+  "passed": 10,
+  "phone_calls": 0,
+  "schema": "hepta.install-retention.binding-constructor-controls.v1",
+  "source_candidates_compiled_in_memory_only": true,
+  "state": "PASS_SOURCE_ONLY",
+  "synthetic_descriptors_only": true,
+  "tests": [
+    {
+      "name": "no_descriptor_leaves_both_slots_unbound",
+      "passed": true
+    },
+    {
+      "name": "phase_only_exact_single_rhs_and_inverse",
+      "passed": true
+    },
+    {
+      "name": "two_actual_descriptor_slots_exact_inverse",
+      "passed": true
+    },
+    {
+      "name": "constructor_does_not_claim_actual_success",
+      "passed": true
+    },
+    {
+      "name": "retention_cannot_omit_phase_authority",
+      "passed": true,
+      "rejection": "retention needs explicit phase authority descriptor"
+    },
+    {
+      "name": "changed_source_bytes_refused",
+      "passed": true,
+      "rejection": "exact selected unbound reader source"
+    },
+    {
+      "name": "already_bound_source_not_rebound",
+      "passed": true,
+      "rejection": "exact selected unbound reader source"
+    },
+    {
+      "name": "boolean_descriptor_bytes_refused",
+      "passed": true,
+      "rejection": "typed bounded actual input descriptor"
+    },
+    {
+      "name": "relative_descriptor_path_refused",
+      "passed": true,
+      "rejection": "canonical absolute original path"
+    },
+    {
+      "name": "duplicate_descriptor_json_refused",
+      "passed": true,
+      "rejection": "duplicate descriptor key"
+    }
+  ]
+}

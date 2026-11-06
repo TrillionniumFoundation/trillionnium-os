@@ -1,0 +1,41 @@
+{
+  "after": [
+    16777233,
+    593377449,
+    16832,
+    501,
+    20,
+    3,
+    96,
+    1793976559312484609,
+    1793976559312484609
+  ],
+  "before": [
+    16777233,
+    593377449,
+    16832,
+    501,
+    20,
+    2,
+    64,
+    1793976559312421238,
+    1793976559312421238
+  ],
+  "fields": [
+    "st_dev",
+    "st_ino",
+    "st_mode",
+    "st_uid",
+    "st_gid",
+    "st_nlink",
+    "st_size",
+    "st_mtime_ns",
+    "st_ctime_ns"
+  ],
+  "first_five_identity_fields_unchanged": true,
+  "nlink_changed": true,
+  "only_known_owned_file_created": true,
+  "phone_calls": 0,
+  "platform": "darwin",
+  "schema": "host-owned-directory-own-member-observation/v1"
+}

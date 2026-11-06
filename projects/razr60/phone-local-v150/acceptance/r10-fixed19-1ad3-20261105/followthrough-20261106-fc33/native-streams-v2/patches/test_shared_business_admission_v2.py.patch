@@ -1,0 +1,76 @@
+--- v1/test_shared_business_admission.py
++++ v2/test_shared_business_admission_v2.py
+@@ -2,7 +2,7 @@
+ """Current full-source host checks for selected NEG-12/13 business/admission paths.
+ 
+ All owner requests and native/public receipts are explicitly synthetic fixtures.
+-The real unmodified CodexAdapter, PhoneTools, and task_postconditions execute.
++The real pinned CodexAdapter, candidate PhoneTools, and task_postconditions execute.
+ No PhoneLocalAdapter is constructed; its executor gate is neither replaced nor bypassed.
+ No provider completion loop, model client, subprocess, socket, or native dispatch is used.
+ """
+@@ -28,7 +28,7 @@
+ import xml.etree.ElementTree as ET
+ 
+ sys.dont_write_bytecode = True
+-PINS_SHA = "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4"
++PINS_SHA = "8c15ed8eabefe9c2587cd4bbadd2738461b592eb30b103bd0c52ac14de83114a"
+ PACKAGE = "org.example.hepta.synthetic"
+ EDITOR = PACKAGE + ":id/editor"
+ PUBLIC = PACKAGE + ":id/receipt"
+@@ -114,7 +114,7 @@
+     assert sha(pins_raw) == PINS_SHA
+     pins = json.loads(pins_raw)
+     assert pins["production_source_count"] == pins["candidate_source_count"] == 15
+-    assert pins["changed_source_files"] == ["daily_phone_local.py", "phone_observation_tools.py"]
++    assert pins["changed_source_files"] == ["daily_phone_local.py", "phone_local_tools.py", "phone_observation_tools.py"]
+     assert pins["adopted"] is False and pins["whole_NEG12_qualified"] is False and pins["whole_NEG13_qualified"] is False
+     files = {}
+     for row in pins["files"]:
+@@ -123,8 +123,8 @@
+     candidate = {Path(path).name: raw for path, raw in files.items() if path.startswith("candidate/source/")}
+     assert len(originals) == len(candidate) == 15 and set(originals) == set(candidate)
+     assert [name for name in sorted(originals) if originals[name] != candidate[name]] == pins["changed_source_files"]
+-    assert sha(candidate["phone_observation_tools.py"]) == "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409"
+-    assert sha(candidate["daily_phone_local.py"]) == "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f"
++    assert sha(candidate["phone_observation_tools.py"]) == "ec015260f64e2c61c8f9953f6abe0d8dc4a7a62ce86943ce3c9cfcd250c35162"
++    assert sha(candidate["daily_phone_local.py"]) == "203862a29023c827804d4e2a7ccc0217f917f789f49272dc09f4ab64ec029027"
+     comb = pins["current_combination"]
+     pinned(package / comb["archived_path"], comb["bytes"], comb["sha256"])
+     old = pins["reference_runner"]
+@@ -192,6 +192,8 @@
+ 
+ 
+ def native(call_id, raw, tool):
++    # Explicitly synthetic current-schema receipt, matching observed NEG01
++    # event/terminal field sets. This does not attest a physical execution.
+     terminal = {"kind": "exited", "exit_code": 0, "signal": None, "stdout_bytes": len(raw),
+                 "stderr_bytes": 0, "output_truncated": False, "elapsed_ms": 7, "error": None}
+     events = [{"kind": "accepted"}, {"kind": "started", "pid": 12345},
+@@ -199,9 +201,15 @@
+                "data": b64(raw), "byte_count": len(raw)},
+               {"kind": "terminal", "terminal": copy.deepcopy(terminal)}]
+     return {"call_id": call_id, "status": "terminal", "terminal": terminal,
+-            "events": [{"call_id": call_id, "tool": tool, "seq": i, "event": event}
++            "registry": {"call_id": call_id, "tool": tool, "target_id": None,
++                         "request_sha256": "0" * 64, "binding_fingerprint": "1" * 64,
++                         "state": "SYNTHETIC terminal fixture",
++                         "cancellation_requested": False, "connection_lost": False,
++                         "earliest_history_seq": 0, "next_event_seq": 4},
++            "generation": 1, "observation_sha256": "2" * 64,
++            "events": [{"call_id": call_id, "target_id": None, "tool": tool,
++                        "seq": i, "elapsed_ms": i * 2, "event": event}
+                        for i, event in enumerate(events)]}
+-
+ 
+ def input_payload(call):
+     requested = call["requested_text"].encode()
+@@ -634,7 +642,7 @@
+         "actual_network_or_process_operations": 0 if not DENIED else None,
+         "all_owner_and_public_receipts_are_synthetic": True,
+         "limits": [
+-            "Full current 15-file candidate pinned and imported; only observation native_streams and daily's parent hash differ.",
++            "Full15 native v2 candidate pinned/imported; observation parser and eight existing callsites change, with daily two dependency pins; other twelve sources remain exact.",
+             "Tests execute real shared business/admission implementations against explicitly synthetic owner/native/public fixtures.",
+             "Real pipes, durable files, fsync, O_EXCL and two actual competing threads are used.",
+             "No PhoneLocalAdapter or DailyAdapter instance is constructed; the fixed executor client gate is not bypassed.",

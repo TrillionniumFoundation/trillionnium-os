@@ -1,0 +1,481 @@
+{
+  "actor_executions": 0,
+  "actual_BUILD": 0,
+  "actual_READY": 0,
+  "actual_authority_positive_executed": false,
+  "actual_install": 0,
+  "actual_phone_observer_executed": false,
+  "actual_scopes_bound": 0,
+  "blocked_pipe_result": {
+    "blocking_restored": true,
+    "elapsed": 0.16010812500000002,
+    "error": "capture output ready",
+    "same_process": true
+  },
+  "chunk_count": 12,
+  "chunk_wire_bytes": 27526,
+  "fixed19_credit": 0,
+  "large_original_bytes": 9900047,
+  "large_original_sha256": "3393c54585c9a67082c40712837b86a03ce4e18db073e954df8522fb62c6ac95",
+  "manifest_wire_bytes": 24546,
+  "maximum_chunk_response_bytes": 1399399,
+  "new_nonces": 0,
+  "passed": 79,
+  "phone_calls": 0,
+  "real_host_file_bytes_and_full9_exercised": true,
+  "schema": "hepta.install-original-retention.source-controls.v1",
+  "source_pins": {
+    "install_retention_protocol_UNBOUND.py": {
+      "bytes": 20851,
+      "sha256": "280df226c4bde2294bfaefec93da40fcbc0c685e7c20a2359444e856fbd0bb7a"
+    },
+    "verify_install_retention_UNBOUND.py": {
+      "bytes": 21234,
+      "sha256": "43d797ecf9ebeaab29ce750fbe195c46601b0b7b1d5ebfd7829261c0e0b31c0f"
+    }
+  },
+  "state": "PASS_SOURCE_ONLY",
+  "synthetic_capture_actor_fixtures": true,
+  "tests": [
+    {
+      "exception": "ValueError",
+      "name": "producer_unbound_before_parse_and_io",
+      "passed": true,
+      "rejection": "UNBOUND_INSTALL_RETENTION_SCOPE_NO_IO"
+    },
+    {
+      "exception": "ValueError",
+      "name": "phase_authority_unbound_before_callback",
+      "passed": true,
+      "rejection": "UNBOUND_INSTALL_RETENTION_PHASE_AUTHORITY_NO_IO"
+    },
+    {
+      "exception": "ValueError",
+      "name": "retention_reader_unbound_before_callback",
+      "passed": true,
+      "rejection": "UNBOUND_INSTALL_RETENTION_ORIGINALS_NO_IO"
+    },
+    {
+      "exception": "ValueError",
+      "name": "retention_writer_unbound_before_directory",
+      "passed": true,
+      "rejection": "UNBOUND_INSTALL_RETENTION_ORIGINALS_NO_IO"
+    },
+    {
+      "name": "no_unbound_callbacks_or_output_directory",
+      "passed": true
+    },
+    {
+      "exception": "ValueError",
+      "name": "duplicate_scope_json",
+      "passed": true,
+      "rejection": "duplicate JSON key"
+    },
+    {
+      "exception": "ValueError",
+      "name": "nonfinite_scope_json",
+      "passed": true,
+      "rejection": "nonfinite JSON"
+    },
+    {
+      "name": "stage_file_pins_derived_from_original_serializations_and_preservation_pin",
+      "passed": true
+    },
+    {
+      "name": "stdout_and_saved_file_encodings_stay_distinct",
+      "passed": true
+    },
+    {
+      "name": "start_binds_full_supervisor_generation",
+      "passed": true
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_arbitrary_path",
+      "passed": true,
+      "rejection": "installation role/path allowlist"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_wrong_role",
+      "passed": true,
+      "rejection": "installation role/path allowlist"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_wrong_boot",
+      "passed": true,
+      "rejection": "installation-only scope"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_stage_claims_new_generation",
+      "passed": true,
+      "rejection": "stage has no new supervisor generation"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_bool_file_size",
+      "passed": true,
+      "rejection": "typed bounded byte/hash pin"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_float_file_size",
+      "passed": true,
+      "rejection": "typed bounded byte/hash pin"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_oversize_preservation",
+      "passed": true,
+      "rejection": "typed bounded byte/hash pin"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_extra_file",
+      "passed": true,
+      "rejection": "exact phase file count"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_old_phase_identity_boolean",
+      "passed": true,
+      "rejection": "positive exact identity tuple"
+    },
+    {
+      "exception": "ValueError",
+      "name": "scope_missing_final_LF",
+      "passed": true,
+      "rejection": "canonical scope and final LF"
+    },
+    {
+      "exception": "ValueError",
+      "name": "start_tuple_boolean_not_int",
+      "passed": true,
+      "rejection": "positive exact identity tuple"
+    },
+    {
+      "exception": "ValueError",
+      "name": "stage_writes_boolean_not_int",
+      "passed": true,
+      "rejection": "actual stage source stdout and exact BUILD boundary"
+    },
+    {
+      "name": "in_memory_bound_source_exact_inverse",
+      "passed": true
+    },
+    {
+      "name": "real_host_large_original_complete_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "large_original_exceeds_shell_cap_each_chunk_is_bounded",
+      "passed": true
+    },
+    {
+      "name": "full9_scan_and_chunk_fds_return_to_baseline",
+      "passed": true
+    },
+    {
+      "name": "UTF8_emoji_backslash_newline_and_final_LF_preserved",
+      "passed": true
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_byte_count_boolean",
+      "passed": true,
+      "rejection": "typed bounded byte/hash pin"
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_byte_count_float",
+      "passed": true,
+      "rejection": "typed bounded byte/hash pin"
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_file_hardlink",
+      "passed": true,
+      "rejection": "private single-link original file"
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_root_metadata_float",
+      "passed": true,
+      "rejection": "typed full9 original"
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_other_scope",
+      "passed": true,
+      "rejection": "canonical manifest belongs to scope"
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_swapped_roles",
+      "passed": true,
+      "rejection": "manifest file order and exact bytes"
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_capture_pid_boolean",
+      "passed": true,
+      "rejection": "positive exact identity tuple"
+    },
+    {
+      "exception": "ValueError",
+      "name": "manifest_unearned_generation",
+      "passed": true,
+      "rejection": "manifest stage generation must be null"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_index_boolean",
+      "passed": true,
+      "rejection": "typed exact sequence/offset"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_offset_float",
+      "passed": true,
+      "rejection": "typed exact sequence/offset"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_length_boolean",
+      "passed": true,
+      "rejection": "typed bounded byte/hash pin"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_file_size_float",
+      "passed": true,
+      "rejection": "typed bounded byte/hash pin"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_wrong_data_hash",
+      "passed": true,
+      "rejection": "complete canonical chunk bytes"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_wrong_manifest",
+      "passed": true,
+      "rejection": "scope/manifest chunk linkage"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_wrong_scope",
+      "passed": true,
+      "rejection": "scope/manifest chunk linkage"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_wrong_file_inode",
+      "passed": true,
+      "rejection": "chunk original file identity"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_eof_int",
+      "passed": true,
+      "rejection": "exact final slice marker"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_eof_false",
+      "passed": true,
+      "rejection": "exact final slice marker"
+    },
+    {
+      "exception": "ValueError",
+      "name": "chunk_extra_field",
+      "passed": true,
+      "rejection": "exact retained chunk"
+    },
+    {
+      "exception": "JSONDecodeError",
+      "name": "truncated_chunk_JSON",
+      "passed": true,
+      "rejection": "Unterminated string starting at: line 1 column 1428 (char 1427)"
+    },
+    {
+      "exception": "ValueError",
+      "name": "missing_chunk",
+      "passed": true,
+      "rejection": "all and only complete chunk operations"
+    },
+    {
+      "exception": "ValueError",
+      "name": "duplicate_or_reordered_chunk",
+      "passed": true,
+      "rejection": "chunk original file identity"
+    },
+    {
+      "exception": "ValueError",
+      "name": "final_original_identity_changed",
+      "passed": true,
+      "rejection": "all original byte/full9 manifest bookends"
+    },
+    {
+      "exception": "ValueError",
+      "name": "operation_boolean_index",
+      "passed": true,
+      "rejection": "exact role and bounded chunk index"
+    },
+    {
+      "exception": "ValueError",
+      "name": "operation_out_of_scope_role",
+      "passed": true,
+      "rejection": "exact role and bounded chunk index"
+    },
+    {
+      "exception": "ValueError",
+      "name": "operation_past_EOF",
+      "passed": true,
+      "rejection": "exact role and bounded chunk index"
+    },
+    {
+      "exception": "ValueError",
+      "name": "actual_file_symlink_refused",
+      "passed": true,
+      "rejection": "private single-link original file"
+    },
+    {
+      "exception": "ValueError",
+      "name": "actual_multiple_link_file_refused",
+      "passed": true,
+      "rejection": "private single-link original file"
+    },
+    {
+      "exception": "ValueError",
+      "name": "actual_same_length_content_change_refused",
+      "passed": true,
+      "rejection": "complete original bytes and SHA256"
+    },
+    {
+      "exception": "ValueError",
+      "name": "actual_stale_full9_refused",
+      "passed": true,
+      "rejection": "original full9 differs from manifest"
+    },
+    {
+      "exception": "ValueError",
+      "name": "actual_short_read_refused",
+      "passed": true,
+      "rejection": "complete original bytes and SHA256"
+    },
+    {
+      "exception": "OSError",
+      "name": "unknown_read_io_error_not_hidden",
+      "passed": true,
+      "rejection": "[Errno 5] HOST_SOURCE_CONTROL"
+    },
+    {
+      "exception": "FileNotFoundError",
+      "name": "original_directory_rename_refused",
+      "passed": true,
+      "rejection": "[Errno 2] No such file or directory: 'originals'"
+    },
+    {
+      "name": "error_paths_close_original_descriptors",
+      "passed": true
+    },
+    {
+      "name": "retained_host_full9_map_accepted_by_unchanged_install_reader",
+      "passed": true
+    },
+    {
+      "exception": "FileExistsError",
+      "name": "retained_directory_cannot_be_overwritten",
+      "passed": true,
+      "rejection": "[Errno 17] File exists: '/private/var/folders/4b/3k3pz4g52rqf29hjr083nzd00000gn/T/fc33-install-retention-54gfd0n6/retained'"
+    },
+    {
+      "exception": "OSError",
+      "name": "unknown_publish_io_leaves_no_terminal_result",
+      "passed": true,
+      "rejection": "[Errno 5] HOST_SOURCE_CONTROL"
+    },
+    {
+      "name": "failed_publish_no_result_and_fd_baseline",
+      "passed": true
+    },
+    {
+      "name": "manifest_and_chunk_wire_requests_below_unchanged_ceiling",
+      "passed": true
+    },
+    {
+      "name": "exact_v2_environment_and_timeout",
+      "passed": true
+    },
+    {
+      "name": "request_serializer_final_LF",
+      "passed": true
+    },
+    {
+      "name": "synthetic_original_capture_actor_roundtrip",
+      "passed": true
+    },
+    {
+      "exception": "ValueError",
+      "name": "controller_zero_phone_nonzero_rejected_with_consistent_hashes",
+      "passed": true,
+      "rejection": "actor zero alone is insufficient: original phone must also exit zero"
+    },
+    {
+      "exception": "ValueError",
+      "name": "phone_false_is_not_integer_exit_zero",
+      "passed": true,
+      "rejection": "actor zero alone is insufficient: original phone must also exit zero"
+    },
+    {
+      "exception": "ValueError",
+      "name": "unknown_timeout_never_retains_success",
+      "passed": true,
+      "rejection": "actual actor original wait/output is not complete success"
+    },
+    {
+      "exception": "ValueError",
+      "name": "controller_log_count_boolean_rejected",
+      "passed": true,
+      "rejection": "controller original durable stream counts"
+    },
+    {
+      "exception": "ValueError",
+      "name": "capture_actor_wrong_label_consistent_result_hash",
+      "passed": true,
+      "rejection": "capture result complete original binding"
+    },
+    {
+      "exception": "ValueError",
+      "name": "wrong_inline_source_request",
+      "passed": true,
+      "rejection": "exact complete inline producer request"
+    },
+    {
+      "exception": "ValueError",
+      "name": "capture_separate_stdout_mismatch",
+      "passed": true,
+      "rejection": "complete retained capture phone streams"
+    },
+    {
+      "exception": "ValueError",
+      "name": "capture_success_with_nonempty_stderr_rejected",
+      "passed": true,
+      "rejection": "bounded capture response, unchanged shell limit and empty stderr"
+    },
+    {
+      "name": "blocked_output_bounded_and_original_process_unchanged",
+      "passed": true
+    },
+    {
+      "name": "host_deadline_test_process_group_cleaned",
+      "passed": true
+    }
+  ],
+  "uid_gid_only_normalized_in_synthetic_phone_fixture": true,
+  "whole_qualification": false
+}

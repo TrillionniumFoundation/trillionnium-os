@@ -1,0 +1,56 @@
+{
+  "all_fifteen_parse": true,
+  "all_fourteen_daily_parent_pins_match": true,
+  "base_pins_sha256": "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4",
+  "candidate_pins": {
+    "bytes": 8729,
+    "git_blob_sha1": "7c07a6d1cf2ba41b06a33095a6e177445d292e32",
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/CANDIDATE-PINS.json",
+    "sha256": "8c15ed8eabefe9c2587cd4bbadd2738461b592eb30b103bd0c52ac14de83114a"
+  },
+  "changed_files": [
+    "daily_phone_local.py",
+    "phone_local_tools.py",
+    "phone_observation_tools.py"
+  ],
+  "daily_edits": "Exactly two PARENTS SHA256 strings",
+  "existing_callsite_updates": 8,
+  "historical_native_v1_preserved": true,
+  "legacy_minimal_terminal_rejected_only_by_new_v2": true,
+  "limitations": [
+    "No installed schema claim beyond current archived NEG01 originals and reviewed matching producer sources.",
+    "No phone/model/native dispatch or runtime adoption.",
+    "Registry routing identity is checked; generation, request canonical digest and configuration fingerprint are not reconstructed by this consumer."
+  ],
+  "observation_callsite_counts": {
+    "actual": 6,
+    "reply": 1
+  },
+  "observation_function_replacement": "native_streams only",
+  "other_twelve_sources_unchanged": true,
+  "patches": {
+    "daily_phone_local.py": {
+      "bytes": 2912,
+      "git_blob_sha1": "9a4e6540c27ab2bc30954cff49c432b580201eaf",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/patches/daily_phone_local.py.patch",
+      "sha256": "cbbb60eda9a8c78ee200768816967b02c79ed6674b5e48fa01ea04e516deaab8"
+    },
+    "phone_local_tools.py": {
+      "bytes": 635,
+      "git_blob_sha1": "7a9a1808d4775428fcbfbb5b6a415a09c7544631",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/patches/phone_local_tools.py.patch",
+      "sha256": "0bdeb71233106dd80a100e56786b339b6600512b6c6f4cf91f8fab2bb9a5f054"
+    },
+    "phone_observation_tools.py": {
+      "bytes": 12426,
+      "git_blob_sha1": "c4434b9e1b4815f3489988fdb1aac0e06c67748d",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-audit01/native-streams-v2/patches/phone_observation_tools.py.patch",
+      "sha256": "92279f98956dce1dbea574c890ee42714ad9b8d101490e4d96f251485e582aaf"
+    }
+  },
+  "phone_local_adapter_existing_exact_dispatch_gate_unchanged": true,
+  "phone_local_callsite_count": 1,
+  "schema": "razr60-native-streams-v2-derivation/v1",
+  "semantic_record_fields_added": false,
+  "wire_call_already_persisted_by_original_map": true
+}
