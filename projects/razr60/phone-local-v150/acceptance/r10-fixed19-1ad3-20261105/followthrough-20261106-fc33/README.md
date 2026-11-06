@@ -20,3 +20,11 @@
 - runtime-r5/：完整 17 文件 delta、实际冻结/绑定源码和 controller、已读小原件。
 
 所有源控制均保留自己的范围与 synthetic 声明，不冒充手机动作、BUILD、安装、READY 或业务完成。下一阶段由根协调器单独运行新 NEG-01、NEG-02，取得真实 LEASE/闭合后继续安装与业务、故障用例。
+
+## 检查点 05：实际前置拒绝已保全
+
+独立 preparer 已全量重读双完成记录、完整冻结目录与输入 full9，实际通过；新的 NEG-01 主机计划仅生成一个 nonce。随后本次 Root 实机链在 phone stage 的 verify_retired 前置校验失败，尚未创建本次组件 home，也未进入 sender 或 Root 夹具阶段。完整 host/phone 原始回执、失败和计划保全在 runtime-r5/current-attempt/。
+
+随后的唯一只读手机观察确认当前父目录为 17 个成员、nlink 19，基线为 16/18；额外成员是既有 root-r10-neg02-a1055-final05。两个别名、两个采样的 full9/names/标签一致，本次 home、journal、fixture 均实际 ENOENT。该新观察用于证明当前差异，不冒充旧失败时点的逐字段记录。
+
+既有 final05 原件显示原组合 lifecycle 在 setup 前失败，sender 报告零 Send 并恢复草稿，但其完整远端角色收尾仍在只读核实。当前保留该任务及其原件，不把它当作成功 source-parent。原 final04 清理闭合仍然成立；新增 final05 足迹是独立的当前前置问题。当前 fixed19 新通过仍为零。

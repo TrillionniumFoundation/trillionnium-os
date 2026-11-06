@@ -1,0 +1,96 @@
+{
+  "agent_cleanup_calls": 0,
+  "agent_phone_calls": 0,
+  "all_four_alias_samples_agree": true,
+  "checks": {
+    "android": {
+      "metadata[5]": false,
+      "metadata[:5]": true,
+      "names": false,
+      "path": true,
+      "selinux_raw_b64": true
+    },
+    "gnu": {
+      "metadata[5]": false,
+      "metadata[:5]": true,
+      "names": false,
+      "path": true,
+      "selinux_raw_b64": true
+    }
+  },
+  "current_own_home_journal_fixture": [
+    {
+      "errno": 2,
+      "exists": false,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-bound01"
+    },
+    {
+      "errno": 2,
+      "exists": false,
+      "path": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-bound01/executor"
+    },
+    {
+      "errno": 2,
+      "exists": false,
+      "path": "/proc/1/root/data/local/tmp/hepta-native-guard-e2fdaccd43cec9da1df4d77783db8fdb"
+    }
+  ],
+  "differences": [
+    {
+      "actual_count": 17,
+      "added": [
+        "root-r10-neg02-a1055-final05"
+      ],
+      "expected_count": 16,
+      "path": "gnu.names",
+      "removed": []
+    },
+    {
+      "actual": 19,
+      "delta": 1,
+      "expected": 18,
+      "field": "st_nlink",
+      "path": "gnu.metadata[5]"
+    },
+    {
+      "actual_count": 17,
+      "added": [
+        "root-r10-neg02-a1055-final05"
+      ],
+      "expected_count": 16,
+      "path": "android.names",
+      "removed": []
+    },
+    {
+      "actual": 19,
+      "delta": 1,
+      "expected": 18,
+      "field": "st_nlink",
+      "path": "android.metadata[5]"
+    }
+  ],
+  "expected_profile": {
+    "bytes": 3521,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-stage-parent-diagnosis01/EXPECTED-PRECREATE.json",
+    "sha256": "2ee5216b23bb31835383f1e80c3e115703c0b37ad85c3ea165876b075d9c4b0b"
+  },
+  "foreign_identity": "root-r10-neg02-a1055-final05",
+  "foreign_ownership_or_qualification_inferred": false,
+  "historical_failure_instant_observation_reconstructed": false,
+  "next_action": "Read existing foreign controller/component originals and terminal; no cleanup, re-dispatch, or runtime admission.",
+  "observation_raw": {
+    "bytes": 4246,
+    "sha256": "b1c4ad781a5ef9867819c0ffca08ee58f21665e80b112424ca31c2672c200e97"
+  },
+  "operation_original": {
+    "bytes": 13327,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-PARENT-OBSERVATION-OPERATION.original.json",
+    "sha256": "4f42512522bec9d6985f1d8f204050c7f2bf9657ecd4a4c0f1ae9cf513977cf5"
+  },
+  "production_gate_relaxation_required": false,
+  "schema": "hepta.fc33.stage-parent.fresh-diff.v1",
+  "source_edits": 0,
+  "source_parent_growth_omission_found": false,
+  "state": "CURRENT_FOREIGN_ADDITION_OBSERVED_EXISTING_GATE_CORRECTLY_REFUSES",
+  "temporal_scope": "This is the later actual read-only sample; it is not a replacement for an unrecorded failed-gate local value."
+}

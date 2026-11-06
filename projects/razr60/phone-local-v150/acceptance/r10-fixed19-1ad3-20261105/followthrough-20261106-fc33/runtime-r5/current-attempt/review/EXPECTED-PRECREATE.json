@@ -1,0 +1,101 @@
+{
+  "actual_failure_subcomparison": null,
+  "actual_fresh_parent_observation": null,
+  "additional_current_home": null,
+  "cleanup_calls": 0,
+  "counted_source_parent_homes": 1,
+  "current_attempt": {
+    "combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+    "label": "root-r10-neg01-fc33-bound01",
+    "lease_sha256": "5a69cb9a4ba12dc2c93e789616e911414fc9e6b698ecc18676c47204bacc4190",
+    "nonce": "e2fdaccd43cec9da1df4d77783db8fdb",
+    "package_sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+  },
+  "current_home_was_not_created_by_this_stage_program_before_failure": true,
+  "expected_allowed_new_homes": [
+    "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-a1055-final04"
+  ],
+  "expected_metadata_first5": [
+    65086,
+    153525,
+    16832,
+    0,
+    0
+  ],
+  "expected_names": [
+    "root-r10-neg01-1ad3-01",
+    "root-r10-neg01-20261104-02",
+    "root-r10-neg01-20261104-03",
+    "root-r10-neg01-20261104-04",
+    "root-r10-neg01-20261105-05",
+    "root-r10-neg01-20261105-06",
+    "root-r10-neg01-20261105-07",
+    "root-r10-neg01-20261105-08",
+    "root-r10-neg01-20261105-09",
+    "root-r10-neg01-7c907661-01",
+    "root-r10-neg01-7c907661-diag01",
+    "root-r10-neg01-7c907661-diag02",
+    "root-r10-neg01-7c907661-sides01",
+    "root-r10-neg01-a1055-final02",
+    "root-r10-neg01-a1055-final04",
+    "root-r10-neg01-a1055-v3stack01"
+  ],
+  "expected_nlink": 18,
+  "expected_paths": {
+    "android": "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1",
+    "gnu": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1"
+  },
+  "expected_selinux_raw_b64": "dTpvYmplY3Rfcjp0cmlsbGlvbm5pdW1fb3duZXJfb3Blbl9zdGF0ZV9maWxlOnMwAA==",
+  "live_current_home_absence_not_observed_here": true,
+  "new_gate_matches_actual_old_closed_parent_profile": {
+    "android": {
+      "integer_full9": true,
+      "metadata_first5": true,
+      "names": true,
+      "nlink": true,
+      "path": true,
+      "selinux": true
+    },
+    "gnu": {
+      "integer_full9": true,
+      "metadata_first5": true,
+      "names": true,
+      "nlink": true,
+      "path": true,
+      "selinux": true
+    }
+  },
+  "not_compared_to_historical_values": [
+    "metadata[6] size",
+    "metadata[7] mtime_ns",
+    "metadata[8] ctime_ns"
+  ],
+  "old_closed_two_bookends_equal": true,
+  "phone_calls": 0,
+  "retained_base_roots": 41,
+  "schema": "hepta.fc33.stage-parent.expected-precreate-profile.v1",
+  "selected_source_parent_inventory_roots": 44,
+  "source_mutations": 0,
+  "sources": [
+    {
+      "bytes": 181669,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/runtime/source/late_boundary.py",
+      "sha256": "0a9f52cf8fb71177d0816f561cce279811a7182e986c12912d9431bde5997cda"
+    },
+    {
+      "bytes": 62662,
+      "path": "/workspace/scratch/fc33eac909ab/review/R4/runtime/reference/retained_unstarted_stage_final02.py",
+      "sha256": "bc6faf1c7ae2b7e3d44be3d4fe19e4272073073f8df283397ef37c177ca25850"
+    },
+    {
+      "bytes": 29342,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-agent-late/history-inputs/NEG01-BOUNDARY.original.json",
+      "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+    },
+    {
+      "bytes": 31568,
+      "path": "/workspace/scratch/fc33eac909ab/review/R5-NEG01-STAGE-FAILURE.original.json",
+      "sha256": "74ee32a40603f1ebc77036988ad98c5b3982e329668ea598f817e9a3a7ec6da4"
+    }
+  ]
+}

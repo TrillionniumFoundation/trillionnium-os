@@ -1,0 +1,9 @@
+{
+  "automatic_retry": false,
+  "case_id": "NEG-01",
+  "generation_count": 1,
+  "label": "root-r10-neg01-fc33-bound01",
+  "nonce": "e2fdaccd43cec9da1df4d77783db8fdb",
+  "phone_calls": 0,
+  "schema": "hepta.fc33.component-plan-identity.v1"
+}

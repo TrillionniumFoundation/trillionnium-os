@@ -1,0 +1,28 @@
+{
+  "actual_previous": {
+    "bytes": 1426,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-a1055-final04/ACTUAL-PREVIOUS-INPUT.json",
+    "sha256": "fcdf8a456f663d6963d3cd9caf231a210aad92d8f5e192a71917381d10ea10f0"
+  },
+  "automatic_retry": false,
+  "case_id": "NEG-01",
+  "freeze": {
+    "bytes": 1039896,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/FREEZE-RESULT.json",
+    "sha256": "d6ae0199011ddb9bfa86d8d0c4b9818e3a9037141f5441e85d43085874fd4a3c"
+  },
+  "freeze_controller": {
+    "bytes": 7823,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-freeze-r5-CONTROLLER.original.json",
+    "sha256": "c154686b7d693596f0acf14367d1f6cfbc363a96600e719ec65648cf4b9a5422"
+  },
+  "label": "root-r10-neg01-fc33-bound01",
+  "maximum_nonce_generations": 1,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.component-plan-intent.v1",
+  "source": {
+    "bytes": 20681,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/prepare_native_bound_components_r5_fc33.py",
+    "sha256": "6746dcf25d31d210580600026a45e575cbb579b02caee24b0ad00a731de38f97"
+  }
+}

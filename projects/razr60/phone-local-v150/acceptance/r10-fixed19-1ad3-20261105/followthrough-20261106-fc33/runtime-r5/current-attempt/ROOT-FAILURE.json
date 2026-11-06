@@ -1,0 +1,140 @@
+{
+  "automatic_retry": false,
+  "business_qualified": false,
+  "component_qualified": false,
+  "detail": "actual phone command failed; no new key retry",
+  "error_type": "ValueError",
+  "host_cleanup": {
+    "host_children": [],
+    "stream_cleanup_errors": []
+  },
+  "model_requests": 0,
+  "new_identity_retry": false,
+  "note": "Inspect existing process/actor/phone receipts. No missing record is treated as no effect.",
+  "policy_changes": 0,
+  "root_fixture_attempts": [],
+  "send_again": false,
+  "signals_sent_by_coordinator": 0,
+  "state": "FAILED_OR_UNKNOWN_ORIGINALS_PRESERVED_NO_AUTOMATIC_CONTINUATION",
+  "steps": [
+    {
+      "automatic_retry": false,
+      "phase": "prepare-material",
+      "pid": 85458,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/prepare-material/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 2882,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/prepare-material/stdout.original",
+        "sha256": "c48127d0250a6c18243be05d806c0e39b2655790fd44a5bb902dea0759b64963"
+      }
+    },
+    {
+      "automatic_retry": false,
+      "phase": "host-stage-material",
+      "pid": 85473,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/host-stage-material/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 8903,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/host-stage-material/stdout.original",
+        "sha256": "b50c3fd4e4401b7fff599abe68b1b3ba9e978d21fc5ee377ed057acd3e32d054"
+      }
+    },
+    {
+      "automatic_retry": false,
+      "phase": "phone-push-material",
+      "pid": 85480,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-push-material/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 930,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-push-material/stdout.original",
+        "sha256": "50038c6277fc962bb713d3035fad86bc4b466f6c1b6ea6a54375b7bc0bb01720"
+      }
+    },
+    {
+      "automatic_retry": false,
+      "phase": "phone-copy-material",
+      "pid": 85490,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-copy-material/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 18856,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-copy-material/stdout.original",
+        "sha256": "6fd90777f18b8a0390fd6343dde278aa1b94854ee241ef58b3c942d5494bad9d"
+      }
+    },
+    {
+      "automatic_retry": false,
+      "phase": "phone-push-stage-source",
+      "pid": 85501,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-push-stage-source/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 938,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-push-stage-source/stdout.original",
+        "sha256": "a55ad5f55a0627e27f3024f26a3a0106212a6196e3da546931f308fe796ff3bf"
+      }
+    },
+    {
+      "automatic_retry": false,
+      "phase": "phone-copy-stage-source",
+      "pid": 85510,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-copy-stage-source/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 18862,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-copy-stage-source/stdout.original",
+        "sha256": "285778db8b2a4e741fef2cd29fcd4a66aa909dcf5c1eec97f423afb77e962ce0"
+      }
+    },
+    {
+      "automatic_retry": false,
+      "phase": "phone-stage",
+      "pid": 85533,
+      "returncode": 0,
+      "state": "ORIGINAL_HOST_CHILD_JOINED",
+      "stderr": {
+        "bytes": 0,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-stage/stderr.original",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 3391,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/phone-stage/stdout.original",
+        "sha256": "8f3a3aae3693d0fa227b76bcd07cd53d97d537181ceb17d66d992124d189948e"
+      }
+    }
+  ]
+}
