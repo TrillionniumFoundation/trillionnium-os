@@ -1,0 +1,11 @@
+--- reference/derive_negative_sources_UNBOUND.original.py
++++ source/derive_negative_sources_UNBOUND.py
+@@ -20,7 +20,7 @@
+ 
+ FROZEN_INPUTS = None
+ INPUT_SCHEMA = 'hepta.fc33.negative-source-inputs.v1'
+-REFERENCE_INDEX = (38100, '1a7f17faf1d6705dac356076ce1d0df0292a35a805bceb117eeea50f52f15e32')
++REFERENCE_INDEX = (38100, 'bccd3fb4c6d785ea1edbca3442430f041e0e86b4df95be60c8882eba7ef3000c')
+ CHAIN_TEMPLATE = (33827, '4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835')
+ CONSUMER_TEMPLATE = (249798, '016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349')
+ RUNTIME_PIN = (57078, '990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a')

@@ -1,0 +1,38 @@
+{
+  "actual_policy": {
+    "bytes": 2667752,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/phone-originals/original-014.bin",
+    "sha256": "69aa6433a11ac4cffb2f1d349cc9f36ec2349a601911c173ebe7d92fff9e0c5b"
+  },
+  "host_neg06_namespace": "/home/alex/razr60-local-model-v150/fc33-neg06-native-v3-r5-02",
+  "materializer": {
+    "bytes": 24834,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/operator/materialize_case_r10.py",
+    "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+  },
+  "output_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fc33-negative-sources-native-v3-r5-02",
+  "policy_adoption": {
+    "bytes": 32638,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/actual_adoption_candidate03/actual01/POLICY-ADOPTION.json",
+    "sha256": "98b5db3d2c9680fff13e50bf64b18ddf9822689641427d204fded84f690d04c7"
+  },
+  "reference_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02/inputs",
+  "release_source_chain": {
+    "constructor": {
+      "bytes": 34103,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/source/derive_reviewed_release_sources_BOUND.py",
+      "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a"
+    },
+    "inputs": {
+      "bytes": 3515,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01/SOURCE-CHAIN-INPUTS.json",
+      "sha256": "e3cc22536e42074ba3fe662101dd4a4c98224de285b0a5c13c32f84d2fac322b"
+    }
+  },
+  "root_manifest": {
+    "bytes": 50107,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r5/root-chain/SOURCE-MANIFEST.json",
+    "sha256": "f9145ce2f0e5864a78ed8bece2d926187dc83e8baf15799758200bb646057282"
+  },
+  "schema": "hepta.fc33.negative-source-inputs.v1"
+}

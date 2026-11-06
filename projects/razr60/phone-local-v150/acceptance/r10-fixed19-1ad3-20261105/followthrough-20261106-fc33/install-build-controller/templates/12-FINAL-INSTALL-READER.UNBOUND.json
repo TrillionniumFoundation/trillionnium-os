@@ -1,0 +1,8 @@
+{
+  "actual": {
+    "exact8_construction": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "final_install_reader"
+}

@@ -1,0 +1,528 @@
+{
+  "actual_api_publication": {
+    "bytes": 60803,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/ACTUAL-GITHUB-PUBLICATION.json",
+    "sha256": "4cf90765b1f4a5d6cbbba1ceb76cb2d0d11c083092809473d72c4efcd8aa3c77"
+  },
+  "actual_source_files": 49,
+  "count": 64,
+  "files": [
+    {
+      "blob_sha": "3755f83e7ee0439e8beb9cd67fae499bbfb712ba",
+      "bytes": 2423,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/BINDING-INPUTS.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/BINDING-INPUTS.json",
+      "relative_path": "actual/BINDING-INPUTS.json",
+      "sha256": "bd956769c64f15f8917d7b3dbafedc0cfbcb14e4b81acb6efdf31190638de67e"
+    },
+    {
+      "blob_sha": "2f926928b85541da52a30c7e7474e76be739531e",
+      "bytes": 60062,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/BINDING.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/BINDING.json",
+      "relative_path": "actual/BINDING.json",
+      "sha256": "00a6cc4850c40cc710d348480f0d6b2871a145c89ee6801bd195432659a8da15"
+    },
+    {
+      "blob_sha": "50f63a1aa3cad24bda3b7e0c3bf0be8ae32aef77",
+      "bytes": 10207,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/collector/business_fact_recheck.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/collector/business_fact_recheck.py",
+      "relative_path": "actual/collector-package/collector/business_fact_recheck.py",
+      "sha256": "15ff4d7bf0815bdd53fa7234c95e20f50f460052770c5069f9a59d0ecc24559d"
+    },
+    {
+      "blob_sha": "10994718d45cf69535e57bf461a5b68dd60c2807",
+      "bytes": 56572,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/collector/collect_business_evidence.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/collector/collect_business_evidence.py",
+      "relative_path": "actual/collector-package/collector/collect_business_evidence.py",
+      "sha256": "b2774a4669a60d576fe3f19ea00fdec7119b5e5d36a6b591853bc686dbb5de3f"
+    },
+    {
+      "blob_sha": "548867749a78b512766f54de511b15d581b4d36c",
+      "bytes": 4318,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/collector/health_context_audit.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/collector/health_context_audit.py",
+      "relative_path": "actual/collector-package/collector/health_context_audit.py",
+      "sha256": "25b483fb2af25b3578f58c9d14b6f093325445879ae2fa8e2fdfc52690209765"
+    },
+    {
+      "blob_sha": "f5a83a19574971ec0c648597b5eaef6e344995c2",
+      "bytes": 15483,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/collector/history_context_audit.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/collector/history_context_audit.py",
+      "relative_path": "actual/collector-package/collector/history_context_audit.py",
+      "sha256": "2a43e62ad5409c978f1caccb7df512adfdf5200d224e9d092532b7613e9844ef"
+    },
+    {
+      "blob_sha": "a514012ca8e12b280f3a6008a184c7579569df01",
+      "bytes": 29100,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/collector/ledger_prefix_audit.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/collector/ledger_prefix_audit.py",
+      "relative_path": "actual/collector-package/collector/ledger_prefix_audit.py",
+      "sha256": "022b9321d19563d2405051f796dfebe517045333627babe34aeeb810754647f4"
+    },
+    {
+      "blob_sha": "2f293b32333e275351acc57832e04ba2efe71b82",
+      "bytes": 14929,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/collector/mobile_use_evidence.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/collector/mobile_use_evidence.py",
+      "relative_path": "actual/collector-package/collector/mobile_use_evidence.py",
+      "sha256": "7511ad1607522015f4be1a68c43194ac2c818ede5324d5494d8a7116ffabd867"
+    },
+    {
+      "blob_sha": "f88151091cf3022c520ad7315638a2e163dfec18",
+      "bytes": 6701,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/collector/native_journal_audit.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/collector/native_journal_audit.py",
+      "relative_path": "actual/collector-package/collector/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "blob_sha": "06481712bdb7b8d644fe74c64213837f04833cb3",
+      "bytes": 4270,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/collector-package/MANIFEST.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/collector-package/MANIFEST.json",
+      "relative_path": "actual/collector-package/MANIFEST.json",
+      "sha256": "ec593e1b8c97eb979ee1059cca8629861e896c38088973764a984b590cc47517"
+    },
+    {
+      "blob_sha": "ac21843e725470972efa82de4d0185a8fe344861",
+      "bytes": 25550,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator-chain/capture_originals_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator-chain/capture_originals_r10.py",
+      "relative_path": "actual/operator-chain/capture_originals_r10.py",
+      "sha256": "7e8b3920f9fa1345e8e2906f9cc05afb9db8b9c70c05577d5e5ad2202243d10c"
+    },
+    {
+      "blob_sha": "c29fa518d0c7a3776886ee1726dc02b5284fe412",
+      "bytes": 41173,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator-chain/close_original_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator-chain/close_original_r10.py",
+      "relative_path": "actual/operator-chain/close_original_r10.py",
+      "sha256": "19af371cb5271ea6b3f8c2929ab969357aee07d14d498dcf50f57e9b3bbc9e75"
+    },
+    {
+      "blob_sha": "65820925428ce5670cba8026b0772624e7153154",
+      "bytes": 27540,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator-chain/export_originals_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator-chain/export_originals_r10.py",
+      "relative_path": "actual/operator-chain/export_originals_r10.py",
+      "sha256": "034cebffe8569f09139d3e39dfcef7882683923af6fb5ae7935bb04162e43586"
+    },
+    {
+      "blob_sha": "c3b374fcd291d32c54b88d3224ce67651e38f5c6",
+      "bytes": 2549,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator-chain/read_archive_chunk_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator-chain/read_archive_chunk_r10.py",
+      "relative_path": "actual/operator-chain/read_archive_chunk_r10.py",
+      "sha256": "afb19e6792dcced3dc443d25bb5cd9534e56030e3792a85bf7a0c6b7ba574f32"
+    },
+    {
+      "blob_sha": "0dab9a0a2ed6e6ba5cbf41ef21782d3a1c6cc835",
+      "bytes": 10669,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator-chain/registration_phone_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator-chain/registration_phone_r10.py",
+      "relative_path": "actual/operator-chain/registration_phone_r10.py",
+      "sha256": "0922878919264a7af3c10db6db960392955654c1e7dbb09716f8a980754546f5"
+    },
+    {
+      "blob_sha": "06bb5a9843e0c9adaf5d8603f2087436344358b6",
+      "bytes": 27535,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator-chain/root_acceptance_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator-chain/root_acceptance_r10.py",
+      "relative_path": "actual/operator-chain/root_acceptance_r10.py",
+      "sha256": "caeb1a437ffe49e77874da454230aa2d64b23e6d205251aa863a8b8edd0b2fcd"
+    },
+    {
+      "blob_sha": "13a66a6f1d39537f89f3df1d199669a51598c32a",
+      "bytes": 5011,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator-chain/SOURCE-MANIFEST.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator-chain/SOURCE-MANIFEST.json",
+      "relative_path": "actual/operator-chain/SOURCE-MANIFEST.json",
+      "sha256": "f078a6ccaac60874a37ef269aed4ca168c599eaf1e5b184067b6e47533fbab3f"
+    },
+    {
+      "blob_sha": "b1d9d83602f0d88700d480681b202fd56ababa4d",
+      "bytes": 24834,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator/materialize_case_r10.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator/materialize_case_r10.py",
+      "relative_path": "actual/operator/materialize_case_r10.py",
+      "sha256": "b25125bc0e204ea7aefde6f2a17fa2fb8e5edf132a4b62dfbb546964c1c09290"
+    },
+    {
+      "blob_sha": "ace871749648ac0be1ba5b86cbb6a8f6e464dbf9",
+      "bytes": 9783,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator/references/materialize_case_r4.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator/references/materialize_case_r4.py",
+      "relative_path": "actual/operator/references/materialize_case_r4.py",
+      "sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81"
+    },
+    {
+      "blob_sha": "672d9baaa33c1ecb8affb47d4356a1f97eb2382c",
+      "bytes": 1872,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/operator/RUNTIME-COMPONENT-QUALIFICATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/operator/RUNTIME-COMPONENT-QUALIFICATION.json",
+      "relative_path": "actual/operator/RUNTIME-COMPONENT-QUALIFICATION.json",
+      "sha256": "e3e10557b7ece137916c7cb8bb9b5c049224c851dd47546f9a729a9a98557d81"
+    },
+    {
+      "blob_sha": "2d0c53fcd9b596fd8b02bfc1af7bad9d81183fef",
+      "bytes": 12133,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/reference/CANDIDATE-SOURCES.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/reference/CANDIDATE-SOURCES.original.json",
+      "relative_path": "actual/reference/CANDIDATE-SOURCES.original.json",
+      "sha256": "d352e5aeafe52777ccbfe8d3deec15b76eb54ee9f9b61e62a7b1f7f4c6f5ee44"
+    },
+    {
+      "blob_sha": "85ca4ede3b7a69166240c73f3c6df61ef525e714",
+      "bytes": 3608,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/reference/FORMAL-SOURCE-BINDING.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/reference/FORMAL-SOURCE-BINDING.original.json",
+      "relative_path": "actual/reference/FORMAL-SOURCE-BINDING.original.json",
+      "sha256": "c7b074b529b4bbe258303842b3d0b2f3912d8cdf606f803522775b79ba147003"
+    },
+    {
+      "blob_sha": "38d00815102d8ada37ae090076edfccc839a548b",
+      "bytes": 37720,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/reference/owned_capture.source.original.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/reference/owned_capture.source.original.py",
+      "relative_path": "actual/reference/owned_capture.source.original.py",
+      "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29"
+    },
+    {
+      "blob_sha": "d50529c1861258f9788539ebdb2f6284293118a7",
+      "bytes": 16407,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/reference/readiness.source.original.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/reference/readiness.source.original.py",
+      "relative_path": "actual/reference/readiness.source.original.py",
+      "sha256": "8fcf151ebeeeeaa38f0d8e057b4340f7c681f402d6a5a9670ca95f79737935e5"
+    },
+    {
+      "blob_sha": "2715e38dd0803c86741427bc56d1018e0933ef82",
+      "bytes": 249860,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/reference/release_boundaries.source.original.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/reference/release_boundaries.source.original.py",
+      "relative_path": "actual/reference/release_boundaries.source.original.py",
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+    },
+    {
+      "blob_sha": "abecc1dc30a1eb4eba430e8839406a2ca7a23f9d",
+      "bytes": 1039896,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/reference/RUNTIME-FREEZE.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/reference/RUNTIME-FREEZE.original.json",
+      "relative_path": "actual/reference/RUNTIME-FREEZE.original.json",
+      "sha256": "d6ae0199011ddb9bfa86d8d0c4b9818e3a9037141f5441e85d43085874fd4a3c"
+    },
+    {
+      "blob_sha": "d4f593ac3daf991e196754c5747ee11f3698656c",
+      "bytes": 57078,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/reference/RUNTIME-MANIFEST.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/reference/RUNTIME-MANIFEST.original.json",
+      "relative_path": "actual/reference/RUNTIME-MANIFEST.original.json",
+      "sha256": "990c726a1fff139761494cc19cf091deb269201f27ea947dda4a5833e3a72f2a"
+    },
+    {
+      "blob_sha": "2d9871a199a1a759f38badf6467e376525f49838",
+      "bytes": 1493,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/local-config-r10-r1.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/local-config-r10-r1.json",
+      "relative_path": "actual/shared/local-config-r10-r1.json",
+      "sha256": "5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48"
+    },
+    {
+      "blob_sha": "89405ceb319ac26c2c052065885913107a36723f",
+      "bytes": 10654,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+      "relative_path": "actual/shared/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+      "sha256": "273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58"
+    },
+    {
+      "blob_sha": "9779079985636df58686330571222ce582f69944",
+      "bytes": 15587,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/action_ledger.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/action_ledger.py",
+      "relative_path": "actual/shared/provider/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "blob_sha": "59e2c8594b88a58793d7ba3c6761bd5d277df725",
+      "bytes": 22059,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/daily_phone_local.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/daily_phone_local.py",
+      "relative_path": "actual/shared/provider/source/daily_phone_local.py",
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8"
+    },
+    {
+      "blob_sha": "556bbf50b9849e0fbe1ea507ad35cc98b6f58945",
+      "bytes": 11439,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/health_contracts.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/health_contracts.py",
+      "relative_path": "actual/shared/provider/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "blob_sha": "b98fa2e0e04dca525ad5442cccbc7acb5ec91efc",
+      "bytes": 15135,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/ledger_round_evidence.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/ledger_round_evidence.py",
+      "relative_path": "actual/shared/provider/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "blob_sha": "fbe2e8832dcc2a3958e9dc790a1ecf394023eb37",
+      "bytes": 8251,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/model_health.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/model_health.py",
+      "relative_path": "actual/shared/provider/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "blob_sha": "339f98ec195a62d4dfd4538c1cb8ff634596a0d0",
+      "bytes": 37375,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/model_slot_cleanup.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/model_slot_cleanup.py",
+      "relative_path": "actual/shared/provider/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "blob_sha": "34b67ebbc6338e66f0c43ae19059ab0ffda7aba2",
+      "bytes": 10453,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_local_http_worker.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/phone_local_http_worker.py",
+      "relative_path": "actual/shared/provider/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "blob_sha": "03800a9aab65d102477cbb6f6c7d8867fe0a16ef",
+      "bytes": 13927,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_local_tools.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/phone_local_tools.py",
+      "relative_path": "actual/shared/provider/source/phone_local_tools.py",
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930"
+    },
+    {
+      "blob_sha": "598544ec9460977b374744d053c5a83d490c8f99",
+      "bytes": 55981,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_observation_tools.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/phone_observation_tools.py",
+      "relative_path": "actual/shared/provider/source/phone_observation_tools.py",
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086"
+    },
+    {
+      "blob_sha": "9cdba9872fd2637c144dc889ba38643300bef568",
+      "bytes": 22825,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_task_guards.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/phone_task_guards.py",
+      "relative_path": "actual/shared/provider/source/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "blob_sha": "6c430b9f14f1cb17e5e6585229ee9fa212f550e5",
+      "bytes": 41618,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/provider_codex_host.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/provider_codex_host.py",
+      "relative_path": "actual/shared/provider/source/provider_codex_host.py",
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa"
+    },
+    {
+      "blob_sha": "d5755ca4129da5c5ed1da9b8771a116be3b3efa5",
+      "bytes": 17730,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/provider_openai_compatible.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/provider_openai_compatible.py",
+      "relative_path": "actual/shared/provider/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "blob_sha": "78be7653d6af6784b30871c1e1054e398e29e4ab",
+      "bytes": 70303,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/provider_phone_local.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/provider_phone_local.py",
+      "relative_path": "actual/shared/provider/source/provider_phone_local.py",
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee"
+    },
+    {
+      "blob_sha": "938ad60ef2b1b33103384c6ef50d764d9da8e5e3",
+      "bytes": 9802,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/retirement_recovery.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/retirement_recovery.py",
+      "relative_path": "actual/shared/provider/source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "blob_sha": "1da225de785769d3dd5329ab48b4ad207f3c77c8",
+      "bytes": 23211,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/task_postconditions.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/provider/source/task_postconditions.py",
+      "relative_path": "actual/shared/provider/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    },
+    {
+      "blob_sha": "7864cd4843f6d1a54118c0af327317a8c5d90f63",
+      "bytes": 3519,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/SHARED-MATERIALS.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/shared/SHARED-MATERIALS.json",
+      "relative_path": "actual/shared/SHARED-MATERIALS.json",
+      "sha256": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1"
+    },
+    {
+      "blob_sha": "6e52da99ab1fe84a4eb8ea200e53a7b02291e404",
+      "bytes": 4695,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/source-origin/COMBINATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/source-origin/COMBINATION.json",
+      "relative_path": "actual/source-origin/COMBINATION.json",
+      "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+    },
+    {
+      "blob_sha": "0eb7d5c3370a4adc199c1d290bfc936402a3a6a4",
+      "bytes": 19087,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/source-origin/DERIVATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/source-origin/DERIVATION.json",
+      "relative_path": "actual/source-origin/DERIVATION.json",
+      "sha256": "adaba62c40a49d61f0f809ad5f389ca52d900ec4b6415de829a5f9a708a738e3"
+    },
+    {
+      "blob_sha": "7cf828068496ea7613b3cae1080fc4c7247bd5be",
+      "bytes": 2341,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/source-origin/SOURCE-SEAL.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/source-origin/SOURCE-SEAL.json",
+      "relative_path": "actual/source-origin/SOURCE-SEAL.json",
+      "sha256": "b8ace9d8c6cd7f1a6dbeab83f20ccb3675dff76e47bc445c5d2c286eba58681a"
+    },
+    {
+      "blob_sha": "682b294f6d3f87587ca3741ce4c086513976bf64",
+      "bytes": 20208,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/source/run_fixed19_e2e_root_once.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/actual/source/run_fixed19_e2e_root_once.py",
+      "relative_path": "actual/source/run_fixed19_e2e_root_once.py",
+      "sha256": "d1959bfc46c0dc0e347a1a438062f6f6259d85bd6f17cf0b4aae967f1e488b53"
+    },
+    {
+      "blob_sha": "bef40fc2528589d7f6a1ada0e1bb26ff682ad488",
+      "bytes": 24724,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/ARCHIVE-MANIFEST.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/ARCHIVE-MANIFEST.json",
+      "relative_path": "ARCHIVE-MANIFEST.json",
+      "sha256": "abda64c3096bdf976b9cd8a71bcd6dd91e053fc743e58b743cd1ab246588491e"
+    },
+    {
+      "blob_sha": "2f926928b85541da52a30c7e7474e76be739531e",
+      "bytes": 60062,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/BINDING.ROOT-READ.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/BINDING.ROOT-READ.original.json",
+      "relative_path": "BINDING.ROOT-READ.original.json",
+      "sha256": "00a6cc4850c40cc710d348480f0d6b2871a145c89ee6801bd195432659a8da15"
+    },
+    {
+      "blob_sha": "d5ebfa6741739188a16933954d5a8fe4f2fa05f4",
+      "bytes": 49873,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/COPY-MAP.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/COPY-MAP.json",
+      "relative_path": "COPY-MAP.json",
+      "sha256": "7aa27fb1efe2c1cc107e9afd1ab9b7f03dedc5d983431eaf9269798271bdbf26"
+    },
+    {
+      "blob_sha": "ab815d98a1234c7702726c61eeb1dc9d2569ff3b",
+      "bytes": 8260,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/observe_bound_e2e_sources.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/observe_bound_e2e_sources.py",
+      "relative_path": "observe_bound_e2e_sources.py",
+      "sha256": "e2535a94d680cafe421047e8155f0f56ed1d1e90ed6ac618e2da671e4def3101"
+    },
+    {
+      "blob_sha": "074b3237d5ec514f3e2492d525b4c8aa9e08616e",
+      "bytes": 531089,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/ORIGINAL-TRANSFER.stdout.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/ORIGINAL-TRANSFER.stdout.json",
+      "relative_path": "ORIGINAL-TRANSFER.stdout.json",
+      "sha256": "74309e830cd1a05ab4c0e33f626a634a05ff5481761bd446b509c8c2fb6d60cd"
+    },
+    {
+      "blob_sha": "e4d1013bd13685345b1fc021c9a1b8c4fec8f4aa",
+      "bytes": 5648,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/PUBLICATION-CONTROLLER.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/PUBLICATION-CONTROLLER.original.json",
+      "relative_path": "PUBLICATION-CONTROLLER.original.json",
+      "sha256": "3176e95d05df9c1f01072e8ee2356cf7e1e3e8bb037bd4ebcb639f83837ff6e0"
+    },
+    {
+      "blob_sha": "a14c06b2ea52f0e1be568c3dc683bc6905465a55",
+      "bytes": 2349056,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/PUBLISHED-E2E-ORIGINALS.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/PUBLISHED-E2E-ORIGINALS.json",
+      "relative_path": "PUBLISHED-E2E-ORIGINALS.json",
+      "sha256": "c1e35509022e5cf4ff2dd7bf0e2d3837be318ab2737bc951fabd990cf350b426"
+    },
+    {
+      "blob_sha": "9c576bac6fde6bde576ea60747a8b059f84d63c8",
+      "bytes": 1622730,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/READ-CONTROLLER.original.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/READ-CONTROLLER.original.json",
+      "relative_path": "READ-CONTROLLER.original.json",
+      "sha256": "1fb4261838591f74cc5091dd3994fc92786b3b5b1cfcf00f71c67aed97611d75"
+    },
+    {
+      "blob_sha": "909c753e0b91b1bfaac799ed09dec79fec617d05",
+      "bytes": 1619,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/README.md",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/README.md",
+      "relative_path": "README.md",
+      "sha256": "16b1185631000cfdeecfff91cc54cbf6e0f25b33d792efc9da642e1888a9c244"
+    },
+    {
+      "blob_sha": "50eded5d7127fe6e7868122633c99da278a30727",
+      "bytes": 18012,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/reference/bind_e2e_sources_r5.original.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/reference/bind_e2e_sources_r5.original.py",
+      "relative_path": "reference/bind_e2e_sources_r5.original.py",
+      "sha256": "a39fbab2020e357bbd5a146e15af96b76f847fcd83b54a2fd60dfc6430e5e3a1"
+    },
+    {
+      "blob_sha": "1860f98bc21187a8cedf0b9d425a38b46f8b23bb",
+      "bytes": 906,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/reference/SOURCE-ENTRY-GUARD.original.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/reference/SOURCE-ENTRY-GUARD.original.py",
+      "relative_path": "reference/SOURCE-ENTRY-GUARD.original.py",
+      "sha256": "ec0e474bbb85311d963f934834f72a56b256129908aaa4e23b78268c325cec86"
+    },
+    {
+      "blob_sha": "123973dc1b4a826632d33d4c8b6d83027572984f",
+      "bytes": 16570,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/reference/verify_host_controller_originals.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/reference/verify_host_controller_originals.py",
+      "relative_path": "reference/verify_host_controller_originals.py",
+      "sha256": "be2b96db92bb456a798c3f8be6c1425a81e3afeadf782940bd695cf4cb3c714a"
+    },
+    {
+      "blob_sha": "7a19f7ea5466a5e913c7796801f847d355a529b0",
+      "bytes": 67826,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/ROOT-BINDING-READ.original.mcp.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/ROOT-BINDING-READ.original.mcp.json",
+      "relative_path": "ROOT-BINDING-READ.original.mcp.json",
+      "sha256": "2feb1cc7d89cecd018dc041c262abec785ea3c8e63cd0e50c4e5d36513d200cc"
+    },
+    {
+      "blob_sha": "0bee465b5e58307606ebfb9e3803eb65755bfc6c",
+      "bytes": 2183,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/VERIFICATION.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/VERIFICATION.json",
+      "relative_path": "VERIFICATION.json",
+      "sha256": "89a3776b639c73ecde0aa7a5a426e0fc795888213fe52df7dce4f33f74d074c4"
+    },
+    {
+      "blob_sha": "beb361152f8167e441de763dee31e18dbd4c085e",
+      "bytes": 9178,
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/verify_actual_archive.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-actual-e2e-bound-source/verify_actual_archive.py",
+      "relative_path": "verify_actual_archive.py",
+      "sha256": "61b8db33a8f037d645cc04a4531bbf38497542f44c52fc3dce718735421d9177"
+    }
+  ],
+  "remote_prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "schema": "hepta.fc33.verified-git-blob-map.v1",
+  "total_bytes": 7002712,
+  "tree_or_ref_changed": false
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.fc33.final05.recovery02-independent-source-interface-review.v1",
+  "state": "ACTUAL_RETAINED_INPUT_PURE_PROJECTION_INTERFACE_MATCHED",
+  "reader": {
+    "bytes": 29656,
+    "sha256": "3228d058bebd9f847b86760655978c265295a6de3bdd80898396d85419766060"
+  },
+  "projection_extension": {
+    "bytes": 7545,
+    "sha256": "d2696591ee1371be81b9f259b38838ea3de3d6bb795f697081cd05009bc57248"
+  },
+  "actual_target": {
+    "bytes": 183176,
+    "sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1"
+  },
+  "actual_observation_report": {
+    "bytes": 72764,
+    "sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a"
+  },
+  "projection": {
+    "original_targets_sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1",
+    "actual_reconciliation_sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a",
+    "derived_targets_sha256": "58b253b325daacf7417e7c2c53bd636c8840064b61965e4c37ffbf99e01263e0",
+    "only_parent_profiles_and_absent_fixture_parent_fields_changed": true,
+    "derived_projection_is_original": false,
+    "original97_files_and10_directories_unchanged": true
+  },
+  "derived_target_bytes": 183122,
+  "changed_existing_reader_functions": [
+    "validate_recovery",
+    "main"
+  ],
+  "original97_file_and10_directory_descriptors_equal": true,
+  "actual_cleanup_executed": false,
+  "cleanup_success_claimed": false,
+  "phone_calls": 0,
+  "full_source_and_guard_review": "pending_exact_candidate",
+  "observations": [
+    "The selected full current report exactly matches both pure projection APIs.",
+    "Both old absent-fixture references now share the same whole current parent profile; their original informational monotonic fields stay untouched.",
+    "Existing removal/44 projection validation logic retains original functions except explicit reconciliation call and output identity checks.",
+    "The exact 4 foreign transport removals and 2 audit additions only update expected parent membership, and grant no foreign cleanup authority."
+  ]
+}

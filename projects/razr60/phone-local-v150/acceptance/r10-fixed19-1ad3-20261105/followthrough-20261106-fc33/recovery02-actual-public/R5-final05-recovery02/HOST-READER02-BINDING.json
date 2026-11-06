@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.fc33.recovery02-host-reader-exact-binding.v1",
+  "unbound": {
+    "bytes": 29656,
+    "sha256": "3228d058bebd9f847b86760655978c265295a6de3bdd80898396d85419766060"
+  },
+  "bound": {
+    "bytes": 48307,
+    "sha256": "6320200af67f8e429e838eb759821b8f575a2bf0af4e932d86caebf98e78bb10"
+  },
+  "unchanged_core_validator": {
+    "bytes": 16500,
+    "sha256": "29520d5dcfa5f9eaeac033689869cea08cbc620b5eb16e5b5a2a91c1879286df"
+  },
+  "bindings": {
+    "operation_label": "ng-fc33-final05-owned-scope-recovery02",
+    "source": {
+      "bytes": 358086,
+      "sha256": "94ab728a7fd4adb0ba4d4d7d5dc3c84cdad8923e73b4bd0cd87d5159bf6f0dc1"
+    },
+    "request": {
+      "path": "/home/alex/razr60-local-model-v150/requests/ng-fc33-final05-owned-scope-recovery02.json",
+      "bytes": 49592,
+      "sha256": "16e3ad935ad485e94146c5b35521b297694d3431ac3955014aa4b08e2c2db425"
+    },
+    "targets": {
+      "bytes": 183176,
+      "metadata": [
+        66306,
+        39846600,
+        33152,
+        1000,
+        1000,
+        1,
+        183176,
+        1793990364709986368,
+        1793990364709986368
+      ],
+      "path": "/home/alex/razr60-local-model-v150/fc33-final05-recovery-inputs01/TARGETS.json",
+      "sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1"
+    },
+    "authority": {
+      "bytes": 3510,
+      "sha256": "7b3e24ac62786be6b14586fe0b7b2f9a104d699a992f1dd80c998b9b09812463"
+    },
+    "reconciliation": {
+      "bytes": 72764,
+      "metadata": [
+        66306,
+        39846765,
+        33152,
+        1000,
+        1000,
+        1,
+        72764,
+        1793993617663384901,
+        1793993617663384901
+      ],
+      "path": "/home/alex/razr60-local-model-v150/fc33-final05-surviving-parents-readonly02-import03/HOST-VERIFICATION.PUBLIC.json",
+      "sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a"
+    }
+  },
+  "complete_three_literal_inverse": true,
+  "actual_request_loader_full_source_equal": true,
+  "actual_retained_projection_interface": {
+    "original_targets_sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1",
+    "actual_reconciliation_sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a",
+    "derived_targets_sha256": "58b253b325daacf7417e7c2c53bd636c8840064b61965e4c37ffbf99e01263e0",
+    "only_parent_profiles_and_absent_fixture_parent_fields_changed": true,
+    "derived_projection_is_original": false,
+    "original97_files_and10_directories_unchanged": true
+  },
+  "finite_scope": {
+    "files": 97,
+    "directories": 10,
+    "parents": 5
+  },
+  "definitions_only_no_capture_or_cleanup_called": true,
+  "actual_result": null,
+  "phone_calls": 0
+}

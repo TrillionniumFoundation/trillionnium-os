@@ -1,0 +1,11 @@
+{
+  "build_idempotency_key": null,
+  "build_output_root": null,
+  "build_timeout_seconds": 180,
+  "case_results": {
+    "NEG-01": null,
+    "NEG-02": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.actual-component-build-construction-inputs.v1"
+}

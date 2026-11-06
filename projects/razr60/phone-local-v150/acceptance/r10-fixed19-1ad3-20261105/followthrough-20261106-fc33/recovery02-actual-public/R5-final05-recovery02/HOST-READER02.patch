@@ -1,0 +1,132 @@
+--- review/R5-final05-recovery01/verify_recovery_result_UNBOUND.py
++++ review/R5-final05-recovery02/verify_recovery02_result_UNBOUND.py
+@@ -116,8 +116,89 @@
+              and type(row['proc_errno'])is int and row['proc_errno']==2 and type(row['kernel_errno'])is int and row['kernel_errno']==3
+              and type(row['signal'])is int and row['signal']==0 and row['pid_argument']==-identity[1],'fresh actual known PID/group absence')
+ 
++
++def validate_reconciled_targets(module):
++    """Independent finite projection; original TARGETS bytes stay immutable."""
++    original=strict(module.TARGETS_RAW)
++    report=strict(module.RECONCILIATION_RAW)
++    need(sha(module.TARGETS_RAW)==module.TARGETS_SHA and
++         sha(module.RECONCILIATION_RAW)==module.RECONCILIATION_SHA,
++         'exact original target and separately retained reconciliation bytes')
++    need(report['schema']=='hepta.fc33.final05.parent-observation-host-verification.v1'
++         and report['state']=='COMPLETE_FINITE_OBSERVATION_PRIVATELY_PRESERVED_NO_CLOSURE'
++         and report['host_validation_error'] is None and report['phone_rc']==0
++         and report['private_bodies_in_public_report'] is False
++         and report['scope_closure'] is False and report['cleanup_authorized'] is False,
++         'actual complete independently verified observation without cleanup authority')
++    need({k:report['actual_original_targets'][k] for k in ('bytes','sha256')}==
++         {'bytes':len(module.TARGETS_RAW),'sha256':module.TARGETS_SHA},
++         'same immutable original target descriptor')
++    checks=report['checks'];fresh=checks['five_complete_current_parent_profiles']
++    old=original['surviving_parents']
++    need(len(fresh)==len(old)==5 and [r['path'] for r in fresh]==[r['path'] for r in old],
++         'same exact five surviving parents')
++    need(checks['current_parent_and_fixture_profile_coherent'] is True
++         and checks['all15_existing_lock_groups_held_through_two_windows'] is True
++         and checks['exact_resource_baseline_restored'] is True
++         and checks['unknown_foreign_cleanup_not_admitted'] is True,
++         'coherent complete actual parent observation')
++    for before,after in zip(old,fresh):
++        metadata(after['metadata'])
++        need(set(after)==set(before)=={'path','metadata','names','selinux_raw_b64'}
++             and after['metadata'][:7]==before['metadata'][:7]
++             and after['selinux_raw_b64']==before['selinux_raw_b64']
++             and after['names']==sorted(set(after['names'])),
++             'current parent identity owner mode links size label and complete names')
++    need(old[:2]==fresh[:2] and old[4]['names']==fresh[4]['names'],
++         'shared aliases unchanged and same complete tmp membership')
++    foreign='root-r10-neg01-74ec-final05'
++    expected_removed=[set(),set(),{foreign+'.stage.py',foreign+'.tar.gz'},
++        {'hepta-native-guard-'+foreign+'.stage.py','hepta-native-guard-'+foreign+'.tar.gz'},set()]
++    expected_added=[set(),set(),{foreign+'.SECONDARY4-CLEANUP-INTENT-74ec02.json',
++        foreign+'.SECONDARY4-CLEANUP-RESULT-74ec02.json'},set(),set()]
++    for i in range(5):
++        need(set(old[i]['names'])-set(fresh[i]['names'])==expected_removed[i]
++             and set(fresh[i]['names'])-set(old[i]['names'])==expected_added[i],
++             'only the exact observed foreign four transport and two audit names differ')
++    fixture=str(module.C.FIXTURE);absence=checks['fixture_absence'];parent=fresh[-1]
++    need(absence['kind']=='absent' and absence['absence']=='ENOENT'
++         and absence['path']==fixture and absence['no_effect_inferred'] is False
++         and absence['parent_metadata']==parent['metadata']
++         and absence['parent_selinux_raw_b64']==parent['selinux_raw_b64']
++         and Path(fixture).name not in parent['names'],
++         'one exact current fixture absence shares the whole current parent profile')
++    xml={r['path']:{k:r[k] for k in ('path','bytes','sha256','metadata','selinux_raw_b64')}
++         for r in checks['eleven_xml_originals']}
++    original_xml={r['path']:r for r in original['files']
++                  if Path(r['path']).name.startswith('hepta-natural-root-r10-neg02-a1055-final05-v150-')}
++    need(xml==original_xml and len(xml)==11 and sum(r['bytes'] for r in xml.values())==223418,
++         'all eleven original target XML exact bytes/full9/labels unchanged')
++    expected=copy.deepcopy(original);expected['surviving_parents']=copy.deepcopy(fresh)
++    need(original['prior_fixture_absence']['path']==fixture and
++         original['prior_private_tree']['entries'][fixture]['kind']=='absent',
++         'only the already absent original fixture receives a derived parent projection')
++    for row in (expected['prior_fixture_absence'],expected['prior_private_tree']['entries'][fixture]):
++        row['parent_metadata']=copy.deepcopy(parent['metadata'])
++        row['parent_selinux_raw_b64']=parent['selinux_raw_b64']
++    need(enc(module.TARGETS)==enc(expected) and
++         module.DERIVED_TARGETS_SHA==sha(enc(expected)),
++         'complete independent only-parent projection equals executed source')
++    need(expected['files']==original['files'] and expected['directories']==original['directories']
++         and len(expected['files'])==97 and len(expected['directories'])==10,
++         'all97 file and10 directory deletion identities remain byte-for-byte unchanged')
++    return {'original_targets_sha256':module.TARGETS_SHA,
++            'actual_reconciliation_sha256':module.RECONCILIATION_SHA,
++            'derived_targets_sha256':module.DERIVED_TARGETS_SHA,
++            'only_parent_profiles_and_absent_fixture_parent_fields_changed':True,
++            'derived_projection_is_original':False,'original97_files_and10_directories_unchanged':True}
++
+ def validate_recovery(value, pre, module, blobs):
+     C=module.C;targets=module.TARGETS;authority=module.AUTHORITY
++    reconciliation=validate_reconciled_targets(module)
++    for frame in (value,pre):
++        need(frame['reconciliation_sha256']==module.RECONCILIATION_SHA
++             and frame['derived_targets_sha256']==module.DERIVED_TARGETS_SHA,
++             'actual output explicitly identifies the exact derived parent projection')
+     need(value['schema']=='hepta.fc33.final05.exact-owned-recovery.v1' and value['operation_label']==FROZEN['operation_label']
+          and value['scope_label']==C.LABEL and value['nonce']==C.NONCE and value['boot_id']==C.BOOT
+          and value['targets_sha256']==module.TARGETS_SHA and enc(value['authority'])==enc(authority),'exact recovery identity and authority')
+@@ -206,7 +287,8 @@
+         'preflight_checks':prechecks,'preflight_adapter_is_original':False,'whole_operation_was_readonly':False,
+         'current_role_absence_checks_before_and_after':True,'all15_original_locks_held_during_effects':True,'measured_fd_baseline_restored':True,
+         'historical_supervisor_wait_proven':False,'producer_scope_closure_flag':False,'business_or_component_credit':False,
+-        'owned_recovery_closed':True,'fresh_component_admission_required':True}
++        'owned_recovery_closed':True,'fresh_component_admission_required':True,
++        'parent_reconciliation':reconciliation}
+ 
+ def main():
+     need(type(FROZEN)is dict and CORE_VALIDATOR_RAW is not None and CORE_VALIDATOR_PIN is not None,'UNBOUND_NO_IO')
+@@ -218,7 +300,7 @@
+     out=Path(a.out);need(out.parent==BASE and out.name==label.removeprefix('ng-')+'-import01' and out.parent.resolve(strict=True)==out.parent and not out.exists(),'fresh exact private import namespace')
+     out.mkdir(mode=0o700)
+     outputs=[write_new(out,'result.original.json',result_raw),write_new(out,'actor.original.py',actor_raw),write_new(out,'request.original.json',request_raw)]
+-    checks=None;error=None;inputs={};preserved=[];phone_rc=None
++    checks=None;error=None;inputs={};preserved=[];phone_rc=None;reconciliation_pin=None
+     try:
+         operation=strict(result_raw);request=strict(request_raw)
+         need(operation['label']==label and operation['status']=='command_exited' and operation['model_decision'] is False and operation['native_task_result'] is False,'actual original recovery actor result')
+@@ -233,7 +315,11 @@
+         need((len(module.CAP_SOURCE_RAW),sha(module.CAP_SOURCE_RAW))==PROBE_PIN and module.OPERATION_LABEL==label,'unchanged reviewed capture definitions')
+         targets_raw,targets_pin=read_row(FROZEN['targets']);authority_raw=module.AUTHORITY_RAW
+         need(targets_raw==module.TARGETS_RAW and len(authority_raw)==FROZEN['authority']['bytes'] and sha(authority_raw)==FROZEN['authority']['sha256'],'complete actual targets and reviewed authority literal equal executed source')
+-        outputs.extend([write_new(out,'targets.original.json',targets_raw),write_new(out,'authority.original.json',authority_raw),write_new(out,'preflight-validator.original.py',CORE_VALIDATOR_RAW)])
++        reconciliation_raw,reconciliation_pin=read_row(FROZEN['reconciliation'])
++        need(reconciliation_raw==module.RECONCILIATION_RAW,'exact separately retained complete parent reconciliation original')
++        validate_reconciled_targets(module)
++        outputs.extend([write_new(out,'targets.original.json',targets_raw),write_new(out,'authority.original.json',authority_raw),write_new(out,'preflight-validator.original.py',CORE_VALIDATOR_RAW),
++            write_new(out,'parent-reconciliation.original.json',reconciliation_raw)])
+         blobs={}
+         for row in module.TARGETS['preserved_blob_descriptors']:
+             raw,pin=read_exact(row['preserved_path'],row['bytes'],row['sha256']);need(row['sha256'] not in blobs,'unique original blob descriptor')
+@@ -249,6 +335,7 @@
+     report={'schema':'hepta.fc33.final05.exact-recovery-host-verification.v1',
+         'state':'EXACT_OWNED_RECOVERY_INDEPENDENTLY_VERIFIED_NO_CASE_CREDIT' if error is None else 'ORIGINALS_PRESERVED_RECOVERY_INCOMPLETE_OR_UNKNOWN',
+         'actual_result':result_pin,'actual_actor':actor_pin,'actual_request':request_pin,
++        'actual_parent_reconciliation':reconciliation_pin,
+         'actual_operation_inputs':{name:row for name,(_,row) in inputs.items()},'phone_rc':phone_rc,'host_validation_error':error,'checks':checks,
+         'rechecked_preserved_originals':preserved,'output_descriptors':outputs,'phone_calls_by_host_verifier':0,
+         'owned_recovery_closed':error is None,'original_failed_case_qualification':False,'historical_unknowns_upgraded':False,'private_bodies_in_public_report':False}

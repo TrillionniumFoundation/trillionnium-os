@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.fc33.recovery02-independent-host-guard-review.v1",
+  "state": "STATIC_COMPLETE_GUARD_SOURCE_INTERFACE_REVIEWED_NO_EXECUTION",
+  "guard": {
+    "bytes": 49469,
+    "sha256": "9c0eb59a76426321f0c92e27dd049d8a42348398c2c4740b7ef41e236da10134"
+  },
+  "parent": {
+    "bytes": 14670,
+    "sha256": "52f29b97c655b96106a2220b8f6a6f689fda53a0cfff992e439186d2e9468bca"
+  },
+  "embedded_validator_matches_complete_actual_v4_source": {
+    "bytes": 22485,
+    "sha256": "cebb4cbe8244826208c17011e1838a31c24349dc3dd3ce37cc3f2cae5c8c9d0d"
+  },
+  "unchanged_existing_functions": [
+    "need",
+    "sha",
+    "enc",
+    "strict",
+    "full9",
+    "read_original",
+    "descriptor",
+    "absent",
+    "bounded_unzip",
+    "publish_admission"
+  ],
+  "changed_existing_functions": [
+    "verify",
+    "main"
+  ],
+  "added_functions": [
+    "exact_source_from_request",
+    "verify_parent_reconciliation"
+  ],
+  "findings": [
+    "Every new actual or retained file is read through the unchanged bounded full-byte/full9/canonical descriptor path and added to the whole-set final bookend.",
+    "The one pinned public report is independently regenerated from the full actual packet, ten private blobs, exact source/input request, actual intent/baseline and original44 lock source. The validator is loaded under a non-main name.",
+    "The exact previous recovery01 source/result must show pre-mutation rejection with zero operations and released original locks; no UNKNOWN is converted to a zero-effect claim.",
+    "The loaded recovery02 definitions execute only the reviewed pure reconciliation and retain C.STATE and RECOVERY as None; the first actual capture and effects remain the Root-owned actor path.",
+    "The existing 64MiB read cap, exact actor identity, create-only admission, full readback and single execv branch remain unchanged. Any read or admission failure precedes execv."
+  ],
+  "actual_guard_run": false,
+  "actual_cleanup_run": false,
+  "phone_calls": 0,
+  "blocker_found_in_reviewed_delta": false,
+  "limit": "Static interface review and literal/full-function byte comparison only. The actual host originals must still pass the real guard; no physical recovery or current state inferred."
+}

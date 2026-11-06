@@ -1,0 +1,17 @@
+{
+  "actual": {
+    "actor_path": null,
+    "delivery_directory": null,
+    "identity_prefix": null,
+    "phase_timeouts": {
+      "ready": null,
+      "stage": null,
+      "start": null
+    },
+    "release_inputs": null,
+    "request_directory": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "install_plan"
+}

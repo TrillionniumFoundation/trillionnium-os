@@ -1,0 +1,63 @@
+--- import_parent_observer_host_v2.py
++++ import_parent_observer_host_v3.py
+@@ -5,11 +5,11 @@
+ This proves the finite observation only, not cleanup, role liveness or all97.
+ """
+ from pathlib import Path
+-import ast,base64,hashlib,json,lzma,os,shlex,stat,zlib
++import ast,base64,hashlib,json,lzma,os,shlex,stat,traceback,zlib
+ 
+ BASE=Path('/home/alex/razr60-local-model-v150')
+ LABEL='ng-fc33-final05-surviving-parents-readonly02'
+-OUT=BASE/'fc33-final05-surviving-parents-readonly02-import01'
++OUT=BASE/'fc33-final05-surviving-parents-readonly02-import02'
+ RESULT_PIN=(195248,'d0d2726adb89a6e29c6ed054972c4ef9131402a521cdfdfdf1196284dcd0c0e4')
+ REQUEST_PIN=(28145,'e7afd47d4f41b18fe5745de2c2c32eabb8d771b54f7354fd64e89ed54fa45fbf')
+ SOURCE_PIN=(91164,'0af051db4502e1655c5e3eb1580ff6cd981fae794dc6cb41a56e1704bd490acc')
+@@ -56,9 +56,11 @@
+ def meta(m):need(type(m) is list and len(m)==9 and all(type(x) is int and 0<=x<(1<<63) for x in m),'bounded complete integer full9')
+ def label(row):
+     b=base64.b64decode(row['selinux_raw_b64'],validate=True);need(0<len(b)<=256,'complete SELinux label')
+-def pin_equal(row,pin):
++def pin_equal(row,pin,*,legacy_without_label=False):
+     need(row['path']==pin['path'],'exact ordered path')
+-    for k in ('bytes','sha256','metadata','selinux_raw_b64'):need(row[k]==pin[k],'exact original '+k)
++    for k in ('bytes','sha256','metadata'):need(row[k]==pin[k],'exact original '+k)
++    if 'selinux_raw_b64' in pin:need(row['selinux_raw_b64']==pin['selinux_raw_b64'],'exact original label')
++    else:need(legacy_without_label is True,'missing mandatory original label')
+ def directory(row,path):
+     need(set(row)=={'path','metadata','names','selinux_raw_b64'} and row['path']==path,'exact parent row schema/path')
+     meta(row['metadata']);label(row)
+@@ -93,7 +95,8 @@
+     meta(identity['gnu_root_metadata']);meta(identity['android_root_metadata'])
+     need(identity['gnu_root_metadata'][:2]!=identity['android_root_metadata'][:2] and type(identity['collector_pid']) is int and identity['collector_pid']>1,'distinct GNU/Android roots')
+     need(baseline['schema']=='hepta.native-guard.complete-inventory.v1' and baseline['roots']==cap_inputs['baseline_roots'] and len(baseline['roots'])==44 and len(baseline['entries'])==3823,'exact44 lock source, not a new44 census')
+-    pin_equal(value['lock_inventory_original'],cap_inputs['baseline'])
++    file_row(value['lock_inventory_original'])
++    pin_equal(value['lock_inventory_original'],cap_inputs['baseline'],legacy_without_label=True)
+     aliases={p:r for p,r in baseline['entries'].items() if r['kind']=='file' and (p.rsplit('/',1)[-1]=='lock' or p.endswith('.lock'))}
+     need(len(aliases)==26 and len({tuple(r['metadata'][:2]) for r in aliases.values()})==14,'actual old14 lock groups')
+     gnu='/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg02-a1055-final05/executor/server.lock'
+@@ -103,7 +106,12 @@
+     locks=value['locks'];ordered=sorted(aliases,key=lambda p:(aliases[p]['metadata'][0],aliases[p]['metadata'][1],p))
+     need(locks['alias_count']==28 and locks['inode_group_count']==15 and locks['old_inode_group_count']==14 and locks['lock_mode']=='LOCK_EX|LOCK_NB on existing O_RDONLY descriptors' and locks['lock_files_created']==0 and locks['held_through_both_windows'] is True,'all existing lock groups held')
+     need(len(locks['aliases'])==28 and [r['path'] for r in locks['aliases']]==ordered,'all complete ordered lock observations')
+-    for row in locks['aliases']:file_row(row);pin_equal(row,aliases[row['path']])
++    lock_identities={}
++    for row in locks['aliases']:
++        file_row(row);pin_equal(row,aliases[row['path']],legacy_without_label=row['path'] in baseline['entries'])
++        key=tuple(row['metadata'][:2]);observed=(row['metadata'],row['selinux_raw_b64'])
++        need(key not in lock_identities or lock_identities[key]==observed,'complete current lock alias metadata/labels agree')
++        lock_identities[key]=observed
+     need(len({tuple(r['metadata'][:2]) for r in locks['aliases']})==15,'exact actual inode grouping')
+     windows=value['windows'];need(len(windows)==2 and [w['index'] for w in windows]==[0,1],'exact two windows')
+     refs=inputs['parent_identity_references'];paths=[r['path'] for r in refs]
+@@ -197,7 +205,7 @@
+             b=base64.b64decode(row['base64'],validate=True);need(len(b)==row['bytes'] and sha(b)==digest,'complete private blob')
+             blobs[digest]=b;outputs.append(put('private-originals/'+digest+'.bin',b))
+         checks=validate(value,inputs,cap_inputs,baseline,blobs,targets,reference)
+-    except BaseException as exc:error={'type':type(exc).__name__,'detail':str(exc)[:2048]}
++    except BaseException as exc:error={'type':type(exc).__name__,'detail':str(exc)[:2048],'traceback':traceback.format_exc()}
+     report={'schema':'hepta.fc33.final05.parent-observation-host-verification.v1',
+             'state':'COMPLETE_FINITE_OBSERVATION_PRIVATELY_PRESERVED_NO_CLOSURE' if error is None else 'ORIGINALS_PRESERVED_VALIDATION_INCOMPLETE',
+             'actual_result':result_pin,'actual_actor':actor_pin,'actual_request':request_pin,'actual_original_targets':target_pin,'actual_failure_reference':ref_pin,'actual_lock_source':baseline_pin,

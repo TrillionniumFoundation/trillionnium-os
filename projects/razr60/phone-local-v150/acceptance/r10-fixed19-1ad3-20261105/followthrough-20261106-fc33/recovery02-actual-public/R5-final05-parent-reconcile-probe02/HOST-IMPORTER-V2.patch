@@ -1,0 +1,20 @@
+--- import_parent_observer_host.py
++++ import_parent_observer_host_v2.py
+@@ -10,7 +10,7 @@
+ BASE=Path('/home/alex/razr60-local-model-v150')
+ LABEL='ng-fc33-final05-surviving-parents-readonly02'
+ OUT=BASE/'fc33-final05-surviving-parents-readonly02-import01'
+-RESULT_PIN=(195248,'d0d2726adb89a6e29c6ed054972c4ef9131402a521cdfdfdfdf1196284dcd0c0e4')
++RESULT_PIN=(195248,'d0d2726adb89a6e29c6ed054972c4ef9131402a521cdfdfdf1196284dcd0c0e4')
+ REQUEST_PIN=(28145,'e7afd47d4f41b18fe5745de2c2c32eabb8d771b54f7354fd64e89ed54fa45fbf')
+ SOURCE_PIN=(91164,'0af051db4502e1655c5e3eb1580ff6cd981fae794dc6cb41a56e1704bd490acc')
+ INPUTS_PIN=(16641,'f057b3fd8d42db1ade3d0c24b23ae90982bfe3bedf469d535a92d42ad4072c8e')
+@@ -153,6 +153,8 @@
+             'unknown_foreign_cleanup_not_admitted':True,'scope_closure':False,'cleanup_authorized':False}
+ 
+ def main():
++    for n,h in (RESULT_PIN,REQUEST_PIN,SOURCE_PIN,INPUTS_PIN,CAP_PIN,TARGETS_PIN,REFERENCE_PIN):
++        need(type(n) is int and n>0 and len(h)==64 and all(c in '0123456789abcdef' for c in h),'complete fixed host pin grammar')
+     result_raw,result_pin=read(BASE/'operations'/LABEL/'result.json',RESULT_PIN)
+     op=strict(result_raw);need(op['label']==LABEL and op['status']=='command_exited' and op['model_decision'] is False and op['native_task_result'] is False,'actual one observed operator operation')
+     actor_raw,actor_pin=read(BASE/'ops/phone_once.py',(5652,'179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22'))

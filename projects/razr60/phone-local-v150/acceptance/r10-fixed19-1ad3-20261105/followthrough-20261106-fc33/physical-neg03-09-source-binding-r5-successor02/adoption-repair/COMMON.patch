@@ -1,0 +1,86 @@
+--- reference/physical_fault_common.original.py
++++ source/physical_fault_common.py
+@@ -153,7 +153,8 @@
+     consumer=originals.read(plan['consumer'],4*1024*1024)
+     readiness=originals.read(plan['readiness'],4*1024*1024)
+     policy=originals.read(plan['actual_policy'],16*1024*1024)
+-    adoption=strict(originals.read(plan['policy_adoption'],16*1024*1024))
++    adoption_raw=originals.read(plan['policy_adoption'],16*1024*1024)
++    adoption=strict(adoption_raw)
+     need(runtime.get('revision')=='r10-r1-fc33-native-bound-v3-r5' and len(runtime['files'])==38 and
+          runtime.get('actual_combination_generated') is True and
+          runtime.get('current_policy_sha256')==sha(policy) and
+@@ -165,24 +166,38 @@
+          literal(consumer,'CURRENT_POLICY_ADOPTION_SHA')==plan['policy_adoption']['sha256'] and
+          literal(readiness,'BOUNDARY_CONSUMER_SHA256')==sha(consumer),
+          'actual_consumer_and_readiness_source_relationships')
+-    need(adoption.get('schema')=='hepta.runtime-properties-r10.policy-adoption.v1' and
+-         adoption.get('release_id')=='v150-r10-r1' and adoption.get('boot_id')==BOOT and
+-         adoption.get('actual_export')==plan['actual_policy'],'actual_policy_adoption_descriptor_relationship')
+-    decision=adoption.get('root_decision',{})
+-    need(decision.get('schema')=='hepta.root.runtime-properties-policy-adoption-decision.v1' and
+-         decision.get('decision')=='ADOPT_INDEPENDENTLY_VERIFIED_ACTUAL_EXPORTED_POLICY' and
+-         decision.get('actual_policy_sha256')==sha(policy) and
+-         all(decision.get(k) is False for k in ('automatic_adoption','service_start_admitted','component_qualified')),
+-         'explicit_actual_policy_decision_relationship')
+-    for key,source in (('root_scope_decision_sha256','root_scope_decision'),
+-        ('post_live_comparison_sha256','post_live_comparison'),('pre_live_expectation_sha256','pre_live_expectation')):
+-        row=adoption[source];originals.read(row,32*1024*1024)
+-        need(decision.get(key)==row['sha256'],'actual_adoption_original_link_'+key)
+-    need(decision.get('prior_boundary_sha256')==adoption.get('pre_policy_boundary',{}).get('sha256') and
+-         re.fullmatch('[0-9a-f]{64}',decision.get('actual_live_binding_sha256','')) and
+-         type(decision.get('permission_atoms')) is list and len(decision['permission_atoms'])==44 and
+-         all(type(a) is list and len(a)==5 and all(type(v) is str and v for v in a) for a in decision['permission_atoms']) and
+-         len({tuple(a) for a in decision['permission_atoms']})==44,'actual_adoption_original_boundary_and_atoms')
++    need(adoption.get('schema')=='hepta.parent-dir.policy-adoption.v1' and
++         adoption.get('release_id')=='v150-parent-dir-getattr-r1' and adoption.get('boot_id')==BOOT and
++         adoption.get('actual_export')==plan['actual_policy'],'actual_current_parent_dir_adoption_descriptor_relationship')
++    # The current consumer pins the complete file-callback-only adoption
++    # verifier. Its exact proof validates the retained parent, complete rule,
++    # one declared getattr delta, actual live capture and full post-live proof.
++    # This is the same API used by that consumer, never a schema union or a
++    # fabricated top-level list of the old generation's permission atoms.
++    verifier_sha=literal(consumer,'POLICY_VERIFIER_SHA')
++    verifier_bytes=literal(consumer,'POLICY_VERIFIER_BYTES')
++    need(type(verifier_sha)is str and re.fullmatch('[0-9a-f]{64}',verifier_sha) and
++         type(verifier_bytes)is int and 0<verifier_bytes<=131072,'exact_current_adoption_verifier_source_pin')
++    matches=[row for row in adoption['verification_originals'] if type(row)is dict and
++             row.get('sha256')==verifier_sha and row.get('bytes')==verifier_bytes]
++    need(len(matches)==1,'one_current_consumer_reviewed_adoption_verifier_original')
++    verifier_raw=originals.read(matches[0],131072)
++    need(len(verifier_raw)==verifier_bytes and sha(verifier_raw)==verifier_sha,
++         'complete_current_adoption_verifier_original')
++    verifier=module(verifier_raw,matches[0]['path'],'negative_current_policy_adoption')
++    summary=verifier.verify_adoption(adoption_raw,read_pinned=originals.read)
++    need(summary['current_adoption_sha256']==sha(adoption_raw)==plan['policy_adoption']['sha256'] and
++         summary['runtime_policy']=={'bytes':len(policy),'sha256':sha(policy)} and
++         summary['full_rule']==adoption['full_rule'] and
++         summary['root_scope_decision_sha256']==literal(consumer,'CURRENT_SCOPE_DECISION_SHA'),
++         'actual_current_adoption_complete_proof_matches_consumer_and_export')
++    need(summary['root_decision']==adoption['root_decision'] and
++         summary['current_policy_adoption']['schema']=='hepta.parent-dir.policy-adoption.v1' and
++         summary['current_policy_adoption']['boot_id']==BOOT and
++         summary['service_start_admitted']is False and summary['component_qualified']is False and
++         type(summary['phone_calls'])is int and summary['phone_calls']==0 and
++         type(summary['policy_writes'])is int and summary['policy_writes']==0,
++         'strict_actual_adoption_verification_does_not_grant_runtime_admission')
+     return runtime
+ 
+ 
+@@ -205,11 +220,13 @@
+     need({k:plan['actual_policy'][k] for k in ('bytes','sha256')}==final['live_policy'],
+          'actual_exported_policy_bytes')
+     adoption=strict(originals.read(plan['policy_adoption'],16*1024*1024))
+-    need(adoption.get('schema')=='hepta.runtime-properties-r10.policy-adoption.v1' and
++    need(adoption.get('schema')=='hepta.parent-dir.policy-adoption.v1' and
++         adoption.get('release_id')=='v150-parent-dir-getattr-r1' and
+          adoption.get('actual_export')==plan['actual_policy'] and
+-         adoption.get('root_decision',{}).get('decision')=='ADOPT_INDEPENDENTLY_VERIFIED_ACTUAL_EXPORTED_POLICY' and
++         adoption.get('root_decision',{}).get('schema')=='hepta.root.parent-dir.actual-policy-adoption-decision.v1' and
++         adoption['root_decision'].get('decision')=='ADOPT_INDEPENDENTLY_VERIFIED_ACTUAL_EXPORTED_POLICY' and
+          adoption['root_decision'].get('actual_policy_sha256')==plan['actual_policy']['sha256'],
+-         'actual_policy_adoption_descriptor_relationship')
++         'actual_current_parent_dir_adoption_descriptor_relationship')
+     fault,fb=load_members(originals,plan['fault_package'],'runtime_sources')
+     need(fault.get('schema')=='hepta.r10.signal-fault-package.v1' and len(fb)==8 and
+          sha(fb['source/active_runtime_r10.py'])==final['active_source_sha256'] and

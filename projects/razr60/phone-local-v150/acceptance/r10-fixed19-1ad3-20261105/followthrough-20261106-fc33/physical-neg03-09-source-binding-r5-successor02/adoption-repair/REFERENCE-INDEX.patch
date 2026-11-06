@@ -1,0 +1,14 @@
+--- reference/REVIEWED-INPUTS.original.json
++++ source/REVIEWED-INPUTS.json
+@@ -852,9 +852,9 @@
+       "sha256": "c5910c42d28b43872f510f1eac2cecfd9f6cf2653675baf3fbc728f85bcfbc8e"
+     },
+     {
+-      "bytes": 27001,
++      "bytes": 28157,
+       "path": "candidate/templates/physical-fault/physical_fault_common.py",
+-      "sha256": "6c85e9eee232e4b4662919cb78622bcb6bf216fc9b83aa613cf2141775a2941e"
++      "sha256": "60f5a7b64cf055db153fc20e49951866fabf3e7c0b2b28d29290fec4d722eae9"
+     }
+   ],
+   "historical_git_commit": "744fc422a28bd6f505701503bf0d113ab49d4634",

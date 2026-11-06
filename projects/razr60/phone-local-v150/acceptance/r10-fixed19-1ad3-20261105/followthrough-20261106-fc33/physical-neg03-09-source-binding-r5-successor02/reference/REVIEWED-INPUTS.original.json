@@ -1,0 +1,862 @@
+{
+  "candidate_sources_are_not_qualification": true,
+  "files": [
+    {
+      "bytes": 14897,
+      "path": "reference/component-physical-final02/package/README.md",
+      "sha256": "b16cf285d6f9d64fd248a4a4e801591155d9c7d40f266a233317e46f928812cd"
+    },
+    {
+      "bytes": 4973,
+      "path": "reference/component-physical-final02/package/SOURCE-MANIFEST.json",
+      "sha256": "e3d995a9a9550084cf9dd12cf4777298314bfe586b1f8d4df10a9440194c8510"
+    },
+    {
+      "bytes": 31813,
+      "path": "reference/component-physical-final02/package/reference/active_runtime_r10.original.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 68481,
+      "path": "reference/component-physical-final02/package/reference/capture_transport0374.original.py",
+      "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+    },
+    {
+      "bytes": 15724,
+      "path": "reference/component-physical-final02/package/reference/component_source_context.original.py",
+      "sha256": "2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d"
+    },
+    {
+      "bytes": 786,
+      "path": "reference/component-physical-final02/package/reference/geometry-assets/GIT-ORIGIN.json",
+      "sha256": "097473b50243d5566db2b2a6b74c40b60195a4cff8b9a1182684e227f214e7a2"
+    },
+    {
+      "bytes": 19356,
+      "path": "reference/component-physical-final02/package/reference/geometry-assets/synthetic.jpg",
+      "sha256": "e8e0d7d851b6079e29e86c69f176056bee2ed849540620f0505a34ddf0438521"
+    },
+    {
+      "bytes": 1191,
+      "path": "reference/component-physical-final02/package/reference/geometry-assets/synthetic.png",
+      "sha256": "4318a71128144b0e7da041731c3014192fffb4f1a15495eda8864a774c831d13"
+    },
+    {
+      "bytes": 1438,
+      "path": "reference/component-physical-final02/package/reference/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 29065,
+      "path": "reference/component-physical-final02/package/source/owned_capture.py",
+      "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+    },
+    {
+      "bytes": 12347,
+      "path": "reference/component-physical-final02/package/source/p4_component_dispatch_once.py",
+      "sha256": "e44191ad60d264504322e03933389264033e527dcd05978ef34c1c13a56b0ed7"
+    },
+    {
+      "bytes": 29295,
+      "path": "reference/component-physical-final02/package/source/physical_component_common.py",
+      "sha256": "9a722bc807bc6a3bd2c084b3f308ec1cea5656407da25faeeb95284ba9c9747f"
+    },
+    {
+      "bytes": 13551,
+      "path": "reference/component-physical-final02/package/source/restore_existing_rotation_once.py",
+      "sha256": "cf252f0ba5f35c5acdb74ee178000ce872bc0a484bd6da13f384d95724d76cf3"
+    },
+    {
+      "bytes": 24645,
+      "path": "reference/component-physical-final02/package/source/run_physical_component_once.py",
+      "sha256": "bd5cbd63e0a04b4697244e49c2a70fa528adb74f1ee4ffddab5fd07eb83adce8"
+    },
+    {
+      "bytes": 38480,
+      "path": "reference/component-physical-final02/package/source/verify_physical_component.py",
+      "sha256": "745869a88b0db60745800942d82e0ebd61927f2c996e8dbbf3746afd1e38dc89"
+    },
+    {
+      "bytes": 576,
+      "path": "reference/component-physical-final02/package/templates/COMP-01-ROOT-PLAN.template.json",
+      "sha256": "70717dd502fa57bd2306d7a368b1ca097ee02d856361dce939495e757338604f"
+    },
+    {
+      "bytes": 631,
+      "path": "reference/component-physical-final02/package/templates/NEG-03-ROOT-PLAN.template.json",
+      "sha256": "8ea458276633b384c7c7f31f34d979b8e29a4cfdba74fdaa17e2d5d0ac0c9159"
+    },
+    {
+      "bytes": 546,
+      "path": "reference/component-physical-final02/package/templates/NEG03-FIXTURE-PLAN.template.json",
+      "sha256": "08d570c8fae60088de1a50272b05f1f89c26b22ad4b2d4019038fa4a023aa1fd"
+    },
+    {
+      "bytes": 1245,
+      "path": "reference/component-physical-final02/package/validation/CAPTURE-DERIVATION.json",
+      "sha256": "d325f7e301777a4d176f9742996b27cf83a1235c9ac594f8cd050bdeb5713b2c"
+    },
+    {
+      "bytes": 944,
+      "path": "reference/component-physical-final02/package/validation/LITERAL-PATH-FIX.json",
+      "sha256": "f0761186f275802d34d3412f72c45b7115b99eccf0558cc269db190fe9072631"
+    },
+    {
+      "bytes": 708,
+      "path": "reference/component-physical-final02/package/validation/LITERAL-PATH-FIX.patch",
+      "sha256": "e78e17eb2d680af01e766092239b410239a6d63ee2ae19b0a7ea076a2fe4b204"
+    },
+    {
+      "bytes": 7370,
+      "path": "reference/component-physical-final02/package/validation/LOCAL-SOURCE-RESULT.json",
+      "sha256": "b68ff3c97fe38ed0f961208de6628b03627431b01a0281152bdb1ea0776b374d"
+    },
+    {
+      "bytes": 4267,
+      "path": "reference/component-physical-final02/package/validation/derive_owned_capture.py",
+      "sha256": "6b54c44096b9a262646471657e73ba09558dfda17d89b0516d2a9f42ee1c97c9"
+    },
+    {
+      "bytes": 17514,
+      "path": "reference/component-physical-final02/package/validation/test_source_boundaries.py",
+      "sha256": "3915995cad9ba764f41487d2752426bc500cca690a7b1b90786f4f7ec9bd8b54"
+    },
+    {
+      "bytes": 1078,
+      "path": "reference/cpu-cancel-compat-candidate01/package/HOST-PHASE.template.json",
+      "sha256": "00a1ff87bd21f177fbe4cff397a5e095c9145210e5b11f751a5419ba5cc78246"
+    },
+    {
+      "bytes": 7181,
+      "path": "reference/cpu-cancel-compat-candidate01/package/PHYSICAL-FAULT-CLOSURE-REUSE.md",
+      "sha256": "4e731c02a827bf8dc37a828e322c071e821688b9593e3b315a7700b0521f7bcd"
+    },
+    {
+      "bytes": 5709,
+      "path": "reference/cpu-cancel-compat-candidate01/package/README.md",
+      "sha256": "96bddb1a9984347c1660616804b73682490355bc30f4d166a4013431b0de5567"
+    },
+    {
+      "bytes": 5017,
+      "path": "reference/cpu-cancel-compat-candidate01/package/SOURCE-MANIFEST.json",
+      "sha256": "0e36fd00be0436bf0dcbd6babc7c8d1a2c268f05d72e51ab109646bac7851098"
+    },
+    {
+      "bytes": 5862,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/PARENT-INTERFACE.original.json",
+      "sha256": "6753197cd3b8d1780eebb27f3f2f3ab59fa62203a302118379f2cf6298f1fcef"
+    },
+    {
+      "bytes": 7317,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/PARENT-SOURCE-MANIFEST.original.json",
+      "sha256": "6d7920a771d790e66eb45c7469a7a68a253b9247f11b9986ff868f0e5835606d"
+    },
+    {
+      "bytes": 43958,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 37253,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/negative_originals.py",
+      "sha256": "939674588f6229e27b71581a45bbf5b92e53c7b71edf2dab836e1f83158ec8b2"
+    },
+    {
+      "bytes": 45952,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/root-Q2-53b5.original.py",
+      "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+    },
+    {
+      "bytes": 71820,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/root-capture-r8-50a5.original.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    {
+      "bytes": 15256,
+      "path": "reference/cpu-cancel-compat-candidate01/package/reference/root_cpu_negative.py",
+      "sha256": "29531f8f54716b6aa83f76a3007473b9b5a38f4fbd6b8f74d895bfa2a1d3a748"
+    },
+    {
+      "bytes": 43958,
+      "path": "reference/cpu-cancel-compat-candidate01/package/source/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 29465,
+      "path": "reference/cpu-cancel-compat-candidate01/package/source/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 44221,
+      "path": "reference/cpu-cancel-compat-candidate01/package/source/negative_originals.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    {
+      "bytes": 15256,
+      "path": "reference/cpu-cancel-compat-candidate01/package/source/root_cpu_negative.py",
+      "sha256": "d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0"
+    },
+    {
+      "bytes": 2292,
+      "path": "reference/cpu-negative-capture-generation-final01/package/INTERFACE.json",
+      "sha256": "fbc45ca9fc06aaac7383751e5938085976a4c09128c0c248be969e6e267dcf2e"
+    },
+    {
+      "bytes": 7469,
+      "path": "reference/cpu-negative-capture-generation-final01/package/README.md",
+      "sha256": "75ce3f179f365b27362cd61cd0f390a463f0077c043256adf9aae3b793c18909"
+    },
+    {
+      "bytes": 10723,
+      "path": "reference/cpu-negative-capture-generation-final01/package/SOURCE-MANIFEST.json",
+      "sha256": "b512a2b251cc8f3b567b4bd04cefdc21c79b5076fa52fe0d726a9162923cd8f6"
+    },
+    {
+      "bytes": 5017,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/CPU-CAPTURE-COMPATIBILITY-MANIFEST.original.json",
+      "sha256": "0e36fd00be0436bf0dcbd6babc7c8d1a2c268f05d72e51ab109646bac7851098"
+    },
+    {
+      "bytes": 1078,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/HOST-PHASE.template.original.json",
+      "sha256": "00a1ff87bd21f177fbe4cff397a5e095c9145210e5b11f751a5419ba5cc78246"
+    },
+    {
+      "bytes": 43958,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/close_cpu_negative.5c431.original.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 41788,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/derive_negative_operator_sources.6adb.original.py",
+      "sha256": "6adbfa234b88c1f9d6ab247e97fa40e98115c584a3d67c41975b06cf0739da4d"
+    },
+    {
+      "bytes": 29465,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/ledger_prefix_negative.7ed57.original.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 44221,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/negative_originals.3e17.original.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    {
+      "bytes": 8036,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/phone_chain_bridge.6694.original.py",
+      "sha256": "6694b106ee8ccf2177bf758367fda214f27b7ebfbea1611e11e67604a2bfd572"
+    },
+    {
+      "bytes": 45952,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/root-Q2-53b5.original.py",
+      "sha256": "53b5f9a3cd95a92b4aaa7382fcd890fc197c20a8a0106b7f49332e2ba3a67cc8"
+    },
+    {
+      "bytes": 71820,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/root-capture-r8-50a5.original.py",
+      "sha256": "50a500e0c1cc014d3d4043f8c86172bf0b6068719473eb5646aca818416ed649"
+    },
+    {
+      "bytes": 15256,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/root_cpu_negative.d7a2.original.py",
+      "sha256": "d7a2da229ac9d9a126d384979fe894c0d1ceb53d1fb5677b39464180411f94f0"
+    },
+    {
+      "bytes": 40788,
+      "path": "reference/cpu-negative-capture-generation-final01/package/reference/send_new_native_task_r5.5ab040.original.py",
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+    },
+    {
+      "bytes": 53525,
+      "path": "reference/cpu-negative-capture-generation-final01/package/source/derive_negative_operator_sources.py",
+      "sha256": "57f67089f6885b0e5bdcca96a4dc73c1821626854a51794964c0ce3f6c32cf09"
+    },
+    {
+      "bytes": 9860,
+      "path": "reference/cpu-negative-capture-generation-final01/package/source/prepare_negative_source_generation.py",
+      "sha256": "a7dfa4b865bd4babc3947fa92695cc2b773a1d4480e77d57c3f0a230bb172036"
+    },
+    {
+      "bytes": 330,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/COMP01-PLAN.template.json",
+      "sha256": "f09470ffbfd353ffea974ae53e4e987236ef0f00b2784e9225415bbe323987f5"
+    },
+    {
+      "bytes": 6198,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/INTERFACE.json",
+      "sha256": "0b4333feac658cdcd8f7edc53485d445c877adb4fc5ba25d86c5978f1c28c9cb"
+    },
+    {
+      "bytes": 1469,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/MANIFEST.json",
+      "sha256": "669b344d40cda3412f0eae806b1db53585342d07eee154fd766913ae889b59ce"
+    },
+    {
+      "bytes": 546,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/NEG03-PLAN.template.json",
+      "sha256": "af05b0c14b3faf44eaf0bbf632ff637a4407af59e03b5dfa57944cb843fb7008"
+    },
+    {
+      "bytes": 30154,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/reference/host_negative_runner.original.py",
+      "sha256": "32dd8e70d3b253748f6bfa1b068dd26497cb9ef530dcf5bad49caa5ba5d75d5f"
+    },
+    {
+      "bytes": 37318,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/reference/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 15724,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/source/component_source_context.py",
+      "sha256": "2f5e6169f66017bee29b32a4f05d9cb8a0936e01c36b7b1f59aa015ba1ffb02d"
+    },
+    {
+      "bytes": 18043,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/source/prepare_direct_return_component.py",
+      "sha256": "915f57d98934f216179806beefc213986df83e255e402c6d8a8f34fea6d123f0"
+    },
+    {
+      "bytes": 18636,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/component/source/verify_unqualified_geometry_fixture.py",
+      "sha256": "3cbc0d9d77629c2183f706fc897075a16952e4cb586f16fef29a65e521c81487"
+    },
+    {
+      "bytes": 60828,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/cpu/source.original.py",
+      "sha256": "88fd6ca9ed46e99082d30d25ba5b1aaf9cdc8d071cf0705c62ca933f50a1e531"
+    },
+    {
+      "bytes": 2517,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/MANIFEST.json",
+      "sha256": "fff728422175cc90a9e818b3b32da873c70c95de269994ebe9c097b770cfc619"
+    },
+    {
+      "bytes": 31813,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/active_runtime_r10.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 8053,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/cancel_phase.py",
+      "sha256": "36890bfb9dbbf324963a92c93e45d211a574fcb8e360c8e413669ce2ce607ed2"
+    },
+    {
+      "bytes": 6701,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 17449,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/observe_cancel_phase_r10.py",
+      "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+    },
+    {
+      "bytes": 17587,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/observe_carrier_r10.py",
+      "sha256": "1a94086416f3ea82efc04cd85b3a28cceff085201028f938c865e30bb41a90f0"
+    },
+    {
+      "bytes": 1438,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 3977,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/reviewed_page_projection.py",
+      "sha256": "96a1af463b205adf5baa544a9a27122fc7424e72fcc38e2fd4bcf26533ea7c93"
+    },
+    {
+      "bytes": 32953,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/fault/source/signal_fault_once_r10.py",
+      "sha256": "cd5100c0f12dc77b275a55893aa31fdc7d6b5ec61839635b70c0c9a11f0cbb1e"
+    },
+    {
+      "bytes": 31418,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/p4/source.original.py",
+      "sha256": "a66d5e4de27912716748f53a599c513ea46bb81415d64ec184e91e4744c122c2"
+    },
+    {
+      "bytes": 44102,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/phone/source.original.py",
+      "sha256": "79ed15ea8b23662c091bd64bcdc63d972b18cd9552f5af9fa2d825ddd75cd082"
+    },
+    {
+      "bytes": 4262,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/MANIFEST.json",
+      "sha256": "65720e417594205b45172fe509f3419d607d3dbf1e579b2a17faa8b40315ca10"
+    },
+    {
+      "bytes": 31813,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/active_runtime_r10.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 26407,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/cancel_native_once_r10.py",
+      "sha256": "d973891aa125ce2deb2237064fbc101d5d9d915d9e4bd75e25e4da298eecd5f1"
+    },
+    {
+      "bytes": 8053,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/cancel_phase.py",
+      "sha256": "36890bfb9dbbf324963a92c93e45d211a574fcb8e360c8e413669ce2ce607ed2"
+    },
+    {
+      "bytes": 4116,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/decode_client_state.py",
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+    },
+    {
+      "bytes": 6701,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 17449,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/observe_cancel_phase_r10.py",
+      "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+    },
+    {
+      "bytes": 1438,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 3977,
+      "path": "reference/cpu-negative-capture-generation-final01/package/validation/parent-source-fixtures/ui/source/reviewed_page_projection.py",
+      "sha256": "96a1af463b205adf5baa544a9a27122fc7424e72fcc38e2fd4bcf26533ea7c93"
+    },
+    {
+      "bytes": 2761,
+      "path": "reference/host-five-final01/README.md",
+      "sha256": "0cbbc15c49b1b12dfa22d24488efb2600eda267f719febfcadf4e8e849788aca"
+    },
+    {
+      "bytes": 4616,
+      "path": "reference/host-five-final01/evidence/HOST-VERIFICATION.original.json",
+      "sha256": "b6d658adac84fef782a4edcef1219c869af709d317e8a204c19a732d57f7c395"
+    },
+    {
+      "bytes": 6010,
+      "path": "reference/host-five-final01/evidence/RUN-RESULT.original.json",
+      "sha256": "00b71333f72d5c6e5e25b664367d986d22cdf3e46f60345ea9a01bf82c39f5ab"
+    },
+    {
+      "bytes": 1420,
+      "path": "reference/host-five-final01/package/DERIVATION.json",
+      "sha256": "aef8c34d8c465c6056f5a01dd2c0f0dfe4996c77e5edaf04d1b14814ac459638"
+    },
+    {
+      "bytes": 2259,
+      "path": "reference/host-five-final01/package/GIT-ORIGINALS.json",
+      "sha256": "1854a1684271326e4ebe6a29fcba893cefea350a7ba8dae373c8530034d3ebc0"
+    },
+    {
+      "bytes": 7306,
+      "path": "reference/host-five-final01/package/README.md",
+      "sha256": "76ae5a437ecb86e09350bcd4e64e0325eda6d7f60129b30e538424b32ef2ae5d"
+    },
+    {
+      "bytes": 3716,
+      "path": "reference/host-five-final01/package/SOURCE-MANIFEST.json",
+      "sha256": "32299b1bd9015e107a9492b6ab1e8baacfea86bfe4d990b265d10eae7ab2475b"
+    },
+    {
+      "bytes": 37318,
+      "path": "reference/host-five-final01/package/reference/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 3130,
+      "path": "reference/host-five-final01/package/reference/r7-r3/README.r7-r2.original.md",
+      "sha256": "150615f7733e1847c39d284e791c7c938fee7adecd4a2548c986091acb8c548b"
+    },
+    {
+      "bytes": 6171,
+      "path": "reference/host-five-final01/package/reference/r7-r3/SOURCE-SEAL.PUBLIC.json",
+      "sha256": "d1ec59f6c80f27bb2522f00b69a8af983303fdeef4b922b58c98669e17d8134d"
+    },
+    {
+      "bytes": 2299,
+      "path": "reference/host-five-final01/package/reference/r7-r3/counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 7559,
+      "path": "reference/host-five-final01/package/reference/r7-r3/execute_namespace_once.py",
+      "sha256": "d9dce9dd6c6612fc5a85ff07a1b321bc0d08c7ff9dc4c24e077771ee3bf0de5f"
+    },
+    {
+      "bytes": 5371,
+      "path": "reference/host-five-final01/package/reference/r7-r3/fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 22963,
+      "path": "reference/host-five-final01/package/reference/r7-r3/frozen_fixture_support.py",
+      "sha256": "f43ca2a3009405cb1a7b58e7fa43808f8d1fba4632da525468972c6e1f4b5cdb"
+    },
+    {
+      "bytes": 26214,
+      "path": "reference/host-five-final01/package/reference/r7-r3/run_fault_cases.py",
+      "sha256": "6163449a9c92fd370fb5e27b190461ae46f2bfe11c180ea7ca1987bdb190b178"
+    },
+    {
+      "bytes": 2975,
+      "path": "reference/host-five-final01/package/reference/r7-r3/run_fixed_faults_once.py",
+      "sha256": "b8f68ae2f9d41d7a5509cd8bbcb8987bceb4277accd66cc92d545b1204a45ea3"
+    },
+    {
+      "bytes": 17390,
+      "path": "reference/host-five-final01/package/reference/tool_client_r6.py",
+      "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f"
+    },
+    {
+      "bytes": 2299,
+      "path": "reference/host-five-final01/package/source/counter_effect.py",
+      "sha256": "53aa97adbba5ad9df7fe9e21a00bd5fadcf41aa3d2211521826e6dd00b80f59b"
+    },
+    {
+      "bytes": 5371,
+      "path": "reference/host-five-final01/package/source/fixture_server.py",
+      "sha256": "4848e66e94115f64baddc47b575aab53f34d947e7cebc89173f604870504a049"
+    },
+    {
+      "bytes": 68481,
+      "path": "reference/host-five-final01/package/source/host_capture_transport.py",
+      "sha256": "0374a8858a26114a6184e2e40949e33dbb9b0014117ce4637b55b72e7629a5bd"
+    },
+    {
+      "bytes": 21183,
+      "path": "reference/host-five-final01/package/source/host_lifecycle.py",
+      "sha256": "19e0ac1e1d8820eddcea6420779e272529ee27d81d802219b74bdb4c71909784"
+    },
+    {
+      "bytes": 15960,
+      "path": "reference/host-five-final01/package/source/lifecycle_support.py",
+      "sha256": "5735be88424d4243c0eb77833b6d90c825ed7a0b1697d22a6cdb28975dbdcdfa"
+    },
+    {
+      "bytes": 27301,
+      "path": "reference/host-five-final01/package/source/run_fault_cases.py",
+      "sha256": "1f2ea3fcba45099acd3ae1b488fd0afe05d0bffd0fef50ec2ccf87e0011eeafc"
+    },
+    {
+      "bytes": 28759,
+      "path": "reference/host-five-final01/package/source/verify_host_originals.py",
+      "sha256": "b4d22fc4964bc236c6e3108d4c0fc509cb98d8e4f61d5c5bd679ac7a225b5e98"
+    },
+    {
+      "bytes": 785,
+      "path": "reference/physical-fault-final01/package/FREEZE-INPUT.template.json",
+      "sha256": "3a98f9a3edc4c4e20ee732fd541b74d919f221d7ef4e8e705ec15b654b6d113d"
+    },
+    {
+      "bytes": 2353,
+      "path": "reference/physical-fault-final01/package/INTERFACE.json",
+      "sha256": "098389f44ac306aa6b961a55d2e19deea5fb1ea5df251c8e0e5889d3485e8cf0"
+    },
+    {
+      "bytes": 1298,
+      "path": "reference/physical-fault-final01/package/PREPARE-INPUT.template.json",
+      "sha256": "aee1a9fee62187254e33af21643698793474be6496667a61bf67ec46e2e5b229"
+    },
+    {
+      "bytes": 14369,
+      "path": "reference/physical-fault-final01/package/README.md",
+      "sha256": "5efc10cf3935a01ffc10e0c00b03338a97e141ebfd0efc80d7b30caee62872f0"
+    },
+    {
+      "bytes": 8432,
+      "path": "reference/physical-fault-final01/package/SOURCE-MANIFEST.json",
+      "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+    },
+    {
+      "bytes": 10635,
+      "path": "reference/physical-fault-final01/package/reference/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+      "sha256": "2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a"
+    },
+    {
+      "bytes": 31813,
+      "path": "reference/physical-fault-final01/package/reference/active_runtime_r10.original.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 44102,
+      "path": "reference/physical-fault-final01/package/reference/capture-negative-phone-r7.py",
+      "sha256": "79ed15ea8b23662c091bd64bcdc63d972b18cd9552f5af9fa2d825ddd75cd082"
+    },
+    {
+      "bytes": 31418,
+      "path": "reference/physical-fault-final01/package/reference/capture-p4-cancel-r7.py",
+      "sha256": "a66d5e4de27912716748f53a599c513ea46bb81415d64ec184e91e4744c122c2"
+    },
+    {
+      "bytes": 43958,
+      "path": "reference/physical-fault-final01/package/reference/close_cpu_negative.py",
+      "sha256": "5c4314195c84c30352c21e381957a922676ea16eadd8a86450da59012f949ce5"
+    },
+    {
+      "bytes": 41173,
+      "path": "reference/physical-fault-final01/package/reference/close_original_r10.original.py",
+      "sha256": "19af371cb5271ea6b3f8c2929ab969357aee07d14d498dcf50f57e9b3bbc9e75"
+    },
+    {
+      "bytes": 56572,
+      "path": "reference/physical-fault-final01/package/reference/collect_business_evidence.original.py",
+      "sha256": "b2774a4669a60d576fe3f19ea00fdec7119b5e5d36a6b591853bc686dbb5de3f"
+    },
+    {
+      "bytes": 60828,
+      "path": "reference/physical-fault-final01/package/reference/cpu-originals-r2-ledger-prefix.py",
+      "sha256": "88fd6ca9ed46e99082d30d25ba5b1aaf9cdc8d071cf0705c62ca933f50a1e531"
+    },
+    {
+      "bytes": 4116,
+      "path": "reference/physical-fault-final01/package/reference/decode_client_state.py",
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+    },
+    {
+      "bytes": 2517,
+      "path": "reference/physical-fault-final01/package/reference/fault-package.original.json",
+      "sha256": "fff728422175cc90a9e818b3b32da873c70c95de269994ebe9c097b770cfc619"
+    },
+    {
+      "bytes": 29100,
+      "path": "reference/physical-fault-final01/package/reference/ledger_prefix_audit.original.py",
+      "sha256": "022b9321d19563d2405051f796dfebe517045333627babe34aeeb810754647f4"
+    },
+    {
+      "bytes": 29465,
+      "path": "reference/physical-fault-final01/package/reference/ledger_prefix_negative.py",
+      "sha256": "7ed57c6579eb16abc78993793be09956cc758c4c017228b65247260a6d8affa6"
+    },
+    {
+      "bytes": 1493,
+      "path": "reference/physical-fault-final01/package/reference/local-config-r10-r1.json",
+      "sha256": "780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34"
+    },
+    {
+      "bytes": 37375,
+      "path": "reference/physical-fault-final01/package/reference/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 44221,
+      "path": "reference/physical-fault-final01/package/reference/negative_originals.py",
+      "sha256": "3e17e2a831256222691f06cef274a6c684534ef7a41bc0d10d694c07d320f78b"
+    },
+    {
+      "bytes": 37318,
+      "path": "reference/physical-fault-final01/package/reference/original-protocol.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 12347,
+      "path": "reference/physical-fault-final01/package/reference/p4_component_dispatch_once.py",
+      "sha256": "e44191ad60d264504322e03933389264033e527dcd05978ef34c1c13a56b0ed7"
+    },
+    {
+      "bytes": 5652,
+      "path": "reference/physical-fault-final01/package/reference/phone_once.py",
+      "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+    },
+    {
+      "bytes": 24731,
+      "path": "reference/physical-fault-final01/package/reference/preserved_ui_package_phase_r7.py",
+      "sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b"
+    },
+    {
+      "bytes": 40952,
+      "path": "reference/physical-fault-final01/package/reference/send_new_native_guard_task_r10_r4.py",
+      "sha256": "aafd40345c6dc35b7b7d34ab8b04c860ebf17d326d842ed733d0404cd0a051ad"
+    },
+    {
+      "bytes": 40788,
+      "path": "reference/physical-fault-final01/package/reference/send_new_native_task_r5.py",
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+    },
+    {
+      "bytes": 18666,
+      "path": "reference/physical-fault-final01/package/reference/sender_native_guard_ready_r10_r4.py",
+      "sha256": "f3b83e55a07edd370946c40cec8694f310c9713082604646d264b625e7314d99"
+    },
+    {
+      "bytes": 23211,
+      "path": "reference/physical-fault-final01/package/reference/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    },
+    {
+      "bytes": 19990,
+      "path": "reference/physical-fault-final01/package/source/capture_fault_p4.py",
+      "sha256": "fde708a3c10ead122f68ac1925b0ad516d58bc14a148dd1d1f9670d2d7134f5a"
+    },
+    {
+      "bytes": 46032,
+      "path": "reference/physical-fault-final01/package/source/capture_fault_phone.py",
+      "sha256": "e4ba939e88cd05b29f791e6d77715ab2944fdb8308cc242a7b4a6ad4a8930760"
+    },
+    {
+      "bytes": 14747,
+      "path": "reference/physical-fault-final01/package/source/fault_originals.py",
+      "sha256": "8e969725a5e86ffdfadcc104093a15909fd96004a23d99473a0a7821338a8bc0"
+    },
+    {
+      "bytes": 5757,
+      "path": "reference/physical-fault-final01/package/source/fault_projections.py",
+      "sha256": "844edadca12ab68760a2f15df0d032f1134f971d51627d164404140c3a649c8c"
+    },
+    {
+      "bytes": 10330,
+      "path": "reference/physical-fault-final01/package/source/freeze_physical_fault.py",
+      "sha256": "dc18471ec336b5ebb649d82cb9a58a2a6d66cf31fbca13f653d4b9e8da6b0466"
+    },
+    {
+      "bytes": 29469,
+      "path": "reference/physical-fault-final01/package/source/ledger_prefix_fault.py",
+      "sha256": "d64c68e71a0bf578f60d2277e7e3d131c4469014b5fc5d9cba2bf11e2b83c76a"
+    },
+    {
+      "bytes": 29065,
+      "path": "reference/physical-fault-final01/package/source/owned_capture.py",
+      "sha256": "f12a251542894d0e8c0dedc9d62eb96d4f39e2b1d563f849c2f60e6ee02580e3"
+    },
+    {
+      "bytes": 12325,
+      "path": "reference/physical-fault-final01/package/source/p4_fault_dispatch_once.py",
+      "sha256": "361ed5f0da4664e7e38ecc2f1bc7c0139963dbd4740e91ea034e27a551f73d24"
+    },
+    {
+      "bytes": 26980,
+      "path": "reference/physical-fault-final01/package/source/physical_fault_common.py",
+      "sha256": "13604af4cf1a053abda021c506515b7cdaf181529f14da5b8bb26ed4a9a93df3"
+    },
+    {
+      "bytes": 10280,
+      "path": "reference/physical-fault-final01/package/source/prepare_physical_fault.py",
+      "sha256": "8e1b686353eda8a45c86ed21c537f191208b982a901ab242090ca476718f6c37"
+    },
+    {
+      "bytes": 24658,
+      "path": "reference/physical-fault-final01/package/source/run_physical_fault_once.py",
+      "sha256": "40be35991b829c1d5eaf981c74d419e14a1ddf2e3fe5e6eca9f889b995725d95"
+    },
+    {
+      "bytes": 8661,
+      "path": "reference/physical-fault-final01/package/source/verify_fault_once.py",
+      "sha256": "259fff567338f9ea70b10c62ff17d6a1c1dedef02c82dbb1851d69a013d4ad13"
+    },
+    {
+      "bytes": 71672,
+      "path": "reference/physical-fault-final01/package/source/verify_physical_fault.py",
+      "sha256": "8aa7ca90e6c3c8a587e43ea2864c4b25a38ffa55b5062a7c4a5ae6873a2c61da"
+    },
+    {
+      "bytes": 23401,
+      "path": "reference/physical-fault-final01/package/source/watch_physical_fault_once.py",
+      "sha256": "acd9d5c930685c2509ac4eb08929bf92755680a8e891ca60546485c68d4ecce9"
+    },
+    {
+      "bytes": 31813,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/active_runtime_r10.py",
+      "sha256": "f1a68fcc420799a7221019afdcda046a8d297b23d674e1e2642e888df26635dd"
+    },
+    {
+      "bytes": 8053,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/cancel_phase.py",
+      "sha256": "36890bfb9dbbf324963a92c93e45d211a574fcb8e360c8e413669ce2ce607ed2"
+    },
+    {
+      "bytes": 6701,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 17449,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/observe_cancel_phase_r10.py",
+      "sha256": "0418a96677d6561ef44f03a59f62997fb616ca0f091285c9ab9bf7cfb4885cb9"
+    },
+    {
+      "bytes": 17587,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/observe_carrier_r10.py",
+      "sha256": "1a94086416f3ea82efc04cd85b3a28cceff085201028f938c865e30bb41a90f0"
+    },
+    {
+      "bytes": 1438,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/production-pins.json",
+      "sha256": "73963fdcea527cdbc3628bdeff5918f7106afbaf095fb183e4b199391e46a7a5"
+    },
+    {
+      "bytes": 3977,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/reviewed_page_projection.py",
+      "sha256": "96a1af463b205adf5baa544a9a27122fc7424e72fcc38e2fd4bcf26533ea7c93"
+    },
+    {
+      "bytes": 32953,
+      "path": "reference/physical-fault-final01/package/validation/operator-source-fixture/source/signal_fault_once_r10.py",
+      "sha256": "cd5100c0f12dc77b275a55893aa31fdc7d6b5ec61839635b70c0c9a11f0cbb1e"
+    },
+    {
+      "bytes": 14060,
+      "path": "reference/physical-fault-final01/package/validation/test_freeze_prepare_interfaces.py",
+      "sha256": "ec164acbd299450fcbb0d18fd249a2db1541f0b3e49f9d0ed90bc3078bd30d3f"
+    },
+    {
+      "bytes": 14323,
+      "path": "reference/physical-fault-final01/package/validation/test_physical_fault_source.py",
+      "sha256": "4e92486cb339046c4591b72ae1bd09b60ddde02d6e1a53b0c3e9285dfacec0fc"
+    },
+    {
+      "bytes": 13670,
+      "path": "reference/r7-r3-host-negative/namespace-geometry-r1/geometry_negative_runner.py",
+      "sha256": "72ee53eb35557b8c6735751823dc5a9f2eee40e05ffe088bbdbb0b9cf665b848"
+    },
+    {
+      "bytes": 7127,
+      "path": "reference/r7-r3-host-negative/namespace-service-r1/execute_namespace_once.py",
+      "sha256": "593f2f28948726bda8e8f428dc0f7af92acf7f2fa722c04f004992ac87fd9809"
+    },
+    {
+      "bytes": 4338,
+      "path": "reference/r7-r3-host-negative/namespace-service-r1/fixture_server.py",
+      "sha256": "6b6d2486786d27f916e3268f3e189d836fc6ed1164933cd6cf5509574beb6f12"
+    },
+    {
+      "bytes": 22963,
+      "path": "reference/r7-r3-host-negative/namespace-service-r1/service_negative_runner.py",
+      "sha256": "5d296fb8a2541d5494cd3aa86e5ce64a1f2288991369f5848276c72a70d6e2bc"
+    },
+    {
+      "bytes": 24236,
+      "path": "candidate/component/verify_unqualified_geometry_fixture.py",
+      "sha256": "5ae3f51d89d8e1d36be07846b34b09f652fdf39db0db0eee98ed0f194c720a2d"
+    },
+    {
+      "bytes": 17507,
+      "path": "candidate/shared/observe_cancel_phase_r10.py",
+      "sha256": "5d9839ae004a91857b5f9ca978d25fb0b13087c0af57d0ea850a842e6f28d540"
+    },
+    {
+      "bytes": 44221,
+      "path": "candidate/templates/closure/negative_originals.py",
+      "sha256": "7ab22a7f8dbcb4fa3149d7254b88de273dc9f585f3d4d9c893bbab0b1daed7dd"
+    },
+    {
+      "bytes": 30055,
+      "path": "candidate/templates/physical-component/physical_component_common.py",
+      "sha256": "c5910c42d28b43872f510f1eac2cecfd9f6cf2653675baf3fbc728f85bcfbc8e"
+    },
+    {
+      "bytes": 27001,
+      "path": "candidate/templates/physical-fault/physical_fault_common.py",
+      "sha256": "6c85e9eee232e4b4662919cb78622bcb6bf216fc9b83aa613cf2141775a2941e"
+    }
+  ],
+  "historical_git_commit": "744fc422a28bd6f505701503bf0d113ab49d4634",
+  "schema": "fc33.negative-operator-reviewed-reference-set.v1"
+}

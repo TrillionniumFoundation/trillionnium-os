@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.fc33.recovery02-host-reader-projection-derivation.v1",
+  "parent": {
+    "bytes": 23555,
+    "sha256": "d4ca0e0fdf87890df86055fa1361ce1ea4c884e9200248cdcf007c1112d0d575"
+  },
+  "candidate": {
+    "bytes": 29656,
+    "sha256": "3228d058bebd9f847b86760655978c265295a6de3bdd80898396d85419766060"
+  },
+  "complete_inverse": true,
+  "actual_source_or_result_bound": false,
+  "phone_calls": 0,
+  "only_added_contract": "Exact separately retained reconciliation bytes, independent finite parent/absent-fixture projection, explicit output hash bindings; old recovery event and whole44 validators unchanged."
+}

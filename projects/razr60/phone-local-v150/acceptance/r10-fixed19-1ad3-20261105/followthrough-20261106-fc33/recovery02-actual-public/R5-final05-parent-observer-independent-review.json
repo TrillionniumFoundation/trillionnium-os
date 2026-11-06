@@ -1,0 +1,50 @@
+{
+  "actual97_current_files_proven": false,
+  "actual_failure_reference": {
+    "bytes": 12129,
+    "sha256": "5dd20c0bb2fbc049dea1b168cb83a730a3abc9916677be5e47ac81bbd7518427"
+  },
+  "all11_xml_descriptors_by_path_equal_unchanged_original_targets": true,
+  "cleanup_authority": false,
+  "complete_xz_loader_matches_full_source": true,
+  "conclusion": "NO_CONCRETE_READONLY_OBSERVER_BLOCKER_IDENTIFIED_IN_SELECTED_SOURCE",
+  "extension": {
+    "bytes": 8091,
+    "sha256": "cb9b0c9e89017eb88276bb6e552285c209cb2da48ab584b75a33ef415140bfe3"
+  },
+  "extension_and_original_helper_unchanged": true,
+  "four_reference_profiles_equal_exact_old_profiles_plus_complete_actual_failure_diffs": true,
+  "inputs": {
+    "bytes": 16641,
+    "sha256": "f057b3fd8d42db1ade3d0c24b23ae90982bfe3bedf469d535a92d42ad4072c8e"
+  },
+  "limits": [
+    "This observer does not refresh44inventory,private82/transport4 or process liveness.",
+    "Noactual phone result exists from this review.",
+    "Thefull5683048-byte upstream failure preflight was not independently reread by this reviewer;itslocal exact reference was checked against the retained complete difference original."
+  ],
+  "original_helper": {
+    "bytes": 63646,
+    "sha256": "70c4dc710368da58f609208879f1fb83af5e0b428b712cfd31b8bced1907bc44"
+  },
+  "phone_calls_by_reviewer": 0,
+  "request": {
+    "bytes": 28145,
+    "sha256": "e7afd47d4f41b18fe5745de2c2c32eabb8d771b54f7354fd64e89ed54fa45fbf"
+  },
+  "reviewed_logic": [
+    "Calls only unchanged original read/identity/existing-lock helpers,never C.capture or either old main.",
+    "15existing lock groups held around two complete five-parent windows,11exact XML byte/full9 originals,twofixed foreign audit originals and held/reopened ENOENT.",
+    "Two common-parent aliases match exact full9/names/label;fresh fixture parent equals same complete XML directory profile in both windows.",
+    "Reference time/names are explicitly not admission;onlyfirst5 metadata and label constrain identity.Fresh output remains observation and grants no mutation.",
+    "Read/output/deadline/resource failures remain unknown;own timer only,noexternal signals/UI/model/native/file changes."
+  ],
+  "schema": "hepta.fc33.parent-reconciliation-probe-independent-static-review.v1",
+  "source": {
+    "bytes": 91164,
+    "sha256": "0af051db4502e1655c5e3eb1580ff6cd981fae794dc6cb41a56e1704bd490acc"
+  },
+  "two_foreign_audit_paths_exact_observed_names": true,
+  "xml_order": "same unique11 files; observer uses numeric sequence1..11 while original targets are lexical",
+  "xml_reference_has_only_observed_full9_and_label_not_invented_names": true
+}

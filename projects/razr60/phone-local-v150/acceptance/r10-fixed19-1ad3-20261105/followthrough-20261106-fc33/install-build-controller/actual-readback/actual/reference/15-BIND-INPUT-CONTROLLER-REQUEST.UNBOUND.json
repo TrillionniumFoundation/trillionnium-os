@@ -1,0 +1,17 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/source/bind_actual_controller_input.py",
+    "--inputs",
+    null,
+    "--inputs-bytes",
+    null,
+    "--inputs-sha256",
+    null
+  ],
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": null,
+  "timeout_seconds": 60
+}

@@ -1,0 +1,10 @@
+{
+  "actual": {
+    "capture_carriers": null,
+    "capture_plan": null,
+    "retention_output_root": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "retention_finish"
+}

@@ -1,0 +1,395 @@
+{
+  "complete_local_sha256_and_git_blob_sha1_match": true,
+  "file_bytes": 2093297,
+  "file_count": 55,
+  "files": [
+    {
+      "blob_sha": "0aa013b9f926531fdd1347d2b84788c96075c187",
+      "bytes": 1631,
+      "local_path": "review/R5-final05-recovery02-independent-complete-source-review.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/independent-reviews/R5-final05-recovery02-independent-complete-source-review.json",
+      "sha256": "3fed0c2fe0336ba6ac346befa19d174c15ee6708cfb715d05437fa68c90251b8"
+    },
+    {
+      "blob_sha": "a1428dba062443e188b5a0479292afa535ecc052",
+      "bytes": 2215,
+      "local_path": "review/R5-final05-recovery02-independent-host-guard-review.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/independent-reviews/R5-final05-recovery02-independent-host-guard-review.json",
+      "sha256": "3106dd9d93c3a942aadde3693ad8a3095bdfdca9f66d174ba5048b2118e5ef81"
+    },
+    {
+      "blob_sha": "b68d0a40072e7efeeb3920e61b30975a9dcc9584",
+      "bytes": 2062,
+      "local_path": "review/R5-final05-recovery02-independent-interface-review.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/independent-reviews/R5-final05-recovery02-independent-interface-review.json",
+      "sha256": "621112fcaaee41080bb23154bf5ca8f1c434f8462ad6b3bd2af22074545d1bbe"
+    },
+    {
+      "blob_sha": "50a6f82672fb05b6b3f88771c20b21ffbf28e43c",
+      "bytes": 5885,
+      "local_path": "review/R5-negative-source-binding02/BINDING-PROOF.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/BINDING-PROOF.json",
+      "sha256": "6b0cca8b3f1f8e77a6641b56902d6b1f7a02ba1f06d9af8cf4df75f8026c1fec"
+    },
+    {
+      "blob_sha": "482148d9d4eda0be77971d03aa173428ad55c602",
+      "bytes": 46727,
+      "local_path": "review/R5-negative-source-binding02/BYTE-BOUNDS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/BYTE-BOUNDS.json",
+      "sha256": "c18315a110a0e7968e3cbe1a75c0adca2b1eb7397404d4f790be9d241635c492"
+    },
+    {
+      "blob_sha": "d7847dfe00b3b7ce1f68f330d89533b13104c36b",
+      "bytes": 1188,
+      "local_path": "review/R5-negative-source-binding02/CONSTRUCTOR-COMMENT.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/CONSTRUCTOR-COMMENT.patch",
+      "sha256": "9a1fb35f480daa745a9e8518a7f93a00803f5dba0219e1a8b7dbf22bfcb21b30"
+    },
+    {
+      "blob_sha": "bd43ac8fdaaad2888a5249df465244c4e7e8a3d4",
+      "bytes": 2305,
+      "local_path": "review/R5-negative-source-binding02/NEG03-PROTOCOL-BOUNDARY.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/NEG03-PROTOCOL-BOUNDARY.json",
+      "sha256": "e27684afe43a341a2a84d32dc7c44c89a1126fa0b353f4252b7788ab4236ff24"
+    },
+    {
+      "blob_sha": "aaa6b79a6fb0b0ac8f565e52c9d4c1ac2b263c9a",
+      "bytes": 9345,
+      "local_path": "review/R5-negative-source-binding02/PACKAGE-MANIFEST.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/PACKAGE-MANIFEST.json",
+      "sha256": "d5d8bcbad3e286bdce013194c57cdb64b6e3e7ed491a0bd28981638e50d62833"
+    },
+    {
+      "blob_sha": "3f80db848fd619b67c1c8dbfef3e39b8e6460671",
+      "bytes": 498,
+      "local_path": "review/R5-negative-source-binding02/PROCESS-REQUEST.UNEXECUTED.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/PROCESS-REQUEST.UNEXECUTED.json",
+      "sha256": "31cc0e8b0982ce8bbb2a504af587f504c94b6d327865d1fd8d05e4afffd874d8"
+    },
+    {
+      "blob_sha": "b067c7a497f1e831005487ed9e12bac4198180f5",
+      "bytes": 1047,
+      "local_path": "review/R5-negative-source-binding02/PUBLISHER-DERIVATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/PUBLISHER-DERIVATION.json",
+      "sha256": "2ca897be1b57f4567549df88f4c620982522848f4a1523b728e8ac4002e32b55"
+    },
+    {
+      "blob_sha": "dea22ece2c604a7cdc0160f43d289f7af0669f83",
+      "bytes": 3734,
+      "local_path": "review/R5-negative-source-binding02/PUBLISHER.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/PUBLISHER.patch",
+      "sha256": "4caf66b160c9707bbccd8292e5bfdcfd55895c479ba82fb85f988ff6f375e6d8"
+    },
+    {
+      "blob_sha": "2bc9077937e5937b7c6f0b9f488bfe6df9677dbe",
+      "bytes": 7523,
+      "local_path": "review/R5-negative-source-binding02/README.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/README.md",
+      "sha256": "6feb49adeadac2c8003c0a6c51c9aa9afd2cc40d0cdc63cf57cb2f4ee12deea0"
+    },
+    {
+      "blob_sha": "96a7134d3cb699c3b807ce71c6f3d585b87e95c1",
+      "bytes": 2537,
+      "local_path": "review/R5-negative-source-binding02/SOURCE-INPUTS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/SOURCE-INPUTS.json",
+      "sha256": "b922c80e3e0d212167b164aed3d044d416439510368aa4b02998be2b3dbe9567"
+    },
+    {
+      "blob_sha": "af2a36f8dcb0069f54bb0a9d527003ea79bc7b32",
+      "bytes": 697,
+      "local_path": "review/R5-negative-source-binding02/SOURCE.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/SOURCE.patch",
+      "sha256": "fda3a4e9ca81a9391abed647c36b3ee5e3b82589dbb7599d9aa0665e67f34544"
+    },
+    {
+      "blob_sha": "6a0e0bcf77286a6cc939102ca0da6f99027d5236",
+      "bytes": 3850,
+      "local_path": "review/R5-negative-source-binding02/TRANSPORT-PLAN.UNEXECUTED.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/TRANSPORT-PLAN.UNEXECUTED.json",
+      "sha256": "25210ae81092db9ec33da559ef9bb681055da381480606ee4a97f10a4ac748a4"
+    },
+    {
+      "blob_sha": "6edeba5ba9f3077751d28af7a90e8dbc36f2f905",
+      "bytes": 1764,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/ACTUAL-GENERATION-INPUTS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/ACTUAL-GENERATION-INPUTS.json",
+      "sha256": "afe6384695a0302dfd92f7ae7133e98d2f7e0f99c2b3424ca8a92b44e307762b"
+    },
+    {
+      "blob_sha": "d4b1209d75f81cecdcd15df0272922edacca3331",
+      "bytes": 2805,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/CONTROL-READ.original.mcp.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/CONTROL-READ.original.mcp.json",
+      "sha256": "1e26e35c24f54420f587b2e808f730e5fffc6e251c5515cd073d4118b57681fa"
+    },
+    {
+      "blob_sha": "9a69d4f57ceac7ac4f3f4ee1205206eabc3f95ea",
+      "bytes": 38928,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/CONTROL-REQUEST.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/CONTROL-REQUEST.json",
+      "sha256": "1621583bf4c91ea3687ea6b3fce243ec60fdf44a76a743dffc50da704a9f9da4"
+    },
+    {
+      "blob_sha": "c3f6330363995276276bf3168981db6802d59a82",
+      "bytes": 6216,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/CONTROL-RESULT-READ.original.mcp.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/CONTROL-RESULT-READ.original.mcp.json",
+      "sha256": "f544b0bee816adf9caebb52d0074667d6949128c60fb28018c843a20389cdf05"
+    },
+    {
+      "blob_sha": "3534c0bf3522706cb650bacf33cc487cdd240f57",
+      "bytes": 1302,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/CONTROL-START.original.mcp.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/CONTROL-START.original.mcp.json",
+      "sha256": "25d3dcc41d737935124250ed2665660913e3a1d6a01995990dbcf467824e8c29"
+    },
+    {
+      "blob_sha": "fc6d9051668b7a4f66ca2f3acb189da238baee1e",
+      "bytes": 952,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/CONTROL-STATUS.original.mcp.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/CONTROL-STATUS.original.mcp.json",
+      "sha256": "af21c46ef2c17dd20430972e71b96537e56b8168a5776541c131b2b780e50f26"
+    },
+    {
+      "blob_sha": "2974a52f62c5555b21f1a3fccdda5b2a26695a81",
+      "bytes": 728,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/CONTROL-STDOUT.original.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/CONTROL-STDOUT.original.json",
+      "sha256": "a34e58512025254ae7fe648de8943d0c507ea646a7d1f0491c3d4ed009808d9c"
+    },
+    {
+      "blob_sha": "a007fc4fa6d18131ca454f372a8ad777816790ae",
+      "bytes": 69128,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/ORIGINALS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/ORIGINALS.json",
+      "sha256": "72d631fe5fb308e491f42faf29dbde825f5c985a507b1844d0c30beec03a8aa1"
+    },
+    {
+      "blob_sha": "c0312b39b41bfb7f02912e4bb9818f21a75aed5f",
+      "bytes": 2637,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/RESULT.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/RESULT.json",
+      "sha256": "4f7ee4da09c8d5230169b72ce0f94442dea200b9dc42f4052b5be55fab4425b1"
+    },
+    {
+      "blob_sha": "763e813fbb600af2782e74c0a0add2d162b552c4",
+      "bytes": 36852,
+      "local_path": "review/R5-negative-source-binding02/actual-host-controls/test_current_adoption_api.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/actual-host-controls/test_current_adoption_api.py",
+      "sha256": "fd884ffad7c891f23ff9f8988e1548d38b8256e7d9b465cee8fb50e5fc351627"
+    },
+    {
+      "blob_sha": "5414fc7c4b9e6347efcbc7d7f8df63f303ff798d",
+      "bytes": 6616,
+      "local_path": "review/R5-negative-source-binding02/adoption-repair/COMMON.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/adoption-repair/COMMON.patch",
+      "sha256": "881b43c294e00940655b26615ffbc01ef92ef5f5446d27118b62a16612d1fd97"
+    },
+    {
+      "blob_sha": "c861638ad3894690895198e0bbfaa2dc89b98103",
+      "bytes": 674,
+      "local_path": "review/R5-negative-source-binding02/adoption-repair/CONSTRUCTOR.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/adoption-repair/CONSTRUCTOR.patch",
+      "sha256": "e6c27ea224c42457dc0e30a186c6a676fd70bc2768c6ada5f549572ab9707cd0"
+    },
+    {
+      "blob_sha": "e1375c6ff4dc499dbb05c33cc2c830953c538e22",
+      "bytes": 2387,
+      "local_path": "review/R5-negative-source-binding02/adoption-repair/DERIVATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/adoption-repair/DERIVATION.json",
+      "sha256": "707773b0500f0b42c8619da07e566d680258aa979a537293f40c8dc5ffae9cfa"
+    },
+    {
+      "blob_sha": "b76b876e57f1be16dc8dc42106d835c6b3c15024",
+      "bytes": 572,
+      "local_path": "review/R5-negative-source-binding02/adoption-repair/REFERENCE-INDEX.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/adoption-repair/REFERENCE-INDEX.patch",
+      "sha256": "9427cb49646d8edf7e12beb4b154f33f27b4e2c851f7fde0b38ebb0e232d7352"
+    },
+    {
+      "blob_sha": "03393e69ffe349b673dd90960e7d6c5e77406747",
+      "bytes": 10050,
+      "local_path": "review/R5-negative-source-binding02/adoption-repair/derive_adoption_compatible_operator.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/adoption-repair/derive_adoption_compatible_operator.py",
+      "sha256": "6fe46871e5b8d4a87b92ddbdb1dfd0f597caeb393f938e1a9df08eb6b3e99629"
+    },
+    {
+      "blob_sha": "f106cd4d34ce0658f4cf16906b2f3327a35d2673",
+      "bytes": 15189,
+      "local_path": "review/R5-negative-source-binding02/prepare_successor_source_binding.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/prepare_successor_source_binding.py",
+      "sha256": "aad5a0b9e8f8b847d4093560e9b0c818ac39b5d28b2b26ba89ecc22cff699839"
+    },
+    {
+      "blob_sha": "12e0606a4473d229a579409dad1c12ba2d278149",
+      "bytes": 38100,
+      "local_path": "review/R5-negative-source-binding02/reference/REVIEWED-INPUTS.original.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/reference/REVIEWED-INPUTS.original.json",
+      "sha256": "1a7f17faf1d6705dac356076ce1d0df0292a35a805bceb117eeea50f52f15e32"
+    },
+    {
+      "blob_sha": "aecba6c556af8c62d600b40c6cc54ac04e8a8696",
+      "bytes": 860,
+      "local_path": "review/R5-negative-source-binding02/reference/SOURCE-READER-DERIVATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/reference/SOURCE-READER-DERIVATION.json",
+      "sha256": "316cdc84d49fe3a752f708940faa8aae1bb567a68a6d8afbd577d16f65cdf3d9"
+    },
+    {
+      "blob_sha": "0b6851d0263924e6a18853f84c7815791c7e46eb",
+      "bytes": 43142,
+      "local_path": "review/R5-negative-source-binding02/reference/derive_negative_sources.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/reference/derive_negative_sources.original.py",
+      "sha256": "d539cb12c5b3d99f4b6066de148f11db78d3ad4210bc034669ebc1bc99c44903"
+    },
+    {
+      "blob_sha": "b6a8fc5f4ec4ff1eda51a6b8c1f27613c77eae8a",
+      "bytes": 43126,
+      "local_path": "review/R5-negative-source-binding02/reference/derive_negative_sources_UNBOUND.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/reference/derive_negative_sources_UNBOUND.py",
+      "sha256": "3c64904a631b8987fa6626e2575a5e1e8046dde9ac6f6cef22273e5c86d1f982"
+    },
+    {
+      "blob_sha": "6ccc98f1e63313ec75c8e1d64c15aa4656bd0d7a",
+      "bytes": 43142,
+      "local_path": "review/R5-negative-source-binding02/reference/derive_negative_sources_api_candidate.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/reference/derive_negative_sources_api_candidate.py",
+      "sha256": "c9d6b80bbfbf1daa69132331511ad6a28e6f8c09a83072f2508021ca35603c4b"
+    },
+    {
+      "blob_sha": "84cda036f52bb0d356482a56dea52a7efac6c835",
+      "bytes": 27001,
+      "local_path": "review/R5-negative-source-binding02/reference/physical_fault_common.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/reference/physical_fault_common.original.py",
+      "sha256": "6c85e9eee232e4b4662919cb78622bcb6bf216fc9b83aa613cf2141775a2941e"
+    },
+    {
+      "blob_sha": "8317f5cd811fd6b02cf6c76e78dc41396a9814b9",
+      "bytes": 19652,
+      "local_path": "review/R5-negative-source-binding02/reference/publish_negative_sources_once.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/reference/publish_negative_sources_once.original.py",
+      "sha256": "581efadeed85af47e98c68c4037cee4b2599d00987df1f78ca753e917e729335"
+    },
+    {
+      "blob_sha": "53d205ae5b536803971581c88e8eb302e45b1597",
+      "bytes": 38100,
+      "local_path": "review/R5-negative-source-binding02/source/REVIEWED-INPUTS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/source/REVIEWED-INPUTS.json",
+      "sha256": "bccd3fb4c6d785ea1edbca3442430f041e0e86b4df95be60c8882eba7ef3000c"
+    },
+    {
+      "blob_sha": "d29e67d23476f9b270b3a47f9b337706e73d4015",
+      "bytes": 43397,
+      "local_path": "review/R5-negative-source-binding02/source/derive_negative_sources_BOUND.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/source/derive_negative_sources_BOUND.py",
+      "sha256": "1ad08e6375da76631900a1678794127bf69145963c8ac0f04bd798e614e94601"
+    },
+    {
+      "blob_sha": "c62c2f550552a5a0fad8b0516b22a0f8cf94387c",
+      "bytes": 28157,
+      "local_path": "review/R5-negative-source-binding02/source/physical_fault_common.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/source/physical_fault_common.py",
+      "sha256": "60f5a7b64cf055db153fc20e49951866fabf3e7c0b2b28d29290fec4d722eae9"
+    },
+    {
+      "blob_sha": "7631fb058c05a877359da39e8e5e8cc41d062b78",
+      "bytes": 40736,
+      "local_path": "review/R5-negative-source-binding02/transport/PAYLOAD-MANIFEST.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/PAYLOAD-MANIFEST.json",
+      "sha256": "eb4312336e56c7576dd6b73eac995819dd75b27b711bfe4ca86d1ce1b7aa1890"
+    },
+    {
+      "blob_sha": "ab4a5234865e500d1c8603dda8496eec3649ced3",
+      "bytes": 710094,
+      "local_path": "review/R5-negative-source-binding02/transport/SOURCE-PAYLOAD.zlib",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/SOURCE-PAYLOAD.zlib",
+      "sha256": "6fb4b534935bd54e165245fdc090b95270a31810307ab63ee5183f40109e8964"
+    },
+    {
+      "blob_sha": "f7de50b40adb800364f7229fbf9c792779505cf3",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-000.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-000.bin",
+      "sha256": "60f7ba0a93700f91e2eae812a04f9d8771c2a11d631a2af797cf8fd02fb69811"
+    },
+    {
+      "blob_sha": "ab41b8cd2d8d8927e8d501b99cff9b76a29a1db8",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-001.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-001.bin",
+      "sha256": "1dbf567e01235494b3dd8d06506eeb52a329bab679d89ec195c6fe7dbe4a9476"
+    },
+    {
+      "blob_sha": "a911b48c6ae967dd6ec61188db368a4bc27cc555",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-002.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-002.bin",
+      "sha256": "ab0b5916d147240327af459866c61bbe1438e3137427205255c1617d62860f07"
+    },
+    {
+      "blob_sha": "93902124dc0af9023c52f145b9c39dd5e257cd39",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-003.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-003.bin",
+      "sha256": "632922de7c200f97fa71b061c47c36780db3c7a07f5ac7a47f89a9e67ff51310"
+    },
+    {
+      "blob_sha": "0beda7ce7868a4ece09cb19a944ae2edd65c2ab0",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-004.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-004.bin",
+      "sha256": "57571e74b1cde26ded56ff84f7a1855ca8b421cc27062c095601970a4d6f5ad2"
+    },
+    {
+      "blob_sha": "57ef6e5a57b3e4737daeaed86276365d8e0d34be",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-005.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-005.bin",
+      "sha256": "37ea1e567922ee906a514af219a8655192ce49bacd83c5ebcbff3c7d160d225b"
+    },
+    {
+      "blob_sha": "9111028e7e07c33da6a41680244e075d5c48b489",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-006.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-006.bin",
+      "sha256": "1c8db5b166058d5528e655e839b1bdc5315dbddea1cc6416a1c54451a44bf807"
+    },
+    {
+      "blob_sha": "f9f9c25908bb6e7d99983f6937538be58ebf100f",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-007.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-007.bin",
+      "sha256": "fd39873eba6f6528cfcaf3cc1ce4439268f1e46515edfea3eb7f50d654f4ad59"
+    },
+    {
+      "blob_sha": "a9db0ffb8c35385b81a585ba63ca47537d5c3cf6",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-008.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-008.bin",
+      "sha256": "69d627e1a441793502696941f6e541d066fee5f30647397b686aab4f0371009f"
+    },
+    {
+      "blob_sha": "b38bcc0422f1c9e44b4d74123eab31f0aa137cc1",
+      "bytes": 65536,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-009.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-009.bin",
+      "sha256": "074450e4f26b86df9f3f6094037d92c399202ac18e5367d3f14a51265d4cfba3"
+    },
+    {
+      "blob_sha": "12caa9c095e55ec1b2dc5c33fd502de05463cfa3",
+      "bytes": 54734,
+      "local_path": "review/R5-negative-source-binding02/transport/chunks/source-payload-010.bin",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/chunks/source-payload-010.bin",
+      "sha256": "b3a90dd84fe78727eb2f689cbd505d9394ac84eb924bf9abe73dcee1a5a90add"
+    },
+    {
+      "blob_sha": "d030a00ec53333973927f3128074fbd1706d2458",
+      "bytes": 19652,
+      "local_path": "review/R5-negative-source-binding02/transport/publish_negative_sources_once.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source-binding-r5-successor02/transport/publish_negative_sources_once.py",
+      "sha256": "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81"
+    }
+  ],
+  "git_tree_commit_ref_changed": false,
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "schema": "hepta.fc33.actual-immutable-github-blobs.v1"
+}

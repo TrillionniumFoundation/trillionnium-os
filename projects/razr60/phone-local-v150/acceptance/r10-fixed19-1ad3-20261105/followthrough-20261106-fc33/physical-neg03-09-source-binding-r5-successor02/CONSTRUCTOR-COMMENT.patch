@@ -1,0 +1,15 @@
+--- reference/derive_negative_sources_api_candidate.py
++++ reference/derive_negative_sources_UNBOUND.py
+@@ -293,9 +293,9 @@
+     common = module(references.read('candidate/templates/physical-fault/physical_fault_common.py'), 'negative_generation_admission')
+     generation = dict(runtime_package=runtime_row, consumer=consumer, readiness=readiness,
+         actual_policy=value['actual_policy'], policy_adoption=value['policy_adoption'], combination_sha256=COMBINATION_SHA)
+-    # This retained function checks the complete runtime source package, actual
+-    # policy/adoption original links and all 44 exact permission atoms.  It does
+-    # not award independent policy verification, BUILD, READY or physical credit.
++    # The current consumer-pinned pure verifier checks the complete retained
++    # parent adoption, actual export, full rule and its one declared delta.
++    # That verification grants no BUILD, READY or physical qualification.
+     common.generation_inputs(generation, pool)
+     return dict(out=out, host_namespace=host_namespace, references=references, production=production,
+         material=material, combination=combination, combination_raw=combination_raw,

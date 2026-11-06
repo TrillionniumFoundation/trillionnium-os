@@ -1,0 +1,19 @@
+{
+  "actual": {
+    "execution_plan": null,
+    "installed_original_map": null,
+    "phase_carriers": {
+      "ready": null,
+      "stage": null,
+      "start": null
+    },
+    "release_inputs": null,
+    "retention_constructions": {
+      "stage": null,
+      "start": null
+    }
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "exact8_inputs"
+}

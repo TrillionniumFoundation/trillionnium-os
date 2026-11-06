@@ -159,82 +159,135 @@
     "new_tuple_credit": false
   },
   "current_attempt": {
-    "label": "root-r10-neg01-fc33-bound01",
-    "nonce": "e2fdaccd43cec9da1df4d77783db8fdb",
+    "label": "root-r10-neg01-fc33-bound02",
+    "nonce": "4fce1e327941e723a4f1d4c838acf684",
     "nonce_generation_count": 1,
     "nonce_permanently_consumed": true,
-    "plan": {
-      "bytes": 4833,
-      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-bound01/ROOT-PLAN.json",
-      "sha256": "0c44480dc23fca0734019b95cabca9d201ae0e30824a1c0c1cb4d3e4b033aef3"
-    },
-    "preparation_evidence": {
-      "bytes": 1073491,
-      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-bound01/PREPARATION-EVIDENCE.json",
-      "sha256": "d2d838cdd4740f034ac171296759b0dbce0f3750d2184e16cb269f428c5d2daf"
-    },
-    "root_job": "1a1b1d3a2d9-fc05-7b03",
+    "plan_sha256": "fc72f0c6547b00f7cd1da8306db130d98663d1fb48a951784b7410a8a7d23ac9",
+    "root_job": "1a1b26f9d6d-fc05-7e01",
     "root_exit_code": 1,
     "root_stdout_bytes": 0,
-    "root_stderr_bytes": 1896,
+    "root_stderr_bytes": 2066,
     "root_output_complete": true,
     "root_output_durable": true,
     "automatic_retry": false,
-    "state": "FAILED_BEFORE_CURRENT_HOME_CREATION_AND_BEFORE_SENDER_PHASE",
+    "state": "FAILED_AT_SENDER_PREPARED_AFTER_SUCCESSFUL_PRIVATE_STAGE",
     "failure": {
-      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/ROOT-FAILURE.json",
-      "bytes": 6734,
-      "sha256": "90eb139ecc328ceb62bc61375b977b4c84fe4137bac573b13872ec11d42665e1"
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound02/ROOT-FAILURE.json",
+      "size": 12085,
+      "sha256": "3724495fb0a12d2762aa99aa4e7a335b330e5a7dbb1dd2e2ab4fadfadbaec08b"
     },
-    "actual_phone_stage": {
-      "exit_code": 1,
-      "elapsed_seconds": 62.90876048395876,
-      "exception": "ValueError: shared parent identity/label/names differ from exact admitted additions",
-      "before_home_creation": true,
-      "sender_phase_reached": false,
-      "root_fixture_attempts": []
+    "failure_detail": "original phase failed; no replay: sender-prepared",
+    "root_fixture_attempts": [],
+    "host_cleanup": {
+      "host_children": [
+        {
+          "automatic_retry": false,
+          "business_qualified": false,
+          "child_join_observed_monotonic": 161.799977125,
+          "child_wait_returned": true,
+          "cleanup_errors": [],
+          "execution_deadline_monotonic": 671.3468397080001,
+          "output_capture": {
+            "automatic_retry": false,
+            "captured": {
+              "stderr": {
+                "bytes": 0,
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stdout": {
+                "bytes": 677,
+                "sha256": "202956dc04953ec77fbb2662a26fbd64ab1decbca0380b25dd41b96673ec1eae"
+              }
+            },
+            "child_join_observed_monotonic": 161.799977125,
+            "child_returncode": 0,
+            "child_wait_returned": true,
+            "deadline_validity": "this_running_coordinator_only",
+            "eof_observed_monotonic": {
+              "stderr": 101.064522208,
+              "stdout": 101.064562208
+            },
+            "error": null,
+            "execution_deadline_monotonic": 671.3468397080001,
+            "files": {
+              "stderr": {
+                "bytes": 0,
+                "metadata": {
+                  "st_ctime_ns": 1793995093336771233,
+                  "st_dev": 16777233,
+                  "st_gid": 20,
+                  "st_ino": 593540966,
+                  "st_mode": 33152,
+                  "st_mtime_ns": 1793995093336771233,
+                  "st_nlink": 1,
+                  "st_size": 0,
+                  "st_uid": 501
+                },
+                "original_created_inode_bound": true,
+                "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound02/sender-execute/stderr.original",
+                "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              "stdout": {
+                "bytes": 677,
+                "metadata": {
+                  "st_ctime_ns": 1793995183792913370,
+                  "st_dev": 16777233,
+                  "st_gid": 20,
+                  "st_ino": 593540965,
+                  "st_mode": 33152,
+                  "st_mtime_ns": 1793995183792913370,
+                  "st_nlink": 1,
+                  "st_size": 677,
+                  "st_uid": 501
+                },
+                "original_created_inode_bound": true,
+                "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound02/sender-execute/stdout.original",
+                "sha256": "202956dc04953ec77fbb2662a26fbd64ab1decbca0380b25dd41b96673ec1eae"
+              }
+            },
+            "output_limit_bytes_per_stream": 67108864,
+            "persist_errors": [],
+            "phase": "sender-execute",
+            "pid": 58537,
+            "pipe_close_errors": [],
+            "pipe_reader_owner": "closed_by_worker",
+            "prefix_only_or_unknown": false,
+            "remote_terminal_or_cleanup_proven": false,
+            "schema": "hepta.native-guard.host-output-capture.v1",
+            "signals_sent": 0,
+            "source_intent_sha256": "05bad38602d73dec2ffb8596ef2ea77476982aa09bca7d8358441a10123b1e5b",
+            "stderr_eof": true,
+            "stdout_eof": true,
+            "worker_joined": true,
+            "worker_started": true
+          },
+          "phase": "sender-execute",
+          "pid": 58537,
+          "remote_terminal_or_cleanup_proven": false,
+          "returncode": 0,
+          "signals_sent": 0,
+          "state": "OWNED_HOST_CHILD_JOINED_NO_BUSINESS_QUALIFICATION"
+        }
+      ],
+      "stream_cleanup_errors": []
     },
-    "fresh_observation": {
-      "job": "1a1b1dbf291-fc05-7b2b",
-      "actor_exit_code": 0,
-      "phone_exit_code": 0,
-      "original": {
-        "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-r5-shared-parents-observe01/result.json",
-        "bytes": 13327,
-        "sha256": "4f42512522bec9d6985f1d8f204050c7f2bf9657ecd4a4c0f1ae9cf513977cf5"
-      },
-      "observed_names": 17,
-      "expected_names": 16,
-      "observed_nlink": 19,
-      "expected_nlink": 18,
-      "extra_name": "root-r10-neg02-a1055-final05",
-      "missing_names": [],
-      "identity_and_label_match": true,
-      "both_aliases_and_both_bookends_equal": true,
-      "current_home_journal_fixture_all_actual_ENOENT": true,
-      "observation_phone_file_writes": 0,
-      "observation_ui_inputs": 0,
-      "not_a_reconstruction_of_the_exact_prior_failure_instant": true
+    "sender_public_summary": {
+      "rc": 2,
+      "state": "PRE_SEND_OR_ACTOR_FAILURE",
+      "send_attempt_count": 0,
+      "draft_restore_attempts": 1,
+      "draft_state": "ORIGINAL_DRAFT_RESTORED",
+      "independent_underlying_host_originals_review_pending": true
     },
     "component_qualified": false,
     "business_qualified": false,
-    "host_crosscheck": {
-      "evidence": "neg01-stage-host-evidence/",
-      "verification": {
-        "bytes": 10990,
-        "sha256": "24901268bb1b05ea196f8e8a316ee5e4d10b402f07804a541ec02d408f8c888c"
-      },
-      "host_tree_files": 115,
-      "host_tree_directories": 15,
-      "host_tree_bytes": 10998073,
-      "completed_synchronous_phases": 7,
-      "sender_preview_execute_prepared_actual_ENOENT": true,
-      "own_sender_directory_and_markers_actual_ENOENT": true,
-      "public_originals": 30,
-      "public_original_bytes": 77606,
-      "private_bodies_exported": false,
-      "whole_durable_log_transferred_readonly_not_claimed_as_contiguous_process_read": true,
-      "phone_material_and_source_pushes_did_occur": true
+    "owned_stage_recovery_not_yet_closed": true,
+    "no_new_nonce_until_originals_and_owned_scope_resolved": true,
+    "controller": {
+      "path": "review/R5-SUCCESSOR02-ROOT-CONTROLLER.original.json",
+      "bytes": 10412,
+      "sha256": "670be0cea383f4dfeeaee5bbfad4a8d286409eae20bbc44f2d5429cb45e52f84"
     }
   },
   "source_controls": {
@@ -439,9 +492,9 @@
     "actual_installed_READY": null,
     "whole_cases_closed": []
   },
-  "schema": "hepta.fc33.fixed19-followthrough-checkpoint.v8",
-  "recorded_at": "2026-11-06 19:28:00 UTC",
-  "repository_base_commit": "a75796961ba2e0208eb80097afd23656f7325c87",
+  "schema": "hepta.fc33.fixed19-followthrough.checkpoint09.v1",
+  "recorded_at": "2026-11-06T20:02:32.074485+00:00",
+  "repository_base_commit": "7f3cdf7f0664e3656278e0da554eda91fdc28469",
   "new_whole_cases_closed": [],
   "current_tuple_component_cases_closed": [],
   "full19_qualified": false,
@@ -585,7 +638,7 @@
       }
     },
     "parent_readonly02": {
-      "state": "ACTUAL_PHONE_RC0_HOST_IMPORT_PENDING",
+      "state": "ACTUAL_PARENT_RECONCILIATION_INDEPENDENTLY_IMPORTED",
       "job_id": "1a1b251a580-fc05-7d80",
       "actor_exit_code": 0,
       "phone_exit_code": 0,
@@ -613,7 +666,14 @@
       },
       "all44_or_all97_or_process_liveness_credit": false,
       "cleanup_authority": false,
-      "automatic_retry": false
+      "automatic_retry": false,
+      "host_import_job": "1a1b25a2cd2-fc05-7da7",
+      "host_import_exit_code": 0,
+      "public_original": {
+        "path": "review/R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.PUBLIC.original.json",
+        "bytes": 72764,
+        "sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a"
+      }
     },
     "new_recovery02_preparation": {
       "same97_file_targets_and10_directories_required": true,
@@ -626,7 +686,97 @@
       "present_file_full9_bytes_labels_not_relaxed": true,
       "fresh_locked_full_capture_and_host_preservation_revalidation_required": true,
       "new_identity_after_review_required": true,
-      "dispatched": false
+      "dispatched": true
+    },
+    "owned_recovery_closed": true,
+    "remains_current_blocker": false,
+    "recovery02": {
+      "state": "EXACT_OWNED_RECOVERY_INDEPENDENTLY_VERIFIED_NO_CASE_CREDIT",
+      "actual_phone_job": "1a1b2682281-fc05-7dec",
+      "host_import_job": "1a1b268f9f4-fc05-7df0",
+      "phone_rc": 0,
+      "actual_result": {
+        "bytes": 1208773,
+        "metadata": [
+          66306,
+          59120842,
+          33152,
+          1000,
+          1000,
+          1,
+          1208773,
+          1793994536019941485,
+          1793994536019941485
+        ],
+        "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-final05-owned-scope-recovery02/result.json",
+        "sha256": "b158aa06b93a3b0767da41161cae4833d4e9a9b557584d10faa337520b9259cb"
+      },
+      "checks": {
+        "after_inventory_representation": "Complete post-read projection hash verified against the complete preflight original graph; a separate raw after-inventory was not emitted.",
+        "after_projection": {
+          "absent_fixture_parents_match_actual_surviving_parent": true,
+          "all_present_labels_exact": true,
+          "canonical_projection_bytes": 1345403,
+          "canonical_projection_sha256": "f072bf74423e9b449b3b23d01b9b5910a10f1c51950fbf949431dd91811dfe9a",
+          "complete_entries": 3823,
+          "complete_file_bytes_hashed": 44353573,
+          "complete_roots": 44,
+          "equal_to_complete_preflight_projection": true
+        },
+        "all15_original_locks_held_during_effects": true,
+        "business_or_component_credit": false,
+        "current_role_absence_checks_before_and_after": true,
+        "exact_directories_removed": 10,
+        "exact_files_removed": 97,
+        "exact_final_absences": 18,
+        "fresh_component_admission_required": true,
+        "historical_supervisor_wait_proven": false,
+        "measured_fd_baseline_restored": true,
+        "ordered_operations_checked": 107,
+        "original44_bytes_read_per_complete_window": 44353573,
+        "original44_entries": 3823,
+        "original44_roots": 44,
+        "owned_recovery_closed": true,
+        "parent_reconciliation": {
+          "actual_reconciliation_sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a",
+          "derived_projection_is_original": false,
+          "derived_targets_sha256": "58b253b325daacf7417e7c2c53bd636c8840064b61965e4c37ffbf99e01263e0",
+          "only_parent_profiles_and_absent_fixture_parent_fields_changed": true,
+          "original97_files_and10_directories_unchanged": true,
+          "original_targets_sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1"
+        },
+        "preflight_adapter_is_original": false,
+        "preflight_checks": {
+          "actions_names": [],
+          "bounded_no_claim_or_action_records": true,
+          "claims_names": [],
+          "cleanup_authorized": false,
+          "fixture_kind": "absent",
+          "fresh_known_groups_absent_two_windows": true,
+          "historical_native_or_effect_count_inferred": null,
+          "operator_names": [],
+          "original44_entries": 3823,
+          "original44_file_bytes_hashed_each_window": 44353573,
+          "original44_full_inventory_equal": true,
+          "original44_roots": 44,
+          "private_entry_count": 98,
+          "private_file_bytes_each_window": 4515947,
+          "runtime37_and_stage61_exact": true,
+          "scope_closure": false,
+          "signal_zero_ESRCH_count": 4,
+          "unexpected_expected_absence_records_present": []
+        },
+        "producer_scope_closure_flag": false,
+        "whole_operation_was_readonly": false
+      },
+      "public_host_verification": {
+        "path": "review/R5-final05-recovery02/HOST-VERIFICATION.PUBLIC.original.json",
+        "bytes": 39126,
+        "sha256": "63ed1fa9accb6e1a26d6448527346560e8efc2dc291d06cad9819652f89006ee"
+      },
+      "original_failed_case_qualification": false,
+      "historical_unknowns_upgraded": false,
+      "fixed19_credit": 0
     }
   },
   "negative_source_publication01": {
@@ -704,16 +854,151 @@
     "actual_READY": null
   },
   "remaining_actual_dependencies": [
-    "Complete independently verified parent reconciliation and one separately reviewed recovery02; preserve all prior failures and scopes",
-    "Fresh successful NEG-01 bound02 then NEG-02 bound01 on same frozen R5 tuple; no successor nonce has been generated",
-    "Actual sealed BUILD, install, stage/start original retention and READY",
-    "E2E-01..04 and production-native COMP-01 actual task outcomes",
-    "NEG03..09 required actual protocol layers with no replay",
-    "Bind already executed final-source NEG10..14 host originals to actual installed15-source tuple"
+    "Independently resolve actual NEG01 bound02 sender failure and recover only its new owned scope; do not replay consumed identity",
+    "Fresh successful current R5 NEG01 then NEG02 with real ordered closure and late inventory",
+    "Finish exact NEG03-09 source reader compatibility and E2E operator phase handling without changing production tuple",
+    "Actual sealed BUILD, installation, complete stage/start original retention and READY",
+    "E2E01-04, production/native COMP01 and NEG03-09 actual protocol outcomes",
+    "Bind already executed final-source NEG10-14 host originals to actual installed15-source tuple"
   ],
   "publication_notes": [
     "Prepared Git maps retain their original unexecuted-state snapshots; this checkpoint records later actual controller outcomes separately.",
     "No private sender/XML/observer packet bodies are published. Exact private originals remain in their pinned host archives.",
-    "Original recovery no-blocker review must be read with its explicit superseding ADDENDUM."
-  ]
+    "Original recovery no-blocker review must be read with its explicit superseding ADDENDUM.",
+    "Recovery02 is independently closed with zero fixed19 credit. New bound02 sender failure remains failed; its staged files were actually created. No missing receipt is treated as zero effect."
+  ],
+  "prior_current_tuple_attempts": [
+    {
+      "label": "root-r10-neg01-fc33-bound01",
+      "nonce": "e2fdaccd43cec9da1df4d77783db8fdb",
+      "nonce_generation_count": 1,
+      "nonce_permanently_consumed": true,
+      "plan": {
+        "bytes": 4833,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-bound01/ROOT-PLAN.json",
+        "sha256": "0c44480dc23fca0734019b95cabca9d201ae0e30824a1c0c1cb4d3e4b033aef3"
+      },
+      "preparation_evidence": {
+        "bytes": 1073491,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-bound01/PREPARATION-EVIDENCE.json",
+        "sha256": "d2d838cdd4740f034ac171296759b0dbce0f3750d2184e16cb269f428c5d2daf"
+      },
+      "root_job": "1a1b1d3a2d9-fc05-7b03",
+      "root_exit_code": 1,
+      "root_stdout_bytes": 0,
+      "root_stderr_bytes": 1896,
+      "root_output_complete": true,
+      "root_output_durable": true,
+      "automatic_retry": false,
+      "state": "FAILED_BEFORE_CURRENT_HOME_CREATION_AND_BEFORE_SENDER_PHASE",
+      "failure": {
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-bound01/ROOT-FAILURE.json",
+        "bytes": 6734,
+        "sha256": "90eb139ecc328ceb62bc61375b977b4c84fe4137bac573b13872ec11d42665e1"
+      },
+      "actual_phone_stage": {
+        "exit_code": 1,
+        "elapsed_seconds": 62.90876048395876,
+        "exception": "ValueError: shared parent identity/label/names differ from exact admitted additions",
+        "before_home_creation": true,
+        "sender_phase_reached": false,
+        "root_fixture_attempts": []
+      },
+      "fresh_observation": {
+        "job": "1a1b1dbf291-fc05-7b2b",
+        "actor_exit_code": 0,
+        "phone_exit_code": 0,
+        "original": {
+          "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-r5-shared-parents-observe01/result.json",
+          "bytes": 13327,
+          "sha256": "4f42512522bec9d6985f1d8f204050c7f2bf9657ecd4a4c0f1ae9cf513977cf5"
+        },
+        "observed_names": 17,
+        "expected_names": 16,
+        "observed_nlink": 19,
+        "expected_nlink": 18,
+        "extra_name": "root-r10-neg02-a1055-final05",
+        "missing_names": [],
+        "identity_and_label_match": true,
+        "both_aliases_and_both_bookends_equal": true,
+        "current_home_journal_fixture_all_actual_ENOENT": true,
+        "observation_phone_file_writes": 0,
+        "observation_ui_inputs": 0,
+        "not_a_reconstruction_of_the_exact_prior_failure_instant": true
+      },
+      "component_qualified": false,
+      "business_qualified": false,
+      "host_crosscheck": {
+        "evidence": "neg01-stage-host-evidence/",
+        "verification": {
+          "bytes": 10990,
+          "sha256": "24901268bb1b05ea196f8e8a316ee5e4d10b402f07804a541ec02d408f8c888c"
+        },
+        "host_tree_files": 115,
+        "host_tree_directories": 15,
+        "host_tree_bytes": 10998073,
+        "completed_synchronous_phases": 7,
+        "sender_preview_execute_prepared_actual_ENOENT": true,
+        "own_sender_directory_and_markers_actual_ENOENT": true,
+        "public_originals": 30,
+        "public_original_bytes": 77606,
+        "private_bodies_exported": false,
+        "whole_durable_log_transferred_readonly_not_claimed_as_contiguous_process_read": true,
+        "phone_material_and_source_pushes_did_occur": true
+      }
+    }
+  ],
+  "negative_source_publication02": {
+    "job_id": "1a1b27082de-fc05-7e06",
+    "exit_code": 1,
+    "state": "FAILED_AT_REVIEWED_SOURCE_READER_TYPED_DESCRIPTOR_BOUND",
+    "stdout_bytes": 0,
+    "stderr_bytes": 3742,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "exact_descriptor_and_partial_output_independent_diagnosis_pending": true,
+    "original_failure_retained": true,
+    "phone_calls": 0,
+    "nonce_generated": false,
+    "actual_BUILD": null,
+    "actual_READY": null,
+    "controller": {
+      "path": "review/R5-negative-source-binding02/ROOT-ACTUAL-PUBLICATION-CONTROLLER.original.json",
+      "bytes": 20889,
+      "sha256": "e5d9e9d82c8c641fd117c805672365f44baf5a6efd1af91aa858d5ecfe338154"
+    }
+  },
+  "actual_e2e_source_archive": {
+    "state": "ORIGINAL49_AND_COMPLETE_CONTROLLER_READBACK_ARCHIVED",
+    "source_files": 49,
+    "archive_files": 64,
+    "archive_bytes": 7002712,
+    "git_map": {
+      "path": "review/R5-actual-e2e-bound-source/GIT-BLOB-MAP.json",
+      "bytes": 37128,
+      "sha256": "2214e5e4883b10a52e8ed99fd68486b9ec9ade67d8c4fda4acba7ea3d4e6a8ac"
+    },
+    "business_qualification": false,
+    "actual_BUILD": null,
+    "actual_READY": null,
+    "operator_phase_dictionary_duplicate_keyword_fix_under_review": true
+  },
+  "actual_install_build_controller_source": {
+    "state": "ACTUAL27_SOURCE_FILES_PUBLISHED_AND_INDEPENDENTLY_READ",
+    "publication_job": "1a1b25d70f9-fc05-7db5",
+    "readback_job": "1a1b25f8f91-fc05-7dc2",
+    "files": 27,
+    "bytes": 170416,
+    "derivation_sha256": "8d7df81d1c3da3ce4f87e68c33e3b31aafa2503e658acb203655083e6505719d",
+    "package_sha256": "cf50a27c818510234731ac0922925e77d5b2575c86525842d7b6bd14aa7944b8",
+    "git_map": {
+      "path": "review/install-build-controller/GIT-BLOB-MAP.json",
+      "bytes": 49894,
+      "sha256": "c069b33ba81ab3eaf159ad334c34f348e88b3261e20933de66a53a9b97452478"
+    },
+    "actual_BUILD": null,
+    "actual_install": null,
+    "actual_READY": null
+  }
 }

@@ -1,0 +1,36 @@
+{
+  "actor_dispatches": 0,
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_publication": null,
+  "checks": [
+    {
+      "name": "complete actual prepared payload27 and five source pins validate without publication",
+      "passed": true
+    },
+    {
+      "name": "original payload bytes match exact embedded payload pin",
+      "passed": true
+    },
+    {
+      "name": "actual prepared controller stdin equals the complete publisher source bytes",
+      "passed": true
+    },
+    {
+      "name": "existing isolated host output rejected before any child or file mutation",
+      "passed": true
+    }
+  ],
+  "passed": 4,
+  "payload": {
+    "bytes": 228591,
+    "sha256": "2d882bd13012936fcc56de91f29e14ee898811153e4334f95d1f4a8bc5ea2441"
+  },
+  "phone_calls": 0,
+  "publisher": {
+    "bytes": 308748,
+    "sha256": "755135e1cbe32296171b372ef4aa8809128b64d90ae598570ef8fba69870ee3d"
+  },
+  "schema": "hepta.fc33.host-controller-source-publisher-controls.v1",
+  "state": "FOUR_PREPARATION_AND_CREATE_ONLY_CONTROLS_PASSED_NO_ACTUAL_PUBLICATION"
+}

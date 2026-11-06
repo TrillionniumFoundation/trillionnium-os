@@ -1,0 +1,20 @@
+--- recovery01-candidate02/recovery_extension.py
++++ recovery02-candidate01/recovery_extension.py
+@@ -201,7 +201,7 @@
+     value={'schema':'hepta.fc33.exact-recovery-preflight.v1','evidence':C.STATE['evidence'],
+            'actual_complete_originals':[{'sha256':h,'bytes':r['bytes']} for h,r in sorted(C.STATE['blobs'].items())],
+            'all_original_bytes_preserved_by_host_authority':True,'read_bytes':C.STATE['read_bytes'],
+-           'targets_sha256':TARGETS_SHA,'authority':AUTHORITY,'private_body_blobs_omitted_because_already_exactly_preserved':True}
++           'targets_sha256':TARGETS_SHA,'reconciliation_sha256':RECONCILIATION_SHA,'derived_targets_sha256':DERIVED_TARGETS_SHA,'authority':AUTHORITY,'private_body_blobs_omitted_because_already_exactly_preserved':True}
+     raw=C.encoded(value);require(len(raw)<=C.MAX_PACKET,'bounded full preflight proof');z=zlib.compress(raw,9)
+     return {'encoding':'zlib-base64','bytes':len(raw),'sha256':C.sha(raw),'compressed_bytes':len(z),'compressed_sha256':C.sha(z),'base64':base64.b64encode(z).decode()}
+ 
+@@ -267,7 +267,7 @@
+     C.STATE={'deadline':started+RECOVERY_SECONDS,'read_bytes':0,'complete_file_reads':0,'errors':[],
+              'evidence':{},'blobs':{},'blob_bytes':0,'lock_fds':[],'last_complete_read':None}
+     RECOVERY={'schema':'hepta.fc33.final05.exact-owned-recovery.v1','operation_label':OPERATION_LABEL,
+-        'scope_label':C.LABEL,'nonce':C.NONCE,'boot_id':C.BOOT,'targets_sha256':TARGETS_SHA,'authority':AUTHORITY,
++        'scope_label':C.LABEL,'nonce':C.NONCE,'boot_id':C.BOOT,'targets_sha256':TARGETS_SHA,'reconciliation_sha256':RECONCILIATION_SHA,'derived_targets_sha256':DERIVED_TARGETS_SHA,'authority':AUTHORITY,
+         'state':'PRE_MUTATION_REJECTED','phase':'initial','preflight_complete':False,'preflight':None,'operations':[],
+         'after':{},'terminal_error':None,'file_fds':[],'directory_fds':[],'automatic_retry':False,
+         'scope_closure':False,'component_qualified':False,'business_qualified':False,'qualified_source_parent':False,

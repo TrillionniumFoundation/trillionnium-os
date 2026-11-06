@@ -1,0 +1,72 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "actual_new_component_positive_run": false,
+  "actual_source_bytes_read": 3763914,
+  "actual_source_files_read": 44,
+  "all_read_originals_rechecked": true,
+  "checks": [
+    {
+      "name": "unbound rejects before JSON parsing and original callback",
+      "passed": true
+    },
+    {
+      "name": "bound input with absent actual cases rejects before all original IO",
+      "passed": true
+    },
+    {
+      "name": "different complete input bytes reject before all original IO",
+      "passed": true
+    },
+    {
+      "name": "descriptor rejects False as original byte count",
+      "passed": true
+    },
+    {
+      "name": "descriptor rejects 0.0 as original byte count",
+      "passed": true
+    },
+    {
+      "name": "canonical type-preserving equality distinguishes false from zero",
+      "passed": true
+    },
+    {
+      "name": "duplicate JSON descriptor key rejected",
+      "passed": true
+    },
+    {
+      "name": "actual frozen38 files and same actual source-chain consumer pins",
+      "passed": true
+    },
+    {
+      "name": "source-derived history has exact current20 keys and three actual case slots absent",
+      "passed": true
+    },
+    {
+      "name": "old source-parent qualified state is historical and cannot fill current slots",
+      "passed": true
+    },
+    {
+      "name": "actual old failed Root result rejected as a current qualified case",
+      "passed": true
+    }
+  ],
+  "current_NEG01": null,
+  "current_NEG02": null,
+  "history_seed_preview": {
+    "bytes": 179432,
+    "sha256": "10cd2800c52b43b96b2cc54c08889d708fdabeabf791accea366a7f6ccf42073"
+  },
+  "limitation": "The complete component bundle can only be validated when both new original closures and their LEASE bytes actually exist.",
+  "native_dispatches": 0,
+  "passed": 11,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.component-constructor-source-controls.v1",
+  "source": {
+    "bytes": 34048,
+    "sha256": "766f6b933b4982088925669f327e0c7c2d03855b8c3f140052d7fbfd088d1b5f"
+  },
+  "state": "SOURCE_CONTROLS_PASSED_CURRENT_COMPONENT_INPUTS_UNBOUND",
+  "whole_case_credit": 0
+}

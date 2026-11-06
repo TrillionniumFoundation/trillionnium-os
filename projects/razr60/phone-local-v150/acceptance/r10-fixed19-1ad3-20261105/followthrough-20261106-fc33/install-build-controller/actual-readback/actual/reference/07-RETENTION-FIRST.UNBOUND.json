@@ -1,0 +1,10 @@
+{
+  "actual": {
+    "identity_prefix": null,
+    "phase_authority_construction": null,
+    "request_directory": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "retention_first"
+}

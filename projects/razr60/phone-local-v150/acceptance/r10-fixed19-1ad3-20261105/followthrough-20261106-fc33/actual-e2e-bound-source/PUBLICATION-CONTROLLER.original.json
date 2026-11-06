@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.fc33.e2e-source-binding-controller.v1",
+  "request": {
+    "host": "mac",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "stdin": "import os,sys,stat,hashlib\nfrom pathlib import Path\np=Path(\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-bind-e2e-sources-r5-01.py\")\nassert p.resolve(strict=True)==p\nfd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)\nkeys=('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')\nwith os.fdopen(fd,'rb') as f:\n a=os.fstat(f.fileno());assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size==18012\n raw=f.read(18013);b=os.fstat(f.fileno())\nassert len(raw)==18012 and hashlib.sha256(raw).hexdigest()==\"a39fbab2020e357bbd5a146e15af96b76f847fcd83b54a2fd60dfc6430e5e3a1\"\nassert [getattr(a,k)for k in keys]==[getattr(b,k)for k in keys]==[getattr(p.lstat(),k)for k in keys]\nsys.argv=[str(p),'--bind-source-once']\nexec(compile(raw,str(p),'exec'),{'__name__':'__main__','__file__':str(p)})\n",
+    "idempotency_key": "fc33-r5-e2e-bind-source-once01",
+    "timeout_seconds": 180
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793988011368,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b204a568-fc05-7c0c\",\n    \"idempotency_key\": \"fc33-r5-e2e-bind-source-once01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b204a568-fc05-7c0c\",\n    \"request_digest\": \"849ca42f06f3552fe6709927f722cb81ffc8a907b899f22d496cda6079c4a4d8\",\n    \"request_fingerprint\": 9555693031260378415,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b204a568-fc05-7c0c\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 9066,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b204a568-fc05-7c0c\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793988011810,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b204a568-fc05-7c0c\",\n  \"launch_nonce\": \"c8daa4a01e403fd960205ee1f35217a7\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 385,\n      \"stored\": 385\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b204a568-fc05-7c0c\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226175746f6d617469635f7265747279223a2066616c73652c20226e65775f6e6f6e636573223a20302c202270686f6e655f63616c6c73223a20302c2022726573756c74223a207b226279746573223a2036303036322c202270617468223a20222f55736572732f7169616e71692f446f63756d656e74732f436f6465782f323032362d31302d31382f706f636b6574342d72617a7236302d75692f776f726b2f73746f636b31362d68657074612d6c6f63616c2d6d6f64656c2d526f6f742d763135302d72312f666f6c6c6f777468726f7567682d666333332d6532652d626f756e642d736f757263652d72352d30312f42494e44494e472e6a736f6e222c2022736861323536223a202230306136636334383530633430636337313064333438343830663064366232383731613134356338396565363830316264313935343332363539613864613135227d2c20227374617465223a2022534f555243455f424f554e445f5441534b5f455845435554494f4e5f554e424f554e44227d0a\",\n    \"eof\": true,\n    \"next_offset\": 385,\n    \"offset\": 0,\n    \"size\": 385,\n    \"text\": \"{\\\"automatic_retry\\\": false, \\\"new_nonces\\\": 0, \\\"phone_calls\\\": 0, \\\"result\\\": {\\\"bytes\\\": 60062, \\\"path\\\": \\\"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r5-01/BINDING.json\\\", \\\"sha256\\\": \\\"00a6cc4850c40cc710d348480f0d6b2871a145c89ee6801bd195432659a8da15\\\"}, \\\"state\\\": \\\"SOURCE_BOUND_TASK_EXECUTION_UNBOUND\\\"}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "source_publication": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"mode\":384,\"sha256\":\"a39fbab2020e357bbd5a146e15af96b76f847fcd83b54a2fd60dfc6430e5e3a1\",\"size\":18012,\"version\":\"16777233:593492149:18012:1793987962300570529:1793987962301002501\",\"written\":18012}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}
+

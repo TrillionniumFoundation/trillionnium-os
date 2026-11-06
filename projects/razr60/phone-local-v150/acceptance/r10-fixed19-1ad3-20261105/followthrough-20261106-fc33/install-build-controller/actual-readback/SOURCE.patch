@@ -1,0 +1,38 @@
+--- reference/observe_published_sources.py
++++ observe_controller_source_originals.py
+@@ -1,4 +1,4 @@
+-"""Read and losslessly transfer the exact 8+21 published host source originals."""
++"""Read the exact 27 actual published unbound controller host source originals."""
+ import base64
+ import hashlib
+ import json
+@@ -9,14 +9,7 @@
+ from pathlib import Path
+ 
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-SPECS = (
+-    ('binding', B / 'followthrough-fc33-release-source-binding-r5-01',
+-     ('', 'source', 'reference'), 8,
+-     {'bytes': 2548, 'sha256': '5699b0817fd6d4de93eafdc5ff9bb444620f0b097a18c3fcd6a7c2d9f2f1710c'}),
+-    ('derived', B / 'followthrough-fc33-release-source-chain-r5-derived01',
+-     ('', 'source', 'contracts', 'preview-module'), 21,
+-     {'bytes': 44922, 'sha256': '09ea015625df33e992160a2b58569079586a2b501087a6c23e51e3f869b1ca37'}),
+-)
++SPECS = (('controllers', B / 'followthrough-fc33-install-build-controller01', ('', 'originals', 'source', 'requests', 'reference'), 27, {'bytes': 9265, 'sha256': '8d7df81d1c3da3ce4f87e68c33e3b31aafa2503e658acb203655083e6505719d'}),)
+ META = ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink',
+         'st_size', 'st_mtime_ns', 'st_ctime_ns')
+ ALL = []
+@@ -132,10 +125,10 @@
+         bookend()
+         result = {
+             'schema': 'hepta.fc33.actual-published-source-originals.v1',
+-            'state': 'COMPLETE_29_PUBLISHED_HOST_SOURCE_ORIGINALS_READ',
+-            'publication_job_id': '1a1b1ff0f2e-fc05-7bef',
++            'state': 'COMPLETE_27_PUBLISHED_CONTROLLER_HOST_SOURCE_ORIGINALS_READ',
++            'publication_job_id': '1a1b25d70f9-fc05-7db5',
+             'started_unix_ns': started, 'finished_unix_ns': time.time_ns(),
+-            'groups': groups, 'file_count': 29, 'file_bytes': sum(group['file_bytes'] for group in groups),
++            'groups': groups, 'file_count': 27, 'file_bytes': sum(group['file_bytes'] for group in groups),
+             'all_original_files_read_to_EOF': True, 'all_directory_and_file_full9_bookended': True,
+             'phone_calls': 0, 'project_modules_executed': 0, 'host_file_writes': 0,
+             'current_case_qualified': False, 'actual_BUILD': None, 'actual_install': None, 'actual_READY': None,

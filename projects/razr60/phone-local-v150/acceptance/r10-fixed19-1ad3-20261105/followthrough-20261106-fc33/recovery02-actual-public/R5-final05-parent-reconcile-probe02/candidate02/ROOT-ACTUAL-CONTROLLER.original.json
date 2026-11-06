@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.fc33.parent-observer-root-controller.v1",
+  "request_publication": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"mode\":384,\"sha256\":\"e7afd47d4f41b18fe5745de2c2c32eabb8d771b54f7354fd64e89ed54fa45fbf\",\"size\":28145,\"version\":\"66306:39767129:28145:1793993045869348492:1793993045869403655\",\"written\":28145}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "execution_request": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "/home/alex/razr60-local-model-v150/ops/phone_once.py",
+      "ng-fc33-final05-surviving-parents-readonly02",
+      "/home/alex/razr60-local-model-v150/requests/ng-fc33-final05-surviving-parents-readonly02.json"
+    ],
+    "idempotency_key": "fc33-final05-surviving-parents-readonly02",
+    "timeout_seconds": 120
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/home/alex/razr60-local-model-v150/ops/phone_once.py\",\n      \"ng-fc33-final05-surviving-parents-readonly02\",\n      \"/home/alex/razr60-local-model-v150/requests/ng-fc33-final05-surviving-parents-readonly02.json\"\n    ],\n    \"created_unix_ms\": 1793993057664,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1b251a580-fc05-7d80\",\n    \"idempotency_key\": \"fc33-final05-surviving-parents-readonly02\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b251a580-fc05-7d80\",\n    \"request_digest\": \"c3c9b43c37f633437e2b24164952265a0c1d52b57116b2af2d1d9ceebc41a06f\",\n    \"request_fingerprint\": 14108005478444708675,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b251a580-fc05-7d80\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b251a580-fc05-7d80\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793993059401,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b251a580-fc05-7d80\",\n  \"launch_nonce\": \"7aab79c92fa2ddb36a7a75739de5ab7f\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 298,\n      \"stored\": 298\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b251a580-fc05-7d80\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b2272756e223a20222f686f6d652f616c65782f72617a7236302d6c6f63616c2d6d6f64656c2d763135302f6f7065726174696f6e732f6e672d666333332d66696e616c30352d737572766976696e672d706172656e74732d726561646f6e6c793032222c2022737461747573223a2022636f6d6d616e645f657869746564222c2022736861323536223a202264306432373236616462383961366532396336656430353439373263346566393133313430326135323163646664666466313139363238346463643063306534222c2022656c61707365645f7365636f6e6473223a20302e363631363932353736303137323330372c2022687474705f737461747573223a206e756c6c2c202270686f6e655f7263223a20302c20226572726f72223a206e756c6c7d0a\",\n    \"eof\": true,\n    \"next_offset\": 298,\n    \"offset\": 0,\n    \"size\": 298,\n    \"text\": \"{\\\"run\\\": \\\"/home/alex/razr60-local-model-v150/operations/ng-fc33-final05-surviving-parents-readonly02\\\", \\\"status\\\": \\\"command_exited\\\", \\\"sha256\\\": \\\"d0d2726adb89a6e29c6ed054972c4ef9131402a521cdfdfdf1196284dcd0c0e4\\\", \\\"elapsed_seconds\\\": 0.6616925760172307, \\\"http_status\\\": null, \\\"phone_rc\\\": 0, \\\"error\\\": null}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "scope": "Read-only current five-parent,11XML,two foreign audit,and fixture absence;no deletion/whole component/business qualification."
+}

@@ -1,0 +1,14 @@
+{
+  "actual": {
+    "build_process": {
+      "read": null,
+      "start": null,
+      "status": null
+    },
+    "build_result": null,
+    "component_construction": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "actual_build"
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.fc33.recovery02-root-execution-decision.v1",
+  "decision": "EXECUTE_ONE_EXACT_NEW_OWNED_RECOVERY02_AFTER_ACTUAL_HOST_PRESERVATION_PREVIEW",
+  "operation_label": "ng-fc33-final05-owned-scope-recovery02",
+  "idempotency_key": "fc33-final05-owned-scope-recovery02",
+  "source": {
+    "bytes": 358086,
+    "sha256": "94ab728a7fd4adb0ba4d4d7d5dc3c84cdad8923e73b4bd0cd87d5159bf6f0dc1"
+  },
+  "request": {
+    "bytes": 49592,
+    "sha256": "16e3ad935ad485e94146c5b35521b297694d3431ac3955014aa4b08e2c2db425"
+  },
+  "guard": {
+    "bytes": 49469,
+    "sha256": "9c0eb59a76426321f0c92e27dd049d8a42348398c2c4740b7ef41e236da10134"
+  },
+  "reader": {
+    "bytes": 48307,
+    "sha256": "6320200af67f8e429e838eb759821b8f575a2bf0af4e932d86caebf98e78bb10"
+  },
+  "host_preview": {
+    "job_id": "1a1b266b040-fc05-7de5",
+    "exit_code": 0,
+    "full_stdout_bytes": 417,
+    "full_stderr_bytes": 0,
+    "checked_originals": 149,
+    "read_bytes": 49258880,
+    "reconciliation_verified": true,
+    "phone_calls": 0,
+    "admission_written": false
+  },
+  "original_targets_unchanged": true,
+  "scope": {
+    "files": 97,
+    "directories": 10,
+    "private_blobs": 88,
+    "sender_originals": 144
+  },
+  "derived_parent_projection_sha256": "58b253b325daacf7417e7c2c53bd636c8840064b61965e4c37ffbf99e01263e0",
+  "prior_recovery01_known_pre_mutation_zero": true,
+  "prior_identity_replayed": false,
+  "foreign_files_removal_authorized": false,
+  "fresh_locked_phone_full_preflight_required_by_source": true,
+  "automatic_retry": false,
+  "business_or_component_qualification_granted": false,
+  "actual_phone_result": null
+}

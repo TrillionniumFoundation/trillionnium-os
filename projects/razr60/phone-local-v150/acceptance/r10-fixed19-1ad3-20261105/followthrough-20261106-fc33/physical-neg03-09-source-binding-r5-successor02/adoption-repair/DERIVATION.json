@@ -1,0 +1,83 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_positive_control": null,
+  "actual_publication": null,
+  "api": "actual current consumer-pinned verifier.verify_adoption(adoption_raw,read_pinned=originals.read)",
+  "common": {
+    "candidate": {
+      "bytes": 28157,
+      "sha256": "60f5a7b64cf055db153fc20e49951866fabf3e7c0b2b28d29290fec4d722eae9"
+    },
+    "changed_functions": [
+      "generation_inputs",
+      "admit"
+    ],
+    "complete_inverse": true,
+    "parent": {
+      "bytes": 27001,
+      "sha256": "6c85e9eee232e4b4662919cb78622bcb6bf216fc9b83aa613cf2141775a2941e"
+    },
+    "unchanged_functions": [
+      "need",
+      "sha",
+      "enc",
+      "strict",
+      "desc",
+      "b64",
+      "decode",
+      "relative",
+      "module",
+      "load_members",
+      "final_dependencies",
+      "literal",
+      "python_request",
+      "p4_plan_stage_program",
+      "p4_archive_chunk_program",
+      "operator_bundle_bytes",
+      "operator_stage_request",
+      "source_request",
+      "armed_request",
+      "archive_chunk_request"
+    ]
+  },
+  "constructor": {
+    "FROZEN_INPUTS": null,
+    "candidate": {
+      "bytes": 43142,
+      "sha256": "c9d6b80bbfbf1daa69132331511ad6a28e6f8c09a83072f2508021ca35603c4b"
+    },
+    "complete_inverse": true,
+    "only_literal_changed": "REFERENCE_INDEX",
+    "parent": {
+      "bytes": 43142,
+      "sha256": "d539cb12c5b3d99f4b6066de148f11db78d3ad4210bc034669ebc1bc99c44903"
+    }
+  },
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "old_adoption_or_current_originals_changed": false,
+  "phone_calls": 0,
+  "policy_verifier": {
+    "bytes": 65591,
+    "sha256": "6a3a9f8278ccf4b29724d9d034b4a349127a77d0adfd4daa8066ef6aa8d6c35b"
+  },
+  "production15_changed": false,
+  "reference_index": {
+    "candidate": {
+      "bytes": 38100,
+      "sha256": "bccd3fb4c6d785ea1edbca3442430f041e0e86b4df95be60c8882eba7ef3000c"
+    },
+    "complete_inverse": true,
+    "files": 171,
+    "only_member_changed": "candidate/templates/physical-fault/physical_fault_common.py",
+    "parent": {
+      "bytes": 38100,
+      "sha256": "1a7f17faf1d6705dac356076ce1d0df0292a35a805bceb117eeea50f52f15e32"
+    }
+  },
+  "runtime38_changed": false,
+  "schema": "hepta.fc33.negative-operator-current-adoption-source-derivation.v1",
+  "schema_union_allowed": false,
+  "state": "INDEPENDENT_OPERATOR_CANDIDATE_NO_PUBLICATION_OR_ACTUAL_TASK"
+}

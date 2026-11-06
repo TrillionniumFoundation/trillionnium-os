@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.fc33.root-release-install-stage-static-review.v1",
+  "source": {
+    "path": "review/install-build-controller/derive_release_install_stages_UNBOUND.py",
+    "bytes": 64682,
+    "sha256": "60c6d2e84216798037133199882c5d34101808eb9035a741c64f22d6aa3fbece"
+  },
+  "observer": {
+    "path": "review/install-build-controller/observe_p4_install_phase_UNBOUND.py",
+    "bytes": 8346,
+    "sha256": "e07d8e48fb81c6f80cf688b991c1d3fd2d939af85137df3f99104160cf628d32"
+  },
+  "review": "Complete stage constructor and P4 observer read by Root; no concrete dispatch/replay/scope-widening defect identified in these reviewed sources.",
+  "reviewed_contracts": [
+    "Explicit actual BUILD, phase, retention and installed-original dependencies; unknown inputs refuse before callback IO.",
+    "Original UNBOUND installation helper preserved; phase and final readers are separately bound by complete source inverses.",
+    "Only original protocol-derived actor/retention requests are emitted; no dispatcher in this constructor.",
+    "Actual source/request full9 observed before and after original controller call with ordered terminal/creation times.",
+    "Retained originals preserve source metadata and exact bytes; new host inode metadata is read after create-only publication.",
+    "Same complete actor scope for manifest/chunks/final-manifest; final reader limits its qualification to original observed transport.",
+    "P4 observer creates only exact exclusive request and never invokes phone actor."
+  ],
+  "actual_source_interfaces_not_positive_fixture_tested": true,
+  "actual_BUILD": null,
+  "actual_install": null,
+  "actual_READY": null,
+  "phone_calls": 0,
+  "fixed19_credit": 0,
+  "limits": [
+    "Static review cannot substitute for real current component closures, actual BUILD or original phase/retention outcomes.",
+    "The current consumer and source-chain pins remain authoritative; no old adoption schema or count assumption is added."
+  ]
+}

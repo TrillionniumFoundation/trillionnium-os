@@ -1,0 +1,157 @@
+{
+  "actor_dispatches": 0,
+  "actual_BUILD_positive": false,
+  "actual_READY_positive": false,
+  "actual_current_component_positive": false,
+  "actual_install_positive": false,
+  "actual_retention_positive": false,
+  "checks": [
+    {
+      "name": "stage UNBOUND rejects before parsing or both original callbacks",
+      "passed": true
+    },
+    {
+      "name": "stage CLI UNBOUND refuses before argument parser or source reads",
+      "passed": true
+    },
+    {
+      "name": "actual_build actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "install_plan actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "ingest_phase actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "phase_authority actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "retention_first actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "ingest_capture actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "retention_remaining actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "retention_finish actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "exact8_inputs actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "final_install_reader actual slots None refuse before source/callback IO",
+      "passed": true
+    },
+    {
+      "name": "complete input byte drift refuses before all callback IO",
+      "passed": true
+    },
+    {
+      "name": "typed original descriptor rejects False as byte count",
+      "passed": true
+    },
+    {
+      "name": "typed original descriptor rejects 0.0 as byte count",
+      "passed": true
+    },
+    {
+      "name": "duplicate stage JSON key refuses",
+      "passed": true
+    },
+    {
+      "name": "descriptor JSON key reordering preserves the exact bound source bytes",
+      "passed": true
+    },
+    {
+      "name": "whole-source literal inverse returns every original byte",
+      "passed": true
+    },
+    {
+      "name": "P4 observer UNBOUND refuses before any filesystem callback",
+      "passed": true
+    },
+    {
+      "name": "P4 observation request pin rejects False",
+      "passed": true
+    },
+    {
+      "name": "P4 observation request pin rejects 113.0",
+      "passed": true
+    },
+    {
+      "name": "P4 specification accepts exact request bytes without executing them",
+      "passed": true
+    },
+    {
+      "name": "observer request and complete bound source rederive after JSON transport",
+      "passed": true
+    },
+    {
+      "name": "changed observer source rejected by byte rederivation",
+      "passed": true
+    },
+    {
+      "name": "host request written exclusively and full bytes/full9 read back",
+      "passed": true
+    },
+    {
+      "name": "existing host request refuses overwrite/replay",
+      "passed": true
+    },
+    {
+      "name": "host request symlink parent refused",
+      "passed": true
+    },
+    {
+      "name": "retained host reader independently checks supplied full9",
+      "passed": true
+    },
+    {
+      "name": "same original may select one of two separately verified retained full copies",
+      "passed": true
+    },
+    {
+      "name": "retained alias cannot change original namespace",
+      "passed": true
+    },
+    {
+      "name": "host reader rejects original metadata change even with same bytes",
+      "passed": true
+    },
+    {
+      "name": "published installation helper actual slots remain None",
+      "passed": true
+    }
+  ],
+  "component_helper": {
+    "bytes": 34048,
+    "sha256": "766f6b933b4982088925669f327e0c7c2d03855b8c3f140052d7fbfd088d1b5f"
+  },
+  "fixed19_credit": 0,
+  "limitation": "Only complete future actual originals can qualify each production reader. No synthetic BUILD/READY or phone effect was used.",
+  "model_requests": 0,
+  "observer": {
+    "bytes": 8346,
+    "sha256": "e07d8e48fb81c6f80cf688b991c1d3fd2d939af85137df3f99104160cf628d32"
+  },
+  "passed": 32,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.release-install-stage-source-controls.v1",
+  "source": {
+    "bytes": 64682,
+    "sha256": "60c6d2e84216798037133199882c5d34101808eb9035a741c64f22d6aa3fbece"
+  },
+  "state": "SOURCE_AND_ISOLATED_HOST_CONTROLS_PASSED_ACTUAL_STAGES_UNBOUND"
+}

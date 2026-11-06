@@ -1,0 +1,19 @@
+{
+  "candidate": {
+    "bytes": 7752,
+    "sha256": "8a59f1ccb4cc3d24e866c5be23b6c82f1d69f45a67bd0db4c7289730f8ce1e38"
+  },
+  "changes": [
+    "one SPECS assignment exact27/terminal/flat layouts",
+    "docstring",
+    "scope state label",
+    "publication job identifier",
+    "expected total file count"
+  ],
+  "operation": "read only existing Mac host source files; no project module execution and no phone calls",
+  "parent": {
+    "bytes": 7963,
+    "sha256": "e70ad6384e7384529346b1fa3e3dbaf54baaf507c521d23d15a90d8628729fbd"
+  },
+  "schema": "hepta.fc33.controller-source-observer-derivation.v1"
+}

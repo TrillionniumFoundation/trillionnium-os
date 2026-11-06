@@ -1,0 +1,68 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_business_task_run": false,
+  "actual_install": null,
+  "all_actual_streams_complete_durable_and_EOF": true,
+  "all_original_full9_and_exact_directory_sets_verified": true,
+  "complete_actual_read_pages": 33,
+  "current_collector_members": 7,
+  "current_operator_members": 6,
+  "current_shared_members": 17,
+  "fixed19_credit": 0,
+  "new_controls_executed": 0,
+  "phone_calls_by_archive": 0,
+  "publication_job": "1a1b204a568-fc05-7c0c",
+  "read_only_observation_job": "1a1b23d619a-fc05-7d1b",
+  "schema": "hepta.fc33.actual-e2e-source-archive-verification.v1",
+  "source_file_bytes": 2234976,
+  "source_file_count": 49,
+  "source_inverse_count": 4,
+  "source_inverses": [
+    {
+      "actual": {
+        "bytes": 27535,
+        "sha256": "caeb1a437ffe49e77874da454230aa2d64b23e6d205251aa863a8b8edd0b2fcd"
+      },
+      "parent": {
+        "bytes": 27473,
+        "sha256": "70ea657a6a3f1149fd6840b7d1497336f75275e5e7a0661549e4d4e5c1432c4d"
+      },
+      "path": "operator-chain/root_acceptance_r10.py"
+    },
+    {
+      "actual": {
+        "bytes": 20208,
+        "sha256": "d1959bfc46c0dc0e347a1a438062f6f6259d85bd6f17cf0b4aae967f1e488b53"
+      },
+      "parent": {
+        "bytes": 20119,
+        "sha256": "595c20d892f3ffa3daa9eb4fa0da9df8d1eab7f3166a8048cc5cb027c09c99e6"
+      },
+      "path": "source/run_fixed19_e2e_root_once.py"
+    },
+    {
+      "actual": {
+        "bytes": 249860,
+        "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+      },
+      "parent": {
+        "bytes": 249798,
+        "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+      },
+      "path": "reference/release_boundaries.source.original.py"
+    },
+    {
+      "actual": {
+        "bytes": 16407,
+        "sha256": "8fcf151ebeeeeaa38f0d8e057b4340f7c681f402d6a5a9670ca95f79737935e5"
+      },
+      "parent": {
+        "bytes": 16407,
+        "sha256": "2b4ff90f7078af2481feb8a2d33c39d1a0e260102cd769a4ee3b46d9bec47e11"
+      },
+      "path": "reference/readiness.source.original.py"
+    }
+  ],
+  "state": "ACTUAL_E2E_SOURCE_PUBLICATION_AND_COMPLETE_49_ORIGINALS_VERIFIED"
+}

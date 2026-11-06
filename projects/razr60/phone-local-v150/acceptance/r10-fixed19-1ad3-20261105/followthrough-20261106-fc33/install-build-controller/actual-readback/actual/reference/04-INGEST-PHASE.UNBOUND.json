@@ -1,0 +1,12 @@
+{
+  "actual": {
+    "actor_controller": null,
+    "after_observer": null,
+    "before_observer": null,
+    "phase": null,
+    "plan_construction": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "ingest_phase"
+}

@@ -1,0 +1,13 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/publish_negative_sources_once.py",
+    "--publish-negative-source-candidate-once",
+    "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81"
+  ],
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "fc33-negative-source-only-native-v3-r5-02",
+  "timeout_seconds": 120
+}

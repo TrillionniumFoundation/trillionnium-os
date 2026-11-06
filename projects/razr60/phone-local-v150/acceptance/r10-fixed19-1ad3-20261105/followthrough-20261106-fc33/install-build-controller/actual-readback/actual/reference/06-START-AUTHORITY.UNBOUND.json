@@ -1,0 +1,14 @@
+{
+  "actual": {
+    "execution_plan": null,
+    "phase": "start",
+    "phase_carriers": {
+      "stage": null,
+      "start": null
+    },
+    "release_inputs": null
+  },
+  "output_root": null,
+  "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+  "stage": "phase_authority"
+}

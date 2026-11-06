@@ -1,0 +1,24 @@
+{
+  "actor_dispatches": 0,
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_file_bytes": 170416,
+  "actual_file_count": 27,
+  "actual_install": null,
+  "actual_source_count": 5,
+  "actual_source_slots_None": [
+    "derive_component_build_inputs_UNBOUND.py:FROZEN_INPUTS",
+    "derive_release_install_stages_UNBOUND.py:FROZEN_INPUTS",
+    "observe_p4_install_phase_UNBOUND.py:FROZEN_SPEC"
+  ],
+  "all_actual_original_bytes_equal_prepared_payload": true,
+  "complete_read_pages": 4,
+  "fixed19_credit": 0,
+  "observation_job": "1a1b25f8f91-fc05-7dc2",
+  "original_full9_and_membership_verified": true,
+  "phone_calls": 0,
+  "publication_job": "1a1b25d70f9-fc05-7db5",
+  "schema": "hepta.fc33.actual-controller-source-archive-verification.v1",
+  "source_controls_rerun": 0,
+  "state": "ACTUAL_27_CONTROLLER_SOURCE_ORIGINALS_VERIFIED_EXECUTION_UNBOUND"
+}

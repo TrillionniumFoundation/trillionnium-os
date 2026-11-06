@@ -1,0 +1,15 @@
+{
+  "after": "directories=('', 'originals', 'source', 'requests', 'reference')",
+  "before": "directories=('', 'shared', 'shared/provider', 'shared/provider/source', 'reference')",
+  "candidate_function": {
+    "bytes": 3857,
+    "sha256": "fb673833a058f934bacf7e5eadc958a18016c9fb7572efca61a871c0b7c07558"
+  },
+  "complete_inverse": true,
+  "host_publication_only": true,
+  "parent_function": {
+    "bytes": 3877,
+    "sha256": "551077aaff3819aa4e00dc8f41af6a64cbc335cd188cfd1b72db9056c2e2e698"
+  },
+  "phone_calls": 0
+}

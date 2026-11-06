@@ -1,0 +1,100 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_case_plans": null,
+  "actual_process": null,
+  "actual_source_outputs": null,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_owned_transport_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02",
+  "no_delete_or_automatic_retry": true,
+  "old181_inputs_and_failed_controller_preserved": true,
+  "phone_calls": 0,
+  "request": {
+    "bytes": 498,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-negative-source-binding02/PROCESS-REQUEST.UNEXECUTED.json",
+    "sha256": "31cc0e8b0982ce8bbb2a504af587f504c94b6d327865d1fd8d05e4afffd874d8"
+  },
+  "required_existing_staged_files_before_the_one_process_request": [
+    {
+      "bytes": 19652,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/publish_negative_sources_once.py",
+      "sha256": "b1ae10610b16aeb4620ec6f66362d3945e1f2a40717465303b24724e03b4eb81"
+    },
+    {
+      "bytes": 710094,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/SOURCE-PAYLOAD.zlib",
+      "sha256": "6fb4b534935bd54e165245fdc090b95270a31810307ab63ee5183f40109e8964"
+    }
+  ],
+  "schema": "hepta.fc33.negative-source-only-unexecuted-transport.v1",
+  "source_payload_chunks": [
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-000.bin",
+      "offset": 0,
+      "sha256": "60f7ba0a93700f91e2eae812a04f9d8771c2a11d631a2af797cf8fd02fb69811"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-001.bin",
+      "offset": 65536,
+      "sha256": "1dbf567e01235494b3dd8d06506eeb52a329bab679d89ec195c6fe7dbe4a9476"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-002.bin",
+      "offset": 131072,
+      "sha256": "ab0b5916d147240327af459866c61bbe1438e3137427205255c1617d62860f07"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-003.bin",
+      "offset": 196608,
+      "sha256": "632922de7c200f97fa71b061c47c36780db3c7a07f5ac7a47f89a9e67ff51310"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-004.bin",
+      "offset": 262144,
+      "sha256": "57571e74b1cde26ded56ff84f7a1855ca8b421cc27062c095601970a4d6f5ad2"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-005.bin",
+      "offset": 327680,
+      "sha256": "37ea1e567922ee906a514af219a8655192ce49bacd83c5ebcbff3c7d160d225b"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-006.bin",
+      "offset": 393216,
+      "sha256": "1c8db5b166058d5528e655e839b1bdc5315dbddea1cc6416a1c54451a44bf807"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-007.bin",
+      "offset": 458752,
+      "sha256": "fd39873eba6f6528cfcaf3cc1ce4439268f1e46515edfea3eb7f50d654f4ad59"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-008.bin",
+      "offset": 524288,
+      "sha256": "69d627e1a441793502696941f6e541d066fee5f30647397b686aab4f0371009f"
+    },
+    {
+      "bytes": 65536,
+      "local_relative_path": "chunks/source-payload-009.bin",
+      "offset": 589824,
+      "sha256": "074450e4f26b86df9f3f6094037d92c399202ac18e5367d3f14a51265d4cfba3"
+    },
+    {
+      "bytes": 54734,
+      "local_relative_path": "chunks/source-payload-010.bin",
+      "offset": 655360,
+      "sha256": "b3a90dd84fe78727eb2f689cbd505d9394ac84eb924bf9abe73dcee1a5a90add"
+    }
+  ],
+  "state": "PREPARED_SUCCESSOR_FOR_ROOT_REVIEW_NOT_TRANSPORTED_OR_EXECUTED"
+}

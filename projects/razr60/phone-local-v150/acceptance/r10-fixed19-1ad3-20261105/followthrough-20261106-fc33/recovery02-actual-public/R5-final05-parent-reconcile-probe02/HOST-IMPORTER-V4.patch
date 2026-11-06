@@ -1,0 +1,20 @@
+--- import_parent_observer_host_v3.py
++++ import_parent_observer_host_v4.py
+@@ -9,7 +9,7 @@
+ 
+ BASE=Path('/home/alex/razr60-local-model-v150')
+ LABEL='ng-fc33-final05-surviving-parents-readonly02'
+-OUT=BASE/'fc33-final05-surviving-parents-readonly02-import02'
++OUT=BASE/'fc33-final05-surviving-parents-readonly02-import03'
+ RESULT_PIN=(195248,'d0d2726adb89a6e29c6ed054972c4ef9131402a521cdfdfdf1196284dcd0c0e4')
+ REQUEST_PIN=(28145,'e7afd47d4f41b18fe5745de2c2c32eabb8d771b54f7354fd64e89ed54fa45fbf')
+ SOURCE_PIN=(91164,'0af051db4502e1655c5e3eb1580ff6cd981fae794dc6cb41a56e1704bd490acc')
+@@ -108,7 +108,7 @@
+     need(len(locks['aliases'])==28 and [r['path'] for r in locks['aliases']]==ordered,'all complete ordered lock observations')
+     lock_identities={}
+     for row in locks['aliases']:
+-        file_row(row);pin_equal(row,aliases[row['path']],legacy_without_label=row['path'] in baseline['entries'])
++        file_row(row);pin_equal(row,dict(aliases[row['path']],path=row['path']),legacy_without_label=row['path'] in baseline['entries'])
+         key=tuple(row['metadata'][:2]);observed=(row['metadata'],row['selinux_raw_b64'])
+         need(key not in lock_identities or lock_identities[key]==observed,'complete current lock alias metadata/labels agree')
+         lock_identities[key]=observed

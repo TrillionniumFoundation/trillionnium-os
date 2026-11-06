@@ -1,0 +1,8 @@
+{
+  "actual_inputs": null,
+  "constructor": "component_build",
+  "execution_idempotency_key": null,
+  "execution_timeout_seconds": 180,
+  "output_root": null,
+  "schema": "hepta.fc33.actual-constructor-input-binding.v1"
+}

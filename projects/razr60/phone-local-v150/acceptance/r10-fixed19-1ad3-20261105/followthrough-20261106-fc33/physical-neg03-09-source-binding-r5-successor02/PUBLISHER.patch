@@ -1,0 +1,37 @@
+--- reference/publish_negative_sources_once.original.py
++++ transport/publish_negative_sources_once.py
+@@ -15,9 +15,9 @@
+ import types
+ import zlib
+ 
+-SOURCE_PAYLOAD = {'bytes': 711272, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-01/SOURCE-PAYLOAD.zlib', 'sha256': '324bf65adb34b22e870ab8d791216ffcc50f360685934ab7696694b866b5a873'}
+-PAYLOAD_RAW = {'bytes': 2521095, 'sha256': '0d178167de8e3e983b64bc116d8a87d4d04b305d58668a69da5eec670570cf7e'}
+-EXPECTED_INPUTS = {'bytes': 2537, 'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-01/SOURCE-INPUTS.json', 'sha256': '639a157ab7609bfad53d910216ed5fc8f86b973962b908af463ac876628ee694'}
++SOURCE_PAYLOAD = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-transport-r5-02/SOURCE-PAYLOAD.zlib', 'bytes': 710094, 'sha256': '6fb4b534935bd54e165245fdc090b95270a31810307ab63ee5183f40109e8964'}
++PAYLOAD_RAW = {'bytes': 2523407, 'sha256': 'fd609d1093a85ec4c60ea3aee900e13d84e489f1a48f6188958abba817a827d6'}
++EXPECTED_INPUTS = {'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-negative-source-binding-r5-02/SOURCE-INPUTS.json', 'bytes': 2537, 'sha256': 'b922c80e3e0d212167b164aed3d044d416439510368aa4b02998be2b3dbe9567'}
+ PUBLISHER_SOURCE = {
+     'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v3.py',
+     'bytes': 16399, 'sha256': '842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82',
+@@ -26,8 +26,8 @@
+     'path': '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-chain-r5-derived01/SOURCE-BINDING.json',
+     'bytes': 3608, 'sha256': 'c7b074b529b4bbe258303842b3d0b2f3912d8cdf606f803522775b79ba147003',
+ }
+-SOURCE_PARENT = {'bytes': 43142, 'sha256': 'd539cb12c5b3d99f4b6066de148f11db78d3ad4210bc034669ebc1bc99c44903'}
+-REFERENCE_INDEX = {'bytes': 38100, 'sha256': '1a7f17faf1d6705dac356076ce1d0df0292a35a805bceb117eeea50f52f15e32'}
++SOURCE_PARENT = {'bytes': 43126, 'sha256': '3c64904a631b8987fa6626e2575a5e1e8046dde9ac6f6cef22273e5c86d1f982'}
++REFERENCE_INDEX = {'bytes': 38100, 'sha256': 'bccd3fb4c6d785ea1edbca3442430f041e0e86b4df95be60c8882eba7ef3000c'}
+ B = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+ META = ('st_dev', 'st_ino', 'st_mode', 'st_uid', 'st_gid', 'st_nlink',
+         'st_size', 'st_mtime_ns', 'st_ctime_ns')
+@@ -188,8 +188,8 @@
+     payload, files = decode_payload(payload_raw, material)
+     binding_root, derived_root = Path(payload['binding_root']), Path(payload['derived_root'])
+     need(binding_root.parent == derived_root.parent == B and binding_root != derived_root
+-         and B.resolve(strict=True) == B and binding_root.name == 'followthrough-fc33-negative-source-binding-r5-01'
+-         and derived_root.name == 'fc33-negative-sources-native-v3-r5-01',
++         and B.resolve(strict=True) == B and binding_root.name == 'followthrough-fc33-negative-source-binding-r5-02'
++         and derived_root.name == 'fc33-negative-sources-native-v3-r5-02',
+          'two exact independent new source namespaces')
+     need(not os.path.lexists(binding_root) and not os.path.lexists(derived_root),
+          'both one-use source outputs must be absent; no automatic retry or overwrite')

@@ -1,0 +1,659 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_file_bytes": 170416,
+  "actual_file_count": 27,
+  "files": [
+    {
+      "copy": {
+        "bytes": 9265,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/DERIVATION.json",
+        "sha256": "8d7df81d1c3da3ce4f87e68c33e3b31aafa2503e658acb203655083e6505719d"
+      },
+      "original": {
+        "bytes": 9265,
+        "metadata": {
+          "st_ctime_ns": 1793993830971286050,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533932,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830971286050,
+          "st_nlink": 1,
+          "st_size": 9265,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/DERIVATION.json",
+        "sha256": "8d7df81d1c3da3ce4f87e68c33e3b31aafa2503e658acb203655083e6505719d"
+      },
+      "relative_path": "actual-readback/actual/DERIVATION.json"
+    },
+    {
+      "copy": {
+        "bytes": 9785,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/EXECUTION-ORDER.md",
+        "sha256": "caaa4eb5cb4b8cefe615aafaf27eeee80a2dd21497b0962e2dc9b0639e9cc404"
+      },
+      "original": {
+        "bytes": 9785,
+        "metadata": {
+          "st_ctime_ns": 1793993830961566800,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533906,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830961566800,
+          "st_nlink": 1,
+          "st_size": 9785,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/EXECUTION-ORDER.md",
+        "sha256": "caaa4eb5cb4b8cefe615aafaf27eeee80a2dd21497b0962e2dc9b0639e9cc404"
+      },
+      "relative_path": "actual-readback/actual/EXECUTION-ORDER.md"
+    },
+    {
+      "copy": {
+        "bytes": 4906,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/SOURCE-PACKAGE.json",
+        "sha256": "cf50a27c818510234731ac0922925e77d5b2575c86525842d7b6bd14aa7944b8"
+      },
+      "original": {
+        "bytes": 4906,
+        "metadata": {
+          "st_ctime_ns": 1793993830961818140,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533907,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830961818140,
+          "st_nlink": 1,
+          "st_size": 4906,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/SOURCE-PACKAGE.json",
+        "sha256": "cf50a27c818510234731ac0922925e77d5b2575c86525842d7b6bd14aa7944b8"
+      },
+      "relative_path": "actual-readback/actual/SOURCE-PACKAGE.json"
+    },
+    {
+      "copy": {
+        "bytes": 256,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/01-COMPONENT-BUILD-INPUTS.UNBOUND.json",
+        "sha256": "fa19be33ba53eb64f2b086f95fd418ecff717d0e91075fadebb9a2c42ebf18c8"
+      },
+      "original": {
+        "bytes": 256,
+        "metadata": {
+          "st_ctime_ns": 1793993830962054314,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533908,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830962054314,
+          "st_nlink": 1,
+          "st_size": 256,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/01-COMPONENT-BUILD-INPUTS.UNBOUND.json",
+        "sha256": "fa19be33ba53eb64f2b086f95fd418ecff717d0e91075fadebb9a2c42ebf18c8"
+      },
+      "relative_path": "actual-readback/actual/reference/01-COMPONENT-BUILD-INPUTS.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 296,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/02-ACTUAL-BUILD.UNBOUND.json",
+        "sha256": "b2a8ebde5f8eb4ef99bd5e89ed86000d9dddd6549743ae01c8a516e7043b3f27"
+      },
+      "original": {
+        "bytes": 296,
+        "metadata": {
+          "st_ctime_ns": 1793993830962284405,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533909,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830962284405,
+          "st_nlink": 1,
+          "st_size": 296,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/02-ACTUAL-BUILD.UNBOUND.json",
+        "sha256": "b2a8ebde5f8eb4ef99bd5e89ed86000d9dddd6549743ae01c8a516e7043b3f27"
+      },
+      "relative_path": "actual-readback/actual/reference/02-ACTUAL-BUILD.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 379,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/03-INSTALL-PLAN.UNBOUND.json",
+        "sha256": "bdd7412bc034061981582e5004f611f3a4288efc375d402acd5fa8ad2cfe2b5b"
+      },
+      "original": {
+        "bytes": 379,
+        "metadata": {
+          "st_ctime_ns": 1793993830962510786,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533910,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830962510786,
+          "st_nlink": 1,
+          "st_size": 379,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/03-INSTALL-PLAN.UNBOUND.json",
+        "sha256": "bdd7412bc034061981582e5004f611f3a4288efc375d402acd5fa8ad2cfe2b5b"
+      },
+      "relative_path": "actual-readback/actual/reference/03-INSTALL-PLAN.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 279,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/04-INGEST-PHASE.UNBOUND.json",
+        "sha256": "144600c62748cef913cf3030cc71d7b2bcf55c0f301999aef4cb330b75fd16fc"
+      },
+      "original": {
+        "bytes": 279,
+        "metadata": {
+          "st_ctime_ns": 1793993830962740751,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533911,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830962740751,
+          "st_nlink": 1,
+          "st_size": 279,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/04-INGEST-PHASE.UNBOUND.json",
+        "sha256": "144600c62748cef913cf3030cc71d7b2bcf55c0f301999aef4cb330b75fd16fc"
+      },
+      "relative_path": "actual-readback/actual/reference/04-INGEST-PHASE.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 274,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/05-STAGE-AUTHORITY.UNBOUND.json",
+        "sha256": "1f753fd554ed7e858bd462c744fa3ee6d89ccf3acb9c339efdbffe5fd0c7278f"
+      },
+      "original": {
+        "bytes": 274,
+        "metadata": {
+          "st_ctime_ns": 1793993830962990592,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533912,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830962990592,
+          "st_nlink": 1,
+          "st_size": 274,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/05-STAGE-AUTHORITY.UNBOUND.json",
+        "sha256": "1f753fd554ed7e858bd462c744fa3ee6d89ccf3acb9c339efdbffe5fd0c7278f"
+      },
+      "relative_path": "actual-readback/actual/reference/05-STAGE-AUTHORITY.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 295,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/06-START-AUTHORITY.UNBOUND.json",
+        "sha256": "2a8bd9e1c86a2c7ac265b079f56952bc75d501f1e637500fb174b7acfc770724"
+      },
+      "original": {
+        "bytes": 295,
+        "metadata": {
+          "st_ctime_ns": 1793993830963237308,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533913,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830963237308,
+          "st_nlink": 1,
+          "st_size": 295,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/06-START-AUTHORITY.UNBOUND.json",
+        "sha256": "2a8bd9e1c86a2c7ac265b079f56952bc75d501f1e637500fb174b7acfc770724"
+      },
+      "relative_path": "actual-readback/actual/reference/06-START-AUTHORITY.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 247,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/07-RETENTION-FIRST.UNBOUND.json",
+        "sha256": "3f61a42feaff10750d008510995bdc5ea7b324664ce6050bfb1f51476c2196de"
+      },
+      "original": {
+        "bytes": 247,
+        "metadata": {
+          "st_ctime_ns": 1793993830963543942,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533914,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830963543942,
+          "st_nlink": 1,
+          "st_size": 247,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/07-RETENTION-FIRST.UNBOUND.json",
+        "sha256": "3f61a42feaff10750d008510995bdc5ea7b324664ce6050bfb1f51476c2196de"
+      },
+      "relative_path": "actual-readback/actual/reference/07-RETENTION-FIRST.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 286,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/08-INGEST-CAPTURE.UNBOUND.json",
+        "sha256": "b22bf011226f3c0ad40229bcccdf732a9cba07efbb49157e59314350693e4b6d"
+      },
+      "original": {
+        "bytes": 286,
+        "metadata": {
+          "st_ctime_ns": 1793993830963792991,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533915,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830963792991,
+          "st_nlink": 1,
+          "st_size": 286,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/08-INGEST-CAPTURE.UNBOUND.json",
+        "sha256": "b22bf011226f3c0ad40229bcccdf732a9cba07efbb49157e59314350693e4b6d"
+      },
+      "relative_path": "actual-readback/actual/reference/08-INGEST-CAPTURE.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 276,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/09-RETENTION-REMAINING.UNBOUND.json",
+        "sha256": "14504049dc036f2064c9c340f5d37f028ceb95535974e1e624dc7984ad4977d8"
+      },
+      "original": {
+        "bytes": 276,
+        "metadata": {
+          "st_ctime_ns": 1793993830964043666,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533916,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830964043666,
+          "st_nlink": 1,
+          "st_size": 276,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/09-RETENTION-REMAINING.UNBOUND.json",
+        "sha256": "14504049dc036f2064c9c340f5d37f028ceb95535974e1e624dc7984ad4977d8"
+      },
+      "relative_path": "actual-readback/actual/reference/09-RETENTION-REMAINING.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 237,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/10-RETENTION-FINISH.UNBOUND.json",
+        "sha256": "aba96114e5b45b773eff7711df3ae1f4e4c9ee73eb1f7ca896106b041111c7dc"
+      },
+      "original": {
+        "bytes": 237,
+        "metadata": {
+          "st_ctime_ns": 1793993830964304757,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533917,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830964304757,
+          "st_nlink": 1,
+          "st_size": 237,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/10-RETENTION-FINISH.UNBOUND.json",
+        "sha256": "aba96114e5b45b773eff7711df3ae1f4e4c9ee73eb1f7ca896106b041111c7dc"
+      },
+      "relative_path": "actual-readback/actual/reference/10-RETENTION-FINISH.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 409,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/11-EXACT8.UNBOUND.json",
+        "sha256": "edd59f9c6d0ba18468ab67495845a59b7276805a256d3821f6cecec692d841ef"
+      },
+      "original": {
+        "bytes": 409,
+        "metadata": {
+          "st_ctime_ns": 1793993830964557348,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533918,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830964557348,
+          "st_nlink": 1,
+          "st_size": 409,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/11-EXACT8.UNBOUND.json",
+        "sha256": "edd59f9c6d0ba18468ab67495845a59b7276805a256d3821f6cecec692d841ef"
+      },
+      "relative_path": "actual-readback/actual/reference/11-EXACT8.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 183,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/12-FINAL-INSTALL-READER.UNBOUND.json",
+        "sha256": "5b450afb6f093280a5bdb8604c167cb0b0d3b12e04c9d98073cc24af2c5bfb0b"
+      },
+      "original": {
+        "bytes": 183,
+        "metadata": {
+          "st_ctime_ns": 1793993830964810980,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533919,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830964810980,
+          "st_nlink": 1,
+          "st_size": 183,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/12-FINAL-INSTALL-READER.UNBOUND.json",
+        "sha256": "5b450afb6f093280a5bdb8604c167cb0b0d3b12e04c9d98073cc24af2c5bfb0b"
+      },
+      "relative_path": "actual-readback/actual/reference/12-FINAL-INSTALL-READER.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 222,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/13-BIND-COMPONENT-INPUT.UNBOUND.json",
+        "sha256": "02144a387357d883eab8c269af5aac7367fc2bd06d903e8f327df551850f53a7"
+      },
+      "original": {
+        "bytes": 222,
+        "metadata": {
+          "st_ctime_ns": 1793993830965070446,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533920,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830965070446,
+          "st_nlink": 1,
+          "st_size": 222,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/13-BIND-COMPONENT-INPUT.UNBOUND.json",
+        "sha256": "02144a387357d883eab8c269af5aac7367fc2bd06d903e8f327df551850f53a7"
+      },
+      "relative_path": "actual-readback/actual/reference/13-BIND-COMPONENT-INPUT.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 228,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/14-BIND-STAGE-INPUT.UNBOUND.json",
+        "sha256": "68bfbbae59b23c4e44280d84963ae976d0de1e9678a309ecd82ec76e9cea2f24"
+      },
+      "original": {
+        "bytes": 228,
+        "metadata": {
+          "st_ctime_ns": 1793993830965315912,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533921,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830965315912,
+          "st_nlink": 1,
+          "st_size": 228,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/14-BIND-STAGE-INPUT.UNBOUND.json",
+        "sha256": "68bfbbae59b23c4e44280d84963ae976d0de1e9678a309ecd82ec76e9cea2f24"
+      },
+      "relative_path": "actual-readback/actual/reference/14-BIND-STAGE-INPUT.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 430,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/15-BIND-INPUT-CONTROLLER-REQUEST.UNBOUND.json",
+        "sha256": "f844ff30bb45390b54f486eff5261da54d761c3e2400755843923f25b26ce143"
+      },
+      "original": {
+        "bytes": 430,
+        "metadata": {
+          "st_ctime_ns": 1793993830965614171,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533922,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830965614171,
+          "st_nlink": 1,
+          "st_size": 430,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/15-BIND-INPUT-CONTROLLER-REQUEST.UNBOUND.json",
+        "sha256": "f844ff30bb45390b54f486eff5261da54d761c3e2400755843923f25b26ce143"
+      },
+      "relative_path": "actual-readback/actual/reference/15-BIND-INPUT-CONTROLLER-REQUEST.UNBOUND.json"
+    },
+    {
+      "copy": {
+        "bytes": 782,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/BINDER-CONTROL-RESULT.json",
+        "sha256": "92359a84f456db883f10c21f4b22ce61ac634348aaef23ec585a14449b5d1927"
+      },
+      "original": {
+        "bytes": 782,
+        "metadata": {
+          "st_ctime_ns": 1793993830965879262,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533923,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830965879262,
+          "st_nlink": 1,
+          "st_size": 782,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/BINDER-CONTROL-RESULT.json",
+        "sha256": "92359a84f456db883f10c21f4b22ce61ac634348aaef23ec585a14449b5d1927"
+      },
+      "relative_path": "actual-readback/actual/reference/BINDER-CONTROL-RESULT.json"
+    },
+    {
+      "copy": {
+        "bytes": 2164,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/COMPONENT-CONTROL-RESULT.json",
+        "sha256": "be020b5c7abeb3c280634598d4e2483c22a1046bb250e31e83d96c1e24a4401e"
+      },
+      "original": {
+        "bytes": 2164,
+        "metadata": {
+          "st_ctime_ns": 1793993830966146812,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533924,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830966146812,
+          "st_nlink": 1,
+          "st_size": 2164,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/COMPONENT-CONTROL-RESULT.json",
+        "sha256": "be020b5c7abeb3c280634598d4e2483c22a1046bb250e31e83d96c1e24a4401e"
+      },
+      "relative_path": "actual-readback/actual/reference/COMPONENT-CONTROL-RESULT.json"
+    },
+    {
+      "copy": {
+        "bytes": 1973,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/ROOT-STAGE-STATIC-REVIEW.json",
+        "sha256": "e64a3c726473183d99db7a54f4c42fd161e0139c9365fc3ec61b5c35782b63f0"
+      },
+      "original": {
+        "bytes": 1973,
+        "metadata": {
+          "st_ctime_ns": 1793993830966395486,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533925,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830966395486,
+          "st_nlink": 1,
+          "st_size": 1973,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/ROOT-STAGE-STATIC-REVIEW.json",
+        "sha256": "e64a3c726473183d99db7a54f4c42fd161e0139c9365fc3ec61b5c35782b63f0"
+      },
+      "relative_path": "actual-readback/actual/reference/ROOT-STAGE-STATIC-REVIEW.json"
+    },
+    {
+      "copy": {
+        "bytes": 4513,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/reference/STAGE-CONTROL-RESULT.json",
+        "sha256": "4eceaf4f73b9a61570fce209492a19592f5fc340bba7bacf9d7197cb78bfb5bc"
+      },
+      "original": {
+        "bytes": 4513,
+        "metadata": {
+          "st_ctime_ns": 1793993830966641535,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533926,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830966641535,
+          "st_nlink": 1,
+          "st_size": 4513,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/reference/STAGE-CONTROL-RESULT.json",
+        "sha256": "4eceaf4f73b9a61570fce209492a19592f5fc340bba7bacf9d7197cb78bfb5bc"
+      },
+      "relative_path": "actual-readback/actual/reference/STAGE-CONTROL-RESULT.json"
+    },
+    {
+      "copy": {
+        "bytes": 9085,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/source/bind_actual_controller_input.py",
+        "sha256": "a1bcbebda1ae20af89c859c322c99bbb61c454b6195bb7050224691bbc9598f4"
+      },
+      "original": {
+        "bytes": 9085,
+        "metadata": {
+          "st_ctime_ns": 1793993830966900376,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533927,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830966900376,
+          "st_nlink": 1,
+          "st_size": 9085,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/source/bind_actual_controller_input.py",
+        "sha256": "a1bcbebda1ae20af89c859c322c99bbb61c454b6195bb7050224691bbc9598f4"
+      },
+      "relative_path": "actual-readback/actual/source/bind_actual_controller_input.py"
+    },
+    {
+      "copy": {
+        "bytes": 34048,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/source/derive_component_build_inputs_UNBOUND.py",
+        "sha256": "766f6b933b4982088925669f327e0c7c2d03855b8c3f140052d7fbfd088d1b5f"
+      },
+      "original": {
+        "bytes": 34048,
+        "metadata": {
+          "st_ctime_ns": 1793993830967257512,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533928,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830967257512,
+          "st_nlink": 1,
+          "st_size": 34048,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/source/derive_component_build_inputs_UNBOUND.py",
+        "sha256": "766f6b933b4982088925669f327e0c7c2d03855b8c3f140052d7fbfd088d1b5f"
+      },
+      "relative_path": "actual-readback/actual/source/derive_component_build_inputs_UNBOUND.py"
+    },
+    {
+      "copy": {
+        "bytes": 64682,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/source/derive_release_install_stages_UNBOUND.py",
+        "sha256": "60c6d2e84216798037133199882c5d34101808eb9035a741c64f22d6aa3fbece"
+      },
+      "original": {
+        "bytes": 64682,
+        "metadata": {
+          "st_ctime_ns": 1793993830967532520,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533929,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830967532520,
+          "st_nlink": 1,
+          "st_size": 64682,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/source/derive_release_install_stages_UNBOUND.py",
+        "sha256": "60c6d2e84216798037133199882c5d34101808eb9035a741c64f22d6aa3fbece"
+      },
+      "relative_path": "actual-readback/actual/source/derive_release_install_stages_UNBOUND.py"
+    },
+    {
+      "copy": {
+        "bytes": 8346,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/source/observe_p4_install_phase_UNBOUND.py",
+        "sha256": "e07d8e48fb81c6f80cf688b991c1d3fd2d939af85137df3f99104160cf628d32"
+      },
+      "original": {
+        "bytes": 8346,
+        "metadata": {
+          "st_ctime_ns": 1793993830967856280,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533930,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830967856280,
+          "st_nlink": 1,
+          "st_size": 8346,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/source/observe_p4_install_phase_UNBOUND.py",
+        "sha256": "e07d8e48fb81c6f80cf688b991c1d3fd2d939af85137df3f99104160cf628d32"
+      },
+      "relative_path": "actual-readback/actual/source/observe_p4_install_phase_UNBOUND.py"
+    },
+    {
+      "copy": {
+        "bytes": 16570,
+        "path": "/workspace/scratch/fc33eac909ab/review/install-build-controller/actual-readback/actual/source/verify_host_controller_originals.py",
+        "sha256": "be2b96db92bb456a798c3f8be6c1425a81e3afeadf782940bd695cf4cb3c714a"
+      },
+      "original": {
+        "bytes": 16570,
+        "metadata": {
+          "st_ctime_ns": 1793993830968155122,
+          "st_dev": 16777233,
+          "st_gid": 20,
+          "st_ino": 593533931,
+          "st_mode": 33152,
+          "st_mtime_ns": 1793993830968155122,
+          "st_nlink": 1,
+          "st_size": 16570,
+          "st_uid": 501
+        },
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/source/verify_host_controller_originals.py",
+        "sha256": "be2b96db92bb456a798c3f8be6c1425a81e3afeadf782940bd695cf4cb3c714a"
+      },
+      "relative_path": "actual-readback/actual/source/verify_host_controller_originals.py"
+    }
+  ],
+  "observation_job": "1a1b25f8f91-fc05-7dc2",
+  "phone_calls": 0,
+  "schema": "hepta.fc33.actual-controller-source-copy-map.v1"
+}

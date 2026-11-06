@@ -1,0 +1,2573 @@
+{
+  "schema": "hepta.fc33.final05.actual-github-public-blob-publication.v1",
+  "state": "ALL_EXACT_WHITELIST_BLOBS_ACTUALLY_CREATED_AND_SHA_VERIFIED",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "actual_file_path_count": 75,
+  "actual_unique_api_success_count": 71,
+  "total_file_bytes": 2569421,
+  "files": [
+    {
+      "bytes": 5114,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "ff06a202b51f20d657c6bca75cc8c15d5773909e",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.original.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.original.json",
+      "sha256": "3ff4ce3d6c7e828b7dc254d3d1126b83d1fae8e0f87b64da1b85e837f8d9e91c",
+      "actual_blob_sha": "ff06a202b51f20d657c6bca75cc8c15d5773909e",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 5113,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "8d51ae5cb8eea6a97e8c616f865a581dbe24a5b2",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.stdout.original.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.stdout.original.json",
+      "sha256": "7299543e4305cadedd4bd025c71f0be0a173da0b6a9c2b6e0f30f015bf7f9443",
+      "actual_blob_sha": "8d51ae5cb8eea6a97e8c616f865a581dbe24a5b2",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 12129,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "36e92027f34a46d9a0949b5eac448bb1ff6ef43f",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/FAILURE-PARENT-PROFILE-REFERENCE.original.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/FAILURE-PARENT-PROFILE-REFERENCE.original.json",
+      "sha256": "5dd20c0bb2fbc049dea1b168cb83a730a3abc9916677be5e47ac81bbd7518427",
+      "actual_blob_sha": "36e92027f34a46d9a0949b5eac448bb1ff6ef43f",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2669,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "3e6b771bcd0664f885f8cfa7a6531c41938a1b23",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/FAILURE-PARENT-REFERENCE.gzip.base64",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/FAILURE-PARENT-REFERENCE.gzip.base64",
+      "sha256": "e9d07b053e53403fec64672fc5a340a9fd309a26c373bfc83e1010c77f20e8f4",
+      "actual_blob_sha": "3e6b771bcd0664f885f8cfa7a6531c41938a1b23",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 121015,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "5244944bb0d7cd282a430ab3e956d512a660be97",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/FAILURE-REFERENCE-CONTROLLER-ORIGINALS.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/FAILURE-REFERENCE-CONTROLLER-ORIGINALS.json",
+      "sha256": "27523ca35e6f311b99a44e4c64ca689f3ee78266776f9bd69d0d7b6f0ffb6cff",
+      "actual_blob_sha": "5244944bb0d7cd282a430ab3e956d512a660be97",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 228623,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "a2a01c46d1b9b24b6a0e1402b0b12bfb19a740c8",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/HOST-IMPORT-CONTROLLER-ORIGINALS.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORT-CONTROLLER-ORIGINALS.json",
+      "sha256": "b712dbd0f02753c73843dbfb3fbb39c919040921070e801a4bbe24915017c085",
+      "actual_blob_sha": "a2a01c46d1b9b24b6a0e1402b0b12bfb19a740c8",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 774,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "49e1a87448ef5c4a31b828d26d15788594cf8405",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/HOST-IMPORTER-ACTUAL-CONTRACT-CHECK.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-ACTUAL-CONTRACT-CHECK.json",
+      "sha256": "4e34020a35d75a189f728990d79f04561503e3f4325eea12ba80e9a08e03265d",
+      "actual_blob_sha": "49e1a87448ef5c4a31b828d26d15788594cf8405",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 1480,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "08d5172cc763b117bc88e9478d17ca195df73495",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V2.patch",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V2.patch",
+      "sha256": "35c6f3554a7a5fe366e2cd5270e70a0bee79b493e53c2af72708fa4d14e20868",
+      "actual_blob_sha": "08d5172cc763b117bc88e9478d17ca195df73495",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 5271,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "cbb28dce9e217f0f948e26dd4816ee82064275ff",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V3.patch",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V3.patch",
+      "sha256": "039d092d66e5bd07c9c10b080a7de7899fb7b60009a1416595ea4df424ff65d7",
+      "actual_blob_sha": "cbb28dce9e217f0f948e26dd4816ee82064275ff",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 1303,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "f1c06a5b44235dd847659fb059e579deb3181bb0",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V4.patch",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V4.patch",
+      "sha256": "0fc4e029ac253e3445c54c8024a5f665494b582ae5cd7491ccec031c1fe0cb54",
+      "actual_blob_sha": "f1c06a5b44235dd847659fb059e579deb3181bb0",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 97904,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "24704937a8a81f2fbcf3f32ae2fc2ea8b1a40980",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/HOST-VERIFICATION-PUBLIC.binary-transport.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/HOST-VERIFICATION-PUBLIC.binary-transport.json",
+      "sha256": "7a24e900f6a4a9993ef446a6ce232ae3b63ddfb6fbe00546a2fec878538657eb",
+      "actual_blob_sha": "24704937a8a81f2fbcf3f32ae2fc2ea8b1a40980",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 72764,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "4f7b0795459804214b4cd1607c694ef381fd57f1",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/HOST-VERIFICATION.PUBLIC.original.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/HOST-VERIFICATION.PUBLIC.original.json",
+      "sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a",
+      "actual_blob_sha": "4f7b0795459804214b4cd1607c694ef381fd57f1",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 59913,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "73ccc58361e73cdfbede538f925b7a56fe170179",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/INPUTS.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/INPUTS.json",
+      "sha256": "ba3d0be82d57721046928253bef7161e7d4dd36e39ab65bce51280328bdba802",
+      "actual_blob_sha": "73ccc58361e73cdfbede538f925b7a56fe170179",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2267,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "7efcf53947d05d8d00d205bc659a4d161ab4721a",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/MANIFEST.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/MANIFEST.json",
+      "sha256": "d9fb8e9b8a0b14fc09e5d65eb04763b7aa3b22c6b3c7ab5b89ec980a2384707a",
+      "actual_blob_sha": "7efcf53947d05d8d00d205bc659a4d161ab4721a",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 30460,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "6f9a22eef111b59ec2cf50a1f23f8dea98c31bbe",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/PHONE-COMMAND.sh",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/PHONE-COMMAND.sh",
+      "sha256": "365eb97f16e2de1ca3aa7e940ebb3aaa2fdae23708f0324e6ac50085f03f09be",
+      "actual_blob_sha": "6f9a22eef111b59ec2cf50a1f23f8dea98c31bbe",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 30559,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "9be171f150ec474f88c3f4804367a9fca4945e39",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/PHONE-REQUEST.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/PHONE-REQUEST.json",
+      "sha256": "410713500727dde2a969f44b06cc6ef0349da1e58ddc3ab646b4366eb2619f33",
+      "actual_blob_sha": "9be171f150ec474f88c3f4804367a9fca4945e39",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 72764,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "4f7b0795459804214b4cd1607c694ef381fd57f1",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.PUBLIC.original.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.PUBLIC.original.json",
+      "sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a",
+      "actual_blob_sha": "4f7b0795459804214b4cd1607c694ef381fd57f1",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 97021,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "1f8dba420459226e9c596e37116fdfad380207ce",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.raw.base64",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.raw.base64",
+      "sha256": "7bdfb2d603879512387f54bc0f0449c867f0556fdab2c22d8d219019063b684d",
+      "actual_blob_sha": "1f8dba420459226e9c596e37116fdfad380207ce",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 134436,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "0376291b364a986eac271417ea6b169af937ab2d",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/SOURCE.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/SOURCE.py",
+      "sha256": "fcad91d21e21f177883b5924cba36e44a580aaabe1b676e5953fbd57075c491f",
+      "actual_blob_sha": "0376291b364a986eac271417ea6b169af937ab2d",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 6109,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "8d156d43c7be1dba288c2e71315aaea4406bd04f",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/build_observer.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/build_observer.py",
+      "sha256": "ec875267a2ef315bb7d348991cea14008a14fcee6193819c1704c913e18fa04d",
+      "actual_blob_sha": "8d156d43c7be1dba288c2e71315aaea4406bd04f",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 7163,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "7ce5f30ac8e8d43046d98eb8fbf1b0e2ae7f79ee",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/build_observer02.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/build_observer02.py",
+      "sha256": "e7c8ed6eb0ff94cad94c1ffb7abbf3b1107a085deede67bd8c6972a81c4bc7ee",
+      "actual_blob_sha": "7ce5f30ac8e8d43046d98eb8fbf1b0e2ae7f79ee",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 8091,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "c22bd432edd15f975124cba304fef934f2d92b0f",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/observer_extension.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/observer_extension.py",
+      "sha256": "cb9b0c9e89017eb88276bb6e552285c209cb2da48ab584b75a33ef415140bfe3",
+      "actual_blob_sha": "c22bd432edd15f975124cba304fef934f2d92b0f",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 8856,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "853466fc704c25eb9487165d8a866fcae84e0dfa",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/verify_observer_host.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/verify_observer_host.py",
+      "sha256": "9cb18824cc9f402346fc871b9822d789f3f1b5928939a082977cabf219ff50ab",
+      "actual_blob_sha": "853466fc704c25eb9487165d8a866fcae84e0dfa",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 21579,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "2300ee2d2680759cc249abe51a6a3b208aacba91",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/import_parent_observer_host.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host.py",
+      "sha256": "13bae5cfe7ac048b9a944b16398e0c8c08e318129b1ad1fef83902883bf6a0aa",
+      "actual_blob_sha": "2300ee2d2680759cc249abe51a6a3b208aacba91",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 21804,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "aed3a5e49083d5dd9b16ba3f2fcbaee0d297be70",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/import_parent_observer_host_v2.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v2.py",
+      "sha256": "9095a78d1fbb36ff1772e617e7890b22b4e5c1ae49b23fe047e38cd2d30f60df",
+      "actual_blob_sha": "aed3a5e49083d5dd9b16ba3f2fcbaee0d297be70",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 22462,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "57eefcabf7255b64b215e20faf1a765657f61c90",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/import_parent_observer_host_v3.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v3.py",
+      "sha256": "18e3824206f5842d7c2b9796e30f7d3c2240016e01cbcbaa474d4189500d924c",
+      "actual_blob_sha": "57eefcabf7255b64b215e20faf1a765657f61c90",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 22485,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "2160c77d2bd6750f022c575c3c0e1135426babdb",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/import_parent_observer_host_v4.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v4.py",
+      "sha256": "cebb4cbe8244826208c17011e1838a31c24349dc3dd3ce37cc3f2cae5c8c9d0d",
+      "actual_blob_sha": "2160c77d2bd6750f022c575c3c0e1135426babdb",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 1842,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "06f83fdb1aba50cfb6006eb264f790b62bc8a4f4",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/candidate02/HOST-CONTROLS.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/HOST-CONTROLS.json",
+      "sha256": "48d4abd3c4fc87abdebfa7e12d5377a09b35f272400022d2d7f745769a065f76",
+      "actual_blob_sha": "06f83fdb1aba50cfb6006eb264f790b62bc8a4f4",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 16641,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "c160cf5c49ae4a9d506ae7581b9910ca3506c17e",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/candidate02/INPUTS.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/INPUTS.json",
+      "sha256": "f057b3fd8d42db1ade3d0c24b23ae90982bfe3bedf469d535a92d42ad4072c8e",
+      "actual_blob_sha": "c160cf5c49ae4a9d506ae7581b9910ca3506c17e",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2301,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "1442aa85dd9960c96f0f7d041ab8720b6c196ac5",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/candidate02/MANIFEST.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/MANIFEST.json",
+      "sha256": "5dae574a48113a3fe18f98ad85ee3d0f21dbc69f4e648ce3a95b921b6ccd9c34",
+      "actual_blob_sha": "1442aa85dd9960c96f0f7d041ab8720b6c196ac5",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 28046,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "23687ba5c940ff523324a94f14a5d8dcebc85428",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/candidate02/PHONE-COMMAND.sh",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/PHONE-COMMAND.sh",
+      "sha256": "1abc153371cea2fd3c03241aba089ca78cabf08cb7cfd81dd173c63cff1d9e2d",
+      "actual_blob_sha": "23687ba5c940ff523324a94f14a5d8dcebc85428",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 28145,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "3a3d5f9a8ddf337e65523162b37323e9c7523082",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/candidate02/PHONE-REQUEST.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/PHONE-REQUEST.json",
+      "sha256": "e7afd47d4f41b18fe5745de2c2c32eabb8d771b54f7354fd64e89ed54fa45fbf",
+      "actual_blob_sha": "3a3d5f9a8ddf337e65523162b37323e9c7523082",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 4959,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "7618fcaff46edc7ea48da854bc9621d944eef7fe",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/candidate02/ROOT-ACTUAL-CONTROLLER.original.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/ROOT-ACTUAL-CONTROLLER.original.json",
+      "sha256": "dc0396d57978f58e7b9395a9edb8a47c47e63e01a8e46bfdf38864402eca3597",
+      "actual_blob_sha": "7618fcaff46edc7ea48da854bc9621d944eef7fe",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 91164,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "361401f8a0f64eaf153f6faabbbe39af6cb81c17",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-reconcile-probe02/candidate02/SOURCE.py",
+      "mode": "100644",
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/SOURCE.py",
+      "sha256": "0af051db4502e1655c5e3eb1580ff6cd981fae794dc6cb41a56e1704bd490acc",
+      "actual_blob_sha": "361401f8a0f64eaf153f6faabbbe39af6cb81c17",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2701,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "9431ced30bf90f7c588cac50c486592acf76734d",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/HOST-READER02-BINDING.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/HOST-READER02-BINDING.json",
+      "sha256": "d6703b4ba90c06f0f8965225324029b7bb3228af6f1609eedb8498a82307de79",
+      "actual_blob_sha": "9431ced30bf90f7c588cac50c486592acf76734d",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 623,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "cf4cbc423d4ffb725af352c03d5a1afd5e64989b",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/HOST-READER02-DERIVATION.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/HOST-READER02-DERIVATION.json",
+      "sha256": "3e53d321cd8f77b69886ea77a5246c575e93d54b34a42c0e670a178b28a04450",
+      "actual_blob_sha": "cf4cbc423d4ffb725af352c03d5a1afd5e64989b",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 10558,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "c7c1e8f4eef06a11ad1caa70226832ef4b04b109",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/HOST-READER02.patch",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/HOST-READER02.patch",
+      "sha256": "01d58353800234f86fdc9622db11dcb59a7d00b9ad9b1664c4685bf3039b4562",
+      "actual_blob_sha": "c7c1e8f4eef06a11ad1caa70226832ef4b04b109",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 39126,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "e98197f1e4c15ea27b6ecbc3ad919c241b3ee22e",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/HOST-VERIFICATION.PUBLIC.original.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/HOST-VERIFICATION.PUBLIC.original.json",
+      "sha256": "63ed1fa9accb6e1a26d6448527346560e8efc2dc291d06cad9819652f89006ee",
+      "actual_blob_sha": "e98197f1e4c15ea27b6ecbc3ad919c241b3ee22e",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 54972,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "cd40d4195e6190a970f2a8b29caf3f80dd1f1959",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/ROOT-HOST-IMPORT-CONTROLLER.original.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/ROOT-HOST-IMPORT-CONTROLLER.original.json",
+      "sha256": "6e2a503d1a91930b8cf8cc3608eead309d418598b47433784f468c3af098c320",
+      "actual_blob_sha": "cd40d4195e6190a970f2a8b29caf3f80dd1f1959",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 43993,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "824acc4e648767c5110996f58cdd2ff10dc47812",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/ROOT-HOST-VERIFICATION-READ.original.mcp.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/ROOT-HOST-VERIFICATION-READ.original.mcp.json",
+      "sha256": "cfebdf964c6dd21e42080646184c9aa42e3839a162487d094239c754e487f425",
+      "actual_blob_sha": "824acc4e648767c5110996f58cdd2ff10dc47812",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2293,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "3a73df9eb613f407e41063f594b184fd98f75580",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/PUBLIC-PACKAGE-OUTCOME.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/PUBLIC-PACKAGE-OUTCOME.json",
+      "sha256": "cbb9df4d8eedf019cfa1518b7367cf34e6352eebf74a03f2351fd334baf75e3b",
+      "actual_blob_sha": "3a73df9eb613f407e41063f594b184fd98f75580",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 4295,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "35919e972e33bba98d2137c6a1714ac0099755c3",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/build_host_guard02.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/build_host_guard02.py",
+      "sha256": "6d5eb62facd660ca39efb701459772bdde0a2916e33a4b20b62b20aac89cd641",
+      "actual_blob_sha": "35919e972e33bba98d2137c6a1714ac0099755c3",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 8315,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "24fffd5786b584969b7128c0ebbd55c45730e7ff",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/build_recovery02.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/build_recovery02.py",
+      "sha256": "750704fac3c6a6577b684d15e69793f701feb261dee3cc30a4adc9047ea8b87e",
+      "actual_blob_sha": "24fffd5786b584969b7128c0ebbd55c45730e7ff",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 8921,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "0eea08da0787b3a8196161bec0bbe10848071ce9",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/check_recovery02_host.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/check_recovery02_host.py",
+      "sha256": "be06b3cf5268f148286e8a0c3cb19da18bc67dc027bae2039aeb50473dfd82b2",
+      "actual_blob_sha": "0eea08da0787b3a8196161bec0bbe10848071ce9",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 10636,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "352db14b38e839d3186d712ba20e43af6ea7a836",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/host_guard_reconciliation_extension.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/host_guard_reconciliation_extension.py",
+      "sha256": "7af7beb0aafd42f885bf4f9409171138a2bab25e4d8485a2aa412fedde448f8c",
+      "actual_blob_sha": "352db14b38e839d3186d712ba20e43af6ea7a836",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 7545,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "f8ced5b764574c7f4b60e9d308c24490d7d864bd",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/reconciliation_extension.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/reconciliation_extension.py",
+      "sha256": "d2696591ee1371be81b9f259b38838ea3de3d6bb795f697081cd05009bc57248",
+      "actual_blob_sha": "f8ced5b764574c7f4b60e9d308c24490d7d864bd",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 48307,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "19e3387b386a0f7990a9845525cf0f1e4da7caf8",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/verify_recovery02_result_BOUND.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/verify_recovery02_result_BOUND.py",
+      "sha256": "6320200af67f8e429e838eb759821b8f575a2bf0af4e932d86caebf98e78bb10",
+      "actual_blob_sha": "19e3387b386a0f7990a9845525cf0f1e4da7caf8",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 29656,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "4afd6fd9f86ef6ae57c4f3097b9acf3601d6213e",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/verify_recovery02_result_UNBOUND.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/verify_recovery02_result_UNBOUND.py",
+      "sha256": "3228d058bebd9f847b86760655978c265295a6de3bdd80898396d85419766060",
+      "actual_blob_sha": "4afd6fd9f86ef6ae57c4f3097b9acf3601d6213e",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 3510,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "e5138deee8347e76f621a79a83a0cb16e2dd234e",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/AUTHORITY.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/AUTHORITY.json",
+      "sha256": "7b3e24ac62786be6b14586fe0b7b2f9a104d699a992f1dd80c998b9b09812463",
+      "actual_blob_sha": "e5138deee8347e76f621a79a83a0cb16e2dd234e",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 183122,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "748e51618b11d147bce4b0c60849dde1523f5d71",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/DERIVED-TARGETS.EXPECTATION-ONLY.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/DERIVED-TARGETS.EXPECTATION-ONLY.json",
+      "sha256": "58b253b325daacf7417e7c2c53bd636c8840064b61965e4c37ffbf99e01263e0",
+      "actual_blob_sha": "748e51618b11d147bce4b0c60849dde1523f5d71",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2048,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "d0a9a146c867debfffb6808968e37dc694544cc8",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/EXTENSION.patch",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/EXTENSION.patch",
+      "sha256": "dc4662a84ffdf332e3433f09963d462c021d8e1d8304a30f9b0b07c2daca887f",
+      "actual_blob_sha": "d0a9a146c867debfffb6808968e37dc694544cc8",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 4399,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "efa8ca6bd1ef6f6b5e51388b733c31628b8cf6f3",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/FINAL-DELIVERY.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/FINAL-DELIVERY.json",
+      "sha256": "2d7c262282fe1d94d73ff47d8f0af1c3cfb7f899e66428b0694b4d8abce731e1",
+      "actual_blob_sha": "efa8ca6bd1ef6f6b5e51388b733c31628b8cf6f3",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2002,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "76c41d372682a530a69260382f3411c6c5079392",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/HOST-CONTROLS.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/HOST-CONTROLS.json",
+      "sha256": "e1675ef9a574942681fb539da8f6fc02f729a4f6fe4162dbc62b3884bcad59a1",
+      "actual_blob_sha": "76c41d372682a530a69260382f3411c6c5079392",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 891,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "05902d57a12b4d3f9d5f9b69ebc2edb32dd9b17f",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/HOST-GUARD-DERIVATION.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/HOST-GUARD-DERIVATION.json",
+      "sha256": "5832f09540d5448919748e9068fc4933ec0bd4eb02e581d209a583533b8b2a9e",
+      "actual_blob_sha": "05902d57a12b4d3f9d5f9b69ebc2edb32dd9b17f",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 10636,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "352db14b38e839d3186d712ba20e43af6ea7a836",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/HOST-GUARD-EXTENSION.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/HOST-GUARD-EXTENSION.py",
+      "sha256": "7af7beb0aafd42f885bf4f9409171138a2bab25e4d8485a2aa412fedde448f8c",
+      "actual_blob_sha": "352db14b38e839d3186d712ba20e43af6ea7a836",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 39420,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "169e855f8ca6ff6cad424980953033a95a894aab",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/HOST-GUARD.patch",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/HOST-GUARD.patch",
+      "sha256": "ff002ce8d15e7daf161277926f2f2837a3e763761bdbdf9568c904a7e1a73d93",
+      "actual_blob_sha": "169e855f8ca6ff6cad424980953033a95a894aab",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 49469,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "fc5d32dd1682543013f82a3b4337babbf2bebfc5",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/HOST-PRE-DISPATCH.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/HOST-PRE-DISPATCH.py",
+      "sha256": "9c0eb59a76426321f0c92e27dd049d8a42348398c2c4740b7ef41e236da10134",
+      "actual_blob_sha": "fc5d32dd1682543013f82a3b4337babbf2bebfc5",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 3500,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "ba112b700edfa0be219c9996c7afa0c8040534e4",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/MANIFEST.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/MANIFEST.json",
+      "sha256": "ac7276a4fae49a34b84b6fbef046a3c3135f54d59b41f3d29544fee1b3f53438",
+      "actual_blob_sha": "ba112b700edfa0be219c9996c7afa0c8040534e4",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 3558,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "974ea2ed9dd3f4337fa6c1fffea6c7b33d6aeb37",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/MANIFEST.pre-metadata-fix.original.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/MANIFEST.pre-metadata-fix.original.json",
+      "sha256": "8f1557a940d367bd5c012fc1ae967294a029133959175dd43d2388c6f174baa8",
+      "actual_blob_sha": "974ea2ed9dd3f4337fa6c1fffea6c7b33d6aeb37",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 49493,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "4907992f5e2d492ed54698cab8173b2f1f809943",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/PHONE-COMMAND.sh",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/PHONE-COMMAND.sh",
+      "sha256": "8c567c3a6d47e1e3592d57fe92b0938f3f0c20279a8406ee7894a552fe130d98",
+      "actual_blob_sha": "4907992f5e2d492ed54698cab8173b2f1f809943",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 49592,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "a34b25fd2c20378ca3b1fb5f608abbd15f6fb1fc",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/PHONE-REQUEST.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/PHONE-REQUEST.json",
+      "sha256": "16e3ad935ad485e94146c5b35521b297694d3431ac3955014aa4b08e2c2db425",
+      "actual_blob_sha": "a34b25fd2c20378ca3b1fb5f608abbd15f6fb1fc",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 72764,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "4f7b0795459804214b4cd1607c694ef381fd57f1",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/RECONCILIATION.original.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/RECONCILIATION.original.json",
+      "sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a",
+      "actual_blob_sha": "4f7b0795459804214b4cd1607c694ef381fd57f1",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 55114,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "7650845440472d6c2a2d47c13e81e735b8fe2c35",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/ROOT-ACTUAL-EXECUTION-CONTROLLER.original.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/ROOT-ACTUAL-EXECUTION-CONTROLLER.original.json",
+      "sha256": "19842bd56a2e20fe63aa57fdd3d7ea312bc1f6d62d237e1d69613590969ef869",
+      "actual_blob_sha": "7650845440472d6c2a2d47c13e81e735b8fe2c35",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 1623,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "7030da19eedd24b2acb11ee73ac4e45103581173",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/ROOT-EXECUTION-DECISION.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/ROOT-EXECUTION-DECISION.json",
+      "sha256": "f15e54b02e7119668d049e31accd53611beb0e44f932158914be07bbd9e2aab6",
+      "actual_blob_sha": "7030da19eedd24b2acb11ee73ac4e45103581173",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 55910,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "12d17f15aa9dfa6b88868a8da88bfa0915ddda6e",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/ROOT-HOST-PREVIEW-CONTROLLER.original.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/ROOT-HOST-PREVIEW-CONTROLLER.original.json",
+      "sha256": "fe1b3e95ad4edd459e84695aa6fc13e2df5a4957340dae88c7f2ca564ae41b77",
+      "actual_blob_sha": "12d17f15aa9dfa6b88868a8da88bfa0915ddda6e",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 147,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "a81de2fb1c8d9e74fd58aba723cedf2613cf2071",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/SOURCE-COMPRESSION.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/SOURCE-COMPRESSION.json",
+      "sha256": "cf71eb35e46827a692b8744f4d9f632098ced88d39ed119f935eb1300d559e5a",
+      "actual_blob_sha": "a81de2fb1c8d9e74fd58aba723cedf2613cf2071",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 358086,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "0e42c114d6430eca27e134c40d10c174b1e5c614",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/SOURCE.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/SOURCE.py",
+      "sha256": "94ab728a7fd4adb0ba4d4d7d5dc3c84cdad8923e73b4bd0cd87d5159bf6f0dc1",
+      "actual_blob_sha": "0e42c114d6430eca27e134c40d10c174b1e5c614",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 7545,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "f8ced5b764574c7f4b60e9d308c24490d7d864bd",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/reconciliation_extension.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/reconciliation_extension.py",
+      "sha256": "d2696591ee1371be81b9f259b38838ea3de3d6bb795f697081cd05009bc57248",
+      "actual_blob_sha": "f8ced5b764574c7f4b60e9d308c24490d7d864bd",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 24135,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "b04305b102176b145047b015cedd2b1228d147a2",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/candidate01/recovery_extension.py",
+      "mode": "100644",
+      "path": "R5-final05-recovery02/candidate01/recovery_extension.py",
+      "sha256": "d07d3abc68a93641497248b5ffc3370475d7e924957a6f19900214a252907eca",
+      "actual_blob_sha": "b04305b102176b145047b015cedd2b1228d147a2",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2626,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "d87a82c86ddeaf745a2d54e754f1b2e845cf5a49",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-parent-observer-independent-review.json",
+      "mode": "100644",
+      "path": "R5-final05-parent-observer-independent-review.json",
+      "sha256": "fb16842f83dfa2ede685e8a4b48b837d1e442ae7af344d480af147b8e256edba",
+      "actual_blob_sha": "d87a82c86ddeaf745a2d54e754f1b2e845cf5a49",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 1631,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "0aa013b9f926531fdd1347d2b84788c96075c187",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02-independent-complete-source-review.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02-independent-complete-source-review.json",
+      "sha256": "3fed0c2fe0336ba6ac346befa19d174c15ee6708cfb715d05437fa68c90251b8",
+      "actual_blob_sha": "0aa013b9f926531fdd1347d2b84788c96075c187",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2215,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "a1428dba062443e188b5a0479292afa535ecc052",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02-independent-host-guard-review.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02-independent-host-guard-review.json",
+      "sha256": "3106dd9d93c3a942aadde3693ad8a3095bdfdca9f66d174ba5048b2118e5ef81",
+      "actual_blob_sha": "a1428dba062443e188b5a0479292afa535ecc052",
+      "api_method": "github_create_blob"
+    },
+    {
+      "bytes": 2062,
+      "content_class": "reviewed source, public metadata, public receipt or failure correction",
+      "expected_git_blob_sha1": "b68d0a40072e7efeeb3920e61b30975a9dcc9584",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02-independent-interface-review.json",
+      "mode": "100644",
+      "path": "R5-final05-recovery02-independent-interface-review.json",
+      "sha256": "621112fcaaee41080bb23154bf5ca8f1c434f8462ad6b3bd2af22074545d1bbe",
+      "actual_blob_sha": "b68d0a40072e7efeeb3920e61b30975a9dcc9584",
+      "api_method": "github_create_blob"
+    },
+    {
+      "path": "R5-final05-recovery02/PUBLIC-GIT-UPLOAD-PLAN.json",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/PUBLIC-GIT-UPLOAD-PLAN.json",
+      "bytes": 33327,
+      "sha256": "ef48da191d6911e2e5da06b1d218de6741fff4efb008c73afc8b1558a5ad20c6",
+      "expected_git_blob_sha1": "a7f98bf528e1d483c2c46cf194d3019a96514199",
+      "content_class": "exact public whitelist plan or its source",
+      "mode": "100644",
+      "actual_blob_sha": "a7f98bf528e1d483c2c46cf194d3019a96514199",
+      "api_method": "github_create_blob"
+    },
+    {
+      "path": "R5-final05-recovery02/prepare_public_git_plan.py",
+      "local_path": "/workspace/scratch/fc33eac909ab/review/R5-final05-recovery02/prepare_public_git_plan.py",
+      "bytes": 5429,
+      "sha256": "5ff4ac7d528a57f39b9d98bd61107fa2da4cc8bfeae0807ed641d5886d516290",
+      "expected_git_blob_sha1": "69381b420eefea09398eca4212f4ee37d058ad36",
+      "content_class": "exact public whitelist plan or its source",
+      "mode": "100644",
+      "actual_blob_sha": "69381b420eefea09398eca4212f4ee37d058ad36",
+      "api_method": "github_create_blob"
+    }
+  ],
+  "receipts_by_sha": {
+    "3a73df9eb613f407e41063f594b184fd98f75580": {
+      "actual_blob_sha": "3a73df9eb613f407e41063f594b184fd98f75580",
+      "api_method": "github_create_blob",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "3a73df9eb613f407e41063f594b184fd98f75580"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/PUBLIC-PACKAGE-OUTCOME.json"
+    },
+    "a2a01c46d1b9b24b6a0e1402b0b12bfb19a740c8": {
+      "actual_blob_sha": "a2a01c46d1b9b24b6a0e1402b0b12bfb19a740c8",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a2a01c46d1b9b24b6a0e1402b0b12bfb19a740c8"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/HOST-IMPORT-CONTROLLER-ORIGINALS.json"
+    },
+    "8d51ae5cb8eea6a97e8c616f865a581dbe24a5b2": {
+      "actual_blob_sha": "8d51ae5cb8eea6a97e8c616f865a581dbe24a5b2",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "8d51ae5cb8eea6a97e8c616f865a581dbe24a5b2"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.stdout.original.json"
+    },
+    "3e6b771bcd0664f885f8cfa7a6531c41938a1b23": {
+      "actual_blob_sha": "3e6b771bcd0664f885f8cfa7a6531c41938a1b23",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "3e6b771bcd0664f885f8cfa7a6531c41938a1b23"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/FAILURE-PARENT-REFERENCE.gzip.base64"
+    },
+    "36e92027f34a46d9a0949b5eac448bb1ff6ef43f": {
+      "actual_blob_sha": "36e92027f34a46d9a0949b5eac448bb1ff6ef43f",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "36e92027f34a46d9a0949b5eac448bb1ff6ef43f"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/FAILURE-PARENT-PROFILE-REFERENCE.original.json"
+    },
+    "5244944bb0d7cd282a430ab3e956d512a660be97": {
+      "actual_blob_sha": "5244944bb0d7cd282a430ab3e956d512a660be97",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "5244944bb0d7cd282a430ab3e956d512a660be97"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/FAILURE-REFERENCE-CONTROLLER-ORIGINALS.json"
+    },
+    "08d5172cc763b117bc88e9478d17ca195df73495": {
+      "actual_blob_sha": "08d5172cc763b117bc88e9478d17ca195df73495",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "08d5172cc763b117bc88e9478d17ca195df73495"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V2.patch"
+    },
+    "f1c06a5b44235dd847659fb059e579deb3181bb0": {
+      "actual_blob_sha": "f1c06a5b44235dd847659fb059e579deb3181bb0",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "f1c06a5b44235dd847659fb059e579deb3181bb0"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V4.patch"
+    },
+    "cbb28dce9e217f0f948e26dd4816ee82064275ff": {
+      "actual_blob_sha": "cbb28dce9e217f0f948e26dd4816ee82064275ff",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cbb28dce9e217f0f948e26dd4816ee82064275ff"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V3.patch"
+    },
+    "ff06a202b51f20d657c6bca75cc8c15d5773909e": {
+      "actual_blob_sha": "ff06a202b51f20d657c6bca75cc8c15d5773909e",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ff06a202b51f20d657c6bca75cc8c15d5773909e"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.original.json"
+    },
+    "4f7b0795459804214b4cd1607c694ef381fd57f1": {
+      "actual_blob_sha": "4f7b0795459804214b4cd1607c694ef381fd57f1",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "4f7b0795459804214b4cd1607c694ef381fd57f1"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/HOST-VERIFICATION.PUBLIC.original.json"
+    },
+    "49e1a87448ef5c4a31b828d26d15788594cf8405": {
+      "actual_blob_sha": "49e1a87448ef5c4a31b828d26d15788594cf8405",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "49e1a87448ef5c4a31b828d26d15788594cf8405"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-ACTUAL-CONTRACT-CHECK.json"
+    },
+    "24704937a8a81f2fbcf3f32ae2fc2ea8b1a40980": {
+      "actual_blob_sha": "24704937a8a81f2fbcf3f32ae2fc2ea8b1a40980",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "24704937a8a81f2fbcf3f32ae2fc2ea8b1a40980"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/HOST-VERIFICATION-PUBLIC.binary-transport.json"
+    },
+    "7efcf53947d05d8d00d205bc659a4d161ab4721a": {
+      "actual_blob_sha": "7efcf53947d05d8d00d205bc659a4d161ab4721a",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7efcf53947d05d8d00d205bc659a4d161ab4721a"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/MANIFEST.json"
+    },
+    "8d156d43c7be1dba288c2e71315aaea4406bd04f": {
+      "actual_blob_sha": "8d156d43c7be1dba288c2e71315aaea4406bd04f",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "8d156d43c7be1dba288c2e71315aaea4406bd04f"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/build_observer.py"
+    },
+    "7ce5f30ac8e8d43046d98eb8fbf1b0e2ae7f79ee": {
+      "actual_blob_sha": "7ce5f30ac8e8d43046d98eb8fbf1b0e2ae7f79ee",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7ce5f30ac8e8d43046d98eb8fbf1b0e2ae7f79ee"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/build_observer02.py"
+    },
+    "c22bd432edd15f975124cba304fef934f2d92b0f": {
+      "actual_blob_sha": "c22bd432edd15f975124cba304fef934f2d92b0f",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "c22bd432edd15f975124cba304fef934f2d92b0f"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/observer_extension.py"
+    },
+    "1f8dba420459226e9c596e37116fdfad380207ce": {
+      "actual_blob_sha": "1f8dba420459226e9c596e37116fdfad380207ce",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1f8dba420459226e9c596e37116fdfad380207ce"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.raw.base64"
+    },
+    "6f9a22eef111b59ec2cf50a1f23f8dea98c31bbe": {
+      "actual_blob_sha": "6f9a22eef111b59ec2cf50a1f23f8dea98c31bbe",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "6f9a22eef111b59ec2cf50a1f23f8dea98c31bbe"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/PHONE-COMMAND.sh"
+    },
+    "0376291b364a986eac271417ea6b169af937ab2d": {
+      "actual_blob_sha": "0376291b364a986eac271417ea6b169af937ab2d",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0376291b364a986eac271417ea6b169af937ab2d"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/SOURCE.py"
+    },
+    "9be171f150ec474f88c3f4804367a9fca4945e39": {
+      "actual_blob_sha": "9be171f150ec474f88c3f4804367a9fca4945e39",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9be171f150ec474f88c3f4804367a9fca4945e39"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/PHONE-REQUEST.json"
+    },
+    "853466fc704c25eb9487165d8a866fcae84e0dfa": {
+      "actual_blob_sha": "853466fc704c25eb9487165d8a866fcae84e0dfa",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "853466fc704c25eb9487165d8a866fcae84e0dfa"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/verify_observer_host.py"
+    },
+    "aed3a5e49083d5dd9b16ba3f2fcbaee0d297be70": {
+      "actual_blob_sha": "aed3a5e49083d5dd9b16ba3f2fcbaee0d297be70",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "aed3a5e49083d5dd9b16ba3f2fcbaee0d297be70"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v2.py"
+    },
+    "73ccc58361e73cdfbede538f925b7a56fe170179": {
+      "actual_blob_sha": "73ccc58361e73cdfbede538f925b7a56fe170179",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "73ccc58361e73cdfbede538f925b7a56fe170179"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/INPUTS.json"
+    },
+    "2300ee2d2680759cc249abe51a6a3b208aacba91": {
+      "actual_blob_sha": "2300ee2d2680759cc249abe51a6a3b208aacba91",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "2300ee2d2680759cc249abe51a6a3b208aacba91"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host.py"
+    },
+    "7618fcaff46edc7ea48da854bc9621d944eef7fe": {
+      "actual_blob_sha": "7618fcaff46edc7ea48da854bc9621d944eef7fe",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7618fcaff46edc7ea48da854bc9621d944eef7fe"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/candidate02/ROOT-ACTUAL-CONTROLLER.original.json"
+    },
+    "c160cf5c49ae4a9d506ae7581b9910ca3506c17e": {
+      "actual_blob_sha": "c160cf5c49ae4a9d506ae7581b9910ca3506c17e",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "c160cf5c49ae4a9d506ae7581b9910ca3506c17e"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/candidate02/INPUTS.json"
+    },
+    "9431ced30bf90f7c588cac50c486592acf76734d": {
+      "actual_blob_sha": "9431ced30bf90f7c588cac50c486592acf76734d",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9431ced30bf90f7c588cac50c486592acf76734d"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/HOST-READER02-BINDING.json"
+    },
+    "3a3d5f9a8ddf337e65523162b37323e9c7523082": {
+      "actual_blob_sha": "3a3d5f9a8ddf337e65523162b37323e9c7523082",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "3a3d5f9a8ddf337e65523162b37323e9c7523082"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/candidate02/PHONE-REQUEST.json"
+    },
+    "cf4cbc423d4ffb725af352c03d5a1afd5e64989b": {
+      "actual_blob_sha": "cf4cbc423d4ffb725af352c03d5a1afd5e64989b",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cf4cbc423d4ffb725af352c03d5a1afd5e64989b"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/HOST-READER02-DERIVATION.json"
+    },
+    "1442aa85dd9960c96f0f7d041ab8720b6c196ac5": {
+      "actual_blob_sha": "1442aa85dd9960c96f0f7d041ab8720b6c196ac5",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1442aa85dd9960c96f0f7d041ab8720b6c196ac5"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/candidate02/MANIFEST.json"
+    },
+    "c7c1e8f4eef06a11ad1caa70226832ef4b04b109": {
+      "actual_blob_sha": "c7c1e8f4eef06a11ad1caa70226832ef4b04b109",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "c7c1e8f4eef06a11ad1caa70226832ef4b04b109"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/HOST-READER02.patch"
+    },
+    "06f83fdb1aba50cfb6006eb264f790b62bc8a4f4": {
+      "actual_blob_sha": "06f83fdb1aba50cfb6006eb264f790b62bc8a4f4",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "06f83fdb1aba50cfb6006eb264f790b62bc8a4f4"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/candidate02/HOST-CONTROLS.json"
+    },
+    "57eefcabf7255b64b215e20faf1a765657f61c90": {
+      "actual_blob_sha": "57eefcabf7255b64b215e20faf1a765657f61c90",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "57eefcabf7255b64b215e20faf1a765657f61c90"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v3.py"
+    },
+    "23687ba5c940ff523324a94f14a5d8dcebc85428": {
+      "actual_blob_sha": "23687ba5c940ff523324a94f14a5d8dcebc85428",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "23687ba5c940ff523324a94f14a5d8dcebc85428"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/candidate02/PHONE-COMMAND.sh"
+    },
+    "2160c77d2bd6750f022c575c3c0e1135426babdb": {
+      "actual_blob_sha": "2160c77d2bd6750f022c575c3c0e1135426babdb",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "2160c77d2bd6750f022c575c3c0e1135426babdb"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v4.py"
+    },
+    "361401f8a0f64eaf153f6faabbbe39af6cb81c17": {
+      "actual_blob_sha": "361401f8a0f64eaf153f6faabbbe39af6cb81c17",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "361401f8a0f64eaf153f6faabbbe39af6cb81c17"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-reconcile-probe02/candidate02/SOURCE.py"
+    },
+    "352db14b38e839d3186d712ba20e43af6ea7a836": {
+      "actual_blob_sha": "352db14b38e839d3186d712ba20e43af6ea7a836",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "352db14b38e839d3186d712ba20e43af6ea7a836"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/host_guard_reconciliation_extension.py"
+    },
+    "24fffd5786b584969b7128c0ebbd55c45730e7ff": {
+      "actual_blob_sha": "24fffd5786b584969b7128c0ebbd55c45730e7ff",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "24fffd5786b584969b7128c0ebbd55c45730e7ff"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/build_recovery02.py"
+    },
+    "824acc4e648767c5110996f58cdd2ff10dc47812": {
+      "actual_blob_sha": "824acc4e648767c5110996f58cdd2ff10dc47812",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "824acc4e648767c5110996f58cdd2ff10dc47812"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/ROOT-HOST-VERIFICATION-READ.original.mcp.json"
+    },
+    "cd40d4195e6190a970f2a8b29caf3f80dd1f1959": {
+      "actual_blob_sha": "cd40d4195e6190a970f2a8b29caf3f80dd1f1959",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cd40d4195e6190a970f2a8b29caf3f80dd1f1959"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/ROOT-HOST-IMPORT-CONTROLLER.original.json"
+    },
+    "e98197f1e4c15ea27b6ecbc3ad919c241b3ee22e": {
+      "actual_blob_sha": "e98197f1e4c15ea27b6ecbc3ad919c241b3ee22e",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e98197f1e4c15ea27b6ecbc3ad919c241b3ee22e"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/HOST-VERIFICATION.PUBLIC.original.json"
+    },
+    "f8ced5b764574c7f4b60e9d308c24490d7d864bd": {
+      "actual_blob_sha": "f8ced5b764574c7f4b60e9d308c24490d7d864bd",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "f8ced5b764574c7f4b60e9d308c24490d7d864bd"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/reconciliation_extension.py"
+    },
+    "35919e972e33bba98d2137c6a1714ac0099755c3": {
+      "actual_blob_sha": "35919e972e33bba98d2137c6a1714ac0099755c3",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "35919e972e33bba98d2137c6a1714ac0099755c3"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/build_host_guard02.py"
+    },
+    "748e51618b11d147bce4b0c60849dde1523f5d71": {
+      "actual_blob_sha": "748e51618b11d147bce4b0c60849dde1523f5d71",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "748e51618b11d147bce4b0c60849dde1523f5d71"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/DERIVED-TARGETS.EXPECTATION-ONLY.json"
+    },
+    "0eea08da0787b3a8196161bec0bbe10848071ce9": {
+      "actual_blob_sha": "0eea08da0787b3a8196161bec0bbe10848071ce9",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0eea08da0787b3a8196161bec0bbe10848071ce9"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/check_recovery02_host.py"
+    },
+    "4afd6fd9f86ef6ae57c4f3097b9acf3601d6213e": {
+      "actual_blob_sha": "4afd6fd9f86ef6ae57c4f3097b9acf3601d6213e",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "4afd6fd9f86ef6ae57c4f3097b9acf3601d6213e"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/verify_recovery02_result_UNBOUND.py"
+    },
+    "19e3387b386a0f7990a9845525cf0f1e4da7caf8": {
+      "actual_blob_sha": "19e3387b386a0f7990a9845525cf0f1e4da7caf8",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "19e3387b386a0f7990a9845525cf0f1e4da7caf8"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/verify_recovery02_result_BOUND.py"
+    },
+    "e5138deee8347e76f621a79a83a0cb16e2dd234e": {
+      "actual_blob_sha": "e5138deee8347e76f621a79a83a0cb16e2dd234e",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e5138deee8347e76f621a79a83a0cb16e2dd234e"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/AUTHORITY.json"
+    },
+    "05902d57a12b4d3f9d5f9b69ebc2edb32dd9b17f": {
+      "actual_blob_sha": "05902d57a12b4d3f9d5f9b69ebc2edb32dd9b17f",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "05902d57a12b4d3f9d5f9b69ebc2edb32dd9b17f"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/HOST-GUARD-DERIVATION.json"
+    },
+    "76c41d372682a530a69260382f3411c6c5079392": {
+      "actual_blob_sha": "76c41d372682a530a69260382f3411c6c5079392",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "76c41d372682a530a69260382f3411c6c5079392"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/HOST-CONTROLS.json"
+    },
+    "fc5d32dd1682543013f82a3b4337babbf2bebfc5": {
+      "actual_blob_sha": "fc5d32dd1682543013f82a3b4337babbf2bebfc5",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fc5d32dd1682543013f82a3b4337babbf2bebfc5"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/HOST-PRE-DISPATCH.py"
+    },
+    "efa8ca6bd1ef6f6b5e51388b733c31628b8cf6f3": {
+      "actual_blob_sha": "efa8ca6bd1ef6f6b5e51388b733c31628b8cf6f3",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "efa8ca6bd1ef6f6b5e51388b733c31628b8cf6f3"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/FINAL-DELIVERY.json"
+    },
+    "d0a9a146c867debfffb6808968e37dc694544cc8": {
+      "actual_blob_sha": "d0a9a146c867debfffb6808968e37dc694544cc8",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "d0a9a146c867debfffb6808968e37dc694544cc8"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/EXTENSION.patch"
+    },
+    "ba112b700edfa0be219c9996c7afa0c8040534e4": {
+      "actual_blob_sha": "ba112b700edfa0be219c9996c7afa0c8040534e4",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ba112b700edfa0be219c9996c7afa0c8040534e4"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/MANIFEST.json"
+    },
+    "7030da19eedd24b2acb11ee73ac4e45103581173": {
+      "actual_blob_sha": "7030da19eedd24b2acb11ee73ac4e45103581173",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7030da19eedd24b2acb11ee73ac4e45103581173"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/ROOT-EXECUTION-DECISION.json"
+    },
+    "4907992f5e2d492ed54698cab8173b2f1f809943": {
+      "actual_blob_sha": "4907992f5e2d492ed54698cab8173b2f1f809943",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "4907992f5e2d492ed54698cab8173b2f1f809943"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/PHONE-COMMAND.sh"
+    },
+    "974ea2ed9dd3f4337fa6c1fffea6c7b33d6aeb37": {
+      "actual_blob_sha": "974ea2ed9dd3f4337fa6c1fffea6c7b33d6aeb37",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "974ea2ed9dd3f4337fa6c1fffea6c7b33d6aeb37"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/MANIFEST.pre-metadata-fix.original.json"
+    },
+    "169e855f8ca6ff6cad424980953033a95a894aab": {
+      "actual_blob_sha": "169e855f8ca6ff6cad424980953033a95a894aab",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "169e855f8ca6ff6cad424980953033a95a894aab"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/HOST-GUARD.patch"
+    },
+    "a34b25fd2c20378ca3b1fb5f608abbd15f6fb1fc": {
+      "actual_blob_sha": "a34b25fd2c20378ca3b1fb5f608abbd15f6fb1fc",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a34b25fd2c20378ca3b1fb5f608abbd15f6fb1fc"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/PHONE-REQUEST.json"
+    },
+    "7650845440472d6c2a2d47c13e81e735b8fe2c35": {
+      "actual_blob_sha": "7650845440472d6c2a2d47c13e81e735b8fe2c35",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7650845440472d6c2a2d47c13e81e735b8fe2c35"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/ROOT-ACTUAL-EXECUTION-CONTROLLER.original.json"
+    },
+    "a81de2fb1c8d9e74fd58aba723cedf2613cf2071": {
+      "actual_blob_sha": "a81de2fb1c8d9e74fd58aba723cedf2613cf2071",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a81de2fb1c8d9e74fd58aba723cedf2613cf2071"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/SOURCE-COMPRESSION.json"
+    },
+    "d87a82c86ddeaf745a2d54e754f1b2e845cf5a49": {
+      "actual_blob_sha": "d87a82c86ddeaf745a2d54e754f1b2e845cf5a49",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "d87a82c86ddeaf745a2d54e754f1b2e845cf5a49"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-parent-observer-independent-review.json"
+    },
+    "12d17f15aa9dfa6b88868a8da88bfa0915ddda6e": {
+      "actual_blob_sha": "12d17f15aa9dfa6b88868a8da88bfa0915ddda6e",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "12d17f15aa9dfa6b88868a8da88bfa0915ddda6e"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/ROOT-HOST-PREVIEW-CONTROLLER.original.json"
+    },
+    "b04305b102176b145047b015cedd2b1228d147a2": {
+      "actual_blob_sha": "b04305b102176b145047b015cedd2b1228d147a2",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b04305b102176b145047b015cedd2b1228d147a2"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/recovery_extension.py"
+    },
+    "a7f98bf528e1d483c2c46cf194d3019a96514199": {
+      "actual_blob_sha": "a7f98bf528e1d483c2c46cf194d3019a96514199",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a7f98bf528e1d483c2c46cf194d3019a96514199"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/PUBLIC-GIT-UPLOAD-PLAN.json"
+    },
+    "69381b420eefea09398eca4212f4ee37d058ad36": {
+      "actual_blob_sha": "69381b420eefea09398eca4212f4ee37d058ad36",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "69381b420eefea09398eca4212f4ee37d058ad36"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/prepare_public_git_plan.py"
+    },
+    "0aa013b9f926531fdd1347d2b84788c96075c187": {
+      "actual_blob_sha": "0aa013b9f926531fdd1347d2b84788c96075c187",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0aa013b9f926531fdd1347d2b84788c96075c187"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02-independent-complete-source-review.json"
+    },
+    "b68d0a40072e7efeeb3920e61b30975a9dcc9584": {
+      "actual_blob_sha": "b68d0a40072e7efeeb3920e61b30975a9dcc9584",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b68d0a40072e7efeeb3920e61b30975a9dcc9584"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02-independent-interface-review.json"
+    },
+    "a1428dba062443e188b5a0479292afa535ecc052": {
+      "actual_blob_sha": "a1428dba062443e188b5a0479292afa535ecc052",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a1428dba062443e188b5a0479292afa535ecc052"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02-independent-host-guard-review.json"
+    },
+    "0e42c114d6430eca27e134c40d10c174b1e5c614": {
+      "actual_blob_sha": "0e42c114d6430eca27e134c40d10c174b1e5c614",
+      "api_method": "github_create_blob",
+      "encoding": "utf-8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0e42c114d6430eca27e134c40d10c174b1e5c614"
+        },
+        "isError": false
+      },
+      "source_path": "R5-final05-recovery02/candidate01/SOURCE.py"
+    }
+  },
+  "tree_entries": [
+    {
+      "path": "R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ff06a202b51f20d657c6bca75cc8c15d5773909e"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/ACTUAL-CONTRACT-INSPECTION.stdout.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d51ae5cb8eea6a97e8c616f865a581dbe24a5b2"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/FAILURE-PARENT-PROFILE-REFERENCE.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36e92027f34a46d9a0949b5eac448bb1ff6ef43f"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/FAILURE-PARENT-REFERENCE.gzip.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3e6b771bcd0664f885f8cfa7a6531c41938a1b23"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/FAILURE-REFERENCE-CONTROLLER-ORIGINALS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5244944bb0d7cd282a430ab3e956d512a660be97"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORT-CONTROLLER-ORIGINALS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a2a01c46d1b9b24b6a0e1402b0b12bfb19a740c8"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-ACTUAL-CONTRACT-CHECK.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "49e1a87448ef5c4a31b828d26d15788594cf8405"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V2.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08d5172cc763b117bc88e9478d17ca195df73495"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V3.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cbb28dce9e217f0f948e26dd4816ee82064275ff"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/HOST-IMPORTER-V4.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1c06a5b44235dd847659fb059e579deb3181bb0"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/HOST-VERIFICATION-PUBLIC.binary-transport.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24704937a8a81f2fbcf3f32ae2fc2ea8b1a40980"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/HOST-VERIFICATION.PUBLIC.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f7b0795459804214b4cd1607c694ef381fd57f1"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/INPUTS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73ccc58361e73cdfbede538f925b7a56fe170179"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7efcf53947d05d8d00d205bc659a4d161ab4721a"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/PHONE-COMMAND.sh",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6f9a22eef111b59ec2cf50a1f23f8dea98c31bbe"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/PHONE-REQUEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9be171f150ec474f88c3f4804367a9fca4945e39"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.PUBLIC.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f7b0795459804214b4cd1607c694ef381fd57f1"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/ROOT-HOST-VERIFICATION.raw.base64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1f8dba420459226e9c596e37116fdfad380207ce"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/SOURCE.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0376291b364a986eac271417ea6b169af937ab2d"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/build_observer.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d156d43c7be1dba288c2e71315aaea4406bd04f"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/build_observer02.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7ce5f30ac8e8d43046d98eb8fbf1b0e2ae7f79ee"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/observer_extension.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c22bd432edd15f975124cba304fef934f2d92b0f"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/verify_observer_host.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "853466fc704c25eb9487165d8a866fcae84e0dfa"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2300ee2d2680759cc249abe51a6a3b208aacba91"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aed3a5e49083d5dd9b16ba3f2fcbaee0d297be70"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "57eefcabf7255b64b215e20faf1a765657f61c90"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/import_parent_observer_host_v4.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2160c77d2bd6750f022c575c3c0e1135426babdb"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/HOST-CONTROLS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "06f83fdb1aba50cfb6006eb264f790b62bc8a4f4"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/INPUTS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c160cf5c49ae4a9d506ae7581b9910ca3506c17e"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1442aa85dd9960c96f0f7d041ab8720b6c196ac5"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/PHONE-COMMAND.sh",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "23687ba5c940ff523324a94f14a5d8dcebc85428"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/PHONE-REQUEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a3d5f9a8ddf337e65523162b37323e9c7523082"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/ROOT-ACTUAL-CONTROLLER.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7618fcaff46edc7ea48da854bc9621d944eef7fe"
+    },
+    {
+      "path": "R5-final05-parent-reconcile-probe02/candidate02/SOURCE.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "361401f8a0f64eaf153f6faabbbe39af6cb81c17"
+    },
+    {
+      "path": "R5-final05-recovery02/HOST-READER02-BINDING.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9431ced30bf90f7c588cac50c486592acf76734d"
+    },
+    {
+      "path": "R5-final05-recovery02/HOST-READER02-DERIVATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cf4cbc423d4ffb725af352c03d5a1afd5e64989b"
+    },
+    {
+      "path": "R5-final05-recovery02/HOST-READER02.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c7c1e8f4eef06a11ad1caa70226832ef4b04b109"
+    },
+    {
+      "path": "R5-final05-recovery02/HOST-VERIFICATION.PUBLIC.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e98197f1e4c15ea27b6ecbc3ad919c241b3ee22e"
+    },
+    {
+      "path": "R5-final05-recovery02/ROOT-HOST-IMPORT-CONTROLLER.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cd40d4195e6190a970f2a8b29caf3f80dd1f1959"
+    },
+    {
+      "path": "R5-final05-recovery02/ROOT-HOST-VERIFICATION-READ.original.mcp.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "824acc4e648767c5110996f58cdd2ff10dc47812"
+    },
+    {
+      "path": "R5-final05-recovery02/PUBLIC-PACKAGE-OUTCOME.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3a73df9eb613f407e41063f594b184fd98f75580"
+    },
+    {
+      "path": "R5-final05-recovery02/build_host_guard02.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35919e972e33bba98d2137c6a1714ac0099755c3"
+    },
+    {
+      "path": "R5-final05-recovery02/build_recovery02.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "24fffd5786b584969b7128c0ebbd55c45730e7ff"
+    },
+    {
+      "path": "R5-final05-recovery02/check_recovery02_host.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0eea08da0787b3a8196161bec0bbe10848071ce9"
+    },
+    {
+      "path": "R5-final05-recovery02/host_guard_reconciliation_extension.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "352db14b38e839d3186d712ba20e43af6ea7a836"
+    },
+    {
+      "path": "R5-final05-recovery02/reconciliation_extension.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8ced5b764574c7f4b60e9d308c24490d7d864bd"
+    },
+    {
+      "path": "R5-final05-recovery02/verify_recovery02_result_BOUND.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19e3387b386a0f7990a9845525cf0f1e4da7caf8"
+    },
+    {
+      "path": "R5-final05-recovery02/verify_recovery02_result_UNBOUND.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4afd6fd9f86ef6ae57c4f3097b9acf3601d6213e"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/AUTHORITY.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5138deee8347e76f621a79a83a0cb16e2dd234e"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/DERIVED-TARGETS.EXPECTATION-ONLY.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "748e51618b11d147bce4b0c60849dde1523f5d71"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/EXTENSION.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0a9a146c867debfffb6808968e37dc694544cc8"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/FINAL-DELIVERY.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "efa8ca6bd1ef6f6b5e51388b733c31628b8cf6f3"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/HOST-CONTROLS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76c41d372682a530a69260382f3411c6c5079392"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/HOST-GUARD-DERIVATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "05902d57a12b4d3f9d5f9b69ebc2edb32dd9b17f"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/HOST-GUARD-EXTENSION.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "352db14b38e839d3186d712ba20e43af6ea7a836"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/HOST-GUARD.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "169e855f8ca6ff6cad424980953033a95a894aab"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/HOST-PRE-DISPATCH.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc5d32dd1682543013f82a3b4337babbf2bebfc5"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ba112b700edfa0be219c9996c7afa0c8040534e4"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/MANIFEST.pre-metadata-fix.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "974ea2ed9dd3f4337fa6c1fffea6c7b33d6aeb37"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/PHONE-COMMAND.sh",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4907992f5e2d492ed54698cab8173b2f1f809943"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/PHONE-REQUEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a34b25fd2c20378ca3b1fb5f608abbd15f6fb1fc"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/RECONCILIATION.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4f7b0795459804214b4cd1607c694ef381fd57f1"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/ROOT-ACTUAL-EXECUTION-CONTROLLER.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7650845440472d6c2a2d47c13e81e735b8fe2c35"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/ROOT-EXECUTION-DECISION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7030da19eedd24b2acb11ee73ac4e45103581173"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/ROOT-HOST-PREVIEW-CONTROLLER.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12d17f15aa9dfa6b88868a8da88bfa0915ddda6e"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/SOURCE-COMPRESSION.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a81de2fb1c8d9e74fd58aba723cedf2613cf2071"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/SOURCE.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e42c114d6430eca27e134c40d10c174b1e5c614"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/reconciliation_extension.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8ced5b764574c7f4b60e9d308c24490d7d864bd"
+    },
+    {
+      "path": "R5-final05-recovery02/candidate01/recovery_extension.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b04305b102176b145047b015cedd2b1228d147a2"
+    },
+    {
+      "path": "R5-final05-parent-observer-independent-review.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d87a82c86ddeaf745a2d54e754f1b2e845cf5a49"
+    },
+    {
+      "path": "R5-final05-recovery02-independent-complete-source-review.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0aa013b9f926531fdd1347d2b84788c96075c187"
+    },
+    {
+      "path": "R5-final05-recovery02-independent-host-guard-review.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a1428dba062443e188b5a0479292afa535ecc052"
+    },
+    {
+      "path": "R5-final05-recovery02-independent-interface-review.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b68d0a40072e7efeeb3920e61b30975a9dcc9584"
+    },
+    {
+      "path": "R5-final05-recovery02/PUBLIC-GIT-UPLOAD-PLAN.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a7f98bf528e1d483c2c46cf194d3019a96514199"
+    },
+    {
+      "path": "R5-final05-recovery02/prepare_public_git_plan.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "69381b420eefea09398eca4212f4ee37d058ad36"
+    }
+  ],
+  "tree_entry_paths_are_relative_to_review": false,
+  "tree_entry_paths_are_relative_to_parent_chosen_checkpoint_prefix": true,
+  "private_raw_phone_results_packets_XML_foreign_bodies_not_uploaded": true,
+  "all_host_adapter_failures_and_corrections_retained": true,
+  "phone_calls": 0,
+  "branch_commit_or_ref_updated_by_this_agent": false,
+  "source_case_qualification_granted": false
+}

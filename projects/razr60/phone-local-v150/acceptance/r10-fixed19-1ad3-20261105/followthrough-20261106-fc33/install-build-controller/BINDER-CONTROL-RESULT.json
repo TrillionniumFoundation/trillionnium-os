@@ -1,0 +1,31 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_positive_binding": false,
+  "checks": [
+    {
+      "name": "unknown actual binding slots refuse before original callback",
+      "passed": true
+    },
+    {
+      "name": "binding input byte drift rejected before original callback",
+      "passed": true
+    },
+    {
+      "name": "typed input descriptor rejects False",
+      "passed": true
+    },
+    {
+      "name": "typed input descriptor rejects 222.0",
+      "passed": true
+    }
+  ],
+  "passed": 4,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.actual-constructor-binding-source-controls.v1",
+  "source": {
+    "bytes": 9085,
+    "sha256": "a1bcbebda1ae20af89c859c322c99bbb61c454b6195bb7050224691bbc9598f4"
+  },
+  "state": "UNBOUND_REFUSAL_SOURCE_CONTROLS_PASSED"
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.fc33.recovery02-independent-complete-source-review.v1",
+  "state": "EXACT_SOURCE_REQUEST_AND_READER_INTERFACE_MATCHED",
+  "source": {
+    "bytes": 358086,
+    "sha256": "94ab728a7fd4adb0ba4d4d7d5dc3c84cdad8923e73b4bd0cd87d5159bf6f0dc1"
+  },
+  "request": {
+    "bytes": 49592,
+    "sha256": "16e3ad935ad485e94146c5b35521b297694d3431ac3955014aa4b08e2c2db425"
+  },
+  "original_capture_source_equal": true,
+  "original_capture_main_never_called": true,
+  "loaded_source_state_remains_none": true,
+  "source_request_xz_decode_exact": true,
+  "only_recovery_core_change": "Exactly two explicit provenance hash pairs in preflight and terminal output; complete inverse to previous reviewed extension.",
+  "unchanged_owned_finite_plan": {
+    "files": 97,
+    "directories": 10,
+    "surviving_parents": 5
+  },
+  "independent_projection": {
+    "original_targets_sha256": "0aad40b0feac77b963547d90b27ed49eb260d3a2c14fd9a9dbfe4a61550597d1",
+    "actual_reconciliation_sha256": "3f07757cf054f697e2a81ad1ce0752c6e1aa5ca6a7b09488cb122363b76b038a",
+    "derived_targets_sha256": "58b253b325daacf7417e7c2c53bd636c8840064b61965e4c37ffbf99e01263e0",
+    "only_parent_profiles_and_absent_fixture_parent_fields_changed": true,
+    "derived_projection_is_original": false,
+    "original97_files_and10_directories_unchanged": true
+  },
+  "source_main_executed": false,
+  "phone_calls": 0,
+  "guard_review": "pending_exact_guard",
+  "actual_cleanup_success": false,
+  "review_limit": "Static full candidate and actual retained data API integration; no fresh device state, cleanup effect or successful physical recovery inferred."
+}
