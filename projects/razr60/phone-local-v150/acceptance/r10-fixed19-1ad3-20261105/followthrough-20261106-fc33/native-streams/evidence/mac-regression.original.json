@@ -1,0 +1,759 @@
+{
+  "cases": [
+    {
+      "detail": {
+        "candidate": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "valid_full_terminal",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": true,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "utf8": ""
+        }
+      },
+      "name": "valid_empty_stdout",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": true,
+          "bytes": 16,
+          "sha256": "18e540e14f16a797122b385edfc1dba668f10d2a87446f0adbca63951578a94c",
+          "utf8": "中文😀\nHEPTA"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 16,
+          "sha256": "18e540e14f16a797122b385edfc1dba668f10d2a87446f0adbca63951578a94c",
+          "utf8": "中文😀\nHEPTA"
+        }
+      },
+      "name": "valid_multichunk_chinese_emoji_lf",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "valid_historical_minimal_terminal",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result does not contain its original accepted/start/terminal events"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "output_before_started",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result does not contain its original accepted/start/terminal events"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result does not contain its original accepted/start/terminal events"
+        }
+      },
+      "name": "duplicate_started",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result does not contain its original accepted/start/terminal events"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result does not contain its original accepted/start/terminal events"
+        }
+      },
+      "name": "missing_started",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result contains an unqualified event kind"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "unknown_kind_progress",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result contains an unqualified event kind"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "unknown_kind_queued",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result contains an unqualified event kind"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "unknown_kind_list",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result contains an unqualified event kind"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "unknown_kind_dict",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result contains an unqualified event kind"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "unknown_kind_none",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone semantic tool is not confirmed successful and complete"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "top_exit_code_bool",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone semantic tool is not confirmed successful and complete"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "top_exit_code_float",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone terminal event differs in value or field type"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "event_terminal_exit_bool",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone terminal event differs in value or field type"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "event_terminal_exit_float",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone terminal event differs in value or field type"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "event_terminal_stdout_float",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone terminal event differs in value or field type"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "event_terminal_stderr_bool",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone terminal event differs in value or field type"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "event_terminal_truncated_int",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone terminal event differs in value or field type"
+        },
+        "original": {
+          "accepted": true,
+          "bytes": 2,
+          "sha256": "2689367b205c16ce32ed4200942b8b8b1e262dfc70d9bc9fbc77c49699a4f1df",
+          "utf8": "ok"
+        }
+      },
+      "name": "event_terminal_elapsed_float",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result lacks matching terminal identity"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result lacks matching terminal identity"
+        }
+      },
+      "name": "wrong_call_identity",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result event scope or sequence differs"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result event scope or sequence differs"
+        }
+      },
+      "name": "wrong_event_identity",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result event scope or sequence differs"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result event scope or sequence differs"
+        }
+      },
+      "name": "wrong_event_sequence",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone output byte count differs"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone output byte count differs"
+        }
+      },
+      "name": "wrong_output_byte_count",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone output base64 is invalid"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone output base64 is invalid"
+        }
+      },
+      "name": "invalid_base64",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone semantic tool is not confirmed successful and complete"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone semantic tool is not confirmed successful and complete"
+        }
+      },
+      "name": "nonzero_exit",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone semantic tool is not confirmed successful and complete"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone semantic tool is not confirmed successful and complete"
+        }
+      },
+      "name": "truncated_output",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "candidate": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result event scope or sequence differs"
+        },
+        "original": {
+          "accepted": false,
+          "error_type": "ProviderError",
+          "message": "phone result event scope or sequence differs"
+        }
+      },
+      "name": "wrong_wire_tool",
+      "passed": true,
+      "scope": "NEG-11_SELECTED_NATIVE_PARSER"
+    },
+    {
+      "detail": {
+        "dispatched_calls": 0,
+        "errno": null,
+        "error_type": "ProviderError",
+        "mapping_records": 0,
+        "state_unchanged": true
+      },
+      "name": "image_budget",
+      "passed": true,
+      "scope": "NEG-10_SELECTED_MAP_GUARDS"
+    },
+    {
+      "detail": {
+        "dispatched_calls": 0,
+        "errno": null,
+        "error_type": "ProviderError",
+        "mapping_records": 0,
+        "state_unchanged": true
+      },
+      "name": "image_expired",
+      "passed": true,
+      "scope": "NEG-10_SELECTED_MAP_GUARDS"
+    },
+    {
+      "detail": {
+        "dispatched_calls": 0,
+        "errno": null,
+        "error_type": "ProviderError",
+        "mapping_records": 0,
+        "state_unchanged": true
+      },
+      "name": "image_foreign_image",
+      "passed": true,
+      "scope": "NEG-10_SELECTED_MAP_GUARDS"
+    },
+    {
+      "detail": {
+        "dispatched_calls": 0,
+        "errno": null,
+        "error_type": "ProviderError",
+        "mapping_records": 0,
+        "state_unchanged": true
+      },
+      "name": "image_old_round",
+      "passed": true,
+      "scope": "NEG-10_SELECTED_MAP_GUARDS"
+    },
+    {
+      "detail": {
+        "canonical_bytes": 32,
+        "missing_known_temporary": "tolerated",
+        "real_os_replace": true
+      },
+      "name": "rename_local-01.request.json.new",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "canonical_bytes": 32,
+        "missing_known_temporary": "tolerated",
+        "real_os_replace": true
+      },
+      "name": "rename_health-outcome.json.new",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "errno": 2,
+        "error_type": "FileNotFoundError"
+      },
+      "name": "missing_canonical",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "errno": 2,
+        "error_type": "FileNotFoundError"
+      },
+      "name": "unknown_temporary",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "errno": 2,
+        "error_type": "FileNotFoundError"
+      },
+      "name": "known_temporary_missing_parent",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "errno": null,
+        "error_type": "RuntimeError"
+      },
+      "name": "symlink_rejected",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "errno": 20,
+        "error_type": "NotADirectoryError"
+      },
+      "name": "actual_enotdir_propagated",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "injection": "direct callback; not physical filesystem EACCES",
+        "same_exception_object": true
+      },
+      "name": "scanner_eacces_same_exception",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_FILESYSTEM"
+    },
+    {
+      "detail": {
+        "fd_after": {
+          "0": [
+            16777233,
+            593318625,
+            33152
+          ],
+          "1": [
+            0,
+            11294152685404953335,
+            4528
+          ],
+          "2": [
+            0,
+            2815002481142537873,
+            4528
+          ],
+          "3": [
+            -731631651,
+            612,
+            8630
+          ]
+        },
+        "fd_before": {
+          "0": [
+            16777233,
+            593318625,
+            33152
+          ],
+          "1": [
+            0,
+            11294152685404953335,
+            4528
+          ],
+          "2": [
+            0,
+            2815002481142537873,
+            4528
+          ],
+          "3": [
+            -731631651,
+            612,
+            8630
+          ]
+        },
+        "owned_temporary_tree_removed": true,
+        "rss_baseline_return_claimed": false,
+        "rss_high_water_after": 23183360,
+        "rss_high_water_before": 23183360,
+        "threads_after": [
+          [
+            "MainThread",
+            8407703936,
+            true
+          ]
+        ],
+        "threads_before": [
+          [
+            "MainThread",
+            8407703936,
+            true
+          ]
+        ]
+      },
+      "name": "fd_thread_and_owned_temp_tree_baseline",
+      "passed": true,
+      "scope": "NEG-14_SELECTED_RESOURCE_RETURN"
+    },
+    {
+      "detail": {
+        "all_other_observation_bytes_exact": true,
+        "daily_one_parent_hash_inverse_exact": true,
+        "only_observation_function_changed": "native_streams"
+      },
+      "name": "exact_current_source_preservation",
+      "passed": true,
+      "scope": "SOURCE_PRESERVATION"
+    }
+  ],
+  "dispatches": 0,
+  "host": {
+    "python": "3.9.6",
+    "system": "Darwin"
+  },
+  "limitations": [
+    "Selected real source definitions loaded via AST; no whole provider or installed runtime is run.",
+    "Original rejection or acceptance is measured alongside the candidate for each parser case.",
+    "NEG-10 covers four map preconditions only; no new phone screenshot or model input is claimed.",
+    "NEG-14 covers two actual renames, the listed filesystem errors, a synthetic callback, and host FD/thread/temp cleanup.",
+    "No full capacity exhaustion, process-group cleanup, whole-runtime memory return, or physical phone case is claimed.",
+    "This is a newly reconstructed Mac script, not a claim to recover the inaccessible earlier Linux script bytes."
+  ],
+  "model_requests": 0,
+  "passed": 42,
+  "phone_calls": 0,
+  "schema": "razr60-current-native-streams-offline-regression/v2",
+  "scope_counts": {
+    "NEG-10_SELECTED_MAP_GUARDS": 4,
+    "NEG-11_SELECTED_NATIVE_PARSER": 28,
+    "NEG-14_SELECTED_FILESYSTEM": 8,
+    "NEG-14_SELECTED_RESOURCE_RETURN": 1,
+    "SOURCE_PRESERVATION": 1
+  },
+  "script": {
+    "bytes": 19996,
+    "sha256": "26c1028f3b8c882680f0d530d5cb7ad9eec038e09b7bf1cc27e9c943e00f5e84"
+  },
+  "source_combination_or_business_qualification": false,
+  "sources": [
+    {
+      "bytes": 43445,
+      "path": "reference/phone_observation_tools.original.py",
+      "sha256": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66"
+    },
+    {
+      "bytes": 43954,
+      "path": "source/phone_observation_tools.py",
+      "sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409"
+    },
+    {
+      "bytes": 22059,
+      "path": "reference/daily_phone_local.original.py",
+      "sha256": "ca23c60bbb4114960c6a571492cacd9e0bdc3404191409ac78bcf0c34a06c1d0"
+    },
+    {
+      "bytes": 22059,
+      "path": "source/daily_phone_local.py",
+      "sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f"
+    }
+  ],
+  "state": "PASSED",
+  "total": 42,
+  "whole_neg10_qualified": false,
+  "whole_neg11_qualified": false,
+  "whole_neg14_qualified": false
+}

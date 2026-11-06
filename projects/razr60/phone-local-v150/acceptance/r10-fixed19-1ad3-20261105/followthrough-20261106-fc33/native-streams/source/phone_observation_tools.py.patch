@@ -1,0 +1,40 @@
+--- reference/phone_observation_tools.original.py
++++ source/phone_observation_tools.py
+@@ -80,6 +80,7 @@
+             'phone result lacks matching terminal identity')
+     terminal = reply.get('terminal')
+     require(isinstance(terminal, dict) and terminal.get('kind') == 'exited'
++            and type(terminal.get('exit_code')) is int
+             and terminal.get('exit_code') == 0 and terminal.get('error') is None
+             and terminal.get('output_truncated') is False,
+             'phone semantic tool is not confirmed successful and complete')
+@@ -92,7 +93,10 @@
+                 'phone result event scope or sequence differs')
+         event = record.get('event')
+         require(isinstance(event, dict), 'phone result event is malformed')
+-        if event.get('kind') != 'output':
++        require(type(event.get('kind')) is str
++                and event['kind'] in {'accepted', 'started', 'output', 'terminal'},
++                'phone result contains an unqualified event kind')
++        if event['kind'] != 'output':
+             continue
+         name = event.get('stream')
+         require(name in streams and event.get('encoding') == 'base64'
+@@ -105,10 +109,14 @@
+                 'phone output byte count differs')
+         streams[name].extend(raw)
+     kinds = [record['event']['kind'] for record in events]
+-    require(kinds and kinds[0] == 'accepted' and kinds[-1] == 'terminal'
+-            and all(kinds.count(kind) == 1 for kind in ('accepted', 'started', 'terminal'))
+-            and events[-1]['event'].get('terminal') == terminal,
++    require(len(kinds) >= 3 and kinds[:2] == ['accepted', 'started']
++            and kinds[-1] == 'terminal' and all(kind == 'output' for kind in kinds[2:-1]),
+             'phone result does not contain its original accepted/start/terminal events')
++    observed_terminal = events[-1]['event'].get('terminal')
++    require(isinstance(observed_terminal, dict) and observed_terminal == terminal
++            and all(type(observed_terminal[key]) is type(value)
++                    for key, value in terminal.items()),
++            'phone terminal event differs in value or field type')
+     for name, raw in streams.items():
+         require(type(terminal.get(name + '_bytes')) is int
+                 and terminal[name + '_bytes'] == len(raw), 'phone terminal count differs')

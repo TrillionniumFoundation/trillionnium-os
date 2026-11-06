@@ -1,0 +1,164 @@
+{
+  "actual_READY": 0,
+  "actual_builds": 0,
+  "actual_installs": 0,
+  "actual_phone_operations": 0,
+  "baseline_contracts_are_reference_only": true,
+  "baseline_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-a1055-20261106-01",
+  "candidate_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-fc33-type-checks-candidate01",
+  "candidate_source_pins": {
+    "install_ready_execution_protocol.py": {
+      "bytes": 12331,
+      "sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35"
+    },
+    "verify_install_start_ready_UNBOUND.py": {
+      "bytes": 35028,
+      "sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681"
+    }
+  },
+  "facts": {
+    "already_correct": "log_synced uses is True; integer 1 already rejected and behavior preserved",
+    "baseline_reader": {
+      "bytes": 34507,
+      "sha256": "011be7502d97f5673c3df48802a3dd5dd78be2892e6a0e82873e863f619e3346"
+    },
+    "baseline_reproductions": [
+      "False and 0.0 accepted as stream offset zero",
+      "False for empty next_offset and float for nonempty next_offset accepted",
+      "False/float durable seen/stored counters accepted",
+      "0 and 0.0 accepted as false truncation flags",
+      "True parent PID matched original integer 1",
+      "float PID/PPID/PGID/SID/start_ticks matched original integers"
+    ],
+    "candidate_reader": {
+      "bytes": 35028,
+      "sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681"
+    },
+    "controls_job": "1a1b108fb19-fc05-7532",
+    "creation_job": "1a1b1067666-fc05-750a",
+    "local_linux_observation": {
+      "guard_timeout_elapsed_seconds": 10.002828208002029,
+      "included_in_mac_retained_test_total": false,
+      "phone_rc_controls": 3,
+      "raw_local_artifact_currently_unavailable": true,
+      "source_controls": 43,
+      "type_lf_guard_controls": 25,
+      "verified_in_tool_output": true
+    },
+    "unchanged_protocol": {
+      "bytes": 12331,
+      "sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35"
+    }
+  },
+  "files": {
+    "INSTALL-READER-TYPE-CHECKS.patch": {
+      "bytes": 2593,
+      "sha256": "d0dbff965a73851f5c810be2dcec899373772f8ec2517db4dc952312998d31d3"
+    },
+    "RESULTS-AND-LIMITS.md": {
+      "bytes": 3893,
+      "sha256": "8a73e1b8295972b2c397b890ff3a1a4cb5c975a131ea3de17b40a66039f0b491"
+    },
+    "evidence/candidate.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/candidate.stdout": {
+      "bytes": 8459,
+      "sha256": "1144bf5f2161cec7b9b3ea0d6f9cffcac6987b951a5e1b3eace2be780c6a6459"
+    },
+    "evidence/mac-candidate-controls01/RESULT.json": {
+      "bytes": 8459,
+      "sha256": "1144bf5f2161cec7b9b3ea0d6f9cffcac6987b951a5e1b3eace2be780c6a6459"
+    },
+    "evidence/mac-candidate-controls01/original43/RESULT.json": {
+      "bytes": 5945,
+      "sha256": "a894e3703893ec5cd4152183d87206b6275a6e6ef699762a2f5f6b12ebffcc06"
+    },
+    "evidence/mac-controls01.original.RESULT.json": {
+      "bytes": 5923,
+      "sha256": "7f2286774dda62d9a464e3f14d15fb9e504ac1f14f463cf54b0e0eb32db6140c"
+    },
+    "evidence/phone-rc.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "evidence/phone-rc.stdout": {
+      "bytes": 1276,
+      "sha256": "fc1ae5784dbe08704f9ce4ac29e4f3f394cb8228f0308d8edcc65cd0d0cadaf5"
+    },
+    "references/INPUT-CONTRACT.original.json": {
+      "bytes": 7175,
+      "sha256": "6acf1df1cbbb09422568c69bd838f67be7d4226f53d0f050bea27658c62a72fe"
+    },
+    "references/PRODUCER-RETENTION-CONTRACT.original.json": {
+      "bytes": 4280,
+      "sha256": "e2c43784539b2deae129dcdb1d09c7f19796b5dacf88bffdde2ec2350ea368ce"
+    },
+    "references/REFERENCE-SEED.original.json": {
+      "bytes": 5787,
+      "sha256": "c3ca803e44708e8e3e1d7c83dea62b1f595435de6fcd2345579f1f8b4aea0c56"
+    },
+    "references/consumer.original.py": {
+      "bytes": 243806,
+      "sha256": "3de6208604022671d4db21e2b479e3ef4d4bba4aaa9d2faa360f1865aec428da"
+    },
+    "references/exact8.original.py": {
+      "bytes": 29027,
+      "sha256": "24db28bee38671322b11ce4c2afd5dd47425381101dd85f887141f567811b490"
+    },
+    "references/installer.original.py": {
+      "bytes": 34100,
+      "sha256": "714a2916680e2313bfcee5a4319d6484b3c6ea5539854818c1134ad84ea02446"
+    },
+    "references/readiness.original.py": {
+      "bytes": 16407,
+      "sha256": "2b4ff90f7078af2481feb8a2d33c39d1a0e260102cd769a4ee3b46d9bec47e11"
+    },
+    "references/release_reader.original.py": {
+      "bytes": 28483,
+      "sha256": "e947a3b2de75a0820fcc3cb5cfe758f874cd85625cb11bac793b38256a670c43"
+    },
+    "references/verify_install_start_ready_UNBOUND.baseline.py": {
+      "bytes": 34507,
+      "sha256": "011be7502d97f5673c3df48802a3dd5dd78be2892e6a0e82873e863f619e3346"
+    },
+    "source/install_ready_execution_protocol.py": {
+      "bytes": 12331,
+      "sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35"
+    },
+    "source/verify_install_start_ready_UNBOUND.py": {
+      "bytes": 35028,
+      "sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681"
+    },
+    "validation/CONTROLLER-PHONE-RC-RESULT.json": {
+      "bytes": 1276,
+      "sha256": "fc1ae5784dbe08704f9ce4ac29e4f3f394cb8228f0308d8edcc65cd0d0cadaf5"
+    },
+    "validation/run_controller_phone_rc_controls.py": {
+      "bytes": 3438,
+      "sha256": "36b67b98d0b10938ac8933488eedd58cfff480f8199e56b71a3ea40f5a1c6101"
+    },
+    "validation/run_install_ready_candidate_controls.py": {
+      "bytes": 10143,
+      "sha256": "43f66a5fa2f0350ef06f7f6cbcff4763d6cf8af867fd4dcfec26887566e8d59d"
+    },
+    "validation/run_install_ready_source_controls.py": {
+      "bytes": 14680,
+      "sha256": "92979c495d021225d6f1122e05556c62274224f760b2a88e401547274e63ce24"
+    }
+  },
+  "fixed19_credit": 0,
+  "focused_type_lf_controls": 21,
+  "formal_role_identities_generated": 0,
+  "frozen_execution_plan": null,
+  "frozen_inputs": null,
+  "linux_guard_execution_on_mac": false,
+  "mac_persisted_unique_controls": 67,
+  "new_workflow_gates_added": false,
+  "original_source_controls": 43,
+  "phone_rc_controls": 3,
+  "schema": "hepta.install-ready.unbound-type-check-candidate.v1",
+  "state": "PASS_SOURCE_ONLY_UNBOUND",
+  "whole_qualification": false
+}

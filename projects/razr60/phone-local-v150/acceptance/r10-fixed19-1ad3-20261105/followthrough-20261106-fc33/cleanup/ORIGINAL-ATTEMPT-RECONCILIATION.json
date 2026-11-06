@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.fixed19.cleanup-original-reconciliation-summary.v1",
+  "derivative_summary": true,
+  "recorded_at": "2026-11-06 13:47:44 UTC",
+  "original_dispatch": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "/home/alex/razr60-local-model-v150/ops/phone_once.py",
+      "ng-a1055-neg02-final04-owned-cleanup01",
+      "/home/alex/razr60-local-model-v150/requests/ng-a1055-neg02-final04-owned-cleanup01.json"
+    ],
+    "idempotency_key": "a1055-neg02-final04-owned-cleanup01",
+    "timeout_seconds": null
+  },
+  "original_actor": {
+    "job_id": "1a1b10ebd5e-fc05-756b",
+    "launch_nonce": "9b705ed125c699b37b0f9b14163a221f",
+    "request_digest": "0d41dba58aaea5a1aa60b98a8f6d4828e13efa67828cdf2d053511326cfc96c1",
+    "state": "succeeded",
+    "exit_code": 0,
+    "at_unix_ms": 1793971912866,
+    "stdout_bytes": 290,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "log_truncated": false,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "cancelled": false
+  },
+  "operation_result": {
+    "bytes": 68538,
+    "sha256": "aae928ae0493966f92684f94cf56e30f409c3932ec8fd690f4ba99ff49800937",
+    "status": "command_exited",
+    "elapsed_seconds": 9.25036197307054,
+    "phone_rc": 1
+  },
+  "phone_failure": {
+    "schema": "hepta.owned-unstarted-stage.cleanup-current44-failure.v1",
+    "phase": "same_locked_original_capture_preflight",
+    "detail": "all owned directories/aliases/transfer parents unchanged before first mutation",
+    "completed_removal_count": 0,
+    "completed_removed_paths": [],
+    "durable_intent": null,
+    "durable_result": null
+  },
+  "pins": {
+    "cleanup_source_sha256": "dfa9ffbde578dbd262ac03c802fa809cb8beb8432e9c10c1dc2b485b891f6329",
+    "bound_request_sha256": "8362481fc74494bc99f50d2f130c19d86fce5834df63ce599d41ecb4b41a901f",
+    "phone_request_sha256": "af2addbc79a4936f9a89becb42c017a4c177fbce7178b8eedf30b729f0288888",
+    "original_capture_sha256": "e6f1562d9e887137958eaeecb8aec647c4601ac4796c33656a7aaf58985daa34"
+  },
+  "interpretation": "The controller actor completed but the phone command failed. The cleanup code rejected its preflight before its first removal. This does not close recovery or NEG-02.",
+  "review": {
+    "original_archived_observations_equal_targets_all_five_groups": true,
+    "comparison_structures_return_json_compatible_lists_and_dicts": true,
+    "tuple_list_bug_confirmed": false,
+    "actual_changed_field_known": false,
+    "gate_relaxed": false
+  },
+  "preservation": {
+    "controller_originals_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-controller-originals01",
+    "original_start_mcp_timeout_preserved": true,
+    "original_failed_operation_not_replayed": true,
+    "other_final02_wait": "UNKNOWN_UNCHANGED"
+  }
+}

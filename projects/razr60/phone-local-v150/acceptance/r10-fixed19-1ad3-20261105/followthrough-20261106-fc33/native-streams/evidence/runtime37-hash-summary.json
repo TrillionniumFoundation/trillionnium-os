@@ -1,0 +1,254 @@
+{
+  "current_combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
+  "current_mapper_source_sha256": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66",
+  "exact_hash_readback": {
+    "bytes": 14220,
+    "private_original_retained": true,
+    "sha256": "ed102cd325436fb2528f5988f1d902957f82047584906a82833a39a0ccd5e8b6"
+  },
+  "exact_hash_readback_job": "1a1b0fd498d-fc05-74a9",
+  "file_count": 37,
+  "files": [
+    {
+      "bytes": 1438,
+      "path": "reference/REVIEWED-PRODUCTION-PINS.json",
+      "sha256": "970e33dedeebcf4d996160374df04d4e8dc42a3ea3895c368152f6c608e4c2ab",
+      "verified": true
+    },
+    {
+      "bytes": 664638,
+      "path": "reference/attempt05-AFTER-INVENTORY.original.json",
+      "sha256": "87103089914885fff5632781f18fbe36895ed181f01997eac6c3b49449b5579e",
+      "verified": true
+    },
+    {
+      "bytes": 164095,
+      "path": "reference/attempt05-CLOSURE.original.json",
+      "sha256": "d464bac786ef208d8fa0390587bd3bb7616a13985fb064716a209aa2394458f6",
+      "verified": true
+    },
+    {
+      "bytes": 4650,
+      "path": "reference/attempt05-SIDE-PROOF.original.json",
+      "sha256": "1bf6bca5ae5aaa5d5803b708070680e92d3f072f9541f38b09783787cfae7b9c",
+      "verified": true
+    },
+    {
+      "bytes": 18133,
+      "path": "reference/component_common_r5.py",
+      "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02",
+      "verified": true
+    },
+    {
+      "bytes": 13238,
+      "path": "reference/component_core.py",
+      "sha256": "705b982a46de0fd4427cd6a233687381c592ef74459f9818f3da15e20c03916f",
+      "verified": true
+    },
+    {
+      "bytes": 30647,
+      "path": "reference/component_once_r9.py",
+      "sha256": "1c27b548e42c91391e12db125c23608a2d5fb9e28ae2713df17c271bddc58fa2",
+      "verified": true
+    },
+    {
+      "bytes": 4116,
+      "path": "reference/decode_client_state.py",
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073",
+      "verified": true
+    },
+    {
+      "bytes": 1031582,
+      "path": "reference/diag02-AFTER-INVENTORY.original.json",
+      "sha256": "10fe1e2d389cf8aa4928593abb207406ae63e84519339da25c722b03bee9c67d",
+      "verified": true
+    },
+    {
+      "bytes": 253127,
+      "path": "reference/diag02-CLOSURE.original.json",
+      "sha256": "e25d415963eabab1fdc08704623dec88cc3ad88b9a9c228072e1138d41f8b035",
+      "verified": true
+    },
+    {
+      "bytes": 8439,
+      "path": "reference/diag02-SIDE-PROOF.original.json",
+      "sha256": "a76283b76f1f12e08378662131b0375ffec95f1333d190deb3f1f90280dcc2bd",
+      "verified": true
+    },
+    {
+      "bytes": 53502,
+      "path": "reference/environment_parent_late_boundary_r6.py",
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c",
+      "verified": true
+    },
+    {
+      "bytes": 28109,
+      "path": "reference/native_guard_session.py",
+      "sha256": "77dacc52468de95b68f30baafbb1cbf7dd7452c3d9ce652980dbb4af0ca62d8b",
+      "verified": true
+    },
+    {
+      "bytes": 6701,
+      "path": "reference/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+      "verified": true
+    },
+    {
+      "bytes": 19740,
+      "path": "reference/non_native_attempt05.py",
+      "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4",
+      "verified": true
+    },
+    {
+      "bytes": 29504,
+      "path": "reference/non_native_diag02.py",
+      "sha256": "296f5e22485712fff6641082ab0ffdee78d2d2951bcb8f53a1da5f0c374c2de6",
+      "verified": true
+    },
+    {
+      "bytes": 35730,
+      "path": "reference/policy_parent_late_boundary_r4.py",
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b",
+      "verified": true
+    },
+    {
+      "bytes": 62434,
+      "path": "reference/property_parent_late_boundary_r7.py",
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd",
+      "verified": true
+    },
+    {
+      "bytes": 62662,
+      "path": "reference/retained_unstarted_stage_final02.py",
+      "sha256": "bc6faf1c7ae2b7e3d44be3d4fe19e4272073073f8df283397ef37c177ca25850",
+      "verified": true
+    },
+    {
+      "bytes": 40788,
+      "path": "reference/send_new_native_task_r5.py",
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281",
+      "verified": true
+    },
+    {
+      "bytes": 17390,
+      "path": "reference/tool_client_r6.py",
+      "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+      "verified": true
+    },
+    {
+      "bytes": 107528,
+      "path": "source/close_component.py",
+      "sha256": "5b145819502951fe37e56ceb1bd2e04a6be19deef2f210590c1711e5fe401655",
+      "verified": true
+    },
+    {
+      "bytes": 19138,
+      "path": "source/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab",
+      "verified": true
+    },
+    {
+      "bytes": 40451,
+      "path": "source/component_lifecycle.py",
+      "sha256": "b4d876939121798f07d2a64ee46caf86a97d872b4d399ac4b96264c25725b626",
+      "verified": true
+    },
+    {
+      "bytes": 39012,
+      "path": "source/component_listener.py",
+      "sha256": "6db4eb9f55bc3313b635bdd05584901706213a9d47ac2f48b81a28cdb91313ec",
+      "verified": true
+    },
+    {
+      "bytes": 27762,
+      "path": "source/component_snapshot.py",
+      "sha256": "a3a2e9b7527b81d65daf5a6311b200c179c7bfcdeba33c2972e1a2031d42f1f0",
+      "verified": true
+    },
+    {
+      "bytes": 153138,
+      "path": "source/late_boundary.py",
+      "sha256": "27350db238c5ca31796af91c77b5c2fdb9d02b838d35140f759df907903d4fa4",
+      "verified": true
+    },
+    {
+      "bytes": 28878,
+      "path": "source/native_guard_session_r2.py",
+      "sha256": "5fe50be4dccbe655a39124876d1f9c2199de20d80ec0a84f08a63d88e7f1a931",
+      "verified": true
+    },
+    {
+      "bytes": 4633,
+      "path": "source/native_proc_profile.py",
+      "sha256": "12719e58d2e3e1a1e86b8a6a9dc9587e37bfcb36c4c3b26b023138752bb3e67b",
+      "verified": true
+    },
+    {
+      "bytes": 14256,
+      "path": "source/prepare_component.py",
+      "sha256": "2259eb2684ae207f27f3d40cfaaa8f28efb8d392f2bfaa27fee1183d699e6c3e",
+      "verified": true
+    },
+    {
+      "bytes": 18725,
+      "path": "source/root_fixture_once.py",
+      "sha256": "605f9cfd6170bf7a1dccd73345fbafb785de8f7956a4af091a59ca4a398d3cf1",
+      "verified": true
+    },
+    {
+      "bytes": 39144,
+      "path": "source/root_fixture_originals.py",
+      "sha256": "f9285a2cdac4895358671a19ada0d41c7da14832e6857c5de611fda8bf0678a9",
+      "verified": true
+    },
+    {
+      "bytes": 10498,
+      "path": "source/run_root_fixture_phase.py",
+      "sha256": "bf65791c252d0b4d9416717ffca44fe43c9021211c2f2189be5553ab8967a6b2",
+      "verified": true
+    },
+    {
+      "bytes": 41080,
+      "path": "source/send_new_native_guard_task_r10_r4.py",
+      "sha256": "16363414b952637f61367c51ab313187a37af632528a62207752e60f93caf6d6",
+      "verified": true
+    },
+    {
+      "bytes": 25040,
+      "path": "source/sender_native_guard_ready_r10_r4.py",
+      "sha256": "a6fa2690dea61134cd51b162d86453e064c547571241959ad45f660905a542b6",
+      "verified": true
+    },
+    {
+      "bytes": 19085,
+      "path": "source/stage_component.py",
+      "sha256": "ab60dc3303f14a4d979d1aa98b9990fd1496b7607f78611f26a3bb6134df4328",
+      "verified": true
+    },
+    {
+      "bytes": 18143,
+      "path": "source/witness_bundle.py",
+      "sha256": "8e8e1aa967ba9fd96d9bae80eb40c6322763ba1109b015b399e4c08ad14d5557",
+      "verified": true
+    }
+  ],
+  "manifest": {
+    "bytes": 46685,
+    "path": "runtime/MANIFEST.json",
+    "sha256": "72d6dcb4c20547549debad6ef55001aa5c8d115574ac222312b158f9722e2515",
+    "unchanged": true
+  },
+  "manifest_plus_listed_bytes": 3203859,
+  "manifest_plus_listed_files": 38,
+  "model_requests": 0,
+  "phone_calls": 0,
+  "qualification_promoted": false,
+  "recorded_utc": "2026-11-06T13:12:32.158899+00:00",
+  "reference_count": 21,
+  "runtime_source_mutations": 0,
+  "schema": "razr60-runtime37-safe-hash-summary/v1",
+  "scope": "37 runtime entries plus their manifest are 38 objects. This list is separate from the combination's 15 production source entries. No full original inventory/nonce or inode metadata is disclosed here.",
+  "source_count": 16,
+  "total_listed_file_bytes": 3157174,
+  "verification": "All 37 exact declared regular single-link files were opened O_NOFOLLOW, matched declared size and SHA256 with stable before/after/named full9 metadata; manifest reread unchanged. Physical filesystem observations are from the named Mac host job."
+}

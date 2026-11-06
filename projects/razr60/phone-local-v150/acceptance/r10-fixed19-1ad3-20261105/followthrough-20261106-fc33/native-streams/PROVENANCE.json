@@ -1,0 +1,53 @@
+{
+  "actual_current_combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
+  "actual_current_component": "native-guard-r10-r1-operator-final-v3-getattr-a1055-r4",
+  "business_qualified": false,
+  "candidate_scope": "Only native_streams plus daily's one corresponding PARENTS hash.",
+  "current_increments_preserved": true,
+  "device_modified": false,
+  "dispatches": 0,
+  "earlier_linux_runs": {
+    "checks_per_run": 42,
+    "exact_artifacts_recovered": false,
+    "not_substituted_for_mac_result": true,
+    "observed_successful": 2,
+    "reason": "scratch executor unavailable during preservation"
+  },
+  "frozen_sources_modified": false,
+  "intended_repository_directory": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/native-streams",
+  "mac_derivation_job": "1a1b10aa6f2-fc05-7548",
+  "mac_preservation_job": "1a1b1089fd6-fc05-752d",
+  "mac_regression": {
+    "passed": 42,
+    "result_bytes": 21377,
+    "result_sha256": "b0650028495995a2f361b5245fc16cab0a29ab635ef321bf2bc9270812d56bb6",
+    "script_bytes": 19996,
+    "script_sha256": "26c1028f3b8c882680f0d530d5cb7ad9eec038e09b7bf1cc27e9c943e00f5e84",
+    "total": 42
+  },
+  "mac_regression_job": "1a1b10f1643-fc05-7572",
+  "model_requests": 0,
+  "original_sources": [
+    {
+      "archived_path": "reference/phone_observation_tools.original.py",
+      "bytes": 43445,
+      "component_relative_path": "shared/provider/source/phone_observation_tools.py",
+      "sha256": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66"
+    },
+    {
+      "archived_path": "reference/daily_phone_local.original.py",
+      "bytes": 22059,
+      "component_relative_path": "shared/provider/source/daily_phone_local.py",
+      "sha256": "ca23c60bbb4114960c6a571492cacd9e0bdc3404191409ac78bcf0c34a06c1d0"
+    }
+  ],
+  "phone_calls": 0,
+  "private_retained_artifacts": "Full read receipts, runtime manifest, full9 metadata, and controller originals are retained separately; they are not automatically published.",
+  "publication_authority": "Parent operator performs review and any atomic Git tree commit with branch lease.",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "reviewed_repository_commit": "744fc422a28bd6f505701503bf0d113ab49d4634",
+  "runtime37_actual_hash_readback_job": "1a1b0fd498d-fc05-74a9",
+  "schema": "razr60-native-streams-candidate-provenance/v1",
+  "source_combination_adopted": false,
+  "state": "HOST_REVIEWED_SOURCE_CANDIDATE_NOT_PHONE_QUALIFIED"
+}

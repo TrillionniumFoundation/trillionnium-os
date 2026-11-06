@@ -1,0 +1,87 @@
+{
+  "file_count": 15,
+  "files": [
+    {
+      "bytes": 2534,
+      "path": "PROVENANCE.json",
+      "sha256": "a8791894187d9c8fc1748177fe2dd11da5aecbba64e181ac1a1a7f13dc71fcc0"
+    },
+    {
+      "bytes": 6904,
+      "path": "README.md",
+      "sha256": "8fcfa92fad9c0f96d205c1271e41097d4fd8d6735cd42272103a13f85418e694"
+    },
+    {
+      "bytes": 6717,
+      "path": "build_candidate.py",
+      "sha256": "b139e8c495d7ea96cb13a208a6927aa80101bf1edbc3a4da8c4e0c2b2186c03b"
+    },
+    {
+      "bytes": 7553,
+      "path": "evidence/WIRE-CONTRACT.json",
+      "sha256": "f25b2098f3236cc7d82797081ba9bb36a0cc88073dda530fc95aab3d83f6e29f"
+    },
+    {
+      "bytes": 1573,
+      "path": "evidence/mac-regression-controller.json",
+      "sha256": "8a5935d49f935c44aa1e68d23c2bc080376c39d028621cb9712a4e8245e7f8a4"
+    },
+    {
+      "bytes": 21377,
+      "path": "evidence/mac-regression.original.json",
+      "sha256": "b0650028495995a2f361b5245fc16cab0a29ab635ef321bf2bc9270812d56bb6"
+    },
+    {
+      "bytes": 8696,
+      "path": "evidence/runtime37-hash-summary.json",
+      "sha256": "dc74f66afe5bbe1b5bcbf305afc70349cfc247bf138213afec805571e024e66c"
+    },
+    {
+      "bytes": 22059,
+      "path": "reference/daily_phone_local.original.py",
+      "sha256": "ca23c60bbb4114960c6a571492cacd9e0bdc3404191409ac78bcf0c34a06c1d0"
+    },
+    {
+      "bytes": 43445,
+      "path": "reference/phone_observation_tools.original.py",
+      "sha256": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66"
+    },
+    {
+      "bytes": 1371,
+      "path": "source/DERIVATION.json",
+      "sha256": "1cd2ee419850cab35ea1cb23b80f89b63a6ae297da4752aaf118063b7e67d6e4"
+    },
+    {
+      "bytes": 22059,
+      "path": "source/daily_phone_local.py",
+      "sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f"
+    },
+    {
+      "bytes": 2918,
+      "path": "source/daily_phone_local.py.patch",
+      "sha256": "5eca29368da72be343f913f26305f116d54071a54cbaf018cbf34f898ed6d713"
+    },
+    {
+      "bytes": 43954,
+      "path": "source/phone_observation_tools.py",
+      "sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409"
+    },
+    {
+      "bytes": 2348,
+      "path": "source/phone_observation_tools.py.patch",
+      "sha256": "695dc9fe242e0bd0fc91368b4d744765a942624d1f9e86c1e411029a23036348"
+    },
+    {
+      "bytes": 19996,
+      "path": "test_native_streams_regression.py",
+      "sha256": "26c1028f3b8c882680f0d530d5cb7ad9eec038e09b7bf1cc27e9c943e00f5e84"
+    }
+  ],
+  "frozen_originals_modified": false,
+  "model_requests": 0,
+  "phone_calls": 0,
+  "schema": "razr60-native-streams-publishable-source-manifest/v1",
+  "self_excluded": "SOURCE-MANIFEST.json",
+  "state": "HOST_CANDIDATE_NOT_DEPLOYED_OR_PHONE_QUALIFIED",
+  "total_file_bytes": 213504
+}

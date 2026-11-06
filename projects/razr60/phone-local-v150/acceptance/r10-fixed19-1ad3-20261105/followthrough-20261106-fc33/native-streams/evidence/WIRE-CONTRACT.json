@@ -1,0 +1,96 @@
+{
+  "candidate_contract_limit": "A narrow successful-result validator. It preserves the historical minimal terminal and compares exact corresponding terminal field types; it does not claim full or recursive schema validation.",
+  "commit": "744fc422a28bd6f505701503bf0d113ab49d4634",
+  "early_failures": "May emit accepted then a failure terminal before started; these are not accepted as successful phone facts.",
+  "event_kinds": [
+    "accepted",
+    "started",
+    "output",
+    "terminal"
+  ],
+  "installed_binary_identity_newly_verified": false,
+  "no_progress_or_queued_variant_in_checked_enum": true,
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "schema": "native-wire-checked-source-contract/v1",
+  "source_files": [
+    {
+      "bytes": 22047,
+      "excerpts": [
+        {
+          "end_line": 605,
+          "start_line": 596,
+          "text": "pub struct ExecutionTerminal {\n    pub kind: TerminalKind,\n    pub exit_code: Option<i32>,\n    pub signal: Option<i32>,\n    pub stdout_bytes: u64,\n    pub stderr_bytes: u64,\n    pub output_truncated: bool,\n    pub elapsed_ms: u64,\n    pub error: Option<String>,\n}\n"
+        },
+        {
+          "end_line": 620,
+          "start_line": 615,
+          "text": "pub enum ExecutionEventKind {\n    Accepted,\n    Started { pid: u32 },\n    Output { stream: StreamKind, bytes: Vec<u8> },\n    Terminal(ExecutionTerminal),\n}\n"
+        }
+      ],
+      "git_blob_sha1": "635f673d5785566603ba4426b823ac0c1ba45f64",
+      "path": "crates/trillionnium-owner-open-runtime/src/types.rs",
+      "sha256": "e8bc46d0b734bfc294cec2c70222f9cf8fd364618af3d1eef7dc2afffc2080a3",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/744fc422a28bd6f505701503bf0d113ab49d4634/crates/trillionnium-owner-open-runtime/src/types.rs"
+    },
+    {
+      "bytes": 34226,
+      "excerpts": [
+        {
+          "end_line": 774,
+          "start_line": 747,
+          "text": "fn encode_execution_event(event: &ExecutionEvent) -> Value {\n    let body = match &event.kind {\n        ExecutionEventKind::Accepted => json!({\"kind\": \"accepted\"}),\n        ExecutionEventKind::Started { pid } => json!({\"kind\": \"started\", \"pid\": pid}),\n        ExecutionEventKind::Output { stream, bytes } => json!({\n            \"kind\": \"output\",\n            \"stream\": match stream {\n                StreamKind::Stdout => \"stdout\",\n                StreamKind::Stderr => \"stderr\",\n                StreamKind::Pty => \"pty\",\n            },\n            \"encoding\": \"base64\",\n            \"data\": BASE64_STANDARD.encode(bytes),\n            \"byte_count\": bytes.len()\n        }),\n        ExecutionEventKind::Terminal(terminal) => json!({\n            \"kind\": \"terminal\",\n            \"terminal\": encode_terminal(terminal)\n        }),\n    };\n    json!({\n        \"call_id\": &event.call_id,\n        \"target_id\": &event.target_id,\n        \"tool\": event.tool.as_str(),\n        \"seq\": event.seq,\n        \"elapsed_ms\": event.elapsed_ms,\n        \"event\": body\n    })\n"
+        },
+        {
+          "end_line": 787,
+          "start_line": 777,
+          "text": "fn encode_terminal(terminal: &ExecutionTerminal) -> Value {\n    json!({\n        \"kind\": terminal.kind.as_str(),\n        \"exit_code\": terminal.exit_code,\n        \"signal\": terminal.signal,\n        \"stdout_bytes\": terminal.stdout_bytes,\n        \"stderr_bytes\": terminal.stderr_bytes,\n        \"output_truncated\": terminal.output_truncated,\n        \"elapsed_ms\": terminal.elapsed_ms,\n        \"error\": &terminal.error\n    })\n"
+        }
+      ],
+      "git_blob_sha1": "29cd4548201a23347bc5f0d293c5cec63aaff53f",
+      "path": "crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
+      "sha256": "a77c06e761e06f858d56c1dbe5b372317ebed86bd4304f44cf3da50a8c5ba64f",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/744fc422a28bd6f505701503bf0d113ab49d4634/crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs"
+    },
+    {
+      "bytes": 64939,
+      "excerpts": [
+        {
+          "end_line": 211,
+          "start_line": 202,
+          "text": "            elapsed_ms: elapsed_ms(started_at),\n            kind,\n        };\n        sequence = sequence.saturating_add(1);\n        sink(event);\n    };\n\n    emit(ExecutionEventKind::Accepted);\n\n    // An empty ADB executable is an explicit configuration state, not a\n"
+        },
+        {
+          "end_line": 455,
+          "start_line": 429,
+          "text": "    let pty_master = pty_pair.map(|pair| {\n        drop(pair.slave);\n        pair.master\n    });\n\n    let pid = identity.pid;\n    emit(ExecutionEventKind::Started { pid });\n\n    // Readers are live before initial stdin is written. This order prevents a\n    // child that writes before reading from deadlocking the Host setup path.\n    let (sender, receiver) = sync_channel::<ReaderMessage>(limits.reader_queue_depth);\n    let workers = (|| -> std::io::Result<_> {\n        let (stdout_thread, stderr_thread, pty_stdin) = if let Some(master) = pty_master {\n            let reader = master.try_clone()?;\n            let writer = master.try_clone()?;\n            (\n                Some(spawn_reader(\n                    reader,\n                    StreamKind::Pty,\n                    limits.stream_chunk_bytes,\n                    sender.clone(),\n                    true,\n                )?),\n                None,\n                Some(writer),\n            )\n        } else {\n"
+        },
+        {
+          "end_line": 627,
+          "start_line": 615,
+          "text": "                        StreamKind::Stdout | StreamKind::Pty => {\n                            stdout_bytes = stdout_bytes.saturating_add(delivered)\n                        }\n                        StreamKind::Stderr => stderr_bytes = stderr_bytes.saturating_add(delivered),\n                    }\n                    emit(ExecutionEventKind::Output {\n                        stream,\n                        bytes: output,\n                    });\n                }\n                if delivered < bytes.len() || remaining == 0 {\n                    forced_kind.get_or_insert(TerminalKind::OutputLimitExceeded);\n                }\n"
+        },
+        {
+          "end_line": 705,
+          "start_line": 695,
+          "text": "        signal: status.as_ref().and_then(ExitStatusExt::signal),\n        stdout_bytes: u64::try_from(stdout_bytes).unwrap_or(u64::MAX),\n        stderr_bytes: u64::try_from(stderr_bytes).unwrap_or(u64::MAX),\n        output_truncated: status_kind == TerminalKind::OutputLimitExceeded,\n        elapsed_ms: elapsed_ms(started_at),\n        error: runtime_error,\n    };\n    emit(ExecutionEventKind::Terminal(terminal.clone()));\n    Ok(terminal)\n}\n\n"
+        }
+      ],
+      "git_blob_sha1": "0171ff55b2f4574804a5e58a858b8ca28114bbab",
+      "path": "crates/trillionnium-owner-open-runtime/src/process.rs",
+      "sha256": "19a8c50a5ed44670fdd913ba267b922faa79ecb1f99deb675bdb49e7bbf24632",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/744fc422a28bd6f505701503bf0d113ab49d4634/crates/trillionnium-owner-open-runtime/src/process.rs"
+    }
+  ],
+  "successful_lifecycle": "accepted, started, output*, terminal",
+  "terminal_fields": [
+    "kind",
+    "exit_code",
+    "signal",
+    "stdout_bytes",
+    "stderr_bytes",
+    "output_truncated",
+    "elapsed_ms",
+    "error"
+  ],
+  "terminal_is_flat": true
+}

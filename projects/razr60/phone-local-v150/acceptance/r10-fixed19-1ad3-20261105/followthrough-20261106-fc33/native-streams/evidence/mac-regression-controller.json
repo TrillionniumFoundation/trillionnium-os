@@ -1,0 +1,65 @@
+{
+  "job_id": "1a1b10f1643-fc05-7572",
+  "projection_not_original_receipt": true,
+  "raw_receipt_retained_privately": true,
+  "result": {
+    "dispatches": 0,
+    "failed": [],
+    "model_requests": 0,
+    "passed": 42,
+    "phone_calls": 0,
+    "result_bytes": 21377,
+    "result_sha256": "b0650028495995a2f361b5245fc16cab0a29ab635ef321bf2bc9270812d56bb6",
+    "scope_counts": {
+      "NEG-10_SELECTED_MAP_GUARDS": 4,
+      "NEG-11_SELECTED_NATIVE_PARSER": 28,
+      "NEG-14_SELECTED_FILESYSTEM": 8,
+      "NEG-14_SELECTED_RESOURCE_RETURN": 1,
+      "SOURCE_PRESERVATION": 1
+    },
+    "script": {
+      "bytes": 19996,
+      "sha256": "26c1028f3b8c882680f0d530d5cb7ad9eec038e09b7bf1cc27e9c943e00f5e84"
+    },
+    "state": "PASSED",
+    "total": 42
+  },
+  "schema": "mac-regression-controller-safe-projection/v1",
+  "status": {
+    "at_unix_ms": 1793971925566,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 803,
+        "stored": 803
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "stderr_eof": true,
+  "stderr_text": "",
+  "stdout_eof": true
+}

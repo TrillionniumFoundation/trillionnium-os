@@ -1,0 +1,30 @@
+{
+  "actor_executions": 0,
+  "actual_phase_credit": 0,
+  "earlier_control_label_correction": "controls01/controller_zero_does_not_imply_phone_zero changed only text and therefore tested bytes/text disagreement; this new control tests the actual phone_rc semantic gate with internally consistent complete output bytes.",
+  "fixture_family": "SYNTHETIC_PARSER_ONLY",
+  "passed": 3,
+  "phone_calls": 0,
+  "schema": "hepta.production.install-ready.focused-code-controls.v1",
+  "source": {
+    "bytes": 35028,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-fc33-type-checks-candidate01/source/verify_install_start_ready_UNBOUND.py",
+    "sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681"
+  },
+  "tests": [
+    {
+      "name": "integer_phone0_with_original_actor0_shape",
+      "passed": true
+    },
+    {
+      "name": "integer_phone7_with_actor0_rejected",
+      "passed": true,
+      "rejection": "actor zero alone is insufficient: original phone must also exit zero"
+    },
+    {
+      "name": "boolean_false_not_phone_exit0",
+      "passed": true,
+      "rejection": "actor zero alone is insufficient: original phone must also exit zero"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.fixed19.followthrough-checkpoint.v1",
+  "recorded_at": "2026-11-06 13:47:44 UTC",
+  "repository_base_commit": "744fc422a28bd6f505701503bf0d113ab49d4634",
+  "scope": "Independent source candidates and reconciled cleanup attempt; no new final-combination qualification",
+  "current_component": {
+    "combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
+    "source_seal_sha256": "78c39b4cc4afd438bb149013fff20bbecc0a78241c3ed979e101320736eadcc0",
+    "runtime_manifest_sha256": "72d6dcb4c20547549debad6ef55001aa5c8d115574ac222312b158f9722e2515",
+    "runtime_files_verified": 37,
+    "runtime_bytes": 3157174,
+    "four_role_ready": false
+  },
+  "candidates": {
+    "native_streams": {
+      "source_sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409",
+      "daily_loader_sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f",
+      "mac_checks_passed": 42,
+      "mac_checks_total": 42,
+      "job_id": "1a1b10f1643-fc05-7572",
+      "deployed": false,
+      "adopted_into_formal_combination": false
+    },
+    "install_ready_reader": {
+      "source_sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681",
+      "protocol_sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35",
+      "persisted_mac_checks_passed": 67,
+      "persisted_mac_checks_total": 67,
+      "frozen_inputs_bound": false,
+      "frozen_execution_plan_bound": false,
+      "actual_install": false
+    }
+  },
+  "new_whole_cases_closed": [],
+  "preserved_neg01": {
+    "component_qualified": true,
+    "business_qualified": false,
+    "four_role_qualification": false,
+    "root_stdout_bytes": 1191,
+    "root_stdout_sha256": "d57d7c93b620a7246eb20a1e51663f8a9fb5041bdfbc5632224b87e8b4f82082",
+    "model_requests": 0,
+    "automatic_retry": false,
+    "not_credited_to_new_candidates": true
+  },
+  "neg02_recovery": {
+    "original_business_send_attempt_count": 0,
+    "original_draft_restored": true,
+    "cleanup_actor_job_id": "1a1b10ebd5e-fc05-756b",
+    "cleanup_actor_exit_code": 0,
+    "cleanup_phone_rc": 1,
+    "cleanup_state": "REJECTED_BEFORE_FIRST_MUTATION",
+    "completed_removal_count": 0,
+    "cleanup_intent_created": false,
+    "cleanup_result_created": false,
+    "operation_actor_result_retained": true,
+    "operation_actor_result_sha256": "aae928ae0493966f92684f94cf56e30f409c3932ec8fd690f4ba99ff49800937",
+    "start_mcp_timed_out": true,
+    "original_job_reconciled": true,
+    "automatic_retry": false,
+    "cleanup_complete": false,
+    "precise_changed_field": "NOT_YET_IDENTIFIED",
+    "tuple_list_conversion_patch": "NOT_JUSTIFIED_BY_SOURCE_REVIEW"
+  },
+  "limits": [
+    "42 parser/provider controls and 67 reader controls are distinct host regressions; neither is a physical acceptance count.",
+    "The original runtime hash verification was read-only and is time-bound to its recorded observation.",
+    "Frozen historical inputs and original failed operations remain unchanged.",
+    "No E2E, COMP, or remaining NEG whole case is promoted to passed by this checkpoint.",
+    "An earlier unrelated final02 wait remains UNKNOWN_UNCHANGED."
+  ]
+}
