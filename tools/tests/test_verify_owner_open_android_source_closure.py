@@ -82,6 +82,53 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
             report.errors,
         )
 
+    def test_deferred_sealed_common_inheritance_cannot_pass_as_owner_open(self) -> None:
+        self.rewrite(module.COMMON_OWNER_OPEN, "config/common_owner_open_base.mk", "config/common.mk")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("inherit generated shared base" in error for error in report.errors), report.errors)
+
+    def test_generated_common_base_cannot_reintroduce_a_legacy_runtime(self) -> None:
+        relative = module.COMMON_OWNER_OPEN.with_name("common_owner_open_base.mk")
+        path = self.root / relative
+        path.write_text(path.read_text() + "\nPRODUCT_PACKAGES += trillionniumd\n")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("common base differs" in error for error in report.errors), report.errors)
+
+    def test_phone_chain_cannot_restore_sealed_inheritance(self) -> None:
+        relative = module.COMMON_OWNER_OPEN.with_name("common_owner_open_mobile.mk")
+        self.rewrite(relative, "config/common_owner_open.mk)", "config/common.mk)")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open phone chain" in error for error in report.errors), report.errors)
+
+    def test_missing_phone_source_rules_fail_the_complete_source_closure(self) -> None:
+        (self.root / "tools/owner-open-phone-chain.v1.json").unlink()
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open phone chain" in error for error in report.errors), report.errors)
+
+    def test_shared_sdk_legacy_service_cannot_pass_source_closure(self) -> None:
+        self.rewrite(
+            Path("android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml"),
+            "    </string-array>",
+            "        <item>org.trillionnium.platform.internal.AgentSystemApiService</item>\n    </string-array>",
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open SDK selection" in error for error in report.errors), report.errors)
+
+    def test_shared_sdk_owner_selector_must_be_exported(self) -> None:
+        self.rewrite(
+            module.ANDROID_ROOT / "product.mk",
+            "$(call soong_config_set_bool,trillionnium_owner_open,enabled,true)",
+            "# disabled owner selector",
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open SDK selection" in error for error in report.errors), report.errors)
+
     def test_profile_reference_traversal_fails_closed(self) -> None:
         path = self.root / module.PROFILE
         value = json.loads(path.read_text(encoding="utf-8"))
@@ -123,6 +170,51 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
         )
         report = module.verify(self.root)
         self.assertTrue(any("bootstrap does not bind" in error for error in report.errors))
+
+    def test_required_config_cannot_be_satisfied_by_a_native_comment(self) -> None:
+        self.rewrite(
+            module.ANDROID_ROOT / "native/owner_open_bootstrap.cpp",
+            '      "/etc/trillionnium/codex-provider.json",',
+            '      /* "/etc/trillionnium/codex-provider.json", */',
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("payload admission inventory" in error for error in report.errors), report.errors)
+
+    def test_missing_transitive_provider_helper_fails_source_closure(self) -> None:
+        helper = self.root / "crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py"
+        helper.unlink()
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("codex_callback_observation" in error for error in report.errors), report.errors)
+
+    def test_mirrored_payload_gate_cannot_drop_native_configuration(self) -> None:
+        self.rewrite(
+            module.ANDROID_ROOT / "tools/verify_owner_open_materialized_payload.py",
+            '    "/etc/trillionnium/codex-provider.json",', "",
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("payload admission required inventory differs" in error for error in report.errors), report.errors)
+
+    def test_private_state_directory_mode_or_presence_is_required(self) -> None:
+        for child in ("home", "codex-home", "provider-sessions"):
+            relative = module.ANDROID_ROOT / "init/trillionnium-owner-open.rc"
+            path = self.root / relative
+            original = path.read_text()
+            self.rewrite(relative, f"state/{child} 0700 root root", f"state/{child} 0755 root root")
+            report = module.verify(self.root)
+            self.assertFalse(report.ok)
+            self.assertTrue(any("private state directory before data_ready" in error for error in report.errors), report.errors)
+            path.write_text(original)
+
+    def test_new_unbound_python_import_cannot_silently_pass(self) -> None:
+        relative = "crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py"
+        path = self.root / relative
+        path.write_text(path.read_text() + "\nimport unbound_native_provider_helper\n")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("runtime Python import is unbound" in error for error in report.errors), report.errors)
 
     def test_missing_selinux_boundary_fails_closed(self) -> None:
         (self.root / module.ANDROID_ROOT / "sepolicy/private/types.te").unlink()

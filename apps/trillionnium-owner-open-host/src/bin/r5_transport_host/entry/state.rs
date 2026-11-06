@@ -914,6 +914,7 @@ impl TransportOutput {
             // than emitting an invalid null event_id.
             let ordinal = self.take_local_event_ordinal();
             frame.event_id = Some(format!("{}-event-{ordinal}", self.connection_id));
+            frame.extensions.insert("transport_generated_event_id".to_string(), Value::Bool(true));
         }
         frame
     }

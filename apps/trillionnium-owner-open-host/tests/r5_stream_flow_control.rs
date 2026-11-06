@@ -22,8 +22,18 @@ fn start_host(
     provider_args: &[&std::path::Path],
     event_store: Option<&std::path::Path>,
 ) -> RunningHost {
+    start_host_with_transport_args(provider, provider_args, event_store, &[])
+}
+
+fn start_host_with_transport_args(
+    provider: &std::path::Path,
+    provider_args: &[&std::path::Path],
+    event_store: Option<&std::path::Path>,
+    transport_args: &[&str],
+) -> RunningHost {
     let mut command = Command::new(env!("CARGO_BIN_EXE_trillionnium-owner-open-r5-host"));
     command
+        .args(transport_args)
         .args([
             "--transport-core",
             env!("CARGO_BIN_EXE_trillionnium-owner-open-r5-core"),
@@ -356,5 +366,240 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
         "provider input/exit trace: {}",
         fs::read_to_string(&provider_trace).unwrap_or_else(|error| error.to_string())
     );
+    finish(running);
+}
+
+#[test]
+fn actual_core_inspection_covers_overflow_before_scoped_resume_releases_new_data() {
+    let directory = secure_tempdir();
+    let provider = directory.path().join("provider.sh");
+    let emit = directory.path().join("emit");
+    let second = directory.path().join("second");
+    let terminal = directory.path().join("terminal");
+    let event_store = directory.path().join("events.jsonl");
+    fs::write(&provider, r#"#!/bin/sh
+IFS= read -r start || exit 10
+while [ ! -f "$1" ]; do sleep 0.01; done
+printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"provider.event","seq":0,"event":"model.delta","text":"recover this durable observation"}'
+while [ ! -f "$2" ]; do sleep 0.01; done
+printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"provider.event","seq":1,"event":"model.delta","text":"delivered after scoped recovery"}'
+while [ ! -f "$3" ]; do sleep 0.01; done
+printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"turn.complete","seq":2,"summary":"recovered"}'
+"#).unwrap();
+    fs::set_permissions(&provider, fs::Permissions::from_mode(0o700)).unwrap();
+    let mut running = start_host_with_transport_args(
+        &provider,
+        &[&emit, &second, &terminal],
+        Some(&event_store),
+        &["--transport-buffer-bytes", "128"],
+    );
+    send(
+        &mut running.stdin,
+        json!({"kind":"hello","seq":0,"payload":{}}),
+    );
+    let hello = read_until(&mut running.stdout, "hello.ack").pop().unwrap();
+    assert_eq!(
+        hello["payload"]["resync_protocols"],
+        json!(["scoped_cursor_v1"])
+    );
+    assert_eq!(hello["payload"]["legacy_numeric_resume_after_gap"], false);
+    send(&mut running.stdin, start_frame("turn-scoped-resume"));
+    let accepted = read_until(&mut running.stdout, "turn.accepted")
+        .pop()
+        .unwrap();
+    send(
+        &mut running.stdin,
+        flow_frame("stream.pause", 2, 0, &accepted, json!({})),
+    );
+    read_until(&mut running.stdout, "stream.pause.ack");
+    fs::write(&emit, b"emit").unwrap();
+    let gap = read_until(&mut running.stdout, "stream.resync_required")
+        .pop()
+        .unwrap();
+    let required = &gap["payload"]["required_resumes"][0];
+    assert_eq!(required["cursor_domain"], "transport_event");
+    assert_eq!(required["cursor_scope"]["turn_id"], "turn-scoped-resume");
+    let next = required["required_resume_cursor"].as_u64().unwrap();
+    send(
+        &mut running.stdin,
+        flow_frame(
+            "stream.resume",
+            3,
+            1,
+            &accepted,
+            json!({"resumed_through_cursor":next}),
+        ),
+    );
+    let rejected = read_until(&mut running.stdout, "host.error").pop().unwrap();
+    assert_eq!(rejected["payload"]["code"], "flow_control_conflict");
+    let acknowledged = json!([{"cursor_domain":required["cursor_domain"],"cursor_scope":required["cursor_scope"],"resumed_through_cursor":next}]);
+    send(
+        &mut running.stdin,
+        flow_frame(
+            "stream.resume",
+            4,
+            1,
+            &accepted,
+            json!({"resync_protocol":"scoped_cursor_v1","resumed_cursors":acknowledged}),
+        ),
+    );
+    let rejected = read_until(&mut running.stdout, "host.error").pop().unwrap();
+    assert_eq!(rejected["payload"]["code"], "flow_control_conflict");
+    let mut inspect_payload = required["cursor_scope"].clone();
+    inspect_payload["inclusive_cursor"] = required["first_missing_cursor"].clone();
+    inspect_payload["limit"] = json!(1);
+    inspect_payload["request_sha256"] = accepted["payload"]["turn_request_sha256"].clone();
+    send(
+        &mut running.stdin,
+        json!({"kind":"turn.inspect","seq":5,"direction":"client_to_host","payload":inspect_payload}),
+    );
+    let inspected = read_until(&mut running.stdout, "turn.inspect.result")
+        .pop()
+        .unwrap();
+    assert_eq!(inspected["payload"]["next_cursor"], next);
+    assert_eq!(
+        inspected["payload"]["frames"][0]["payload"]["text"],
+        "recover this durable observation"
+    );
+    assert_eq!(inspected["payload"]["side_effects"], false);
+    send(
+        &mut running.stdin,
+        flow_frame(
+            "stream.window_update",
+            6,
+            1,
+            &accepted,
+            json!({"credit_bytes":4096}),
+        ),
+    );
+    read_until(&mut running.stdout, "stream.window_update.ack");
+    send(
+        &mut running.stdin,
+        flow_frame(
+            "stream.resume",
+            7,
+            2,
+            &accepted,
+            json!({"resync_protocol":"scoped_cursor_v1","resumed_cursors":acknowledged}),
+        ),
+    );
+    let resumed = read_until(&mut running.stdout, "stream.resume.ack")
+        .pop()
+        .unwrap();
+    assert_eq!(resumed["payload"]["resync_required"], false);
+    fs::write(&second, b"emit").unwrap();
+    let delivered = read_until(&mut running.stdout, "model.delta")
+        .pop()
+        .unwrap();
+    assert_eq!(
+        delivered["payload"]["text"],
+        "delivered after scoped recovery"
+    );
+    fs::write(&terminal, b"finish").unwrap();
+    read_until(&mut running.stdout, "turn.end");
+    finish(running);
+}
+
+#[test]
+fn actual_job_inspection_uses_job_scope_and_runtime_domain_to_recover_output() {
+    let directory = secure_tempdir();
+    let provider = directory.path().join("provider.sh");
+    let terminal = directory.path().join("terminal");
+    let emit = directory.path().join("job-emit");
+    let event_store = directory.path().join("events.jsonl");
+    let job_store = directory.path().join("jobs.jsonl");
+    fs::write(&provider, r#"#!/bin/sh
+IFS= read -r start || exit 10
+while [ ! -f "$1" ]; do sleep 0.01; done
+printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"turn.complete","seq":0,"summary":"job output recovered"}'
+"#).unwrap();
+    fs::set_permissions(&provider, fs::Permissions::from_mode(0o700)).unwrap();
+    let mut running = start_host_with_transport_args(
+        &provider,
+        &[&terminal],
+        Some(&event_store),
+        &[
+            "--transport-buffer-bytes",
+            "128",
+            "--job-store",
+            job_store.to_str().unwrap(),
+        ],
+    );
+    send(
+        &mut running.stdin,
+        json!({"kind":"hello","seq":0,"payload":{}}),
+    );
+    read_until(&mut running.stdout, "hello.ack");
+    send(&mut running.stdin, start_frame("turn-job-scoped-resume"));
+    let accepted = read_until(&mut running.stdout, "turn.accepted")
+        .pop()
+        .unwrap();
+    send(
+        &mut running.stdin,
+        flow_frame("stream.pause", 2, 0, &accepted, json!({})),
+    );
+    read_until(&mut running.stdout, "stream.pause.ack");
+    let mut job = flow_frame("stream.pause", 3, 0, &accepted, json!({}));
+    job["kind"] = json!("job.start");
+    job["payload"]
+        .as_object_mut()
+        .unwrap()
+        .remove("control_seq");
+    job["payload"]["job_id"] = json!("job-recovery");
+    job["payload"]["operation_id"] = json!("start-job-recovery");
+    job["payload"]["tool"] = json!("shell.job");
+    job["payload"]["target_id"] = json!("rootlinux");
+    job["payload"]["mode"] = json!("pipe");
+    job["payload"]["command"] = json!(format!(
+        "while [ ! -f '{}' ]; do sleep 0.01; done; printf durable-job-observation; while [ ! -f '{}' ]; do sleep 0.01; done",
+        emit.display(),
+        terminal.display()
+    ));
+    send(&mut running.stdin, job);
+    let started = read_until(&mut running.stdout, "job.start.result")
+        .pop()
+        .unwrap();
+    assert_eq!(started["payload"]["status"], "started");
+    fs::write(&emit, b"emit").unwrap();
+    let gap = read_until(&mut running.stdout, "stream.resync_required")
+        .pop()
+        .unwrap();
+    let required = &gap["payload"]["required_resumes"][0];
+    assert_eq!(required["cursor_domain"], "job_runtime_event");
+    assert_eq!(required["cursor_scope"]["job_id"], "job-recovery");
+    let mut inspect_payload = required["cursor_scope"].clone();
+    inspect_payload["inclusive_cursor"] = required["first_missing_cursor"].clone();
+    inspect_payload["durable_inclusive_cursor"] = json!(0);
+    inspect_payload["limit"] = json!(1);
+    send(
+        &mut running.stdin,
+        json!({"kind":"job.inspect","seq":4,"direction":"client_to_host","payload":inspect_payload}),
+    );
+    let inspected = read_until(&mut running.stdout, "job.inspect.result")
+        .pop()
+        .unwrap();
+    assert_eq!(inspected["job_id"], "job-recovery");
+    assert_eq!(inspected["payload"]["inspection"]["resync_required"], false);
+    assert_eq!(
+        inspected["payload"]["inspection"]["next_cursor"],
+        required["required_resume_cursor"]
+    );
+    let acknowledgement = json!([{"cursor_domain":required["cursor_domain"],"cursor_scope":required["cursor_scope"],"resumed_through_cursor":required["required_resume_cursor"]}]);
+    send(
+        &mut running.stdin,
+        flow_frame(
+            "stream.resume",
+            5,
+            1,
+            &accepted,
+            json!({"resync_protocol":"scoped_cursor_v1","resumed_cursors":acknowledgement}),
+        ),
+    );
+    let resumed = read_until(&mut running.stdout, "stream.resume.ack")
+        .pop()
+        .unwrap();
+    assert_eq!(resumed["payload"]["resync_required"], false);
+    fs::write(&terminal, b"finish").unwrap();
+    read_until(&mut running.stdout, "turn.end");
     finish(running);
 }

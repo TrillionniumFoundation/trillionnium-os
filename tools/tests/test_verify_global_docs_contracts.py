@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from tools.docs import verify_global_docs as verifier
 from tools.docs import generate_global_docs as generator
@@ -26,6 +28,37 @@ def evidence_index() -> dict:
 
 
 class ModuleContractVerificationTests(unittest.TestCase):
+    def test_active_documentation_revision_is_consistent(self) -> None:
+        docset = json.loads((ROOT / "docs/machine/doc-set.v1.json").read_text())
+        program = json.loads((ROOT / "docs/machine/program-state.v1.json").read_text())
+        verifier.verify_documentation_revision(docset, program)
+
+    def test_machine_documentation_revision_drift_is_rejected(self) -> None:
+        with self.assertRaisesRegex(verifier.VerificationError, "documentation revision drift"):
+            verifier.verify_documentation_revision(
+                {"documentation_revision": "1.3.0"}, {"documentation_revision": "1.0.0"}
+            )
+        with self.assertRaisesRegex(verifier.VerificationError, "semantic version"):
+            verifier.verify_documentation_revision(
+                {"documentation_revision": "current"}, {"documentation_revision": "current"}
+            )
+
+    def test_entrypoint_documentation_revision_is_exact_and_unique(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            path = directory / "START_HERE.md"
+            records = {"documentation_revision": "1.3.0"}
+            for text in ("Documentation revision: **1.0.0**\n", "# No revision\n",
+                         "Documentation revision: **1.3.0**\n" * 2,
+                         "<!--\nDocumentation revision: **1.3.0**\n-->\n",
+                         "```text\nDocumentation revision: **1.3.0**\n```\n",
+                         "    Documentation revision: **1.3.0**\n"):
+                path.write_text(text)
+                with self.subTest(text=text), mock.patch.object(verifier, "DOCS", directory), self.assertRaisesRegex(
+                    verifier.VerificationError, "entrypoint documentation revision drift"
+                ):
+                    verifier.verify_documentation_revision(records, records)
+
     def test_checked_in_catalog_has_concrete_contracts(self) -> None:
         known = verifier.verify_modules(catalog())
         self.assertEqual(len(known), 16)

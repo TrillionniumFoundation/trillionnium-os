@@ -261,6 +261,76 @@ class PerformanceQualificationTests(unittest.TestCase):
         self.assertTrue(report["comparison"]["regressions"])
         self.assertFalse(report["passed"])
 
+    def test_raw_resource_counters_require_uint64_in_real_sample_consumer(self) -> None:
+        # Synthetic L1 fixtures exercise admission only; they mint no measurements.
+        sample = copy.deepcopy(make_batch("A1")["samples"][0])
+        for name, unit in QUAL.REQUIRED_RESOURCE_UNITS.items():
+            if unit == "ratio":
+                continue
+            for value in (True, False, 0.0, 0.5, 1e300, -1, 1 << 64):
+                with self.subTest(name=name, value=value):
+                    sample["resources"][name] = {
+                        "status": "observed", "value": value, "unit": unit, "reason": None,
+                    }
+                    with self.assertRaisesRegex(QUAL.QualificationError, "uint64 integer"):
+                        QUAL._validate_sample(sample, level=QUAL.SOURCE_LEVEL,
+                                              repetitions=QUAL.MIN_REPETITIONS)
+            for value in (0, QUAL.MAX_RAW_COUNTER_VALUE):
+                with self.subTest(name=name, valid_value=value):
+                    sample["resources"][name]["value"] = value
+                    if name == "redispatch_count" and value != 0:
+                        with self.assertRaisesRegex(QUAL.QualificationError, "redispatch count must be zero"):
+                            QUAL._validate_sample(sample, level=QUAL.SOURCE_LEVEL,
+                                                  repetitions=QUAL.MIN_REPETITIONS)
+                    else:
+                        QUAL._validate_sample(sample, level=QUAL.SOURCE_LEVEL,
+                                              repetitions=QUAL.MIN_REPETITIONS)
+            sample["resources"][name] = observation(unit=unit, level=QUAL.SOURCE_LEVEL)
+
+    def test_ratio_resources_preserve_finite_unit_interval(self) -> None:
+        for name in ("fairness", "unknown_rate"):
+            for value in (0, 0.0, 0.5, 1, 1.0):
+                with self.subTest(name=name, valid_value=value):
+                    QUAL._validate_resource_observation(
+                        {"status": "observed", "value": value, "unit": "ratio", "reason": None},
+                        name=name, level=QUAL.SOURCE_LEVEL)
+            for value in (True, False, -0.5, 1.5, float("nan"), float("inf"), 1e300):
+                with self.subTest(name=name, invalid_value=value):
+                    with self.assertRaises(QUAL.QualificationError):
+                        QUAL._validate_resource_observation(
+                            {"status": "observed", "value": value, "unit": "ratio", "reason": None},
+                            name=name, level=QUAL.SOURCE_LEVEL)
+
+    def test_new_numeric_policy_is_closed_and_requires_fresh_batches(self) -> None:
+        policy = QUAL.reviewed_policy()
+        self.assertEqual(policy["schema"], "org.trillionnium.performance-qualification-policy.v3")
+        self.assertEqual(policy["version"], "2026-10-03-v3")
+        self.assertEqual(policy["raw_counter_units"], ["bytes", "count", "ns", "usec"])
+        self.assertEqual(policy["raw_counter_value_type"], "U64_INTEGER")
+        self.assertIs(type(policy["max_raw_counter_value"]), int)
+        self.assertEqual(policy["max_raw_counter_value"], (1 << 64) - 1)
+        old = make_batch("A1")
+        for field in ("raw_counter_units", "raw_counter_value_type", "max_raw_counter_value"):
+            old["policy"].pop(field)
+        old["policy"]["schema"] = "org.trillionnium.performance-qualification-policy.v2"
+        old["policy"]["version"] = old["policy"]["registry_version"] = "2026-09-11-v2"
+        reseal(old)
+        with self.assertRaisesRegex(QUAL.QualificationError, "batch.policy keys differ"):
+            QUAL.validate_batch(old)
+        for field, invalid, message in (
+            ("raw_counter_units", ["count"], "raw counter units"),
+            ("raw_counter_value_type", "FLOAT", "raw counter value type"),
+            ("max_raw_counter_value", float(QUAL.MAX_RAW_COUNTER_VALUE), "uint64 bound"),
+            ("max_raw_counter_value", True, "uint64 bound"),
+            ("max_raw_counter_value", 1 << 64, "uint64 bound"),
+        ):
+            with self.subTest(field=field, invalid=invalid):
+                registry = json.loads(QUAL._POLICY_REGISTRY_RAW)
+                registry["policy"][field] = invalid
+                with mock.patch.object(QUAL, "_read_bounded", return_value=QUAL.canonical(registry)):
+                    with self.assertRaisesRegex(QUAL.QualificationError, message):
+                        QUAL._load_policy_registry()
+
     def test_l2_rejects_unavailable_stage_or_resource(self) -> None:
         value = make_batch("A1", level=QUAL.INSTALLED_LEVEL)
         value["samples"][0]["resources"]["fsync_count"] = {

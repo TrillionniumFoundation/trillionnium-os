@@ -111,7 +111,7 @@ class ModuleContractTest(unittest.TestCase):
                 )
             prefix = f"schemas/modules/{module['slug']}/golden/invalid/"
             invalid = [path for path in outputs if path.startswith(prefix)]
-            self.assertEqual(len(invalid), 24)
+            self.assertEqual(len(invalid), self.contracts.INVALID_VECTOR_COUNT)
             for path in invalid:
                 kind = Path(path).name.split("-", 1)[0]
                 schema = json.loads(outputs[module["artifacts"][kind]])
@@ -674,6 +674,138 @@ raise SystemExit(6)
             with self.assertRaisesRegex(ValueError, "stale breaking review"):
                 self.checker.evaluate(root, base)
 
+    def test_base_breaking_review_uses_exact_git_provenance(self) -> None:
+        # A real second-generation base carries a prior breaking packet. The
+        # next worktree retires it and must not supply historical provenance.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root).decode().strip()
+
+            def write(path, value):
+                raw = self.checker.canonical_packet(value)
+                destination = root / path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(raw)
+                return raw
+
+            git("init", "-q")
+            git("config", "user.name", "fixture")
+            git("config", "user.email", "fixture@example.invalid")
+            paths = {kind: f"schemas/{kind}.json" for kind in
+                     ("api", "state", "errors", "compatibility")}
+            catalog = {"module_count": 1, "modules": [
+                {"module_id": "MOD-FIXTURE", "artifacts": paths}]}
+            catalog_raw = write(self.checker.CATALOG, catalog)
+            migration = {"strategy": "fixture-fenced-prefix"}
+            rollback = {"fail_closed": True, "procedure": "retain-compatible-state"}
+            no_change = {
+                "class": "NO_CHANGE", "contracts": [], "families": [],
+                "review_packet": None, "review_packet_sha256": None,
+                "reviewer": None, "review_authority": None, "approval_asserted": False,
+                "migration_review_sha256": self.checker.sha256_bytes(self.checker.canonical(migration)),
+                "rollback_review_sha256": self.checker.sha256_bytes(self.checker.canonical(rollback)),
+                "base_catalog_sha256": None, "base_contract_sha256": {},
+                "target_contract_sha256": {},
+            }
+
+            def compatibility(review):
+                return {"introduction_review_class": "INITIAL_V1", "change_review": review,
+                        "migration_review": migration, "rollback_review": rollback}
+
+            api = {"type": "string", "maxLength": 32}
+            api_before = write(paths["api"], api)
+            for kind in ("state", "errors"):
+                write(paths[kind], {"type": "object"})
+            write(paths["compatibility"], compatibility(no_change))
+            git("add", ".")
+            git("commit", "-qm", "initial schema")
+            initial = git("rev-parse", "HEAD")
+            api["maxLength"] = 16
+            api_after = write(paths["api"], api)
+            packet = {
+                "schema": self.checker.REVIEW_PACKET_SCHEMA, "module_id": "MOD-FIXTURE",
+                "contracts": ["api"], "families": ["other"],
+                "base_catalog_sha256": self.checker.sha256_bytes(catalog_raw),
+                "base_contract_sha256": {"api": self.checker.sha256_bytes(api_before)},
+                "target_contract_sha256": {"api": self.checker.sha256_bytes(api_after)},
+                "migration_review_sha256": no_change["migration_review_sha256"],
+                "rollback_review_sha256": no_change["rollback_review_sha256"],
+                "reviewer": "Tomasrgbsf", "review_authority": self.checker.REVIEW_AUTHORITY,
+                "approval_asserted": False, "automatic_redispatch": False,
+                "claim_ceiling": self.checker.CLAIM_CEILING, "public_release": False,
+            }
+            packet_raw = self.checker.canonical_packet(packet)
+            digest = self.checker.sha256_bytes(packet_raw)
+            packet_path = f"docs/reviews/module-contracts/{digest}.json"
+            write(packet_path, packet)
+            reviewed = copy.deepcopy(no_change)
+            reviewed.update({key: packet[key] for key in (
+                "contracts", "families", "base_catalog_sha256", "base_contract_sha256",
+                "target_contract_sha256", "reviewer", "review_authority")})
+            reviewed.update({"class": "BREAKING_MIGRATION", "review_packet": packet_path,
+                             "review_packet_sha256": digest})
+            write(paths["compatibility"], compatibility(reviewed))
+            self.assertEqual(self.checker.evaluate(root, initial)["semantic_changes"], ["MOD-FIXTURE:api"])
+            git("add", ".")
+            git("commit", "-qm", "reviewed schema migration")
+            accepted = git("rev-parse", "HEAD")
+            write(paths["compatibility"], compatibility(no_change))
+            (root / packet_path).unlink()
+            self.assertEqual(self.checker.evaluate(root, accepted)["semantic_changes"], [])
+
+            # A different live file cannot replace the accepted Git packet.
+            (root / packet_path).write_bytes(b"unrelated current bytes")
+            self.assertEqual(self.checker.evaluate(root, accepted)["semantic_changes"], [])
+            write(paths["compatibility"], compatibility(reviewed))
+            (root / packet_path).write_bytes(packet_raw)
+            with self.assertRaisesRegex(ValueError, "stale breaking review"):
+                self.checker.evaluate(root, accepted)
+            write(paths["compatibility"], compatibility(no_change))
+
+            # Base validation still rejects missing, nonregular, oversized and
+            # inconsistent provenance, even when a valid current copy exists.
+            for case in ("missing", "symlink", "oversized", "wrong-module", "wrong-target"):
+                with self.subTest(case=case):
+                    git("reset", "--hard", "-q", accepted)
+                    destination = root / packet_path
+                    if case == "missing":
+                        destination.unlink()
+                    elif case == "symlink":
+                        destination.unlink()
+                        destination.symlink_to("../outside")
+                    elif case == "oversized":
+                        destination.write_bytes(b"x" * (self.checker.REVIEW_PACKET_MAX_BYTES + 1))
+                    elif case == "wrong-module":
+                        wrong = copy.deepcopy(packet)
+                        wrong["module_id"] = "MOD-OTHER"
+                        wrong_raw = self.checker.canonical_packet(wrong)
+                        wrong_digest = self.checker.sha256_bytes(wrong_raw)
+                        wrong_path = f"docs/reviews/module-contracts/{wrong_digest}.json"
+                        write(wrong_path, wrong)
+                        wrong_review = copy.deepcopy(reviewed)
+                        wrong_review.update({"review_packet": wrong_path, "review_packet_sha256": wrong_digest})
+                        write(paths["compatibility"], compatibility(wrong_review))
+                    else:
+                        write(paths["api"], {"type": "string", "maxLength": 15})
+                    git("add", ".")
+                    git("commit", "-qm", "invalid base provenance " + case)
+                    bad_base = git("rev-parse", "HEAD")
+                    write(paths["compatibility"], compatibility(no_change))
+                    if destination.is_symlink():
+                        destination.unlink()
+                    destination.write_bytes(packet_raw)
+                    expected_error = {
+                        "missing": "base path is absent",
+                        "symlink": "regular tracked file",
+                        "oversized": "byte bound",
+                        "wrong-module": "module differs",
+                        "wrong-target": "bind target api",
+                    }[case]
+                    with self.assertRaisesRegex(ValueError, expected_error):
+                        self.checker.evaluate(root, bad_base)
+
     def test_generator_review_packet_is_content_addressed_and_non_authorizing(self) -> None:
         migration = {
             "from_versions": [],
@@ -758,7 +890,7 @@ raise SystemExit(6)
             ):
                 self.contracts.contract_change_review(root, item, target_contracts)
 
-    def test_initial_introduction_uses_provenance_not_reusable_change_class(self) -> None:
+    def test_introduction_provenance_is_distinct_from_current_change_review(self) -> None:
         outputs = self.outputs()
         catalog = json.loads(outputs[self.contracts.CONTRACT_CATALOG_PATH])
         for module in catalog["modules"]:
@@ -766,9 +898,17 @@ raise SystemExit(6)
             self.assertEqual(
                 compatibility["introduction_review_class"], "INITIAL_V1"
             )
-            self.assertEqual(compatibility["change_review"]["class"], "NO_CHANGE")
-            self.assertEqual(compatibility["change_review"]["contracts"], [])
-            self.assertEqual(compatibility["change_review"]["families"], [])
+            source = json.loads((ROOT / self.contracts.CATALOG_PATH).read_text())
+            source_module = next(item for item in source["modules"] if item["id"] == module["module_id"])
+            current_class = source_module["compatibility"].get("contract_change_review", {}).get("class", "NO_CHANGE")
+            self.assertEqual(compatibility["change_review"]["class"], current_class)
+            self.assertFalse(compatibility["change_review"]["approval_asserted"])
+            if current_class == "NO_CHANGE":
+                self.assertEqual(compatibility["change_review"]["contracts"], [])
+                self.assertEqual(compatibility["change_review"]["families"], [])
+            else:
+                self.assertTrue(compatibility["change_review"]["contracts"])
+                self.assertTrue(compatibility["change_review"]["families"])
 
     def test_lock_binds_every_generated_artifact_except_itself(self) -> None:
         outputs = self.outputs()
@@ -816,6 +956,65 @@ raise SystemExit(6)
                 for item in catalog["producer_consumer_pairs"]
             )
         )
+
+    def test_standard_uint64_assertions_do_not_depend_on_format(self) -> None:
+        outputs = self.outputs()
+        catalog = json.loads(outputs[self.contracts.CONTRACT_CATALOG_PATH])
+        for module in catalog["modules"]:
+            for kind, fields in (("api", ("host_epoch", "writer_epoch")),
+                                 ("state", ("host_epoch", "writer_epoch", "durable_sequence", "monotonic_ns"))):
+                schema = json.loads(outputs[module["artifacts"][kind]])
+                for field in fields:
+                    numeric = schema["properties"][field]
+                    self.assertEqual(numeric["minimum"], 0)
+                    self.assertEqual(numeric["maximum"], (1 << 64) - 1)
+                    numeric.pop("format", None)
+                    self.contracts.validate_schema(0, numeric)
+                    self.contracts.validate_schema((1 << 64) - 1, numeric)
+                    for invalid in (-1, 1 << 64, True, 1.5):
+                        with self.assertRaises(self.contracts.ContractError):
+                            self.contracts.validate_schema(invalid, numeric)
+
+    def test_uncertainty_equivalence_is_enforced_by_schema_alone(self) -> None:
+        from itertools import product
+        outputs = self.outputs()
+        catalog = json.loads(outputs[self.contracts.CONTRACT_CATALOG_PATH])
+        classes = ("REJECTED_BEFORE_EFFECT", "TRANSIENT_BEFORE_EFFECT", "EFFECT_UNCERTAIN", "TERMINAL_FAILURE", "INTERNAL_INVARIANT")
+        dispositions = ("MAY_RETRY_BEFORE_EFFECT", "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH", "DO_NOT_RETRY")
+        for module in catalog["modules"]:
+            schema = json.loads(outputs[module["artifacts"]["errors"]])
+            valid = json.loads(outputs[f"schemas/modules/{module['slug']}/golden/valid/errors.json"])
+            for error_class, disposition, uncertain in product(classes, dispositions, (False, True)):
+                value = {**valid, "class": error_class, "retry_disposition": disposition, "effect_uncertain": uncertain}
+                accepted = (error_class == "EFFECT_UNCERTAIN") == uncertain and (disposition == "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH") == uncertain
+                if accepted:
+                    self.contracts.validate_schema(value, schema)
+                else:
+                    with self.assertRaises(self.contracts.ContractError):
+                        self.contracts.validate_schema(value, schema)
+
+    def test_standard_patterns_reject_trailing_controls_without_extensions(self) -> None:
+        import re
+        outputs = self.outputs()
+        catalog = json.loads(outputs[self.contracts.CONTRACT_CATALOG_PATH])
+        for module in catalog["modules"]:
+            schema = json.loads(outputs[module["artifacts"]["api"]])
+            text_pattern = schema["properties"]["operation_id"]["pattern"]
+            digest_pattern = schema["properties"]["request_digest"]["pattern"]
+            self.assertIsNotNone(re.search(text_pattern, "plain-中文"))
+            self.assertIsNotNone(re.search(digest_pattern, "a" * 64))
+            for control in ("\n", "\r", "\x00", "\x1f", "\x7f", "\x85", "\x9f"):
+                self.assertIsNone(re.search(text_pattern, "plain" + control))
+                self.assertIsNone(re.search(text_pattern, control + "plain"))
+                self.assertIsNone(re.search(digest_pattern, "a" * 64 + control))
+
+    def test_payload_remains_explicitly_opaque_not_a_business_api_claim(self) -> None:
+        outputs = self.outputs()
+        catalog = json.loads(outputs[self.contracts.CONTRACT_CATALOG_PATH])
+        for module in catalog["modules"]:
+            schema = json.loads(outputs[module["artifacts"]["api"]])
+            self.assertEqual(schema["properties"]["payload"], {"type": "object", "maxProperties": 64})
+        self.assertIn(b"not a typed", outputs[self.contracts.README_PATH])
 
     def test_static_sources_forbid_defaults_aliases_and_auto_redispatch(self) -> None:
         rust = self.contracts.rust_source().decode()

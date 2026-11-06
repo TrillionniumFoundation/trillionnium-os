@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import importlib.util
 import json
 import re
 import sys
@@ -29,6 +30,18 @@ PROVENANCE_ENTRY_KEYS = {
 REQUIRED_SECTIONS = ('## 1. Identity and maturity', '## 2. Responsibilities', '## 3. Non-goals and authority boundary', '## 4. Context, dependencies and data flow', '## 5. API and protocol contract', '## 6. State model and ownership', '## 7. Ordering, concurrency and backpressure', '## 8. Effect, cancellation and uncertainty semantics', '## 9. Resource budget and SLO status', '## 10. Persistence, recovery and reconciliation', '## 11. Security and trust boundaries', '## 12. Failure matrix and degraded behavior', '## 13. Compatibility, migration and rollback', '## 14. Observability', '## 15. Verification and evidence', '## 16. Deployment and runbook', '## 17. Open gaps and exit criteria')
 
 EDITORIAL = re.compile(r"\b(?:TODO|TBD|FIXME|PLACEHOLDER)\b|same\s+as\s+above", re.I)
+RAW_HTML = re.compile(r"</?[A-Za-z][A-Za-z0-9-]*(?:\s[^<>]*|/?)>|<!|<\?", re.I)
+
+# Use the same accepted Markdown boundary as component documentation. Keep the
+# code spans in module fields: their literal values are the contract being bound.
+_SURFACE_SPEC = importlib.util.spec_from_file_location(
+    "_module_documentation_surface",
+    Path(__file__).with_name("verify_component_documentation.py"),
+)
+if _SURFACE_SPEC is None or _SURFACE_SPEC.loader is None:  # pragma: no cover
+    raise RuntimeError("cannot load documentation Markdown boundary")
+_SURFACE = importlib.util.module_from_spec(_SURFACE_SPEC)
+_SURFACE_SPEC.loader.exec_module(_SURFACE)
 
 
 class VerificationError(Exception):
@@ -120,21 +133,44 @@ def catalog_modules(catalog: dict[str, Any]) -> tuple[list[str], dict[str, dict[
 
 def visible_prose(text: str) -> str:
     """Do not accept required contract text hidden in comments or examples."""
-    text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
+    try:
+        _SURFACE._reject_unsupported_markdown(text, "module document")
+        text = _SURFACE.strip_html_comments(text, "module document")
+    except _SURFACE.VerificationError as error:
+        raise VerificationError(str(error)) from error
     lines: list[str] = []
     fence: str | None = None
+    fence_length = 0
+    inline_marker: str | None = None
     for line in text.splitlines():
-        stripped = line.lstrip()
-        marker = "`" if stripped.startswith("```") else "~" if stripped.startswith("~~~") else None
-        if marker:
-            if fence is None:
-                fence = marker
-            elif fence == marker:
+        if fence is not None:
+            stripped = line.lstrip(" \t")
+            run_length = len(stripped) - len(stripped.lstrip(fence))
+            if (_SURFACE.indentation_columns(line) <= 3
+                    and run_length >= fence_length
+                    and not stripped[run_length:].strip()):
                 fence = None
+                fence_length = 0
             continue
-        if fence is None:
-            lines.append(line)
+        if inline_marker is not None:
+            hidden, inline_marker = _SURFACE.strip_inline_code(line, inline_marker)
+            require(RAW_HTML.search(hidden) is None, "module document contains raw HTML outside code")
+            lines.append(hidden)
+            continue
+        match = _SURFACE.FENCE_OPEN.fullmatch(line)
+        if match is not None:
+            marker = match.group("marker")
+            fence, fence_length = marker[0], len(marker)
+            continue
+        if _SURFACE.indentation_columns(line) >= 4:
+            continue
+        # Preserve complete same-line literal field values while withholding
+        # credit from Markdown-looking text inside a multiline code span.
+        hidden, inline_marker = _SURFACE.strip_inline_code(line, None)
+        require(RAW_HTML.search(hidden) is None, "module document contains raw HTML outside code")
+        lines.append(line if inline_marker is None else hidden)
     require(fence is None, "module document contains an unterminated code fence")
+    require(inline_marker is None, "module document contains an unterminated inline code span")
     return "\n".join(lines)
 
 
@@ -378,6 +414,7 @@ def verify_index_and_documents(root: Path) -> None:
         raw = path.read_bytes()
         require(len(raw) >= minimum, f"{module_id} document truncated")
         text = raw.decode("utf-8")
+        prose = visible_prose(text)
         verify_headings(text, headings, module_id)
         verify_contract_prose(text, module)
         verify_implementation_links(root, text, module_id)
@@ -395,19 +432,19 @@ def verify_index_and_documents(root: Path) -> None:
             "Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.",
         ]
         for literal in required:
-            require(literal in text, f"{module_id} omits {literal!r}")
+            require(literal in prose, f"{module_id} omits {literal!r}")
         for j, source in enumerate(module.get("paths", [])):
             require(repo_path(root, source, f"{module_id}.paths[{j}]").exists(), f"{module_id} source missing")
-            require(f"`{source}`" in text, f"{module_id} omits source path {source}")
+            require(f"`{source}`" in prose, f"{module_id} omits source path {source}")
         for dependency in module.get("dependencies", []):
-            require(f"`{dependency}`" in text, f"{module_id} omits dependency {dependency}")
+            require(f"`{dependency}`" in prose, f"{module_id} omits dependency {dependency}")
         gaps = module.get("open_gaps", [])
         require(isinstance(gaps, list), f"{module_id}.open_gaps must be an array")
         if gaps:
             for gap in gaps:
-                require(gap in text, f"{module_id} omits gap {gap}")
+                require(gap in prose, f"{module_id} omits gap {gap}")
         else:
-            require("Open machine gaps: none." in text, f"{module_id} omits no-gap declaration")
+            require("Open machine gaps: none." in prose, f"{module_id} omits no-gap declaration")
 
     require(ids == order, "index module order/set drifted")
     require(len(paths) == len(set(paths)), "module document paths are not unique")

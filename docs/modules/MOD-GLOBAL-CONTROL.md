@@ -74,6 +74,9 @@ The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
 `Controller`, `Lease`, `ResourceBudget`, `ModuleInstanceRegistry` and `ShadowPolicy` are the concrete mechanical contracts. The crate refuses active modes. Registry/audit state must observe a consistent control epoch; no shadow recommendation is an effect authorization.
+Shadow projection history commits only after all observations and the decision
+digest are valid. A rejected projection leaves safety latches, dwell timers and
+cooldown state unchanged; a failed audit append also rolls back those changes.
 
 ## 6. State model and ownership
 
@@ -217,14 +220,21 @@ Standard deployment sequence:
 
 ## 17. Open gaps and exit criteria
 
-Open machine gaps: `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-CONTROL-PLANE-SHADOW-001`.
+Open machine gaps: `GAP-PERF-L2-BASELINE-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-CONTROL-PLANE-SHADOW-001`.
 
-### GAP-PERF-SYSTEM-BASELINE-001 — exit L2
+### GAP-PERF-L2-BASELINE-001 — exit L2
+
+Installed WL-01 through WL-10 retain raw A1/A2/A3 and C1/C2/C3 batches,
+complete applicable stage/resource counters and qualified stability/comparison.
+WL-11 remains an L4 hold and WL-12 remains an L5 hold.
+
+### GAP-PERF-SYSTEM-BASELINE-001 — exit L5
 
 Mixed-workload throughput, latency, resource and recovery baselines are repeatable.
 
 Exit evidence must demonstrate:
-- WL-01 through WL-12 run.
+- WL-01 through WL-10 have installed L2 evidence, WL-11 has physical L4 evidence and WL-12 has destructive L5 evidence.
+- The exact subject and continuous L1 through L5 evidence lineage bind every phase.
 - P50, P95, P99 and maximum are recorded.
 - CPU, RSS, FD, thread, process and I/O are recorded.
 - system-objective delta gates changes.

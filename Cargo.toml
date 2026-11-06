@@ -10,6 +10,7 @@ members = [
   "crates/trillionnium-owner-open-stream-window",
   "crates/trillionnium-owner-open-tool-bridge",
   "crates/trillionnium-owner-open-turn-loop",
+  "crates/trillionnium-owner-open-trace",
   "crates/trillionnium-owner-open-types",
   "crates/trillionnium-owner-open-runtime",
   "crates/trillionnium-os-types",
@@ -38,6 +39,7 @@ default-members = [
   "crates/trillionnium-owner-open-stream-window",
   "crates/trillionnium-owner-open-tool-bridge",
   "crates/trillionnium-owner-open-turn-loop",
+  "crates/trillionnium-owner-open-trace",
   "crates/trillionnium-owner-open-types",
   "crates/trillionnium-owner-open-runtime",
 ]
@@ -51,6 +53,7 @@ authors = ["Qianqi + Trillionnium OS contributors"]
 rust-version = "1.93"
 
 [workspace.dependencies]
+trillionnium-owner-open-trace = { path = "crates/trillionnium-owner-open-trace" }
 trillionnium-owner-open-call-registry = { path = "crates/trillionnium-owner-open-call-registry" }
 trillionnium-owner-open-event-store = { path = "crates/trillionnium-owner-open-event-store" }
 trillionnium-owner-open-job-registry = { path = "crates/trillionnium-owner-open-job-registry" }

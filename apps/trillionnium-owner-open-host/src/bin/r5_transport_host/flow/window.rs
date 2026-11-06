@@ -29,8 +29,8 @@ impl StreamDelivery {
         &mut self,
         parsed: &ParsedFlowControl,
     ) -> Result<(ApplyDisposition, StreamWindowSnapshot), String> {
-        if self.window.is_none() {
-            self.window = Some(
+        let candidate_window = if self.window.is_none() {
+            Some(
                 StreamWindow::new(StreamWindowConfig {
                     initial_credit_bytes: 0,
                     max_credit_bytes: self.max_credit_bytes,
@@ -38,14 +38,16 @@ impl StreamDelivery {
                     max_control_history: self.control_history,
                 })
                 .map_err(|error| error.to_string())?,
-            );
-        }
-        let before = self
+            )
+        } else {
+            None
+        };
+        let window = self
             .window
             .as_ref()
-            .expect("window initialized")
-            .snapshot()
-            .map_err(|error| error.to_string())?;
+            .or(candidate_window.as_ref())
+            .expect("window candidate exists");
+        let before = window.snapshot().map_err(|error| error.to_string())?;
         if parsed.control_seq < before.next_control_seq {
             let fingerprint = self
                 .control_fingerprints
@@ -61,19 +63,13 @@ impl StreamDelivery {
                     );
                 }
                 None => {
-                    return self
-                        .window
-                        .as_ref()
-                        .expect("window initialized")
+                    return window
                         .apply_control(parsed.control_seq, parsed.command.clone())
                         .map(|result| (result.disposition, result.snapshot))
                         .map_err(|error| error.to_string());
                 }
             }
-            return self
-                .window
-                .as_ref()
-                .expect("window initialized")
+            return window
                 .apply_control(parsed.control_seq, parsed.command.clone())
                 .map(|result| (result.disposition, result.snapshot))
                 .map_err(|error| error.to_string());
@@ -81,23 +77,10 @@ impl StreamDelivery {
 
         let clear_gap_after_apply = if matches!(parsed.command, StreamControl::Resume) {
             if let Some(gap) = &self.gap {
-                let required = gap.required_resume_cursor().ok_or_else(|| {
-                    "delivery gap has no stable cursor; restart inspection from cursor 0"
-                        .to_string()
-                })?;
-                let received = parsed.resumed_through_cursor.ok_or_else(|| {
-                    format!(
-                        "stream.resume requires resumed_through_cursor >= {required} after a delivery gap"
-                    )
-                })?;
-                if received < required {
-                    return Err(format!(
-                        "resumed_through_cursor {received} is before required cursor {required}"
-                    ));
-                }
+                gap.validate_resume(parsed)?;
                 true
             } else {
-                if parsed.resumed_through_cursor.is_some() {
+                if parsed.resumed_through_cursor.is_some() || !parsed.resumed_cursors.is_empty() {
                     return Err(
                         "resumed_through_cursor is valid only after stream.resync_required"
                             .to_string(),
@@ -106,20 +89,18 @@ impl StreamDelivery {
                 false
             }
         } else {
-            if parsed.resumed_through_cursor.is_some() {
-                return Err(
-                    "resumed_through_cursor is accepted only by stream.resume".to_string(),
-                );
+            if parsed.resumed_through_cursor.is_some() || !parsed.resumed_cursors.is_empty() {
+                return Err("resumed_through_cursor is accepted only by stream.resume".to_string());
             }
             false
         };
-        let result = self
-            .window
-            .as_ref()
-            .expect("window initialized")
+        let result = window
             .apply_control(parsed.control_seq, parsed.command.clone())
             .map_err(|error| error.to_string())?;
         if result.disposition == ApplyDisposition::Applied {
+            if let Some(window) = candidate_window {
+                self.window = Some(window);
+            }
             if self.control_fingerprints.len() == self.control_history {
                 self.control_fingerprints.pop_front();
             }

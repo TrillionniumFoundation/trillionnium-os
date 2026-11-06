@@ -1,0 +1,82 @@
+{
+  "schema": "org.trillionnium.android.defensive-source-patches.v1",
+  "profile_id": "owner-open-whole-control-v4",
+  "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-09-01",
+  "projects": [
+    {
+      "project": "frameworks/base",
+      "selected_head_before": "87c84ee0c3ee76c8361e8c20678c903fd196d28e",
+      "official_commit": "8800ef252b9f59834c1e1707bfa47a5de65aae10",
+      "cve": "CVE-2026-28666",
+      "ordered_patches": [
+        {
+          "path": "android-integration/security-patches/frameworks-base-CVE-2026-28666.patch",
+          "bytes": 4136,
+          "sha256": "11ed1a5aa8a1238626dfb8750e4626fef9801e3970aaaea01afb9fa4441a33c8"
+        },
+        {
+          "path": "android-integration/security-patches/frameworks-base-header-rejection-tests.patch",
+          "bytes": 1581,
+          "sha256": "a62957c5f35bcca128e40a22fb9c30a91d28715675ce0a606ba26d04ace65128"
+        }
+      ],
+      "changed_files": [
+        {
+          "path": "core/java/com/android/internal/widget/LocalImageResolver.java",
+          "before_bytes": 13957,
+          "before_sha256": "13560e55610643338f579ae8d0d4f65bdc58bdb09f465976038b5398467e9dbe",
+          "before_git_blob": "97e66d9ddfd06b02a2d2589367b8659d95da59da",
+          "after_bytes": 14221,
+          "after_sha256": "43a5568f7c1e7c116998e50e9cf2434ef42697963ed3827c2a154aef423eba25",
+          "after_git_blob": "71dbbe06ba73ca9d1e4e3f81e6f111b2c418bbe0"
+        },
+        {
+          "path": "core/tests/coretests/src/com/android/internal/widget/LocalImageResolverTest.java",
+          "before_bytes": 15350,
+          "before_sha256": "4c66464649fd4fe3af2e8078ba67fb54403249bdfcfa216001150d4ee1e4d4bc",
+          "before_git_blob": "474e3c3f010b03b5830afd0c78214be2f84f0d0e",
+          "after_bytes": 16107,
+          "after_sha256": "80260df90aee0d3607b15693883f0599eb642d9af45138a8a3fc70a089fc6450",
+          "after_git_blob": "be6f3672cb0ab442ea51d434a61d0fc6bd529167"
+        }
+      ]
+    },
+    {
+      "project": "packages/modules/Nfc",
+      "selected_head_before": "ff865d6888f53cff913d9c28b9893831174a46be",
+      "official_commit": "9f4efdd67acb88de5f3450a31a85c054156fa4a6",
+      "cve": "CVE-2026-28639",
+      "ordered_patches": [
+        {
+          "path": "android-integration/security-patches/nfc-CVE-2026-28639.patch",
+          "bytes": 389,
+          "sha256": "f088725b9f0e3f5fd674dd96da6557cd5d06c2297713af1db73947dab8399faa"
+        }
+      ],
+      "changed_files": [
+        {
+          "path": "libnfc-nci/src/nfc/tags/rw_mfc.cc",
+          "before_bytes": 56829,
+          "before_sha256": "aa4b7262b9d3a3be26c38edd60aa5b6c7c773e0ab20e60bc7632518e23ad8754",
+          "before_git_blob": "21c904cf2b7ad56476aada8ff7f7cb3e3ecf9dcc",
+          "after_bytes": 56852,
+          "after_sha256": "81ad76a6781332de0042edf17bfa7fa1df776109c2b5d0e97b9d1f8800f360e1",
+          "after_git_blob": "4fe463488929fa696f0cf3625f130766e525d7e4"
+        }
+      ]
+    }
+  ],
+  "application": "Apply only in exclusive complete private project forks after verifying exact before generations/files; retain original projects and select new complete fork commits in a new resolved manifest. These are declared patch inputs, not working-tree overlays.",
+  "test_expectation_correction": "The constrained API catches its callback header RuntimeException and returns null. Two upstream tests must assert a null rejection; preserve the unconstrained API exception tests and official production code.",
+  "required_evidence": [
+    "Full private HEAD/tree and whole changed path set",
+    "Compiled affected Android code and regression tests",
+    "New exact control source, private16 source BOM and build-time META",
+    "Actual target-files and installed checks"
+  ],
+  "complete_security_bulletin_coverage": false,
+  "platform_kernel_soc_coverage_qualified": false,
+  "source_bom_qualified": false,
+  "installed": false,
+  "production_ready": false
+}

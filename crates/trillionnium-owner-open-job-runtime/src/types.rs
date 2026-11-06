@@ -40,14 +40,27 @@ pub type Result<T> = std::result::Result<T, JobRuntimeError>;
 /// Deployments may choose lower values, but accepting an arbitrary
 /// `usize` from configuration would let a malformed profile turn admission,
 /// input, or resident observation state into an effectively unbounded
-/// allocation.  These values are deliberately generous operational limits;
-/// they are not claims about the host's available capacity.
-pub const MAX_JOB_RUNTIME_JOBS: usize = 65_536;
+/// allocation. Count, buffer and resident-window budgets apply together;
+/// they are not claims about the host's measured available capacity.
+pub const MAX_JOB_RUNTIME_JOBS: usize = 8;
 pub const MAX_JOB_RUNTIME_OPERATION_ID_BYTES: usize = 4_096;
 pub const MAX_JOB_RUNTIME_INPUT_BYTES: usize = 16 * 1024 * 1024;
 pub const MAX_JOB_RUNTIME_OUTPUT_CHUNK_BYTES: usize = 16 * 1024 * 1024;
 pub const MAX_JOB_RUNTIME_OBSERVATIONS_PER_JOB: usize = 1_048_576;
 pub const MAX_JOB_RUNTIME_OBSERVATION_BYTES_PER_JOB: usize = 1 << 30;
+/// Aggregate resident window and raw process-buffer ceilings, independent of
+/// the per-job limits. These do not describe the event store or whole RSS.
+pub const MAX_JOB_RUNTIME_OBSERVATION_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_JOB_RUNTIME_OBSERVATIONS: usize = 4096;
+pub const MAX_JOB_RUNTIME_PROCESS_BUFFER_BYTES: usize = 32 * 1024 * 1024;
+pub const MAX_JOB_RUNTIME_RETAINED_KEYS: usize = 256;
+pub const MAX_JOB_RUNTIME_REGISTRY_EVENTS_PER_JOB: usize = 16;
+pub(crate) const MAX_OBSERVATION_STAGING_BYTES: usize = 16 * 1024 * 1024;
+pub(crate) const OBSERVATION_STAGING_FIXED_BYTES: usize = 1024 * 1024;
+pub(crate) const OUTPUT_VALUE_STAGING_PER_BYTE: usize = 224;
+// Covers 256 bounded keys, hash buckets and cursor/gap state even when their
+// event prefixes have been evicted. Registry identity is never budget-evicted.
+pub(crate) const OBSERVATION_METADATA_RESERVE: usize = 1024 * 1024;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct JobRuntimeConfig {
@@ -57,18 +70,22 @@ pub struct JobRuntimeConfig {
     pub max_output_chunk_bytes: usize,
     pub max_observations_per_job: usize,
     pub max_observation_bytes_per_job: usize,
+    pub max_observations: usize,
+    pub max_observation_bytes: usize,
     pub allow_unjournaled_effects: bool,
 }
 
 impl Default for JobRuntimeConfig {
     fn default() -> Self {
         Self {
-            max_jobs: 256,
+            max_jobs: 8,
             max_operation_id_bytes: 256,
             max_input_bytes: 1024 * 1024,
             max_output_chunk_bytes: 64 * 1024,
             max_observations_per_job: 4096,
             max_observation_bytes_per_job: 16 * 1024 * 1024,
+            max_observations: MAX_JOB_RUNTIME_OBSERVATIONS,
+            max_observation_bytes: MAX_JOB_RUNTIME_OBSERVATION_BYTES,
             allow_unjournaled_effects: false,
         }
     }
@@ -113,6 +130,16 @@ impl JobRuntimeConfig {
                 self.max_observation_bytes_per_job,
                 MAX_JOB_RUNTIME_OBSERVATION_BYTES_PER_JOB,
             ),
+            (
+                "max_observations",
+                self.max_observations,
+                MAX_JOB_RUNTIME_OBSERVATIONS,
+            ),
+            (
+                "max_observation_bytes",
+                self.max_observation_bytes,
+                MAX_JOB_RUNTIME_OBSERVATION_BYTES,
+            ),
         ] {
             if value > maximum {
                 return Err(JobRuntimeError::InvalidRequest(format!(
@@ -126,10 +153,40 @@ impl JobRuntimeConfig {
             || self.max_output_chunk_bytes == 0
             || self.max_observations_per_job == 0
             || self.max_observation_bytes_per_job == 0
+            || self.max_observations == 0
+            || self.max_observation_bytes <= OBSERVATION_METADATA_RESERVE
             || self.max_output_chunk_bytes > self.max_observation_bytes_per_job
         {
             return Err(JobRuntimeError::InvalidRequest(
                 "job runtime bounds are inconsistent".to_string(),
+            ));
+        }
+        // The stdin request is cloned into its worker. Two reader workspaces,
+        // two blocked sends and dispatcher/event staging can coexist with a
+        // full channel. Arc process handles share allocations rather than
+        // multiplying this reservation. Use checked arithmetic before any
+        // durable acceptance, allocation or spawn.
+        let buffers = self
+            .max_output_chunk_bytes
+            .checked_mul(crate::process::PROCESS_EVENT_QUEUE + 6)
+            .and_then(|output| self.max_input_bytes.checked_mul(2)?.checked_add(output))
+            .and_then(|per_job| per_job.checked_mul(self.max_jobs));
+        if buffers.is_none_or(|bytes| bytes > MAX_JOB_RUNTIME_PROCESS_BUFFER_BYTES) {
+            return Err(JobRuntimeError::InvalidRequest(
+                "aggregate process buffers exceed the runtime budget".to_string(),
+            ));
+        }
+        // Runtime output is carried as a numeric Value array. Bound the
+        // existing schema's DOM/clone/encoder staging as well as raw buffers;
+        // its shared serialization lane is reserved before the first DOM.
+        if self
+            .max_output_chunk_bytes
+            .checked_mul(OUTPUT_VALUE_STAGING_PER_BYTE)
+            .and_then(|bytes| bytes.checked_add(OBSERVATION_STAGING_FIXED_BYTES))
+            .is_none_or(|bytes| bytes > MAX_OBSERVATION_STAGING_BYTES)
+        {
+            return Err(JobRuntimeError::InvalidRequest(
+                "observation Value staging exceeds the runtime budget".to_string(),
             ));
         }
         Ok(())
@@ -145,6 +202,16 @@ mod tests {
         JobRuntimeConfig::default()
             .validate()
             .expect("default runtime bounds are valid");
+    }
+
+    #[test]
+    fn default_process_buffers_fit_the_aggregate_source_budget() {
+        let config = JobRuntimeConfig::default();
+        // One bounded queue and two reader work buffers, plus initial stdin.
+        let resident = config.max_jobs
+            * (2 * config.max_input_bytes
+                + (crate::process::PROCESS_EVENT_QUEUE + 6) * config.max_output_chunk_bytes);
+        assert!(resident <= 32 * 1024 * 1024, "process buffers: {resident}");
     }
 
     #[test]
@@ -187,6 +254,48 @@ mod tests {
             "max_observation_bytes_per_job",
             max_observation_bytes_per_job,
             MAX_JOB_RUNTIME_OBSERVATION_BYTES_PER_JOB
+        );
+        assert_oversized!(
+            "max_observations",
+            max_observations,
+            MAX_JOB_RUNTIME_OBSERVATIONS
+        );
+        assert_oversized!(
+            "max_observation_bytes",
+            max_observation_bytes,
+            MAX_JOB_RUNTIME_OBSERVATION_BYTES
+        );
+    }
+
+    #[test]
+    fn aggregate_process_reservation_rejects_a_single_oversized_input_profile() {
+        let config = JobRuntimeConfig {
+            max_jobs: 2,
+            max_input_bytes: 16 * 1024 * 1024,
+            ..JobRuntimeConfig::default()
+        };
+        assert!(
+            config
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("aggregate process buffers")
+        );
+    }
+
+    #[test]
+    fn numeric_output_dom_staging_rejects_a_profile_before_journal_or_spawn() {
+        let config = JobRuntimeConfig {
+            max_jobs: 1,
+            max_output_chunk_bytes: 128 * 1024,
+            ..JobRuntimeConfig::default()
+        };
+        assert!(
+            config
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("Value staging")
         );
     }
 }

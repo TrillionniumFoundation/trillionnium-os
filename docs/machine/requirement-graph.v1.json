@@ -336,7 +336,7 @@
       ],
       "gaps": [
         "GAP-CONTROL-PLANE-SHADOW-001",
-        "GAP-PERF-SYSTEM-BASELINE-001"
+        "GAP-PERF-L2-BASELINE-001"
       ],
       "source": [
         "docs/GLOBAL_ARCHITECTURE.md",

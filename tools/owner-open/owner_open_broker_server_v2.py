@@ -10,7 +10,7 @@ import stat
 import threading
 
 from owner_open_broker_base_v2 import terminate_upstream_bounded
-from owner_open_broker_common import BrokerError, atomic_write_private, validate_socket_path
+from owner_open_broker_common import BrokerError, atomic_write_private, validate_socket_path, performance_span, drain_performance_stream_at_caller_boundary
 
 
 class BrokerServerMixin:
@@ -200,8 +200,12 @@ class BrokerServerMixin:
             self.descriptor_identity = self._path_identity(self.args.descriptor)
             self._start_workers()
             while not self.stopping.is_set():
+                # The preceding listener operation/span has returned; no
+                # client/queue/product mutex is held by this caller.
+                drain_performance_stream_at_caller_boundary()
                 try:
-                    connection, _ = listener.accept()
+                    with performance_span("broker_accept", "listener.accept"):
+                        connection, _ = listener.accept()
                 except socket.timeout:
                     continue
                 # Reserve before Thread.start, including silent/unauthenticated peers.

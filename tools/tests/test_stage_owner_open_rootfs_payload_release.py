@@ -167,6 +167,61 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         self.assertIn(b"digest does not match", completed.stderr)
         self.assertFalse(output.exists())
 
+    def test_empty_python_package_file_preserves_exact_bytes_and_manifest(self) -> None:
+        self.config.write_bytes(b"")
+        value = self.plan_value()
+        value["entries"][1]["destination"] = "/usr/lib/python3.11/urllib/__init__.py"
+        plan = self.write_plan(value)
+        output = self.outputs / "empty-package"
+        completed = self.run_command(plan, output)
+        self.assertEqual(completed.returncode, 0, completed.stderr.decode())
+        target = output / "root/usr/lib/python3.11/urllib/__init__.py"
+        self.assertEqual(target.read_bytes(), b"")
+        manifest = json.loads((output / "owner-open-rootfs.manifest.json").read_text())
+        entry = next(item for item in manifest["entries"] if item["role"] == "profile")
+        self.assertEqual(entry["bytes"], 0)
+        self.assertEqual(entry["sha256"], hashlib.sha256(b"").hexdigest())
+
+    def test_empty_required_elf_is_rejected_before_output_creation(self) -> None:
+        self.host.write_bytes(b"")
+        plan = self.write_plan(self.plan_value())
+        output = self.outputs / "empty-required-elf"
+        completed = self.run_command(plan, output)
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn(b"requires AArch64 ELF", completed.stderr)
+        self.assertFalse(output.exists())
+
+    def test_public_frozen_python_modules_are_admitted_at_exact_paths_only(self) -> None:
+        for module in ("secrets", "token", "tokenize"):
+            with self.subTest(module=module):
+                value = self.plan_value()
+                value["entries"][1]["destination"] = f"/usr/lib/python3.11/{module}.py"
+                plan = self.write_plan(value, f"public-{module}.json")
+                output = self.outputs / f"public-{module}"
+                completed = self.run_command(plan, output)
+                self.assertEqual(completed.returncode, 0, completed.stderr.decode())
+                target = output / f"root/usr/lib/python3.11/{module}.py"
+                self.assertEqual(target.read_bytes(), self.config.read_bytes())
+
+        for index, destination in enumerate((
+            "/usr/lib/python3.12/secrets.py",
+            "/usr/lib/python3.11/Secrets.py",
+            "/usr/lib/python3.11/secrets.py.bak",
+            "/usr/lib/python3.11/secrets.py/auth.json",
+            "/usr/lib/python3.11/private_token.py",
+            "/usr/lib/python3.11/token.py/child",
+            "/usr/lib/python3.11/tokenize.json",
+            "/etc/trillionnium/owner-open/token",
+        )):
+            with self.subTest(destination=destination):
+                value = self.plan_value()
+                value["entries"][1]["destination"] = destination
+                plan = self.write_plan(value, f"non-public-{index}.json")
+                output = self.outputs / f"non-public-{index}"
+                completed = self.run_command(plan, output)
+                self.assertNotEqual(completed.returncode, 0)
+                self.assertFalse(output.exists())
+
     def test_uid_and_gid_must_be_json_integers(self) -> None:
         for field in ("uid", "gid"):
             value = self.plan_value()

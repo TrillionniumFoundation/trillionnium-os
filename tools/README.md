@@ -670,7 +670,13 @@ compilation. It does not claim a recursively byte-closed host kernel,
 hardware, AVB, device execution, or release boundary; those remain separate
 admission evidence.
 
-## Production Agent feature graph
+## Sealed Agent feature graph
+
+This retained gate belongs to the sealed Agent lane and its fixed 14-member,
+four-default-member workspace. The current owner-open workspace has a different
+24-member, 11-default-member graph; running this gate against that graph returns
+HOLD. It does not qualify the active owner-open product profile. Use the selected
+owner-open source/profile gates and current G1 evidence routing for that lane.
 
 - `production_agent_feature_gate.py` verifies the explicit empty default
   feature tables for the daemon, UDS, D-Bus and tool-runtime crates.

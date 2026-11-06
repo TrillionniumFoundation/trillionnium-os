@@ -13,6 +13,8 @@ from typing import Any
 
 from owner_open_broker_common import (
     BrokerError,
+    performance_stage,
+    performance_span,
     canonical,
     strict_json,
     validate_private_parent,
@@ -182,7 +184,8 @@ class BrokerAuditJournal:
                         "before synchronizing the journal directory"
                     )
                     try:
-                        os.fsync(directory)
+                        with performance_span("journal_fsync", "audit.directory"):
+                            os.fsync(directory)
                     finally:
                         self._require_path_fd_identity(
                             "after synchronizing the journal directory"
@@ -378,6 +381,7 @@ class BrokerAuditJournal:
         binding.stage = stage
         binding.terminal_message = message
 
+    @performance_stage("journal_append")
     def _append(
         self,
         binding: AuditBinding,
@@ -428,7 +432,8 @@ class BrokerAuditJournal:
                 "before synchronizing an appended journal record"
             )
             try:
-                os.fsync(self._fd)
+                with performance_span("journal_fsync", binding.request_sha256):
+                    os.fsync(self._fd)
             finally:
                 self._require_path_fd_identity(
                     "after synchronizing an appended journal record"
@@ -506,6 +511,7 @@ class BrokerAuditJournal:
             )
             binding.stage = "broker.forwarded"
 
+    @performance_stage("terminal_persistence")
     def terminal(
         self,
         binding: AuditBinding,

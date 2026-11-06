@@ -1,0 +1,1989 @@
+{
+  "affected_project_paths": [
+    "art",
+    "bionic",
+    "external/exfatprogs",
+    "external/freetype",
+    "external/libcupsfilters",
+    "external/libhevc",
+    "external/libpng",
+    "external/libppd",
+    "external/wpa_supplicant_8",
+    "frameworks/av",
+    "frameworks/base",
+    "hardware/interfaces",
+    "hardware/nxp/secure_element",
+    "kernel/motorola/sm6375",
+    "packages/apps/Settings",
+    "packages/apps/TV",
+    "packages/modules/Bluetooth",
+    "packages/modules/Nfc",
+    "packages/modules/Uwb",
+    "packages/modules/Wifi",
+    "packages/providers/MediaProvider",
+    "packages/providers/TelephonyProvider",
+    "packages/services/Telephony",
+    "system/core"
+  ],
+  "control_count": 1,
+  "manifest_count": 1170,
+  "original_count": 1131,
+  "pending_qualification": {
+    "compiled": false,
+    "cumulative_ASB": false,
+    "device_applicability": false,
+    "installed": false,
+    "production_ready": false,
+    "source_bom": false,
+    "whole_ASB": false,
+    "whole_CVE": false
+  },
+  "prior_private_project_paths": [
+    "build/make",
+    "device/motorola/fogos",
+    "device/motorola/sm6375-common",
+    "device/trillionnium/sepolicy",
+    "external/aws-sdk-java-v2",
+    "external/libopenapv",
+    "frameworks/base",
+    "frameworks/layoutlib",
+    "packages/apps/Seedvault",
+    "packages/apps/TrillionniumAiAuthority",
+    "packages/apps/TrillionniumAiShell",
+    "packages/modules/Nfc",
+    "packages/modules/adb",
+    "system/extras",
+    "trillionnium-sdk",
+    "vendor/trillionnium"
+  ],
+  "private_count": 38,
+  "private_project_paths": [
+    "art",
+    "bionic",
+    "build/make",
+    "device/motorola/fogos",
+    "device/motorola/sm6375-common",
+    "device/trillionnium/sepolicy",
+    "external/aws-sdk-java-v2",
+    "external/exfatprogs",
+    "external/freetype",
+    "external/libcupsfilters",
+    "external/libhevc",
+    "external/libopenapv",
+    "external/libpng",
+    "external/libppd",
+    "external/wpa_supplicant_8",
+    "frameworks/av",
+    "frameworks/base",
+    "frameworks/layoutlib",
+    "hardware/interfaces",
+    "hardware/nxp/secure_element",
+    "kernel/motorola/sm6375",
+    "packages/apps/Seedvault",
+    "packages/apps/Settings",
+    "packages/apps/TV",
+    "packages/apps/TrillionniumAiAuthority",
+    "packages/apps/TrillionniumAiShell",
+    "packages/modules/Bluetooth",
+    "packages/modules/Nfc",
+    "packages/modules/Uwb",
+    "packages/modules/Wifi",
+    "packages/modules/adb",
+    "packages/providers/MediaProvider",
+    "packages/providers/TelephonyProvider",
+    "packages/services/Telephony",
+    "system/core",
+    "system/extras",
+    "trillionnium-sdk",
+    "vendor/trillionnium"
+  ],
+  "projects": [
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 82475,
+            "git_blob_sha1": "feb77b70f176d585f165f9bfd5eaa3fd1482dcdc",
+            "sha256": "94432ad27cffb8c485f3d341dedfd9d43614571e58ec74b0d724ad7af0108634"
+          },
+          "before": {
+            "bytes": 82098,
+            "git_blob_sha1": "ba8593ae8b04ebb6ed132189dff428571be67ede",
+            "sha256": "3618befc54e6dd27c202305dda0ad98439086acf6fcb8ee1a7f7a02cea7da6a9"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 754,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/000.diff",
+            "new_label": "owned-final/art/runtime/runtime_image.cc",
+            "old_label": "actual-captured/art/runtime/runtime_image.cc",
+            "sha256": "833a8d1d5da65c7d0c78a5d92c1be0cdbf7e0f8eb4fb4ec39495958155fccb2f"
+          },
+          "path": "runtime/runtime_image.cc"
+        }
+      ],
+      "historical_source_head": "1690c6912a7972c9e62c39b48c706de9b8b18b4a",
+      "historical_source_tree": null,
+      "path": "art"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 13342,
+            "git_blob_sha1": "e00b8c636a4bcd2fcfd92128299c9103b4be5b73",
+            "sha256": "859ad72910a790d48d9d150284d59b5d12e71ad479709613105e4699ed3e8286"
+          },
+          "before": {
+            "bytes": 13341,
+            "git_blob_sha1": "5128a3526e5d168d7540d7e82e75c426b2f6baa6",
+            "sha256": "8617ca3d1199429973043b8a877d00f624ee297cdffd9a78806222ca9f4efdbc"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 461,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/001.diff",
+            "new_label": "owned-final/bionic/libc/bionic/malloc_limit.cpp",
+            "old_label": "actual-captured/bionic/libc/bionic/malloc_limit.cpp",
+            "sha256": "82ee23397688e89c1b42110f1d2fa2406eb1f6cc29b5122ec17595160ec99180"
+          },
+          "path": "libc/bionic/malloc_limit.cpp"
+        }
+      ],
+      "historical_source_head": "7ad2441de12bf7b5dc0055e0a940583d80fe104b",
+      "historical_source_tree": null,
+      "path": "bionic"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 47719,
+            "git_blob_sha1": "8ebf100ad905f7716b68ef04587fb135af058791",
+            "sha256": "15ef6f4e4669346f3554e2ce5fe3176ea0ccf511508f38bd2db8440733b8feb7"
+          },
+          "before": {
+            "bytes": 47105,
+            "git_blob_sha1": "2fd7194dfedc1b95eecffca93a5cddc5173b917f",
+            "sha256": "db2117296f2301fe53e5df60864676aca44ad006ef58d51a538395e47d9108c3"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1102,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/002.diff",
+            "new_label": "owned-final/external/exfatprogs/fsck/fsck.c",
+            "old_label": "actual-captured/external/exfatprogs/fsck/fsck.c",
+            "sha256": "6c7d87806303e5b72ee35666bc29d6640c6e97eb02c562906e523a9d21c4549e"
+          },
+          "path": "fsck/fsck.c"
+        },
+        {
+          "after": {
+            "bytes": 6653,
+            "git_blob_sha1": "1a9a2d5c7be2d65b15a871dc97d8a5a8073f6e8c",
+            "sha256": "742d51eac3da5de58ef8d004b097120a94df69d0e5c6c409195e7d5210495c1b"
+          },
+          "before": {
+            "bytes": 6643,
+            "git_blob_sha1": "bcab23a24bf40a25e1bd8d36d8eee686e28159d0",
+            "sha256": "940372de7adcfe0cbdb9420424725a4ec5d097acd8421811f8a88be844ca4a91"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 443,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/003.diff",
+            "new_label": "owned-final/external/exfatprogs/include/libexfat.h",
+            "old_label": "actual-captured/external/exfatprogs/include/libexfat.h",
+            "sha256": "59a31370d62acb8fcf055153ce68bf625934851044d748591d48371aa667dc04"
+          },
+          "path": "include/libexfat.h"
+        }
+      ],
+      "historical_source_head": "f2640cfd8c3369ea5412917e5474a2a95f01a693",
+      "historical_source_tree": null,
+      "path": "external/exfatprogs"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 62168,
+            "git_blob_sha1": "43fa25d9c92770f26e070d323516313bc3ee0721",
+            "sha256": "447e352dc99804f5946824c07e49f71f950b8fffbe9cf1fabb0bff591cc34387"
+          },
+          "before": {
+            "bytes": 62186,
+            "git_blob_sha1": "2bf9a7e95a971af49de3fbb98d2f57ab1e3f7c6c",
+            "sha256": "1d75e472e28d13474b5177b637808e41f5f9531202d7e202a4b4fabe6accc324"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 339,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/004.diff",
+            "new_label": "owned-final/external/freetype/src/sfnt/ttcolr.c",
+            "old_label": "actual-captured/external/freetype/src/sfnt/ttcolr.c",
+            "sha256": "cc81bbc0241e92fa09e6122e8012634edf5d983295f490c91b66c63269a2eccd"
+          },
+          "path": "src/sfnt/ttcolr.c"
+        },
+        {
+          "after": {
+            "bytes": 16868,
+            "git_blob_sha1": "253271479ac54c1518bc53fc5469e072ab013616",
+            "sha256": "32398d90166ef02118028666d8048c560535e1079922dcf19267312bf2dbb028"
+          },
+          "before": {
+            "bytes": 16549,
+            "git_blob_sha1": "f0acc1ea4a6e2cdd7cc23cf6951978b9bf50d2e8",
+            "sha256": "d6e9ef82ffb0e99375f31073be133d173a57e6f22d0dd7fa09404a9072db1a64"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 791,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/005.diff",
+            "new_label": "owned-final/external/freetype/src/smooth/ftsmooth.c",
+            "old_label": "actual-captured/external/freetype/src/smooth/ftsmooth.c",
+            "sha256": "d39b1379bb8f0165e418e2bc62e52337ed797e88624e16034c15ef32f6089e01"
+          },
+          "path": "src/smooth/ftsmooth.c"
+        }
+      ],
+      "historical_source_head": "70a231077db3fdc1991b3bc5c44d4012af318441",
+      "historical_source_tree": null,
+      "path": "external/freetype"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 136126,
+            "git_blob_sha1": "2c190ee4288caf64f0f555fb37a562f01d75b101",
+            "sha256": "5460e99e45f08c892b155314e324288cee8979944c2929537598172b8eb3de48"
+          },
+          "before": {
+            "bytes": 135671,
+            "git_blob_sha1": "e229586233cfc1ddb050bb0d8977d04c3f80fa02",
+            "sha256": "dbb7a7000bfd432eba0d1ee8ffcfcc300dc074af8135550eb3db65cda747199c"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1613,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/006.diff",
+            "new_label": "owned-final/external/libcupsfilters/cupsfilters/imagetoraster.c",
+            "old_label": "actual-captured/external/libcupsfilters/cupsfilters/imagetoraster.c",
+            "sha256": "67deb3249e0ebd996000792e9568569c82f8953d6f68fd3f97729f9bd9b623ad"
+          },
+          "path": "cupsfilters/imagetoraster.c"
+        },
+        {
+          "after": {
+            "bytes": 75966,
+            "git_blob_sha1": "f1006d39b6b8e436bc14628aaa151c0ecf5e2230",
+            "sha256": "7d1501e917eae49e5b64711d24a39e4bc99ca59c77441e101a784493059c31d0"
+          },
+          "before": {
+            "bytes": 74008,
+            "git_blob_sha1": "ee81000de4516846faf4c914ec3b2bc2cd87ad14",
+            "sha256": "d5c54ed214bb691cf1c5b01535a7db4315138cb97daf9abbd79c9e8c09fd13ef"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 5055,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/007.diff",
+            "new_label": "owned-final/external/libcupsfilters/cupsfilters/pwgtoraster.c",
+            "old_label": "actual-captured/external/libcupsfilters/cupsfilters/pwgtoraster.c",
+            "sha256": "c666916817a5cb374ac3cef04ba620ae9cdbcc29ca808ac784751630b9ae533d"
+          },
+          "path": "cupsfilters/pwgtoraster.c"
+        },
+        {
+          "after": {
+            "bytes": 57327,
+            "git_blob_sha1": "968c80bd5180ac22402d83544876dcdef37734dc",
+            "sha256": "a142f35bbc237da547271364bec62e4be489db2b3452df0bfdc34f9793169313"
+          },
+          "before": {
+            "bytes": 56978,
+            "git_blob_sha1": "528de7ddaea18d2abe8cf8c7a221fd058b1950c5",
+            "sha256": "ee170ea4b708c9a61b3b3c35c689b539fb78e56fd42d9380e4f8554dfcf23aaa"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1385,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/008.diff",
+            "new_label": "owned-final/external/libcupsfilters/cupsfilters/raster.c",
+            "old_label": "actual-captured/external/libcupsfilters/cupsfilters/raster.c",
+            "sha256": "9ecf81841876685c9265a10fa396d5e1ee5c646f2574bb8f1a99792a286f4fb7"
+          },
+          "path": "cupsfilters/raster.c"
+        }
+      ],
+      "historical_source_head": "7388b69623d9e41dc4417259fc41ca763f22c9fa",
+      "historical_source_tree": null,
+      "path": "external/libcupsfilters"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 46487,
+            "git_blob_sha1": "6c79e3b48f819bddc3833e188aeb23efcad143ab",
+            "sha256": "3ad1cbe4177728e117f77a80536c9ae81eaa0f31c108f10c30edd8b083abca16"
+          },
+          "before": {
+            "bytes": 46492,
+            "git_blob_sha1": "26c08a7f355d0337e5b1699663c0a7b1049dbc03",
+            "sha256": "f22912b16d358a0b7356432ad751dbbb7c8c741994eb8cce48958f3c33e57d0a"
+          },
+          "git_mode": "100755",
+          "patch": {
+            "bytes": 414,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/009.diff",
+            "new_label": "owned-final/external/libhevc/decoder/ihevcd_utils.c",
+            "old_label": "actual-captured/external/libhevc/decoder/ihevcd_utils.c",
+            "sha256": "d5e75e60aeb20ed6de385f5fad5ac52476c1b21b36066df5a0cd8a0de179c386"
+          },
+          "path": "decoder/ihevcd_utils.c"
+        }
+      ],
+      "historical_source_head": "c83a76b084498d55f252f48b2e3786804cdf24b7",
+      "historical_source_tree": null,
+      "path": "external/libhevc"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 4877,
+            "git_blob_sha1": "f3355bef591140301b10a1eb9ef10c6223270f53",
+            "sha256": "4763c897bb94eb801d99fb11130849a984b2a7f75a19b3d8ec7aa048398d975d"
+          },
+          "before": {
+            "bytes": 4704,
+            "git_blob_sha1": "3068e9b6e62be16bee2a8f1ff8271a02f32be97f",
+            "sha256": "d58734a03a91df0f2c11e3558354281d7613888d85c83887586560a270bffa41"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2193,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/010.diff",
+            "new_label": "owned-final/external/libpng/arm/palette_neon_intrinsics.c",
+            "old_label": "actual-captured/external/libpng/arm/palette_neon_intrinsics.c",
+            "sha256": "00997fb1ef5c46b76d3b951895c06eb53f85ab52a063504054f323544e851a36"
+          },
+          "path": "arm/palette_neon_intrinsics.c"
+        }
+      ],
+      "historical_source_head": "812ea249a49e26a13fa080821dc094f33c0f6608",
+      "historical_source_tree": null,
+      "path": "external/libpng"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 46491,
+            "git_blob_sha1": "83f343094c626c98a9f3c194a23f3683ac34717f",
+            "sha256": "d1981110042c5c81712909c23c42dff5ec669e49eadb94481265bdfcbc5fe5ab"
+          },
+          "before": {
+            "bytes": 46104,
+            "git_blob_sha1": "ad0b456b4c8848e6820a122cf9ee923e36d94cff",
+            "sha256": "ef1b30e4110c5ee1b098c5a51bba81a20380213c76a5e5bd4c7b4880ba28dff2"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 974,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/011.diff",
+            "new_label": "owned-final/external/libppd/ppd/raster-interpret.c",
+            "old_label": "actual-captured/external/libppd/ppd/raster-interpret.c",
+            "sha256": "ff699f39b6c43e0a2b45b1d4afe225d4c45918bed24367a35e72ea387c4fa5d5"
+          },
+          "path": "ppd/raster-interpret.c"
+        },
+        {
+          "after": {
+            "bytes": 15340,
+            "git_blob_sha1": "8ab1916a115b15685f7d60c75eb0c346ac66f4c5",
+            "sha256": "ee51f32ff3b15937261d120be0c79cba90ff7b96ff1c009792b4f14efb3cbf40"
+          },
+          "before": {
+            "bytes": 14651,
+            "git_blob_sha1": "dc8bac7d8aa40c1eee0482c732ff75d08e0ddf67",
+            "sha256": "2b558cf35d942f9bb27ac2a8fd364182a2852fb14b91ad4255603d69144ee214"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3338,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/012.diff",
+            "new_label": "owned-final/external/libppd/ppd/rastertops.c",
+            "old_label": "actual-captured/external/libppd/ppd/rastertops.c",
+            "sha256": "78b3124aebbcb457c018f7992a1810edc1d74a0571a987703a1eb4bad6eccdc9"
+          },
+          "path": "ppd/rastertops.c"
+        }
+      ],
+      "historical_source_head": "c7fab25788ad841f0ce49295d47823ea600feebc",
+      "historical_source_tree": null,
+      "path": "external/libppd"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 64636,
+            "git_blob_sha1": "65e313abd61f0b66fdb08f9e2a7873b306098c97",
+            "sha256": "f37b7cadcc596ed7b0c56793a4c90649976e98153bc5772854445aa18acfa4a1"
+          },
+          "before": {
+            "bytes": 64518,
+            "git_blob_sha1": "b0f893e7f5ee8511587412efdbbaf3c4b3caa290",
+            "sha256": "792d6f87ccdd58209d9839fe9cadfec58dc7374fd3a1419b3963c3a4a2647cec"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 372,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/013.diff",
+            "new_label": "owned-final/external/wpa_supplicant_8/src/p2p/p2p_pd.c",
+            "old_label": "actual-captured/external/wpa_supplicant_8/src/p2p/p2p_pd.c",
+            "sha256": "4031cc6b433fe08476981b1e59493d6ec794452ec4fc713060f27268e1029e93"
+          },
+          "path": "src/p2p/p2p_pd.c"
+        },
+        {
+          "after": {
+            "bytes": 45960,
+            "git_blob_sha1": "a99502b4ecf4300d38d0c2e8c03fc5692e38781a",
+            "sha256": "91049551a81c472583fa94cffd866383379c98a5fc0a286cd6dd7082f073490a"
+          },
+          "before": {
+            "bytes": 45938,
+            "git_blob_sha1": "d02c591cbb51455451800f98f05c16ede1c264b7",
+            "sha256": "dd04687206f641e5e2175bbd82602c2cdb5faee7ffdad3e929f43badc6dc2c6d"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 332,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/014.diff",
+            "new_label": "owned-final/external/wpa_supplicant_8/wpa_supplicant/Android.bp",
+            "old_label": "actual-captured/external/wpa_supplicant_8/wpa_supplicant/Android.bp",
+            "sha256": "2c9b689fbad3ba9f170844fff52882a729ec8d8f2f016ec60241ee69ccfff362"
+          },
+          "path": "wpa_supplicant/Android.bp"
+        }
+      ],
+      "historical_source_head": "8a9d0a55a61bf0774209118b9c0c341d16e966ed",
+      "historical_source_tree": null,
+      "path": "external/wpa_supplicant_8"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 4483,
+            "git_blob_sha1": "7d78f0e869284ce6b13884031734208f644dfc52",
+            "sha256": "2f357f285849f8e657db8d3ce4ca266302b937a661992ed1deb33fdfdb90ff40"
+          },
+          "before": {
+            "bytes": 4505,
+            "git_blob_sha1": "f0a086703effafd42958ab0847f597ccea1d91a2",
+            "sha256": "1bc5bc9844bd2019c55fb2feffb095417d6f071f3651b76b73d2664c3943fee7"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 746,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/015.diff",
+            "new_label": "owned-final/frameworks/av/media/module/extractors/mp4/HeifCleanAperture.cpp",
+            "old_label": "actual-captured/frameworks/av/media/module/extractors/mp4/HeifCleanAperture.cpp",
+            "sha256": "6960761b18b79831a9ead2345b64574eb3a6e2e3ea265d37f3b48433c46f48c2"
+          },
+          "path": "media/module/extractors/mp4/HeifCleanAperture.cpp"
+        }
+      ],
+      "historical_source_head": "33249c48ab011c0c313510f05c106ffcaeca2a2a",
+      "historical_source_tree": null,
+      "path": "frameworks/av"
+    },
+    {
+      "baseline_kind": "previous_complete_private",
+      "files": [
+        {
+          "after": {
+            "bytes": 2761,
+            "git_blob_sha1": "c5d421451a71934dc05eecf51b9b4b152df4b10f",
+            "sha256": "acaebc6ff764b6d37a813ec09f03217568e0f0b2b56ba53c712e6efa7cd69062"
+          },
+          "before": {
+            "bytes": 2595,
+            "git_blob_sha1": "c35a89f7f32f003d979341bfbd78660c13984d25",
+            "sha256": "672d51794a101af542508f5bae3d148013de0040e4322cb75fc5c6d7a01d3f15"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 780,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/016.diff",
+            "new_label": "owned-final/frameworks/base/core/java/android/appwidget/AppWidgetConfigActivityProxy.java",
+            "old_label": "actual-captured/frameworks/base/core/java/android/appwidget/AppWidgetConfigActivityProxy.java",
+            "sha256": "86dcf317a86ae89b70369f65081f638851e5f2a519a28b082dc6d37d4d34bc54"
+          },
+          "path": "core/java/android/appwidget/AppWidgetConfigActivityProxy.java"
+        },
+        {
+          "after": {
+            "bytes": 12320,
+            "git_blob_sha1": "3ebeb179a5ba3c2465c0672d7a6c20ec26b0aca5",
+            "sha256": "faf38edc6377d6b52b10ce469812abf42f2d47308753262746f32b7d327faa35"
+          },
+          "before": {
+            "bytes": 11337,
+            "git_blob_sha1": "7e7c3fb976c703804f953e9b5fea409e7a7aa4b1",
+            "sha256": "a64f3c456e929df14efcb207c79ca1fe0647683da738965556ffc09e61ea9d8b"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3488,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/017.diff",
+            "new_label": "owned-final/frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java",
+            "old_label": "actual-captured/frameworks/base/core/java/android/database/sqlite/SQLiteTokenizer.java",
+            "sha256": "d967b9ae7f64d4a3dd42e06c36f91605c5af1b6f8d88391e17fa0ef82da2f44c"
+          },
+          "path": "core/java/android/database/sqlite/SQLiteTokenizer.java"
+        },
+        {
+          "after": {
+            "bytes": 473725,
+            "git_blob_sha1": "38faea9b63bea1d14f8ac5c475b794871ab31eea",
+            "sha256": "15d36d446da65bc7d137eceea0ef721877e4ad47df66df86d41b9ca38b2590d7"
+          },
+          "before": {
+            "bytes": 471946,
+            "git_blob_sha1": "a0bf980563f415ed14bfe452aa6f5f659b66f7dc",
+            "sha256": "a467abb823faf1839627ab1f51f265ab7c3f3e143a9ea0a9aa37e4c86de624d3"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 11674,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/018.diff",
+            "new_label": "owned-final/frameworks/base/core/java/android/widget/RemoteViews.java",
+            "old_label": "actual-captured/frameworks/base/core/java/android/widget/RemoteViews.java",
+            "sha256": "a23ffd3bcb54db1c37cf30d398571d7baccd37b8ce9d4f330acfd81c8bae7fe1"
+          },
+          "path": "core/java/android/widget/RemoteViews.java"
+        },
+        {
+          "after": {
+            "bytes": 294363,
+            "git_blob_sha1": "2bdbfa4aa2cb0fab3bed5a4960d42709c4dda841",
+            "sha256": "0c7c68aaa62766f28356de5446e3eee197e97a8125a3ba93b47fd9c8b794685e"
+          },
+          "before": {
+            "bytes": 293210,
+            "git_blob_sha1": "0a70f26ab85147a10cb2d653c6fd82375d4bfbf3",
+            "sha256": "0f0f65a279ac356c4e53a6177c60b568e2d0238c04371ed5c789348cbc9b5bad"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2468,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/019.diff",
+            "new_label": "owned-final/frameworks/base/libs/androidfw/ResourceTypes.cpp",
+            "old_label": "actual-captured/frameworks/base/libs/androidfw/ResourceTypes.cpp",
+            "sha256": "cf0055817d91d184894db1d94c3f4cacc5a693946e337d8838a8c4ab001968f0"
+          },
+          "path": "libs/androidfw/ResourceTypes.cpp"
+        },
+        {
+          "after": {
+            "bytes": 19604,
+            "git_blob_sha1": "1bdc60fa4f50d6ad9f7e4f231b8e5adee1284f51",
+            "sha256": "5c984dce2d7ae2fba494184e751b250db0ba0a61ff8d3f2d7ae11663576a6d40"
+          },
+          "before": {
+            "bytes": 17990,
+            "git_blob_sha1": "cfdfad73c1427033fa881a17a7137435e5867608",
+            "sha256": "6b7cd5eec38cf81d28b11376e21dd00eb035a61b1f0206b78b3ffd1878b51e41"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2080,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/020.diff",
+            "new_label": "owned-final/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/PackageUtil.java",
+            "old_label": "actual-captured/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/PackageUtil.java",
+            "sha256": "ff296f0de6ffec96aeb5c55b8bc04f24c527ce9ead1a4d21061bda6a9b08e637"
+          },
+          "path": "packages/PackageInstaller/src/com/android/packageinstaller/PackageUtil.java"
+        },
+        {
+          "after": {
+            "bytes": 6764,
+            "git_blob_sha1": "cbd3d94f84806d850522c18ec6033a7596b4f306",
+            "sha256": "3a27c2365e2f77b62008477e848d263ebcede3c2c0cc914b2f288f088749fe54"
+          },
+          "before": {
+            "bytes": 7591,
+            "git_blob_sha1": "69b94b1efe284b9d38350b66d741b81da2d31c3f",
+            "sha256": "f7d274613e2e3156513666c016a79df22cba53a9e164605b39e7070407a9de85"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 5632,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/021.diff",
+            "new_label": "owned-final/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/UnarchiveActivity.java",
+            "old_label": "actual-captured/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/UnarchiveActivity.java",
+            "sha256": "370a8067641f3fb51befc59dee52fb443dde7bf2318f462f57db19320c45068f"
+          },
+          "path": "packages/PackageInstaller/src/com/android/packageinstaller/UnarchiveActivity.java"
+        },
+        {
+          "after": {
+            "bytes": 5510,
+            "git_blob_sha1": "d217689998d72d61f04bb12ab21952da9f98ccfa",
+            "sha256": "4b62329acd381306336646a407f9c426d15e9b48fc93d4f6b29eb35cae4a9975"
+          },
+          "before": {
+            "bytes": 3727,
+            "git_blob_sha1": "c51bc512691b5bba8a8afdc73e017ad28f4c56bf",
+            "sha256": "f3cdd005323d400a4f9c59371d89903309617e87408f27ed5c8d22d4cbae8c8d"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2750,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/022.diff",
+            "new_label": "owned-final/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/UnarchiveErrorActivity.java",
+            "old_label": "actual-captured/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/UnarchiveErrorActivity.java",
+            "sha256": "04444d5b9352416dbb0c843c408588c7681a9240783d6328fe56bb848d20d922"
+          },
+          "path": "packages/PackageInstaller/src/com/android/packageinstaller/UnarchiveErrorActivity.java"
+        },
+        {
+          "after": {
+            "bytes": 55985,
+            "git_blob_sha1": "1581b6afde9f04ed833bd0ff0bca337ce254c236",
+            "sha256": "3dc843ffa959671972395b951fee428c5bcc55dbb6c952d65785e4e4b86bedae"
+          },
+          "before": {
+            "bytes": 55984,
+            "git_blob_sha1": "abf7c8c81b660ef9a3c7f86a856f54040e0135fc",
+            "sha256": "2e885b4a9980a8f0def47279772a184589b039a61061b8a674f201f61e326d48"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 599,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/023.diff",
+            "new_label": "owned-final/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/v2/model/InstallRepository.kt",
+            "old_label": "actual-captured/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/v2/model/InstallRepository.kt",
+            "sha256": "555292a65ee111dc58dd89f35784185e25dd9cb55f5b076ce3676f841e12e2bc"
+          },
+          "path": "packages/PackageInstaller/src/com/android/packageinstaller/v2/model/InstallRepository.kt"
+        },
+        {
+          "after": {
+            "bytes": 6758,
+            "git_blob_sha1": "5a26c8474cc3a1098633902c30f64fa786226ed6",
+            "sha256": "c6dd70155055f216fc05d45332f2fb2b8076c03a9c75d964ae7b29000791827a"
+          },
+          "before": {
+            "bytes": 5821,
+            "git_blob_sha1": "67012cb0584fffdc202cfbc29ae0d8cc83e75827",
+            "sha256": "0829fbd09098b726d91a9cbf78a87e64e1b1fe11d4bc00603c7543a3e8bfc027"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1881,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/024.diff",
+            "new_label": "owned-final/frameworks/base/packages/SystemUI/src/com/android/systemui/SlicePermissionActivity.java",
+            "old_label": "actual-captured/frameworks/base/packages/SystemUI/src/com/android/systemui/SlicePermissionActivity.java",
+            "sha256": "de6d0f0976e0dbdb128f85664b104848f8f434a549823a12f8c1d55a4944891b"
+          },
+          "path": "packages/SystemUI/src/com/android/systemui/SlicePermissionActivity.java"
+        },
+        {
+          "after": {
+            "bytes": 213633,
+            "git_blob_sha1": "81e70659f0c62b10b7d2caf8f5a798b51d9176f4",
+            "sha256": "daa895d645be257f5a2b7ad97a908768eb214d14c669395a789af1c659326553"
+          },
+          "before": {
+            "bytes": 214065,
+            "git_blob_sha1": "ebc1eef1cc996d1c8c5deac153a1e3a9a7da8d33",
+            "sha256": "247632752319bf78aec3116603bd5b23fd0cf4069fc92bad5d4c62da83e19f49"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3279,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/025.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/StorageManagerService.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/StorageManagerService.java",
+            "sha256": "39bdb0a9e88b9ade76ea18bc138e972389f4a621bcebc56cd5884187be679769"
+          },
+          "path": "services/core/java/com/android/server/StorageManagerService.java"
+        },
+        {
+          "after": {
+            "bytes": 887036,
+            "git_blob_sha1": "49b2efa137dbcd3d43e5a5f4ea21a35dd074c11c",
+            "sha256": "9e555d20e0bb3c79f4f654204f53bcc6e70604f06a8028d2eaf260164ac363a6"
+          },
+          "before": {
+            "bytes": 887051,
+            "git_blob_sha1": "143294982afa26a950fa2781145a79c80f60ef7c",
+            "sha256": "02399b4ba4ee4fdbe7a5f93b40d8d7839ff5648b5f8fe1f8f605d726bee9d02f"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 589,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/026.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java",
+            "sha256": "68d9787b65994a00653b532b5c9a33f7b1919a8eefd191d0bd1ebb7ef5a0c3bb"
+          },
+          "path": "services/core/java/com/android/server/am/ActivityManagerService.java"
+        },
+        {
+          "after": {
+            "bytes": 78787,
+            "git_blob_sha1": "fe037070c915fc01d005dc675c75eed75d6eed26",
+            "sha256": "0dc6156301bc130e23f6a9e78bb2cc010b2360a9baca40cfe8aa215422541e2c"
+          },
+          "before": {
+            "bytes": 78733,
+            "git_blob_sha1": "bbae6a01786e3c39716af498fac1bd157b5aa526",
+            "sha256": "544aabaa64f72970d281efbd343314e9a0a372a4d2efe855da072953a5d755bf"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1426,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/027.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/clipboard/ClipboardService.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/clipboard/ClipboardService.java",
+            "sha256": "bff4b2cd182ecafd72f659631aae02a2cf387df013b3bb283c6cc70c6ad7b5b7"
+          },
+          "path": "services/core/java/com/android/server/clipboard/ClipboardService.java"
+        },
+        {
+          "after": {
+            "bytes": 141931,
+            "git_blob_sha1": "eb3da1396226f1510a96650367f618cd8bb028f5",
+            "sha256": "5b43738b8aafd6da0880e6bd93e3b3fe32b0f31a39786fba5ff21dccdf40c5e1"
+          },
+          "before": {
+            "bytes": 141546,
+            "git_blob_sha1": "e1b99fae2065096e6a8805d579e6a7c7f9924d7d",
+            "sha256": "159bcce0ddb938c6000b3d91f2d4785514454384b7baac779c2a6475f3c8a040"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1694,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/028.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/pm/LauncherAppsService.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/pm/LauncherAppsService.java",
+            "sha256": "a84be9602dabb0be57d498dee48ecd2f3326628d49227090ed01d06906c84162"
+          },
+          "path": "services/core/java/com/android/server/pm/LauncherAppsService.java"
+        },
+        {
+          "after": {
+            "bytes": 123153,
+            "git_blob_sha1": "eedf25eb2205b63b35acb34f8022812f5cd4f5d2",
+            "sha256": "478337e3dfffb4b91f30b9f36e8a37da27f4898c5a0c35b3ee5548096b1d438c"
+          },
+          "before": {
+            "bytes": 122425,
+            "git_blob_sha1": "e106761990b493bef42396f4569f88ea0d6a2ed5",
+            "sha256": "1f1e7121927bc6f4791108738269f8fa1af6a26dbb6f89f07ea16a74329deebc"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2475,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/029.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/pm/PackageInstallerService.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/pm/PackageInstallerService.java",
+            "sha256": "bdd58292337e372e463ce1267960252f02ce4e7900eeb482503da284811a1aad"
+          },
+          "path": "services/core/java/com/android/server/pm/PackageInstallerService.java"
+        },
+        {
+          "after": {
+            "bytes": 6413,
+            "git_blob_sha1": "d839b30ddf44411e435d901b77ef868c4dd2c4af",
+            "sha256": "dd5906a9e3169a4c465805c6dd998fc28847243a388e80ff1d0656b56a01079b"
+          },
+          "before": {
+            "bytes": 6257,
+            "git_blob_sha1": "292314840efbc2861bc8268b29c3f6814e03cc40",
+            "sha256": "8bc1f4487fd67daed5ecfe76d983544f8aad5b104fc9d282cb30c5a5dbd38278"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 892,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/030.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/storage/AppFuseBridge.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/storage/AppFuseBridge.java",
+            "sha256": "d14f3558ee48c2140d6e0d79c2e98d73f202f1d7bcbd3105e09ab3ea220fa98f"
+          },
+          "path": "services/core/java/com/android/server/storage/AppFuseBridge.java"
+        },
+        {
+          "after": {
+            "bytes": 1973,
+            "git_blob_sha1": "cb6623aa2f63e2b990db5ecd8d80332c1e4f0c0e",
+            "sha256": "d74fef4f8fd5c237c7f84c52b6a0d684f33d45cc5e28a6d6f94ac0d3e3f388fe"
+          },
+          "before": {
+            "bytes": 2673,
+            "git_blob_sha1": "2fe61e00c97e806c909c30458f1c70701331fcf1",
+            "sha256": "f196b85ebe469e5617e988be1bdad2892702de87182379ddd8b805729bb14546"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1157,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/031.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/uri/NeededUriGrants.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/uri/NeededUriGrants.java",
+            "sha256": "e8dd57ad8b799790d9eb05a8c2f4c19a74bd0a046b78930e7a902ed4db960bb9"
+          },
+          "path": "services/core/java/com/android/server/uri/NeededUriGrants.java"
+        },
+        {
+          "after": {
+            "bytes": 36723,
+            "git_blob_sha1": "23e4530d44f8d293336b03e502eb2384531715af",
+            "sha256": "abeb421618dd742e57bbb1c39408d974740da13eb53c7668147cb32483020683"
+          },
+          "before": {
+            "bytes": 36027,
+            "git_blob_sha1": "51025d204b46c6d44101b27bc7973879d9f40f9b",
+            "sha256": "991eeab09b8c14f1013aa853f5f5ce0d19d35660dd4bf0149c0bbbda7ea885e4"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3792,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/032.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/wm/ActivityStartController.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/wm/ActivityStartController.java",
+            "sha256": "639373ee7837e5e139f7e3a5b2dc803de5b88f6def7de629a21b29ba44d7e2e4"
+          },
+          "path": "services/core/java/com/android/server/wm/ActivityStartController.java"
+        },
+        {
+          "after": {
+            "bytes": 187745,
+            "git_blob_sha1": "65c4d51dbc9954d9c24a4191c2c746e84144c33e",
+            "sha256": "95ffb5926b75c1ff2af1e73fa0575c88395bfca8221002569e00bcd001fa92cb"
+          },
+          "before": {
+            "bytes": 187750,
+            "git_blob_sha1": "b0a80079682afe6ed36b76a7c8b6318d89212c7d",
+            "sha256": "f9be4b84722a2cbeca2befcfb819479f2c394354dae3a713b25901d315a21889"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 5298,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/033.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/wm/ActivityStarter.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/wm/ActivityStarter.java",
+            "sha256": "03df35dff7492c774fe33ef6189f76d77668b4899ee768daba526b3b775e49a5"
+          },
+          "path": "services/core/java/com/android/server/wm/ActivityStarter.java"
+        },
+        {
+          "after": {
+            "bytes": 264558,
+            "git_blob_sha1": "3368c7b085342e440f88962f89fa82f7e0f3af5e",
+            "sha256": "a644f25f1d842564b22fc6246544632b464cdb168d03d63a8bda70414f23c845"
+          },
+          "before": {
+            "bytes": 264520,
+            "git_blob_sha1": "2f25587ee91feb509a05d1a491db44d9986753c0",
+            "sha256": "b92291d8aa59525c155e5e7b9f873b863271c2f3da5ebfc598aef26d0cbf8f5f"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 612,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/034.diff",
+            "new_label": "owned-final/frameworks/base/services/core/java/com/android/server/wm/WindowState.java",
+            "old_label": "actual-captured/frameworks/base/services/core/java/com/android/server/wm/WindowState.java",
+            "sha256": "ae5da207f8bee5ddb9ffdd42d22e3ac89a47fb910a6661e90addcd96da5d072b"
+          },
+          "path": "services/core/java/com/android/server/wm/WindowState.java"
+        },
+        {
+          "after": {
+            "bytes": 6660,
+            "git_blob_sha1": "376ba571f7909697edde28e67840ea83a65f311f",
+            "sha256": "be5dfcfbdaec7ac694eeac90ecc60e52cc7a45a4badbea4278b32d5c515a1812"
+          },
+          "before": {
+            "bytes": 5764,
+            "git_blob_sha1": "05d4b9305d3079867f9c7680cf96f3a0f5061651",
+            "sha256": "bd41fc3355a38ad0ccf202fc98dd5f6c7633f2543f0d607fadc78390e255bcbc"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2185,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/035.diff",
+            "new_label": "owned-final/frameworks/base/services/voiceinteraction/java/com/android/server/voiceinteraction/RecognitionServiceInfo.java",
+            "old_label": "actual-captured/frameworks/base/services/voiceinteraction/java/com/android/server/voiceinteraction/RecognitionServiceInfo.java",
+            "sha256": "080163b9dba80ce8c9c19f2758b46ac6c6f4bb6970145b8f0bf15b066678e427"
+          },
+          "path": "services/voiceinteraction/java/com/android/server/voiceinteraction/RecognitionServiceInfo.java"
+        },
+        {
+          "after": {
+            "bytes": 131144,
+            "git_blob_sha1": "7d4f59aa493920d61faa9458365e18a342b9e6a5",
+            "sha256": "4ba01f47be03820e2545e5e0a7c8711394f203e0df256cfc9a3230b3a4035749"
+          },
+          "before": {
+            "bytes": 130841,
+            "git_blob_sha1": "6823d85762cda9c01666b8ffbdacc8dff899658d",
+            "sha256": "0b21d411f4d705a0fb4711e105c68215d1f69ec5cc65b8810f9df59f2acd053c"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1544,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/036.diff",
+            "new_label": "owned-final/frameworks/base/services/voiceinteraction/java/com/android/server/voiceinteraction/VoiceInteractionManagerService.java",
+            "old_label": "actual-captured/frameworks/base/services/voiceinteraction/java/com/android/server/voiceinteraction/VoiceInteractionManagerService.java",
+            "sha256": "37290411a770cbc8a77ef472d3bf8ae8c884532f3b6e8e3816df191c1e643dd3"
+          },
+          "path": "services/voiceinteraction/java/com/android/server/voiceinteraction/VoiceInteractionManagerService.java"
+        },
+        {
+          "after": {
+            "bytes": 82819,
+            "git_blob_sha1": "ecab9562f72edfaa602960ea6cdcabf6d7f60ec2",
+            "sha256": "033a75005400c2be4a68ae5a0db2469a28369a61e0a3c2103e8701d0619ede79"
+          },
+          "before": {
+            "bytes": 81240,
+            "git_blob_sha1": "62eac7ac942ae747237c0717bc2d861855dc3603",
+            "sha256": "7f6a004ed61913fefdab40f82cf9da14fb65b77ca0943195578167fd83db09e5"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2943,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/037.diff",
+            "new_label": "owned-final/frameworks/base/telephony/common/com/google/android/mms/pdu/PduParser.java",
+            "old_label": "actual-captured/frameworks/base/telephony/common/com/google/android/mms/pdu/PduParser.java",
+            "sha256": "b983c87f21e504f33f43ff9731df4ffe0a5d2cbd867cfaa91609877243d80c53"
+          },
+          "path": "telephony/common/com/google/android/mms/pdu/PduParser.java"
+        }
+      ],
+      "historical_source_head": "ee28f1154e639b4968d3cc23f9caf91d4c53bf2e",
+      "historical_source_tree": "da48e3390d27e2afa5d9d717e6b63f3ea1d4e39b",
+      "path": "frameworks/base"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 8482,
+            "git_blob_sha1": "53ea6ce43d4fded8a0c9613cd04d3dbcd46b96ef",
+            "sha256": "94fefe9fda03ed37fe3c9bac289044d6f02f373fca6b47299420a9a215f23191"
+          },
+          "before": {
+            "bytes": 8305,
+            "git_blob_sha1": "0f4e99b31599ec6bcc2897e405e067cd47baeb97",
+            "sha256": "7062ab0aff8185ed07100a0aa5eb745375fabf52f4e580119ca7bc9a1217b9f0"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1076,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/038.diff",
+            "new_label": "owned-final/hardware/interfaces/cas/aidl/default/DescramblerImpl.cpp",
+            "old_label": "actual-captured/hardware/interfaces/cas/aidl/default/DescramblerImpl.cpp",
+            "sha256": "d5a71f4c44337fa06e7632b7288e1998336ccd50a8014f0225bdf13cbf0a8f8a"
+          },
+          "path": "cas/aidl/default/DescramblerImpl.cpp"
+        }
+      ],
+      "historical_source_head": "aeec302a8bee50a702280a47ac46f39a899b7adb",
+      "historical_source_tree": null,
+      "path": "hardware/interfaces"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 16027,
+            "git_blob_sha1": "10415bbf11ab3c5e6353e169cfefd99c7bbb6278",
+            "sha256": "50cf18a018ea645ba0f9de0974ab35f4e083d372ec67879e047900afa9e1c67b"
+          },
+          "before": {
+            "bytes": 15866,
+            "git_blob_sha1": "b2159a6ec8c5738c91631761806a98e128da19d4",
+            "sha256": "a47fe6e39b13581ac9118351d2e1a98df52e38d2dbfe34802b95a4a919b7d497"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1456,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/039.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/pn8x/1.0/SecureElement.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/pn8x/1.0/SecureElement.cpp",
+            "sha256": "8d4c4b519f179d345a35c8197fa4bbc84514b720e2961644da7c566cf8d0db47"
+          },
+          "path": "pn8x/1.0/SecureElement.cpp"
+        },
+        {
+          "after": {
+            "bytes": 17609,
+            "git_blob_sha1": "01bbcbddc1fec69330a72abbf46ee095769064ba",
+            "sha256": "9d26955a15e2ee72788118d9d54f87c9727a3ddfe050fed5c980d0b7c706a938"
+          },
+          "before": {
+            "bytes": 17448,
+            "git_blob_sha1": "c9605682332794c19504b4a8e5b91960c58189fe",
+            "sha256": "dbdf0ae5cb8648baa237ce9a07c098f9b6370a1d103b42ce4bc7dfe8ccf2be32"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1456,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/040.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/pn8x/1.1/SecureElement.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/pn8x/1.1/SecureElement.cpp",
+            "sha256": "199deeb19bfa84365257967fdccce7072f310d9cf78e950ae2e5bb4f860a64f0"
+          },
+          "path": "pn8x/1.1/SecureElement.cpp"
+        },
+        {
+          "after": {
+            "bytes": 25384,
+            "git_blob_sha1": "7ba0d88bbec5161f11c80ef0edba6f524ad004cd",
+            "sha256": "84b17e4b0f14b8fcfff6540b084c18abdc505128b3689116c28bf237dc9004aa"
+          },
+          "before": {
+            "bytes": 25183,
+            "git_blob_sha1": "f60595727472853dd2eaf3927353e7c344afc099",
+            "sha256": "bf753aeab23ce79c4b450b9e9b4edc8a127b6a17710b1e72320d1399d0e894f7"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1092,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/041.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/1.0/SecureElement.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/1.0/SecureElement.cpp",
+            "sha256": "18159a3b2cba708662504fac91751cc366130bafe8cab27cc6eb124112d7cae6"
+          },
+          "path": "snxxx/1.0/SecureElement.cpp"
+        },
+        {
+          "after": {
+            "bytes": 22110,
+            "git_blob_sha1": "e8f1ce53d84eb6daeeeeb50bb6b3bd15f6c3195d",
+            "sha256": "f723d3421c6789003b00daa5453f0bd7ce2ee85753ea061f32ac8a9edf8969a2"
+          },
+          "before": {
+            "bytes": 21909,
+            "git_blob_sha1": "12c2197c40e16cf7b7177cb81924eedd42eb1f19",
+            "sha256": "64ec35cd86321301d2f51f46c427dfea6eb2cf24deae21e1ed2d7e11cce01c67"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1086,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/042.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/1.0/VirtualISO.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/1.0/VirtualISO.cpp",
+            "sha256": "1edd51d5c23404308c3c7c5ec0f9dec2db67392a8b515996d727a6c2b71401b3"
+          },
+          "path": "snxxx/1.0/VirtualISO.cpp"
+        },
+        {
+          "after": {
+            "bytes": 26225,
+            "git_blob_sha1": "27e5d4eb754afbcf7044911b30449a9b9ae68496",
+            "sha256": "bbf73c2f288a5195574f9cc1e20347001d266af86ded1fd5507f887f95d82cc6"
+          },
+          "before": {
+            "bytes": 26024,
+            "git_blob_sha1": "8b27e7769d92148bb571e08abdd6952345c1c7bf",
+            "sha256": "74fd8359647ca0689c8c15933a29452050322a4711fee00464c5040b697d50fe"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1092,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/043.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/1.1/SecureElement.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/1.1/SecureElement.cpp",
+            "sha256": "37fa1ada52fe8bb2628550619afda42c0831a53eee66b49b9797c73fdc1321d2"
+          },
+          "path": "snxxx/1.1/SecureElement.cpp"
+        },
+        {
+          "after": {
+            "bytes": 23830,
+            "git_blob_sha1": "1ed15dc372d602003ce6269d70a7495ed3016674",
+            "sha256": "4abeb38b8504b53c4d673cb5abdf9a359607b94375b63036f64721ca27cc431b"
+          },
+          "before": {
+            "bytes": 23629,
+            "git_blob_sha1": "ae90211b89271c0397edc02bac25d1a60e72af21",
+            "sha256": "9297639165a76f994b0eaa9a2cff829a03319e50393a3fa1b3c407b79fa7db06"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1086,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/044.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/1.1/VirtualISO.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/1.1/VirtualISO.cpp",
+            "sha256": "4198d2eae5dec021987d1770749586db76036c5b50ba9fa36e3defc6498d0bf8"
+          },
+          "path": "snxxx/1.1/VirtualISO.cpp"
+        },
+        {
+          "after": {
+            "bytes": 38812,
+            "git_blob_sha1": "ad72b9a36e8ca0553af4aaee009c51509b4bdbf3",
+            "sha256": "51d10af9765133cfd08a909e0d91ca9eab5687682fa80a0f6287055605b51243"
+          },
+          "before": {
+            "bytes": 38611,
+            "git_blob_sha1": "8cdb5c41014b45357b48ec8a4dad11ca949dd414",
+            "sha256": "8554ce4ab6de1abb5d3a5d1f8f7eb2e2588e6f1aff361e232de4faf46cb75cc9"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1092,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/045.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/1.2/SecureElement.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/1.2/SecureElement.cpp",
+            "sha256": "97ad0aceeb1bcfc3d6c9176c7158d2a3b2f988a89642ac871c714abe47d7b8b2"
+          },
+          "path": "snxxx/1.2/SecureElement.cpp"
+        },
+        {
+          "after": {
+            "bytes": 26275,
+            "git_blob_sha1": "314106d5e8e97a59c83c2df58c50e9e1902ffbd3",
+            "sha256": "5f5d8dbdce8df0d51a0f5467e93eb5dc564b7eeeb192e05d6bf87d13660fca41"
+          },
+          "before": {
+            "bytes": 26074,
+            "git_blob_sha1": "445d97db20a483abe2e87bed977b923109a529e3",
+            "sha256": "cd2dbe4eb81523756cdc932bbb72a3ff90d1a378160623cf401e68488956be21"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1086,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/046.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/1.2/VirtualISO.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/1.2/VirtualISO.cpp",
+            "sha256": "2be9c104f70ecccd638ada9671a4d521ffbd9cfceb56014ca2181ad4efadde78"
+          },
+          "path": "snxxx/1.2/VirtualISO.cpp"
+        },
+        {
+          "after": {
+            "bytes": 36842,
+            "git_blob_sha1": "2ccd26d2d9cffaa8c432fcd26c3fa298e8788272",
+            "sha256": "b2906ae36485b579080b7a143af8e2b6c39ca61e1023e74d8b44c077ea01ec1f"
+          },
+          "before": {
+            "bytes": 36648,
+            "git_blob_sha1": "4ad9388c0295b9cb380fc98738d689a3ad7c6ee9",
+            "sha256": "cf14ee2367d4e2e2a3b32036a453c7d04609cc949f5b658be65d6eb34f5a5669"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1058,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/047.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/aidl/SecureElement.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/aidl/SecureElement.cpp",
+            "sha256": "cb8470d4ed1bd01afec8b6f0f7423ccc56620959e434905b80fca63a6041161b"
+          },
+          "path": "snxxx/aidl/SecureElement.cpp"
+        },
+        {
+          "after": {
+            "bytes": 23787,
+            "git_blob_sha1": "4f858a447dd3c172bdf88bca50a93dde3a1fdba5",
+            "sha256": "3ba066513cbffcb93dc42ae8996e8f69f964a475b8851846c9e5e7107c902066"
+          },
+          "before": {
+            "bytes": 23593,
+            "git_blob_sha1": "58082381c698afe4cfad445b8068efd3f7868f7e",
+            "sha256": "85791d8fc66fff1166a8c0356957b402c2f23aec529c2b968e34548d821741d8"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1052,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/048.diff",
+            "new_label": "owned-final/hardware/nxp/secure_element/snxxx/aidl/VirtualISO.cpp",
+            "old_label": "actual-captured/hardware/nxp/secure_element/snxxx/aidl/VirtualISO.cpp",
+            "sha256": "790f914ffa6a7ed714f31bb2682ac538c2b78de17069b8aef7389b868c4e5f5d"
+          },
+          "path": "snxxx/aidl/VirtualISO.cpp"
+        }
+      ],
+      "historical_source_head": "272469bdba8adf0ad7550d0cff82d9baa2e1b4cf",
+      "historical_source_tree": null,
+      "path": "hardware/nxp/secure_element"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 111361,
+            "git_blob_sha1": "ac7dc35b1e89f13856ef00578d07053f97f824b9",
+            "sha256": "a0fe6480267cd5b8687c495e6e87f720e73e18873fda886f670c5a0e2b3475c7"
+          },
+          "before": {
+            "bytes": 111343,
+            "git_blob_sha1": "477b082aa6a853465b0c62b6ee888e11f38e39fe",
+            "sha256": "e145eeed8928f6b253207193d3f39aac12928580703952e735ab9e66f2bbd08a"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 432,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/049.diff",
+            "new_label": "owned-final/kernel/motorola/sm6375/drivers/hid/hid-logitech-hidpp.c",
+            "old_label": "actual-captured/kernel/motorola/sm6375/drivers/hid/hid-logitech-hidpp.c",
+            "sha256": "30cc4d42e0563b2db313ac09ef15e549665943024e3d0b960ad7c0ad8de04eb4"
+          },
+          "path": "drivers/hid/hid-logitech-hidpp.c"
+        },
+        {
+          "after": {
+            "bytes": 36592,
+            "git_blob_sha1": "cd481490bcfe76c5c800298c0b7213e4b30f9ac8",
+            "sha256": "6d153f50124e2a7baf84db67dda6fff98742a65ca474a6ee0530b2426c25007e"
+          },
+          "before": {
+            "bytes": 36572,
+            "git_blob_sha1": "da3cb0d29b972a3441e7b14341caccf7d42f8f1b",
+            "sha256": "d424fbd22d00260e0ad27610249f1f24fae3e3100497100cab6230829d05095e"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 456,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/050.diff",
+            "new_label": "owned-final/kernel/motorola/sm6375/net/nfc/llcp_core.c",
+            "old_label": "actual-captured/kernel/motorola/sm6375/net/nfc/llcp_core.c",
+            "sha256": "daf1bdc36b2c2dc54f5ba3cd22a9670cc3c74935f36e19b90d13086595d65ab8"
+          },
+          "path": "net/nfc/llcp_core.c"
+        },
+        {
+          "after": {
+            "bytes": 21221,
+            "git_blob_sha1": "494410260147338acbd4a95a5ab13f52f4566466",
+            "sha256": "0ea983628d26f6345a9b7860db32b14e6fdbcab1487b4508ef3ff4ccf23cf348"
+          },
+          "before": {
+            "bytes": 21169,
+            "git_blob_sha1": "ff167decbef16fa469a81ca25058c35680869a83",
+            "sha256": "61574cf8e0f3577218a1986f7715189fc7d02f02fd8d6a6aa2f0962cc35f9a68"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 437,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/051.diff",
+            "new_label": "owned-final/kernel/motorola/sm6375/net/tipc/msg.c",
+            "old_label": "actual-captured/kernel/motorola/sm6375/net/tipc/msg.c",
+            "sha256": "2328d8924d69e93d7e94e50e36157d4cb694783f1bec9e55ffaf8cdf36757280"
+          },
+          "path": "net/tipc/msg.c"
+        }
+      ],
+      "historical_source_head": "61bd3f259e09e7297cbcfbbccda655f2d7a60586",
+      "historical_source_tree": null,
+      "path": "kernel/motorola/sm6375"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 72653,
+            "git_blob_sha1": "96070be25ee348b835f9a15db02a61bfc2df462c",
+            "sha256": "0482c29f338883a6dc96ce4285947e3a5ce059e02f9be8e248075ce600fa21da"
+          },
+          "before": {
+            "bytes": 74059,
+            "git_blob_sha1": "a76beea7d87077de0a839176a92e70ea7219dfa5",
+            "sha256": "9d341c4a286e70458cb85b57ce00bf252c1b25e665e063090964fd6d4b709d42"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3782,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/052.diff",
+            "new_label": "owned-final/packages/apps/Settings/src/com/android/settings/Utils.java",
+            "old_label": "actual-captured/packages/apps/Settings/src/com/android/settings/Utils.java",
+            "sha256": "b27332321e3cd618b4e2a6d5fc274f850606fef11591c62e18de89e6771a5787"
+          },
+          "path": "src/com/android/settings/Utils.java"
+        },
+        {
+          "after": {
+            "bytes": 22499,
+            "git_blob_sha1": "cab81673eb61bd9fb35160ad354101032f50d8cd",
+            "sha256": "e997c8d377c5e520588fb566efc02298cf5b43a97996003fea009cdebe26131e"
+          },
+          "before": {
+            "bytes": 21903,
+            "git_blob_sha1": "7963219bbcf27a271ec19a4c59d4491550a95bbb",
+            "sha256": "421192af3bc49eea41cbb4aef5e29eb12d751125cccfc851ff2fcfe284f34ce4"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2137,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/053.diff",
+            "new_label": "owned-final/packages/apps/Settings/src/com/android/settings/biometrics/combination/BiometricsSettingsBase.java",
+            "old_label": "actual-captured/packages/apps/Settings/src/com/android/settings/biometrics/combination/BiometricsSettingsBase.java",
+            "sha256": "750fee7f075e47ecc96d321ee04659baf3ed28e7d09b947cced617266d38236d"
+          },
+          "path": "src/com/android/settings/biometrics/combination/BiometricsSettingsBase.java"
+        },
+        {
+          "after": {
+            "bytes": 110825,
+            "git_blob_sha1": "6c2bf6e959d7a9576570c9edebbfbe37b5a9b640",
+            "sha256": "2f2326c314b27f6c4e1c0e370e1b19a6dd64beb682d47f80e8a9b5769f953d86"
+          },
+          "before": {
+            "bytes": 110356,
+            "git_blob_sha1": "85afbe392f4b56849a4fbeb489afb8214a4d490b",
+            "sha256": "53b43d02862c69afd3f38f8133d23e15c27f12fcc910be25a06e320b16129d96"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 6302,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/054.diff",
+            "new_label": "owned-final/packages/apps/Settings/src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+            "old_label": "actual-captured/packages/apps/Settings/src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java",
+            "sha256": "e3a3a1c04843bb7bef95d108beab0ec19c3e967098418bed5f725f15a0fe60fd"
+          },
+          "path": "src/com/android/settings/biometrics/fingerprint/FingerprintSettings.java"
+        },
+        {
+          "after": {
+            "bytes": 6061,
+            "git_blob_sha1": "d556b6df9294c7d12db8ad65b26fb73b44ea7684",
+            "sha256": "f2502c2c35aacb12340b44f19dbc51b418feda5466aa829861fb9ef419698d96"
+          },
+          "before": {
+            "bytes": 6270,
+            "git_blob_sha1": "d333b3da6ac2bbc70d41b4c33d8653459ddc358a",
+            "sha256": "0f3c967a3e8d013dcd22be85011b0cf210dd5fbdd8bbc689b5c49a1393be8560"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 813,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/055.diff",
+            "new_label": "owned-final/packages/apps/Settings/src/com/android/settings/nfc/PaymentDefaultDialog.java",
+            "old_label": "actual-captured/packages/apps/Settings/src/com/android/settings/nfc/PaymentDefaultDialog.java",
+            "sha256": "25a406122cb343b30eb78b738d411526c20985f575a1948ac3da98481f15719f"
+          },
+          "path": "src/com/android/settings/nfc/PaymentDefaultDialog.java"
+        },
+        {
+          "after": {
+            "bytes": 27744,
+            "git_blob_sha1": "4e1cd01847eecb9a2e4a303658b5839dd1df14da",
+            "sha256": "c7b1e102ca42916b08b4281f4a895289a6d96a621bcb54663e65d7cfe0342c48"
+          },
+          "before": {
+            "bytes": 27201,
+            "git_blob_sha1": "36054b0766e60f083c63d2c0b2a5eea2b86d0fad",
+            "sha256": "82e81d840d221c695ba8a80cc6479031dbea42f5211469e6e0a4842986f5eded"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3122,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/056.diff",
+            "new_label": "owned-final/packages/apps/Settings/src/com/android/settings/password/ConfirmDeviceCredentialActivity.java",
+            "old_label": "actual-captured/packages/apps/Settings/src/com/android/settings/password/ConfirmDeviceCredentialActivity.java",
+            "sha256": "4c8ca2d1622a94c59bad0423267b5692269e9f8e96367d6bf84cdce94b10903e"
+          },
+          "path": "src/com/android/settings/password/ConfirmDeviceCredentialActivity.java"
+        },
+        {
+          "after": {
+            "bytes": 39265,
+            "git_blob_sha1": "999c43041fdd540a68821209b726bae78e81d811",
+            "sha256": "5ff4808c1d487a23bbff93d1532c4accc0902f752d7f78cf4a5a7acc6f6324ca"
+          },
+          "before": {
+            "bytes": 38914,
+            "git_blob_sha1": "f416c617e2c1667b0a322c916e8cdc663dd6cc3f",
+            "sha256": "201e7a963783444e5f437c9ddd784d1206f859171df736f72b0283ca301bde5a"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 867,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/057.diff",
+            "new_label": "owned-final/packages/apps/Settings/src/com/android/settings/users/AppRestrictionsFragment.java",
+            "old_label": "actual-captured/packages/apps/Settings/src/com/android/settings/users/AppRestrictionsFragment.java",
+            "sha256": "bd1c58646c2a91f6ed75799fd38453d95a02b237e10118c0110ab15591a21aa7"
+          },
+          "path": "src/com/android/settings/users/AppRestrictionsFragment.java"
+        }
+      ],
+      "historical_source_head": "834f411f4cb6df7ec579d76eb96ada09409a6fe8",
+      "historical_source_tree": null,
+      "path": "packages/apps/Settings"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 11746,
+            "git_blob_sha1": "87a66a0eaa44f0d156aab3c0ab9c87af053e3b47",
+            "sha256": "00ac5808e65edf18018730c7da0f9ebf8143554e2af339598417f384ff8b4088"
+          },
+          "before": {
+            "bytes": 11192,
+            "git_blob_sha1": "2a4a556f260b23ef41a7133dd51902872a573846",
+            "sha256": "e393d502d4304eb7c3fb9061ae6b0806909c00521537efab747c10c5b3a05b67"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1307,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/058.diff",
+            "new_label": "owned-final/packages/apps/TV/src/com/android/tv/SetupPassthroughActivity.java",
+            "old_label": "actual-captured/packages/apps/TV/src/com/android/tv/SetupPassthroughActivity.java",
+            "sha256": "d224cef836aea5339978e2099b5c7c99fa4df3e09dfe3842bd4188f8bf0643f2"
+          },
+          "path": "src/com/android/tv/SetupPassthroughActivity.java"
+        },
+        {
+          "after": {
+            "bytes": 29533,
+            "git_blob_sha1": "62c06cc212053677cc64681965e5c3f3be0bcd7f",
+            "sha256": "c9b83775973094bfb4c98cb9953f5956d13c4d7d95baadd927a51160ddaea039"
+          },
+          "before": {
+            "bytes": 28626,
+            "git_blob_sha1": "5be1179dec6d6cd06899fc80504b15918d063e56",
+            "sha256": "ce0894cdf174b792ad4cadeeba06bbb356e2156b3534bd7583fcffcdc4188242"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1860,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/059.diff",
+            "new_label": "owned-final/packages/apps/TV/src/com/android/tv/data/ChannelImpl.java",
+            "old_label": "actual-captured/packages/apps/TV/src/com/android/tv/data/ChannelImpl.java",
+            "sha256": "e92d37d894afe232ac9f1c95f08aa51f962d563df027717ea76894fb1ac25edc"
+          },
+          "path": "src/com/android/tv/data/ChannelImpl.java"
+        },
+        {
+          "after": {
+            "bytes": 10410,
+            "git_blob_sha1": "1ac5d81ec2ca9dd5f1d2b370ed5c8c129785bfa7",
+            "sha256": "ed970a39a48c714595df71b16af8b2918ffde696f0322ba81733bdb4acbc968c"
+          },
+          "before": {
+            "bytes": 10117,
+            "git_blob_sha1": "762a190cfb8ced6c42972fe89c7d50429af6630e",
+            "sha256": "83dbaa01b0c307366b44000faa6a30c0f7719a2b4f29d449829683125ade9e8b"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1478,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/060.diff",
+            "new_label": "owned-final/packages/apps/TV/src/com/android/tv/ui/sidepanel/SettingsFragment.java",
+            "old_label": "actual-captured/packages/apps/TV/src/com/android/tv/ui/sidepanel/SettingsFragment.java",
+            "sha256": "caae0a54fb91e545f97df8da34d9e0ef6de2f9f6f40df27f8e896aeea4a9b0f1"
+          },
+          "path": "src/com/android/tv/ui/sidepanel/SettingsFragment.java"
+        }
+      ],
+      "historical_source_head": "a5ee3d93e3dd4c022b5d507eab27285b68151df8",
+      "historical_source_tree": null,
+      "path": "packages/apps/TV"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 5554,
+            "git_blob_sha1": "5095b28735f09bfdaa0ec70aad6c81485b31dc7c",
+            "sha256": "6260694740940258e9d1d558c745714d9baf863fc4f16019e72f13a9531263f8"
+          },
+          "before": {
+            "bytes": 5442,
+            "git_blob_sha1": "d0000b50d483aabf9a8b9d6159bfc16c357a31e2",
+            "sha256": "2f3ab16e892973f557745d460007fae4f831a7d5d6c0ed97caea7c0c6a86bb51"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3425,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/061.diff",
+            "new_label": "owned-final/packages/modules/Bluetooth/system/stack/a2dp/a2dp_vendor_opus_decoder.cc",
+            "old_label": "actual-captured/packages/modules/Bluetooth/system/stack/a2dp/a2dp_vendor_opus_decoder.cc",
+            "sha256": "1f7ef599d367bf1b9a600d956fe4e2a392131dae5187e562295958fcddc67f76"
+          },
+          "path": "system/stack/a2dp/a2dp_vendor_opus_decoder.cc"
+        },
+        {
+          "after": {
+            "bytes": 31747,
+            "git_blob_sha1": "39faa945af355da1a12154af1e31aa1cdb3ce8f1",
+            "sha256": "cba37a623cb23071e6ba00350be8d863060ada86c1f0bb3b7f3730a97a10324a"
+          },
+          "before": {
+            "bytes": 31641,
+            "git_blob_sha1": "4f66fdbd3c12e1bf3c5fd44fc582a8f2387e523b",
+            "sha256": "ca939c4d6acecf903207423be9762a311f5dc26d36686c3e4fefce36ba9cf01f"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1391,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/062.diff",
+            "new_label": "owned-final/packages/modules/Bluetooth/system/stack/sdp/sdp_db.cc",
+            "old_label": "actual-captured/packages/modules/Bluetooth/system/stack/sdp/sdp_db.cc",
+            "sha256": "c6205b4ffc785657d32603d7547abc4b983b965b114b1905736f795ebf0da25d"
+          },
+          "path": "system/stack/sdp/sdp_db.cc"
+        },
+        {
+          "after": {
+            "bytes": 40585,
+            "git_blob_sha1": "c2efc7adc86d0b285204c80e3c5782e31f3f754b",
+            "sha256": "7dc6f21bf6d79459e7c8b8386be7d6cc9b8e20abbe92233bb6e9015545d790cd"
+          },
+          "before": {
+            "bytes": 40015,
+            "git_blob_sha1": "4287240e52153221be3b1962e2f8103329a5bfc8",
+            "sha256": "eb4076a89804b09ba61022e09cf4b757f1f0b54d2ade0cabddd8d97f0e90875d"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1414,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/063.diff",
+            "new_label": "owned-final/packages/modules/Bluetooth/system/stack/sdp/sdp_server.cc",
+            "old_label": "actual-captured/packages/modules/Bluetooth/system/stack/sdp/sdp_server.cc",
+            "sha256": "69b755e151faa2962145b37b9409e20d9e12ae77df75f587615b2eee78c8fbc4"
+          },
+          "path": "system/stack/sdp/sdp_server.cc"
+        },
+        {
+          "after": {
+            "bytes": 59612,
+            "git_blob_sha1": "8592d275ffeac5580a3c940fdf8c0ccde7a902f3",
+            "sha256": "8e8b312e470ed7ba002a6419c427aff8dd33dbbed605f1bfdef1b7a0a0452cf8"
+          },
+          "before": {
+            "bytes": 59240,
+            "git_blob_sha1": "66a19e4b07d22daf4a4a1722c477b885e522fd75",
+            "sha256": "7c7d243bbd0669f560a442f56979ca432633988122f9eec6c46e2cacf6611927"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1271,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/064.diff",
+            "new_label": "owned-final/packages/modules/Bluetooth/system/stack/sdp/sdp_utils.cc",
+            "old_label": "actual-captured/packages/modules/Bluetooth/system/stack/sdp/sdp_utils.cc",
+            "sha256": "3e00cba7c01d99e93eaa0d3e0bf1d54f4a42939d5c160915c0a95a4af2a368ec"
+          },
+          "path": "system/stack/sdp/sdp_utils.cc"
+        }
+      ],
+      "historical_source_head": "b8d94a797f7f1180b653f78619f84d600abce681",
+      "historical_source_tree": null,
+      "path": "packages/modules/Bluetooth"
+    },
+    {
+      "baseline_kind": "previous_complete_private",
+      "files": [
+        {
+          "after": {
+            "bytes": 65026,
+            "git_blob_sha1": "9fd4b4559897a52108f899ca6b3f3540c32b164a",
+            "sha256": "5844bc04abf4d3a06edf5d5227b0b9444d8aab05166477e81fcf19fd3a03591d"
+          },
+          "before": {
+            "bytes": 64793,
+            "git_blob_sha1": "8450d06007de4f4f60fabc01dfb1941ab4166282",
+            "sha256": "4d28c568b790b5111bba21fd70791bf4dee4d0063214a15776856ba2768465ea"
+          },
+          "git_mode": "100755",
+          "patch": {
+            "bytes": 612,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/065.diff",
+            "new_label": "owned-final/packages/modules/Nfc/NfcNci/nci/jni/RoutingManager.cpp",
+            "old_label": "actual-captured/packages/modules/Nfc/NfcNci/nci/jni/RoutingManager.cpp",
+            "sha256": "6e972748f8295ff913445368da9ab9d62c0fa83fd6056b6189388115a9f78dcd"
+          },
+          "path": "NfcNci/nci/jni/RoutingManager.cpp"
+        },
+        {
+          "after": {
+            "bytes": 57002,
+            "git_blob_sha1": "536f5a4ede3ae5c7452088b5df92534db18acf83",
+            "sha256": "960eff969b1b0acab4bcf6e66e133ba3f3bb4dda37bee7c6c2ad5000d08ee65f"
+          },
+          "before": {
+            "bytes": 56852,
+            "git_blob_sha1": "4fe463488929fa696f0cf3625f130766e525d7e4",
+            "sha256": "81ad76a6781332de0042edf17bfa7fa1df776109c2b5d0e97b9d1f8800f360e1"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1912,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/066.diff",
+            "new_label": "owned-final/packages/modules/Nfc/libnfc-nci/src/nfc/tags/rw_mfc.cc",
+            "old_label": "actual-captured/packages/modules/Nfc/libnfc-nci/src/nfc/tags/rw_mfc.cc",
+            "sha256": "3aae87dec79c07ebc71ec1f40f6c61dbc5ece333d9df19594de22b9df536b871"
+          },
+          "path": "libnfc-nci/src/nfc/tags/rw_mfc.cc"
+        },
+        {
+          "after": {
+            "bytes": 116449,
+            "git_blob_sha1": "5a6395c40195e531c07ca13b3233d05d1a726283",
+            "sha256": "cedc4e12fa9057b322ec690b98435076172422a0cbc3fa286e25f814ee3246cf"
+          },
+          "before": {
+            "bytes": 115840,
+            "git_blob_sha1": "a7b6c5373890169952cfb4e220510b3751e8d9dc",
+            "sha256": "5fd6de76b20e42d7ea5bfce8eb2919643777cf5de901df51dc28229cdbd14088"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2789,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/067.diff",
+            "new_label": "owned-final/packages/modules/Nfc/libnfc-nci/src/nfc/tags/rw_t3t.cc",
+            "old_label": "actual-captured/packages/modules/Nfc/libnfc-nci/src/nfc/tags/rw_t3t.cc",
+            "sha256": "39a1ddf8e21d28b567b970ce604708506bb5a1b21edea7cf0123f8fc5875f246"
+          },
+          "path": "libnfc-nci/src/nfc/tags/rw_t3t.cc"
+        }
+      ],
+      "historical_source_head": "8d73343d6a1f86db733d516e02ea66c2a1191bb1",
+      "historical_source_tree": "b7eb6a8d9072184e285955eafe33969ef010eaaa",
+      "path": "packages/modules/Nfc"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 6382,
+            "git_blob_sha1": "e916431d99b7178a3b9f49bfcb44d4695e2e0319",
+            "sha256": "e3c72997c25c355dce158dc494c9abf4d0476c0e93b1d4f0d0f40f58f60b74dc"
+          },
+          "before": {
+            "bytes": 6120,
+            "git_blob_sha1": "63209b97b0bd91ccf4dfe2eaaa7e83c037d28242",
+            "sha256": "1a14618993a2c8a550340a1ce07fd5939c8f97d5305a32941444893a1a77f23e"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1383,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/068.diff",
+            "new_label": "owned-final/packages/modules/Uwb/ranging/framework/java/android/ranging/ble/cs/BleCsRangingCapabilities.java",
+            "old_label": "actual-captured/packages/modules/Uwb/ranging/framework/java/android/ranging/ble/cs/BleCsRangingCapabilities.java",
+            "sha256": "382b81b977e3ba7e14986f1fd22640e1d7f41e4303031b297666620aa563e1ee"
+          },
+          "path": "ranging/framework/java/android/ranging/ble/cs/BleCsRangingCapabilities.java"
+        },
+        {
+          "after": {
+            "bytes": 2772,
+            "git_blob_sha1": "a2b80142f32f0fd5154713edacebcf756ea44c28",
+            "sha256": "63729977d9a3cf0ee376acc26429d6821b7018d84839f21d1e1603f229cac651"
+          },
+          "before": {
+            "bytes": 2330,
+            "git_blob_sha1": "13069807b0319dbfe537c1437b1d766114e4de84",
+            "sha256": "77fa13bfabdcfa0331ffa0bcb48c24b99fb72e7446263644c2c52909bf51a7c1"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1720,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/069.diff",
+            "new_label": "owned-final/packages/modules/Uwb/ranging/framework/java/android/ranging/ble/rssi/BleRssiRangingCapabilities.java",
+            "old_label": "actual-captured/packages/modules/Uwb/ranging/framework/java/android/ranging/ble/rssi/BleRssiRangingCapabilities.java",
+            "sha256": "dfd9b1d86ed37d2f427ca676223acc78722a92bf79c5a9480ccce78966aff8ba"
+          },
+          "path": "ranging/framework/java/android/ranging/ble/rssi/BleRssiRangingCapabilities.java"
+        },
+        {
+          "after": {
+            "bytes": 6113,
+            "git_blob_sha1": "35e9460ae91fc016b92ef8855aa244d48b13a35c",
+            "sha256": "97d11f6fe394b1bddc5380d3f104faf6590e394ea15b688af1639b1cbbf2364b"
+          },
+          "before": {
+            "bytes": 5933,
+            "git_blob_sha1": "dcae54be1d10bd41c569543797af3a832ca62efa",
+            "sha256": "5245532b0ef656194169106d6d2786dcaca88a1bcbc15c0011b2b9fba4520108"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1348,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/070.diff",
+            "new_label": "owned-final/packages/modules/Uwb/ranging/service/java/com/android/server/ranging/RangingServiceImpl.java",
+            "old_label": "actual-captured/packages/modules/Uwb/ranging/service/java/com/android/server/ranging/RangingServiceImpl.java",
+            "sha256": "e9fef968a88fe6580ec6478a90ee883130610ef621bcdcb2c7681c6f3a73cc29"
+          },
+          "path": "ranging/service/java/com/android/server/ranging/RangingServiceImpl.java"
+        }
+      ],
+      "historical_source_head": "f45f43ac59705b5d344a9100ffa3498e0855b5be",
+      "historical_source_tree": null,
+      "path": "packages/modules/Uwb"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 137419,
+            "git_blob_sha1": "2051b789116461bdfde5f3a9aaaf77522ecf8705",
+            "sha256": "83bf97b60077226b284111662fa0821907eabe79d3e3b3154f842a6c81123b05"
+          },
+          "before": {
+            "bytes": 137112,
+            "git_blob_sha1": "027650e12e74a53f73b71b97009fadaff9067c70",
+            "sha256": "0d09a84fdf9270a739a524b7032a9e6ad95aecb1f4ccf38f6d178829553b6e6a"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1136,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/071.diff",
+            "new_label": "owned-final/packages/modules/Wifi/service/java/com/android/server/wifi/WifiNetworkSuggestionsManager.java",
+            "old_label": "actual-captured/packages/modules/Wifi/service/java/com/android/server/wifi/WifiNetworkSuggestionsManager.java",
+            "sha256": "7b41f3fbf02e07a781bbf24a4e8b0a7e4c776489bebf35af2fa1e12106c2212b"
+          },
+          "path": "service/java/com/android/server/wifi/WifiNetworkSuggestionsManager.java"
+        }
+      ],
+      "historical_source_head": "027547fd86c65f3b0fef766c5aae5d97cb4a6bd6",
+      "historical_source_tree": null,
+      "path": "packages/modules/Wifi"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 594713,
+            "git_blob_sha1": "0d6195c4af5f74f22a22ff40eaa89a2cb09cb337",
+            "sha256": "1f81f77e790a2537b1fe48c645b030fcd7441f400c6974ff24fd6e5f84223fce"
+          },
+          "before": {
+            "bytes": 591824,
+            "git_blob_sha1": "a8ade2619292ee6f1780f475525e62dd4f0d1dfc",
+            "sha256": "f0f9bcea44edb899e9f59732a4142e3e26cd1345b4dc2ae5212e28a6bac304dd"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 6053,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/072.diff",
+            "new_label": "owned-final/packages/providers/MediaProvider/src/com/android/providers/media/MediaProvider.java",
+            "old_label": "actual-captured/packages/providers/MediaProvider/src/com/android/providers/media/MediaProvider.java",
+            "sha256": "39246302120427471c9c46f69fc1b6aca01c9240907ae9a55f5ba659dbd7c53c"
+          },
+          "path": "src/com/android/providers/media/MediaProvider.java"
+        },
+        {
+          "after": {
+            "bytes": 28888,
+            "git_blob_sha1": "b70e171c070e5116ddf16a08569b3e7a63cc9961",
+            "sha256": "4de1dee3828117a5dc55fb34f076d5f5ef4b221c7e6f5c82aad19f2a75544ae9"
+          },
+          "before": {
+            "bytes": 27465,
+            "git_blob_sha1": "b1fffce3fe78519d47711079b66d31a640592de2",
+            "sha256": "496eb03cf42f1dde44ba2e0688484408e62fb3a283d1c78aa39e4f2f2574b5a2"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 2882,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/073.diff",
+            "new_label": "owned-final/packages/providers/MediaProvider/src/com/android/providers/media/PickerUriResolver.java",
+            "old_label": "actual-captured/packages/providers/MediaProvider/src/com/android/providers/media/PickerUriResolver.java",
+            "sha256": "2c3ca4d2d71397ec8942b2f9661313a794d45f643e87586e14f57c292688c2d5"
+          },
+          "path": "src/com/android/providers/media/PickerUriResolver.java"
+        },
+        {
+          "after": {
+            "bytes": 8223,
+            "git_blob_sha1": "62a9900adbef5ff0e97d9df040d996a73e3761b6",
+            "sha256": "b2baae595b51e468720d13b7da47cab1d52f88087701f94a0c13190e4c20e47d"
+          },
+          "before": {
+            "bytes": 7665,
+            "git_blob_sha1": "02ff888eae65c2c80f73eebeafcff8b3d3448545",
+            "sha256": "cbd49e34cfd6877c0c42827bc86ba2e8d48a6dba3bf10515a2a9230939257533"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1681,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/074.diff",
+            "new_label": "owned-final/packages/providers/MediaProvider/src/com/android/providers/media/photopicker/v2/model/MediaQueryForPreSelection.java",
+            "old_label": "actual-captured/packages/providers/MediaProvider/src/com/android/providers/media/photopicker/v2/model/MediaQueryForPreSelection.java",
+            "sha256": "157b3c1162b251f96c9c0683c0b8de71051d95510dad61a40f1df3867b0b9ef2"
+          },
+          "path": "src/com/android/providers/media/photopicker/v2/model/MediaQueryForPreSelection.java"
+        },
+        {
+          "after": {
+            "bytes": 12749,
+            "git_blob_sha1": "148c2dac4368603751ea36a539c8a72d3af52ef1",
+            "sha256": "6e178658491ab052c45ab3822aac2e26243eceb5e8c4bcf8b9a635a1e2649489"
+          },
+          "before": {
+            "bytes": 12762,
+            "git_blob_sha1": "43a00f00c1740914f951366b872c8cc66c190a24",
+            "sha256": "1471c69a56136a762ae8a8fe765ecec45fc1ef800f187dda31e8300a61aff2ac"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1683,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/075.diff",
+            "new_label": "owned-final/packages/providers/MediaProvider/src/com/android/providers/media/util/IsoInterface.java",
+            "old_label": "actual-captured/packages/providers/MediaProvider/src/com/android/providers/media/util/IsoInterface.java",
+            "sha256": "2eb80d9cb7f5caf11d4692d3e43af425dc7b1f884fbcd03c9d7763dfbdf64101"
+          },
+          "path": "src/com/android/providers/media/util/IsoInterface.java"
+        },
+        {
+          "after": {
+            "bytes": 13729,
+            "git_blob_sha1": "70ad8be25b4cce46af7f51263502493d6bebab88",
+            "sha256": "feeadf89228409e265c0354e03cd0392281868d260108b41cd841807d5e48c10"
+          },
+          "before": {
+            "bytes": 12551,
+            "git_blob_sha1": "cbd4bcf59a9d2737b4e57fa3c7e928bf5af2f097",
+            "sha256": "63fa649b8a422ee1570d30e7f62d95e34f0c75dd877952cadaeaca170f8bf36b"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 3648,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/076.diff",
+            "new_label": "owned-final/packages/providers/MediaProvider/src/com/android/providers/media/util/XmpDataParser.java",
+            "old_label": "actual-captured/packages/providers/MediaProvider/src/com/android/providers/media/util/XmpDataParser.java",
+            "sha256": "5a2bff5092955e7708fc70c74d33c0c96955cbdd60a0b846bcd399dee10cd9f8"
+          },
+          "path": "src/com/android/providers/media/util/XmpDataParser.java"
+        }
+      ],
+      "historical_source_head": "8eaf902e6bffb419fa5c374b6666d2076cd0a213",
+      "historical_source_tree": null,
+      "path": "packages/providers/MediaProvider"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 75374,
+            "git_blob_sha1": "9cb05c0019e7645a343a261d32bbdfbdfaf54a6d",
+            "sha256": "2d634f5dc66e039d5b0a9718e655ab23d5d4f5cd25171c8595f1c03d09c9b34b"
+          },
+          "before": {
+            "bytes": 72539,
+            "git_blob_sha1": "dd9f07cf304db957d4bda5a3663ded1e6b893219",
+            "sha256": "8d7648c74695e7ca261790d790f50d2f243fe065b25426d36265d2fe869f9b26"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 7275,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/077.diff",
+            "new_label": "owned-final/packages/providers/TelephonyProvider/src/com/android/providers/telephony/MmsSmsProvider.java",
+            "old_label": "actual-captured/packages/providers/TelephonyProvider/src/com/android/providers/telephony/MmsSmsProvider.java",
+            "sha256": "d3170e23d13a0e977157d48f39ff92534f61177a83bc588115699aed5ce4e1c6"
+          },
+          "path": "src/com/android/providers/telephony/MmsSmsProvider.java"
+        }
+      ],
+      "historical_source_head": "3d29c5be05880f03ec522affbd10aee4ab8548c1",
+      "historical_source_tree": null,
+      "path": "packages/providers/TelephonyProvider"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 651652,
+            "git_blob_sha1": "610a403b7455dfc12a62643df973b7661bd237fb",
+            "sha256": "bfe8c4a33efe87bb72a6558aa3486e10b09fc5494b3ba2fe68d08ed8c46ae6f5"
+          },
+          "before": {
+            "bytes": 651367,
+            "git_blob_sha1": "43e8c8447d44a914daec3b1166875d5767613a9d",
+            "sha256": "3d4fa26316cb612de8323ddbe91916bff850f41ca3d0582216fc291285e2b3df"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 809,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/078.diff",
+            "new_label": "owned-final/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java",
+            "old_label": "actual-captured/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java",
+            "sha256": "c29973cd1c9caf05fafd43123ce1d9aa54fdce43047080d70db338d0ba58b523"
+          },
+          "path": "src/com/android/phone/PhoneInterfaceManager.java"
+        }
+      ],
+      "historical_source_head": "9ff48901cb68d30870366e3593741048be493b59",
+      "historical_source_tree": null,
+      "path": "packages/services/Telephony"
+    },
+    {
+      "baseline_kind": "original_selected",
+      "files": [
+        {
+          "after": {
+            "bytes": 11030,
+            "git_blob_sha1": "08746556dc009da694594c7e8bcd849859921df9",
+            "sha256": "99323725976c9c1ab1472aa1ade97f11d6550b67bd5fd4d9e804c1ce8e925ca5"
+          },
+          "before": {
+            "bytes": 10350,
+            "git_blob_sha1": "11aedb103df523795c7a85ef40d56e32f1e9f250",
+            "sha256": "a8b2ef0eb7aafabdb5bf8c30e0674502ee062ab2a99f7d5260e7df1e759b1d5d"
+          },
+          "git_mode": "100644",
+          "patch": {
+            "bytes": 1039,
+            "canonical_path": "android-integration/security-patches/owner-asb-forks/patches/079.diff",
+            "new_label": "owned-final/system/core/libcutils/ashmem-dev.cpp",
+            "old_label": "actual-captured/system/core/libcutils/ashmem-dev.cpp",
+            "sha256": "f7f8439e633bb83a15aa0ed1dc4b63c6c5ca134edd3ec3a65cde519620bfc80e"
+          },
+          "path": "libcutils/ashmem-dev.cpp"
+        }
+      ],
+      "historical_source_head": "40048b72531afe10f481ec145544f8551ccc920f",
+      "historical_source_tree": null,
+      "path": "system/core"
+    }
+  ],
+  "schema": "org.trillionnium.owner-asb-fullfork-catalog.v1",
+  "scoped_evidence": [
+    {
+      "bytes": 397693,
+      "canonical_path": "android-integration/security-patches/owner-asb-forks/evidence/000.json",
+      "scope": "exact77 local source composition; compile/wholeCVE/applicability UNKNOWN",
+      "sha256": "0c411d0c8563a81f3303b54227c86b0a69c48d72121f919a568cf42dea374a26"
+    },
+    {
+      "bytes": 37377,
+      "canonical_path": "android-integration/security-patches/owner-asb-forks/evidence/001.json",
+      "scope": "exact3 local kernel source-site backports; missing pKVM sites UNKNOWN",
+      "sha256": "7d972b09ac1f92a071f262f6bdc94482701bacf904da7d6392a01d88258df5d8"
+    }
+  ]
+}

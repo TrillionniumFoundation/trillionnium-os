@@ -1,0 +1,11 @@
+--- actual-captured/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/v2/model/InstallRepository.kt
++++ owned-final/frameworks/base/packages/PackageInstaller/src/com/android/packageinstaller/v2/model/InstallRepository.kt
+@@ -334,7 +334,7 @@
+ 
+         if (!TextUtils.equals(installerPackageNameFromIntent, callerInfo.packageName)
+             && callerInfo.packageName != null
+-            && isPermissionGranted(
++            && !isPermissionGranted(
+                 packageManager, Manifest.permission.INSTALL_PACKAGES, callerInfo.packageName
+             )
+         ) {

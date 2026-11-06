@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import selectors
 import shutil
 import signal
@@ -37,6 +38,17 @@ IMPLEMENTATION_PATHS = (
     "tools/perf/_run_product_baseline_core.py",
     "tools/perf/_run_product_baseline_facade.py",
     "tools/perf/run_product_baseline.py",
+    "tools/owner-open/owner_open_connection_broker.py",
+    "tools/owner-open/owner_open_connection_broker_v2.py",
+    "tools/owner-open/owner_open_broker_admission_v2.py",
+    "tools/owner-open/owner_open_broker_audit.py",
+    "tools/owner-open/owner_open_broker_base_v2.py",
+    "tools/owner-open/owner_open_broker_common.py",
+    "tools/owner-open/owner_open_broker_connections.py",
+    "tools/owner-open/owner_open_broker_convergence_v2.py",
+    "tools/owner-open/owner_open_broker_mux.py",
+    "tools/owner-open/owner_open_broker_runtime.py",
+    "tools/owner-open/owner_open_broker_server_v2.py",
 )
 
 
@@ -47,6 +59,7 @@ OPEN_ADMITTED_FILE: Any = None
 REOPEN_ADMITTED_IDENTITY: Any = None
 SAME_ADMITTED_OBJECT: Any = None
 MAX_PINNED_TOOL_BYTES = 512 * 1024 * 1024
+MAX_PINNED_RUST_RUNTIME_BYTES = 768 * 1024 * 1024
 
 
 class VerificationError(ValueError):
@@ -88,27 +101,29 @@ def _admit_tool(
     *,
     before_component: Any = None,
     after_final: Any = None,
+    executable: bool = True,
+    maximum: int = MAX_PINNED_TOOL_BYTES,
 ) -> tuple[bytes, dict[str, Any], dict[str, Any]]:
     require(callable(OPEN_ADMITTED_FILE),
             "descriptor-rooted tool admission is not installed")
     return OPEN_ADMITTED_FILE(
         path,
         str(path.absolute()),
-        maximum=MAX_PINNED_TOOL_BYTES,
-        executable=True,
+        maximum=maximum,
+        executable=executable,
         before_component=before_component,
         after_final=after_final,
     )
 
 
-def _reopen_tool(path: Path, name: str) -> dict[str, Any]:
+def _reopen_tool(path: Path, name: str, *, executable: bool = True) -> dict[str, Any]:
     require(callable(REOPEN_ADMITTED_IDENTITY),
             "descriptor-rooted tool revalidation is not installed")
     return REOPEN_ADMITTED_IDENTITY(
         path,
         str(path.absolute()),
         maximum=MAX_PINNED_TOOL_BYTES,
-        executable=True,
+        executable=executable,
     )
 
 
@@ -163,13 +178,18 @@ class PinnedTool:
         *,
         before_component: Any = None,
         after_final: Any = None,
+        executable: bool = True,
+        maximum: int = MAX_PINNED_TOOL_BYTES,
     ) -> None:
         self.requested_path = source.absolute()
+        self.executable = executable
         payload, report, internal = _admit_tool(
             self.requested_path,
             name,
             before_component=before_component,
             after_final=after_final,
+            executable=executable,
+            maximum=maximum,
         )
         self._source_internal = internal
         require(hasattr(os, "memfd_create"), "sealed tool custody requires memfd_create")
@@ -186,7 +206,7 @@ class PinnedTool:
             os.symlink(f"/proc/self/fd/{self.descriptor}", self.execution_path)
             link_state = os.lstat(self.execution_path)
             require(stat.S_ISLNK(link_state.st_mode), f"{name} execution link is invalid")
-            current = _reopen_tool(self.requested_path, name)
+            current = _reopen_tool(self.requested_path, name, executable=executable)
             require(_same_admitted(self._source_internal, current),
                     f"{name} selected tool changed before custody completed")
             self.identity = {
@@ -214,7 +234,8 @@ class PinnedTool:
                 f"sealed tool execution link changed: {self.execution_path.name}")
 
     def assert_source_selection(self) -> None:
-        current = _reopen_tool(self.requested_path, self.execution_path.name)
+        current = _reopen_tool(self.requested_path, self.execution_path.name,
+                               executable=self.executable)
         require(_same_admitted(self._source_internal, current),
                 f"selected tool path or bytes moved: {self.requested_path}")
 
@@ -222,6 +243,93 @@ class PinnedTool:
         if self.descriptor >= 0:
             os.close(self.descriptor)
             self.descriptor = -1
+
+
+class PinnedRustRuntime:
+    """Seal the two official SDK runtime ELFs without ambient loader paths.
+
+    The standard-library sysroot and system loader dependencies remain recorded
+    local inputs, not a recursively authenticated SDK.
+    """
+
+    def __init__(self, rustc: Path, custody_root: Path) -> None:
+        require(rustc.name == "rustc" and rustc.parent.name == "bin",
+                "Rust runtime requires the actual SDK bin/rustc path")
+        self.sysroot = rustc.parent.parent
+        self.source_directory = self.sysroot / "lib"
+        self.execution_directory = custody_root / "rust-runtime"
+        self.execution_directory.mkdir(mode=0o700)
+        self.pins: dict[str, PinnedTool] = {}
+        try:
+            self.names = self._inventory()
+            total = 0
+            for name in self.names:
+                # Descriptor-rooted admission rejects symlink components and
+                # copies the exact opened bytes before any compiler executes.
+                pin = PinnedTool(self.source_directory / name,
+                                 self.execution_directory, name, executable=False,
+                                 maximum=min(MAX_PINNED_TOOL_BYTES,
+                                             MAX_PINNED_RUST_RUNTIME_BYTES - total))
+                self.pins[name] = pin
+                total += pin.identity["size"]
+                require(total <= MAX_PINNED_RUST_RUNTIME_BYTES,
+                        "Rust runtime exceeds the aggregate custody bound")
+                require(os.pread(pin.descriptor, 4, 0) == b"\x7fELF",
+                        f"Rust runtime member is not ELF: {name}")
+            self.assert_source_selection()
+        except BaseException:
+            self.close()
+            raise
+
+    def _inventory(self) -> tuple[str, ...]:
+        descriptor = os.open(self.source_directory, os.O_RDONLY | os.O_DIRECTORY
+                             | os.O_NOFOLLOW | os.O_CLOEXEC)
+        try:
+            names_list: list[str] = []
+            with os.scandir(descriptor) as entries:
+                for count, entry in enumerate(entries, start=1):
+                    require(count <= 4096, "Rust SDK library directory exceeds entry bound")
+                    if entry.name.startswith(("librustc_driver-", "libLLVM.so.")):
+                        names_list.append(entry.name)
+                        require(len(names_list) <= 2, "Rust runtime inventory is ambiguous")
+            names = tuple(sorted(names_list))
+        finally:
+            os.close(descriptor)
+        require(len(names) == 2 and
+                sum(bool(re.fullmatch(r"librustc_driver-[0-9a-f]+\.so", name))
+                    for name in names) == 1 and
+                sum(bool(re.fullmatch(r"libLLVM\.so\.[A-Za-z0-9._-]+", name))
+                    for name in names) == 1,
+                "Rust SDK must contain exactly one driver and one LLVM runtime ELF")
+        return names
+
+    @property
+    def descriptors(self) -> tuple[int, ...]:
+        return tuple(pin.descriptor for pin in self.pins.values())
+
+    def environment(self) -> dict[str, str]:
+        return {"LD_LIBRARY_PATH": str(self.execution_directory)}
+
+    def identity(self) -> dict[str, Any]:
+        return {"sysroot": str(self.sysroot),
+                "source_library_directory": str(self.source_directory),
+                "execution_library_directory": str(self.execution_directory),
+                "libraries": [dict(pin.identity) for pin in self.pins.values()],
+                "ambient_loader_environment_inherited": False,
+                "recursive_sysroot_attestation": False}
+
+    def assert_descriptor(self) -> None:
+        for pin in self.pins.values():
+            pin.assert_descriptor()
+
+    def assert_source_selection(self) -> None:
+        require(self._inventory() == self.names, "Rust runtime inventory moved")
+        for pin in self.pins.values():
+            pin.assert_source_selection()
+
+    def close(self) -> None:
+        for pin in self.pins.values():
+            pin.close()
 
 
 def _live_repository_file_identity(relative: str) -> dict[str, Any]:
@@ -316,20 +424,54 @@ def bootstrap_attestation() -> dict[str, Any]:
     return dict(value)
 
 
-def query(command: list[str], cwd: Path, *, pass_fds: tuple[int, ...] = ()) -> str:
-    result = subprocess.run(
-        command,
-        cwd=cwd,
-        env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
-        capture_output=True,
-        text=True,
-        timeout=20,
-        check=True,
-        pass_fds=pass_fds,
-    )
-    require(len(result.stdout.encode()) <= 1024 * 1024,
-            "identity query exceeded bound")
-    return result.stdout.strip()
+def query(command: list[str], cwd: Path, *, pass_fds: tuple[int, ...] = (),
+          runtime: PinnedRustRuntime | None = None,
+          executable: Path | None = None) -> str:
+    # The authenticated facade installs its retained-session streaming query
+    # before exposing this API. There is no unbounded private-core fallback.
+    raise VerificationError("identity queries require the authenticated bounded facade")
+
+
+def gcc_helper_configuration(pin: PinnedTool, repo: Path,
+                             runtime: PinnedRustRuntime) -> dict[str, Any]:
+    # Keep GCC's observed argv[0] while executing only the sealed descriptor.
+    # GCC_EXEC_PREFIX affects helper, CRT and header searches: it is a finite
+    # recorded recipe input, not recursive custody of the helper hierarchy.
+    def gcc(*arguments: str) -> str:
+        return query([str(pin.requested_path), *arguments], repo,
+                     executable=pin.execution_path,
+                     pass_fds=(pin.descriptor, *runtime.descriptors), runtime=runtime)
+
+    target = gcc("-dumpmachine")
+    version = gcc("-dumpversion")
+    require(re.fullmatch(r"[A-Za-z0-9_.+-]{1,256}", target) is not None and
+            re.fullmatch(r"[0-9]+(?:\.[0-9]+){0,3}", version) is not None,
+            "this sealed C linker recipe requires an installed GNU GCC hierarchy")
+    search = gcc("-print-search-dirs")
+    installs = [line.removeprefix("install: ") for line in search.splitlines()
+                if line.startswith("install: ")]
+    require(len(installs) == 1 and "\x00" not in installs[0] and
+            ":" not in installs[0], "GCC helper install path is ambiguous")
+    raw = installs[0].removesuffix("/")
+    install = Path(raw)
+    require(install.is_absolute() and str(install) == raw and
+            ".." not in install.parts and install.is_dir() and
+            install.name == version and install.parent.name == target,
+            "GCC helper install path must be a canonical target/version directory")
+    prefix = install.parent.parent
+    helpers = {"cc1": gcc("-print-prog-name=cc1"),
+               "collect2": gcc("-print-prog-name=collect2"),
+               "lto_plugin": gcc("-print-file-name=liblto_plugin.so")}
+    for path in helpers.values():
+        candidate = Path(path)
+        require(candidate.is_absolute() and str(candidate) == path and
+                ".." not in candidate.parts and "\x00" not in path and
+                candidate.is_file(), "GCC helper discovery returned an invalid path")
+    return {"gcc_exec_prefix": str(prefix) + "/", "install_directory": str(install),
+            "target": target, "version": version, "helper_paths": helpers,
+            "discovery_execution": "sealed-cc-with-selected-source-argv0",
+            "helpers_recursively_attested": False,
+            "ambient_gcc_environment_inherited": False}
 
 
 def source_identity(repo: Path, expected_commit: str | None = None) -> dict[str, Any]:
@@ -368,6 +510,7 @@ def toolchain_identity(
     repo: Path,
     *,
     pinned: dict[str, PinnedTool] | None = None,
+    runtime: PinnedRustRuntime | None = None,
 ) -> dict[str, Any]:
     selected = {"cargo": cargo, "rustc": rustc, "cc": cc, "ar": ar}
     if pinned is None:
@@ -385,13 +528,20 @@ def toolchain_identity(
         pass_fds = tuple(pin.descriptor for pin in pinned.values())
         for pin in pinned.values():
             pin.assert_descriptor()
+    if runtime is not None:
+        require(pinned is not None, "Rust runtime custody requires pinned tools")
+        runtime.assert_descriptor()
+        runtime.assert_source_selection()
+        pass_fds += runtime.descriptors
+        identities["rust_runtime"] = runtime.identity()
     cargo_version = query(
-        [execution["cargo"], "--version"], repo, pass_fds=pass_fds
+        [execution["cargo"], "--version"], repo, pass_fds=pass_fds, runtime=runtime
     )
     rust_version = query(
         [execution["rustc"], "--version", "--verbose"],
         repo,
         pass_fds=pass_fds,
+        runtime=runtime,
     )
     require(cargo_version.startswith(f"cargo {RUST_VERSION} "),
             "Cargo must be exactly 1.93.0")
@@ -401,15 +551,22 @@ def toolchain_identity(
             "Rust release metadata differs")
     for name in ("cc", "ar"):
         identities[name]["version"] = query(
-            [execution[name], "--version"], repo, pass_fds=pass_fds
+            [execution[name], "--version"], repo, pass_fds=pass_fds, runtime=runtime
         )
+    if pinned is not None and runtime is not None:
+        identities["cc"]["gcc_helpers"] = gcc_helper_configuration(pinned["cc"], repo, runtime)
     identities["cargo"]["version"] = cargo_version
     identities["rustc"]["version"] = rust_version
+    sysroot_args = ["--sysroot", str(runtime.sysroot)] if runtime is not None else []
     identities["rust_sysroot"] = query(
-        [execution["rustc"], "--print", "sysroot"],
+        [execution["rustc"], *sysroot_args, "--print", "sysroot"],
         repo,
         pass_fds=pass_fds,
+        runtime=runtime,
     )
+    if runtime is not None:
+        require(identities["rust_sysroot"] == str(runtime.sysroot),
+                "sealed compiler sysroot differs from the selected SDK")
     identities["host_platform"] = {
         "sysname": os.uname().sysname,
         "release": os.uname().release,
@@ -442,6 +599,13 @@ def recipe(repo: Path, target: Path, home: Path, cache: Path, tools: dict, sourc
            "LANG": "C", "LC_ALL": "C", "TZ": "UTC", "CARGO_TERM_COLOR": "never",
            "CARGO_INCREMENTAL": "0", "CARGO_BUILD_JOBS": "1", "CARGO_NET_OFFLINE": "true",
            "SOURCE_DATE_EPOCH": source["source_date_epoch"], "CARGO_ENCODED_RUSTFLAGS": "\x1f".join(flags)}
+    if "rust_runtime" in tools:
+        runtime = tools["rust_runtime"]
+        flags.extend(["--sysroot", runtime["sysroot"]])
+        env["CARGO_ENCODED_RUSTFLAGS"] = "\x1f".join(flags)
+        env["LD_LIBRARY_PATH"] = runtime["execution_library_directory"]
+    if "gcc_helpers" in tools["cc"]:
+        env["GCC_EXEC_PREFIX"] = tools["cc"]["gcc_helpers"]["gcc_exec_prefix"]
     command = [cargo, "build", "--locked", "--offline", "--frozen", "--release",
                "--manifest-path", str(repo / "Cargo.toml"), "--target-dir", str(target),
                "-p", "trillionnium-owner-open-host"]
@@ -529,11 +693,12 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         "limitations": [
             "No installed-target, image, device, signing or release qualification",
             "Same host/kernel and shared offline dependency cache, not independent-builder attestation",
-            "Tool executables run from write-sealed memfd snapshots; full sysroot, linker/runtime libraries and cache trees are not recursively attested",
+            "Tool executables and the selected Rust driver/LLVM runtime ELFs run from write-sealed memfd snapshots; full sysroot, system linker/runtime libraries and cache trees are not recursively attested",
             "Path remapping and identical outputs do not establish a hermetic or trusted build",
         ],
     }
     pins: dict[str, PinnedTool] = {}
+    runtime: PinnedRustRuntime | None = None
     prior_pass_fds = EXECUTION_PASS_FDS
     try:
         require(sys.platform == "linux", "this host recipe requires Linux")
@@ -564,14 +729,15 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         ) as custody_directory:
             custody_root = Path(custody_directory)
             os.chmod(custody_root, 0o700)
-            pins = {
-                name: PinnedTool(selected[name], custody_root, name)
-                for name in ("cargo", "rustc", "cc", "ar")
-            }
+            # Accumulate eagerly so a later admission failure cannot leak the
+            # descriptors already created by earlier successful admissions.
+            for name in ("cargo", "rustc", "cc", "ar"):
+                pins[name] = PinnedTool(selected[name], custody_root, name)
+            runtime = PinnedRustRuntime(selected["rustc"], custody_root)
             EXECUTION_PASS_FDS = tuple(
                 pin.descriptor for pin in pins.values()
-            )
-            tools = toolchain_identity(*resolved, repo, pinned=pins)
+            ) + runtime.descriptors
+            tools = toolchain_identity(*resolved, repo, pinned=pins, runtime=runtime)
             implementation = implementation_manifest()
             validate_implementation_manifest(implementation)
             bootstrap = bootstrap_attestation()
@@ -587,12 +753,13 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
                 "harness": dict(harness),
                 "implementation_manifest": implementation,
                 "bootstrap_attestation": bootstrap,
-                "execution_custody": "linux-write-sealed-memfds-v1",
+                "execution_custody": "linux-write-sealed-tools-and-rust-runtime-memfds-v2",
             })
             build_root.mkdir(mode=0o700)
             for label in ("a", "b"):
                 for pin in pins.values():
                     pin.assert_descriptor()
+                runtime.assert_descriptor()
                 target = build_root / f"target-{label}"
                 home = build_root / f"cargo-home-{label}"
                 prepare_home(home, cache)
@@ -600,7 +767,7 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
                 command, env = recipe(repo, target, home, cache, tools, source)
                 before_source = source_identity(repo, source["commit"])
                 before_tools = toolchain_identity(
-                    *resolved, repo, pinned=pins
+                    *resolved, repo, pinned=pins, runtime=runtime
                 )
                 require(before_source == source and before_tools == tools,
                         "input identity changed before build")
@@ -622,7 +789,7 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
                 ))
                 build["source_after"] = source_identity(repo, source["commit"])
                 build["tools_after"] = toolchain_identity(
-                    *resolved, repo, pinned=pins
+                    *resolved, repo, pinned=pins, runtime=runtime
                 )
                 require(build["exit_code"] == 0,
                         f"build {label} failed; inspect retained Cargo log")
@@ -632,6 +799,8 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
                 for pin in pins.values():
                     pin.assert_descriptor()
                     pin.assert_source_selection()
+                runtime.assert_descriptor()
+                runtime.assert_source_selection()
                 for binary in BINARIES:
                     path = target / "release" / binary
                     require(not path.is_symlink() and path.is_file() and
@@ -644,13 +813,15 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
             require(live_implementation_manifest() == implementation,
                     "reproducibility implementation source paths changed during builds")
             report["gate"] = compare_artifacts(report["builds"])
-    except (VerificationError, OSError, subprocess.SubprocessError) as error:
+    except (VerificationError, RuntimeError, OSError, subprocess.SubprocessError) as error:
         report["errors"].append(str(error))
         report["gate"] = {"status": "FAIL_VERIFICATION", "passed": False}
     finally:
         EXECUTION_PASS_FDS = prior_pass_fds
         for pin in pins.values():
             pin.close()
+        if runtime is not None:
+            runtime.close()
     report["report_digest"] = sha256(canonical(report))
     return report
 

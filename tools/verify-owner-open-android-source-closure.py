@@ -9,7 +9,12 @@ physical effect occurred.
 from __future__ import annotations
 
 import argparse
+import ast
 from dataclasses import dataclass, field
+import hashlib
+import os
+import time
+import types
 import json
 from pathlib import Path
 from pathlib import PurePosixPath
@@ -28,6 +33,81 @@ ANDROID_ROOT = Path(
 COMMON_OWNER_OPEN = Path(
     "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk"
 )
+COMMON_SEALED = COMMON_OWNER_OPEN.with_name("common.mk")
+COMMON_BASE = COMMON_OWNER_OPEN.with_name("common_owner_open_base.mk")
+def bind_helper(name,path,expected_sha,register=False):
+ """Execute the exact measured source bytes; never consult a bytecode cache."""
+ path=Path(path)
+ if not path.is_absolute() or '..' in path.parts or '.' in path.parts:raise RuntimeError('absolute canonical helper path required')
+ deadline=time.monotonic()+5
+ def budget():
+  if time.monotonic()>=deadline:raise RuntimeError('whole source helper binding deadline')
+ def identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+ parent=os.open('/',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ fd=None
+ registered_obj=None
+ previous=None
+ had_previous=False
+ try:
+  for part in path.parts[1:-1]:
+   budget();next_fd=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parent)
+   os.close(parent);parent=next_fd
+  before=os.stat(path.name,dir_fd=parent,follow_symlinks=False)
+  if not stat.S_ISREG(before.st_mode) or before.st_nlink!=1 or not 0<before.st_size<=1024*1024:raise RuntimeError('single-link bounded ordinary helper source required')
+  fd=os.open(path.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC,dir_fd=parent)
+  if identity(os.fstat(fd))!=identity(before):raise RuntimeError('helper FD differs from entry')
+  pieces=[];count=0
+  while True:
+   budget();block=os.read(fd,min(65536,1024*1024-count+1))
+   if not block:break
+   count+=len(block)
+   if count>before.st_size or count>1024*1024:raise RuntimeError('helper source byte bound')
+   pieces.append(block)
+  raw=b''.join(pieces)
+  if count!=before.st_size or hashlib.sha256(raw).hexdigest()!=expected_sha:raise RuntimeError('exact helper source SHA mismatch')
+  if identity(os.fstat(fd))!=identity(before) or identity(os.stat(path.name,dir_fd=parent,follow_symlinks=False))!=identity(before):raise RuntimeError('helper source changed before execution')
+  budget();obj=types.ModuleType(name);obj.__file__=str(path)
+  if register:
+   previous=sys.modules.get(name);had_previous=name in sys.modules
+   sys.modules[name]=obj;registered_obj=obj
+  exec(compile(raw,str(path),'exec'),obj.__dict__)
+  budget();os.lseek(fd,0,os.SEEK_SET);after_digest=hashlib.sha256();count=0
+  while True:
+   budget();block=os.read(fd,min(65536,1024*1024-count+1))
+   if not block:break
+   count+=len(block)
+   if count>before.st_size or count>1024*1024:raise RuntimeError('helper source grew after execution')
+   after_digest.update(block)
+  if count!=before.st_size or after_digest.hexdigest()!=expected_sha or identity(os.fstat(fd))!=identity(before) or identity(os.stat(path.name,dir_fd=parent,follow_symlinks=False))!=identity(before):raise RuntimeError('helper source changed after execution')
+  budget();return obj
+ except BaseException:
+  if registered_obj is not None and sys.modules.get(name) is registered_obj:
+   if had_previous:sys.modules[name]=previous
+   else:sys.modules.pop(name,None)
+  raise
+ finally:
+  try:
+   try:
+    if fd is not None:os.close(fd)
+   finally:os.close(parent)
+  except BaseException:
+   if registered_obj is not None and sys.modules.get(name) is registered_obj:
+    if had_previous:sys.modules[name]=previous
+    else:sys.modules.pop(name,None)
+   raise
+
+COMMON_GENERATOR_SHA256 = "8299a29e3b9166394bb87e740e33f26e8e8ae65c767e53e09a9a0a76077cf191"
+SDK_SELECTION_SHA256 = "159eaff813ab1ffdb34e50477d0b339bd7b0d12a1a92fee8f40ac30939fabf7e"
+COMMON_GENERATOR = bind_helper(
+    "owner_open_common_base_generator", Path(__file__).with_name("generate-owner-open-common-base.py"),
+    COMMON_GENERATOR_SHA256)
+SDK_SELECTION = bind_helper(
+    "owner_open_sdk_selection", Path(__file__).with_name("verify-owner-open-sdk-selection.py"),
+    SDK_SELECTION_SHA256)
+PHONE_GENERATOR_SHA256 = "405cbd2cbf0cd632bb7026c39fec0231401e824e3557cc05f1c11a7bdeec1e50"
+PHONE_GENERATOR = bind_helper(
+    "owner_open_phone_chain_generator", Path(__file__).with_name("generate-owner-open-phone-config.py"),
+    PHONE_GENERATOR_SHA256)
 SUPERVISOR_CONFIG = Path("packaging/owner-open-rootfs/rootlinux-supervisor.json")
 MAX_JSON_BYTES = 8 * 1024 * 1024
 MAX_TEXT_BYTES = 32 * 1024 * 1024
@@ -39,6 +119,43 @@ RUNTIME_CLAIM = "ANDROID_OWNER_OPEN_SOURCE_IMPLEMENTED_NOT_BUILT"
 MODULE_PATTERN = re.compile(r'^\s*name:\s*"([A-Za-z0-9_.+-]+)"\s*,?\s*$', re.MULTILINE)
 SERVICE_PATTERN = re.compile(r"^service\s+([A-Za-z0-9_.-]+)\s+", re.MULTILINE)
 SECLABEL_PATTERN = re.compile(r"^\s*seclabel\s+(u:r:[A-Za-z0-9_]+:s0)\s*$", re.MULTILINE)
+STATE_SUBDIRECTORIES = ("broker", "home", "codex-home", "provider-sessions")
+RUNTIME_PYTHON_ROOTS = (
+    "owner_open_rootlinux_supervisor", "owner_open_connection_broker",
+    "codex_owner_open_mcp", "supervise_codex_mcp_qualification_release",
+    "adb_smart_socket_relay_release", "qualify_owner_open_adb_release",
+    "codex_app_server_provider",
+)
+
+
+def cpp_inventory(text: str, name: str) -> set[str]:
+    tokens = re.compile(r'"(?:\\.|[^"\\])*"|//[^\n]*|/\*.*?\*/', re.DOTALL)
+    visible = tokens.sub(lambda match: match[0] if match[0].startswith('"') else "", text)
+    match = re.search(
+        rf"std::array<std::string_view,\s*(\d+)>\s+{re.escape(name)}\s*=\s*\{{(.*?)\}};",
+        visible, re.DOTALL,
+    )
+    if match is None:
+        raise ValueError(f"missing literal {name} inventory")
+    literals = re.findall(r'"(?:\\.|[^"\\])*"', match[2])
+    values = [json.loads(value) for value in literals]
+    residue = re.sub(r'"(?:\\.|[^"\\])*"|,|\s+', "", match[2])
+    if residue or len(values) != int(match[1]) or len(set(values)) != len(values):
+        raise ValueError(f"invalid literal {name} inventory")
+    return set(values)
+
+
+def python_inventory(text: str, name: str) -> set[str]:
+    for node in ast.parse(text).body:
+        if isinstance(node, ast.Assign) and any(
+            isinstance(target, ast.Name) and target.id == name for target in node.targets
+        ):
+            values = ast.literal_eval(node.value)
+            if (not isinstance(values, tuple) or any(not isinstance(value, str) for value in values)
+                    or len(values) != len(set(values))):
+                raise ValueError(f"invalid literal {name} inventory")
+            return set(values)
+    raise ValueError(f"missing literal {name} inventory")
 
 
 class DuplicateMember(ValueError):
@@ -204,6 +321,13 @@ def added_product_packages(product_text: str) -> set[str]:
 
 def verify(root: Path) -> Report:
     report = Report()
+    phone_chain = None
+    try:
+        phone_chain = PHONE_GENERATOR.check(root)
+    except (OSError, ValueError) as error:
+        report.errors.append(f"owner-open phone chain: {error}")
+    sdk_selection = SDK_SELECTION.verify(root)
+    report.errors.extend(f"owner-open SDK selection: {error}" for error in sdk_selection["errors"])
     try:
         profile = load_json(root / PROFILE, "owner-open Android profile")
     except (OSError, ValueError) as error:
@@ -287,6 +411,8 @@ def verify(root: Path) -> Report:
         bp_text = load_text(root / ANDROID_ROOT / "Android.bp", "owner-open Android.bp")
         product_text = load_text(root / ANDROID_ROOT / "product.mk", "owner-open product.mk")
         supplement_text = load_text(root / COMMON_OWNER_OPEN, "owner-open product supplement")
+        sealed_text = load_text(root / COMMON_SEALED, "sealed common source")
+        common_base_text = load_text(root / COMMON_BASE, "owner-open shared common base")
         fragment_text = load_text(root / GENERATED_FRAGMENT, "generated owner-open package fragment")
         init_text = load_text(
             root / ANDROID_ROOT / "init/trillionnium-owner-open.rc", "owner-open init rc"
@@ -324,12 +450,22 @@ def verify(root: Path) -> Report:
             f"extra={sorted(generated_modules - module_names)}"
         )
 
-    common_include = "vendor/trillionnium/config/common.mk"
+    common_include = "vendor/trillionnium/config/common_owner_open_base.mk"
     product_include = "vendor/trillionnium/owner-open/product.mk"
-    if supplement_text.count(common_include) != 1 or supplement_text.count(product_include) != 1:
-        report.errors.append("common_owner_open.mk must inherit common and owner-open product exactly once")
-    elif supplement_text.index(common_include) > supplement_text.index(product_include):
-        report.errors.append("common_owner_open.mk must apply owner-open graph cut after common.mk")
+    active_supplement = tuple(
+        line.strip() for line in supplement_text.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    )
+    if active_supplement != (
+        f"$(call inherit-product, {common_include})",
+        f"$(call inherit-product, {product_include})",
+    ):
+        report.errors.append("common_owner_open.mk must inherit generated shared base and owner-open product exactly once")
+    try:
+        if common_base_text != COMMON_GENERATOR.render(sealed_text):
+            report.errors.append("owner-open shared common base differs from generated source")
+    except COMMON_GENERATOR.GenerationError as error:
+        report.errors.append(f"owner-open shared common base: {error}")
 
     forbidden = string_set(
         profile.get("forbidden_product_packages"), "forbidden_product_packages", report
@@ -423,6 +559,83 @@ def verify(root: Path) -> Report:
     missing_bootstrap = sorted(value for value in bootstrap_required if value not in bootstrap_text)
     if missing_bootstrap:
         report.errors.append(f"bootstrap does not bind required payload paths: {missing_bootstrap}")
+    # Read the actual admission inventory, rather than letting a required path
+    # mentioned in a comment or an unrelated executable list satisfy closure.
+    expected_inventory = {
+        str(item.get("path")) for item in
+        object_list(payload.get("required_entries"), "rootlinux required_entries", report)
+    }
+    try:
+        native_inventory = cpp_inventory(bootstrap_text, "kRequiredPaths")
+        native_executables = cpp_inventory(bootstrap_text, "kRequiredExecutablePaths")
+        if native_inventory != expected_inventory:
+            report.errors.append("bootstrap does not bind required payload paths: inventory differs from profile")
+        for relative in (
+            Path("tools/owner-open/verify_owner_open_materialized_payload.py"),
+            ANDROID_ROOT / "tools/verify_owner_open_materialized_payload.py",
+        ):
+            text = load_text(root / relative, "payload admission verifier")
+            if python_inventory(text, "REQUIRED_PAYLOAD_PATHS") != native_inventory:
+                report.errors.append(f"payload admission required inventory differs: {relative}")
+            if python_inventory(text, "REQUIRED_EXECUTABLE_PATHS") != native_executables:
+                report.errors.append(f"payload admission executable inventory differs: {relative}")
+    except (OSError, ValueError, SyntaxError, TypeError) as error:
+        report.errors.append(f"payload admission inventory is invalid: {error}")
+
+    # The supervisor's flattened Python directory must contain every project
+    # import. The declared sources cover the tools and the provider-owned crate;
+    # unknown non-stdlib imports cannot silently become external dependencies.
+    python_sources = {
+        Path(item["path"]).stem: Path(item["path"])
+        for item in object_list(profile.get("required_source_artifacts"), "required sources", report)
+        if isinstance(item.get("path"), str) and item["path"].endswith(".py")
+    }
+    pending = list(RUNTIME_PYTHON_ROOTS)
+    visited: set[str] = set()
+    while pending:
+        name = pending.pop()
+        if name in visited:
+            continue
+        visited.add(name)
+        relative = python_sources.get(name)
+        destination = f"/usr/libexec/trillionnium/owner-open/{name}.py"
+        if relative is None or destination not in expected_inventory:
+            report.errors.append(f"runtime Python helper is not bound in source/payload inventory: {name}")
+            continue
+        try:
+            parsed = ast.parse(load_text(root / relative, "runtime Python helper"))
+        except (OSError, ValueError, SyntaxError) as error:
+            report.errors.append(f"runtime Python helper cannot be inspected: {name}: {error}")
+            continue
+        for node in ast.walk(parsed):
+            if isinstance(node, ast.Import):
+                imports = [item.name.split(".")[0] for item in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imports = [node.module.split(".")[0]]
+            else:
+                continue
+            for imported in imports:
+                if imported in python_sources:
+                    pending.append(imported)
+                elif imported not in sys.stdlib_module_names:
+                    report.errors.append(f"runtime Python import is unbound: {name} -> {imported}")
+
+    # These private state children are prepared by init before data_ready and
+    # by the bootstrap before binding state into the immutable rootfs image.
+    post_fs = re.search(r"(?ms)^on post-fs-data\s*\n(.*?)(?=^on |^service |\Z)", init_text)
+    commands = [] if post_fs is None else [
+        line.split("#", 1)[0].strip() for line in post_fs[1].splitlines()
+    ]
+    ready_index = commands.index("setprop trillionnium.owner_open.data_ready 1") if (
+        "setprop trillionnium.owner_open.data_ready 1" in commands
+    ) else -1
+    for child in STATE_SUBDIRECTORIES:
+        path = f"/data/trillionnium/owner-open/state/{child}"
+        command = f"mkdir {path} 0700 root root"
+        if command not in commands or ready_index < 0 or commands.index(command) >= ready_index:
+            report.errors.append(f"init does not prepare private state directory before data_ready: {path}")
+        if f'EnsureDirectory("{path}", 0700)' not in bootstrap_text:
+            report.errors.append(f"bootstrap does not prepare private state directory: {path}")
     for marker in (
         "unsetenv(\"ANDROID_SERIAL\")",
         "unsetenv(\"ADB_SERVER_PORT\")",
@@ -530,6 +743,11 @@ def verify(root: Path) -> Report:
         "ready_property": runtime_profile.get("ready_property"),
         "emergency_stop_property": runtime_profile.get("emergency_stop_property"),
         "source_artifact_count": len(source_paths),
+        "phone_chain_source": phone_chain,
+        "actual_phone_entrypoint_evaluated_graph_qualified": False,
+        "sdk_selection": sdk_selection["facts"],
+        "runtime_python_helper_count": len(visited),
+        "rootfs_required_entry_count": len(expected_inventory),
         "required_module_count": len(module_names),
         "android_bp_modules": sorted(bp_modules),
         "product_modules": sorted(product_modules),

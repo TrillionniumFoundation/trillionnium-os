@@ -4,18 +4,36 @@
   "breaking_change_review": "REQUIRED_FOR_REQUIRED_TYPE_ENUM_DEFAULT_IDENTITY_ORDERING_STATE_OR_ERROR_CHANGE",
   "change_review": {
     "approval_asserted": false,
-    "base_catalog_sha256": null,
-    "base_contract_sha256": {},
-    "class": "NO_CHANGE",
-    "contracts": [],
-    "families": [],
+    "base_catalog_sha256": "448f6edcf7d7d11647a082aed0264064a8bb2f80e6b37348be0ca86ef98cd7a6",
+    "base_contract_sha256": {
+      "api": "8f2313d5f7de91fa303f12bd8daae97add9a4f8594c4b21ea67940ed791fa3de",
+      "errors": "1621fe784ae7fdc570142628a012d17a46e7f91cc4732a6ab17d234853951cdf",
+      "state": "1d11fa0a8b690ad09dded40ee6ab5c3845d5b7f3806790866989dccf06e9c9ea"
+    },
+    "class": "BREAKING_MIGRATION",
+    "contracts": [
+      "api",
+      "errors",
+      "state"
+    ],
+    "families": [
+      "error",
+      "identity",
+      "ordering",
+      "other",
+      "state"
+    ],
     "migration_review_sha256": "066ea67b52547e114a835cf1357f073acb2e2a97d0f6db573b0060cab3132366",
-    "review_authority": null,
-    "review_packet": null,
-    "review_packet_sha256": null,
-    "reviewer": null,
+    "review_authority": "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED",
+    "review_packet": "docs/reviews/module-contracts/688962ca7870d1d7337cdd40d1b476374e117df2747629e23a021a0c4ab41711.json",
+    "review_packet_sha256": "688962ca7870d1d7337cdd40d1b476374e117df2747629e23a021a0c4ab41711",
+    "reviewer": "Tomasrgbsf",
     "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
-    "target_contract_sha256": {}
+    "target_contract_sha256": {
+      "api": "7ec23f9e631c831e2d84c0094e6da40676732371162e32b81d0be373a07d2de9",
+      "errors": "970ab3a0a323c084d0009e8a38fd80ffaee4aac3549ede6653740c8af506c862",
+      "state": "eb990db28cb10eb2e7b2b4102c91c845afc780e2299cc9ccd7366a37200474a1"
+    }
   },
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
   "contract_tests": [
@@ -31,8 +49,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-      "size": 25928
+      "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+      "size": 27954
     }
   ],
   "contracts": {
@@ -82,13 +100,18 @@
     },
     {
       "path": "crates/trillionnium-owner-open-job-registry/src/lib.rs",
-      "sha256": "6eb26d8fc931044ede7cbdf2a1a1a13f9302b8c1db7ca7ca48eeb139bd889090",
-      "size": 461
+      "sha256": "5934f6849f863203a387f1f9d9a108ffe97fd7b57fcb5a646c614c64d3bb6ba3",
+      "size": 534
     },
     {
       "path": "crates/trillionnium-owner-open-job-registry/src/registry.rs",
-      "sha256": "86a36287c2b091328d453e7bcffedfb5a246dd87b692d7287f77e7aab03d9b38",
-      "size": 38049
+      "sha256": "61feada8ea41e9cd0c572a47c7e405354b84e861f20005a270403d1139bca0f6",
+      "size": 41275
+    },
+    {
+      "path": "crates/trillionnium-owner-open-job-registry/src/resources.rs",
+      "sha256": "d600c799d278e26c4761e9918e4ac2d72eea376d95eacc86d9b97e4a200ebb66",
+      "size": 2681
     },
     {
       "path": "crates/trillionnium-owner-open-job-registry/src/types.rs",
@@ -102,38 +125,43 @@
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/Cargo.toml",
-      "sha256": "86d5ced299b5f28feef8c96aa5911e933a27b73cd7e9b9197e7c46b329f47101",
-      "size": 517
+      "sha256": "febaa58ca1dbdddaccd481a41f733540ace789db31afbeb1b002fe7161b19701",
+      "size": 564
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
-      "sha256": "b5cfed9000227dc28aa5e1cf44e43ca03974950a64cdc681f77fc24d5a86bbb8",
-      "size": 6292
+      "sha256": "4cba3066bb891e994e56d4222a34d328045adc4901bb6e2a309a8e098c406c7a",
+      "size": 7183
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/journal.rs",
-      "sha256": "89e9f44f958d3f029dda3f624a379fc461ec913f5960dc57510edc683865e9ea",
-      "size": 58688
+      "sha256": "0af841c62c2c379adad5c2d6b8cdf953e2f033d4ba3dbc4a3fa46d37fff8c376",
+      "size": 120592
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/lib.rs",
-      "sha256": "73a5bc625f88dfdfbb7ec4f831b52c911f6056a3be3b426475fd2997147efaff",
-      "size": 871
+      "sha256": "9c5f67a7d05549b3a3499e224d80ae252894393e3f6b89d3eec91cc246e6b56d",
+      "size": 886
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
-      "sha256": "e684e3007cbaacc64d1b302f65a45ad03add1fc063f463c12e2bb23aaf4ff039",
-      "size": 111963
+      "sha256": "4872d0b1e1be19f58cae13eaa189e31459fc5f410243ecad9d9768850e0131b0",
+      "size": 185300
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/process.rs",
-      "sha256": "46f0e7dc71d9f797fe4ddefbf018abf2a7ead5c6c89ff8334c1462dfdf72cf88",
-      "size": 62044
+      "sha256": "92194f9c277e740e317c3bff00c6b8b41baa66e5d3af0531302908ab0755a638",
+      "size": 123713
+    },
+    {
+      "path": "crates/trillionnium-owner-open-job-runtime/src/resources.rs",
+      "sha256": "aade322e725644118785a0a614e00f06e917db772353b69cb6bb1564e07a716f",
+      "size": 6556
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/types.rs",
-      "sha256": "50b865eda53260dcd18a9b3db92a67b69c4e1696b83e3de76b4b8a2485fdd61d",
-      "size": 11986
+      "sha256": "69130a0f2a7cf677ae11a22e5b36368a3086455ae485a7deab2c13157b981424",
+      "size": 16741
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/validate.rs",
@@ -176,8 +204,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-        "size": 25928
+        "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+        "size": 27954
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -196,18 +224,23 @@
   "test_sources": [
     {
       "path": "crates/trillionnium-owner-open-job-registry/tests/registry.rs",
-      "sha256": "8851e3bd347b5aa863e516f79dc0a1e1fe961994e5f1078f03a3af7f19384e84",
-      "size": 5202
+      "sha256": "db15a361ffa8accd5af89ce1545c05691f8db87eb11ebcfdf9bb2a07fe0f219c",
+      "size": 9633
+    },
+    {
+      "path": "crates/trillionnium-owner-open-job-runtime/tests/queued_input.rs",
+      "sha256": "2f8bb3ddabc38e5c40b68a735c2613404f62f81585563dbb54c791132ab2fbd3",
+      "size": 7399
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
-      "sha256": "a1733b2110b8dd1b43ab6676800b76c8042bd99a329adf1c3ebce3d72d85dadd",
-      "size": 20073
+      "sha256": "9434accd22ace46bd35d7aff35ce67d340b78a31e6928983b0a4be6567737823",
+      "size": 29161
     },
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-      "size": 37209
+      "sha256": "6419413c1a48bb966b26ed48ee04c6b05ba8008ccb131dcad7ea1c2264b83334",
+      "size": 49445
     }
   ],
   "unknown_fields": "REJECT"

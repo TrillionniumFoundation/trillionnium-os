@@ -22,8 +22,8 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 import hashlib
-import importlib.util
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -31,8 +31,10 @@ import shlex
 import ssl
 import stat
 import subprocess
+import sys
 import tempfile
 import time
+import types
 from typing import Iterator, Mapping, Sequence
 import zipfile
 
@@ -165,6 +167,13 @@ MAX_AVB_IMAGE_BYTES = 256 * 1024 * 1024
 MAX_AVB_PUBLIC_KEY_BYTES = 64 * 1024
 MAX_SANITIZED_LOG_BYTES = 128 * 1024 * 1024
 MAX_SOURCE_BOM_BYTES = 16 * 1024 * 1024
+MAX_OWNER_SOURCE_BOM_BYTES = 64 * 1024 * 1024
+OWNER_BINDING_MEMBER = "META/trillionnium-owner-source-bom-binding.json"
+OWNER_BINDING_SCHEMA = "org.trillionnium.owner-android-source-bom-binding.v4"
+OWNER_BOM_SCHEMA = "org.trillionnium.owner-source-bom.v4"
+OWNER_PROFILE = "owner-open-whole-control-v4"
+OWNER_PROJECTION_SCHEMA = "org.trillionnium.host-owner-source-binding-projection.v1"
+OWNER_AUTHORITY = "local_measured_provenance_not_release_authority"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 SOURCE_BOM_BINDING_CHECKER = (
     Path(__file__).resolve().parents[1]
@@ -351,16 +360,21 @@ def inspect_required_source_bom_binding(
         source_bom, "source-BOM binding BOM", MAX_SOURCE_BOM_BYTES
     )
     checker = SOURCE_BOM_BINDING_CHECKER
-    if checker.is_symlink() or not checker.is_file():
-        raise ReleaseError("source-BOM binding checker is unavailable")
-    spec = importlib.util.spec_from_file_location(
-        "_trillionnium_release_source_bom_binding", checker
-    )
-    if spec is None or spec.loader is None:
-        raise ReleaseError("source-BOM binding checker is unavailable")
-    module = importlib.util.module_from_spec(spec)
+    if _has_symlink_component(checker):
+        raise ReleaseError("source-BOM binding checker path contains a symlink")
+    checker_bytes = strict_regular_bytes(checker, "source-BOM binding checker", 2 * 1024 * 1024)
+    checker_baseline = measure_file(checker, "source-BOM binding checker", 2 * 1024 * 1024)
+    bom_baseline = measure_file(source_bom, "source-BOM binding BOM", MAX_SOURCE_BOM_BYTES)
+    target_baseline = measure_file(target_files, "source-BOM binding target-files")
+    if (checker_baseline["sha256"] != sha256_bytes(checker_bytes)
+        or bom_baseline["sha256"] != sha256_bytes(source_bom_bytes)):
+        raise ReleaseError("source-BOM binding input moved before admission")
+    module = types.ModuleType("_trillionnium_release_source_bom_binding")
+    module.__file__ = str(checker)
     try:
-        spec.loader.exec_module(module)
+        # Execute exactly the observed source, including when a valid-looking
+        # timestamp bytecode cache already exists alongside it.
+        exec(compile(checker_bytes, str(checker), "exec"), module.__dict__)
         inspect = module.inspect_target_files_source_bom_binding
         report = inspect(
             target_files,
@@ -369,6 +383,11 @@ def inspect_required_source_bom_binding(
         )
     except (AttributeError, OSError, RuntimeError, ValueError, TypeError) as error:
         raise ReleaseError(f"source-BOM binding preflight failed: {error}") from error
+    if _has_symlink_component(checker) or _has_symlink_component(source_bom):
+        raise ReleaseError("source-BOM binding input path contains a symlink")
+    assert_measurement(checker, checker_baseline, "source-BOM binding checker")
+    assert_measurement(source_bom, bom_baseline, "source-BOM binding BOM")
+    assert_measurement(target_files, target_baseline, "source-BOM binding target-files")
     if not isinstance(report, Mapping):
         raise ReleaseError("source-BOM binding preflight returned an invalid report")
     if report.get("valid") is not True:
@@ -392,6 +411,151 @@ def inspect_required_source_bom_binding(
             "sha256": sha256_bytes(source_bom_bytes),
         },
     }
+
+
+def load_owner_source_context(
+    source_bom: Path, build_inputs: Path, seconds: float
+) -> dict[str, object]:
+    """Load fixed sibling code and public inputs for explicit owner mode.
+
+    Code is executed from measured bytes. The verifier independently compiles
+    its pinned sibling provenance source, without an ambient module import.
+    The context stays private to this process; receipts contain only hashes.
+    """
+    if not math.isfinite(seconds) or not 0 < seconds <= 7200:
+        raise ReleaseError("owner source observer requires a finite 0..7200 second budget")
+    sources: dict[Path, dict[str, object]] = {}
+    bodies: dict[str, bytes] = {}
+    for name, path, maximum in (
+        ("provenance", Path(__file__).absolute().with_name("owner_source_provenance.py"), 2 * 1024 * 1024),
+        ("checker", Path(__file__).absolute().with_name("verify_owner_target_files_binding.py"), 2 * 1024 * 1024),
+        ("bounded", Path(__file__).absolute().with_name("owner_bom_bounded_process.py"), 2 * 1024 * 1024),
+        ("bom", source_bom, MAX_OWNER_SOURCE_BOM_BYTES),
+        ("build", build_inputs, 2 * 1024 * 1024),
+    ):
+        if _has_symlink_component(path):
+            raise ReleaseError("owner source input path contains a symlink")
+        raw = strict_regular_bytes(path, "owner source " + name, maximum)
+        baseline = measure_file(path, "owner source " + name, maximum)
+        if baseline["sha256"] != sha256_bytes(raw):
+            raise ReleaseError("owner source input moved before admission")
+        bodies[name] = raw
+        sources[path] = baseline
+    provenance = types.ModuleType("_trillionnium_release_owner_provenance")
+    provenance.__file__ = str(Path(__file__).absolute().with_name("owner_source_provenance.py"))
+    checker = types.ModuleType("_trillionnium_release_owner_binding")
+    checker.__file__ = str(Path(__file__).absolute().with_name("verify_owner_target_files_binding.py"))
+    try:
+        exec(compile(bodies["provenance"], provenance.__file__, "exec"), provenance.__dict__)
+        if provenance.BOUNDED_HELPER_SHA != sha256_bytes(bodies["bounded"]):
+            raise ReleaseError("owner bounded helper differs from its source contract")
+        exec(compile(bodies["checker"], checker.__file__, "exec"), checker.__dict__)
+        if (checker.SCHEMA, checker.MEMBER, checker.AUTHORITY, provenance.PROFILE, provenance.BOM_SCHEMA) != (
+            OWNER_BINDING_SCHEMA, OWNER_BINDING_MEMBER, OWNER_AUTHORITY, OWNER_PROFILE, OWNER_BOM_SCHEMA
+        ):
+            raise ReleaseError("owner source checker profile differs")
+        bom = checker.validate_bom(bodies["bom"])
+        build = provenance.parse(bodies["build"])
+        expected = checker.materialize_binding(bodies["bom"], build)
+    except (AttributeError, OSError, RuntimeError, ValueError, TypeError, KeyError) as error:
+        raise ReleaseError(f"owner source admission failed: {error}") from error
+    context = dict(checker=checker, sources=sources, bom_raw=bodies["bom"],
+                   build=build, build_raw=bodies["build"], bom=bom,
+                   expected=expected, seconds=seconds)
+    assert_owner_source_context(context)
+    return context
+
+
+def assert_owner_source_context(context: Mapping[str, object]) -> None:
+    for path, baseline in context["sources"].items():
+        if _has_symlink_component(path):
+            raise ReleaseError("owner source input path contains a symlink")
+        assert_measurement(path, baseline, "owner source input")
+
+
+def inspect_owner_source_binding(
+    target_files: Path, context: Mapping[str, object], measurement: Mapping[str, object]
+) -> dict[str, object]:
+    """Verify required META and the entire current ZIP before any use."""
+    assert_owner_source_context(context)
+    expected_zip = {name: measurement[name] for name in ("bytes", "sha256")}
+    checker = context["checker"]
+    try:
+        report = checker.inspect_path(target_files, context["bom_raw"], context["build"],
+                                      expected_zip, time.monotonic() + context["seconds"])
+    except (OSError, RuntimeError, ValueError, TypeError, KeyError, zipfile.BadZipFile) as error:
+        raise ReleaseError(f"required owner META preflight failed: {error}") from error
+    expected = context["expected"]
+    if (type(report) is not dict or report.get("candidate") != expected["candidate"]
+        or report.get("profile_id") != OWNER_PROFILE
+        or report.get("owner_binding_id") != expected["binding_id"]
+        or report.get("owner_source_bom_sha256") != sha256_bytes(context["bom_raw"])
+        or report.get("target_files") != expected_zip
+        or any(report.get(key) is not True for key in ("required_owner_meta_binding_verified", "whole_zip_custody_verified"))
+        or any(report.get(key) is not False for key in ("release_signature_verified", "independent_human_approval_asserted", "installed", "production_ready"))):
+        raise ReleaseError("owner source checker returned an invalid scope or custody report")
+    assert_owner_source_context(context)
+    assert_measurement(target_files, measurement, "owner target-files")
+    return dict(schema=OWNER_PROJECTION_SCHEMA, required=True, present=True, valid=True,
+                member=OWNER_BINDING_MEMBER, binding_schema=OWNER_BINDING_SCHEMA,
+                profile_id=OWNER_PROFILE, authority=OWNER_AUTHORITY,
+                binding_id=expected["binding_id"], candidate=expected["candidate"],
+                source_bom=expected["owner_source_bom"],
+                build_inputs=dict(schema=context["build"]["schema"],
+                                  bytes=len(context["build_raw"]), sha256=sha256_bytes(context["build_raw"]),
+                                  stage_id=context["build"]["stage_id"],
+                                  canonical_sha256=expected["build_inputs_sha256"]),
+                resolved_manifest_sha256=expected["resolved_manifest_sha256"],
+                target_files=expected_zip, whole_zip_custody_verified=True,
+                release_signature_verified=False, installed=False, production_ready=False,
+                independent_human_approval_asserted=False)
+
+
+def validate_owner_source_projection(value: object, target: Mapping[str, object]) -> dict[str, object]:
+    projection = exact_object(value, {
+        "schema", "required", "present", "valid", "member", "binding_schema", "profile_id",
+        "authority", "binding_id", "candidate", "source_bom", "build_inputs",
+        "resolved_manifest_sha256", "target_files", "whole_zip_custody_verified",
+        "release_signature_verified", "installed", "production_ready", "independent_human_approval_asserted"
+    }, "owner source projection")
+    if ((projection["schema"], projection["member"], projection["binding_schema"], projection["profile_id"], projection["authority"])
+        != (OWNER_PROJECTION_SCHEMA, OWNER_BINDING_MEMBER, OWNER_BINDING_SCHEMA, OWNER_PROFILE, OWNER_AUTHORITY)
+        or any(projection[key] is not True for key in ("required", "present", "valid", "whole_zip_custody_verified"))
+        or any(projection[key] is not False for key in ("release_signature_verified", "installed", "production_ready", "independent_human_approval_asserted"))):
+        raise ReleaseError("owner source projection exceeds its profile or provenance scope")
+    if projection["target_files"] != {key: target.get(key) for key in ("bytes", "sha256")}:
+        raise ReleaseError("owner source projection target-files differs")
+    identity = exact_object(projection["target_files"], {"bytes", "sha256"}, "owner target descriptor")
+    if type(identity["bytes"]) is not int or not 0 < identity["bytes"] <= MAX_TARGET_BYTES or not isinstance(identity["sha256"], str) or not HEX64.fullmatch(identity["sha256"]):
+        raise ReleaseError("invalid owner target descriptor")
+    candidate = exact_object(projection["candidate"], {"commit", "tree", "archive_sha256", "control_regular_files"}, "owner candidate")
+    for name, pattern in (("commit", r"[0-9a-f]{40}"), ("tree", r"[0-9a-f]{40}"), ("archive_sha256", r"[0-9a-f]{64}")):
+        if type(candidate[name]) is not str or re.fullmatch(pattern, candidate[name]) is None:
+            raise ReleaseError("invalid owner candidate digest")
+    if type(candidate["control_regular_files"]) is not int or not 0 < candidate["control_regular_files"] <= 250000:
+        raise ReleaseError("invalid owner candidate file count")
+    bom = exact_object(projection["source_bom"], {"schema", "bytes", "sha256", "receipt_id"}, "owner BOM descriptor")
+    build = exact_object(projection["build_inputs"], {"schema", "bytes", "sha256", "stage_id", "canonical_sha256"}, "owner build descriptor")
+    if bom["schema"] != OWNER_BOM_SCHEMA or build["schema"] != "org.trillionnium.owner-android-build-source-inputs.v1":
+        raise ReleaseError("owner provenance descriptor schema differs")
+    for item, maximum in ((bom, MAX_OWNER_SOURCE_BOM_BYTES), (build, 2 * 1024 * 1024)):
+        if type(item["bytes"]) is not int or not 0 < item["bytes"] <= maximum or type(item["sha256"]) is not str or not HEX64.fullmatch(item["sha256"]):
+            raise ReleaseError("invalid owner provenance descriptor")
+    for name, identifier in (("BOM", bom["receipt_id"]), ("binding", projection["binding_id"])):
+        if type(identifier) is not str or re.fullmatch(r"sha256:[0-9a-f]{64}", identifier) is None:
+            raise ReleaseError("invalid owner " + name + " content identifier")
+    for digest in (build["canonical_sha256"], projection["resolved_manifest_sha256"]):
+        if type(digest) is not str or not HEX64.fullmatch(digest):
+            raise ReleaseError("invalid owner provenance digest")
+    if type(build["stage_id"]) is not str or re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", build["stage_id"]) is None:
+        raise ReleaseError("invalid owner build stage")
+    binding = dict(schema=OWNER_BINDING_SCHEMA, profile_id=OWNER_PROFILE, authority=OWNER_AUTHORITY,
+                   candidate=candidate, owner_source_bom=bom,
+                   resolved_manifest_sha256=projection["resolved_manifest_sha256"],
+                   build_inputs_sha256=build["canonical_sha256"], build_stage_id=build["stage_id"])
+    if projection["binding_id"] != "sha256:" + sha256_bytes(canonical_json_bytes(binding)):
+        raise ReleaseError("owner provenance binding content identifier differs")
+    return projection
 
 
 def _identity(item: os.stat_result) -> tuple[int, ...]:
@@ -503,6 +667,20 @@ def validate_receipt(value: object) -> dict[str, object]:
     if plan.get("rollback_policy") != EXPECTED_ROLLBACK_POLICY:
         raise ReleaseError("receipt overstates rollback or hardware authority")
     source_binding = plan.get("source_bom_binding")
+    owner_binding = plan.get("owner_source_bom_binding")
+    signed_owner_binding = plan.get("signed_owner_source_bom_binding")
+    if source_binding is not None and owner_binding is not None:
+        raise ReleaseError("receipt mixes legacy and owner source profiles")
+    if owner_binding is not None:
+        validate_owner_source_projection(owner_binding, input_facts)
+    if signed_owner_binding is not None:
+        if dry_run or owner_binding is None or type(receipt.get("signed_target_files")) is not dict:
+            raise ReleaseError("signed owner provenance lacks its actual signed target")
+        validate_owner_source_projection(signed_owner_binding, receipt["signed_target_files"])
+        expected = dict(owner_binding)
+        expected["target_files"] = signed_owner_binding["target_files"]
+        if signed_owner_binding != expected:
+            raise ReleaseError("signed target-files changed the owner source binding")
     if source_binding is not None:
         if (
             type(source_binding) is not dict
@@ -565,6 +743,8 @@ def validate_receipt(value: object) -> dict[str, object]:
             if receipt[field] is not False:
                 raise ReleaseError(f"release OTA receipt has forbidden true field: {field}")
         if receipt["error"] is None:
+            if owner_binding is not None and signed_owner_binding is None:
+                raise ReleaseError("successful owner signing lacks signed META verification")
             for field in (
                 "material",
                 "signed_target_files",
@@ -1915,6 +2095,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--require-owner-source-bom-binding", action="store_true",
+        help="require the owner v3 META member and complete measured owner source BOM",
+    )
+    parser.add_argument("--owner-source-bom", type=Path)
+    parser.add_argument("--owner-build-source-inputs", type=Path)
+    parser.add_argument("--owner-source-observer-seconds", type=float, default=1800)
+    parser.add_argument(
         "--validate-key-material",
         action="store_true",
         help="In dry-run mode, validate private handles without staging or signing.",
@@ -1927,6 +2114,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise ReleaseError("artifact prefix is invalid")
     if args.validate_key_material and not args.dry_run:
         raise ReleaseError("--validate-key-material only applies to --dry-run")
+    if args.require_owner_source_bom_binding and args.require_source_bom_binding:
+        raise ReleaseError("legacy and owner source profiles are mutually exclusive")
+    owner_inputs_present = args.owner_source_bom is not None and args.owner_build_source_inputs is not None
+    if args.require_owner_source_bom_binding and not owner_inputs_present:
+        raise ReleaseError("owner strict mode requires --owner-source-bom and --owner-build-source-inputs")
+    if not args.require_owner_source_bom_binding and (
+        args.owner_source_bom is not None or args.owner_build_source_inputs is not None
+        or args.owner_source_observer_seconds != 1800
+    ):
+        raise ReleaseError("owner provenance arguments require --require-owner-source-bom-binding")
     if args.require_source_bom_binding and args.source_bom_binding_bom is None:
         raise ReleaseError(
             "--source-bom-binding-bom is required with "
@@ -1954,6 +2151,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     target_files = Path(os.path.abspath(os.fspath(args.target_files)))
     target_baseline = measure_file(target_files, "input target-files")
     source_bom_binding: dict[str, object] | None = None
+    owner_context: dict[str, object] | None = None
+    owner_source_binding: dict[str, object] | None = None
+    if args.require_owner_source_bom_binding:
+        owner_context = load_owner_source_context(
+            Path(os.path.abspath(os.fspath(args.owner_source_bom))),
+            Path(os.path.abspath(os.fspath(args.owner_build_source_inputs))),
+            args.owner_source_observer_seconds,
+        )
+        owner_source_binding = inspect_owner_source_binding(target_files, owner_context, target_baseline)
     if args.require_source_bom_binding:
         source_bom_binding = inspect_required_source_bom_binding(
             target_files,
@@ -1990,6 +2196,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     plan["config_sha256"] = sha256_bytes(config_raw)
     if source_bom_binding is not None:
         plan["source_bom_binding"] = source_bom_binding
+    if owner_source_binding is not None:
+        plan["owner_source_bom_binding"] = owner_source_binding
 
     key_dir = args.key_dir
     if key_dir is None and os.environ.get("TRILLIONNIUM_RELEASE_KEY_DIR"):
@@ -2010,6 +2218,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
 
     if args.dry_run:
+        if owner_context is not None:
+            assert_owner_source_context(owner_context)
         material_public: dict[str, object] | None = None
         decision = dry_run_decision(build_type, False)
         if args.validate_key_material:
@@ -2036,6 +2246,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             }
             decision = dry_run_decision(build_type, True)
         assert_measurement(target_files, target_baseline, "input target-files")
+        if owner_context is not None:
+            assert_owner_source_context(owner_context)
         for name, path in tool_paths.items():
             assert_measurement(path, tool_baselines[name], f"Android host tool {name}")
         result = {
@@ -2089,12 +2301,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     signed_facts: dict[str, object] | None = None
     signed_crypto_facts: dict[str, object] | None = None
     ota_facts: dict[str, object] | None = None
+    verified_output_baselines: dict[str, dict[str, object]] = {}
     material_public: dict[str, object] | None = None
     passphrases: list[str] = []
     source_secret_paths = [key_dir, apex_key_dir]
 
     resolved_tools = tool_paths
     try:
+        if owner_context is not None:
+            assert_owner_source_context(owner_context)
         with staged_material(
             config,
             key_dir,
@@ -2133,6 +2348,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             sign = signing_command(
                 resolved_tools, config, material_path, target_files, working["signed_target"]
             )
+            if owner_context is not None:
+                assert_owner_source_context(owner_context)
             assert_measurement(target_files, target_baseline, "input target-files")
             assert_measurement(
                 resolved_tools["sign_target_files_apks"],
@@ -2157,9 +2374,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             if sign_rc != 0:
                 raise ReleaseError(f"sign_target_files_apks failed rc={sign_rc}")
-            signed_facts = inspect_target_files(working["signed_target"], config, signed=True)
+            signed_baseline = measure_file(working["signed_target"], "signed target-files")
+            verified_output_baselines["signed_target"] = signed_baseline
+            signed_facts = inspect_target_files(working["signed_target"], config, signed=True, measurement=signed_baseline)
+            assert_measurement(working["signed_target"], signed_baseline, "signed target-files")
             if signed_facts["build_type"] != build_type:
                 raise ReleaseError("signed target-files changed the input build type")
+            if owner_context is not None:
+                if {key: signed_baseline[key] for key in ("bytes", "sha256")} != {
+                    key: signed_facts[key] for key in ("bytes", "sha256")
+                }:
+                    raise ReleaseError("signed owner target moved during inspection")
+                plan["signed_owner_source_bom_binding"] = inspect_owner_source_binding(
+                    working["signed_target"], owner_context, signed_baseline
+                )
             for tool_name in ("avbtool", "apksigner"):
                 assert_measurement(
                     resolved_tools[tool_name],
@@ -2189,6 +2417,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 working["ota"],
                 working["metadata"],
             )
+            if owner_context is not None:
+                assert_owner_source_context(owner_context)
+            assert_measurement(working["signed_target"], signed_baseline, "signed target-files")
             assert_measurement(target_files, target_baseline, "input target-files")
             assert_measurement(
                 resolved_tools["ota_from_target_files"],
@@ -2213,6 +2444,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             if ota_rc != 0 or not working["metadata"].is_file():
                 raise ReleaseError(f"ota_from_target_files failed rc={ota_rc}")
+            for name in ("ota", "metadata"):
+                verified_output_baselines[name] = measure_file(working[name], "verified " + name)
             ota_facts = verify_signed_ota(
                 working["ota"],
                 working["metadata"],
@@ -2220,6 +2453,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 build_type,
                 cert_sha,
             )
+            if {key: ota_facts.get(key) for key in ("bytes", "sha256")} != {
+                key: verified_output_baselines["ota"][key] for key in ("bytes", "sha256")
+            }:
+                raise ReleaseError("OTA custody differs from the inspected artifact")
             if ota_facts["post_build"] != signed_facts["fingerprint"]:
                 raise ReleaseError(
                     "OTA post-build fingerprint differs from signed target-files"
@@ -2255,16 +2492,54 @@ def main(argv: Sequence[str] | None = None) -> int:
         for name, path in resolved_tools.items():
             assert_measurement(path, tool_baselines[name], f"Android host tool {name}")
         assert_measurement(target_files, target_baseline, "input target-files")
+        if owner_context is not None:
+            assert_owner_source_context(owner_context)
+        for name, baseline in verified_output_baselines.items():
+            assert_measurement(working[name], baseline, "verified output " + name)
+        publication_baselines = verified_output_baselines
+
+        def assert_publication_inputs() -> None:
+            # Keep the original public provenance and tool inputs fixed through
+            # publication; failure must still be inside the rollback boundary.
+            if owner_context is not None:
+                assert_owner_source_context(owner_context)
+            assert_measurement(target_files, target_baseline, "input target-files")
+            for tool_name, tool_path in resolved_tools.items():
+                assert_measurement(
+                    tool_path, tool_baselines[tool_name], f"Android host tool {tool_name}"
+                )
+
         promoted: list[str] = []
         try:
             for name in ("signed_target", "ota", "metadata"):
                 os.replace(working[name], paths[name])
                 promoted.append(name)
-        except OSError as publish_error:
+                published = measure_file(paths[name], "published output " + name)
+                baseline = publication_baselines[name]
+                if (published["bytes"] != baseline["bytes"]
+                    or published["sha256"] != baseline["sha256"]
+                    or published["identity"][:2] != baseline["identity"][:2]):
+                    raise ReleaseError("published output differs from the verified artifact")
+                assert_publication_inputs()
+            # A later rename may expose movement of an earlier member. Recheck
+            # the complete public set before emitting a successful receipt.
+            for name, baseline in publication_baselines.items():
+                published = measure_file(paths[name], "published output set " + name)
+                if (published["bytes"] != baseline["bytes"]
+                    or published["sha256"] != baseline["sha256"]
+                    or published["identity"][:2] != baseline["identity"][:2]):
+                    raise ReleaseError("published output set differs from the verified artifacts")
+            assert_publication_inputs()
+        except Exception as publish_error:
+            rollback_errors: list[str] = []
             for name in reversed(promoted):
-                if paths[name].exists() and not working[name].exists():
-                    os.replace(paths[name], working[name])
-            raise ReleaseError("failed to publish the verified release output set") from publish_error
+                try:
+                    if paths[name].exists() and not working[name].exists():
+                        os.replace(paths[name], working[name])
+                except OSError:
+                    rollback_errors.append(name)
+            detail = "; rollback incomplete for " + ",".join(rollback_errors) if rollback_errors else ""
+            raise ReleaseError("failed to publish the verified release output set" + detail) from publish_error
     except Exception as exception:  # fail closed and emit a public-only receipt
         sanitizer = Sanitizer(source_secret_paths, passphrases)
         error = sanitizer.line(str(exception)).strip()

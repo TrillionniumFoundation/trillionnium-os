@@ -31,6 +31,14 @@ message and Git configuration. Recomputing the same tuple must produce the same
 commit SHA. GitHub's hidden pull-request merge ref is a mutable service-side
 observation and is not the canonical decision object.
 
+Manual synthetic-merge dispatch may select untrusted fork source while the run
+is scoped to `main`. The source-execution job must declare `cache-mode: none`,
+enforced by the Actions cache service. Verify the effective mode in the runner's
+`Set up job` observation `Cache mode: none`; Bash `run` steps do not receive the
+Node action's `ACTIONS_CACHE_MODE` variable. A manually set environment value
+cannot prove cache isolation. Read-only repository-token permissions alone do
+not restrict cache access. These source gates require no shared Actions cache.
+
 The server-required `L1 exact-source-head aggregate candidate` context is owned
 by a dependent job in `G1 synthetic-merge qualification`. It cannot complete
 until the exact live base/head synthetic job succeeds. The separately named

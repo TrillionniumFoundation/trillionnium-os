@@ -1,23 +1,28 @@
 use std::collections::{HashMap, VecDeque};
+use std::ops::{Deref, DerefMut};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Condvar, Mutex, MutexGuard};
 use std::thread;
 
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_job_registry::{
-    BeginDisposition, JobEffectiveState, JobEvent, JobKey, JobRegistry, JobRegistryError,
-    JobRequest, JobTerminal, SpawnClaim,
+    BeginDisposition, JobEffectiveState, JobEvent, JobKey, JobMemoryLease, JobRegistry,
+    JobRegistryError, JobRegistryLimits, JobRequest, JobTerminal, SpawnClaim,
 };
 
 use crate::journal::{JournalStatus, OperationBegin};
-use crate::process::{ProcessControl, StdinCloseEffect, spawn_process};
+use crate::process::{
+    ProcessControl, StdinCloseEffect, inherited_environment, spawn_process, validate_start,
+};
+use crate::resources::{ProcessLease, process_reservation, start_spec_bytes};
 use crate::{
     ControlDisposition, EventLogStatus, InternalProcessEvent, JobInspection, JobJournal,
     JobObservationGap, JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult,
-    ProcessIdentity, PtySize, ReplayStatus, Result, RuntimeJobEvent, RuntimeJobEventKind,
-    StartDisposition,
+    MAX_JOB_RUNTIME_REGISTRY_EVENTS_PER_JOB, MAX_JOB_RUNTIME_RETAINED_KEYS,
+    OBSERVATION_METADATA_RESERVE, ProcessIdentity, PtySize, ReplayStatus, Result, RuntimeJobEvent,
+    RuntimeJobEventKind, StartDisposition,
 };
 
 const START_SHARD_COUNT: usize = 64;
@@ -25,6 +30,8 @@ const START_SHARD_HASH_VERSION: u8 = 1;
 const START_SHARD_DOMAIN: &[u8] = b"owner-open-job-manager-start";
 const FNV_OFFSET_BASIS: u64 = 0xcbf29ce484222325;
 const FNV_PRIME: u64 = 0x00000100000001b3;
+// One bounded numeric-array/DOM pipeline across independent managers.
+// Never hold the accounting-pool mutex across serialization, callbacks or I/O.
 
 struct AdmissionPool {
     active: AtomicUsize,
@@ -56,6 +63,7 @@ impl AdmissionPool {
                 Ok(_) => {
                     return Ok(AdmissionPermit {
                         pool: Arc::clone(self),
+                        held: AtomicBool::new(true),
                     });
                 }
                 Err(observed) => current = observed,
@@ -66,12 +74,24 @@ impl AdmissionPool {
 
 struct AdmissionPermit {
     pool: Arc<AdmissionPool>,
+    held: AtomicBool,
+}
+
+impl AdmissionPermit {
+    fn release(&self) {
+        // A retained control or dispatcher Arc can outlive process truth.
+        // Release only this manager-private slot; the process/memory lease
+        // remains independently owned until its existing cleanup path ends.
+        if self.held.swap(false, Ordering::AcqRel) {
+            let previous = self.pool.active.fetch_sub(1, Ordering::AcqRel);
+            debug_assert!(previous > 0, "job admission permit underflow");
+        }
+    }
 }
 
 impl Drop for AdmissionPermit {
     fn drop(&mut self) {
-        let previous = self.pool.active.fetch_sub(1, Ordering::AcqRel);
-        debug_assert!(previous > 0, "job admission permit underflow");
+        self.release();
     }
 }
 
@@ -80,6 +100,7 @@ struct RunningJob {
     request: JobRequest,
     generation: u64,
     _admission_permit: AdmissionPermit,
+    _process_lease: Arc<ProcessLease>,
     startup: Arc<StartupGate>,
     lifecycle: Mutex<()>,
     stdout_bytes: Mutex<u64>,
@@ -183,6 +204,41 @@ struct ObservationState {
     next_seq: u64,
     byte_count: usize,
     journal_unavailable_emitted: bool,
+    last_update: u64,
+}
+
+struct Observations {
+    states: HashMap<JobKey, ObservationState>,
+    update_clock: u64,
+    owned_lease: JobMemoryLease,
+}
+
+impl Deref for Observations {
+    type Target = HashMap<JobKey, ObservationState>;
+    fn deref(&self) -> &Self::Target {
+        &self.states
+    }
+}
+
+impl DerefMut for Observations {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.states
+    }
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TestTerminalPublicationPoint {
+    BeforeObservation,
+    AfterObservation,
+}
+
+#[cfg(test)]
+struct TestTerminalPublicationGate {
+    key: JobKey,
+    point: TestTerminalPublicationPoint,
+    reached: std::sync::mpsc::SyncSender<()>,
+    resume: Mutex<std::sync::mpsc::Receiver<()>>,
 }
 
 struct Inner {
@@ -192,8 +248,13 @@ struct Inner {
     running: Mutex<HashMap<JobKey, Arc<RunningJob>>>,
     admission: Arc<AdmissionPool>,
     start_shards: Vec<Mutex<()>>,
-    observations: Mutex<HashMap<JobKey, ObservationState>>,
+    observations: Mutex<Observations>,
+    // Serialize resident terminal archival against snapshot/history reads.
+    // No journal I/O is performed while a registry shard lock is held.
+    retention: Mutex<()>,
     durability_error: Mutex<Option<String>>,
+    #[cfg(test)]
+    test_terminal_publication: Mutex<Option<Arc<TestTerminalPublicationGate>>>,
 }
 
 #[derive(Clone)]
@@ -202,24 +263,63 @@ pub struct JobManager {
 }
 
 impl JobManager {
+    #[cfg(test)]
+    fn test_pause_terminal_publication(&self, key: &JobKey, point: TestTerminalPublicationPoint) {
+        let gate = {
+            let mut configured = self.inner.test_terminal_publication.lock().unwrap();
+            if configured
+                .as_ref()
+                .is_some_and(|gate| gate.key == *key && gate.point == point)
+            {
+                configured.take()
+            } else {
+                None
+            }
+        };
+        if let Some(gate) = gate {
+            gate.reached.send(()).unwrap();
+            gate.resume
+                .lock()
+                .unwrap()
+                .recv_timeout(std::time::Duration::from_secs(5))
+                .expect("owned publication gate must be resumed");
+        }
+    }
+
     pub fn new(config: JobRuntimeConfig, journal: JobJournal) -> Result<Self> {
         config.validate()?;
         let max_jobs = config.max_jobs;
         Ok(Self {
             inner: Arc::new(Inner {
                 config,
-                registry: Arc::new(JobRegistry::default()),
+                registry: Arc::new(
+                    JobRegistry::new(JobRegistryLimits {
+                        max_entries: MAX_JOB_RUNTIME_RETAINED_KEYS,
+                        max_history_per_job: MAX_JOB_RUNTIME_REGISTRY_EVENTS_PER_JOB,
+                        ..JobRegistryLimits::default()
+                    })
+                    .map_err(registry_error)?,
+                ),
                 journal: Arc::new(journal),
                 running: Mutex::new(HashMap::new()),
                 admission: Arc::new(AdmissionPool::new(max_jobs)),
                 start_shards: (0..START_SHARD_COUNT).map(|_| Mutex::new(())).collect(),
-                observations: Mutex::new(HashMap::new()),
+                observations: Mutex::new(Observations {
+                    states: HashMap::new(),
+                    update_clock: 0,
+                    owned_lease: JobMemoryLease::acquire(OBSERVATION_METADATA_RESERVE)
+                        .map_err(registry_error)?,
+                }),
+                retention: Mutex::new(()),
                 durability_error: Mutex::new(None),
+                #[cfg(test)]
+                test_terminal_publication: Mutex::new(None),
             }),
         })
     }
 
     pub fn open(config: JobRuntimeConfig, journal_path: Option<&Path>) -> Result<Self> {
+        config.validate()?;
         Self::new(config, JobJournal::open_best_effort(journal_path))
     }
 
@@ -230,6 +330,7 @@ impl JobManager {
     /// at `events.jsonl.jobs` must never share one segmented root. Callers
     /// that still need the v1 file API can continue using [`Self::open`].
     pub fn open_segmented(config: JobRuntimeConfig, journal_path: Option<&Path>) -> Result<Self> {
+        config.validate()?;
         let root: Option<PathBuf> = journal_path.map(|path| {
             let mut root = path.as_os_str().to_os_string();
             root.push(".segments");
@@ -257,7 +358,8 @@ impl JobManager {
         // across journal I/O, process spawn, or dispatcher creation, so
         // unrelated keys can start concurrently while one key remains
         // linearizable.
-        let _start_guard = self.start_guard(&request.key)?;
+        // Bind owned input last so its buffers retire before its reservation.
+        let (_start_guard, _pending_input, request) = self.start_input_guard(request)?;
         if let Some(running) = self.running()?.get(&request.key).cloned() {
             if running.request != request.request {
                 return Err(JobRuntimeError::JobConflict);
@@ -320,7 +422,21 @@ impl JobManager {
         // Compute the exact operation identity before the registry accepts the
         // key.  A serialization/digest failure must not leave an Accepted
         // entry that has no corresponding journal operation.
-        let operation_sha256 = start_operation_sha256(&request)?;
+        // Existing keys need no new process reservation. Every moved request
+        // already holds its owned-input charge; only a new identity reserves
+        // process/digest staging before durable acceptance.
+        let start_resources = if registry_entry_exists {
+            None
+        } else {
+            let inherited = inherited_environment()?;
+            let lease = ProcessLease::acquire(process_reservation(
+                &request,
+                &self.inner.config,
+                &inherited,
+            )?)?;
+            let digest = start_operation_sha256(&request)?;
+            Some((inherited, lease, digest))
+        };
 
         // Fail closed before the registry accepts the job.  An unavailable or
         // deliberately memory-only journal must not leave an Accepted entry
@@ -330,8 +446,8 @@ impl JobManager {
             && !matches!(&journal_status, JournalStatus::Durable)
         {
             let reason = journal_status_reason(&journal_status);
-            let _ = self.note_journal_degraded_for_job(&request.key, reason);
             if registry_entry_exists {
+                let _ = self.note_journal_degraded_for_job(&request.key, reason);
                 // A pre-existing registry marker must not remain an
                 // unowned, redispatchable Accepted state while persistence
                 // is unavailable. The live-map check above already ruled
@@ -341,6 +457,11 @@ impl JobManager {
                     .mark_restart_uncertain(&request.key)
                     .map_err(registry_error)?;
             }
+            // A rejected new key owns no bounded registry entry. Retaining
+            // an observation for every such key would let repeated failed
+            // admissions grow the observations map without a capacity fence.
+            // Inspection still exposes the manager's journal status/error;
+            // per-job degradation history belongs only to accepted jobs.
             return Err(JobRuntimeError::Journal(
                 "job journal is unavailable and unjournaled effects are disabled".to_string(),
             ));
@@ -354,6 +475,13 @@ impl JobManager {
         } else {
             Some(self.inner.admission.try_acquire()?)
         };
+
+        // Registry capacity includes terminal history, whereas process slots
+        // count only owned children. Archive only a durable terminal under
+        // pressure; the journal remains the exact-key deduplication authority.
+        if !registry_entry_exists {
+            self.archive_durable_terminal_at_capacity()?;
+        }
 
         let begin = self
             .inner
@@ -396,6 +524,11 @@ impl JobManager {
                 replay_status,
             });
         }
+        let (inherited, process_lease, operation_sha256) = start_resources.ok_or_else(|| {
+            JobRuntimeError::Registry(
+                "new job registry entry was created without an owned memory lease".to_string(),
+            )
+        })?;
         if matches!(&journal_status, JournalStatus::Unavailable { .. }) {
             let _ = self.note_journal_degraded_for_job(
                 &request.key,
@@ -424,20 +557,33 @@ impl JobManager {
             Ok(begin) => begin,
             Err(error) => {
                 let journal_error = error.to_string();
-                let _ = self.note_journal_failure_for_job(&request.key, journal_error);
+                let capacity_refusal = matches!(&error, JobRuntimeError::Journal(reason)
+                    if reason == &JobRegistryError::CapacityExhausted.to_string())
+                    && matches!(self.inner.journal.status(), Ok(JournalStatus::Durable));
+                // A pre-WAL capacity refusal owns no new observation identity.
+                // Keep existing observations and the manager-wide diagnostic;
+                // restore the per-key marker below unless rollback proves
+                // this acceptance was still untouched.
+                let _ = self.note_journal_failure_with_observation(
+                    &request.key,
+                    journal_error,
+                    !capacity_refusal,
+                );
                 // `registry.begin` ran first to reserve the exact key.  If
                 // durable acceptance fails, remove only that untouched
                 // Accepted entry; rollback_accept validates request and state
                 // while holding the registry lock.  If it cannot prove the
                 // entry is untouched, inhibit redispatch conservatively.
                 let original = error.to_string();
-                if let Err(rollback_error) = self
+                let rollback = self
                     .inner
                     .registry
                     .rollback_accept(&request.key, &request.request)
-                    .map(|_| ())
-                    .map_err(registry_error)
-                {
+                    .map_err(registry_error);
+                if capacity_refusal && !matches!(&rollback, Ok(true)) {
+                    let _ = self.note_journal_failure_for_job(&request.key, original.clone());
+                }
+                if let Err(rollback_error) = rollback {
                     let _ = self.inner.registry.mark_restart_uncertain(&request.key);
                     return Err(JobRuntimeError::Journal(format!(
                         "{original}; registry acceptance rollback failed: {rollback_error}"
@@ -589,7 +735,12 @@ impl JobManager {
             }
         };
 
-        let spawned = match spawn_process(&request, self.inner.config.max_output_chunk_bytes) {
+        let spawned = match spawn_process(
+            &request,
+            self.inner.config.max_output_chunk_bytes,
+            &inherited,
+            Arc::clone(&process_lease),
+        ) {
             Ok(spawned) => spawned,
             Err(error) => {
                 let effect_may_have_started = matches!(&error, JobRuntimeError::SpawnAfterFork(_));
@@ -664,6 +815,7 @@ impl JobManager {
             request: request.request.clone(),
             generation,
             _admission_permit: admission_permit,
+            _process_lease: process_lease,
             startup: Arc::new(StartupGate::new()),
             lifecycle: Mutex::new(()),
             stdout_bytes: Mutex::new(0),
@@ -1094,6 +1246,11 @@ impl JobManager {
                 "job inspect limit is outside the configured bound".to_string(),
             ));
         }
+        let retention = self
+            .inner
+            .retention
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
         let snapshot = self.inner.registry.snapshot(key).ok();
         let registry_events = match &snapshot {
             Some(_) => self
@@ -1103,6 +1260,8 @@ impl JobManager {
                 .map_err(registry_error)?,
             None => Vec::<JobEvent>::new(),
         };
+        drop(retention);
+        let durable_next_seq = self.inner.journal.runtime_next_cursor(key)?;
         // Copy the bounded resident window out before consulting the journal.
         // Journal failure reporting takes the durability lock and then the
         // observation lock; releasing this guard avoids a lock-order cycle
@@ -1111,7 +1270,9 @@ impl JobManager {
         let (total, oldest_available_cursor, gap, events, next_cursor) = {
             let observations = self.observations()?;
             let state = observations.get(key);
-            let total = state.map_or(0, |state| state.next_seq);
+            let total = state.map_or(durable_next_seq, |state| {
+                state.next_seq.max(durable_next_seq)
+            });
             if inclusive_cursor > total {
                 return Err(JobRuntimeError::InvalidRequest(format!(
                     "inclusive cursor {inclusive_cursor} is after next cursor {total}"
@@ -1143,9 +1304,8 @@ impl JobManager {
             };
             (total, oldest_available_cursor, gap, events, next_cursor)
         };
-        let recovered = self.inner.journal.recovered_job(key)?;
         let replay_status =
-            if snapshot.is_none() && recovered.as_ref().is_some_and(|job| job.terminal.is_none()) {
+            if snapshot.is_none() && self.inner.journal.recovered_nonterminal(key)? {
                 ReplayStatus::UnknownAfterRestart
             } else {
                 self.replay_status(false)?
@@ -1590,6 +1750,7 @@ impl JobManager {
                                     return;
                                 }
                             };
+                            let process_cleanup_complete = cleanup_error.is_none();
                             if let Some(error) = cleanup_error {
                                 let _ = manager.push_runtime_event(
                                     &key,
@@ -1700,6 +1861,14 @@ impl JobManager {
                                     },
                                 );
                             }
+                            // The normal Exited event follows a consumed wait and joined
+                            // output workers.  Release admission before making terminal
+                            // truth visible, even while the dispatcher/control Arcs and
+                            // durable-terminal marker stay retained.  An uncertain cleanup
+                            // keeps its original RAII release timing instead.
+                            if process_cleanup_complete {
+                                running._admission_permit.release();
+                            }
                             // `push_runtime_event` retains the terminal observation and attempts
                             // the observation/`job.terminal` append.  If persistence fails, it
                             // publishes an explicit in-memory degradation marker; do not write the
@@ -1707,14 +1876,18 @@ impl JobManager {
                             // keeps the exclusive writer lease alive after a consumer can observe
                             // completion and makes an immediate in-process manager handoff
                             // spuriously fail closed.
+                            #[cfg(test)]
+                            manager.test_pause_terminal_publication(&key, TestTerminalPublicationPoint::BeforeObservation);
                             if let Err(error) = manager.push_runtime_event(&key, &request, event) {
                                 let _ =
                                     manager.note_journal_failure_for_job(&key, error.to_string());
                             }
+                            #[cfg(test)]
+                            manager.test_pause_terminal_publication(&key, TestTerminalPublicationPoint::AfterObservation);
                             // Keep the owned process marker until the durable
                             // terminal record has been attempted.  The
-                            // registry is already terminal above, so admission
-                            // capacity is free; the marker only prevents the
+                            // normal process admission is already released above;
+                            // the marker still prevents the
                             // Host loop from exiting in the small interval
                             // between publishing the terminal observation and
                             // recording `job.terminal`.
@@ -1782,13 +1955,37 @@ impl JobManager {
         request: &JobRequest,
         kind: RuntimeJobEventKind,
     ) -> Result<u64> {
+        let _staging_lane = crate::resources::working_lane()?;
+        let staging = match &kind {
+            RuntimeJobEventKind::Output { bytes, .. } => {
+                if bytes.capacity() > self.inner.config.max_output_chunk_bytes {
+                    return Err(JobRuntimeError::InvalidRequest(
+                        "runtime output exceeds the owned chunk bound".to_string(),
+                    ));
+                }
+                bytes
+                    .capacity()
+                    .checked_mul(crate::OUTPUT_VALUE_STAGING_PER_BYTE)
+                    .and_then(|bytes| bytes.checked_add(crate::OBSERVATION_STAGING_FIXED_BYTES))
+                    .ok_or_else(|| {
+                        JobRuntimeError::InvalidRequest(
+                            "runtime output Value staging overflow".to_string(),
+                        )
+                    })?
+            }
+            _ => crate::OBSERVATION_STAGING_FIXED_BYTES,
+        };
+        let _staging_lease = JobMemoryLease::acquire_working(staging).map_err(registry_error)?;
         // Reserve and retain the resident event before touching the journal.
         // This keeps the inspection cursor monotonic even when the append
         // fails, and (critically) lets the failure path publish a synthetic
         // in-memory degradation event without holding the observation lock.
         let (seq, event, payload) = {
             let mut observations = self.observations()?;
+            observations.update_clock = observations.update_clock.saturating_add(1);
+            let update = observations.update_clock;
             let state = observations.entry(key.clone()).or_default();
+            state.last_update = update;
             let seq = state.next_seq;
             // Observation cursors are persisted/replayed semantic ordering,
             // not a bounded resource counter.  Wrapping would make a new
@@ -1812,9 +2009,10 @@ impl JobManager {
                 self.inner.config.max_observations_per_job,
                 self.inner.config.max_observation_bytes_per_job,
             );
+            enforce_global_observation_budget(&mut observations, &self.inner.config)?;
             (seq, event, payload)
         };
-        let journal_result = self.inner.journal.append_observation(
+        let journal_result = self.inner.journal.append_observation_reserved(
             key,
             request,
             seq,
@@ -1852,7 +2050,23 @@ impl JobManager {
     /// most once per key and is deliberately never sent back through the
     /// failed journal.
     fn note_journal_degraded_for_job(&self, key: &JobKey, error: String) -> Result<()> {
+        self.note_journal_degradation(key, error, true)
+    }
+
+    fn note_journal_degradation(
+        &self,
+        key: &JobKey,
+        error: String,
+        allow_new_identity: bool,
+    ) -> Result<()> {
         let mut observations = self.observations()?;
+        // Test and mutation share the same lock. Never remove an identity:
+        // an existing cursor/uncertainty marker must retain its old semantics.
+        if !allow_new_identity && !observations.contains_key(key) {
+            return Ok(());
+        }
+        observations.update_clock = observations.update_clock.saturating_add(1);
+        let update = observations.update_clock;
         let state = observations.entry(key.clone()).or_default();
         if state.journal_unavailable_emitted {
             return Ok(());
@@ -1862,6 +2076,7 @@ impl JobManager {
             JobRuntimeError::Journal("runtime observation sequence exhausted".to_string())
         })?;
         state.journal_unavailable_emitted = true;
+        state.last_update = update;
         state.next_seq = next_seq;
         retain_runtime_event(
             state,
@@ -1875,15 +2090,25 @@ impl JobManager {
             self.inner.config.max_observations_per_job,
             self.inner.config.max_observation_bytes_per_job,
         );
+        enforce_global_observation_budget(&mut observations, &self.inner.config)?;
         Ok(())
     }
 
     fn note_journal_failure_for_job(&self, key: &JobKey, error: String) -> Result<()> {
+        self.note_journal_failure_with_observation(key, error, true)
+    }
+
+    fn note_journal_failure_with_observation(
+        &self,
+        key: &JobKey,
+        error: String,
+        allow_new_identity: bool,
+    ) -> Result<()> {
         self.note_journal_failure(error)?;
         let reason = self
             .durability_error()?
             .unwrap_or_else(|| "job journal is unavailable".to_string());
-        self.note_journal_degraded_for_job(key, reason)
+        self.note_journal_degradation(key, reason, allow_new_identity)
     }
 
     fn journal_degradation_reason(&self) -> Result<String> {
@@ -1950,6 +2175,25 @@ impl JobManager {
         stable_start_shard_index(key, self.inner.start_shards.len())
     }
 
+    fn start_input_guard(
+        &self,
+        request: JobStartRequest,
+    ) -> Result<(MutexGuard<'_, ()>, JobMemoryLease, JobStartRequest)> {
+        // Even an idle start shard can later wait for recovery, startup or
+        // other shared lanes. Admit every moved input before the first wait.
+        let heap = start_spec_bytes(&request, &self.inner.config)?
+            .saturating_sub(std::mem::size_of::<JobStartRequest>())
+            .checked_add(request.initial_stdin.capacity())
+            .ok_or_else(|| {
+                JobRuntimeError::InvalidRequest("owned start memory size overflow".to_string())
+            })?;
+        let pending = JobMemoryLease::acquire(heap).map_err(registry_error)?;
+        // Parameters otherwise outlive local guards, including lock errors.
+        #[allow(clippy::redundant_locals)]
+        let request = request;
+        Ok((self.start_guard(&request.key)?, pending, request))
+    }
+
     fn start_guard(&self, key: &JobKey) -> Result<MutexGuard<'_, ()>> {
         self.inner.start_shards[self.start_shard_index(key)]
             .lock()
@@ -1965,11 +2209,71 @@ impl JobManager {
         self.running().map(|jobs| !jobs.is_empty()).unwrap_or(true)
     }
 
-    fn observations(&self) -> Result<MutexGuard<'_, HashMap<JobKey, ObservationState>>> {
+    fn observations(&self) -> Result<MutexGuard<'_, Observations>> {
         self.inner
             .observations
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)
+    }
+
+    fn archive_durable_terminal_at_capacity(&self) -> Result<()> {
+        let _retention = self
+            .inner
+            .retention
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        // This manager owns the registry's fixed default entry ceiling.
+        if self.inner.registry.len().map_err(registry_error)? < MAX_JOB_RUNTIME_RETAINED_KEYS
+            || !matches!(self.inner.journal.status()?, JournalStatus::Durable)
+            || self.durability_error()?.is_some()
+        {
+            return Ok(());
+        }
+        for key in self.inner.registry.keys().map_err(registry_error)? {
+            if self.running()?.contains_key(&key) {
+                continue;
+            }
+            let snapshot = self.inner.registry.snapshot(&key).map_err(registry_error)?;
+            let JobEffectiveState::Terminal {
+                generation,
+                terminal,
+            } = snapshot.state
+            else {
+                continue;
+            };
+            let Some(recovered) = self.inner.journal.recovered_job(&key)? else {
+                continue;
+            };
+            let expected = serde_json::to_value(RuntimeJobEventKind::Terminal {
+                generation,
+                terminal_kind: terminal.terminal_kind,
+                exit_code: terminal.exit_code,
+                signal: terminal.signal,
+                observation_sha256: terminal.observation_sha256,
+                stdout_bytes: terminal.stdout_bytes,
+                stderr_bytes: terminal.stderr_bytes,
+            })
+            .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
+            if recovered.request != snapshot.request
+                || recovered.terminal.as_ref() != Some(&expected)
+            {
+                continue;
+            }
+            if self
+                .inner
+                .registry
+                .remove_terminal(&key)
+                .map_err(registry_error)?
+            {
+                // The durable cursor remains available from the journal, so
+                // inspection reports an explicit whole-prefix gap on archive.
+                let mut observations = self.observations()?;
+                observations.remove(&key);
+                enforce_global_observation_budget(&mut observations, &self.inner.config)?;
+                return Ok(());
+            }
+        }
+        Ok(())
     }
 }
 
@@ -2023,6 +2327,87 @@ fn retain_runtime_event(
     }
 }
 
+fn resident_window_bytes(state: &ObservationState) -> usize {
+    state
+        .events
+        .capacity()
+        .saturating_mul(std::mem::size_of::<RuntimeJobEvent>())
+        .saturating_add(
+            state
+                .events
+                .iter()
+                .map(runtime_event_owned_bytes)
+                .sum::<usize>(),
+        )
+}
+
+fn enforce_global_observation_budget(
+    observations: &mut Observations,
+    config: &JobRuntimeConfig,
+) -> Result<()> {
+    let available = config.max_observation_bytes - OBSERVATION_METADATA_RESERVE;
+    loop {
+        let slots: usize = observations.values().map(|state| state.events.len()).sum();
+        let bytes: usize = observations.values().map(resident_window_bytes).sum();
+        if slots <= config.max_observations
+            && bytes <= available
+            && observations
+                .owned_lease
+                .resize(OBSERVATION_METADATA_RESERVE + bytes)
+                .is_ok()
+        {
+            break;
+        }
+        let oldest = observations
+            .iter()
+            .filter(|(_, state)| !state.events.is_empty())
+            .min_by_key(|(_, state)| state.last_update)
+            .map(|(key, _)| key.clone());
+        let Some(key) = oldest else {
+            observations
+                .owned_lease
+                .resize(OBSERVATION_METADATA_RESERVE)
+                .map_err(registry_error)?;
+            break;
+        };
+        let state = observations
+            .get_mut(&key)
+            .expect("selected observation exists");
+        if let Some(removed) = state.events.pop_front() {
+            state.byte_count = state
+                .byte_count
+                .saturating_sub(runtime_event_bytes(&removed));
+        }
+        // Empty/high-water VecDeque capacity is resident memory too. Return
+        // it when a prefix is evicted rather than counting only logical len.
+        state.events.shrink_to_fit();
+    }
+    Ok(())
+}
+
+fn runtime_event_owned_bytes(event: &RuntimeJobEvent) -> usize {
+    let fields = match &event.event {
+        RuntimeJobEventKind::Output {
+            bytes,
+            stream,
+            sha256,
+            ..
+        } => bytes.capacity() + stream.capacity() + sha256.capacity(),
+        RuntimeJobEventKind::ProcessIdentityBound { identity, .. } => identity.boot_id.capacity(),
+        RuntimeJobEventKind::Terminal {
+            terminal_kind,
+            observation_sha256,
+            ..
+        } => terminal_kind.capacity() + observation_sha256.capacity(),
+        RuntimeJobEventKind::ProcessFault { phase, error } => phase.capacity() + error.capacity(),
+        RuntimeJobEventKind::JournalUnavailable { error } => {
+            error.as_ref().map_or(0, String::capacity)
+        }
+        RuntimeJobEventKind::Started { .. } => 0,
+    };
+    event.job_id.capacity() + fields
+}
+
 const MAX_JOURNAL_ERROR_CHARS: usize = 4096;
 
 fn bound_journal_error(error: String) -> String {
@@ -2049,13 +2434,16 @@ fn journal_status_reason(status: &JournalStatus) -> String {
 }
 
 fn validate_start_request(request: &JobStartRequest, config: &JobRuntimeConfig) -> Result<()> {
+    start_spec_bytes(request, config)?;
     validate_operation_id(&request.operation_id, config.max_operation_id_bytes)?;
     if request.initial_stdin.len() > config.max_input_bytes {
         return Err(JobRuntimeError::InvalidRequest(
             "initial stdin exceeds its bound".to_string(),
         ));
     }
-    Ok(())
+    // Validate process framing before reserving registry/journal state. A
+    // malformed command, environment, path or PTY is not an accepted effect.
+    validate_start(request)
 }
 
 fn validate_operation_id(value: &str, maximum: usize) -> Result<()> {
@@ -2216,6 +2604,304 @@ mod tests {
         )
     }
 
+    #[test]
+    fn cross_job_observation_metadata_has_an_aggregate_bound() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .unwrap();
+        let request = rollback_test_request();
+        for index in 0..5000 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("job-{}", index % 8);
+            manager
+                .push_runtime_event(
+                    &key,
+                    &request,
+                    RuntimeJobEventKind::ProcessFault {
+                        phase: "fixture".to_string(),
+                        error: "bounded diagnostic".to_string(),
+                    },
+                )
+                .unwrap();
+        }
+        let observations = manager.observations().unwrap();
+        let slots: usize = observations.values().map(|state| state.events.len()).sum();
+        assert!(slots <= 4096, "retained across jobs: {slots}");
+    }
+
+    #[test]
+    fn excessive_concurrency_is_rejected_before_journal_creation() {
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        for segmented in [false, true] {
+            let journal = directory.path().join(format!("invalid-{segmented}.jsonl"));
+            let config = JobRuntimeConfig {
+                max_jobs: 9,
+                ..JobRuntimeConfig::default()
+            };
+            let result = if segmented {
+                JobManager::open_segmented(config, Some(&journal))
+            } else {
+                JobManager::open(config, Some(&journal))
+            };
+            assert!(matches!(result, Err(JobRuntimeError::InvalidRequest(_))));
+            assert!(!journal.exists());
+            assert!(
+                !journal
+                    .with_file_name(format!("invalid-{segmented}.jsonl.segments"))
+                    .exists()
+            );
+        }
+    }
+
+    #[test]
+    fn global_window_eviction_preserves_uncertain_identity_and_exact_gaps() {
+        let config = JobRuntimeConfig {
+            max_observation_bytes: OBSERVATION_METADATA_RESERVE + 256 * 1024,
+            ..JobRuntimeConfig::development_unsafe()
+        };
+        let manager = JobManager::new(config.clone(), JobJournal::memory_only()).unwrap();
+        let request = rollback_test_request();
+        for index in 0..8 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("window-{index}");
+            manager
+                .registry()
+                .begin(key.clone(), request.clone())
+                .unwrap();
+            manager
+                .registry()
+                .claim_spawn(&key, &request.request_sha256)
+                .unwrap();
+            manager.registry().mark_restart_uncertain(&key).unwrap();
+            for output_seq in 0..2 {
+                manager
+                    .push_runtime_event(
+                        &key,
+                        &request,
+                        RuntimeJobEventKind::Output {
+                            generation: 1,
+                            output_seq,
+                            stream: "stdout".to_string(),
+                            bytes: vec![0; 32 * 1024],
+                            sha256: "a".repeat(64),
+                        },
+                    )
+                    .unwrap();
+            }
+        }
+        let observations = manager.observations().unwrap();
+        let bytes: usize = observations.values().map(resident_window_bytes).sum();
+        assert!(bytes <= config.max_observation_bytes - OBSERVATION_METADATA_RESERVE);
+        drop(observations);
+        let mut evicted = rollback_test_key();
+        evicted.job_id = "window-0".to_string();
+        let view = manager.inspect(&evicted, 0, 4096).unwrap();
+        assert_eq!(view.total_events, 2);
+        assert_eq!(
+            view.gap,
+            Some(JobObservationGap {
+                first_missing_cursor: 0,
+                last_missing_cursor: 1
+            })
+        );
+        assert!(matches!(
+            view.snapshot.unwrap().state,
+            JobEffectiveState::UnknownAfterRestart { .. }
+        ));
+        assert!(!matches!(
+            manager
+                .registry()
+                .claim_spawn(&evicted, &request.request_sha256)
+                .unwrap(),
+            SpawnClaim::Granted { .. }
+        ));
+        assert_eq!(manager.registry().len().unwrap(), 8);
+    }
+
+    fn fill_registry_with_uncertain_jobs(manager: &JobManager, first: usize) {
+        let request = rollback_test_request();
+        for index in first..256 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("retained-{index:03}");
+            manager
+                .registry()
+                .begin(key.clone(), request.clone())
+                .unwrap();
+            let SpawnClaim::Granted { generation, .. } = manager
+                .registry()
+                .claim_spawn(&key, &request.request_sha256)
+                .unwrap()
+            else {
+                panic!("new claim");
+            };
+            manager
+                .registry()
+                .record_started(&key, generation, 1000 + index as u32, false)
+                .unwrap();
+            manager.registry().mark_restart_uncertain(&key).unwrap();
+        }
+    }
+
+    #[test]
+    fn durable_terminal_archival_releases_capacity_without_redispatch_or_cursor_loss() {
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let journal = directory.path().join("jobs.jsonl");
+        let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+        let mut terminal_key = rollback_test_key();
+        terminal_key.job_id = "retained-000".to_string();
+        let request = rollback_test_request();
+        manager
+            .registry()
+            .begin(terminal_key.clone(), request.clone())
+            .unwrap();
+        let SpawnClaim::Granted { generation, .. } = manager
+            .registry()
+            .claim_spawn(&terminal_key, &request.request_sha256)
+            .unwrap()
+        else {
+            panic!("new claim");
+        };
+        manager
+            .registry()
+            .record_started(&terminal_key, generation, 1000, false)
+            .unwrap();
+        manager
+            .journal()
+            .begin_operation(
+                &terminal_key,
+                &request,
+                "start",
+                "start",
+                &"c".repeat(64),
+                json!({}),
+            )
+            .unwrap();
+        let terminal = JobTerminal {
+            terminal_kind: "exited".to_string(),
+            exit_code: Some(0),
+            signal: None,
+            observation_sha256: "d".repeat(64),
+            stdout_bytes: 0,
+            stderr_bytes: 0,
+        };
+        manager
+            .registry()
+            .complete(&terminal_key, generation, terminal.clone())
+            .unwrap();
+        manager
+            .push_runtime_event(
+                &terminal_key,
+                &request,
+                RuntimeJobEventKind::Terminal {
+                    generation,
+                    terminal_kind: terminal.terminal_kind,
+                    exit_code: terminal.exit_code,
+                    signal: terminal.signal,
+                    observation_sha256: terminal.observation_sha256,
+                    stdout_bytes: 0,
+                    stderr_bytes: 0,
+                },
+            )
+            .unwrap();
+        fill_registry_with_uncertain_jobs(&manager, 1);
+        let mut new_key = rollback_test_key();
+        new_key.job_id = "new-after-archive".to_string();
+        assert_eq!(
+            manager
+                .start(stale_start_request(new_key, request.clone(), "start-new"))
+                .unwrap()
+                .disposition,
+            StartDisposition::Started
+        );
+        assert!(matches!(
+            manager.registry().snapshot(&terminal_key),
+            Err(JobRegistryError::NotFound)
+        ));
+        let view = manager.inspect(&terminal_key, 0, 4096).unwrap();
+        assert_eq!(view.total_events, 1);
+        assert_eq!(
+            view.gap,
+            Some(JobObservationGap {
+                first_missing_cursor: 0,
+                last_missing_cursor: 0
+            })
+        );
+        assert!(view.durable_fallback_available);
+        assert_eq!(
+            manager
+                .start(stale_start_request(
+                    terminal_key.clone(),
+                    request,
+                    "duplicate"
+                ))
+                .unwrap()
+                .disposition,
+            StartDisposition::ExistingTerminal
+        );
+        let mut conflict = rollback_test_request();
+        conflict.request_sha256 = "e".repeat(64);
+        assert!(matches!(
+            manager.start(stale_start_request(terminal_key, conflict, "conflict")),
+            Err(JobRuntimeError::JobConflict)
+        ));
+        let mut unknown = rollback_test_key();
+        unknown.job_id = "retained-001".to_string();
+        assert!(matches!(
+            manager.registry().snapshot(&unknown).unwrap().state,
+            JobEffectiveState::UnknownAfterRestart { .. }
+        ));
+    }
+
+    #[test]
+    fn capacity_pressure_never_archives_unknown_or_undurable_terminal() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .unwrap();
+        fill_registry_with_uncertain_jobs(&manager, 0);
+        let mut terminal_key = rollback_test_key();
+        terminal_key.job_id = "retained-000".to_string();
+        let JobEffectiveState::UnknownAfterRestart { generation, .. } =
+            manager.registry().snapshot(&terminal_key).unwrap().state
+        else {
+            panic!("uncertain");
+        };
+        manager
+            .registry()
+            .complete(
+                &terminal_key,
+                generation,
+                JobTerminal {
+                    terminal_kind: "exited".to_string(),
+                    exit_code: Some(0),
+                    signal: None,
+                    observation_sha256: "d".repeat(64),
+                    stdout_bytes: 0,
+                    stderr_bytes: 0,
+                },
+            )
+            .unwrap();
+        let mut new_key = rollback_test_key();
+        new_key.job_id = "must-not-archive".to_string();
+        assert!(
+            manager
+                .start(stale_start_request(
+                    new_key.clone(),
+                    rollback_test_request(),
+                    "start"
+                ))
+                .is_err()
+        );
+        assert_eq!(manager.registry().len().unwrap(), 256);
+        assert!(manager.registry().snapshot(&terminal_key).is_ok());
+        assert!(manager.registry().snapshot(&new_key).is_err());
+    }
+
     fn stale_start_request(
         key: JobKey,
         request: JobRequest,
@@ -2234,6 +2920,581 @@ mod tests {
             initial_stdin: Vec::new(),
             pty: None,
         }
+    }
+
+    #[test]
+    fn queued_owned_start_refuses_at_resident_capacity_before_waiting() {
+        const ISOLATED: &str = "TRILLIONNIUM_START_QUEUED_INPUT_CHILD";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "manager::tests::queued_owned_start_refuses_at_resident_capacity_before_waiting", "--nocapture"])
+                .env(ISOLATED, "1").output().unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+        let manager =
+            JobManager::new(JobRuntimeConfig::default(), JobJournal::memory_only()).unwrap();
+        let owner = rollback_test_key();
+        let guard = manager.start_guard(&owner).unwrap();
+        let mut pressure = JobMemoryLease::acquire(0).unwrap();
+        let (mut low, mut high) = (0, 48 * 1024 * 1024 + 1);
+        while low + 1 < high {
+            let middle = low + (high - low) / 2;
+            if pressure.resize(middle).is_ok() {
+                low = middle;
+            } else {
+                high = middle;
+            }
+        }
+        pressure.resize(low).unwrap();
+        let mut request = stale_start_request(owner.clone(), rollback_test_request(), "start");
+        let mut command = String::with_capacity(512 * 1024);
+        command.push(':');
+        request.invocation = JobInvocation::Command { command };
+        let clone = manager.clone();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            sender.send(clone.start(request).is_err()).unwrap();
+        });
+        let refused = receiver.recv_timeout(std::time::Duration::from_millis(500));
+        drop(guard);
+        worker.join().unwrap();
+        drop(pressure);
+        assert!(
+            matches!(refused, Ok(true)),
+            "owned start waited without memory admission: {refused:?}"
+        );
+        assert!(manager.registry().snapshot(&owner).is_err());
+        assert!(!manager.has_live_or_pending_jobs());
+    }
+
+    #[test]
+    fn failed_journal_admissions_bound_unaccepted_observation_identities() {
+        const ISOLATED: &str = "TRILLIONNIUM_FAILED_JOURNAL_ADMISSION_CHILD";
+        const CASE: &str =
+            "manager::tests::failed_journal_admissions_bound_unaccepted_observation_identities";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", CASE, "--nocapture"])
+                .env_clear()
+                .env(ISOLATED, "1")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+
+        // Measure the real shared resident lane in this fresh child. The
+        // combined limit is only the binary-search ceiling, not a guessed
+        // registry-entry size, allocator charge or RSS measurement.
+        fn resident_headroom() -> usize {
+            let mut probe = JobMemoryLease::acquire(0).unwrap();
+            let (mut low, mut high) = (
+                0,
+                trillionnium_owner_open_job_registry::MAX_JOB_OWNED_BYTES + 1,
+            );
+            while low + 1 < high {
+                let middle = low + (high - low) / 2;
+                if probe.resize(middle).is_ok() {
+                    low = middle;
+                } else {
+                    high = middle;
+                }
+            }
+            low
+        }
+        fn input_bytes(request: &JobStartRequest, config: &JobRuntimeConfig) -> usize {
+            start_spec_bytes(request, config)
+                .unwrap()
+                .saturating_sub(std::mem::size_of::<JobStartRequest>())
+                .checked_add(request.initial_stdin.capacity())
+                .unwrap()
+        }
+        fn request_at(index: usize, executable: &Path) -> JobStartRequest {
+            let mut key = rollback_test_key();
+            key.job_id = format!("admission-{index:04}")
+                .into_boxed_str()
+                .into_string();
+            let mut request = stale_start_request(key, rollback_test_request(), "start");
+            // The intended failure precedes spawn. If this premise regresses,
+            // a nonexistent executable cannot accidentally run a real shell.
+            request.shell_executable = executable.to_path_buf();
+            request
+        }
+
+        let complete_resident_lane = resident_headroom();
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let journal_path = directory.path().join("jobs");
+        let executable = directory.path().join("must-not-exist");
+        assert!(!executable.exists());
+        let manager =
+            JobManager::open_segmented(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        assert!(matches!(
+            manager.inner.journal.status().unwrap(),
+            JournalStatus::Durable
+        ));
+        assert!(manager.durability_error().unwrap().is_none());
+        let available_before_calibration = resident_headroom();
+        let prototype = request_at(0, &executable);
+        let inherited = inherited_environment().unwrap();
+        assert!(
+            inherited.is_empty(),
+            "fresh child has no inherited allowlist values"
+        );
+        let input_charge = input_bytes(&prototype, &manager.inner.config);
+        let process_charge =
+            process_reservation(&prototype, &manager.inner.config, &inherited).unwrap();
+        let input_lease = JobMemoryLease::acquire(input_charge).unwrap();
+        let process_lease = ProcessLease::acquire(process_charge).unwrap();
+        let begun = manager
+            .registry()
+            .begin(prototype.key.clone(), prototype.request.clone())
+            .unwrap();
+        assert_eq!(begun.disposition, BeginDisposition::New);
+        drop(begun);
+        let pressure_bytes = resident_headroom();
+        assert!(pressure_bytes > 0);
+        let pressure = JobMemoryLease::acquire(pressure_bytes).unwrap();
+        assert_eq!(resident_headroom(), 0);
+        assert!(
+            manager
+                .registry()
+                .rollback_accept(&prototype.key, &prototype.request)
+                .unwrap()
+        );
+        drop(process_lease);
+        drop(input_lease);
+        assert_eq!(manager.registry().len().unwrap(), 0);
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        assert!(!manager.has_live_or_pending_jobs());
+        assert!(
+            manager
+                .inner
+                .journal
+                .recovered_job(&prototype.key)
+                .unwrap()
+                .is_none()
+        );
+        assert!(manager.durable_records(&prototype.key).unwrap().is_empty());
+        assert!(manager.observations().unwrap().is_empty());
+        assert!(manager.durability_error().unwrap().is_none());
+        let transient_headroom = resident_headroom();
+        assert_eq!(
+            transient_headroom + pressure_bytes,
+            available_before_calibration
+        );
+
+        let mut peak_identities = 0;
+        for index in 0..1024 {
+            let request = request_at(index, &executable);
+            assert_eq!(request.key.job_id.len(), prototype.key.job_id.len());
+            assert_eq!(
+                request.key.job_id.capacity(),
+                prototype.key.job_id.capacity()
+            );
+            assert_eq!(request.operation_id.len(), prototype.operation_id.len());
+            assert_eq!(
+                request.operation_id.capacity(),
+                prototype.operation_id.capacity()
+            );
+            assert_eq!(input_bytes(&request, &manager.inner.config), input_charge);
+            assert_eq!(
+                process_reservation(&request, &manager.inner.config, &inherited).unwrap(),
+                process_charge
+            );
+            let key = request.key.clone();
+            let error = manager
+                .start(request)
+                .expect_err("no durable acceptance headroom");
+            if index == 0 {
+                assert!(
+                    matches!(&error, JobRuntimeError::Journal(reason)
+                        if reason == "owner-open job registry capacity is exhausted"),
+                    "fixture missed the journal-metadata resident-admission boundary: {error:?}"
+                );
+                println!(
+                    "FAILED_ADMISSION_BOUNDARY_CONFIRMED pressure_bytes={pressure_bytes} transient_headroom={transient_headroom} input_charge={input_charge} process_charge={process_charge}"
+                );
+            } else {
+                // A conservative future global-degradation fence may reject
+                // later keys earlier; do not require it to repeat the defect.
+                assert!(matches!(&error, JobRuntimeError::Journal(_)), "{error:?}");
+            }
+            assert_eq!(manager.registry().len().unwrap(), 0);
+            assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+            assert!(!manager.has_live_or_pending_jobs());
+            assert!(manager.inner.journal.recovered_job(&key).unwrap().is_none());
+            assert!(manager.durable_records(&key).unwrap().is_empty());
+            assert!(matches!(
+                manager.inner.journal.status().unwrap(),
+                JournalStatus::Durable
+            ));
+            assert_eq!(resident_headroom(), transient_headroom);
+            peak_identities = peak_identities.max(manager.observations().unwrap().len());
+        }
+        let (identities, retained_key_capacity) = {
+            let observations = manager.observations().unwrap();
+            let capacity: usize = observations
+                .keys()
+                .map(|key| {
+                    key.scope.session_id.capacity()
+                        + key.scope.profile_id.capacity()
+                        + key.scope.task_id.capacity()
+                        + key.scope.turn_id.capacity()
+                        + key.scope.turn_stream_id.capacity()
+                        + key.job_id.capacity()
+                })
+                .sum();
+            (observations.len(), capacity)
+        };
+        println!(
+            "FAILED_ADMISSION_OBSERVATIONS attempts=1024 identities={identities} peak_identities={peak_identities} retained_key_capacity={retained_key_capacity} limit={MAX_JOB_RUNTIME_RETAINED_KEYS}"
+        );
+        drop(pressure);
+        drop(manager);
+        assert_eq!(resident_headroom(), complete_resident_lane);
+        assert!(
+            peak_identities <= MAX_JOB_RUNTIME_RETAINED_KEYS,
+            "failed admissions retained {identities} unaccepted observation identities (peak {peak_identities})"
+        );
+    }
+
+    #[test]
+    fn journal_capacity_refusal_preserves_existing_observations_and_durable_unknowns() {
+        const ISOLATED: &str = "TRILLIONNIUM_ADMISSION_PRESERVATION_CHILD";
+        const CASE: &str = "manager::tests::journal_capacity_refusal_preserves_existing_observations_and_durable_unknowns";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", CASE, "--nocapture"])
+                .env_clear()
+                .env(ISOLATED, "1")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+        fn resident_headroom() -> usize {
+            let mut probe = JobMemoryLease::acquire(0).unwrap();
+            let (mut low, mut high) = (
+                0,
+                trillionnium_owner_open_job_registry::MAX_JOB_OWNED_BYTES + 1,
+            );
+            while low + 1 < high {
+                let middle = low + (high - low) / 2;
+                if probe.resize(middle).is_ok() {
+                    low = middle;
+                } else {
+                    high = middle;
+                }
+            }
+            low
+        }
+        fn observation_snapshot(manager: &JobManager, key: &JobKey) -> (u64, bool, Value) {
+            let observations = manager.observations().unwrap();
+            let state = observations.get(key).expect("held observation identity");
+            (
+                state.next_seq,
+                state.journal_unavailable_emitted,
+                serde_json::to_value(&state.events).unwrap(),
+            )
+        }
+        let complete_resident_lane = resident_headroom();
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let journal_path = directory.path().join("jobs");
+        let executable = directory.path().join("must-not-exist");
+        let manager =
+            JobManager::open_segmented(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        let request = rollback_test_request();
+        let mut accepted = rollback_test_key();
+        accepted.job_id = "held-accepted".into();
+        let mut uncertain = rollback_test_key();
+        uncertain.job_id = "held-uncertain".into();
+        // Genuine durable acceptance and resident registry identities. No
+        // process is spawned: the uncertain key crosses only the registry's
+        // spawn-claim boundary, then receives its explicit uncertainty fence.
+        for key in [&accepted, &uncertain] {
+            assert!(matches!(
+                manager
+                    .journal()
+                    .begin_operation(
+                        key,
+                        &request,
+                        "held-start",
+                        "start",
+                        &"c".repeat(64),
+                        json!({"status": "accepted"}),
+                    )
+                    .unwrap(),
+                OperationBegin::New
+            ));
+            manager
+                .registry()
+                .begin(key.clone(), request.clone())
+                .unwrap();
+            manager
+                .push_runtime_event(
+                    key,
+                    &request,
+                    RuntimeJobEventKind::ProcessFault {
+                        phase: "preservation-fixture".into(),
+                        error: "held diagnostic".into(),
+                    },
+                )
+                .unwrap();
+        }
+        assert!(matches!(
+            manager
+                .registry()
+                .claim_spawn(&uncertain, &request.request_sha256)
+                .unwrap(),
+            SpawnClaim::Granted { .. }
+        ));
+        manager
+            .registry()
+            .mark_restart_uncertain(&uncertain)
+            .unwrap();
+        let accepted_state = manager.registry().snapshot(&accepted).unwrap().state;
+        let uncertain_state = manager.registry().snapshot(&uncertain).unwrap().state;
+        let accepted_records = manager.durable_records(&accepted).unwrap();
+        let uncertain_records = manager.durable_records(&uncertain).unwrap();
+        assert!(!accepted_records.is_empty());
+        assert!(!uncertain_records.is_empty());
+        let accepted_observations = observation_snapshot(&manager, &accepted);
+        let uncertain_observations = observation_snapshot(&manager, &uncertain);
+
+        let mut refused = rollback_test_key();
+        refused.job_id = "held-rejected".into();
+        // A pre-existing non-durable diagnostic for this otherwise unaccepted
+        // key is retained through the actual start failure, not recreated by
+        // direct mutation of the observation map or its cursor.
+        manager
+            .note_journal_degraded_for_job(&refused, "prior rejection".into())
+            .unwrap();
+        let prior = observation_snapshot(&manager, &refused);
+        assert!(prior.0 > 0 && prior.1);
+        assert!(manager.journal().recovered_job(&refused).unwrap().is_none());
+        assert!(manager.durability_error().unwrap().is_none());
+        let mut start = stale_start_request(refused.clone(), request.clone(), "refused-start");
+        start.shell_executable = executable.clone();
+        let inherited = inherited_environment().unwrap();
+        assert!(inherited.is_empty());
+        let input_charge = start_spec_bytes(&start, &manager.inner.config)
+            .unwrap()
+            .saturating_sub(std::mem::size_of::<JobStartRequest>())
+            .checked_add(start.initial_stdin.capacity())
+            .unwrap();
+        let input_lease = JobMemoryLease::acquire(input_charge).unwrap();
+        let process_lease = ProcessLease::acquire(
+            process_reservation(&start, &manager.inner.config, &inherited).unwrap(),
+        )
+        .unwrap();
+        drop(
+            manager
+                .registry()
+                .begin(start.key.clone(), start.request.clone())
+                .unwrap(),
+        );
+        let pressure_bytes = resident_headroom();
+        let pressure = JobMemoryLease::acquire(pressure_bytes).unwrap();
+        assert_eq!(resident_headroom(), 0);
+        assert!(
+            manager
+                .registry()
+                .rollback_accept(&start.key, &start.request)
+                .unwrap()
+        );
+        drop(process_lease);
+        drop(input_lease);
+        let transient_headroom = resident_headroom();
+        let error = manager.start(start).expect_err("journal capacity refusal");
+        assert!(
+            matches!(&error, JobRuntimeError::Journal(reason)
+            if reason == &JobRegistryError::CapacityExhausted.to_string()),
+            "{error:?}"
+        );
+        assert!(matches!(
+            manager.journal().status().unwrap(),
+            JournalStatus::Durable
+        ));
+        assert!(manager.durability_error().unwrap().is_some());
+        assert_eq!(resident_headroom(), transient_headroom);
+        assert_eq!(manager.registry().len().unwrap(), 2);
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        assert!(!manager.has_live_or_pending_jobs());
+        assert_eq!(
+            manager.registry().snapshot(&accepted).unwrap().state,
+            accepted_state
+        );
+        assert_eq!(
+            manager.registry().snapshot(&uncertain).unwrap().state,
+            uncertain_state
+        );
+        assert_eq!(
+            observation_snapshot(&manager, &accepted),
+            accepted_observations
+        );
+        assert_eq!(
+            observation_snapshot(&manager, &uncertain),
+            uncertain_observations
+        );
+        assert_eq!(observation_snapshot(&manager, &refused), prior);
+        assert_eq!(manager.observations().unwrap().len(), 3);
+        assert!(matches!(
+            manager.registry().snapshot(&refused),
+            Err(JobRegistryError::NotFound)
+        ));
+        assert!(manager.journal().recovered_job(&refused).unwrap().is_none());
+        assert!(manager.durable_records(&refused).unwrap().is_empty());
+        assert_eq!(
+            manager.durable_records(&accepted).unwrap(),
+            accepted_records
+        );
+        assert_eq!(
+            manager.durable_records(&uncertain).unwrap(),
+            uncertain_records
+        );
+        drop(pressure);
+
+        // Existing accepted/unknown jobs remain retry-fenced in the same
+        // manager; the failed new key cannot erase or reopen either lineage.
+        for key in [&accepted, &uncertain] {
+            let mut retry = stale_start_request(key.clone(), request.clone(), "held-retry");
+            retry.shell_executable = executable.clone();
+            let result = manager.start(retry).unwrap();
+            assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);
+        }
+        // Accepted-without-a-claim is inhibited. An already claimed unknown
+        // job remains Existing with its original generation, never Granted.
+        let SpawnClaim::Inhibited(accepted_snapshot) = manager
+            .registry()
+            .claim_spawn(&accepted, &request.request_sha256)
+            .unwrap()
+        else {
+            panic!("unclaimed accepted identity must remain spawn-inhibited");
+        };
+        assert_eq!(
+            accepted_snapshot.state,
+            JobEffectiveState::ProvenNotStartedAfterRestart
+        );
+        let SpawnClaim::Existing(uncertain_snapshot) = manager
+            .registry()
+            .claim_spawn(&uncertain, &request.request_sha256)
+            .unwrap()
+        else {
+            panic!("already claimed uncertain identity must not grant another spawn");
+        };
+        assert_eq!(uncertain_snapshot.state, uncertain_state);
+        assert!(!manager.has_live_or_pending_jobs());
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        assert_eq!(
+            manager.durable_records(&accepted).unwrap(),
+            accepted_records
+        );
+        assert_eq!(
+            manager.durable_records(&uncertain).unwrap(),
+            uncertain_records
+        );
+        drop(manager);
+        assert_eq!(resident_headroom(), complete_resident_lane);
+        let reopened =
+            JobManager::open_segmented(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        assert_eq!(
+            reopened.durable_records(&accepted).unwrap(),
+            accepted_records
+        );
+        assert_eq!(
+            reopened.durable_records(&uncertain).unwrap(),
+            uncertain_records
+        );
+        assert!(reopened.durable_records(&refused).unwrap().is_empty());
+        for key in [&accepted, &uncertain] {
+            let mut retry = stale_start_request(key.clone(), request.clone(), "restart-retry");
+            retry.shell_executable = executable.clone();
+            assert_eq!(
+                reopened.start(retry).unwrap().disposition,
+                StartDisposition::UnknownAfterRestart
+            );
+        }
+        assert!(!reopened.has_live_or_pending_jobs());
+        drop(reopened);
+        assert_eq!(resident_headroom(), complete_resident_lane);
+    }
+
+    #[test]
+    fn rejected_unjournaled_starts_do_not_retain_attacker_selected_job_keys() {
+        let manager = JobManager::new(JobRuntimeConfig::default(), JobJournal::memory_only())
+            .expect("fail-closed manager");
+        for index in 0..512 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("rejected-{index}");
+            let error = manager
+                .start(stale_start_request(key, rollback_test_request(), "start"))
+                .expect_err("durability is required before acceptance");
+            assert!(matches!(error, JobRuntimeError::Journal(_)));
+        }
+        assert!(manager.observations().unwrap().is_empty());
+        assert!(!manager.has_live_or_pending_jobs());
+    }
+
+    #[test]
+    fn malformed_process_requests_are_rejected_before_durable_acceptance() {
+        let directory = tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("harden temporary directory");
+        let journal_path = directory.path().join("jobs.jsonl");
+        let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        for kind in [
+            "nul-command",
+            "empty-executable",
+            "nul-cwd",
+            "bad-env",
+            "zero-pty",
+        ] {
+            let mut key = rollback_test_key();
+            key.job_id = kind.to_string();
+            let mut request = stale_start_request(key.clone(), rollback_test_request(), "start");
+            match kind {
+                "nul-command" => {
+                    request.invocation = JobInvocation::Command {
+                        command: "x\0y".to_string(),
+                    }
+                }
+                "empty-executable" => request.shell_executable = PathBuf::new(),
+                "nul-cwd" => request.cwd = Some(PathBuf::from("x\0y")),
+                "bad-env" => {
+                    request.env.insert("bad=key".to_string(), None);
+                }
+                "zero-pty" => request.pty = Some(PtySize { rows: 0, cols: 80 }),
+                _ => unreachable!(),
+            }
+            assert!(matches!(
+                manager.start(request),
+                Err(JobRuntimeError::InvalidRequest(_))
+            ));
+            assert!(matches!(
+                manager.registry().snapshot(&key),
+                Err(JobRegistryError::NotFound)
+            ));
+            assert!(manager.durable_records(&key).unwrap().is_empty());
+        }
+        assert!(!manager.has_live_or_pending_jobs());
     }
 
     #[test]
@@ -2467,30 +3728,96 @@ mod tests {
                 .iter()
                 .any(|event| matches!(event.event, RuntimeJobEventKind::JournalUnavailable { .. }))
         );
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        // Retirement has separate finite control, group-scan and worker-join
+        // phases. This fixture checks memory-only journal semantics; its
+        // wait must cover those phases and does not establish a latency SLO.
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
         while manager.has_live_or_pending_jobs() && std::time::Instant::now() < deadline {
             std::thread::sleep(std::time::Duration::from_millis(10));
         }
-        assert!(!manager.has_live_or_pending_jobs());
+        let terminal_inspection = manager.inspect(&key, 0, 64).expect("terminal inspection");
+        assert!(
+            !manager.has_live_or_pending_jobs(),
+            "memory-only fixture still pending after bounded retirement: {terminal_inspection:?}"
+        );
+        assert!(
+            terminal_inspection
+                .runtime_events
+                .iter()
+                .any(|event| matches!(
+                    &event.event,
+                    RuntimeJobEventKind::Terminal { terminal_kind, exit_code: Some(0), .. }
+                        if terminal_kind == "exited"
+                )),
+            "memory-only fixture lacks a successful, fully observed terminal: {terminal_inspection:?}"
+        );
     }
 
     #[test]
     fn control_rechecks_terminal_generation_before_process_effect() {
+        struct FixtureCleanup<'a> {
+            manager: &'a JobManager,
+            key: &'a JobKey,
+            armed: bool,
+        }
+
+        impl Drop for FixtureCleanup<'_> {
+            fn drop(&mut self) {
+                if !self.armed {
+                    return;
+                }
+                let control = self
+                    .manager
+                    .running()
+                    .ok()
+                    .and_then(|jobs| jobs.get(self.key).map(|job| job.control.clone()));
+                if let Some(control) = control {
+                    let close = control.close_stdin();
+                    let kill = control.kill(libc::SIGKILL);
+                    eprintln!("terminal-race fixture cleanup: close={close:?}, kill={kill:?}");
+                }
+                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
+                while self.manager.has_live_or_pending_jobs()
+                    && std::time::Instant::now() < deadline
+                {
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                }
+                if self.manager.has_live_or_pending_jobs() {
+                    eprintln!(
+                        "terminal-race fixture cleanup remained uncertain: {:?}",
+                        self.manager.inspect(self.key, 0, 64),
+                    );
+                }
+            }
+        }
+
         let directory = tempdir().expect("temporary directory");
         let marker = directory.path().join("post-terminal-write");
+        let ready = directory.path().join("stdin-ready");
+        let drained = directory.path().join("stdin-drained");
         let manager = JobManager::new(
             JobRuntimeConfig::development_unsafe(),
             JobJournal::memory_only(),
         )
         .expect("memory-only manager");
         let key = rollback_test_key();
+        let mut fixture_cleanup = FixtureCleanup {
+            manager: &manager,
+            key: &key,
+            armed: true,
+        };
         manager
             .start(JobStartRequest {
                 key: key.clone(),
                 request: rollback_test_request(),
                 operation_id: "start-terminal-race".to_string(),
                 invocation: JobInvocation::Command {
-                    command: format!("IFS= read -r _ && touch '{}' ; sleep 30", marker.display()),
+                    command: format!(
+                        "touch '{}' && {{ if IFS= read -r _; then touch '{}'; fi; touch '{}'; }}",
+                        ready.display(),
+                        marker.display(),
+                        drained.display(),
+                    ),
                 },
                 shell_executable: PathBuf::from("/bin/sh"),
                 cwd: None,
@@ -2505,6 +3832,17 @@ mod tests {
             .get(&key)
             .cloned()
             .expect("live running job");
+        let ready_deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+        while !ready.exists() && std::time::Instant::now() < ready_deadline {
+            std::thread::sleep(std::time::Duration::from_millis(5));
+        }
+        if !ready.exists() {
+            running
+                .control
+                .kill(libc::SIGKILL)
+                .expect("retire fixture that did not reach its stdin barrier");
+            panic!("child did not reach its stdin barrier");
+        }
         manager
             .registry()
             .complete(
@@ -2521,19 +3859,35 @@ mod tests {
             )
             .expect("simulate terminal transition winning lifecycle race");
 
-        assert!(matches!(
+        let write_rejected = matches!(
             manager.write(&key, "write-after-terminal", b"must-not-cross\n"),
             Err(JobRuntimeError::NotLive)
-        ));
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        assert!(!marker.exists(), "post-terminal bytes reached the child");
+        );
+        // This private fixture control only closes the owned input pipe.  EOF
+        // makes the child finish its read before we inspect the marker, so a
+        // slow child cannot make an incorrectly forwarded write look absent.
+        running
+            .control
+            .close_stdin()
+            .expect("close fixture stdin to observe the read result");
 
-        let _ = running.control.kill(libc::SIGKILL);
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        // The process reaper may spend more than two seconds in its bounded
+        // descendant proof and I/O-worker cleanup before publishing Exited.
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
         while manager.has_live_or_pending_jobs() && std::time::Instant::now() < deadline {
             std::thread::sleep(std::time::Duration::from_millis(10));
         }
-        assert!(!manager.has_live_or_pending_jobs());
+        if manager.has_live_or_pending_jobs() {
+            let cleanup = running.control.kill(libc::SIGKILL);
+            panic!(
+                "fixture terminal publication exceeded its bounded deadline: cleanup={cleanup:?}, inspection={:?}",
+                manager.inspect(&key, 0, 64),
+            );
+        }
+        assert!(write_rejected, "post-terminal write must return NotLive");
+        assert!(drained.exists(), "child did not finish its stdin read");
+        assert!(!marker.exists(), "post-terminal bytes reached the child");
+        fixture_cleanup.armed = false;
     }
 
     #[test]
@@ -2711,5 +4065,441 @@ mod concurrency_tests {
         gate.terminal().expect("mark terminal");
         gate.ready().expect("late ready is a harmless no-op");
         assert!(matches!(gate.wait(), Err(super::JobRuntimeError::NotLive)));
+    }
+
+    // These cases own durable managers/processes against process-global
+    // bounded pools. Isolate them like the existing resource-pressure cases;
+    // the child retains the real publication barrier and default pool bounds.
+    fn isolated_admission_case(name: &str) -> bool {
+        const CHILD: &str = "TRILLIONNIUM_ADMISSION_PUBLICATION_TEST_CHILD";
+        if std::env::var(CHILD).as_deref() == Ok(name) {
+            return false;
+        }
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", name, "--nocapture"])
+            .env(CHILD, name)
+            .output()
+            .unwrap();
+        print!("{}", String::from_utf8_lossy(&output.stdout));
+        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+        println!(
+            "isolated_admission_case={name} actual_exit={:?}",
+            output.status.code()
+        );
+        assert!(
+            output.status.success(),
+            "real isolated admission child failed: {}",
+            output.status
+        );
+        true
+    }
+
+    struct PublicationResume(Option<mpsc::SyncSender<()>>);
+
+    impl PublicationResume {
+        fn now(&mut self) {
+            if let Some(sender) = self.0.take() {
+                let _ = sender.try_send(());
+            }
+        }
+    }
+
+    impl Drop for PublicationResume {
+        fn drop(&mut self) {
+            self.now();
+        }
+    }
+
+    fn publication_gate(
+        manager: &JobManager,
+        key: &JobKey,
+        point: super::TestTerminalPublicationPoint,
+    ) -> (mpsc::Receiver<()>, PublicationResume) {
+        let (reached, receiver) = mpsc::sync_channel(1);
+        let (resume, resume_receiver) = mpsc::sync_channel(1);
+        *manager.inner.test_terminal_publication.lock().unwrap() =
+            Some(std::sync::Arc::new(super::TestTerminalPublicationGate {
+                key: key.clone(),
+                point,
+                reached,
+                resume: std::sync::Mutex::new(resume_receiver),
+            }));
+        (receiver, PublicationResume(Some(resume)))
+    }
+
+    fn owned_request(job: JobKey, operation: &str, command: &str) -> crate::JobStartRequest {
+        crate::JobStartRequest {
+            key: job,
+            request: trillionnium_owner_open_job_registry::JobRequest::new(
+                "a".repeat(64),
+                "b".repeat(64),
+                "shell.job",
+                "pipe",
+                Some("rootlinux".into()),
+            ),
+            operation_id: operation.into(),
+            invocation: crate::JobInvocation::Command {
+                command: command.into(),
+            },
+            shell_executable: std::path::PathBuf::from("/bin/sh"),
+            cwd: None,
+            env: std::collections::BTreeMap::new(),
+            initial_stdin: Vec::new(),
+            pty: None,
+        }
+    }
+
+    fn wait_owned_markers_retired(manager: &JobManager) {
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while manager.has_live_or_pending_jobs() {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "owned dispatcher markers must retire"
+            );
+            std::thread::yield_now();
+        }
+    }
+
+    #[test]
+    fn terminal_visible_retained_dispatcher_has_released_admission() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::terminal_visible_retained_dispatcher_has_released_admission",
+        ) {
+            return;
+        }
+        use std::os::unix::fs::PermissionsExt;
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let manager = JobManager::open(
+            JobRuntimeConfig {
+                max_jobs: 1,
+                ..JobRuntimeConfig::default()
+            },
+            Some(&directory.path().join("jobs.jsonl")),
+        )
+        .unwrap();
+        let first = key("first-real-child");
+        let second = key("second-real-child");
+        let (reached, mut resume) = publication_gate(
+            &manager,
+            &first,
+            super::TestTerminalPublicationPoint::AfterObservation,
+        );
+        manager
+            .start(owned_request(
+                first.clone(),
+                "first-start",
+                "printf out; printf err >&2; exit 0",
+            ))
+            .unwrap();
+        reached
+            .recv_timeout(Duration::from_secs(5))
+            .expect("real child terminal is published");
+        let retained = manager.running().unwrap().get(&first).cloned().unwrap();
+        let inspection = manager.inspect(&first, 0, 64).unwrap();
+        assert!(inspection.runtime_events.iter().any(|e| matches!(&e.event,
+            crate::RuntimeJobEventKind::Terminal { terminal_kind, exit_code: Some(0), .. } if terminal_kind == "exited")));
+        let mut stdout = Vec::<u8>::new();
+        let mut stderr = Vec::<u8>::new();
+        for event in &inspection.runtime_events {
+            if let crate::RuntimeJobEventKind::Output { stream, bytes, .. } = &event.event {
+                if stream == "stdout" {
+                    stdout.extend_from_slice(bytes);
+                } else if stream == "stderr" {
+                    stderr.extend_from_slice(bytes);
+                }
+            }
+            assert!(!matches!(
+                event.event,
+                crate::RuntimeJobEventKind::ProcessFault { .. }
+            ));
+        }
+        assert_eq!(stdout, b"out");
+        assert_eq!(stderr, b"err");
+        assert!(matches!(
+            retained.control.kill(libc::SIGTERM),
+            Err(crate::JobRuntimeError::NotLive)
+        ));
+        assert!(
+            manager.has_live_or_pending_jobs(),
+            "first dispatcher is deliberately still held"
+        );
+        let result = manager.start(owned_request(
+            second.clone(),
+            "second-start",
+            "printf next; exit 0",
+        ));
+        println!(
+            "terminal_visible=true old_dispatcher_held=true retired_control=true first_stdout=out first_stderr=err second_start={result:?}"
+        );
+        resume.now();
+        wait_owned_markers_retired(&manager);
+        assert!(
+            result.is_ok(),
+            "terminal visibility must already release manager process capacity: {result:?}"
+        );
+        let inspection = manager.inspect(&second, 0, 64).unwrap();
+        assert!(inspection.runtime_events.iter().any(|e| matches!(
+            e.event,
+            crate::RuntimeJobEventKind::Terminal {
+                exit_code: Some(0),
+                ..
+            }
+        )));
+        drop(retained);
+    }
+
+    #[test]
+    fn concurrent_explicit_release_and_drop_do_not_expand_capacity() {
+        use std::sync::atomic::Ordering;
+        use std::sync::{Arc, Barrier};
+        let pool = Arc::new(AdmissionPool::new(1));
+        let permit = Arc::new(pool.try_acquire().unwrap());
+        let gate = Arc::new(Barrier::new(9));
+        let workers: Vec<_> = (0..8)
+            .map(|_| {
+                let permit = Arc::clone(&permit);
+                let gate = Arc::clone(&gate);
+                std::thread::spawn(move || {
+                    gate.wait();
+                    permit.release();
+                    permit.release();
+                })
+            })
+            .collect();
+        gate.wait();
+        for worker in workers {
+            worker.join().unwrap();
+        }
+        assert_eq!(pool.active.load(Ordering::Acquire), 0);
+        let next = pool.try_acquire().unwrap();
+        assert!(pool.try_acquire().is_err());
+        drop(permit);
+        assert_eq!(pool.active.load(Ordering::Acquire), 1);
+        assert!(
+            pool.try_acquire().is_err(),
+            "old permit Drop must not release a new owner"
+        );
+        next.release();
+        next.release();
+        drop(next);
+        assert_eq!(pool.active.load(Ordering::Acquire), 0);
+        let final_owner = pool.try_acquire().unwrap();
+        assert!(pool.try_acquire().is_err());
+        drop(final_owner);
+    }
+
+    fn terminal_fault_scenario(mode: &str) {
+        use std::os::unix::fs::PermissionsExt;
+        use std::sync::atomic::Ordering;
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let manager = JobManager::open(
+            JobRuntimeConfig {
+                max_jobs: 1,
+                ..JobRuntimeConfig::default()
+            },
+            Some(&directory.path().join("jobs.jsonl")),
+        )
+        .unwrap();
+        let first = key("first-fault-child");
+        let second = key("second-fault-child");
+        let point = if mode == "journal" {
+            super::TestTerminalPublicationPoint::BeforeObservation
+        } else {
+            super::TestTerminalPublicationPoint::AfterObservation
+        };
+        let configured_gate = if mode == "poison" {
+            None
+        } else {
+            Some(publication_gate(&manager, &first, point))
+        };
+        manager
+            .start(owned_request(
+                first.clone(),
+                "first-fault-start",
+                "IFS= read -r line; printf out; printf err >&2; exit 0",
+            ))
+            .unwrap();
+        let retained = manager.running().unwrap().get(&first).cloned().unwrap();
+        if mode == "registry" {
+            manager
+                .inner
+                .registry
+                .complete(
+                    &first,
+                    retained.generation,
+                    trillionnium_owner_open_job_registry::JobTerminal {
+                        terminal_kind: "exited".into(),
+                        exit_code: Some(41),
+                        signal: None,
+                        observation_sha256: "c".repeat(64),
+                        stdout_bytes: 0,
+                        stderr_bytes: 0,
+                    },
+                )
+                .unwrap();
+        } else if mode == "poison" {
+            let clone = std::sync::Arc::clone(&retained);
+            assert!(
+                std::thread::spawn(move || {
+                    let _counter = clone.stdout_bytes.lock().unwrap();
+                    panic!("owned stdout-counter poison fixture");
+                })
+                .join()
+                .is_err()
+            );
+        }
+        retained.control.close_stdin().unwrap();
+        if let Some((reached, mut resume)) = configured_gate {
+            reached.recv_timeout(Duration::from_secs(5)).unwrap();
+            assert_eq!(
+                manager.inner.admission.active.load(Ordering::Acquire),
+                0,
+                "real reaper completion releases only the manager-private slot"
+            );
+            if mode == "journal" {
+                manager
+                    .inner
+                    .journal
+                    .fail_next_observation_for_test()
+                    .unwrap();
+                resume.now();
+                wait_owned_markers_retired(&manager);
+                let inspection = manager.inspect(&first, 0, 64).unwrap();
+                assert!(
+                    inspection
+                        .runtime_events
+                        .iter()
+                        .any(|e| matches!(e.event, crate::RuntimeJobEventKind::Terminal { .. }))
+                );
+                assert!(inspection.runtime_events.iter().any(|e| matches!(
+                    e.event,
+                    crate::RuntimeJobEventKind::JournalUnavailable { .. }
+                )));
+                let marker = directory.path().join("must-not-run");
+                let error = manager
+                    .start(owned_request(
+                        second.clone(),
+                        "must-not-run",
+                        &format!("touch '{}'", marker.display()),
+                    ))
+                    .unwrap_err();
+                assert!(matches!(error, crate::JobRuntimeError::Journal(_)));
+                assert!(!marker.exists());
+                assert!(manager.registry().snapshot(&second).is_err());
+            } else {
+                let inspection = manager.inspect(&first, 0, 64).unwrap();
+                assert!(inspection.runtime_events.iter().any(|e| matches!(&e.event,
+                    crate::RuntimeJobEventKind::ProcessFault { phase, .. } if phase == "registry_terminal")));
+                // A committed registry terminal is immutable even when this
+                // later real reaper observation conflicts. It must remain
+                // terminal, not become redispatchable or be relabelled unknown.
+                assert!(matches!(
+                    manager.registry().snapshot(&first).unwrap().state,
+                    trillionnium_owner_open_job_registry::JobEffectiveState::Terminal {
+                        terminal: trillionnium_owner_open_job_registry::JobTerminal {
+                            exit_code: Some(41),
+                            ..
+                        },
+                        ..
+                    }
+                ));
+                let result = manager.start(owned_request(
+                    second.clone(),
+                    "after-registry-conflict",
+                    "exit 0",
+                ));
+                resume.now();
+                wait_owned_markers_retired(&manager);
+                assert!(
+                    result.is_ok(),
+                    "unrelated key must not inherit consumed child capacity: {result:?}"
+                );
+                let duplicate = manager
+                    .start(owned_request(
+                        first.clone(),
+                        "first-fault-start",
+                        "IFS= read -r line; printf out; printf err >&2; exit 0",
+                    ))
+                    .unwrap();
+                assert_eq!(
+                    duplicate.disposition,
+                    crate::StartDisposition::ExistingTerminal
+                );
+                assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+                println!(
+                    "registry_terminal_conflict=true unrelated_key_accepted=true old_key_redispatched=false"
+                );
+            }
+        } else {
+            wait_owned_markers_retired(&manager);
+            let inspection = manager.inspect(&first, 0, 64).unwrap();
+            assert!(inspection.runtime_events.iter().any(|e| matches!(&e.event,
+                crate::RuntimeJobEventKind::ProcessFault { phase, .. } if phase == "stdout_counter")));
+            assert!(
+                !inspection
+                    .runtime_events
+                    .iter()
+                    .any(|e| matches!(e.event, crate::RuntimeJobEventKind::Terminal { .. }))
+            );
+            assert_eq!(
+                manager.inner.admission.active.load(Ordering::Acquire),
+                1,
+                "poison return must retain the permit while the RunningJob Arc is owned"
+            );
+            let error = manager
+                .start(owned_request(
+                    second.clone(),
+                    "while-poison-owner-retained",
+                    "exit 0",
+                ))
+                .unwrap_err();
+            assert!(matches!(error, crate::JobRuntimeError::InvalidRequest(_)));
+            drop(retained);
+            assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+            manager
+                .start(owned_request(second, "after-poison-owner-drop", "exit 0"))
+                .unwrap();
+            wait_owned_markers_retired(&manager);
+            return;
+        }
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        drop(retained);
+        assert_eq!(
+            manager.inner.admission.active.load(Ordering::Acquire),
+            0,
+            "retained Arc Drop cannot release twice"
+        );
+    }
+
+    #[test]
+    fn registry_terminal_conflict_releases_consumed_child_slot_without_redispatch() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::registry_terminal_conflict_releases_consumed_child_slot_without_redispatch",
+        ) {
+            return;
+        }
+        terminal_fault_scenario("registry");
+    }
+
+    #[test]
+    fn failed_terminal_journal_append_releases_slot_but_inhibits_new_effects() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::failed_terminal_journal_append_releases_slot_but_inhibits_new_effects",
+        ) {
+            return;
+        }
+        terminal_fault_scenario("journal");
+    }
+
+    #[test]
+    fn poisoned_counter_retains_raii_capacity_without_false_terminal() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::poisoned_counter_retains_raii_capacity_without_false_terminal",
+        ) {
+            return;
+        }
+        terminal_fault_scenario("poison");
     }
 }

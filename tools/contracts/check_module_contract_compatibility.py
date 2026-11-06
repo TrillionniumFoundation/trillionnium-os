@@ -188,6 +188,8 @@ def validate_review_packet(
     review: dict[str, Any],
     migration_sha256: str,
     rollback_sha256: str,
+    *,
+    module_id: str,
 ) -> None:
     expected = {
         "schema",
@@ -210,7 +212,7 @@ def validate_review_packet(
         raise ValueError(f"{label}: review packet keys differ")
     if packet.get("schema") != REVIEW_PACKET_SCHEMA:
         raise ValueError(f"{label}: review packet schema differs")
-    if packet.get("module_id") != label:
+    if packet.get("module_id") != module_id:
         raise ValueError(f"{label}: review packet module differs")
     for field in (
         "contracts",
@@ -297,6 +299,7 @@ def show(
     path: str,
     *,
     allow_absent: bool = False,
+    maximum_bytes: int | None = None,
     root: Path = ROOT,
 ) -> bytes | None:
     if SHA40.fullmatch(commit) is None:
@@ -340,7 +343,18 @@ def show(
         or SHA40.fullmatch(object_id) is None
     ):
         raise ValueError(f"verified base object is not one regular tracked file: {path}")
-    return git(["cat-file", "blob", object_id], f"read verified base file {path}", root=root)
+    size = None
+    if maximum_bytes is not None:
+        size_raw = git(["cat-file", "-s", object_id], "inspect base blob size", root=root)
+        if re.fullmatch(rb"[0-9]{1,20}\n", size_raw) is None:
+            raise ValueError("base blob size is malformed")
+        size = int(size_raw)
+        if not 0 < size <= maximum_bytes:
+            raise ValueError("base review packet exceeds its byte bound")
+    raw = git(["cat-file", "blob", object_id], f"read verified base file {path}", root=root)
+    if size is not None and len(raw) != size:
+        raise ValueError("base blob size differs from its immutable object")
+    return raw
 
 
 NON_SEMANTIC = {
@@ -469,6 +483,8 @@ def validate_change_review(
     label: str,
     *,
     root: Path,
+    module_id: str | None = None,
+    base_commit: str | None = None,
 ) -> dict[str, Any]:
     if not isinstance(compatibility, dict):
         raise ValueError(f"{label}: compatibility metadata is not an object")
@@ -554,12 +570,27 @@ def validate_change_review(
                 for value in values.values()
             ):
                 raise ValueError(f"{label}: {field} digest is invalid")
-        packet_raw = read_review_packet(
-            root,
-            review.get("review_packet"),
-            review.get("review_packet_sha256"),
-            label,
-        )
+        if base_commit is None:
+            packet_raw = read_review_packet(
+                root,
+                review.get("review_packet"),
+                review.get("review_packet_sha256"),
+                label,
+            )
+        else:
+            relative = review.get("review_packet")
+            if not isinstance(relative, str):
+                raise ValueError(f"{label}: review packet path is not text")
+            match = REVIEW_PACKET_PATH.fullmatch(relative)
+            if match is None:
+                raise ValueError(f"{label}: review packet path is not canonical")
+            if match.group(1) != review.get("review_packet_sha256"):
+                raise ValueError(f"{label}: review packet path and digest differ")
+            packet_raw = show(
+                base_commit, relative, maximum_bytes=REVIEW_PACKET_MAX_BYTES, root=root
+            )
+            if sha256_bytes(packet_raw) != review["review_packet_sha256"]:
+                raise ValueError(f"{label}: review packet digest differs")
         packet = load(packet_raw, f"{label} review packet")
         if packet_raw != canonical_packet(packet):
             raise ValueError(f"{label}: review packet is not canonical")
@@ -569,6 +600,7 @@ def validate_change_review(
             review,
             migration_sha256,
             rollback_sha256,
+            module_id=module_id if module_id is not None else label,
         )
     return review
 
@@ -613,7 +645,10 @@ def evaluate(root: Path, base_ref: str) -> dict[str, Any]:
         )
         old_compatibility = load(old_compatibility_raw, f"base {module_id}")
         review = validate_change_review(compatibility, module_id, root=root)
-        validate_change_review(old_compatibility, f"base {module_id}", root=root)
+        old_review = validate_change_review(
+            old_compatibility, f"base {module_id}", root=root,
+            module_id=module_id, base_commit=base_commit,
+        )
         if compatibility["introduction_review_class"] != old_compatibility[
             "introduction_review_class"
         ]:
@@ -628,6 +663,12 @@ def evaluate(root: Path, base_ref: str) -> dict[str, Any]:
             old_path = old_record["artifacts"][kind]
             old_schema_raw = show(base_commit, old_path, root=root)
             new_schema_raw = (root / new_path).read_bytes()
+            if (
+                old_review["class"] == "BREAKING_MIGRATION"
+                and kind in old_review["contracts"]
+                and old_review["target_contract_sha256"][kind] != sha256_bytes(old_schema_raw)
+            ):
+                raise ValueError(f"base {module_id}: review does not bind target {kind}")
             old_contract_raw[kind] = old_schema_raw
             new_contract_raw[kind] = new_schema_raw
             old_schema = load(old_schema_raw, old_path)

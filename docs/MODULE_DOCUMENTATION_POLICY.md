@@ -119,6 +119,21 @@ every documented resource/SLO number and gap lists to the machine catalog.
 Required headings or values hidden in a code example or HTML comment do not
 satisfy the contract. Documentation/provenance program revisions must agree.
 
+The accepted Markdown subset rejects unterminated HTML comments and raw HTML
+block openers outside root-level fenced examples, including after list or
+blockquote markers and continuation indentation. Four-column indented code
+cannot supply a required field. A code fence closes only on the same marker
+character, at least the opening length, with no trailing info string and at
+most three indentation columns. Container-nested fences and backtick fence
+info strings containing a backtick are rejected. Required values use complete
+single-line code spans; text inside multiline spans receives no contract credit
+and unterminated spans are rejected.
+All claim ceilings, uncertainty rules and source ownership markers must also
+appear in visible prose, not solely in a comment or example.
+Module documents additionally reject raw HTML tags in ordinary inline prose:
+an inline opener can hide later headings and fields in the rendered document.
+Literal HTML/tag examples remain allowed inside code spans or root-level fences.
+
 Every detailed module document resolves at least one named implementation
 declaration and one test source. Python declarations are inspected with the
 AST without executing code; Rust declaration navigation is checked statically.
