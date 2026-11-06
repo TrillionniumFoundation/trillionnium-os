@@ -1,0 +1,244 @@
+{
+  "schema": "hepta.fixed19.environment-interruption-handoff.v1",
+  "recorded_at": "2026-11-06T01:59:36Z",
+  "state": "EXECUTION_ENVIRONMENT_UNAVAILABLE_FULL_ACCEPTANCE_INCOMPLETE",
+  "scope": {
+    "whole_cases_total": 19,
+    "whole_cases_qualified": 0,
+    "host_layer_passes": 5,
+    "host_layer_total": 5,
+    "host_layer_cases": [
+      "NEG04",
+      "NEG05",
+      "NEG07",
+      "NEG08",
+      "NEG09"
+    ],
+    "policy_comparison_passes": 16,
+    "policy_comparison_total": 16,
+    "host_and_policy_results_do_not_qualify_whole_cases": true
+  },
+  "blocker": {
+    "environment_id": "ccarenv_b64_Y2NhcmVudl82YTljNGExYmJmOGM4MTkxYmZmY2Q1OTExNmRlNDJmNg",
+    "status": "unavailable",
+    "root_read_only_probe": {
+      "command": "pwd",
+      "cwd": "/workspace/scratch/1ad3d6f55439",
+      "error": "No usable execution environment is available. Wait for an environment to become available before using this tool.",
+      "output_received": false
+    },
+    "root_remote_processes_started_during_recovery": 0,
+    "new_phone_actions_during_recovery": 0,
+    "environment_recovery_tool_exposed": false,
+    "git_connector_available": true
+  },
+  "durable_source_checkpoint": {
+    "repository": "TrillionniumFoundation/trillionnium-os",
+    "branch": "codex/razr60-fixed19-r10-20261105-1ad3",
+    "commit": "7f5d5e6c6e7c7f939b80fc6ca90874c534f4332c",
+    "tree": "864b2a0f10c97f825a8a61b4e7305c56e3c290ec",
+    "parent": "f972e1f41f7aca6f74407edc5293b3850d069748",
+    "read_back_again_during_recovery": true,
+    "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/checkpoint11",
+    "source_members": 769,
+    "uncompressed_source_bytes": 32922608,
+    "archive_bytes": 3852952,
+    "archive_sha256": "5d6d002aba82489c161561d230eb4122f2ff8d44956337d3f51f32fabadfebe4",
+    "final_runtime_ready": false
+  },
+  "provenance_note": "This handoff preserves status, paths, known pins and recovery decisions. It does not preserve post-checkpoint11 source bodies. Those bodies require recovery and complete readback from the unavailable workspace. Source-only changes are not actual phone qualification.",
+  "post_checkpoint11_confirmed_local_sources": [
+    {
+      "path": "epoch_prepare_frontier_candidate01/source-draft05/source/prepare_component.py",
+      "bytes": 128358,
+      "sha256": "a4bb1b587315131c27d330e1dc2482c5c3d9e3b49f8eade2a2ec7da099441e87",
+      "evidence": "Root prior completed local build; not re-read during outage"
+    },
+    {
+      "path": "epoch_prepare_frontier_candidate01/source-draft05/source/late_boundary.py",
+      "bytes": 126290,
+      "sha256": "09483f179f7e97a015a93e558fa2b3d6630f35dab6af785217aa5b210ac7f87a",
+      "evidence": "Root prior completed local build; not re-read during outage"
+    },
+    {
+      "path": "epoch_prepare_frontier_candidate01/source-draft05/source/epoch_protocol_collection.fragment.py",
+      "bytes": 42520,
+      "sha256": "b989cacfa0203a5dbe54f029adef0be51328fcff51cb148e0501822a1574cabc",
+      "evidence": "Root prior completed local build; not re-read during outage"
+    },
+    {
+      "path": "epoch_native_candidate01/runtime-protocol-preview07/source/component_common.py",
+      "bytes": 122204,
+      "sha256": "fb0e7420a0025c9c2bc901a06b7d9fcaf8b3c8e5f916794f602b046fc498b2c6",
+      "evidence": "source owner confirmed completed measurement and no subsequent edit"
+    },
+    {
+      "path": "epoch_inventory_shared_gnu_scan_candidate01/delivery-source-only01/package",
+      "manifest_bytes": 3615,
+      "manifest_sha256": "095e9ab6b02e70992f5bb703016aee0a0ce4536e8a2eb3dde43e7b5884e18246",
+      "source_bytes": 128422,
+      "source_sha256": "0cce9badb92fdeb6402df057d3ca735d8f4339caaea079d2898664ff5d9e548e",
+      "evidence": "property owner frozen package; prior Root independent review; source-only"
+    },
+    {
+      "path": "epoch_witness_pack_candidate01/delivery-source-only01/package",
+      "manifest_bytes": 2189,
+      "manifest_sha256": "2f6a88cfb2f580d192b3755e1c4132a7dc6edacb10cb5f7e685d20fc2496bbd4",
+      "source_bytes": 51686,
+      "source_sha256": "72c0564bceb3dd4fcfe2f9165daee91586ed4a391ded63cfe87b6c713f165ee8",
+      "evidence": "property owner frozen package; Root independent review still pending; source-only"
+    },
+    {
+      "path": "epoch_root_workflow_candidate01/publication-carriers-v3-draft02",
+      "members": [
+        {
+          "name": "component_common.py",
+          "bytes": 123875,
+          "sha256": "5dceba5468bd80d7fe972d0a58189149ef6e7bb9537f33913179e2b83ef827c4"
+        },
+        {
+          "name": "component_snapshot.py",
+          "bytes": 129074,
+          "sha256": "5d54f4605d1c52aa957d8dee3dd183a40e2d311c502a3c133613b33d01d2b287"
+        },
+        {
+          "name": "prepare_component.py",
+          "bytes": 129123,
+          "sha256": "2d0d60f205689089a080969e383954447dac827ea21652c2e1c2fbf8ce4e000a"
+        }
+      ],
+      "evidence": "transport owner confirmed local compile and complete source inverse; integrate approved spans only"
+    },
+    {
+      "path": "epoch_root_workflow_candidate01/gnu-parent-patch06",
+      "members": [
+        {
+          "name": "component_snapshot.py",
+          "bytes": 130693,
+          "sha256": "cf8371d41753a2c4a30dc4c2953a4baa00cb87646703401dad9289ab3cbf4ddc"
+        },
+        {
+          "name": "close_component.py",
+          "bytes": 124260,
+          "sha256": "fbe658ca18de6abafea99698e95c2ebefff6818f5d7cbec3820e787dc0478475"
+        },
+        {
+          "name": "prepare_component.py",
+          "bytes": 128447,
+          "sha256": "e54013683c755cf156c694bafa6f5df2f1d038099b096492b85e58a801fda7ca"
+        }
+      ],
+      "evidence": "transport owner confirmed local compile and complete source inverse; prepare is a separate 89-byte call-site delta"
+    }
+  ],
+  "confirmed_but_unmeasured_edits": {
+    "stage": {
+      "path": "epoch_native_candidate01/stage-operations-draft01/source/epoch_stage_operations.fragment.py",
+      "last_measured_bytes": 128831,
+      "last_measured_sha256": "74878fda4bb7be17152d586e0a87196431e8807f28c959437f8552376d61f611",
+      "last_measured_pin_is_current": false,
+      "reason": "Subsequent shared I/O pool patch had a successful tool result; no subsequent complete measurement."
+    },
+    "phase_fragment": "epoch_native_candidate01/stage-operations-draft01/source/epoch_phase_operations.fragment.py",
+    "fixture_fragment": "epoch_native_candidate01/stage-operations-draft01/source/epoch_fixture_admission.fragment.py",
+    "assembly_script": "epoch_native_candidate01/stage-operations-draft01/assemble_working.py"
+  },
+  "uncertain_writes": [
+    {
+      "path": "epoch_native_candidate01/stage-operations-draft01/source/epoch_fresh_observation.fragment.py",
+      "cell_id": "g3:189",
+      "operation": "apply_patch",
+      "status": "No success or failure result received",
+      "first_recovery_action": "Read-only existence, complete body and AST inspection; do not blindly repeat patch."
+    },
+    {
+      "path": "epoch_sender_candidate01/source-draft01",
+      "operation": "build_source01.py after builder patch",
+      "status": "Last Root tool result was context-truncated; build success and emitted hashes not confirmed",
+      "first_recovery_action": "Read SOURCE-DERIVATION and emitted files if present; inspect before any create-only rerun."
+    },
+    {
+      "path": "epoch_root_workflow_candidate01",
+      "operation": "snapshot to RFO relocation builder04 newline correction",
+      "status": "Builder was saved, compile rejected missing trailing LF; correction or successor write not confirmed",
+      "first_recovery_action": "Locate exact builder and result files; inspect and minimally correct; no target execution."
+    }
+  ],
+  "required_recovery_work": [
+    "Recover existing workspace; reconcile uncertain writes before any retry. If the workspace is lost, restore checkpoint11 with its verifier and recreate missing successors explicitly; never treat this handoff as source bodies or original filesystem identity.",
+    "Complete fresh observation using one original callback and one shared I/O pool; fix nested callback identity, pass the same shared I/O into _EpochCaseModules, and count bootstrap physical reads as the operation-local delta. Verify actual LIFE v6 shared_budget field names.",
+    "Preserve actual two-window process/net observations and complete immutable full9 rechecks. Compare business inventory with late.inventory_value, excluding only its elapsed_seconds field while retaining both actual elapsed values.",
+    "Implement initialization, allocation, resource measurements and admission. Add mandatory PRECLAIM-OBSERVATION.json to collector/replay exact slot sets; full raw <=4MiB, CLAIM and ALLOCATION-ADMISSION <=65536 each. Verify the complete original, not its summary alone.",
+    "Implement sender_predecessor exact5 from the last actual committed record and complete P4 latency original. Materializer must read previous bytes and match previous_utf8, and use actual runtime/source sender paths.",
+    "Complete and independently review the sender/ready successor. Preserve original selection CAS, one Send, polling and draft restoration. Measure actual nested wire size <=65536 before deployment.",
+    "Merge publication v3 function spans and GNU-parent capture checks without replacing other owners' complete files. Move the complete ordinary _pa_publication_exchange into existing RFO with an explicit context and shared clock; no compressed executable source or 33rd module.",
+    "Fix consumer decoded_total to charge every distinct actual carrier path, including equal-SHA copies. JOIN aliasing the same RESULT path remains one physical copy.",
+    "Complete Root07 publication packet assembler, exact15 result, actual previous proof, witness paired flags, and NEG02 post-publication seal. Missing origin or actual source body must reject; do not infer authority from hash equality.",
+    "Finish remaining CPU/physical successors using the approved capture-only derivation and actual runtime source admission, preserving original cases and no third epoch native case.",
+    "Integrate actual 32-file runtime, all final bindings and all complete archive/copy costs. Check the real final bytes, including each Python <=131072. Keep missing bindings None and hard rejecting until concretely satisfied.",
+    "Only after the final source and authority gates pass: run the real NEG01/NEG02 qualification sequence and the remaining E2E01-04, COMP01, NEG03-14 host and physical scenarios; collect complete receipts and report each whole-case result against the original acceptance table."
+  ],
+  "locked_interfaces": {
+    "fresh": {
+      "schema": "hepta.native-guard.epoch-current-frontier-observation.v1",
+      "state": "COMPLETE_CURRENT_FRONTIER_AND_FINITE_ABSENCE_OBSERVED",
+      "keys": [
+        "schema",
+        "state",
+        "inventory_spec",
+        "business_inventory",
+        "control_inventory",
+        "inventory_observation",
+        "role_absence",
+        "endpoints",
+        "external_artifacts",
+        "immutable_original_rechecks",
+        "read_accounting"
+      ],
+      "implementation_completed": false
+    },
+    "preclaim_small_value": {
+      "schema": "epoch-preclaim-observation.v1",
+      "keys": [
+        "schema",
+        "epoch_id",
+        "boot_id",
+        "ordinal",
+        "case_id",
+        "initialization",
+        "generation",
+        "prior_boundary",
+        "predecessor_terminal",
+        "complete_observation",
+        "measured",
+        "remaining_qualification_cases",
+        "sender_predecessor"
+      ],
+      "note": "Schema spelling must be checked against actual source before integration; this is the agreed structure, not an executed value.",
+      "full_slot": "PRECLAIM-OBSERVATION.json"
+    },
+    "sender_predecessor": [
+      "previous_original",
+      "previous_utf8",
+      "latency_origin",
+      "latency_utf8",
+      "prior_record"
+    ],
+    "publication_v3": {
+      "action_carriers": 17,
+      "origin": "actual P4 full4",
+      "carrier": "actual Mac exact3",
+      "join_alias": "same RESULT physical path",
+      "old_v2_rejected": true
+    }
+  },
+  "execution_constraints": {
+    "root_only_remote_actor": true,
+    "no_uncertain_process_retry_with_new_key": true,
+    "no_new_native_case_by_recovery": true,
+    "no_claimed_runtime_readiness": true,
+    "retained_6077_remains_provider_failed_and_unqualified": true,
+    "do_not_rerun_completed_historical_deep_audits": true,
+    "no_plain_json_numbers_for_native_nanosecond_identity": true
+  }
+}
