@@ -1,0 +1,34 @@
+{
+  "DailyAdapter_instantiated": false,
+  "PhoneLocalAdapter_instantiated": false,
+  "actual_test_interfaces": [
+    "CodexAdapter.receive turn.start",
+    "CodexAdapter.emit terminal",
+    "PhoneTools.map and prepare",
+    "task_postconditions.load_contract/evaluate/terminal_fields",
+    "write_exclusive O_EXCL + fsync with actual competing threads"
+  ],
+  "all_owner_requests_and_native_public_receipts_synthetic": true,
+  "candidate_adopted": false,
+  "executor_client_validation_bypassed": false,
+  "fixture_control_business_true_is_not_phone_credit": true,
+  "full_candidate_modules_imported": 15,
+  "historical_seals_untouched": true,
+  "model_or_completion_loop_called": false,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "native_tool_frames": 0,
+  "phone_business_qualified": false,
+  "phone_calls": 0,
+  "production_functions_modified_or_monkeypatched": false,
+  "schema": "razr60-shared-host-regression-limits/v1",
+  "unexercised": [
+    "real phone/UI/public receipt",
+    "full PhoneLocalAdapter instance with fixed executor client",
+    "native executor and target runtime",
+    "formal owner-builder/preparer/adoption chain"
+  ],
+  "whole_NEG11_qualified": false,
+  "whole_NEG12_qualified": false,
+  "whole_NEG13_qualified": false
+}

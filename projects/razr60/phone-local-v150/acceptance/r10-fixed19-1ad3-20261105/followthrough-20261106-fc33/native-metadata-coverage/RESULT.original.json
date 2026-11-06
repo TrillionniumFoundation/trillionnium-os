@@ -1,0 +1,337 @@
+{
+  "all_inputs_synthetic": true,
+  "audit_denied_events": [],
+  "candidate_daily_sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f",
+  "candidate_observation_sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409",
+  "controls": 2,
+  "elapsed_seconds": 0.04571675,
+  "fd_thread_baseline_restored": true,
+  "finding_count": 7,
+  "harness_dependency_sha256": "3269dbc7da98ab00ee60f1a458c71244ff312b17e541314b54e20c0ebec92bc7",
+  "limits": [
+    "No installed runtime or transport corruption was performed.",
+    "This proves consumer acceptance and fixture semantic promotion, not an independently demonstrated attack ingress.",
+    "A full PhoneLocalAdapter was not instantiated and its executor gate was not bypassed.",
+    "Historical minimal terminal acceptance is an existing declared compatibility choice.",
+    "No v2 parser edit, production adoption, or whole NEG11 qualification is made."
+  ],
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "outer_scope": "Production decode and known_tool_result invoked. CodexAdapter tool.result receive not executed; its source calls these and checks frame/call identity, without these metadata fields.",
+  "phone_calls": 0,
+  "production_candidate_modified": false,
+  "schema": "razr60-current-native-metadata-coverage-reproduction/v1",
+  "script_sha256": "20ec976d8dd5d5df755f366284f0f04e114fffc51d3748d0ee205bed904a6e34",
+  "semantic_scope": "Real PhoneTools.prepare created facts; real task contract and CodexAdapter.emit persisted turn.complete for each explicitly synthetic fixture.",
+  "source_pins_sha256": "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4",
+  "state": "SEVEN_UNCHECKED_METADATA_REPRODUCTIONS",
+  "target_basis": "Mapped wire_call omits target. Checked Rust decoder clones call.target_id into request, and every runtime event clones that request target; expected current target is None.",
+  "variants": [
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_696087d7efb4fe33662c",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "eaaa55a50531b51ca16acfd46cf3d52c208077e8248ffe49077a282f003305f3",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_30368205efa1112c0fef",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "8c23b2c5dee6d559b8f7618edf120171fd92d3ddeba64a892a18f0fec5ed038d",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_c5a2f647c15de6a0abd6",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "1c198b8a9ae34e0f8439cdb4b09f4ee4a3b163b951b50fbebb2367eab35ec2aa",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": false,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "control",
+      "synthetic_fixture_only": true,
+      "variant": "valid_full_fields"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_fab986a3043c0c948ba8",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "09ba62468ef69c435a2887d7bfd7da8c4a53222781e55582a65539d6b6e72ade",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_fc918e654eec5be2102a",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "a722b86b8836429593a378ca5dbf3b1ead9aab22bacdd99029ec1cc1f76a1391",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_261e52f7735fd7049d60",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "dc1042a377666d7efa2afd7375fc8294e94977458a25ce2b184bf674f6cd6a85",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "target differs from omitted/None mapped target and the other events",
+      "synthetic_fixture_only": true,
+      "variant": "event_wrong_target"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_5855fb08b72b5cc8e93e",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "a651a9987df7a1813c093df3e215cc1e5649664b18222f1fedf5b66ca0923eba",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_fc4a0dee52252d9a26dd",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "c1587c9caf839c0f7001e0e45c79c8e36b32012a469f22154159b03c6ee486ec",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_5c81d55c3cfd3800c8f6",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "3ab0a2b52da815b66d53b34ba232883662724a091215a26a85c9f8dd3b596f55",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "target_id object cannot encode Option<String>",
+      "synthetic_fixture_only": true,
+      "variant": "event_target_object"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_2e144547a994b7d160b6",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "32ab1fcfb9a88d76204a8cfb35ce86442768026ce1976ef7f452620f00345bbf",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_3ab51f0c4b6fc881d196",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "b02066e3fed43447432b2c7fd4c9433885b4549b45201ee045d892523464f203",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_e9632f2f0fdbcdf6ef63",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "650f8939678faedd447caba0319b4a4ab1583521521c2e9781e60ab7dd4df6c5",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "bool cannot encode u32 pid",
+      "synthetic_fixture_only": true,
+      "variant": "started_pid_bool"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_748baf28e4f12c592d1f",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "9aa54c397d579b59916d1b98af6e5fd1795fdca2f633d872c26c037436c870ea",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_d32af77c5962938f3597",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "487ce5c5fe8ca9a88df43be52773c3528de147e776a6280815415af3d4f6f297",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_de20f24fc1f7e9e04f2a",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "d6eda5ded2b7c26f471e6e765dea26048fe3cd8512e0687191aeae528f5c8132",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "float cannot encode u32 pid",
+      "synthetic_fixture_only": true,
+      "variant": "started_pid_float"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_7b7ac9f7725086b05b26",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "1fc3f71097678fdfa16e957232d073e3881fc7632a410fb5e65239585dd06e16",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_05796a8ac2fb6c9a0414",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "8881b1b334a0e5862f874ddf0035d535a62c614caef27a5ed2e52a93b233fdf6",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_83e070c288d97378f5ab",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "446710781aa97cfbcaef67b835223defa57388a71d785faae8bcb036a081de35",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "float cannot encode u64 event elapsed_ms",
+      "synthetic_fixture_only": true,
+      "variant": "event_elapsed_float"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_66a0f3e1a956ec9ee38f",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "f8e72bc9ec7df414800a2e7eb3aa01fb163ee4defdbcf7b69fa4e98b60426c8a",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_1b0543995869040a529b",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "ce94733939c7a39510bc43a1ebfe1d4b59ede26c8caf13aa0107c19405928ec2",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_7556aef84c23dbdeab3a",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "326c2e746bcb31c45e245e80bdbc2b9e3fbd6ec0d3dba7c4b7656b78668a782a",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "float cannot encode u64 terminal elapsed_ms",
+      "synthetic_fixture_only": true,
+      "variant": "terminal_elapsed_float"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_b333f217798330b1b13d",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "c326817348f488bec5ec18a6377ded2eb6a2f9ecfd49304dedc02e50fa157fa7",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_1ff19ca8279743c2a38d",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "cd13e874cd99da91747ac6d1b8ef1cb516bef69a11e1cdf95c4302fd3bd154e5",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_7d83bc4d90a295531620",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "747cc37acc5c380cff62faddb066cdb3a0732eade89e4c5a77adb94ce9b65176",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "runtime producer chooses Signaled for a signal; exited/0/signal9 contradicts it",
+      "synthetic_fixture_only": true,
+      "variant": "exited_zero_with_signal"
+    },
+    {
+      "actual_shared_business_verified": true,
+      "actual_shared_gate_terminal": "turn.complete",
+      "fixtures": [
+        {
+          "call_id": "input_195caae263b28b879732",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "23833233867f0c5068efbe577557ca5ac52d04394bad3ad8a3cb2cd329610502",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "public_4a63684c5bf2de3299e0",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "8cff52a301324aa4b89f9ddbabad68819ee1d8fa9b127852d33b6d0feb164874",
+          "tool": "adb.exec"
+        },
+        {
+          "call_id": "return_a23e08d9f5758c0ad001",
+          "native_streams_accepted": true,
+          "outer_decode_and_known_tool_result_accepted": true,
+          "raw_stdout_sha256": "4cd3089de4109c5a4b5d86655b8faf6a88223f4d1cdd7a575c210e023cfce3fe",
+          "tool": "adb.exec"
+        }
+      ],
+      "malformed_metadata_promoted": false,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "phone_calls": 0,
+      "source_contract_reason": "documented retained compatibility; not a new defect claim",
+      "synthetic_fixture_only": true,
+      "variant": "historical_minimal_terminal"
+    }
+  ]
+}

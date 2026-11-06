@@ -1,7 +1,7 @@
 {
-  "schema": "hepta.fixed19.followthrough-checkpoint.v1",
-  "recorded_at": "2026-11-06 13:47:44 UTC",
-  "repository_base_commit": "744fc422a28bd6f505701503bf0d113ab49d4634",
+  "schema": "hepta.fixed19.followthrough-checkpoint.v2",
+  "recorded_at": "2026-11-06 14:23:52 UTC",
+  "repository_base_commit": "095a0604ce94d0f3f33819ef8df95478ca0223e8",
   "scope": "Independent source candidates and reconciled cleanup attempt; no new final-combination qualification",
   "current_component": {
     "combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
@@ -19,7 +19,21 @@
       "mac_checks_total": 42,
       "job_id": "1a1b10f1643-fc05-7572",
       "deployed": false,
-      "adopted_into_formal_combination": false
+      "adopted_into_formal_combination": false,
+      "additional_metadata_probe": {
+        "source_candidate_modified": false,
+        "script_sha256": "20ec976d8dd5d5df755f366284f0f04e114fffc51d3748d0ee205bed904a6e34",
+        "result_sha256": "37c0215cd9837d4028c91da0c52cd6b12e14c985ebd111cffca39038695f74a8",
+        "job_id": "1a1b12fda88-fc05-76ba",
+        "unchecked_metadata_reproductions": 7,
+        "controls": 2,
+        "all_inputs_synthetic": true,
+        "semantic_fixture_promoted_to_turn_complete": true,
+        "outer_tool_result_receive_exercised": false,
+        "installed_attack_ingress_demonstrated": false,
+        "v2_fix_supplied": false,
+        "whole_NEG11_qualified": false
+      }
     },
     "install_ready_reader": {
       "source_sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681",
@@ -29,6 +43,33 @@
       "frozen_inputs_bound": false,
       "frozen_execution_plan_bound": false,
       "actual_install": false
+    },
+    "install_ready_reader_env_v2": {
+      "source_sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f",
+      "protocol_sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353",
+      "retained_mac_checks_passed": 72,
+      "retained_mac_checks_total": 72,
+      "prior_67_included": true,
+      "environment_controls": 5,
+      "reproduction_is_same_cases_not_additional_credit": true,
+      "actual_slots_bound": false,
+      "actual_install": false
+    },
+    "shared_business_admission": {
+      "candidate_source_pin_manifest_sha256": "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4",
+      "complete_source_count": 15,
+      "imported_source_count": 15,
+      "daily_dependency_pins_verified": 14,
+      "host_scenarios_passed": 14,
+      "host_scenarios_total": 14,
+      "job_id": "1a1b128da9b-fc05-765f",
+      "all_owner_and_receipt_inputs_synthetic": true,
+      "real_O_EXCL_race": true,
+      "real_pipe_admission": true,
+      "full_PhoneLocalAdapter_instantiated": false,
+      "executor_gate_bypassed": false,
+      "whole_NEG12_qualified": false,
+      "whole_NEG13_qualified": false
     }
   },
   "new_whole_cases_closed": [],
@@ -58,8 +99,33 @@
     "original_job_reconciled": true,
     "automatic_retry": false,
     "cleanup_complete": false,
-    "precise_changed_field": "NOT_YET_IDENTIFIED",
-    "tuple_list_conversion_patch": "NOT_JUSTIFIED_BY_SOURCE_REVIEW"
+    "precise_changed_field": "/proc/1/root/data/local/tmp metadata: st_mtime_ns and st_ctime_ns",
+    "tuple_list_conversion_patch": "NOT_JUSTIFIED_BY_SOURCE_REVIEW",
+    "parent_time_change": {
+      "old_decimal": "1793963850235883232",
+      "fresh_decimal": "1793970183899880816",
+      "cause": "NOT_IDENTIFIED",
+      "other_full9_fields_unchanged": true,
+      "all_881_member_names_unchanged": true
+    },
+    "fresh_readonly_capture": {
+      "job_id": "1a1b12453fd-fc05-7634",
+      "actor_exit_code": 0,
+      "phone_rc": 0,
+      "original_result_bytes": 7509274,
+      "original_result_sha256": "cb5b6619d8b7e58f7520aa40d6961f3d208911493ccc6bf8d0abf7aae09f9ba2",
+      "all_192_originals_equal": true,
+      "all_77_owned_files_equal": true,
+      "nine_owned_directories_equal": true,
+      "aliases_equal": true,
+      "two_transport_parents_equal": true,
+      "sender_xml_before_after_equal": true,
+      "same_14_existing_locks": true,
+      "old_cleanup_audit_names_absent_in_two_complete_censuses": true,
+      "archive_member_count": 111,
+      "host_analysis_sha256": "89e80ff36d170b1ec8b1fcaea01086b2e83ee01eb1651709ef2c4f617c931a13",
+      "cleanup_performed": false
+    }
   },
   "limits": [
     "42 parser/provider controls and 67 reader controls are distinct host regressions; neither is a physical acceptance count.",
@@ -67,5 +133,13 @@
     "Frozen historical inputs and original failed operations remain unchanged.",
     "No E2E, COMP, or remaining NEG whole case is promoted to passed by this checkpoint.",
     "An earlier unrelated final02 wait remains UNKNOWN_UNCHANGED."
+  ],
+  "remaining_actual_dependencies": [
+    "Reviewed independent successor cleanup from the fresh exact XML-parent profile; the first failed request remains consumed.",
+    "Successful actual cleanup closure and fresh current44 admission.",
+    "Final reviewed source tuple and successor freezer/preparer/build reader propagation.",
+    "Current-tuple NEG-01 and NEG-02 physical component qualification and full closure before formal BUILD.",
+    "Actual BUILD/install/start/READY plus installation-specific complete large-original retention.",
+    "Remaining same-tuple E2E, COMP and NEG physical evidence."
   ]
 }

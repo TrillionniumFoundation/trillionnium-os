@@ -1,0 +1,45 @@
+{
+  "actual_publisher_required": "Root must first retain actual publication of unchanged714a and actual full BUILD archive to the explicit private GNU delivery directory; no package here uploads or installs either.",
+  "command_api": "install_ready_execution_protocol.expected_phase(plan, phase, verified_release, actual_release_inputs, actual_retirement_sha256)",
+  "large_original_transport": {
+    "current_actual_retention_producer": null,
+    "existing_reusable_source": "resident_artifact_protocol.py359c and reviewed chunk capture523a are implementation references, not automatically admitted for this new installation scope. An exact installation retention producer/binding still needs review before real dispatch.",
+    "problem": "STAGED-PRESERVATION permits32MiB while existing shell combined output stays8MiB. Never inline the whole original into one shell response, take a tail, or raise the transport cap.",
+    "required": "Retain complete preservation with its stage-stdout-bound bytes/SHA using an independently reviewed bounded chunk/artifact protocol. Each chunk and reconstructed full byte stream must be retained and verified; per-call shell cap stays unchanged."
+  },
+  "missing_actuals": [
+    "new qualifiedNEG02/current47",
+    "actual formalBUILD/e947 inputs",
+    "exact GNU publication readback",
+    "one-use bound plan",
+    "three actual controller phase records",
+    "actual five installation files",
+    "new installed module/READY/claim/bind originals",
+    "scope-specific complete preservation retention producer"
+  ],
+  "new_nonces": 0,
+  "not_a_dispatcher": true,
+  "order": [
+    "Obtain successful actual NEG01 then NEG02, complete original closures and fresh47. Do not fill any slot from current44, failed660f, source controls or a projected budget.",
+    "Run Root-reviewed formal BUILD once and retain actual raw controller invocation/terminal/streams and complete archive. e947 must independently verify it.",
+    "Read actual BUILD-derived release/module/shared/input pins and bind one immutable execution plan; reserve three distinct existing syntax labels and request paths. No implicit retries or generated acceptance nonces.",
+    "Root publishes only exact installer and archive originals, retains full readback, and builds expected stage request with the reviewed protocol. Request file bytes must use the specified exact serializer.",
+    "Run one original configured-pocket4 actor process. Retain submitted dispatch, original start/status/read, actual P4 request/intent/baseline/result, full phone stdout/stderr and actor source bookends. Wait original actor and both original streams before any next phase.",
+    "On actual actor or phone error, timeout, missing output, or unknown outcome: preserve originals and stop. Do not dispatch a replacement label, repeat stage/start, or infer supervisor cleanup.",
+    "After stage success retain actual INSTALL-INTENT/STAGED/STAGED-PRESERVATION bytes and metadata. Recompute current47 comparison and exact one-empty-directory delta before authorizing the separate start.",
+    "Run the single start exactly once; retain START-INTENT/STARTED plus same authoritative process evidence. STARTED is detached supervisor spawn/readiness-pending, not supervisor wait.",
+    "After original start actor ends, invoke actual unchanged2b4 READY once using six real BUILD-derived arguments. Retain exact stdout and guard stderr; no model/task/health submission is part of READY.",
+    "Retain real installed module/source/claim identities and three actual H05 bind records; call24db. Original READY bytes and supervisor generation must equal this exact start/READY pair.",
+    "Create an explicit original namespace to host-copy full9 map and run this pure reader. Only the installation/start/READY execution subgate may qualify; all production task/terminal/output/footprint/fresh/rollback readers remain required."
+  ],
+  "phone_calls": 0,
+  "schema": "hepta.production.install-start-ready.producer-retention-contract.v1",
+  "state": "UNBOUND_NO_DISPATCH",
+  "stopping_contract": {
+    "automatic_replay": false,
+    "on_error_signals": false,
+    "original_nonzero_streams_not_discarded": true,
+    "supervisor_wait_not_synthesized": true,
+    "unknown_is_terminal_for_dispatch": true
+  }
+}

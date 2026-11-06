@@ -1,0 +1,48 @@
+{
+  "job_id": "1a1b128da9b-fc05-765f",
+  "projection_not_original_receipt": true,
+  "result": {
+    "bytes": 79185,
+    "sha256": "7b5061bcfc5059c1208d89600b58e8bc1b897dc6d04d9d38cecce3b133d8c6ce"
+  },
+  "scenario_count": 14,
+  "schema": "shared-business-host-regression-controller-safe-projection/v1",
+  "script": {
+    "bytes": 35757,
+    "sha256": "3269dbc7da98ab00ee60f1a458c71244ff312b17e541314b54e20c0ebec92bc7"
+  },
+  "status": {
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 724,
+        "stored": 724
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "whole_NEG12_qualified": false,
+  "whole_NEG13_qualified": false
+}

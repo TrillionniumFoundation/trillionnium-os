@@ -1,0 +1,179 @@
+{
+  "actual_READY": 0,
+  "actual_builds": 0,
+  "actual_installs": 0,
+  "actual_prefix": [
+    "/data/adb/magisk/busybox",
+    "env",
+    "-i",
+    "PATH=/usr/bin:/bin:/usr/libexec/trillionnium",
+    "PYTHONHOME=/usr",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TMPDIR=/var/lib/trillionnium/owner-open/tmp",
+    "NO_COLOR=1",
+    "TERM=dumb",
+    "/data/adb/magisk/busybox",
+    "chroot",
+    "/data/trillionnium/owner-open/root",
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "-c"
+  ],
+  "actual_prefix_read_only_reverified": {
+    "bytes": 61232,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/rollback_finite_r4_candidate01/bound44-current10-01/request/REQUEST.json",
+    "sha256": "d8bcef88d6e56e9641ddbbf16432d95b62183db1d52b66df17ed3f2043044619"
+  },
+  "actual_slots_bound": false,
+  "exact_commuting_forward_and_inverse": true,
+  "files": [
+    {
+      "bytes": 2529,
+      "path": "patches/environment-66fe-to-merged.patch",
+      "sha256": "9b413d08f8ff6d57229baa5d6976a0ae12b9c90631937cf3b77e16ed434d6882"
+    },
+    {
+      "bytes": 1040,
+      "path": "patches/type-c42ada-to-merged.patch",
+      "sha256": "58538029828e1010c6d9315094bcc1473cca058c9c07bc74e5dc4513f4bfd05c"
+    },
+    {
+      "bytes": 4259,
+      "path": "references/ENVIRONMENT-V2-DERIVATION.original.json",
+      "sha256": "94c206ce7ae1b2fe7c09036ddf44a3f13c31f1d8d083084b3f4decfcd02085ce"
+    },
+    {
+      "bytes": 7175,
+      "path": "references/INPUT-CONTRACT.original.json",
+      "sha256": "6acf1df1cbbb09422568c69bd838f67be7d4226f53d0f050bea27658c62a72fe"
+    },
+    {
+      "bytes": 4280,
+      "path": "references/PRODUCER-RETENTION-CONTRACT.original.json",
+      "sha256": "e2c43784539b2deae129dcdb1d09c7f19796b5dacf88bffdde2ec2350ea368ce"
+    },
+    {
+      "bytes": 5787,
+      "path": "references/REFERENCE-SEED.original.json",
+      "sha256": "c3ca803e44708e8e3e1d7c83dea62b1f595435de6fcd2345579f1f8b4aea0c56"
+    },
+    {
+      "bytes": 243806,
+      "path": "references/consumer.original.py",
+      "sha256": "3de6208604022671d4db21e2b479e3ef4d4bba4aaa9d2faa360f1865aec428da"
+    },
+    {
+      "bytes": 29027,
+      "path": "references/exact8.original.py",
+      "sha256": "24db28bee38671322b11ce4c2afd5dd47425381101dd85f887141f567811b490"
+    },
+    {
+      "bytes": 12331,
+      "path": "references/install_ready_execution_protocol.v1.py",
+      "sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35"
+    },
+    {
+      "bytes": 12782,
+      "path": "references/install_ready_execution_protocol.v2.py",
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    {
+      "bytes": 34100,
+      "path": "references/installer.original.py",
+      "sha256": "714a2916680e2313bfcee5a4319d6484b3c6ea5539854818c1134ad84ea02446"
+    },
+    {
+      "bytes": 16407,
+      "path": "references/readiness.original.py",
+      "sha256": "2b4ff90f7078af2481feb8a2d33c39d1a0e260102cd769a4ee3b46d9bec47e11"
+    },
+    {
+      "bytes": 28483,
+      "path": "references/release_reader.original.py",
+      "sha256": "e947a3b2de75a0820fcc3cb5cfe758f874cd85625cb11bac793b38256a670c43"
+    },
+    {
+      "bytes": 34510,
+      "path": "references/verify_install_start_ready.environment-66fe.py",
+      "sha256": "66fe421093482d4ce9338b1646584e94ac10600bc1edb8a711b9362d63dbddf3"
+    },
+    {
+      "bytes": 35028,
+      "path": "references/verify_install_start_ready.type-c42ada.py",
+      "sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681"
+    },
+    {
+      "bytes": 34507,
+      "path": "references/verify_install_start_ready_UNBOUND.baseline.py",
+      "sha256": "011be7502d97f5673c3df48802a3dd5dd78be2892e6a0e82873e863f619e3346"
+    },
+    {
+      "bytes": 12782,
+      "path": "source/install_ready_execution_protocol.py",
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    {
+      "bytes": 35031,
+      "path": "source/verify_install_start_ready_UNBOUND.py",
+      "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f"
+    },
+    {
+      "bytes": 3438,
+      "path": "validation/run_controller_phone_rc_controls.py",
+      "sha256": "36b67b98d0b10938ac8933488eedd58cfff480f8199e56b71a3ea40f5a1c6101"
+    },
+    {
+      "bytes": 10143,
+      "path": "validation/run_install_ready_candidate_controls.py",
+      "sha256": "43f66a5fa2f0350ef06f7f6cbcff4763d6cf8af867fd4dcfec26887566e8d59d"
+    },
+    {
+      "bytes": 14680,
+      "path": "validation/run_install_ready_source_controls.py",
+      "sha256": "92979c495d021225d6f1122e05556c62274224f760b2a88e401547274e63ce24"
+    }
+  ],
+  "fixed19_credit": 0,
+  "formal_role_identities_generated": 0,
+  "historical_contracts_under_references_are_not_candidate_contracts": true,
+  "new_request_nonces": 0,
+  "parents": {
+    "environment_reader": {
+      "bytes": 34510,
+      "sha256": "66fe421093482d4ce9338b1646584e94ac10600bc1edb8a711b9362d63dbddf3"
+    },
+    "original_reader": {
+      "bytes": 34507,
+      "sha256": "011be7502d97f5673c3df48802a3dd5dd78be2892e6a0e82873e863f619e3346"
+    },
+    "protocol_v1": {
+      "bytes": 12331,
+      "sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35"
+    },
+    "typed_reader": {
+      "bytes": 35028,
+      "sha256": "c42ada3af944cb6f8191d1ff8700107b01ea81414a15d25a4740925b6743d681"
+    }
+  },
+  "phone_calls": 0,
+  "protocol_content_changed_from_v2": false,
+  "public_callback_calls": 0,
+  "reader_semantic_changes": "Three type checks from c42ada plus the existing protocol descriptor change from 66fe",
+  "schema": "razr60-install-ready-source-merge/v1",
+  "selected": {
+    "protocol": {
+      "bytes": 12782,
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    "reader": {
+      "bytes": 35031,
+      "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f"
+    }
+  },
+  "state": "HOST_SOURCE_CANDIDATE_UNBOUND",
+  "unbound_rejection": "UNBOUND_ACTUAL_INSTALL_START_READY_INPUTS_NO_IO"
+}

@@ -1,0 +1,27 @@
+{
+  "all14_daily_parent_hashes_verified_before_and_during_import": true,
+  "assembly_job": "1a1b1258249-fc05-7641",
+  "candidate_source_count": 15,
+  "current_combination_sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
+  "formal_adoption": false,
+  "legacy_runner_source_only": {
+    "executed": false,
+    "historical_seal_not_changed": true,
+    "path": "reference/host_negative_runner.r7-r3.original.py",
+    "sha256": "1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871"
+  },
+  "native_builder_sha256": "b139e8c495d7ea96cb13a208a6927aa80101bf1edbc3a4da8c4e0c2b2186c03b",
+  "native_candidate_commit": "095a0604ce94d0f3f33819ef8df95478ca0223e8",
+  "only_changed_files": [
+    "phone_observation_tools.py",
+    "daily_phone_local.py"
+  ],
+  "original_source_bytes": 362872,
+  "original_source_count": 15,
+  "other_13_byte_identical": true,
+  "phone_calls": 0,
+  "regression_job": "1a1b128da9b-fc05-765f",
+  "schema": "razr60-full15-host-candidate-derivation/v1",
+  "source_pin_sha256": "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4",
+  "two_file_derivation": "Exact files from sibling native-streams package, whose build_candidate.py derives the only native_streams edit plus daily's single corresponding dependency hash."
+}

@@ -1,0 +1,21 @@
+{
+  "recorded_at": "2026-11-06 14:23:52 UTC",
+  "previous_commit": "095a0604ce94d0f3f33819ef8df95478ca0223e8",
+  "summary": "Fresh read-only recovery diagnosis, 14 shared host scenarios, 72 merged reader controls, and seven unclosed native-metadata validation findings.",
+  "physical_cleanup_complete": false,
+  "new_whole_cases_closed": [],
+  "test_count_policy": "72 includes prior67; repeated72 is not additional; 14 selected shared scenarios and seven acceptance findings are separately scoped.",
+  "root_reviewed_artifacts": [
+    "cleanup/postfailure-capture/inspect_originals.py",
+    "cleanup/postfailure-capture/RESULT.original.json",
+    "neg12-13-host/README.md",
+    "neg12-13-host/evidence/RUN-RESULT.original.json",
+    "native-metadata-coverage/test_native_wire_scope.py",
+    "native-metadata-coverage/RESULT.original.json",
+    "native-metadata-coverage/LIMITS.json",
+    "install-reader-env-v2/patches/type-c42ada-to-merged.patch",
+    "install-reader-env-v2/patches/environment-66fe-to-merged.patch",
+    "install-reader-env-v2/evidence/RESULT.json",
+    "install-reader-env-v2/ENTRYPOINTS-AND-INPUT-GAPS.md"
+  ]
+}

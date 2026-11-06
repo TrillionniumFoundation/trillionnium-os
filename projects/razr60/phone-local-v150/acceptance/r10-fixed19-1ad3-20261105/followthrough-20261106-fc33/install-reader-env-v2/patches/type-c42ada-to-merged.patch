@@ -1,0 +1,13 @@
+--- type-c42ada.py
++++ merged.py
+@@ -18,8 +18,8 @@
+ FROZEN_EXECUTION_PLAN = None
+ B = '/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1'
+ SOURCES = {
+-    'protocol': {'path': B + '/production-install-ready-source-a1055-20261106-01/source/install_ready_execution_protocol.py',
+-                 'bytes': 12331, 'sha256': '49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35'},
++    'protocol': {'path': B + '/production-install-ready-source-a1055-20261106-01/source/install_ready_execution_protocol_v2.py',
++                 'bytes': 12782, 'sha256': '79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353'},
+     'release': {'path': B + '/production-release-owner-finalizer-a1055-r1/source/verify_final_release_inputs_v3.py',
+                 'bytes': 28483, 'sha256': 'e947a3b2de75a0820fcc3cb5cfe758f874cd85625cb11bac793b38256a670c43'},
+     'exact8': {'path': B + '/fivefault-source-reconstruction-a1055-r2/source/verify_resident_output_bindings_bound02.py',

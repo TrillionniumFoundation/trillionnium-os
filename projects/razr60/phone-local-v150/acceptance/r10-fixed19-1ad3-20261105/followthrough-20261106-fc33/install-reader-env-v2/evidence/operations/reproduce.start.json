@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-fc33-env-v2-type-checks-candidate01/reproduce.py\",\n      \"--out\",\n      \"/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-fc33-env-v2-reproduce01\"\n    ],\n    \"created_unix_ms\": 1793974117664,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1b130a520-fc05-76c7\",\n    \"idempotency_key\": \"fc33-install-env-v2-reproduce01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b130a520-fc05-76c7\",\n    \"request_digest\": \"f36a9eaa6a990cc59b06391f491cccb4eb07d94472c6b1603d59af19711f3ed0\",\n    \"request_fingerprint\": 17540006153517862085,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b130a520-fc05-76c7\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 88857,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1b130a520-fc05-76c7\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

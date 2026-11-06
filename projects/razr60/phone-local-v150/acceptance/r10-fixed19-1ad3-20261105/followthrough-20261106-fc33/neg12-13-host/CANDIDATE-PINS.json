@@ -1,0 +1,183 @@
+{
+  "actual_original_source_root_relative": "shared/provider/source",
+  "adopted": false,
+  "candidate_source_count": 15,
+  "changed_source_files": [
+    "daily_phone_local.py",
+    "phone_observation_tools.py"
+  ],
+  "current_combination": {
+    "archived_path": "reference/CURRENT-COMBINATION.original.json",
+    "bytes": 4695,
+    "sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708"
+  },
+  "daily_parent_hashes_verified": true,
+  "files": [
+    {
+      "bytes": 15587,
+      "path": "reference/production/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "path": "reference/production/daily_phone_local.py",
+      "sha256": "ca23c60bbb4114960c6a571492cacd9e0bdc3404191409ac78bcf0c34a06c1d0"
+    },
+    {
+      "bytes": 11439,
+      "path": "reference/production/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "path": "reference/production/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "path": "reference/production/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "path": "reference/production/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "path": "reference/production/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13813,
+      "path": "reference/production/phone_local_tools.py",
+      "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+    },
+    {
+      "bytes": 43445,
+      "path": "reference/production/phone_observation_tools.py",
+      "sha256": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66"
+    },
+    {
+      "bytes": 22825,
+      "path": "reference/production/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41510,
+      "path": "reference/production/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "path": "reference/production/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70237,
+      "path": "reference/production/provider_phone_local.py",
+      "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+    },
+    {
+      "bytes": 9802,
+      "path": "reference/production/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "path": "reference/production/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    },
+    {
+      "bytes": 15587,
+      "path": "candidate/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "path": "candidate/source/daily_phone_local.py",
+      "sha256": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f"
+    },
+    {
+      "bytes": 11439,
+      "path": "candidate/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "path": "candidate/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "path": "candidate/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "path": "candidate/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "path": "candidate/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13813,
+      "path": "candidate/source/phone_local_tools.py",
+      "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+    },
+    {
+      "bytes": 43954,
+      "path": "candidate/source/phone_observation_tools.py",
+      "sha256": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409"
+    },
+    {
+      "bytes": 22825,
+      "path": "candidate/source/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41510,
+      "path": "candidate/source/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "path": "candidate/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70237,
+      "path": "candidate/source/provider_phone_local.py",
+      "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+    },
+    {
+      "bytes": 9802,
+      "path": "candidate/source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "path": "candidate/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "model_requests": 0,
+  "phone_calls": 0,
+  "production_source_count": 15,
+  "reference_runner": {
+    "bytes": 30125,
+    "commit": "744fc422a28bd6f505701503bf0d113ab49d4634",
+    "git_blob_sha1": "3934392492e1d9f454dde71f93a8fa3ba357f12e",
+    "historical_seal_not_rebound_or_modified": true,
+    "path": "reference/host_negative_runner.r7-r3.original.py",
+    "repository_path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-component-r1/host_negative_runner.py",
+    "sha256": "1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871"
+  },
+  "schema": "razr60-neg12-neg13-unadopted-full-source-candidate/v1",
+  "state": "UNADOPTED_HOST_TEST_CANDIDATE",
+  "whole_NEG12_qualified": false,
+  "whole_NEG13_qualified": false
+}

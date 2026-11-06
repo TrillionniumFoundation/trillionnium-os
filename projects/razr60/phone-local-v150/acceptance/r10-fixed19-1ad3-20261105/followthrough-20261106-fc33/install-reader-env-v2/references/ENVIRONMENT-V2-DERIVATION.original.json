@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.install-ready.actual-environment-derivation.v1",
+  "state": "SOURCE_ONLY_CONTROLS_PENDING",
+  "actual_request": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/art-source-a1055-parent-getattr-resume01/rollback_finite_r4_candidate01/bound44-current10-01/request/REQUEST.json",
+    "bytes": 61232,
+    "sha256": "d8bcef88d6e56e9641ddbbf16432d95b62183db1d52b66df17ed3f2043044619"
+  },
+  "actual_prefix": [
+    "/data/adb/magisk/busybox",
+    "env",
+    "-i",
+    "PATH=/usr/bin:/bin:/usr/libexec/trillionnium",
+    "PYTHONHOME=/usr",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu",
+    "LANG=C.UTF-8",
+    "LC_ALL=C.UTF-8",
+    "TMPDIR=/var/lib/trillionnium/owner-open/tmp",
+    "NO_COLOR=1",
+    "TERM=dumb",
+    "/data/adb/magisk/busybox",
+    "chroot",
+    "/data/trillionnium/owner-open/root",
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "-c"
+  ],
+  "parent_protocol": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-a1055-20261106-01/source/install_ready_execution_protocol.py",
+    "bytes": 12331,
+    "sha256": "49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35"
+  },
+  "selected_protocol": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-a1055-20261106-01/source/install_ready_execution_protocol_v2.py",
+    "bytes": 12782,
+    "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+  },
+  "protocol_changes": [
+    {
+      "before": "MAX_WIRE_EXCLUSIVE = 65536\n",
+      "after": "MAX_WIRE_EXCLUSIVE = 65536\n# Exact full environment prefix from original current44 REQUEST d8bcef88.\nGNU_EXEC_PREFIX = [\"/data/adb/magisk/busybox\",\"env\",\"-i\",\"PATH=/usr/bin:/bin:/usr/libexec/trillionnium\",\"PYTHONHOME=/usr\",\"PYTHONDONTWRITEBYTECODE=1\",\"LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu\",\"LANG=C.UTF-8\",\"LC_ALL=C.UTF-8\",\"TMPDIR=/var/lib/trillionnium/owner-open/tmp\",\"NO_COLOR=1\",\"TERM=dumb\",\"/data/adb/magisk/busybox\",\"chroot\",\"/data/trillionnium/owner-open/root\",\"/usr/bin/python3\",\"-I\",\"-B\",\"-c\"]\n",
+      "count": 1
+    },
+    {
+      "before": "    # This prefix is read from the actual d929 root operator, not an invented route.\n    command = '/data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -B -c ' + shlex.quote(bootstrap)\n",
+      "after": "    # Keep the complete actual GNU environment, without extra shell actions.\n    command = shlex.join(GNU_EXEC_PREFIX + [bootstrap])\n",
+      "count": 1
+    }
+  ],
+  "parent_reader": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-a1055-20261106-01/source/verify_install_start_ready_UNBOUND.py",
+    "bytes": 34507,
+    "sha256": "011be7502d97f5673c3df48802a3dd5dd78be2892e6a0e82873e863f619e3346"
+  },
+  "selected_reader": {
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-a1055-20261106-01/source/verify_install_start_ready_UNBOUND02.py",
+    "bytes": 34510,
+    "sha256": "66fe421093482d4ce9338b1646584e94ac10600bc1edb8a711b9362d63dbddf3"
+  },
+  "reader_changes": [
+    {
+      "before": "    'protocol': {'path': B + '/production-install-ready-source-a1055-20261106-01/source/install_ready_execution_protocol.py',\n                 'bytes': 12331, 'sha256': '49d94d28156621358cd1a17844a16eb026a2f44b43a20f63336394e7b4895e35'},",
+      "after": "    'protocol': {'path': B + '/production-install-ready-source-a1055-20261106-01/source/install_ready_execution_protocol_v2.py',\n                 'bytes': 12782, 'sha256': '79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353'},",
+      "count": 1
+    }
+  ],
+  "full_byte_forward_and_inverse": true,
+  "actual_slots_bound": false,
+  "phone_calls": 0,
+  "new_requests_created": 0
+}

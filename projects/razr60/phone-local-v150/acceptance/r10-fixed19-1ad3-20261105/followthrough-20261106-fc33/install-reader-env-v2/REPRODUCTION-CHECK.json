@@ -1,0 +1,23 @@
+{
+  "schema": "razr60-install-ready-reproduction-check/v1",
+  "state": "PASS_SOURCE_ONLY",
+  "fresh_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-fc33-env-v2-reproduce01",
+  "process_job": "1a1b130a520-fc05-76c7",
+  "observed_exit_code": 0,
+  "complete_stdout_and_stderr": true,
+  "passed_cases": 72,
+  "cases_are_same_candidate_not_additive": true,
+  "source_pins": {
+    "protocol": {
+      "bytes": 12782,
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    "reader": {
+      "bytes": 35031,
+      "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f"
+    }
+  },
+  "phone_calls": 0,
+  "actual_READY": 0,
+  "fixed19_credit": 0
+}

@@ -1,0 +1,48 @@
+{
+  "actual_READY": 0,
+  "actual_builds": 0,
+  "actual_installs": 0,
+  "actual_slots_bound": false,
+  "environment_controls": 5,
+  "fixed19_credit": 0,
+  "formal_role_identities_generated": 0,
+  "linux_guard_execution": "Linux procfs required; four guard execution controls not executed on this host",
+  "passed": 72,
+  "phone_calls": 0,
+  "phone_rc_controls": 3,
+  "portable_controls": 64,
+  "schema": "razr60-install-ready-merged-offline-controls/v1",
+  "source_pins": {
+    "protocol": {
+      "bytes": 12782,
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    "reader": {
+      "bytes": 35031,
+      "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f"
+    }
+  },
+  "state": "PASS_SOURCE_ONLY",
+  "tests": [
+    {
+      "name": "exact_unmodified_v2_protocol_guard",
+      "passed": true
+    },
+    {
+      "name": "exact_actual_prefix_in_source",
+      "passed": true
+    },
+    {
+      "name": "stage_only_environment_command_prefix_differs",
+      "passed": true
+    },
+    {
+      "name": "start_only_environment_command_prefix_differs",
+      "passed": true
+    },
+    {
+      "name": "ready_only_environment_command_prefix_differs",
+      "passed": true
+    }
+  ]
+}

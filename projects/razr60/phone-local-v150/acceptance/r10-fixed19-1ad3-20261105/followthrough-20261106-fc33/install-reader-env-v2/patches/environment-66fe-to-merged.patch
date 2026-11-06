@@ -1,0 +1,38 @@
+--- environment-66fe.py
++++ merged.py
+@@ -189,10 +189,12 @@
+     exact(row, ('bytes_hex', 'eof', 'next_offset', 'offset', 'size', 'text'), 'complete original process stream')
+     need(type(row['bytes_hex']) is str and len(row['bytes_hex']) <= 32768, 'single original actor summary page')
+     raw = bytes.fromhex(row['bytes_hex'])
+-    need(row['offset'] == 0 and row['eof'] is True and type(row['size']) is int
++    need(all(type(row[key]) is int for key in ('offset', 'next_offset', 'size'))
++         and row['offset'] == 0 and row['eof'] is True
+          and row['next_offset'] == row['size'] == len(raw) and type(row['text']) is str
+          and row['text'].encode() == raw, 'actual original output full bytes and EOF')
+-    need(status['log_bytes'][name] == {'seen': len(raw), 'stored': len(raw)}
++    counts = exact(status['log_bytes'][name], ('seen', 'stored'), 'exact original durable stream counts')
++    need(all(type(counts[key]) is int and counts[key] == len(raw) for key in ('seen', 'stored'))
+          and status['log_synced'][name] is True, 'controller original durable stream counts')
+     return raw
+ 
+@@ -216,7 +218,9 @@
+          and status['terminal_publication_confirmed'] is True
+          and status['timed_out'] is False and status['cancelled'] is False
+          and status['log_errors'] == {'stdout': None, 'stderr': None}
+-         and status['log_truncated'] == {'stdout': False, 'stderr': False}
++         and type(status['log_truncated']) is dict
++         and set(status['log_truncated']) == {'stdout', 'stderr'}
++         and all(status['log_truncated'][name] is False for name in ('stdout', 'stderr'))
+          and type(status['at_unix_ms']) is int and job['created_unix_ms'] <= status['at_unix_ms'],
+          'actual actor original wait/output is not complete success')
+     streams = {name: original_stream(outputs[name], name, status) for name in ('stdout', 'stderr')}
+@@ -261,6 +265,9 @@
+     need({k: source[k] for k in ('path', 'bytes', 'sha256')} == expected['spec']['source'],
+          'source guard selected another file')
+     pool.phone(source, source['path'], 262144)
++    need(type(value['identity']) is list and len(value['identity']) == 5
++         and all(type(x) is int and x > 0 for x in value['identity']),
++         'five positive integer source-entry identity fields')
+     for name in ('proc_before_base64', 'proc_after_base64'):
+         need(type(value[name]) is str, 'raw original proc representation')
+         raw = base64.b64decode(value[name], validate=True)

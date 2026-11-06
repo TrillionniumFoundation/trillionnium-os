@@ -1,0 +1,232 @@
+{
+  "actual_READY": 0,
+  "actual_builds": 0,
+  "actual_installs": 0,
+  "actual_phone_operations": 0,
+  "fixed19_credit": 0,
+  "new_nonces": 0,
+  "passed": 43,
+  "public_api_actual_positive_executed": false,
+  "schema": "hepta.production.install-ready.host-source-controls.v1",
+  "sources": [
+    {
+      "bytes": 12782,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-fc33-env-v2-type-checks-candidate01/source/install_ready_execution_protocol.py",
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    {
+      "bytes": 35031,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-install-ready-source-fc33-env-v2-type-checks-candidate01/source/verify_install_start_ready_UNBOUND.py",
+      "sha256": "d1de5b63f24cee899c47f7c3019ac4d7939d6212c9c798f812dc0266a97b569f"
+    }
+  ],
+  "state": "PASS_SOURCE_ONLY",
+  "synthetic_phase_fixture_used": true,
+  "test_scope": "pure original-byte/namespace/CLI/phase/guard parsers and unchanged parent delta only",
+  "tests": [
+    {
+      "name": "unbound_public_rejects_before_parse_or_callback",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "unbound_public_did_no_io",
+      "passed": true
+    },
+    {
+      "name": "duplicate_json",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "nonfinite_json",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "bool_original_size",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "incomplete_full9",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "hardlink_original",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "phone_not_root",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "ambiguous_relative_namespace",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "finite_plan_source_contract",
+      "passed": true
+    },
+    {
+      "name": "bool_shell_timeout",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "expanded_original_actor_timeout",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "arbitrary_actor_source",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "reused_operation_label",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "three_original_cli_phase_vectors",
+      "passed": true
+    },
+    {
+      "name": "entry_guard_compiles_without_execution",
+      "passed": true
+    },
+    {
+      "name": "guard_cleanup_preserves_original_exception_object",
+      "passed": true
+    },
+    {
+      "name": "guard_cleanup_failure_cannot_be_success",
+      "passed": true,
+      "rejection_class": "OSError"
+    },
+    {
+      "name": "explicit_namespace_full_bytes_roundtrip",
+      "passed": true
+    },
+    {
+      "name": "original_map_full_bookend",
+      "passed": true
+    },
+    {
+      "name": "no_implicit_host_path_translation",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "truncated_retained_copy",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "changed_retained_bookend",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "duplicate_original_map_row",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "synthetic_controller_complete_original_shape",
+      "passed": true
+    },
+    {
+      "name": "actual_argv_cannot_be_self_reported_elsewhere",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "reuse_refused",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "nonzero_actor_wait_preserved",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "unknown_actor_exit_refused",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "missing_original_eof",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "truncated_original_stream",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "controller_zero_does_not_imply_phone_zero",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "synthetic_guard_actual_source_bytes_and_raw_proc_join",
+      "passed": true
+    },
+    {
+      "name": "source_receipt_mismatched_proc_start_ticks",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "source_receipt_nonroot_original",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "source_receipt_wrong_exact_entry_argv",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "entry_stderr_after_receipt_not_dropped",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "incomplete_guard_receipt",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "unchanged_parent_pure_empty_directory_delta",
+      "passed": true
+    },
+    {
+      "name": "stage_cannot_change_old_original",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "stage_directory_must_be_empty",
+      "passed": true,
+      "rejection_class": "ValueError"
+    },
+    {
+      "name": "source_file_and_stdout_json_formats_remain_distinct",
+      "passed": true
+    },
+    {
+      "name": "all_actual_public_slots_still_none",
+      "passed": true
+    }
+  ],
+  "whole_qualification": false
+}

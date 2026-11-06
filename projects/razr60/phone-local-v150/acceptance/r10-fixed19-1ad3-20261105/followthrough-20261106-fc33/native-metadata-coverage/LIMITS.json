@@ -1,0 +1,43 @@
+{
+  "schema": "razr60-native-metadata-coverage-limits/v1",
+  "state": "OBSERVED_CONSUMER_VALIDATION_GAPS_NOT_A_DEPLOYED_FIX",
+  "source_candidate": "22580b8aa22d5c0ab4040888872e642a5176042023dd7bcf50e67efe51248409",
+  "daily_candidate": "689db3908014940a1e39689b966d30ab16ac6f9c0d7892becf1718b9840c824f",
+  "actual_host_job": "1a1b12fda88-fc05-76ba",
+  "actual_host_exit_code": 0,
+  "actual_consumer_reproductions": 7,
+  "controls": 2,
+  "all_inputs_synthetic": true,
+  "phone_calls": 0,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "candidate_source_changed": false,
+  "existing_minimal_terminal_compatibility_preserved": true,
+  "comparison_schema": "Published Rust types/encoder/process source at 744fc422; current installed Host result schema still requires an actual original before a v2 adoption decision.",
+  "current_client_read": {
+    "path_relative_to_frozen_component": "runtime/reference/tool_client_r6.py",
+    "bytes": 17390,
+    "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+    "finding": "The client emits verified sidecar stdout/stderr raw bytes and returns an exit code; it does not construct native execution events or minimal native terminals."
+  },
+  "actual_functions_invoked": [
+    "production decode",
+    "production known_tool_result",
+    "production native_streams",
+    "PhoneTools.prepare",
+    "load_contract/evaluate",
+    "CodexAdapter.emit"
+  ],
+  "outer_tool_result_receive_exercised": false,
+  "PhoneLocalAdapter_instantiated": false,
+  "executor_gate_bypassed": false,
+  "installed_attack_ingress_demonstrated": false,
+  "whole_NEG11_qualified": false,
+  "v2_fix_supplied": false,
+  "reproduction_dependency": {
+    "path": "../neg12-13-host/test_shared_business_admission.py",
+    "sha256": "3269dbc7da98ab00ee60f1a458c71244ff312b17e541314b54e20c0ebec92bc7",
+    "source_pins_sha256": "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4"
+  },
+  "original_synthetic_run_files_retained_on_mac": true
+}
