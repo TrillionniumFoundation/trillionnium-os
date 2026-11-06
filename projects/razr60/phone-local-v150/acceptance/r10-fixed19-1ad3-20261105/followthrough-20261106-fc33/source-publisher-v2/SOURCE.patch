@@ -1,0 +1,11 @@
+--- publisher-v1.original.py
++++ publish_and_derive_source_chain_v2.py
+@@ -134,7 +134,7 @@
+     need(consumer_raw == files['source/release_boundaries.py'] and consumer_change == proof['consumer_change']
+          and len(consumer_change['changes']) == 1, 'only exact actual package literal binding')
+     change = constructor.Changes(original_constructor)
+-    change.rhs('FROZEN_INPUTS', proof['source_inputs'])
++    change.rhs('FROZEN_INPUTS', located(binding_root, 'SOURCE-CHAIN-INPUTS.json', inputs_raw))
+     constructor_raw, constructor_change = change.finish()
+     need(constructor_raw == files['source/derive_reviewed_release_sources_BOUND.py']
+          and constructor_change == proof['constructor_change'] and len(constructor_change['changes']) == 1,

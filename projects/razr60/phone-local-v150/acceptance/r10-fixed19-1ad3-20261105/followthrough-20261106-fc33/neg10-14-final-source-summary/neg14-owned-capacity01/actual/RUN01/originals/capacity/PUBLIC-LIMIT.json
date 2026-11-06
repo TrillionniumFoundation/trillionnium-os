@@ -1,0 +1,16 @@
+{
+  "MAX_LINE": 1048576,
+  "disk_ENOSPC_test": false,
+  "entry": "daily_phone_local.main -> serve.capacity",
+  "first_rejected_total_bytes": 939524096,
+  "logical_budget_exhaustion": true,
+  "minimum_allowed_by_original_CLI": 1073741824,
+  "production_evidence_filled": false,
+  "public_CLI_argument": "--max-evidence-bytes",
+  "reserved_bytes": 134217728,
+  "selected_maximum": 1073741824,
+  "source_constants_modified": false,
+  "sparse_allocated_bytes": 0,
+  "total_before": 939524095,
+  "workers": 1
+}

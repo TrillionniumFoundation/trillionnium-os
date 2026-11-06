@@ -1,0 +1,66 @@
+{
+  "all_fifteen_parse": true,
+  "all_fourteen_daily_parent_pins_match": true,
+  "base_pins_sha256": "8c15ed8eabefe9c2587cd4bbadd2738461b592eb30b103bd0c52ac14de83114a",
+  "candidate_pins": {
+    "bytes": 8768,
+    "git_blob_sha1": "2b4ccbb028bab60a44c6a18aed7d14e4fa9def0a",
+    "sha256": "168cbbb9c49e86613622dfe6ce682516847cc856086b3369909e923ae8007d68"
+  },
+  "changed_files": [
+    "daily_phone_local.py",
+    "phone_local_tools.py",
+    "phone_observation_tools.py",
+    "provider_codex_host.py",
+    "provider_phone_local.py"
+  ],
+  "daily_edits": "Exactly four existing PARENTS SHA256 strings",
+  "exact_byte_inverse_checks": {
+    "daily_phone_local.py": true,
+    "phone_local_tools.py": true,
+    "phone_observation_tools.py": true,
+    "provider_codex_host.py": true,
+    "provider_phone_local.py": true
+  },
+  "historical_v1_v2_preserved": true,
+  "limits": [
+    "Host-only source derivation; no installed/runtime qualification or actual new dispatch.",
+    "Generation is allocated after dispatch by the native registry; validation establishes u64 allocator range and complete receipt/digest consistency, not an independent signed counter.",
+    "The qualified /bin/sh or adb executable with null config generation is declared in the call. Reviewed producer admission independently rejects mismatched active configuration before spawn.",
+    "The unsigned protocol cannot distinguish coordinated rewriting of generation and all matching receipt/digest fields. No new independent admission anchor is claimed."
+  ],
+  "mapped_dispatch_expansion_before_ledger_reservation": true,
+  "native_schema": "Qualified current six-field records, eight-field terminal, ten-field result and ten-field registry",
+  "other_ten_sources_unchanged": true,
+  "patches": {
+    "daily_phone_local.py": {
+      "bytes": 2912,
+      "git_blob_sha1": "28d500cd25ad49fe8a463ae8f30a3e136ead633e",
+      "sha256": "2ff0b6b459224127a3fdb76bafa1c562bcf1f8f424d4e7d5922e75c8d1eac2cb"
+    },
+    "phone_local_tools.py": {
+      "bytes": 1820,
+      "git_blob_sha1": "056cd649e6e4763edb3c4bb6f0f12fb7b414b2d5",
+      "sha256": "230e1fb7150cb1f02fa65dbf43eae9ec5595f4f658e173b89a12744191bb3ef3"
+    },
+    "phone_observation_tools.py": {
+      "bytes": 17538,
+      "git_blob_sha1": "42575be9578862249985e471e140935e9079c59c",
+      "sha256": "58d3413966214a92a63d18433b688a276fe49e888832ab4f590367322d013102"
+    },
+    "provider_codex_host.py": {
+      "bytes": 672,
+      "git_blob_sha1": "6119e9889fe00f95d97727500b1b59b5fe7060b3",
+      "sha256": "a74d316846f64e0f6f5c1f8c1ab59b1088c1404c22012d5d25c4cd6f93482810"
+    },
+    "provider_phone_local.py": {
+      "bytes": 683,
+      "git_blob_sha1": "b1e024c5788482c7d30b24bab7989a5fca3b91f0",
+      "sha256": "0e09fca82d76da0b13048752452dd2a3e0a17881d740abfc368094988df108df"
+    }
+  },
+  "production_validate_executor_body_unchanged": true,
+  "schema": "razr60-native-streams-v3-derivation/v1",
+  "semantic_record_top_level_fields_added": false,
+  "trusted_mapping_wire_call_contains_dispatch_claims": true
+}

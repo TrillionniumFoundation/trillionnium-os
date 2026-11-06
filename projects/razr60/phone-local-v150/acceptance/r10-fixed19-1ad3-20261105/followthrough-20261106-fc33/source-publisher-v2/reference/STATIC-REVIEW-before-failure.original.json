@@ -1,0 +1,165 @@
+{
+  "actual_BUILD": null,
+  "actual_BUILD_install_READY_execution_inside_entry": false,
+  "actual_READY": null,
+  "actual_install": null,
+  "allowed_output_roots": [
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-binding-r5-01",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-chain-r5-derived01"
+  ],
+  "automatic_retry": false,
+  "candidate_sources_only_compiled_or_transformed_not_executed": [
+    "release_boundaries.py",
+    "build_release_r10.py",
+    "install_phone_release_r10.py",
+    "collect_r10_readiness.py",
+    "production fifteen sources"
+  ],
+  "constructor_full_inverse": {
+    "bytes": 33827,
+    "sha256": "4c8f32d518c4cf17308f561587eeaf12702b8b9addf0bd8e5ad335a33e941835"
+  },
+  "consumer_full_inverse": {
+    "bytes": 249798,
+    "sha256": "016d25b5467c96f96f25f7b2d9d606e40ea18a72421e549d0ab630a01f9c2349"
+  },
+  "entry": {
+    "bytes": 141612,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-release-source-binding01/publish_and_derive_source_chain.py",
+    "sha256": "d6bfac4486ccd444bfe9ee98f1d1536b6453751200677d6bee5c6f5698360a27"
+  },
+  "existing_file_writes": false,
+  "explicit_imports": [
+    "ast",
+    "base64",
+    "hashlib",
+    "json",
+    "os",
+    "pathlib",
+    "stat",
+    "sys",
+    "types",
+    "zlib"
+  ],
+  "filesystem_scope_note": "Creation changes the existing parent directory metadata naturally; existing file contents and existing output directories are never overwritten.",
+  "mac_outputs_published": false,
+  "material_io_source": {
+    "bytes": 16399,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/followthrough-20261106-fc33-source-propagation01/derive_reviewed_source_material_v3.py",
+    "sha256": "842f893107dfff481e516419da3fd9b1e2c2445378903012658530d83429ac82"
+  },
+  "modules_executed_by_entry_if_root_runs_it": [
+    {
+      "scope": "non-main module load, read/encode helpers and reviewed dirfd publisher function only",
+      "source": "exact material producer 842f8931"
+    },
+    {
+      "scope": "non-main module load and Changes literal inverse only",
+      "source": "exact original source-chain constructor 4c8f32d5"
+    },
+    {
+      "scope": "public pure source construction API; its pinned original release reader is loaded only for fixed source constants",
+      "source": "exact input-bound source-chain constructor 342cf03f"
+    }
+  ],
+  "new_control_scenarios": 0,
+  "overwrite_delete_or_cleanup": false,
+  "partial_failure_behavior": "The first new binding directory can already exist if later derivation/publication fails. Retain it; no automatic delete, overwrite or retry.",
+  "payload": {
+    "bytes": 390745,
+    "sha256": "486b5e5c2e05518306eef422194a081f2c2219f9154c9020859da807a62d9486"
+  },
+  "payload_files": [
+    {
+      "bytes": 5461,
+      "path": "BINDING-PROOF.json",
+      "sha256": "a0e0b9bd483d280dda5f4a32a70a3c671f9c7054790f7bce74520a569113511d"
+    },
+    {
+      "bytes": 3515,
+      "path": "SOURCE-CHAIN-INPUTS.json",
+      "sha256": "e3cc22536e42074ba3fe662101dd4a4c98224de285b0a5c13c32f84d2fac322b"
+    },
+    {
+      "bytes": 34103,
+      "path": "source/derive_reviewed_release_sources_BOUND.py",
+      "sha256": "342cf03f11fcb6cc02fd98f68f44a567603389788de45999c6182ad0a4426c5a"
+    },
+    {
+      "bytes": 249860,
+      "path": "source/release_boundaries.py",
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+    }
+  ],
+  "phone_calls": 0,
+  "phone_or_host_process_dispatch_inside_entry": false,
+  "preconditions": [
+    "Root resolves current HOLD and independently chooses to retain this exact 990c runtime; no host entry has been submitted by this agent.",
+    "Every pinned Mac original in the source input, source-chain parent references, current material15/shared17 graph and retained R4 graph is present and unchanged.",
+    "Both exact output paths are absent; no reused output directory or automatic alternative namespace.",
+    "The existing common parent is canonical and writable for fresh private source directories.",
+    "Exact submitted stdin is the complete reviewed 141612-byte entry and the explicit argument is --publish-source-candidate-once."
+  ],
+  "process_start_preview_without_stdin_body": {
+    "args": [
+      "-I",
+      "-B",
+      "-",
+      "--publish-source-candidate-once"
+    ],
+    "executable": "/usr/bin/python3",
+    "host": "mac",
+    "idempotency_key": "fc33-release-source-990-publication-once-01",
+    "timeout_seconds": 180
+  },
+  "process_start_request": {
+    "bytes": 142064,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-release-source-binding01-static-review/REQUEST.UNEXECUTED.json",
+    "sha256": "fd1e54f8c2ca824e54f5a2abc0f16b0dec854dbea337992ee328a198673fbfd0"
+  },
+  "runtime_gate_scope_note": "Exact source-only runtime/freezer/controller pins are reread; this entry does not replace root independent freeze admission or award any current-case qualification.",
+  "schema": "hepta.fc33.held-source-publication-static-review.v1",
+  "source_chain_derive_called": false,
+  "source_publication_only": true,
+  "state": "STATIC_REVIEW_COMPLETE_ENTRY_NOT_EXECUTED_HOLD_REMAINS",
+  "stdin_pin": {
+    "bytes": 141612,
+    "sha256": "d6bfac4486ccd444bfe9ee98f1d1536b6453751200677d6bee5c6f5698360a27"
+  },
+  "submitted_job_id": null,
+  "writer_function_inverses": [
+    {
+      "derived_function": {
+        "bytes": 3833,
+        "sha256": "39e5f39e3799269fed7789480ae349f6a09dcfef9e8abf381d3c710442cac7b0"
+      },
+      "full_inverse": true,
+      "layout": [
+        "",
+        "source",
+        "reference"
+      ],
+      "parent_function": {
+        "bytes": 3878,
+        "sha256": "f4bf22d18592763c6a60b71f39fea384e8c51b5b62dba074a7028c0aab75163a"
+      }
+    },
+    {
+      "derived_function": {
+        "bytes": 3851,
+        "sha256": "d42ecae21697d5ca878dc8864c4493d7c29b89b5118ce48d29a3634747b76229"
+      },
+      "full_inverse": true,
+      "layout": [
+        "",
+        "source",
+        "contracts",
+        "preview-module"
+      ],
+      "parent_function": {
+        "bytes": 3878,
+        "sha256": "f4bf22d18592763c6a60b71f39fea384e8c51b5b62dba074a7028c0aab75163a"
+      }
+    }
+  ]
+}

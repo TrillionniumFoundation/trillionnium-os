@@ -1,0 +1,1706 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "common_pending_gates": [
+    "Exact current actual sealed BUILD originals verified by the reviewed current release reader",
+    "Exact installed/start/READY originals verified by the reviewed current install reader"
+  ],
+  "conditions": [
+    {
+      "case_id": "NEG-10",
+      "condition_id": "NEG10-budget",
+      "evidence": [
+        {
+          "bytes": 11071,
+          "path": "references/native-v3/evidence/selected-guards-RESULT.original.json",
+          "result": "selected",
+          "selections": [
+            {
+              "name": "image_budget",
+              "pointer": "/cases/0"
+            }
+          ],
+          "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+        }
+      ],
+      "limits": [
+        "图像/round/时钟前提显式 synthetic；没有新截图或本地模型图像输入。"
+      ],
+      "observed": "真实 PhoneTools.map 抛出 ProviderError；mapper 状态不变，零 mapping record、零 input write、零 dispatch。",
+      "requirement_zh": "图像预算超限在 dispatch 前拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-10",
+      "condition_id": "NEG10-expired",
+      "evidence": [
+        {
+          "bytes": 11071,
+          "path": "references/native-v3/evidence/selected-guards-RESULT.original.json",
+          "result": "selected",
+          "selections": [
+            {
+              "name": "image_expired",
+              "pointer": "/cases/1"
+            }
+          ],
+          "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+        }
+      ],
+      "limits": [
+        "图像/round/时钟前提显式 synthetic；没有新截图或本地模型图像输入。"
+      ],
+      "observed": "真实 PhoneTools.map 抛出 ProviderError；mapper 状态不变，零 mapping record、零 input write、零 dispatch。",
+      "requirement_zh": "过期图像在 dispatch 前拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-10",
+      "condition_id": "NEG10-foreign-image",
+      "evidence": [
+        {
+          "bytes": 11071,
+          "path": "references/native-v3/evidence/selected-guards-RESULT.original.json",
+          "result": "selected",
+          "selections": [
+            {
+              "name": "image_foreign_image",
+              "pointer": "/cases/2"
+            }
+          ],
+          "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+        }
+      ],
+      "limits": [
+        "图像/round/时钟前提显式 synthetic；没有新截图或本地模型图像输入。"
+      ],
+      "observed": "真实 PhoneTools.map 抛出 ProviderError；mapper 状态不变，零 mapping record、零 input write、零 dispatch。",
+      "requirement_zh": "非当前图像在 dispatch 前拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-10",
+      "condition_id": "NEG10-old-round",
+      "evidence": [
+        {
+          "bytes": 11071,
+          "path": "references/native-v3/evidence/selected-guards-RESULT.original.json",
+          "result": "selected",
+          "selections": [
+            {
+              "name": "image_old_round",
+              "pointer": "/cases/3"
+            }
+          ],
+          "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+        }
+      ],
+      "limits": [
+        "图像/round/时钟前提显式 synthetic；没有新截图或本地模型图像输入。"
+      ],
+      "observed": "真实 PhoneTools.map 抛出 ProviderError；mapper 状态不变，零 mapping record、零 input write、零 dispatch。",
+      "requirement_zh": "旧 round 在 dispatch 前拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-11",
+      "condition_id": "NEG11-identity",
+      "evidence": [
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "all_wrong_target",
+              "pointer": "/parser_cases/8"
+            },
+            {
+              "name": "event_wrong_target",
+              "pointer": "/parser_cases/9"
+            },
+            {
+              "name": "event_target_object",
+              "pointer": "/parser_cases/10"
+            },
+            {
+              "name": "event_target_missing",
+              "pointer": "/parser_cases/11"
+            },
+            {
+              "name": "registry_wrong_target",
+              "pointer": "/parser_cases/12"
+            },
+            {
+              "name": "registry_missing",
+              "pointer": "/parser_cases/13"
+            },
+            {
+              "name": "registry_target_missing",
+              "pointer": "/parser_cases/14"
+            },
+            {
+              "name": "registry_wrong_call",
+              "pointer": "/parser_cases/15"
+            },
+            {
+              "name": "registry_wrong_tool",
+              "pointer": "/parser_cases/16"
+            },
+            {
+              "name": "wrong_call",
+              "pointer": "/parser_cases/61"
+            },
+            {
+              "name": "wrong_event_call",
+              "pointer": "/parser_cases/62"
+            },
+            {
+              "name": "wrong_event_tool",
+              "pointer": "/parser_cases/63"
+            },
+            {
+              "name": "mapped_call_identity_mismatch",
+              "pointer": "/parser_cases/66"
+            },
+            {
+              "name": "mapped_target_alias_conflict",
+              "pointer": "/parser_cases/67"
+            },
+            {
+              "name": "mapped_target_wrong_type",
+              "pointer": "/parser_cases/68"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        },
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "all_wrong_target",
+              "pointer": "/consumer_chains/1"
+            },
+            {
+              "name": "event_wrong_target",
+              "pointer": "/consumer_chains/2"
+            },
+            {
+              "name": "event_target_object",
+              "pointer": "/consumer_chains/3"
+            },
+            {
+              "name": "event_target_missing",
+              "pointer": "/consumer_chains/4"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        },
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "trusted_scope_changed_original_digest_rejected",
+              "pointer": "/trust_parser_cases/35"
+            },
+            {
+              "name": "missing_scope",
+              "pointer": "/trust_parser_cases/36"
+            },
+            {
+              "name": "scope_extra",
+              "pointer": "/trust_parser_cases/37"
+            },
+            {
+              "name": "scope_missing_stream",
+              "pointer": "/trust_parser_cases/38"
+            },
+            {
+              "name": "scope_float",
+              "pointer": "/trust_parser_cases/39"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        }
+      ],
+      "limits": [],
+      "observed": "expected target、完整 scope 来自真实 map / accepted turn；不从返回值反推 expected。错误 target、call、tool、scope 经真实消费者拒绝。",
+      "requirement_zh": "native 身份错误必须拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        },
+        {
+          "name": "phone_local_tools.py",
+          "symbols": [
+            "PhoneLocalTools._wire_call",
+            "PhoneLocalTools.prepare"
+          ]
+        },
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        },
+        {
+          "name": "provider_phone_local.py",
+          "symbols": [
+            "PhoneLocalAdapter.receive",
+            "PhoneLocalAdapter.emit"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-11",
+      "condition_id": "NEG11-sequence",
+      "evidence": [
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "wrong_event_sequence",
+              "pointer": "/parser_cases/64"
+            },
+            {
+              "name": "boolean_event_sequence",
+              "pointer": "/parser_cases/65"
+            },
+            {
+              "name": "output_before_started",
+              "pointer": "/parser_cases/69"
+            },
+            {
+              "name": "duplicate_started",
+              "pointer": "/parser_cases/70"
+            },
+            {
+              "name": "missing_started",
+              "pointer": "/parser_cases/71"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        },
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "outer_sequence_float",
+              "pointer": "/trust_parser_cases/32"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        }
+      ],
+      "limits": [],
+      "observed": "严格整数序列与 accepted → started → output* → terminal 顺序；错序列、布尔序列、缺失/重复 started 拒绝。",
+      "requirement_zh": "序列和生命周期顺序错误必须拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-11",
+      "condition_id": "NEG11-length",
+      "evidence": [
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "output_wrong_count",
+              "pointer": "/parser_cases/59"
+            },
+            {
+              "name": "output_float_count",
+              "pointer": "/parser_cases/60"
+            },
+            {
+              "name": "output_invalid_base64",
+              "pointer": "/parser_cases/58"
+            },
+            {
+              "name": "noncanonical_base64_pad_bits",
+              "pointer": "/parser_cases/72"
+            },
+            {
+              "name": "output_wrong_encoding",
+              "pointer": "/parser_cases/57"
+            },
+            {
+              "name": "event_terminal_stdout_float",
+              "pointer": "/parser_cases/45"
+            },
+            {
+              "name": "event_terminal_stderr_false",
+              "pointer": "/parser_cases/46"
+            },
+            {
+              "name": "full_current_multichunk",
+              "pointer": "/parser_cases/2"
+            },
+            {
+              "name": "full_current_unicode_newline",
+              "pointer": "/parser_cases/1"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        }
+      ],
+      "limits": [],
+      "observed": "逐块 base64、字节数、累积终态计数与严格类型受校验；多块中文、emoji、换行完整流为正控。",
+      "requirement_zh": "长度、编码与完整流错误必须拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-11",
+      "condition_id": "NEG11-terminal",
+      "evidence": [
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "terminal_nonzero_exit",
+              "pointer": "/parser_cases/38"
+            },
+            {
+              "name": "terminal_error",
+              "pointer": "/parser_cases/40"
+            },
+            {
+              "name": "terminal_exit_bool",
+              "pointer": "/parser_cases/41"
+            },
+            {
+              "name": "terminal_exit_float",
+              "pointer": "/parser_cases/43"
+            },
+            {
+              "name": "event_terminal_exit_bool",
+              "pointer": "/parser_cases/42"
+            },
+            {
+              "name": "event_terminal_exit_float",
+              "pointer": "/parser_cases/44"
+            },
+            {
+              "name": "exited_zero_with_signal",
+              "pointer": "/parser_cases/33"
+            },
+            {
+              "name": "signal_false",
+              "pointer": "/parser_cases/34"
+            },
+            {
+              "name": "signal_missing",
+              "pointer": "/parser_cases/35"
+            },
+            {
+              "name": "legacy_minimal_terminal",
+              "pointer": "/parser_cases/36"
+            },
+            {
+              "name": "terminal_unknown_field",
+              "pointer": "/parser_cases/37"
+            },
+            {
+              "name": "terminal_elapsed_float",
+              "pointer": "/parser_cases/24"
+            },
+            {
+              "name": "terminal_elapsed_bool",
+              "pointer": "/parser_cases/26"
+            },
+            {
+              "name": "terminal_elapsed_negative",
+              "pointer": "/parser_cases/28"
+            },
+            {
+              "name": "terminal_elapsed_overflow",
+              "pointer": "/parser_cases/30"
+            },
+            {
+              "name": "terminal_elapsed_missing",
+              "pointer": "/parser_cases/32"
+            },
+            {
+              "name": "started_pid_bool",
+              "pointer": "/parser_cases/17"
+            },
+            {
+              "name": "started_pid_float",
+              "pointer": "/parser_cases/18"
+            },
+            {
+              "name": "started_pid_zero",
+              "pointer": "/parser_cases/19"
+            },
+            {
+              "name": "started_pid_negative",
+              "pointer": "/parser_cases/20"
+            },
+            {
+              "name": "started_pid_overflow",
+              "pointer": "/parser_cases/21"
+            },
+            {
+              "name": "started_pid_missing",
+              "pointer": "/parser_cases/22"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        },
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "exited_zero_with_signal",
+              "pointer": "/consumer_chains/10"
+            },
+            {
+              "name": "legacy_minimal_terminal",
+              "pointer": "/consumer_chains/11"
+            },
+            {
+              "name": "started_pid_bool",
+              "pointer": "/consumer_chains/5"
+            },
+            {
+              "name": "started_pid_float",
+              "pointer": "/consumer_chains/6"
+            },
+            {
+              "name": "started_pid_missing",
+              "pointer": "/consumer_chains/7"
+            },
+            {
+              "name": "terminal_elapsed_float",
+              "pointer": "/consumer_chains/9"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        }
+      ],
+      "limits": [],
+      "observed": "当前实际 schema 的完整终态、pid、u64 时间字段和 exited 0 / signal None 组合验证；历史 minimal terminal 不被最终 v3 接受。",
+      "requirement_zh": "终态损坏、非法退出组合及缺字段必须拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        },
+        {
+          "name": "phone_local_tools.py",
+          "symbols": [
+            "PhoneLocalTools._wire_call",
+            "PhoneLocalTools.prepare"
+          ]
+        },
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-11",
+      "condition_id": "NEG11-truncation",
+      "evidence": [
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "terminal_truncated",
+              "pointer": "/parser_cases/39"
+            },
+            {
+              "name": "event_terminal_truncated_zero",
+              "pointer": "/parser_cases/47"
+            },
+            {
+              "name": "event_terminal_elapsed_float",
+              "pointer": "/parser_cases/48"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        }
+      ],
+      "limits": [],
+      "observed": "output_truncated 必须精确 False；事件内终态与外层终态逐字段类型一致。",
+      "requirement_zh": "截断和同值异类型终态必须拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-11",
+      "condition_id": "NEG11-hashes",
+      "evidence": [
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "wrong_request_sha256",
+              "pointer": "/trust_parser_cases/0"
+            },
+            {
+              "name": "missing_request_sha256",
+              "pointer": "/trust_parser_cases/1"
+            },
+            {
+              "name": "wrong_binding_fingerprint",
+              "pointer": "/trust_parser_cases/2"
+            },
+            {
+              "name": "missing_binding_fingerprint",
+              "pointer": "/trust_parser_cases/3"
+            },
+            {
+              "name": "wrong_observation_sha256",
+              "pointer": "/trust_parser_cases/4"
+            },
+            {
+              "name": "missing_observation_sha256",
+              "pointer": "/trust_parser_cases/5"
+            },
+            {
+              "name": "registry_terminal_receipt_changed",
+              "pointer": "/trust_parser_cases/14"
+            },
+            {
+              "name": "registry_terminal_receipt_missing",
+              "pointer": "/trust_parser_cases/15"
+            },
+            {
+              "name": "registry_terminal_receipt_wrong_generation",
+              "pointer": "/trust_parser_cases/16"
+            },
+            {
+              "name": "started_pid_changed_without_rehash",
+              "pointer": "/trust_parser_cases/17"
+            },
+            {
+              "name": "terminal_elapsed_changed_without_rehash",
+              "pointer": "/trust_parser_cases/18"
+            },
+            {
+              "name": "same_length_output_bytes_changed",
+              "pointer": "/trust_parser_cases/19"
+            },
+            {
+              "name": "old_turn_request_digest",
+              "pointer": "/trust_parser_cases/20"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        },
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "trust_wrong_request_sha256",
+              "pointer": "/trust_consumer_chains/0"
+            },
+            {
+              "name": "trust_missing_request_sha256",
+              "pointer": "/trust_consumer_chains/1"
+            },
+            {
+              "name": "trust_wrong_binding_fingerprint",
+              "pointer": "/trust_consumer_chains/2"
+            },
+            {
+              "name": "trust_missing_binding_fingerprint",
+              "pointer": "/trust_consumer_chains/3"
+            },
+            {
+              "name": "trust_wrong_observation_sha256",
+              "pointer": "/trust_consumer_chains/4"
+            },
+            {
+              "name": "trust_missing_observation_sha256",
+              "pointer": "/trust_consumer_chains/5"
+            },
+            {
+              "name": "trust_registry_terminal_receipt_changed",
+              "pointer": "/trust_consumer_chains/9"
+            },
+            {
+              "name": "trust_same_length_output_bytes_changed",
+              "pointer": "/trust_consumer_chains/10"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        },
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "mapped_base",
+              "pointer": "/dispatch_binding_cases/0"
+            },
+            {
+              "name": "mapped_full",
+              "pointer": "/dispatch_binding_cases/1"
+            },
+            {
+              "name": "wrong_request_claim",
+              "pointer": "/dispatch_binding_cases/2"
+            },
+            {
+              "name": "wrong_binding_claim",
+              "pointer": "/dispatch_binding_cases/3"
+            },
+            {
+              "name": "wrong_config_generation",
+              "pointer": "/dispatch_binding_cases/4"
+            },
+            {
+              "name": "partial_claims",
+              "pointer": "/dispatch_binding_cases/5"
+            },
+            {
+              "name": "changed_argv",
+              "pointer": "/dispatch_binding_cases/6"
+            },
+            {
+              "name": "unknown_field",
+              "pointer": "/dispatch_binding_cases/7"
+            },
+            {
+              "name": "changed_target",
+              "pointer": "/dispatch_binding_cases/8"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        }
+      ],
+      "limits": [
+        "generation 在 claim_spawn 后分配：验证类型、合法范围及 receipt/digest 一致性，没有先验独立 admission counter 或 MAC；协调重写 generation 与全部未签名哈希不在当前协议可独立鉴别范围。",
+        "event record elapsed_ms 检查类型/范围，但实际 producer 的 ObservationDigest 不包含它；terminal.elapsed_ms 在 digest 内且篡改拒绝。"
+      ],
+      "observed": "用可信完整 mapped call、active scope/config 的真实 preimage 重算请求与配置哈希；对完整 observation 与 registry terminal receipt 重算并比较。真实 LedgerPrefix/ActionLedger 保存的完整 wire 与 dispatch frame 相等。",
+      "requirement_zh": "请求、配置和 observation 哈希损坏必须拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        },
+        {
+          "name": "phone_local_tools.py",
+          "symbols": [
+            "PhoneLocalTools._wire_call",
+            "PhoneLocalTools.prepare"
+          ]
+        },
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        },
+        {
+          "name": "provider_phone_local.py",
+          "symbols": [
+            "PhoneLocalAdapter.receive",
+            "PhoneLocalAdapter.emit"
+          ]
+        },
+        {
+          "name": "action_ledger.py",
+          "symbols": [
+            "ActionLedger.reserve"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-11",
+      "condition_id": "NEG11-generation-and-schema",
+      "evidence": [
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "generation_changed_without_rehash",
+              "pointer": "/trust_parser_cases/6"
+            },
+            {
+              "name": "generation_bool",
+              "pointer": "/trust_parser_cases/7"
+            },
+            {
+              "name": "generation_float",
+              "pointer": "/trust_parser_cases/8"
+            },
+            {
+              "name": "generation_zero",
+              "pointer": "/trust_parser_cases/9"
+            },
+            {
+              "name": "generation_negative",
+              "pointer": "/trust_parser_cases/10"
+            },
+            {
+              "name": "generation_allocator_exhausted",
+              "pointer": "/trust_parser_cases/11"
+            },
+            {
+              "name": "generation_overflow",
+              "pointer": "/trust_parser_cases/12"
+            },
+            {
+              "name": "generation_missing",
+              "pointer": "/trust_parser_cases/13"
+            },
+            {
+              "name": "allocator_minimum",
+              "pointer": "/trust_parser_cases/33"
+            },
+            {
+              "name": "allocator_maximum_allocatable",
+              "pointer": "/trust_parser_cases/34"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        },
+        {
+          "bytes": 61293,
+          "path": "references/native-v3/evidence/native-RESULT.original.json",
+          "result": "native",
+          "selections": [
+            {
+              "name": "unknown_event_kind_progress",
+              "pointer": "/parser_cases/49"
+            },
+            {
+              "name": "unknown_event_kind_queued",
+              "pointer": "/parser_cases/50"
+            },
+            {
+              "name": "unknown_event_kind_list",
+              "pointer": "/parser_cases/51"
+            },
+            {
+              "name": "unknown_event_kind_object",
+              "pointer": "/parser_cases/52"
+            },
+            {
+              "name": "unknown_event_kind_none",
+              "pointer": "/parser_cases/53"
+            },
+            {
+              "name": "event_record_unknown_field",
+              "pointer": "/parser_cases/54"
+            },
+            {
+              "name": "accepted_unknown_field",
+              "pointer": "/parser_cases/55"
+            },
+            {
+              "name": "output_stream_list",
+              "pointer": "/parser_cases/56"
+            }
+          ],
+          "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+        }
+      ],
+      "limits": [],
+      "observed": "当前窄语义 tool 只接受实际 schema 的 accepted / started / output / terminal；未知 kind、错误类型与非法 generation 受控抛出 ProviderError。",
+      "requirement_zh": "generation 与事件 schema 损坏必须受控拒绝",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-12",
+      "condition_id": "NEG12-confirmation",
+      "evidence": [
+        {
+          "bytes": 79208,
+          "path": "references/native-v3/evidence/shared-RESULT.original.json",
+          "result": "shared",
+          "selections": [
+            {
+              "name": "missing_confirmation",
+              "pointer": "/cases/0"
+            },
+            {
+              "name": "invalid_confirmation",
+              "pointer": "/cases/1"
+            }
+          ],
+          "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+        }
+      ],
+      "limits": [
+        "owner/native/public 输入显式 synthetic；真实生产消费者与业务 gate 的结果不替代现场业务证明。"
+      ],
+      "observed": "真实业务降级函数产出 turn.fail；business_verified=False，missing_postconditions 精确为 ['input']；迟到 terminal 被拒绝且已持久终态不重写。",
+      "requirement_zh": "缺确认或确认无效时明确失败并列缺项",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        },
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        },
+        {
+          "name": "task_postconditions.py",
+          "symbols": [
+            "load_contract",
+            "write_exclusive",
+            "evaluate",
+            "terminal_fields"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-12",
+      "condition_id": "NEG12-public",
+      "evidence": [
+        {
+          "bytes": 79208,
+          "path": "references/native-v3/evidence/shared-RESULT.original.json",
+          "result": "shared",
+          "selections": [
+            {
+              "name": "missing_public",
+              "pointer": "/cases/2"
+            },
+            {
+              "name": "wrong_public",
+              "pointer": "/cases/3"
+            }
+          ],
+          "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+        }
+      ],
+      "limits": [
+        "owner/native/public 输入显式 synthetic；真实生产消费者与业务 gate 的结果不替代现场业务证明。"
+      ],
+      "observed": "真实业务降级函数产出 turn.fail；business_verified=False，missing_postconditions 精确为 ['public']；迟到 terminal 被拒绝且已持久终态不重写。",
+      "requirement_zh": "缺公开回执或回执错误时明确失败并列缺项",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        },
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        },
+        {
+          "name": "task_postconditions.py",
+          "symbols": [
+            "load_contract",
+            "write_exclusive",
+            "evaluate",
+            "terminal_fields"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-12",
+      "condition_id": "NEG12-return",
+      "evidence": [
+        {
+          "bytes": 79208,
+          "path": "references/native-v3/evidence/shared-RESULT.original.json",
+          "result": "shared",
+          "selections": [
+            {
+              "name": "missing_return",
+              "pointer": "/cases/4"
+            },
+            {
+              "name": "wrong_return",
+              "pointer": "/cases/5"
+            }
+          ],
+          "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+        }
+      ],
+      "limits": [
+        "owner/native/public 输入显式 synthetic；真实生产消费者与业务 gate 的结果不替代现场业务证明。"
+      ],
+      "observed": "真实业务降级函数产出 turn.fail；business_verified=False，missing_postconditions 精确为 ['return']；迟到 terminal 被拒绝且已持久终态不重写。",
+      "requirement_zh": "缺返回或返回错误时明确失败并列缺项",
+      "source_symbols": [
+        {
+          "name": "phone_observation_tools.py",
+          "symbols": [
+            "native_bound_call",
+            "native_streams",
+            "_native_observation_sha256",
+            "PhoneTools.map",
+            "PhoneTools.prepare"
+          ]
+        },
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        },
+        {
+          "name": "task_postconditions.py",
+          "symbols": [
+            "load_contract",
+            "write_exclusive",
+            "evaluate",
+            "terminal_fields"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-12",
+      "condition_id": "NEG12-coverage",
+      "evidence": [
+        {
+          "bytes": 79208,
+          "path": "references/native-v3/evidence/shared-RESULT.original.json",
+          "result": "shared",
+          "selections": [
+            {
+              "name": "partial_coverage",
+              "pointer": "/cases/6"
+            },
+            {
+              "name": "complete_control",
+              "pointer": "/cases/7"
+            }
+          ],
+          "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+        }
+      ],
+      "limits": [],
+      "observed": "declared_postconditions_only 即使列出后条件全满足也 turn.fail，明确说明合约仅覆盖局部；entire_request 完整 synthetic 正控可 turn.complete。",
+      "requirement_zh": "部分任务不得冒充整项完成",
+      "source_symbols": [
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        },
+        {
+          "name": "task_postconditions.py",
+          "symbols": [
+            "load_contract",
+            "write_exclusive",
+            "evaluate",
+            "terminal_fields"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-13",
+      "condition_id": "NEG13-once",
+      "evidence": [
+        {
+          "bytes": 79208,
+          "path": "references/native-v3/evidence/shared-RESULT.original.json",
+          "result": "shared",
+          "selections": [
+            {
+              "name": "real_exclusive_binding_race",
+              "pointer": "/cases/12"
+            }
+          ],
+          "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+        }
+      ],
+      "limits": [],
+      "observed": "真实两个 host 线程竞争 O_EXCL：一接受、一拒绝、仅一个 binding 文件；两线程均 join，绑定原件保留。",
+      "requirement_zh": "模板恰好一次绑定",
+      "source_symbols": [
+        {
+          "name": "task_postconditions.py",
+          "symbols": [
+            "load_contract",
+            "write_exclusive",
+            "evaluate",
+            "terminal_fields"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-13",
+      "condition_id": "NEG13-scope",
+      "evidence": [
+        {
+          "bytes": 79208,
+          "path": "references/native-v3/evidence/shared-RESULT.original.json",
+          "result": "shared",
+          "selections": [
+            {
+              "name": "real_exclusive_binding_race",
+              "pointer": "/cases/12"
+            },
+            {
+              "name": "nonce_missing",
+              "pointer": "/cases/8"
+            },
+            {
+              "name": "nonce_duplicate",
+              "pointer": "/cases/9"
+            },
+            {
+              "name": "request_digest_mismatch",
+              "pointer": "/cases/10"
+            },
+            {
+              "name": "app_scope_owner_mismatch",
+              "pointer": "/cases/11"
+            }
+          ],
+          "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+        }
+      ],
+      "limits": [],
+      "observed": "错误 session/profile 在竞争前均 bindings_after=0；缺/重复 nonce、请求 digest/app owner 错误均零 binding、模板不变、零 dispatch。",
+      "requirement_zh": "错误 scope 不消费模板",
+      "source_symbols": [
+        {
+          "name": "task_postconditions.py",
+          "symbols": [
+            "load_contract",
+            "write_exclusive",
+            "evaluate",
+            "terminal_fields"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-13",
+      "condition_id": "NEG13-replay",
+      "evidence": [
+        {
+          "bytes": 79208,
+          "path": "references/native-v3/evidence/shared-RESULT.original.json",
+          "result": "shared",
+          "selections": [
+            {
+              "name": "real_exclusive_binding_race",
+              "pointer": "/cases/12"
+            },
+            {
+              "name": "old_identity_real_pipe_admission",
+              "pointer": "/cases/13"
+            }
+          ],
+          "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+        }
+      ],
+      "limits": [],
+      "observed": "同身份、换 stream、换 task/turn 复用旧 nonce 均拒绝；真实 CodexAdapter.receive 的两次旧身份输入均 mapped_calls=0 / outgoing_frames=0 / native_dispatches=0，原 failed claim 和 binding 未改变。",
+      "requirement_zh": "旧身份、旧 nonce 不能再次派发",
+      "source_symbols": [
+        {
+          "name": "task_postconditions.py",
+          "symbols": [
+            "load_contract",
+            "write_exclusive",
+            "evaluate",
+            "terminal_fields"
+          ]
+        },
+        {
+          "name": "provider_codex_host.py",
+          "symbols": [
+            "CodexAdapter.receive",
+            "CodexAdapter.emit"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-14",
+      "condition_id": "NEG14-rename",
+      "evidence": [
+        {
+          "bytes": 11071,
+          "path": "references/native-v3/evidence/selected-guards-RESULT.original.json",
+          "result": "selected",
+          "selections": [
+            {
+              "name": "rename_local-01.request.json.new",
+              "pointer": "/cases/4"
+            },
+            {
+              "name": "rename_health-outcome.json.new",
+              "pointer": "/cases/5"
+            }
+          ],
+          "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+        }
+      ],
+      "limits": [],
+      "observed": "两种已识别临时文件经真实 os.replace 后，生产 scanner 仅容忍该消失临时文件，并计数实际 canonical 原件。",
+      "requirement_zh": "只接受精确识别的 rename 竞态",
+      "source_symbols": [
+        {
+          "name": "daily_phone_local.py",
+          "symbols": [
+            "expected_evidence_temporary",
+            "evidence_item_size",
+            "raise_evidence_scan_error",
+            "serve",
+            "main"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-14",
+      "condition_id": "NEG14-io",
+      "evidence": [
+        {
+          "bytes": 11071,
+          "path": "references/native-v3/evidence/selected-guards-RESULT.original.json",
+          "result": "selected",
+          "selections": [
+            {
+              "name": "missing_canonical",
+              "pointer": "/cases/6"
+            },
+            {
+              "name": "unknown_temporary",
+              "pointer": "/cases/7"
+            },
+            {
+              "name": "known_temporary_missing_parent",
+              "pointer": "/cases/8"
+            },
+            {
+              "name": "symlink_rejected",
+              "pointer": "/cases/9"
+            },
+            {
+              "name": "actual_enotdir",
+              "pointer": "/cases/10"
+            },
+            {
+              "name": "scanner_eacces_same_exception",
+              "pointer": "/cases/11"
+            }
+          ],
+          "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+        },
+        {
+          "bytes": 13063,
+          "path": "neg14-owned-capacity01/actual/RUN01/RESULT.json",
+          "result": "owned",
+          "selections": [
+            {
+              "name": "real_kernel_EACCES_through_lstat_and_scanner",
+              "pointer": "/checks/0"
+            }
+          ],
+          "sha256": "5a3690d3111a5cca31332aa363853ab1d821d71e153997465484fd190075f648"
+        }
+      ],
+      "limits": [
+        "旧 13 项的 scanner EACCES 是合成异常同对象传播；新增 4 项的 EACCES 才是真实权限失败，两者单列。"
+      ],
+      "observed": "缺 canonical、未知临时名、缺父目录、symlink、真实 ENOTDIR 均拒绝；本轮隔离 host 的真实内核 EACCES errno 13 经 evidence_item_size 和 os.walk onerror 传播。",
+      "requirement_zh": "未知路径或 I/O 错误必须拒绝",
+      "source_symbols": [
+        {
+          "name": "daily_phone_local.py",
+          "symbols": [
+            "expected_evidence_temporary",
+            "evidence_item_size",
+            "raise_evidence_scan_error",
+            "serve",
+            "main"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-14",
+      "condition_id": "NEG14-capacity",
+      "evidence": [
+        {
+          "bytes": 13063,
+          "path": "neg14-owned-capacity01/actual/RUN01/RESULT.json",
+          "result": "owned",
+          "selections": [
+            {
+              "name": "public_daily_logical_capacity_first_boundary_refusal",
+              "pointer": "/checks/1"
+            }
+          ],
+          "sha256": "5a3690d3111a5cca31332aa363853ab1d821d71e153997465484fd190075f648"
+        }
+      ],
+      "limits": [
+        "通过自有稀疏文件 st_size 真实耗尽逻辑字节预算；没有填满磁盘，没有触发 ENOSPC，未声称覆盖 200000 文件计数上限。",
+        "原 load_local_config / validate_executor 实际执行；client 原字节只读验证但未运行，真实模型和 phone scope 均未消耗。"
+      ],
+      "observed": "实际 daily CLI 使用公开最低 max-evidence-bytes=1073741824；真实逻辑字节总量 939524095 时仍存活，增至 939524096 首次拒绝；原 claim 全字节/full9 不变，零额外 claim / binding / worker / dispatch / connection，锁可重新取得。",
+      "requirement_zh": "公开容量阈值首次拒绝零 dispatch、零额外消费并保留旧 claim",
+      "source_symbols": [
+        {
+          "name": "daily_phone_local.py",
+          "symbols": [
+            "expected_evidence_temporary",
+            "evidence_item_size",
+            "raise_evidence_scan_error",
+            "serve",
+            "main"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-14",
+      "condition_id": "NEG14-orphan",
+      "evidence": [
+        {
+          "bytes": 13063,
+          "path": "neg14-owned-capacity01/actual/RUN01/RESULT.json",
+          "result": "owned",
+          "selections": [
+            {
+              "name": "public_daily_orphan_spawn_receipt_refusal",
+              "pointer": "/checks/2"
+            }
+          ],
+          "sha256": "5a3690d3111a5cca31332aa363853ab1d821d71e153997465484fd190075f648"
+        }
+      ],
+      "limits": [
+        "没有创建或终止真实模型孤儿 worker；此控制是保留凭据的真实 admission 拒绝。"
+      ],
+      "observed": "真实 daily CLI 发现明确 synthetic、未 join 的 retained spawn intent 后在 READY 前拒绝；intent 与旧 claim 的全字节/full9 不变，不伪造 join、不新增输入或消费，锁可重新取得。",
+      "requirement_zh": "保留孤儿 spawn 凭据时拒绝新工作并保全原件",
+      "source_symbols": [
+        {
+          "name": "daily_phone_local.py",
+          "symbols": [
+            "expected_evidence_temporary",
+            "evidence_item_size",
+            "raise_evidence_scan_error",
+            "serve",
+            "main"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    },
+    {
+      "case_id": "NEG-14",
+      "condition_id": "NEG14-resources",
+      "evidence": [
+        {
+          "bytes": 11071,
+          "path": "references/native-v3/evidence/selected-guards-RESULT.original.json",
+          "result": "selected",
+          "selections": [
+            {
+              "name": "fd_thread_child_cpu_and_owned_temp_cleanup",
+              "pointer": "/cases/12"
+            }
+          ],
+          "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+        },
+        {
+          "bytes": 13063,
+          "path": "neg14-owned-capacity01/actual/RUN01/RESULT.json",
+          "result": "owned",
+          "selections": [
+            {
+              "name": "owned_child_groups_files_and_fd_thread_baseline",
+              "pointer": "/checks/3"
+            }
+          ],
+          "sha256": "5a3690d3111a5cca31332aa363853ab1d821d71e153997465484fd190075f648"
+        }
+      ],
+      "limits": [
+        "进程组为本轮新建自有测试组；没有向现有项目、phone、native 或模型角色发送信号。",
+        "RSS/整套 installed runtime/真实模型 slot 未测；原 NEG14 未要求这些字段，此处只说明范围，不新增资格门。没有创建真实模型 worker，worker admission 两路均为零。"
+      ],
+      "observed": "原固定 protocol 的 NEG14 是 host_isolated，要求 confirmed worker/child/file-descriptor cleanup 回实测基线。两条实际 daily 路径均零 worker admission；两个自有 daily 子进程实际 wait、pidfd terminal、两组 census 为空且 killpg(0)=ESRCH；外层 namespace 子进程单独 wait，内外 FD/thread 恢复、自有测试树移除。旧纯 host 组另保留 FD/thread/child CPU 基线。",
+      "requirement_zh": "资源回到实测基线",
+      "source_symbols": [
+        {
+          "name": "daily_phone_local.py",
+          "symbols": [
+            "expected_evidence_temporary",
+            "evidence_item_size",
+            "raise_evidence_scan_error",
+            "serve",
+            "main"
+          ]
+        }
+      ],
+      "state": "OBSERVED_PASS_IN_RECORDED_HOST_SCOPE",
+      "whole_case_closed": false
+    }
+  ],
+  "counts_are_original_groups_not_sum": true,
+  "current_combination": {
+    "bytes": 4695,
+    "path": "references/COMBINATION-7969.original.json",
+    "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+  },
+  "current_evidence_groups": {
+    "native": {
+      "consumer": 12,
+      "dispatch_binding": 9,
+      "ledger_binding": 1,
+      "parser": 73,
+      "trust_consumer": 11,
+      "trust_parser": 40
+    },
+    "owned_neg14": 4,
+    "selected": 13,
+    "shared": 14
+  },
+  "fixed_protocol": {
+    "bytes": 37318,
+    "path": "references/fixed19.original-protocol.json",
+    "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+  },
+  "generation_trust_boundary_is_not_promoted_to_independent_attestation": true,
+  "installed_tuple": null,
+  "original_NEG14_definition": {
+    "automatic_execution": false,
+    "contract_recipe": null,
+    "executed_in_this_set": false,
+    "expected_business_verified": false,
+    "fresh_inputs": {
+      "isolated_fixture_or_new_component_identity_required": true,
+      "old_task_replay": false
+    },
+    "id": "NEG-14",
+    "layer": "host_isolated",
+    "negative_case": true,
+    "operator_steps": [
+      "Reproduce enumerate→atomic rename→lstat for recognized temporary names.",
+      "Separately exercise unknown missing canonical evidence, unreadable paths, retained orphan-spawn receipts and evidence capacity boundary."
+    ],
+    "pass_postconditions": [
+      "Only the exact recognized rename race is tolerated.",
+      "Unknown files/I/O failures fail closed; no accepted claim is deleted for capacity.",
+      "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline."
+    ],
+    "planned_status": "NOT_RUN_FIXED_SET",
+    "required_metrics": [
+      "latency",
+      "usage",
+      "cost",
+      "resources",
+      "evidence",
+      "restoration"
+    ],
+    "setup": [
+      "Use temporary evidence/state trees only, never fill or delete production evidence."
+    ],
+    "title": "容量/原子rename竞态与资源收尾"
+  },
+  "schema": "fc33.neg10-neg14.final15.condition-map.v1",
+  "source_count": 15,
+  "sources": [
+    {
+      "bytes": 15587,
+      "name": "action_ledger.py",
+      "path": "references/native-v3/candidate/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "name": "daily_phone_local.py",
+      "path": "references/native-v3/candidate/source/daily_phone_local.py",
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8"
+    },
+    {
+      "bytes": 11439,
+      "name": "health_contracts.py",
+      "path": "references/native-v3/candidate/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "name": "ledger_round_evidence.py",
+      "path": "references/native-v3/candidate/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "name": "model_health.py",
+      "path": "references/native-v3/candidate/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "name": "model_slot_cleanup.py",
+      "path": "references/native-v3/candidate/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "name": "phone_local_http_worker.py",
+      "path": "references/native-v3/candidate/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13927,
+      "name": "phone_local_tools.py",
+      "path": "references/native-v3/candidate/source/phone_local_tools.py",
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930"
+    },
+    {
+      "bytes": 55981,
+      "name": "phone_observation_tools.py",
+      "path": "references/native-v3/candidate/source/phone_observation_tools.py",
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086"
+    },
+    {
+      "bytes": 22825,
+      "name": "phone_task_guards.py",
+      "path": "references/native-v3/candidate/source/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41618,
+      "name": "provider_codex_host.py",
+      "path": "references/native-v3/candidate/source/provider_codex_host.py",
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa"
+    },
+    {
+      "bytes": 17730,
+      "name": "provider_openai_compatible.py",
+      "path": "references/native-v3/candidate/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70303,
+      "name": "provider_phone_local.py",
+      "path": "references/native-v3/candidate/source/provider_phone_local.py",
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee"
+    },
+    {
+      "bytes": 9802,
+      "name": "retirement_recovery.py",
+      "path": "references/native-v3/candidate/source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "name": "task_postconditions.py",
+      "path": "references/native-v3/candidate/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "unmeasured_scope_not_additional_qualification_gates": {
+    "full_installed_runtime_RSS": null,
+    "real_model_slot_resource_samples": null
+  },
+  "whole_cases_closed": []
+}

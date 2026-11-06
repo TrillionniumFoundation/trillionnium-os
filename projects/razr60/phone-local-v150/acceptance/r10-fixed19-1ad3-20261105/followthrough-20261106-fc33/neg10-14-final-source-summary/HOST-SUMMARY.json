@@ -1,0 +1,198 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "all_originals_bookended": true,
+  "condition_ids": [
+    "NEG10-budget",
+    "NEG10-expired",
+    "NEG10-foreign-image",
+    "NEG10-old-round",
+    "NEG11-identity",
+    "NEG11-sequence",
+    "NEG11-length",
+    "NEG11-terminal",
+    "NEG11-truncation",
+    "NEG11-hashes",
+    "NEG11-generation-and-schema",
+    "NEG12-confirmation",
+    "NEG12-public",
+    "NEG12-return",
+    "NEG12-coverage",
+    "NEG13-once",
+    "NEG13-scope",
+    "NEG13-replay",
+    "NEG14-rename",
+    "NEG14-io",
+    "NEG14-capacity",
+    "NEG14-orphan",
+    "NEG14-resources"
+  ],
+  "condition_map": {
+    "bytes": 56609,
+    "path": "CONDITION-MAP.json",
+    "sha256": "be89f0d2d1005c561f33658634c5c729ce6c2d94466f7515d9d0ee070aca054c"
+  },
+  "controllers": {
+    "native": {
+      "automatic_retry": false,
+      "job_id": "1a1b18b95c3-fc05-7980",
+      "original_success_full_durable_double_EOF": true,
+      "stderr_bytes": 0,
+      "stdout_bytes": 548
+    },
+    "owned": {
+      "automatic_retry": false,
+      "job_id": "1a1b1f12896-fc05-7b9d",
+      "original_success_full_durable_double_EOF": true,
+      "stderr_bytes": 0,
+      "stdout_bytes": 307
+    },
+    "selected": {
+      "automatic_retry": false,
+      "job_id": "1a1b19980ee-fc05-79c6",
+      "original_success_full_durable_double_EOF": true,
+      "stderr_bytes": 0,
+      "stdout_bytes": 340
+    },
+    "shared": {
+      "automatic_retry": false,
+      "job_id": "1a1b18878e5-fc05-7966",
+      "original_success_full_durable_double_EOF": true,
+      "stderr_bytes": 0,
+      "stdout_bytes": 627
+    }
+  },
+  "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+  "evidence_pins": {
+    "bytes": 4911,
+    "path": "EVIDENCE-PINS.json",
+    "sha256": "f58dee410c82d5100ccb719f193ae3b9afe99f97fb44a65d8581f94419076ec4"
+  },
+  "fixed_protocol": {
+    "bytes": 37318,
+    "path": "references/fixed19.original-protocol.json",
+    "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+  },
+  "generation_trust_boundaries": {
+    "event_record_elapsed_ms_is_type_checked_but_excluded_by_actual_producer_ObservationDigest": true,
+    "no_independent_admission_counter_or_MAC_claimed": true,
+    "terminal_elapsed_ms_is_in_the_digest_and_mutation_rejected": true,
+    "unsigned_generation_rewrite_with_recomputed_full_receipt_and_digest_is_indistinguishable": true
+  },
+  "installed_tuple": null,
+  "ledger_binding_single_existing_check": true,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "original_bytes_read": 1221400,
+  "original_files_read": 87,
+  "original_run_groups_not_added_together": {
+    "native": {
+      "consumer_chains": 12,
+      "dispatch_binding_cases": 9,
+      "parser_cases": 73,
+      "trust_consumer_chains": 11,
+      "trust_parser_cases": 40
+    },
+    "owned": {
+      "checks": 4
+    },
+    "selected": {
+      "cases": 13
+    },
+    "shared": {
+      "cases": 14
+    }
+  },
+  "phone_calls": 0,
+  "processes_started": 0,
+  "production_sources": [
+    {
+      "bytes": 15587,
+      "name": "action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "name": "daily_phone_local.py",
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8"
+    },
+    {
+      "bytes": 11439,
+      "name": "health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "name": "ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "name": "model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "name": "model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "name": "phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13927,
+      "name": "phone_local_tools.py",
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930"
+    },
+    {
+      "bytes": 55981,
+      "name": "phone_observation_tools.py",
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086"
+    },
+    {
+      "bytes": 22825,
+      "name": "phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41618,
+      "name": "provider_codex_host.py",
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa"
+    },
+    {
+      "bytes": 17730,
+      "name": "provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70303,
+      "name": "provider_phone_local.py",
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee"
+    },
+    {
+      "bytes": 9802,
+      "name": "retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "name": "task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "remaining_explicit_gates": [
+    "Exact current actual sealed BUILD originals verified by the reviewed current release reader",
+    "Exact installed/start/READY originals verified by the reviewed current install reader"
+  ],
+  "schema": "fc33.neg10-neg14.observed-final15-host-summary.v1",
+  "source_count": 15,
+  "state": "OBSERVED_HOST_SOURCE_CONDITIONS_VERIFIED_ACTUAL_TUPLE_UNBOUND",
+  "summary_did_not_run_tests": true,
+  "unmeasured_scope_not_additional_qualification_gates": {
+    "full_installed_runtime_RSS": null,
+    "real_model_slot_resource_samples": null
+  },
+  "whole_cases_closed": []
+}

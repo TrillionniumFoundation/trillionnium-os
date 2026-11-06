@@ -1,0 +1,41 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "actual_pinned_mac_reads": true,
+  "actual_source_chain_derive_called": false,
+  "actual_source_publication": false,
+  "controller": {
+    "bytes": 170920,
+    "sha256": "887c527b2463cf403b3f155596d82bedf99d63fda903495f2dd1cd9107583ea1"
+  },
+  "exit_code": 0,
+  "full_stdout_stderr_EOF": true,
+  "harness": {
+    "bytes": 147599,
+    "sha256": "a259820e69e3537ff2c1c4a2745cfa9097acfc4f3d38568c582f3df7767e2dc8"
+  },
+  "job_id": "1a1b1fc1cf4-fc05-7be1",
+  "no_timeout_cancel_retry": true,
+  "phone_calls": 0,
+  "publisher_write_function_called": false,
+  "schema": "hepta.fc33.publisher-v2-main-control-original-transport.v1",
+  "source_candidate": {
+    "bytes": 141651,
+    "sha256": "477bb8c20d4868428761e403456e9c8b333b72607c8ff51aac404b2429dda342"
+  },
+  "state": "ACTUAL_TWO_PREPUBLICATION_MAIN_PATHS_VERIFIED",
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 6172,
+    "sha256": "35254746adb4466f2ce07ca39953a01d10415ff337502378071a27160c29f5c3"
+  },
+  "test_only_writer_effect_boundary_intercepted": true,
+  "unexecuted_publication_request": {
+    "bytes": 142103,
+    "sha256": "92dbdc0d728efa903a7203ead2deafdb1272fb662c857ba97ff3f0e6ef263bec"
+  }
+}

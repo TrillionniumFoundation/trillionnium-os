@@ -1,0 +1,114 @@
+{
+  "actual_BUILD": null,
+  "all_case_counts_are_per_original_run": true,
+  "files": {
+    "neg14-owned-capacity01/actual/PUBLICATION.json": {
+      "bytes": 3648,
+      "sha256": "05d49b9f92a1fddd9d1697eb9a320fd60704bb1ed45f56b2a7f506908299bcfc"
+    },
+    "neg14-owned-capacity01/actual/RUN01/ORIGINALS.json": {
+      "bytes": 13351,
+      "sha256": "1085fd432c2fcda1799a85845261ee68dfd3f882405e34349ef1efa9530be284"
+    },
+    "neg14-owned-capacity01/actual/RUN01/OUTER-RESULT.json": {
+      "bytes": 7618,
+      "sha256": "55ac79c28a0d8c382b60d9076dbd7997e55f406067145564c65489746884ae3b"
+    },
+    "neg14-owned-capacity01/actual/RUN01/RESULT.json": {
+      "bytes": 13063,
+      "sha256": "5a3690d3111a5cca31332aa363853ab1d821d71e153997465484fd190075f648"
+    },
+    "neg14-owned-capacity01/controller/run.read.original.json": {
+      "bytes": 1266,
+      "sha256": "da214ff27240ee78f34cb8f8af0d9087ffb3d5a4fdb0f4325a0460617b61e80c"
+    },
+    "neg14-owned-capacity01/controller/run.start.original.json": {
+      "bytes": 1251,
+      "sha256": "a7827165dfca1f5ab8e89b101ad6d0689da00bc825734d37e14ac27cf62c1dbc"
+    },
+    "neg14-owned-capacity01/controller/run.status.original.json": {
+      "bytes": 730,
+      "sha256": "13cb021619557d373503d007c4f8b476487d1328811a36ac90260e953b93077d"
+    },
+    "neg14-owned-capacity01/inputs/PINS.json": {
+      "bytes": 3318,
+      "sha256": "f79991e29ddf5aa5c282a73b3b4a34b50a741f2e7c590b8e6db72d877002bb26"
+    },
+    "neg14-owned-capacity01/run_owned_neg14.py": {
+      "bytes": 28434,
+      "sha256": "1f25743641dbc672c2f3f55346f18cb20085023fc1dccbd3014cadfad65835d4"
+    },
+    "references/COMBINATION-7969.original.json": {
+      "bytes": 4695,
+      "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+    },
+    "references/native-v3/CANDIDATE-PINS.json": {
+      "bytes": 8768,
+      "sha256": "168cbbb9c49e86613622dfe6ce682516847cc856086b3369909e923ae8007d68"
+    },
+    "references/native-v3/evidence/controller/native.read.original.json": {
+      "bytes": 2006,
+      "sha256": "60c2f8724f80765f658f43e705b754ef7545ff1862a18102ab9ef6e338dbafbf"
+    },
+    "references/native-v3/evidence/controller/native.start.original.json": {
+      "bytes": 1060,
+      "sha256": "e8420c485aae16aa210122d4b0e150bb0aabdc57514efd5b87e658df0a33aba3"
+    },
+    "references/native-v3/evidence/controller/native.status.original.json": {
+      "bytes": 729,
+      "sha256": "4d8e9646b237ef5ff7d3d9cfbd8c137510398f0d1262e6a08fdad0de6e74cb01"
+    },
+    "references/native-v3/evidence/controller/selected-guards.read.original.json": {
+      "bytes": 1368,
+      "sha256": "c43c6ff9270289194a8cd58a54dea9427da7f9b155b06c001d5101dd65d7c2ae"
+    },
+    "references/native-v3/evidence/controller/selected-guards.start.original.json": {
+      "bytes": 1059,
+      "sha256": "69e0d3871394a97180cf08a6aa3e8513bf15997ae9c2880da611b6d29a81c211"
+    },
+    "references/native-v3/evidence/controller/selected-guards.status.original.json": {
+      "bytes": 729,
+      "sha256": "45244732c2f01f27f95ca3c48473b4428f7ca089fe259c5724c1d0065d87851c"
+    },
+    "references/native-v3/evidence/controller/shared.read.original.json": {
+      "bytes": 2245,
+      "sha256": "d1ae733b3a92b7539a5f21a628210fe4258261e24083fb3f40775581c0bdf058"
+    },
+    "references/native-v3/evidence/controller/shared.start.original.json": {
+      "bytes": 1055,
+      "sha256": "8f5cc2271f3ec2c26b765158b446b791815d2e10c682bcbb3662382918c87174"
+    },
+    "references/native-v3/evidence/controller/shared.status.original.json": {
+      "bytes": 729,
+      "sha256": "1fe2e5ecf973f5da5e9223f539c0e39e0710bc18a162adc1907cee605b709003"
+    },
+    "references/native-v3/evidence/native-RESULT.original.json": {
+      "bytes": 61293,
+      "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+    },
+    "references/native-v3/evidence/selected-guards-RESULT.original.json": {
+      "bytes": 11071,
+      "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+    },
+    "references/native-v3/evidence/shared-RESULT.original.json": {
+      "bytes": 79208,
+      "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+    },
+    "references/native-v3/test_native_streams_v3.py": {
+      "bytes": 37609,
+      "sha256": "4ff6d92df7c545f61435e1f8d5142609859a29054c736dc63008089cd7dbed1e"
+    },
+    "references/native-v3/test_selected_neg10_neg14_v3.py": {
+      "bytes": 10367,
+      "sha256": "8840f0c97aaa26cf9581a8d061b130497328837a3fe0a53d2ab7a1a96e7a7ea0"
+    },
+    "references/native-v3/test_shared_business_admission_v3.py": {
+      "bytes": 40884,
+      "sha256": "dbbfece5877955b68a98770af41a9010365990b3fdbe29a8c9c37e648ec6756a"
+    }
+  },
+  "historical_repeated_runs_combined": false,
+  "installed_tuple": null,
+  "phone_calls_by_this_summary": 0,
+  "schema": "fc33.neg10-neg14.final15.observed-evidence-pins.v1"
+}

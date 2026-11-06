@@ -1,0 +1,1 @@
+{"automatic_probe_or_retry": false, "availability": "unknown", "failure_fence": 0, "issued": 0, "last_failure": null, "last_success": null, "model": "synthetic-capacity-no-real-inference", "readiness_is_model_health": false, "reason": "not_observed", "schema": "hepta.model-health.v149.1"}

@@ -1,0 +1,21 @@
+{
+  "actual_direct_child_wait": true,
+  "group_after": {
+    "kernel": "ESRCH",
+    "members": [],
+    "pgid": 3
+  },
+  "monotonic": 1012455.360293365,
+  "original_identity": {
+    "pgid": 3,
+    "pid": 3,
+    "ppid": 2,
+    "raw_stat": "3 (python3) R 2 3 3 0 -1 4194304 29 0 0 0 0 0 0 0 30 10 1 0 101245362 9707520 113 18446744073709551615 4333568 8024065 140729030641120 0 0 0 0 0 0 0 0 0 17 19 0 0 0 0 0 11038136 11672456 818987008 140729030643245 140729030643619 140729030643619 140729030643687 0\n",
+    "sid": 3,
+    "start_ticks": 101245362
+  },
+  "pidfd_terminal": true,
+  "returncode": 1,
+  "signals": [],
+  "timed_out": false
+}

@@ -1,0 +1,296 @@
+{
+  "schema": "hepta.fc33.git-blob-handoff.v1",
+  "state": "IMMUTABLE_BLOBS_ACTUALLY_CONFIRMED_NO_TREE_COMMIT_OR_REF",
+  "prefix": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/",
+  "file_count": 15,
+  "total_bytes": 927466,
+  "actual_api_confirmation_count": 15,
+  "phone_calls": 0,
+  "files": [
+    {
+      "relative_path": "controls/CONTROLLER.original.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/controls/CONTROLLER.original.json",
+      "blob_sha": "e569860863ee81d212d553282e2da982d04e950a",
+      "bytes": 170920,
+      "sha256": "887c527b2463cf403b3f155596d82bedf99d63fda903495f2dd1cd9107583ea1",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e569860863ee81d212d553282e2da982d04e950a"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "controls/RESULT.original.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/controls/RESULT.original.json",
+      "blob_sha": "83a701b5abab9106f67f5ca7b7b077abb16c2c0d",
+      "bytes": 6172,
+      "sha256": "35254746adb4466f2ce07ca39953a01d10415ff337502378071a27160c29f5c3",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "83a701b5abab9106f67f5ca7b7b077abb16c2c0d"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "controls/run_main_prepublication_controls.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/controls/run_main_prepublication_controls.py",
+      "blob_sha": "bb76546ed7216082a73ded71d34180ae788b13bd",
+      "bytes": 147599,
+      "sha256": "a259820e69e3537ff2c1c4a2745cfa9097acfc4f3d38568c582f3df7767e2dc8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "bb76546ed7216082a73ded71d34180ae788b13bd"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "controls/run_main_prepublication_controls.template.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/controls/run_main_prepublication_controls.template.py",
+      "blob_sha": "0b0d9269d744d5f79f7c2055634426ecd071295e",
+      "bytes": 5401,
+      "sha256": "0a9ff4bf545e47aa54cdce3b57d5db5740504d7bd9dc17c3957b6ad92cbf45b1",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0b0d9269d744d5f79f7c2055634426ecd071295e"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "controls/TRANSPORT-VERIFICATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/controls/TRANSPORT-VERIFICATION.json",
+      "blob_sha": "7a3cb1784f47ed2ee63b46d82955a43055e5a95a",
+      "bytes": 1332,
+      "sha256": "549dd215d6a173b402dfa38133be6d7419c50a8042fd08a001cd270742f986d8",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7a3cb1784f47ed2ee63b46d82955a43055e5a95a"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "DERIVATION.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/DERIVATION.json",
+      "blob_sha": "4a82e32e0a23bacaf4bd769b5c12ebc7f9486214",
+      "bytes": 843,
+      "sha256": "3ec16442baf8fb3b22b13fd395b4b378311e59d08e48a1de4893cc1fd007164d",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "4a82e32e0a23bacaf4bd769b5c12ebc7f9486214"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "DIAGNOSIS.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/DIAGNOSIS.json",
+      "blob_sha": "51acbbd77df8a8767b0771d11b31c1f2d8e5d57c",
+      "bytes": 8780,
+      "sha256": "c5da06632b3803f43058dc4146a9a852995cab044e46042fa402d58ca6483bfa",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "51acbbd77df8a8767b0771d11b31c1f2d8e5d57c"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "PACKAGE-MANIFEST.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/PACKAGE-MANIFEST.json",
+      "blob_sha": "e5453bb8a2939a4edf82535252e5a0fd7844cc5a",
+      "bytes": 2775,
+      "sha256": "087635c1c158c40c847e63f10fe3b090f3d053415988805bbc45154b75a3d921",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e5453bb8a2939a4edf82535252e5a0fd7844cc5a"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "publish_and_derive_source_chain_v2.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/publish_and_derive_source_chain_v2.py",
+      "blob_sha": "c24d0386892bdf2ece0dfc532fe24e0ef29631da",
+      "bytes": 141651,
+      "sha256": "477bb8c20d4868428761e403456e9c8b333b72607c8ff51aac404b2429dda342",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "c24d0386892bdf2ece0dfc532fe24e0ef29631da"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "README.md",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/README.md",
+      "blob_sha": "d9d0b03616f2b4697dc22d17ea6c8cae55f772c0",
+      "bytes": 5465,
+      "sha256": "d2cd16a0b91f1844e0c76d600cb07d2ac77510985867c29a41bc44ef4c4d85f6",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "d9d0b03616f2b4697dc22d17ea6c8cae55f772c0"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "reference/ACTUAL-PUBLICATION-FAILURE01.original.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/reference/ACTUAL-PUBLICATION-FAILURE01.original.json",
+      "blob_sha": "fef09f49ab15cb53b331804a1216f7702203c263",
+      "bytes": 145716,
+      "sha256": "e963df18de341050db9df5f52eec573d835c0053fd3270f38825403cd2bd92d3",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fef09f49ab15cb53b331804a1216f7702203c263"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "reference/publisher-v1.original.py",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/reference/publisher-v1.original.py",
+      "blob_sha": "910d403ccd19ba16e056c94848736151a9b83baf",
+      "bytes": 141612,
+      "sha256": "d6bfac4486ccd444bfe9ee98f1d1536b6453751200677d6bee5c6f5698360a27",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "910d403ccd19ba16e056c94848736151a9b83baf"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "reference/STATIC-REVIEW-before-failure.original.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/reference/STATIC-REVIEW-before-failure.original.json",
+      "blob_sha": "fda3856c01a9f096232d378e38e93dc956d8b165",
+      "bytes": 6334,
+      "sha256": "4aba52049f81235295a340ba56e42b8a018f49e0f814e81b11989a48e12e690d",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fda3856c01a9f096232d378e38e93dc956d8b165"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "REQUEST.UNEXECUTED.json",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/REQUEST.UNEXECUTED.json",
+      "blob_sha": "ffc2ee48dc5b7dbc1ac5da0d970213368bc78386",
+      "bytes": 142103,
+      "sha256": "92dbdc0d728efa903a7203ead2deafdb1272fb662c857ba97ff3f0e6ef263bec",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ffc2ee48dc5b7dbc1ac5da0d970213368bc78386"
+        },
+        "isError": false
+      }
+    },
+    {
+      "relative_path": "SOURCE.patch",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-publisher-v2/SOURCE.patch",
+      "blob_sha": "90165288d20f0c9479303e316f8764add2360751",
+      "bytes": 763,
+      "sha256": "3b934ff668019ad8f526ce3019ba77b7ecdbacd0de1133f0ae2559cf6869c452",
+      "api_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "90165288d20f0c9479303e316f8764add2360751"
+        },
+        "isError": false
+      }
+    }
+  ]
+}

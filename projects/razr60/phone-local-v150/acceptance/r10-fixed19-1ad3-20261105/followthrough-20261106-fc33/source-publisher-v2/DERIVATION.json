@@ -1,0 +1,25 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "actual_publish": null,
+  "candidate": {
+    "bytes": 141651,
+    "sha256": "477bb8c20d4868428761e403456e9c8b333b72607c8ff51aac404b2429dda342"
+  },
+  "change": {
+    "after": "change.rhs('FROZEN_INPUTS', located(binding_root, 'SOURCE-CHAIN-INPUTS.json', inputs_raw))",
+    "before": "change.rhs('FROZEN_INPUTS', proof['source_inputs'])"
+  },
+  "original_failure_job": "1a1b1f3d1a6-fc05-7bb2",
+  "parent": {
+    "bytes": 141612,
+    "sha256": "d6bfac4486ccd444bfe9ee98f1d1536b6453751200677d6bee5c6f5698360a27"
+  },
+  "payload_changed": false,
+  "prepared_constructor_changed": false,
+  "prepared_consumer_changed": false,
+  "schema": "hepta.fc33.source-publisher-descriptor-order-fix.v1",
+  "state": "SOURCE_CANDIDATE_NOT_EXECUTED",
+  "whole_source_inverse": true
+}

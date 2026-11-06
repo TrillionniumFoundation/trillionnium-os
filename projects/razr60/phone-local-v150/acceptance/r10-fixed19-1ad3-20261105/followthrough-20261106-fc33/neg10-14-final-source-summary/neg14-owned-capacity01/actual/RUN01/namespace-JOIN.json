@@ -1,0 +1,21 @@
+{
+  "actual_direct_child_wait": true,
+  "group_after": {
+    "kernel": "ESRCH",
+    "members": [],
+    "pgid": 466620
+  },
+  "monotonic": 1012455.696829802,
+  "original_identity": {
+    "pgid": 466620,
+    "pid": 466620,
+    "ppid": 466615,
+    "raw_stat": "466620 (bwrap) D 466615 466620 466620 0 -1 4194304 1 0 0 0 0 0 0 0 30 10 1 0 101245336 217088 0 18446744073709551615 0 0 140730553664806 0 0 0 0 0 0 1 0 0 17 17 0 0 0 0 0 0 0 0 140730553664806 0 0 0 0\n",
+    "sid": 466620,
+    "start_ticks": 101245336
+  },
+  "pidfd_terminal": true,
+  "returncode": 0,
+  "signals": [],
+  "timed_out": false
+}

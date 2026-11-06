@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/suite/provider/source/daily_phone_local.py", line 434, in <module>
+    main()
+    ~~~~^^
+  File "/suite/provider/source/daily_phone_local.py", line 430, in main
+    serve(args)
+    ~~~~~^^^^^^
+  File "/suite/provider/source/daily_phone_local.py", line 286, in serve
+    require(joined.is_file(), 'unjoined prior inference-client round; inspect exact receipts before service restart')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/suite/provider/source/daily_phone_local.py", line 31, in require
+    raise RuntimeError(message)
+RuntimeError: unjoined prior inference-client round; inspect exact receipts before service restart

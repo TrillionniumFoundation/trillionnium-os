@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-c",
+      "#!/usr/bin/env python3\n\"\"\"Read complete originals from this already-ended owned host test only.\"\"\"\nimport base64, hashlib, json, os, stat, zlib\nfrom pathlib import Path\nROOT = Path('/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01')\ndef sha(b): return hashlib.sha256(b).hexdigest()\ndef nine(s): return [getattr(s,n) for n in ('st_dev','st_ino','st_mode','st_nlink','st_uid','st_gid','st_size','st_mtime_ns','st_ctime_ns')]\ndef need(v,m):\n    if not v: raise ValueError(m)\ndef scan():\n    return [ROOT/'PUBLICATION.json'] + sorted(p for p in (ROOT/'RUN01').rglob('*') if not p.is_dir())\nneed(not (ROOT/'RUN01/owned-tests').exists(), 'owned test tree cleanup required')\nbefore = scan()\nneed(1 < len(before) < 128, 'bounded complete original set')\nfiles=[];total=0\nfor p in before:\n    fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n    try:\n        a=os.fstat(fd);need(stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size<=4*1024*1024,'bounded regular original')\n        chunks=[]\n        while True:\n            b=os.read(fd,65536)\n            if not b: break\n            chunks.append(b)\n        b=b''.join(chunks);need(nine(a)==nine(os.fstat(fd))==nine(p.lstat()) and len(b)==a.st_size,'complete full9 bookend')\n        total+=len(b);need(total<=8*1024*1024,'total original bound')\n        files.append({'path':str(p.relative_to(ROOT)),'bytes':len(b),'sha256':sha(b),'full9':nine(a),'base64':base64.b64encode(b).decode()})\n    finally:os.close(fd)\nneed(scan()==before,'closed original pathname set unchanged')\npacket=(json.dumps({'schema':'fc33.neg14.complete-owned-host-originals.v1','root':str(ROOT),'files':files,'file_count':len(files),'bytes':total,'no_phone_or_model_calls':True},sort_keys=True,separators=(',',':'))+'\\n').encode()\npacked=zlib.compress(packet,9)\nprint(json.dumps({'packet_bytes':len(packet),'packet_sha256':sha(packet),'compressed_bytes':len(packed),'compressed_sha256':sha(packed),'archive_base64':base64.b64encode(packed).decode()},sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1793986889864,
+    "cwd": "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1b1f38888-fc05-7bae",
+    "idempotency_key": "fc33-neg14-native-v3-owned-capacity-collect01",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b1f38888-fc05-7bae",
+    "request_digest": "35bffd04c4d9ebd1196ab68c76b5cf77b9419a7d5481d3a4ad609e2628bec7aa",
+    "request_fingerprint": 3873092401486228433,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b1f38888-fc05-7bae"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b1f38888-fc05-7bae"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

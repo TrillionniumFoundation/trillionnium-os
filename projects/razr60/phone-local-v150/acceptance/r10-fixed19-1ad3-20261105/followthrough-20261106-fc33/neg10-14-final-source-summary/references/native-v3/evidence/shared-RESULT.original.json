@@ -1,0 +1,1927 @@
+{
+  "actual_imported_source_count": 15,
+  "actual_network_or_process_operations": 0,
+  "all_owner_and_public_receipts_are_synthetic": true,
+  "audit_denied_events": [],
+  "candidate_adopted": false,
+  "cases": [
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：input。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0
+      },
+      "bindings": [
+        {
+          "name": "49c8d9bd1d94c87c0ba02e9a3f98667f7ef10bf2aefc1b1a2600c6b21cb6f123.json",
+          "sha256": "b3ca974b96974c76c77c41370ae2fd3cdcb509a1988f2db79aa4940103be8cc8"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "49c8d9bd1d94c87c0ba02e9a3f98667f7ef10bf2aefc1b1a2600c6b21cb6f123",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "7581116a2a743194abec1a1d037f729767ac6d1250822a35b2882d87cc95e8b7",
+        "business_verified": false,
+        "contract_sha256": "fae26486a5e60d7b981473f5c84a0aa2147011f3bfe51ab3832ae94d8235b51c",
+        "coverage": "entire_request",
+        "emitted_protocol_terminal": "turn.fail",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-0c4bbe7c9031dc994ed2a54d",
+          "task_id": "synthetic-task-a8b6f8fbfca3acec9e7f41b1",
+          "turn_id": "synthetic-turn-fd8b20b90e91539317da107b",
+          "turn_stream_id": "synthetic-stream-a3fe4cc1407c0d989084f63f"
+        },
+        "missing_postconditions": [
+          "input"
+        ],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": null,
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": false
+          },
+          {
+            "evidence": {
+              "call_id": "public_5c2850c6430e1220a21d",
+              "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+              "display_id": 0,
+              "evidence_type": "focused_public_UI_XML_unique_view_readback",
+              "kind": "public_text_observation",
+              "matched_value": {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 0d99b20d8f00e720c301f15241797022",
+                "utf8_sha256": "49881167d164f6440c697c7cd7b2891bde36ac90306d2796c20793e3ee4a4358",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              },
+              "original_result_sha256": "af05508e80b111465f87bd0365834a5f2544f439056fd211d780a48f5216a5bc",
+              "package": "org.example.hepta.synthetic",
+              "values": [
+                {
+                  "bounds": [
+                    10,
+                    20,
+                    200,
+                    100
+                  ],
+                  "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 0d99b20d8f00e720c301f15241797022",
+                  "utf8_sha256": "49881167d164f6440c697c7cd7b2891bde36ac90306d2796c20793e3ee4a4358",
+                  "view_id": "org.example.hepta.synthetic:id/receipt"
+                }
+              ],
+              "xml_sha256": "4e7d931b933214dec02cb90b75284d1c60e4d0f13c1553e393a4fcb54a4be156"
+            },
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "return_53fd11c72bab59b02791",
+              "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+              "display_id": 0,
+              "evidence_type": "explicit_return_launch_and_actual_focus",
+              "kind": "foreground_hepta",
+              "original_result_sha256": "c3e374912c126f3da34996aaf1fbf6cffd42a6c659ac9fa6b17f99777493f7c0"
+            },
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": true
+          }
+        ],
+        "postconditions_verified": false,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "partial",
+        "verified_facts": [
+          {
+            "call_id": "public_5c2850c6430e1220a21d",
+            "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+            "display_id": 0,
+            "evidence_type": "focused_public_UI_XML_unique_view_readback",
+            "kind": "public_text_observation",
+            "original_result_sha256": "af05508e80b111465f87bd0365834a5f2544f439056fd211d780a48f5216a5bc",
+            "package": "org.example.hepta.synthetic",
+            "values": [
+              {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 0d99b20d8f00e720c301f15241797022",
+                "utf8_sha256": "49881167d164f6440c697c7cd7b2891bde36ac90306d2796c20793e3ee4a4358",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              }
+            ],
+            "xml_sha256": "4e7d931b933214dec02cb90b75284d1c60e4d0f13c1553e393a4fcb54a4be156"
+          },
+          {
+            "call_id": "return_53fd11c72bab59b02791",
+            "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+            "display_id": 0,
+            "evidence_type": "explicit_return_launch_and_actual_focus",
+            "kind": "foreground_hepta",
+            "original_result_sha256": "c3e374912c126f3da34996aaf1fbf6cffd42a6c659ac9fa6b17f99777493f7c0"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "4709ce7929d29a37b9f189146f0427db00d98db78bff78f24a100736b5119f9c",
+          "sha256": "b585cadae180997b6e1dd710a29a5a5cf14fec8d0791c82fff8f19ecb896e586"
+        }
+      ],
+      "expected_terminal": "turn.fail",
+      "fixture_file": {
+        "bytes": 24132,
+        "path": "SYNTHETIC-NEG12-missing_confirmation/SYNTHETIC-INPUTS.json",
+        "sha256": "c70c1b35b2aca58e56a6684cb9611dce95c25e9d2b7af4005d65a5ca603923f5"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [
+        "input"
+      ],
+      "model_requests": 0,
+      "name": "missing_confirmation",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：input。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "utc": "2026-11-06T15:44:33.902073+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：input。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0
+      },
+      "bindings": [
+        {
+          "name": "c06078d5415db2b7eaff1ff38dccb5007b80e3fe1bd2675e5349773a78fba0e4.json",
+          "sha256": "3206e646f5666574bdfbd58d713642491befb11863de4347f8437d225ad4cb1f"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "c06078d5415db2b7eaff1ff38dccb5007b80e3fe1bd2675e5349773a78fba0e4",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "12793f5e0e0b7f1966903c6ad19c84547d9741c3343a618f73f747224bb0e470",
+        "business_verified": false,
+        "contract_sha256": "2514fde716b10b3b8ad5584c23cf5d6c43f485739b95a7b1a19ea41e726a740a",
+        "coverage": "entire_request",
+        "emitted_protocol_terminal": "turn.fail",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-b8c7f7c9edc6d8a7890b370c",
+          "task_id": "synthetic-task-32a2b244118937506cd7c2ca",
+          "turn_id": "synthetic-turn-6df6712942716862c2bdae1a",
+          "turn_stream_id": "synthetic-stream-0d0b3f70f518e16ceeac1081"
+        },
+        "missing_postconditions": [
+          "input"
+        ],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": null,
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": false
+          },
+          {
+            "evidence": {
+              "call_id": "public_85c5a00678d90e6176fb",
+              "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+              "display_id": 0,
+              "evidence_type": "focused_public_UI_XML_unique_view_readback",
+              "kind": "public_text_observation",
+              "matched_value": {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA a5a5c94a980e603e9024c05ed265f9f9",
+                "utf8_sha256": "399b08748afe588c3d96abbabe818dd90068f36a16f0c51e736a040cc4175308",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              },
+              "original_result_sha256": "1e55aa838635a4f8ad9696b8ef08ac14ca29423b086ab0827bf3ec006b29340d",
+              "package": "org.example.hepta.synthetic",
+              "values": [
+                {
+                  "bounds": [
+                    10,
+                    20,
+                    200,
+                    100
+                  ],
+                  "text": "主机合成确认 主机合成输入 中文😀\nHEPTA a5a5c94a980e603e9024c05ed265f9f9",
+                  "utf8_sha256": "399b08748afe588c3d96abbabe818dd90068f36a16f0c51e736a040cc4175308",
+                  "view_id": "org.example.hepta.synthetic:id/receipt"
+                }
+              ],
+              "xml_sha256": "f762ab90ee9921a55fc8d82baf0432c99d684d3a3830976454621a5173987344"
+            },
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "return_e40a68384fcaaf1a8f6c",
+              "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+              "display_id": 0,
+              "evidence_type": "explicit_return_launch_and_actual_focus",
+              "kind": "foreground_hepta",
+              "original_result_sha256": "93c5dafe029d163a42edfb292318975ba8e1fdecf0f660e4c9ecb32977b16650"
+            },
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": true
+          }
+        ],
+        "postconditions_verified": false,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "partial",
+        "verified_facts": [
+          {
+            "call_id": "public_85c5a00678d90e6176fb",
+            "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+            "display_id": 0,
+            "evidence_type": "focused_public_UI_XML_unique_view_readback",
+            "kind": "public_text_observation",
+            "original_result_sha256": "1e55aa838635a4f8ad9696b8ef08ac14ca29423b086ab0827bf3ec006b29340d",
+            "package": "org.example.hepta.synthetic",
+            "values": [
+              {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA a5a5c94a980e603e9024c05ed265f9f9",
+                "utf8_sha256": "399b08748afe588c3d96abbabe818dd90068f36a16f0c51e736a040cc4175308",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              }
+            ],
+            "xml_sha256": "f762ab90ee9921a55fc8d82baf0432c99d684d3a3830976454621a5173987344"
+          },
+          {
+            "call_id": "return_e40a68384fcaaf1a8f6c",
+            "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+            "display_id": 0,
+            "evidence_type": "explicit_return_launch_and_actual_focus",
+            "kind": "foreground_hepta",
+            "original_result_sha256": "93c5dafe029d163a42edfb292318975ba8e1fdecf0f660e4c9ecb32977b16650"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "acc2ed414240d4eb3e9fc50b2adb2540bafa5e79d2d0c6502da3ea1feaef6c3e",
+          "sha256": "30a0ca88332bdaf42d767ff2f9e7a901714d541dcf1b9237d00a32e989e08ef3"
+        }
+      ],
+      "expected_terminal": "turn.fail",
+      "fixture_file": {
+        "bytes": 28748,
+        "path": "SYNTHETIC-NEG12-invalid_confirmation/SYNTHETIC-INPUTS.json",
+        "sha256": "45ec825ab9ea10f306d6ec047ba5bb534bdf8a8a48266749067a21e160def4ba"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [
+        "input"
+      ],
+      "model_requests": 0,
+      "name": "invalid_confirmation",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：input。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "utc": "2026-11-06T15:44:33.907051+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：public。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0
+      },
+      "bindings": [
+        {
+          "name": "6f0d7a1a3f2a299021e4167cd90f10ba1ddbd8932cf0de7d444a614e1bb30f2d.json",
+          "sha256": "cc7f074a535d5ba714d1c615264662ac7ab4ae7b8d1053b40cdb9e94279c939f"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "6f0d7a1a3f2a299021e4167cd90f10ba1ddbd8932cf0de7d444a614e1bb30f2d",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "84b3c5835e272092a9777b9023dbb84c702a98792066a879e952b7e735cd652d",
+        "business_verified": false,
+        "contract_sha256": "2f5b76cb355a89b308c62a6e618c9b7fa13a80713a5a2311373321e06de96e5f",
+        "coverage": "entire_request",
+        "emitted_protocol_terminal": "turn.fail",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-476b252dbcee43a771dbe2db",
+          "task_id": "synthetic-task-3a387b71900921fd1abaf507",
+          "turn_id": "synthetic-turn-488082c499f44fe0255954be",
+          "turn_stream_id": "synthetic-stream-fe533160d0141fbc939023b1"
+        },
+        "missing_postconditions": [
+          "public"
+        ],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": {
+              "call_id": "input_ef0b271f6c7e42d32c63",
+              "evidence_type": "focused_unicode_helper_exact_readback",
+              "kind": "text_readback_exact",
+              "original_result_sha256": "2fd14d32d3be97924177f1c168e112caf2494f977ef7d1e0c95e604767587461",
+              "package": "org.example.hepta.synthetic",
+              "utf8_sha256": "8ca631da324d657db62ecfce521b8ff896889889fc2e8e7f60e5291e2a302572",
+              "view_id": "org.example.hepta.synthetic:id/editor"
+            },
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": null,
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": false
+          },
+          {
+            "evidence": {
+              "call_id": "return_ecfb0d5f69ee50cc1447",
+              "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+              "display_id": 0,
+              "evidence_type": "explicit_return_launch_and_actual_focus",
+              "kind": "foreground_hepta",
+              "original_result_sha256": "388d6c7467cd3b9ee855ff3bdca6b64195560fb955589acbf4c3f26ea35520f2"
+            },
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": true
+          }
+        ],
+        "postconditions_verified": false,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "partial",
+        "verified_facts": [
+          {
+            "call_id": "input_ef0b271f6c7e42d32c63",
+            "evidence_type": "focused_unicode_helper_exact_readback",
+            "kind": "text_readback_exact",
+            "original_result_sha256": "2fd14d32d3be97924177f1c168e112caf2494f977ef7d1e0c95e604767587461",
+            "package": "org.example.hepta.synthetic",
+            "utf8_sha256": "8ca631da324d657db62ecfce521b8ff896889889fc2e8e7f60e5291e2a302572",
+            "view_id": "org.example.hepta.synthetic:id/editor"
+          },
+          {
+            "call_id": "return_ecfb0d5f69ee50cc1447",
+            "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+            "display_id": 0,
+            "evidence_type": "explicit_return_launch_and_actual_focus",
+            "kind": "foreground_hepta",
+            "original_result_sha256": "388d6c7467cd3b9ee855ff3bdca6b64195560fb955589acbf4c3f26ea35520f2"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "eea4108bb7af7b8c152baa175f8f9fa23d7fed2e4246d7dc581470b85cf343ed",
+          "sha256": "ddbc055b3bc4cf0fb9acd0ec0145b37848735917267589c23ea7d59519c0cf2c"
+        }
+      ],
+      "expected_terminal": "turn.fail",
+      "fixture_file": {
+        "bytes": 20973,
+        "path": "SYNTHETIC-NEG12-missing_public/SYNTHETIC-INPUTS.json",
+        "sha256": "32ff16849e0bff2f9d29ada09e86ef20a4436ea8c064b02d45a294e57f980eed"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "missing_public",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：public。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "utc": "2026-11-06T15:44:33.911898+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：public。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0
+      },
+      "bindings": [
+        {
+          "name": "93b43b148e37b1d74fa27e80ca7f46a1efbde37c3a183dcbf855ce53163f192f.json",
+          "sha256": "a610189811b25a8ae7edeb6c5db347fa9675aa4d532deace810ee4d4235ea114"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "93b43b148e37b1d74fa27e80ca7f46a1efbde37c3a183dcbf855ce53163f192f",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "c75a5a4efd2af9b0e9333d264ad4c77cd48b33d98ab78669118a3b50ec91103f",
+        "business_verified": false,
+        "contract_sha256": "3600e001a477dac9c3f593a96369a52ac2fc227627b63657dee4a98b98cddac2",
+        "coverage": "entire_request",
+        "emitted_protocol_terminal": "turn.fail",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-61b7f135cc7c5caf7e81f0ed",
+          "task_id": "synthetic-task-ca91148b0d910a3c1788e4a0",
+          "turn_id": "synthetic-turn-519d7844a2df76909b65228d",
+          "turn_stream_id": "synthetic-stream-6b05ee6f8007392ae025a67f"
+        },
+        "missing_postconditions": [
+          "public"
+        ],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": {
+              "call_id": "input_a7cf515009daab2e3c72",
+              "evidence_type": "focused_unicode_helper_exact_readback",
+              "kind": "text_readback_exact",
+              "original_result_sha256": "6f4ba391f1aea5896bd34a6a9dbb77a1cf5b79eac92671a9268c324c1c43d592",
+              "package": "org.example.hepta.synthetic",
+              "utf8_sha256": "9e7a8a814298fafced8858a7128d4a555b4eabecc83d68fd858a3486f362603a",
+              "view_id": "org.example.hepta.synthetic:id/editor"
+            },
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": null,
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": false
+          },
+          {
+            "evidence": {
+              "call_id": "return_f6a557a2928ff8084a66",
+              "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+              "display_id": 0,
+              "evidence_type": "explicit_return_launch_and_actual_focus",
+              "kind": "foreground_hepta",
+              "original_result_sha256": "1776fa79d359d91193919b60a032b918472867ac29d59462a4e077f3b27c19e5"
+            },
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": true
+          }
+        ],
+        "postconditions_verified": false,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "partial",
+        "verified_facts": [
+          {
+            "call_id": "input_a7cf515009daab2e3c72",
+            "evidence_type": "focused_unicode_helper_exact_readback",
+            "kind": "text_readback_exact",
+            "original_result_sha256": "6f4ba391f1aea5896bd34a6a9dbb77a1cf5b79eac92671a9268c324c1c43d592",
+            "package": "org.example.hepta.synthetic",
+            "utf8_sha256": "9e7a8a814298fafced8858a7128d4a555b4eabecc83d68fd858a3486f362603a",
+            "view_id": "org.example.hepta.synthetic:id/editor"
+          },
+          {
+            "call_id": "public_6aedc94597fe4c10624a",
+            "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+            "display_id": 0,
+            "evidence_type": "focused_public_UI_XML_unique_view_readback",
+            "kind": "public_text_observation",
+            "original_result_sha256": "df31d53bbd6aad77405d2e79181e41b277d719c08b75db12cf82fef561b14aff",
+            "package": "org.example.hepta.synthetic",
+            "values": [
+              {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 79fcce992b96373c2bee8f83df990ae4 WRONG",
+                "utf8_sha256": "4d13b00cc638e055b4f23979e8ec23660b843ff403db812bd87ee3ee42c906c5",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              }
+            ],
+            "xml_sha256": "ab7f602a89d225d1f7c468266a446f43179dbfdd980c4baa487486bcae67ec52"
+          },
+          {
+            "call_id": "return_f6a557a2928ff8084a66",
+            "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+            "display_id": 0,
+            "evidence_type": "explicit_return_launch_and_actual_focus",
+            "kind": "foreground_hepta",
+            "original_result_sha256": "1776fa79d359d91193919b60a032b918472867ac29d59462a4e077f3b27c19e5"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "7027331c937e11f1ca3bb461007d09b342815e446b2251fa5926ea844ebd69db",
+          "sha256": "41aa3c60d079b3ad7856acf31af960a82b1f7c1f91bab4590645b512e48c09f6"
+        }
+      ],
+      "expected_terminal": "turn.fail",
+      "fixture_file": {
+        "bytes": 28882,
+        "path": "SYNTHETIC-NEG12-wrong_public/SYNTHETIC-INPUTS.json",
+        "sha256": "d1a819a83f99dfd195b43872f531809f33d76c32f70f0dc5bb99934173da05f8"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "wrong_public",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：public。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "utc": "2026-11-06T15:44:33.916948+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：return。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0
+      },
+      "bindings": [
+        {
+          "name": "d79bd1a731f3bcdabafb92197081643d7929e9e2970a1265bb49dd5cc596c25d.json",
+          "sha256": "08b46ed5658116247fe5021c964632a36343a3ec7f2af8426c42c1720b234410"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "d79bd1a731f3bcdabafb92197081643d7929e9e2970a1265bb49dd5cc596c25d",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "9f5b96486dd5b6be60d87983473d587321308e22da468ba96a95a2a7fed1a026",
+        "business_verified": false,
+        "contract_sha256": "e64bd8098dbca51682478a7e36c3ab7a80b7afa2e4d43723765b742c97243acc",
+        "coverage": "entire_request",
+        "emitted_protocol_terminal": "turn.fail",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-d8ce9049fae8bc60a43c67bb",
+          "task_id": "synthetic-task-a6e7686046a25376f1ef2211",
+          "turn_id": "synthetic-turn-7a06a35d08e0c8adca73d364",
+          "turn_stream_id": "synthetic-stream-45928c9d1ea9c7a154bd7d7d"
+        },
+        "missing_postconditions": [
+          "return"
+        ],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": {
+              "call_id": "input_5d765e5513fad8b26a45",
+              "evidence_type": "focused_unicode_helper_exact_readback",
+              "kind": "text_readback_exact",
+              "original_result_sha256": "6c72c602c0c7a0e845ef173bc07c6409baf2301ac364e5fd472e11c5cc020092",
+              "package": "org.example.hepta.synthetic",
+              "utf8_sha256": "4c38766372bb268ebdb31767681afb4fa54d75c58249cf093c60729adf42450a",
+              "view_id": "org.example.hepta.synthetic:id/editor"
+            },
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "public_dc7ca14dbf211665dd4e",
+              "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+              "display_id": 0,
+              "evidence_type": "focused_public_UI_XML_unique_view_readback",
+              "kind": "public_text_observation",
+              "matched_value": {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 817e4226337e54bce126d28681e30279",
+                "utf8_sha256": "fc419386438a1c6b2e1276f99d3e8822e168331d1532726e664c92e7dc698c96",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              },
+              "original_result_sha256": "7a48264c04bff4e02b5f97cb1658678a6bb8c7e163562734fe35271e8201a2cd",
+              "package": "org.example.hepta.synthetic",
+              "values": [
+                {
+                  "bounds": [
+                    10,
+                    20,
+                    200,
+                    100
+                  ],
+                  "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 817e4226337e54bce126d28681e30279",
+                  "utf8_sha256": "fc419386438a1c6b2e1276f99d3e8822e168331d1532726e664c92e7dc698c96",
+                  "view_id": "org.example.hepta.synthetic:id/receipt"
+                }
+              ],
+              "xml_sha256": "9408fd3c37f8f4cb986c28f8d13fb9906f69b6b3aaea652a9e2a1f3d9d76a53a"
+            },
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": null,
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": false
+          }
+        ],
+        "postconditions_verified": false,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "partial",
+        "verified_facts": [
+          {
+            "call_id": "input_5d765e5513fad8b26a45",
+            "evidence_type": "focused_unicode_helper_exact_readback",
+            "kind": "text_readback_exact",
+            "original_result_sha256": "6c72c602c0c7a0e845ef173bc07c6409baf2301ac364e5fd472e11c5cc020092",
+            "package": "org.example.hepta.synthetic",
+            "utf8_sha256": "4c38766372bb268ebdb31767681afb4fa54d75c58249cf093c60729adf42450a",
+            "view_id": "org.example.hepta.synthetic:id/editor"
+          },
+          {
+            "call_id": "public_dc7ca14dbf211665dd4e",
+            "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+            "display_id": 0,
+            "evidence_type": "focused_public_UI_XML_unique_view_readback",
+            "kind": "public_text_observation",
+            "original_result_sha256": "7a48264c04bff4e02b5f97cb1658678a6bb8c7e163562734fe35271e8201a2cd",
+            "package": "org.example.hepta.synthetic",
+            "values": [
+              {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 817e4226337e54bce126d28681e30279",
+                "utf8_sha256": "fc419386438a1c6b2e1276f99d3e8822e168331d1532726e664c92e7dc698c96",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              }
+            ],
+            "xml_sha256": "9408fd3c37f8f4cb986c28f8d13fb9906f69b6b3aaea652a9e2a1f3d9d76a53a"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "6a41c4e9f0b1a35a34926c5b341525a8bc0605c6227b33c5e5c8d4ea0279e059",
+          "sha256": "711e7281ccb30e7758bdaaca150837c639faaa76ccd8e03977f58ad60dc6d4cc"
+        }
+      ],
+      "expected_terminal": "turn.fail",
+      "fixture_file": {
+        "bytes": 23536,
+        "path": "SYNTHETIC-NEG12-missing_return/SYNTHETIC-INPUTS.json",
+        "sha256": "c8327e233874dfbf8ca9e581cf84fe4363e22bc9e9c9068d26c07d80c859a3e7"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [
+        "return"
+      ],
+      "model_requests": 0,
+      "name": "missing_return",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：return。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "utc": "2026-11-06T15:44:33.921386+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：return。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0
+      },
+      "bindings": [
+        {
+          "name": "59b19717471ab3aaba2b6b36f287b88ccf164a8150f2575beb4cda1fd53f303f.json",
+          "sha256": "23b8f6ad2599322149b437594f3bd4097716de300f209883dfdd170a7804e4b5"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "59b19717471ab3aaba2b6b36f287b88ccf164a8150f2575beb4cda1fd53f303f",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "d20f6abdbf8074c4f61b16016d4e2e4797f2373465c087c4ebed739445d1cff0",
+        "business_verified": false,
+        "contract_sha256": "af87055db020cad0a497f9673ee0f2774890f87e5db155e9be2e7cdbc236e2f3",
+        "coverage": "entire_request",
+        "emitted_protocol_terminal": "turn.fail",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-35fbdf17c7c5bf81d8c81e77",
+          "task_id": "synthetic-task-d5ad37656f0d6dcf4ee19a51",
+          "turn_id": "synthetic-turn-0c2426e39890c3b08ae2abad",
+          "turn_stream_id": "synthetic-stream-9580d6552b180157ca2ff8fc"
+        },
+        "missing_postconditions": [
+          "return"
+        ],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": {
+              "call_id": "input_4912dc371af088cea0ba",
+              "evidence_type": "focused_unicode_helper_exact_readback",
+              "kind": "text_readback_exact",
+              "original_result_sha256": "d4944288b9f9b02ec68e786b601a58f464673048652375ef1f0aff028d29c37c",
+              "package": "org.example.hepta.synthetic",
+              "utf8_sha256": "13bacd3679aaf49ae5ba876fd0b5f017ffe0660a439b90aed1daafbd9e247969",
+              "view_id": "org.example.hepta.synthetic:id/editor"
+            },
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "public_47dcd1b414d318a395f8",
+              "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+              "display_id": 0,
+              "evidence_type": "focused_public_UI_XML_unique_view_readback",
+              "kind": "public_text_observation",
+              "matched_value": {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 4bdced47378127ff2e3d232c6d454e59",
+                "utf8_sha256": "435127f781122b71cc2f1de221a0c4dbc193e98aba41ab2bab2ffb3e9645cede",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              },
+              "original_result_sha256": "c42cbdf46c4db01b0779e24d5884690023a6d5c4d1e95782d6d7397a0cdfbab2",
+              "package": "org.example.hepta.synthetic",
+              "values": [
+                {
+                  "bounds": [
+                    10,
+                    20,
+                    200,
+                    100
+                  ],
+                  "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 4bdced47378127ff2e3d232c6d454e59",
+                  "utf8_sha256": "435127f781122b71cc2f1de221a0c4dbc193e98aba41ab2bab2ffb3e9645cede",
+                  "view_id": "org.example.hepta.synthetic:id/receipt"
+                }
+              ],
+              "xml_sha256": "d42207f37272cf5b802d106ae964f5cf78d487d20ca265528f1b40d3f1202ea0"
+            },
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": null,
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": false
+          }
+        ],
+        "postconditions_verified": false,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "partial",
+        "verified_facts": [
+          {
+            "call_id": "input_4912dc371af088cea0ba",
+            "evidence_type": "focused_unicode_helper_exact_readback",
+            "kind": "text_readback_exact",
+            "original_result_sha256": "d4944288b9f9b02ec68e786b601a58f464673048652375ef1f0aff028d29c37c",
+            "package": "org.example.hepta.synthetic",
+            "utf8_sha256": "13bacd3679aaf49ae5ba876fd0b5f017ffe0660a439b90aed1daafbd9e247969",
+            "view_id": "org.example.hepta.synthetic:id/editor"
+          },
+          {
+            "call_id": "public_47dcd1b414d318a395f8",
+            "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+            "display_id": 0,
+            "evidence_type": "focused_public_UI_XML_unique_view_readback",
+            "kind": "public_text_observation",
+            "original_result_sha256": "c42cbdf46c4db01b0779e24d5884690023a6d5c4d1e95782d6d7397a0cdfbab2",
+            "package": "org.example.hepta.synthetic",
+            "values": [
+              {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 4bdced47378127ff2e3d232c6d454e59",
+                "utf8_sha256": "435127f781122b71cc2f1de221a0c4dbc193e98aba41ab2bab2ffb3e9645cede",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              }
+            ],
+            "xml_sha256": "d42207f37272cf5b802d106ae964f5cf78d487d20ca265528f1b40d3f1202ea0"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "b7405ac5b7f6c75c4cc9cc860dd9e324a2aca94fe01e47bfa127a30d9002aa72",
+          "sha256": "e63ec012bb4de7a26012fae82bdaf0bc09a64058dfd033875cd123208330b2a3"
+        }
+      ],
+      "expected_terminal": "turn.fail",
+      "fixture_file": {
+        "bytes": 29026,
+        "path": "SYNTHETIC-NEG12-wrong_return/SYNTHETIC-INPUTS.json",
+        "sha256": "97b7e35441b48330dc326238b1aa720182ed8cc448a971199da5489fb0bf70d3"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [
+        "return"
+      ],
+      "model_requests": 0,
+      "name": "wrong_return",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：return。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "utc": "2026-11-06T15:44:33.925749+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：合约只覆盖列出的局部后条件，尚不能确认整项任务。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0
+      },
+      "bindings": [
+        {
+          "name": "21cd83b1ac82cfe5e08b8959eb7499bdccc4684ebdf59a6a22ddc85b2e042ac9.json",
+          "sha256": "3dc4fde1bc8a90440e2e60a6869e300cf0c3bbe2df3d1108343fd6a81920b2df"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "21cd83b1ac82cfe5e08b8959eb7499bdccc4684ebdf59a6a22ddc85b2e042ac9",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "ef5e9a2f397011d11f674a4ce8994a070c12ff7e9c6a0a6e74cbc851090ee6ed",
+        "business_verified": false,
+        "contract_sha256": "f777b9d7fbcca8de92e432cc27eab7dadee759bd31caf99568c63d302d0433d1",
+        "coverage": "declared_postconditions_only",
+        "emitted_protocol_terminal": "turn.fail",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-320ac6a80bd87335fc21b4c2",
+          "task_id": "synthetic-task-5d792fdf3dd8cdaf6bf5341e",
+          "turn_id": "synthetic-turn-c7786369e1b62a857aca4950",
+          "turn_stream_id": "synthetic-stream-8cf4470cb8228dffc6a6bcb1"
+        },
+        "missing_postconditions": [],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": {
+              "call_id": "input_b681b0b0eb268436b5fd",
+              "evidence_type": "focused_unicode_helper_exact_readback",
+              "kind": "text_readback_exact",
+              "original_result_sha256": "3ddd308a948fe5828902e624c8234f14182483f3a177e9772b840d0f914fac0b",
+              "package": "org.example.hepta.synthetic",
+              "utf8_sha256": "d4d06b57af2b815d63584a3d7eecec7aba11f6560b29855934622e9f39f9baae",
+              "view_id": "org.example.hepta.synthetic:id/editor"
+            },
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "public_7078702462e376f478ea",
+              "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+              "display_id": 0,
+              "evidence_type": "focused_public_UI_XML_unique_view_readback",
+              "kind": "public_text_observation",
+              "matched_value": {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 8ed0709cf751710817dc94b6fd0bcbbf",
+                "utf8_sha256": "d2562cbb9f8985fdac9a0374c72a93239584a735ee727737b0a92b2fdc80d560",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              },
+              "original_result_sha256": "723b4664cc247a967821d8ee9863ef9bbae0766f0fca2a7f99584a98c04d6d77",
+              "package": "org.example.hepta.synthetic",
+              "values": [
+                {
+                  "bounds": [
+                    10,
+                    20,
+                    200,
+                    100
+                  ],
+                  "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 8ed0709cf751710817dc94b6fd0bcbbf",
+                  "utf8_sha256": "d2562cbb9f8985fdac9a0374c72a93239584a735ee727737b0a92b2fdc80d560",
+                  "view_id": "org.example.hepta.synthetic:id/receipt"
+                }
+              ],
+              "xml_sha256": "17d1c1ecedc52f265b8329ac1455491fc175ff581c09ba8cb7ea11a6224f7a0e"
+            },
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "return_4529bd33af2bf19e89bb",
+              "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+              "display_id": 0,
+              "evidence_type": "explicit_return_launch_and_actual_focus",
+              "kind": "foreground_hepta",
+              "original_result_sha256": "431a28ef27ffd1bef6434d7190040931d7f96c09e9181a3bcc54e4089b7da705"
+            },
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": true
+          }
+        ],
+        "postconditions_verified": true,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "partial",
+        "verified_facts": [
+          {
+            "call_id": "input_b681b0b0eb268436b5fd",
+            "evidence_type": "focused_unicode_helper_exact_readback",
+            "kind": "text_readback_exact",
+            "original_result_sha256": "3ddd308a948fe5828902e624c8234f14182483f3a177e9772b840d0f914fac0b",
+            "package": "org.example.hepta.synthetic",
+            "utf8_sha256": "d4d06b57af2b815d63584a3d7eecec7aba11f6560b29855934622e9f39f9baae",
+            "view_id": "org.example.hepta.synthetic:id/editor"
+          },
+          {
+            "call_id": "public_7078702462e376f478ea",
+            "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+            "display_id": 0,
+            "evidence_type": "focused_public_UI_XML_unique_view_readback",
+            "kind": "public_text_observation",
+            "original_result_sha256": "723b4664cc247a967821d8ee9863ef9bbae0766f0fca2a7f99584a98c04d6d77",
+            "package": "org.example.hepta.synthetic",
+            "values": [
+              {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 8ed0709cf751710817dc94b6fd0bcbbf",
+                "utf8_sha256": "d2562cbb9f8985fdac9a0374c72a93239584a735ee727737b0a92b2fdc80d560",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              }
+            ],
+            "xml_sha256": "17d1c1ecedc52f265b8329ac1455491fc175ff581c09ba8cb7ea11a6224f7a0e"
+          },
+          {
+            "call_id": "return_4529bd33af2bf19e89bb",
+            "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+            "display_id": 0,
+            "evidence_type": "explicit_return_launch_and_actual_focus",
+            "kind": "foreground_hepta",
+            "original_result_sha256": "431a28ef27ffd1bef6434d7190040931d7f96c09e9181a3bcc54e4089b7da705"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "912538b428769e06dbf6562a7aff455661da50ad9954661a483f449c89174e3b",
+          "sha256": "9961f7776223752b4a013e2ecf76c98a0869613faadfc2fc2884c046772ce30f"
+        }
+      ],
+      "expected_terminal": "turn.fail",
+      "fixture_file": {
+        "bytes": 28880,
+        "path": "SYNTHETIC-NEG12-partial_coverage/SYNTHETIC-INPUTS.json",
+        "sha256": "b58b82bd98d6c88f41508b5c371405ff1a693180c7439d0bc28167c41370a802"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [],
+      "model_requests": 0,
+      "name": "partial_coverage",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "error": "[business_not_verified] 业务未完成或仅部分完成；未验证后条件：合约只覆盖列出的局部后条件，尚不能确认整项任务。已执行动作不会自动重放。",
+        "kind": "turn.fail",
+        "utc": "2026-11-06T15:44:33.931241+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_native_dispatches": 0,
+      "actual_terminal": {
+        "kind": "turn.complete",
+        "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+        "seq": 0,
+        "summary": "[业务已按明确后条件验证] SYNTHETIC host fixture says completed; no model was invoked."
+      },
+      "bindings": [
+        {
+          "name": "5a4c439ec802c3ccecb79c6a1dea47de911511812f8b68c74d6a1aff2110a400.json",
+          "sha256": "32bf538f901b5b8ff2522358bfc110bea0a99d7a2a74a8e9e986a797944eee98"
+        }
+      ],
+      "business_outcome": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "5a4c439ec802c3ccecb79c6a1dea47de911511812f8b68c74d6a1aff2110a400",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "e64bbad5bccc3779d99e300d460fc76f7f44ec15b1ff89922082deccf8ac3715",
+        "business_verified": true,
+        "contract_sha256": "fe903c25d41fb612c1cb1513bbaf1a02fc930df14c61f92e7c43946ff1376ab2",
+        "coverage": "entire_request",
+        "emitted_protocol_terminal": "turn.complete",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-10e1994e7547df6d8e4c2c15",
+          "task_id": "synthetic-task-bc730db34e471770ff9c6265",
+          "turn_id": "synthetic-turn-7f4e507f725d4074712972a3",
+          "turn_stream_id": "synthetic-stream-f9f01aceb8b3271a79600fdf"
+        },
+        "missing_postconditions": [],
+        "model_reported_status": "completed",
+        "native_completed_is_business_success": false,
+        "postconditions": [
+          {
+            "evidence": {
+              "call_id": "input_3e34af649c24c7bdc236",
+              "evidence_type": "focused_unicode_helper_exact_readback",
+              "kind": "text_readback_exact",
+              "original_result_sha256": "36894195fcaf4e41faedaee365762f94ee08d4a57cc38b939943548744bcbcff",
+              "package": "org.example.hepta.synthetic",
+              "utf8_sha256": "db113daeb1a1874b7108cb6928cf00e0f83d1854d9d81388d8627363872c718f",
+              "view_id": "org.example.hepta.synthetic:id/editor"
+            },
+            "id": "input",
+            "kind": "text_readback_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "public_56713eef8dae99f4f69e",
+              "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+              "display_id": 0,
+              "evidence_type": "focused_public_UI_XML_unique_view_readback",
+              "kind": "public_text_observation",
+              "matched_value": {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 06f7c47ee188723f8e742bfacad2d9b1",
+                "utf8_sha256": "7bc56d7a68c138d6315adfc3d9c7d9bf41953bea4199e9e92b44c314f262de0c",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              },
+              "original_result_sha256": "fbb1b01d04680ee2ff7286772ec03700feb1a9dfe6b53ca2985d4f83464e50a3",
+              "package": "org.example.hepta.synthetic",
+              "values": [
+                {
+                  "bounds": [
+                    10,
+                    20,
+                    200,
+                    100
+                  ],
+                  "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 06f7c47ee188723f8e742bfacad2d9b1",
+                  "utf8_sha256": "7bc56d7a68c138d6315adfc3d9c7d9bf41953bea4199e9e92b44c314f262de0c",
+                  "view_id": "org.example.hepta.synthetic:id/receipt"
+                }
+              ],
+              "xml_sha256": "11216241c5b462650dcdd5f1b35fd5d50a0907d80b0b17d8e3e1d289617ad84e"
+            },
+            "id": "public",
+            "kind": "public_text_exact",
+            "satisfied": true
+          },
+          {
+            "evidence": {
+              "call_id": "return_368e0b12c1dfda2c67cf",
+              "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+              "display_id": 0,
+              "evidence_type": "explicit_return_launch_and_actual_focus",
+              "kind": "foreground_hepta",
+              "original_result_sha256": "fb910a83289c84e67a492ba819d608f7d0e92d9b7d999059b1ef0f33f225ac52"
+            },
+            "id": "return",
+            "kind": "foreground_hepta",
+            "satisfied": true
+          }
+        ],
+        "postconditions_verified": true,
+        "requested_protocol_terminal": "turn.complete",
+        "schema": "hepta.business-outcome.v150.3",
+        "status": "verified",
+        "verified_facts": [
+          {
+            "call_id": "input_3e34af649c24c7bdc236",
+            "evidence_type": "focused_unicode_helper_exact_readback",
+            "kind": "text_readback_exact",
+            "original_result_sha256": "36894195fcaf4e41faedaee365762f94ee08d4a57cc38b939943548744bcbcff",
+            "package": "org.example.hepta.synthetic",
+            "utf8_sha256": "db113daeb1a1874b7108cb6928cf00e0f83d1854d9d81388d8627363872c718f",
+            "view_id": "org.example.hepta.synthetic:id/editor"
+          },
+          {
+            "call_id": "public_56713eef8dae99f4f69e",
+            "component": "org.example.hepta.synthetic/org.example.hepta.synthetic.FixtureActivity",
+            "display_id": 0,
+            "evidence_type": "focused_public_UI_XML_unique_view_readback",
+            "kind": "public_text_observation",
+            "original_result_sha256": "fbb1b01d04680ee2ff7286772ec03700feb1a9dfe6b53ca2985d4f83464e50a3",
+            "package": "org.example.hepta.synthetic",
+            "values": [
+              {
+                "bounds": [
+                  10,
+                  20,
+                  200,
+                  100
+                ],
+                "text": "主机合成确认 主机合成输入 中文😀\nHEPTA 06f7c47ee188723f8e742bfacad2d9b1",
+                "utf8_sha256": "7bc56d7a68c138d6315adfc3d9c7d9bf41953bea4199e9e92b44c314f262de0c",
+                "view_id": "org.example.hepta.synthetic:id/receipt"
+              }
+            ],
+            "xml_sha256": "11216241c5b462650dcdd5f1b35fd5d50a0907d80b0b17d8e3e1d289617ad84e"
+          },
+          {
+            "call_id": "return_368e0b12c1dfda2c67cf",
+            "component": "org.trillionnium.owneropen/org.trillionnium.owneropen.OwnerOpenShellActivity",
+            "display_id": 0,
+            "evidence_type": "explicit_return_launch_and_actual_focus",
+            "kind": "foreground_hepta",
+            "original_result_sha256": "fb910a83289c84e67a492ba819d608f7d0e92d9b7d999059b1ef0f33f225ac52"
+          }
+        ]
+      },
+      "claims": [
+        {
+          "name": "8e3e1dc48fbc759dea71fa0c0631b37c8892241a97c3d3b9e4024ca2a51db6b4",
+          "sha256": "f8ba5ab7bc02075169a6eaafc3997047ead2a7fa74359e7468a0298e8f21bcc4"
+        }
+      ],
+      "expected_terminal": "turn.complete",
+      "fixture_file": {
+        "bytes": 28866,
+        "path": "SYNTHETIC-NEG12-complete_control/SYNTHETIC-INPUTS.json",
+        "sha256": "50c64762b67e0972eeb374219130a0a6f899834adfb303d212b05db831cba3b7"
+      },
+      "late_terminal_rejected_without_rewrite": {
+        "error_type": "ProviderError",
+        "message": "provider already persisted a terminal",
+        "rejected": true
+      },
+      "missing_postconditions": [],
+      "model_requests": 0,
+      "name": "complete_control",
+      "passed": true,
+      "persisted_terminal": {
+        "claimed": true,
+        "kind": "turn.complete",
+        "summary": "[业务已按明确后条件验证] SYNTHETIC host fixture says completed; no model was invoked.",
+        "utc": "2026-11-06T15:44:33.936683+00:00"
+      },
+      "phone_calls": 0,
+      "scope": "NEG12_SELECTED_SHARED_BUSINESS_GATE",
+      "synthetic_inputs": true
+    },
+    {
+      "actual_rejection": {
+        "error_type": "ProviderError",
+        "message": "task contract: template request, nonce or known scope differs",
+        "rejected": true
+      },
+      "binding_count": 0,
+      "identity": {
+        "profile_id": "synthetic-host-only",
+        "session_id": "synthetic-session-ca20ede9810d3ca84989d686",
+        "task_id": "synthetic-task-aeff7d1506a0e8a9859ac687",
+        "turn_id": "synthetic-turn-7f0cbe2db7d1e8e2ebd62f9a",
+        "turn_stream_id": "synthetic-stream-13ad2d8eb1ffd04ba1058fa0"
+      },
+      "name": "nonce_missing",
+      "native_dispatches": 0,
+      "passed": true,
+      "request": "SYNTHETIC nonce absent request",
+      "scope": "NEG13_SELECTED_TEMPLATE_PRECONDITIONS",
+      "synthetic_inputs": true,
+      "template": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "334627de02e943d5e0170e23011a513bbef0368fd3113ed8de6dd23aaccbed0d",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "coverage": "entire_request",
+        "expected_scope": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-ca20ede9810d3ca84989d686"
+        },
+        "nonce": "9e8cbbf13aa56f143bfba04491cb1b0a",
+        "postconditions": [
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ],
+        "request_sha256": "334627de02e943d5e0170e23011a513bbef0368fd3113ed8de6dd23aaccbed0d",
+        "schema": "hepta.task-template.v150.3"
+      },
+      "template_sha256": "17cdf21be932417985904abdb186f048f8ac30644d1b89b1ff8eead841462870",
+      "template_unchanged": true
+    },
+    {
+      "actual_rejection": {
+        "error_type": "ProviderError",
+        "message": "task contract: template request, nonce or known scope differs",
+        "rejected": true
+      },
+      "binding_count": 0,
+      "identity": {
+        "profile_id": "synthetic-host-only",
+        "session_id": "synthetic-session-5cf7d28d8639b700410f6759",
+        "task_id": "synthetic-task-532837051f1cc16e8434193c",
+        "turn_id": "synthetic-turn-f4a89f4bda96adf4ac472348",
+        "turn_stream_id": "synthetic-stream-5df32a8a386bd632676323b7"
+      },
+      "name": "nonce_duplicate",
+      "native_dispatches": 0,
+      "passed": true,
+      "request": "SYNTHETIC duplicate 805fda8a51a737f7b4c1aa69ddae9359 and 805fda8a51a737f7b4c1aa69ddae9359",
+      "scope": "NEG13_SELECTED_TEMPLATE_PRECONDITIONS",
+      "synthetic_inputs": true,
+      "template": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "4a38fbd5888f30e6d2147fe3010fa2f3547bfe09fed6938267c5635db5e53925",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "coverage": "entire_request",
+        "expected_scope": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-5cf7d28d8639b700410f6759"
+        },
+        "nonce": "805fda8a51a737f7b4c1aa69ddae9359",
+        "postconditions": [
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ],
+        "request_sha256": "4a38fbd5888f30e6d2147fe3010fa2f3547bfe09fed6938267c5635db5e53925",
+        "schema": "hepta.task-template.v150.3"
+      },
+      "template_sha256": "3e68fc8c8b53d7de03e9de409aa9a215d042eece306d512219faa28ec3a0c393",
+      "template_unchanged": true
+    },
+    {
+      "actual_rejection": {
+        "error_type": "ProviderError",
+        "message": "task contract: app scope schema or exact owner request binding differs",
+        "rejected": true
+      },
+      "binding_count": 0,
+      "identity": {
+        "profile_id": "synthetic-host-only",
+        "session_id": "synthetic-session-f53a0a4f030aa224c5e0e82c",
+        "task_id": "synthetic-task-781344b4c1b95bc41ce82d72",
+        "turn_id": "synthetic-turn-68bf764301dc9dd337382cb6",
+        "turn_stream_id": "synthetic-stream-24eac6e8faaa7bac44611b05"
+      },
+      "name": "request_digest_mismatch",
+      "native_dispatches": 0,
+      "passed": true,
+      "request": "SYNTHETIC owner binding 4c0e807c1b695f23079528bd85c436f9",
+      "scope": "NEG13_SELECTED_TEMPLATE_PRECONDITIONS",
+      "synthetic_inputs": true,
+      "template": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "de0612e525e84bc43d038d963e6d89be33a5da23410eec0ca121c2e50c83bc26",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "coverage": "entire_request",
+        "expected_scope": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-f53a0a4f030aa224c5e0e82c"
+        },
+        "nonce": "4c0e807c1b695f23079528bd85c436f9",
+        "postconditions": [
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ],
+        "request_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "schema": "hepta.task-template.v150.3"
+      },
+      "template_sha256": "066a6207ddab58a427ca91f52a96b9b940d83e8a8ad24d1860033cb665cb7aff",
+      "template_unchanged": true
+    },
+    {
+      "actual_rejection": {
+        "error_type": "ProviderError",
+        "message": "task contract: app scope schema or exact owner request binding differs",
+        "rejected": true
+      },
+      "binding_count": 0,
+      "identity": {
+        "profile_id": "synthetic-host-only",
+        "session_id": "synthetic-session-82441b00515a8864cc27d719",
+        "task_id": "synthetic-task-5b9f76d13c35c77b18b7344c",
+        "turn_id": "synthetic-turn-88b0bfb35a43dd706b7f3933",
+        "turn_stream_id": "synthetic-stream-2bd010e275b2c2e419ea77aa"
+      },
+      "name": "app_scope_owner_mismatch",
+      "native_dispatches": 0,
+      "passed": true,
+      "request": "SYNTHETIC owner binding 00937fab6375e2093461449a78b72cb7",
+      "scope": "NEG13_SELECTED_TEMPLATE_PRECONDITIONS",
+      "synthetic_inputs": true,
+      "template": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "coverage": "entire_request",
+        "expected_scope": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-82441b00515a8864cc27d719"
+        },
+        "nonce": "00937fab6375e2093461449a78b72cb7",
+        "postconditions": [
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ],
+        "request_sha256": "009758843ab789c1a8060a668d49b4d44afc91f2fb1425a0165f71075d62101a",
+        "schema": "hepta.task-template.v150.3"
+      },
+      "template_sha256": "2827b63b7c718ec1d7d1a7b9612bf64d0db4424ca1a48e888048cf18258bfd25",
+      "template_unchanged": true
+    },
+    {
+      "binding_original": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "bb0ffa5bb4f7290ed678e5ee3ab94428304c73d236652af9dfebca13921b513a",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "app_scope_sha256": "fa93f26e8939565966165d38080998d0c34035e7c0e478697df11194ec83d9e9",
+        "identity": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+          "task_id": "synthetic-task-8914c32b2df16d15da3b5139",
+          "turn_id": "synthetic-turn-ce17414223183f364edf1f2a"
+        },
+        "nonce": "d9f9605127db21cc7f7f6caa7fa6ff4e",
+        "request_sha256": "bb0ffa5bb4f7290ed678e5ee3ab94428304c73d236652af9dfebca13921b513a",
+        "schema": "hepta.task-template-binding.v150.3",
+        "state": "consumed_no_reuse",
+        "template_sha256": "45a6144965a7b108f27f14d09fd32e729a402f61b40ec41218665a48d1df3b6c"
+      },
+      "binding_sha256": "54cbbdf224d4c4198b3b00ba5347de394bf66c5d4a9447ee55b320a9efeea2bd",
+      "name": "real_exclusive_binding_race",
+      "native_dispatches": 0,
+      "outcomes": [
+        {
+          "accepted": true,
+          "contract_result": {
+            "binding_kind": "one_time_request_template",
+            "binding_sha256": "54cbbdf224d4c4198b3b00ba5347de394bf66c5d4a9447ee55b320a9efeea2bd",
+            "contract": {
+              "app_scope": {
+                "apps": [
+                  {
+                    "alias": "synthetic_fixture",
+                    "component": "org.example.hepta.synthetic/.FixtureActivity"
+                  }
+                ],
+                "owner_request_sha256": "bb0ffa5bb4f7290ed678e5ee3ab94428304c73d236652af9dfebca13921b513a",
+                "schema": "hepta.task-app-scope.v1"
+              },
+              "coverage": "entire_request",
+              "identity": {
+                "profile_id": "synthetic-host-only",
+                "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+                "task_id": "synthetic-task-8914c32b2df16d15da3b5139",
+                "turn_id": "synthetic-turn-ce17414223183f364edf1f2a"
+              },
+              "postconditions": [
+                {
+                  "id": "return",
+                  "kind": "foreground_hepta"
+                }
+              ],
+              "request_sha256": "bb0ffa5bb4f7290ed678e5ee3ab94428304c73d236652af9dfebca13921b513a",
+              "schema": "hepta.task-contract.v150.3"
+            },
+            "source_sha256": "87c358c65ef21b451948bf55976e991df965c3a84439f3d5a9f656eba1facce7",
+            "template_sha256": "45a6144965a7b108f27f14d09fd32e729a402f61b40ec41218665a48d1df3b6c"
+          },
+          "identity": {
+            "profile_id": "synthetic-host-only",
+            "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+            "task_id": "synthetic-task-8914c32b2df16d15da3b5139",
+            "turn_id": "synthetic-turn-ce17414223183f364edf1f2a",
+            "turn_stream_id": "synthetic-stream-42114a1e40e3a8be1a8313b0"
+          },
+          "index": 0
+        },
+        {
+          "accepted": false,
+          "error": "task contract: one-time request template already consumed; no task dispatch",
+          "error_type": "ProviderError",
+          "identity": {
+            "profile_id": "synthetic-host-only",
+            "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+            "task_id": "synthetic-task-47d537841214dafec07fe50f",
+            "turn_id": "synthetic-turn-71684820b8a7d9ecaa829b54",
+            "turn_stream_id": "synthetic-stream-734fbab25cb6c4a8cf1688cb"
+          },
+          "index": 1
+        }
+      ],
+      "passed": true,
+      "real_binding_files": 1,
+      "replays": [
+        {
+          "actual_rejection": {
+            "error_type": "ProviderError",
+            "message": "task contract: one-time request template already consumed; no task dispatch",
+            "rejected": true
+          },
+          "identity": {
+            "profile_id": "synthetic-host-only",
+            "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+            "task_id": "synthetic-task-8914c32b2df16d15da3b5139",
+            "turn_id": "synthetic-turn-ce17414223183f364edf1f2a",
+            "turn_stream_id": "synthetic-stream-42114a1e40e3a8be1a8313b0"
+          },
+          "name": "same_identity"
+        },
+        {
+          "actual_rejection": {
+            "error_type": "ProviderError",
+            "message": "task contract: one-time request template already consumed; no task dispatch",
+            "rejected": true
+          },
+          "identity": {
+            "profile_id": "synthetic-host-only",
+            "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+            "task_id": "synthetic-task-8914c32b2df16d15da3b5139",
+            "turn_id": "synthetic-turn-ce17414223183f364edf1f2a",
+            "turn_stream_id": "synthetic-replacement-41e4810b9e46c520"
+          },
+          "name": "replacement_stream"
+        },
+        {
+          "actual_rejection": {
+            "error_type": "ProviderError",
+            "message": "task contract: one-time request template already consumed; no task dispatch",
+            "rejected": true
+          },
+          "identity": {
+            "profile_id": "synthetic-host-only",
+            "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+            "task_id": "synthetic-new-task-6a403316c3bdfde1",
+            "turn_id": "synthetic-new-turn-a22fc4a6f878e02a",
+            "turn_stream_id": "synthetic-stream-014af6c5a14f5032c85d9219"
+          },
+          "name": "new_turn_old_nonce"
+        }
+      ],
+      "request": "SYNTHETIC one-use concurrent request d9f9605127db21cc7f7f6caa7fa6ff4e",
+      "scope": "NEG13_SELECTED_REAL_FILESYSTEM_CONCURRENCY",
+      "synthetic_inputs": true,
+      "template": {
+        "app_scope": {
+          "apps": [
+            {
+              "alias": "synthetic_fixture",
+              "component": "org.example.hepta.synthetic/.FixtureActivity"
+            }
+          ],
+          "owner_request_sha256": "bb0ffa5bb4f7290ed678e5ee3ab94428304c73d236652af9dfebca13921b513a",
+          "schema": "hepta.task-app-scope.v1"
+        },
+        "coverage": "entire_request",
+        "expected_scope": {
+          "profile_id": "synthetic-host-only",
+          "session_id": "synthetic-session-4acb720182d9cf46215bae53"
+        },
+        "nonce": "d9f9605127db21cc7f7f6caa7fa6ff4e",
+        "postconditions": [
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ],
+        "request_sha256": "bb0ffa5bb4f7290ed678e5ee3ab94428304c73d236652af9dfebca13921b513a",
+        "schema": "hepta.task-template.v150.3"
+      },
+      "template_and_binding_unchanged_after_replays": true,
+      "template_sha256": "45a6144965a7b108f27f14d09fd32e729a402f61b40ec41218665a48d1df3b6c",
+      "threads_joined": true,
+      "wrong_scopes_before_race": [
+        {
+          "bindings_after": 0,
+          "field": "session_id",
+          "identity": {
+            "profile_id": "synthetic-host-only",
+            "session_id": "synthetic-wrong-cbc134aa3ad6fd679c03f3bc",
+            "task_id": "synthetic-task-b74593b44f15591781d3e201",
+            "turn_id": "synthetic-turn-07b38bf12df9658f67261d38",
+            "turn_stream_id": "synthetic-stream-014af6c5a14f5032c85d9219"
+          },
+          "rejection": {
+            "error_type": "ProviderError",
+            "message": "task contract: template request, nonce or known scope differs",
+            "rejected": true
+          }
+        },
+        {
+          "bindings_after": 0,
+          "field": "profile_id",
+          "identity": {
+            "profile_id": "synthetic-wrong-21251627c2aad2eb9469d185",
+            "session_id": "synthetic-session-4acb720182d9cf46215bae53",
+            "task_id": "synthetic-task-b74593b44f15591781d3e201",
+            "turn_id": "synthetic-turn-07b38bf12df9658f67261d38",
+            "turn_stream_id": "synthetic-stream-014af6c5a14f5032c85d9219"
+          },
+          "rejection": {
+            "error_type": "ProviderError",
+            "message": "task contract: template request, nonce or known scope differs",
+            "rejected": true
+          }
+        }
+      ]
+    },
+    {
+      "attempts": [
+        {
+          "actual_rejection": {
+            "error_type": "ProviderError",
+            "message": "turn identity already accepted; outcome unknown; no redispatch",
+            "rejected": true
+          },
+          "mapped_calls": 0,
+          "name": "exact_old_identity",
+          "native_dispatches": 0,
+          "outgoing_frames": 0,
+          "synthetic_owner_frame": {
+            "kind": "turn.start",
+            "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+            "seq": 0,
+            "turn": {
+              "profile_id": "synthetic-host-only",
+              "session_id": "synthetic-session-0c4bbe7c9031dc994ed2a54d",
+              "task_id": "synthetic-task-a8b6f8fbfca3acec9e7f41b1",
+              "turn_id": "synthetic-turn-fd8b20b90e91539317da107b",
+              "turn_stream_id": "synthetic-stream-a3fe4cc1407c0d989084f63f",
+              "user_input": "SYNTHETIC HOST-ONLY REQUEST: 主机合成输入 中文😀\nHEPTA 0d99b20d8f00e720c301f15241797022"
+            }
+          }
+        },
+        {
+          "actual_rejection": {
+            "error_type": "ProviderError",
+            "message": "turn identity already accepted; outcome unknown; no redispatch",
+            "rejected": true
+          },
+          "mapped_calls": 0,
+          "name": "replacement_stream",
+          "native_dispatches": 0,
+          "outgoing_frames": 0,
+          "synthetic_owner_frame": {
+            "kind": "turn.start",
+            "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+            "seq": 0,
+            "turn": {
+              "profile_id": "synthetic-host-only",
+              "session_id": "synthetic-session-0c4bbe7c9031dc994ed2a54d",
+              "task_id": "synthetic-task-a8b6f8fbfca3acec9e7f41b1",
+              "turn_id": "synthetic-turn-fd8b20b90e91539317da107b",
+              "turn_stream_id": "synthetic-new-stream-0646e15ba276c8c4da93939b",
+              "user_input": "SYNTHETIC HOST-ONLY REQUEST: 主机合成输入 中文😀\nHEPTA 0d99b20d8f00e720c301f15241797022"
+            }
+          }
+        }
+      ],
+      "name": "old_identity_real_pipe_admission",
+      "original_failed_turn_claim_and_binding_unchanged": true,
+      "passed": true,
+      "scope": "NEG13_SELECTED_REAL_ADAPTER_ADMISSION",
+      "synthetic_inputs": true
+    }
+  ],
+  "elapsed_seconds": 0.049540833000000006,
+  "expected_scenario_count": 14,
+  "fatal_error": null,
+  "host": {
+    "python": "3.9.6",
+    "system": "Darwin"
+  },
+  "limits": [
+    "Full15 native v3 candidate pinned/imported; five sources change, including four daily dependency pins. The other ten sources remain exact.",
+    "Tests execute real shared business/admission implementations against explicitly synthetic owner/native/public fixtures.",
+    "Real pipes, durable files, fsync, O_EXCL and two actual competing threads are used.",
+    "No PhoneLocalAdapter or DailyAdapter instance is constructed; the fixed executor client gate is not bypassed.",
+    "No model, native tool frame, phone transport, public UI, installed runtime, or source adoption is exercised.",
+    "The complete-control fixture may report business_verified inside the fixture; it is not phone business evidence.",
+    "Historical SOURCE-SEAL, runtime, and accepted production identities are not altered."
+  ],
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "phone_business_qualified": false,
+  "phone_calls": 0,
+  "pins_sha256": "168cbbb9c49e86613622dfe6ce682516847cc856086b3369909e923ae8007d68",
+  "resources": {
+    "after": {
+      "child_system_seconds": 0.0,
+      "child_user_seconds": 0.0,
+      "fds": {
+        "0": [
+          16777233,
+          593405755,
+          33152
+        ],
+        "1": [
+          0,
+          4847675576077579884,
+          4528
+        ],
+        "2": [
+          0,
+          18440380123561707542,
+          4528
+        ],
+        "3": [
+          -731631651,
+          612,
+          8630
+        ]
+      },
+      "maxrss_lifetime": 28983296,
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          8407703936,
+          true
+        ]
+      ]
+    },
+    "before": {
+      "child_system_seconds": 0.0,
+      "child_user_seconds": 0.0,
+      "fds": {
+        "0": [
+          16777233,
+          593405755,
+          33152
+        ],
+        "1": [
+          0,
+          4847675576077579884,
+          4528
+        ],
+        "2": [
+          0,
+          18440380123561707542,
+          4528
+        ],
+        "3": [
+          -731631651,
+          612,
+          8630
+        ]
+      },
+      "maxrss_lifetime": 28672000,
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          8407703936,
+          true
+        ]
+      ]
+    },
+    "fd_thread_child_cpu_baseline_restored": true
+  },
+  "scenario_count": 14,
+  "schema": "razr60-current-shared-neg12-neg13-host-regression/v1",
+  "script": {
+    "bytes": 40884,
+    "sha256": "dbbfece5877955b68a98770af41a9010365990b3fdbe29a8c9c37e648ec6756a"
+  },
+  "status": "SELECTED_HOST_CHECKS_PASSED",
+  "whole_NEG12_qualified": false,
+  "whole_NEG13_qualified": false
+}

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/suite/provider/source/daily_phone_local.py", line 434, in <module>
+    main()
+    ~~~~^^
+  File "/suite/provider/source/daily_phone_local.py", line 430, in main
+    serve(args)
+    ~~~~~^^^^^^
+  File "/suite/provider/source/daily_phone_local.py", line 380, in serve
+    raise ProviderError('evidence capacity reached; retain claims and archive evidence manually')
+provider_openai_compatible.ProviderError: evidence capacity reached; retain claims and archive evidence manually

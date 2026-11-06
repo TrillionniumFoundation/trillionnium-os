@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-B",
+      "-c",
+      "#!/usr/bin/env python3\n\"\"\"Create-only publication of this one reviewed host control source tree.\"\"\"\nimport base64\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport re\nimport stat\nimport sys\nimport zlib\n\nROOT = Path('/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01')\ndef sha(raw): return hashlib.sha256(raw).hexdigest()\ndef need(value, why):\n    if not value: raise ValueError(why)\nrequest = json.load(sys.stdin)\nneed(set(request) == {'archive_base64', 'archive_sha256', 'decoded_sha256'}, 'closed publication input')\npacked = base64.b64decode(request['archive_base64'], validate=True)\nneed(len(packed) <= 524288 and sha(packed) == request['archive_sha256'], 'bounded exact archive')\nd = zlib.decompressobj()\nraw = d.decompress(packed, 1048577)\nneed(d.eof and not d.unused_data and not d.unconsumed_tail and len(raw) <= 1048576\n     and sha(raw) == request['decoded_sha256'], 'complete single reviewed archive')\nvalue = json.loads(raw)\nneed(set(value) == {'files'} and len(value['files']) == 19, 'exact nineteen source originals')\nfiles = {}\nfor row in value['files']:\n    need(set(row) == {'path', 'bytes', 'sha256', 'base64'} and type(row['path']) is str\n         and re.fullmatch(r'[A-Za-z0-9_./-]+', row['path'])\n         and all(p not in ('', '.', '..') for p in row['path'].split('/')), 'closed source member')\n    body = base64.b64decode(row['base64'], validate=True)\n    need(len(body) == row['bytes'] and sha(body) == row['sha256'] and row['path'] not in files,\n         'complete unique source bytes')\n    files[row['path']] = (body, {k: row[k] for k in ('path', 'bytes', 'sha256')})\nneed(ROOT.parent.resolve(strict=True) == ROOT.parent and not os.path.lexists(ROOT), 'fresh owned source root')\nos.umask(0o077)\nROOT.mkdir(mode=0o700)\nhandles = {}\ntry:\n    handles[''] = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\n    parents = {''}\n    for name in files:\n        parts = name.split('/')[:-1]\n        for i in range(1, len(parts) + 1): parents.add('/'.join(parts[:i]))\n    for name in sorted(parents - {''}, key=lambda n: (n.count('/'), n)):\n        parent, unused, leaf = name.rpartition('/')\n        os.mkdir(leaf, 0o700, dir_fd=handles[parent])\n        handles[name] = os.open(leaf, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=handles[parent])\n    for name, (body, row) in sorted(files.items()):\n        parent, unused, leaf = name.rpartition('/')\n        fd = os.open(leaf, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=handles[parent])\n        with os.fdopen(fd, 'wb') as handle:\n            handle.write(body); handle.flush(); os.fsync(handle.fileno())\n        need((ROOT / name).read_bytes() == body, 'published source complete byte readback')\n    for name, fd in handles.items():\n        expected = {p.split('/')[len(name.split('/')) if name else 0] for p in files\n                    if not name or p.startswith(name + '/')}\n        need(set(os.listdir(fd)) == expected, 'closed complete source directory membership')\n        need(os.fstat(fd).st_ino == (ROOT / name).stat().st_ino, 'held source directory identity')\n        os.fsync(fd)\n    result = {'schema': 'fc33.neg14.owned-host-source-publication.v1',\n              'root': str(ROOT), 'files': [v[1] for k, v in sorted(files.items())],\n              'complete_byte_readback': True, 'host_test_executed': False,\n              'phone_calls': 0, 'model_requests': 0, 'production_changes': 0}\n    result_raw = (json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2) + '\\n').encode()\n    fd = os.open('PUBLICATION.json', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,\n                 0o600, dir_fd=handles[''])\n    with os.fdopen(fd, 'wb') as handle:\n        handle.write(result_raw); handle.flush(); os.fsync(handle.fileno())\n    os.fsync(handles[''])\n    need((ROOT / 'PUBLICATION.json').read_bytes() == result_raw, 'terminal publication readback')\n    print(json.dumps({'root': str(ROOT), 'files': len(files), 'publication': {\n          'path': str(ROOT / 'PUBLICATION.json'), 'bytes': len(result_raw), 'sha256': sha(result_raw)},\n          'phone_calls': 0, 'model_requests': 0}, sort_keys=True))\nfinally:\n    for fd in reversed(list(handles.values())): os.close(fd)\n"
+    ],
+    "created_unix_ms": 1793986627018,
+    "cwd": "/home/alex/razr60-local-model-v150",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1b1ef85ca-fc05-7b93",
+    "idempotency_key": "fc33-neg14-native-v3-owned-capacity-publish01",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b1ef85ca-fc05-7b93",
+    "request_digest": "38c3cad2f63effe10d21fe3a392fff20ca1a422f9d669c05b830f668762a437c",
+    "request_fingerprint": 4090335894005809121,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b1ef85ca-fc05-7b93"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b1ef85ca-fc05-7b93"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

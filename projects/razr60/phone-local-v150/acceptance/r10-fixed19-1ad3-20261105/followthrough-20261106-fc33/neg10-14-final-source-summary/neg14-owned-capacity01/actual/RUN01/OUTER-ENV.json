@@ -1,0 +1,13 @@
+{
+  "gid": 1000,
+  "model_requests": 0,
+  "namespaces": {
+    "mnt": "mnt:[4026531832]",
+    "net": "net:[4026531833]",
+    "pid": "pid:[4026531836]"
+  },
+  "phone_calls": 0,
+  "pid": 466615,
+  "production_changes": 0,
+  "uid": 1000
+}

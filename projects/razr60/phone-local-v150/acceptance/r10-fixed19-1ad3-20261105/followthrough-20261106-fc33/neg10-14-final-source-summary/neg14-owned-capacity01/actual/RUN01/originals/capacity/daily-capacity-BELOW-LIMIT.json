@@ -1,0 +1,12 @@
+{
+  "monotonic": 1012454.989586045,
+  "original": {
+    "pgid": 3,
+    "pid": 3,
+    "ppid": 2,
+    "raw_stat": "3 (python3) S 2 3 3 0 -1 4194304 5148 0 4 0 13 2 0 0 30 10 1 0 101245362 47005696 7786 18446744073709551615 4333568 8024065 140729030641120 0 0 0 0 16781312 16387 1 0 0 17 3 0 0 0 0 0 11038136 11672456 818987008 140729030643245 140729030643619 140729030643619 140729030643687 0\n",
+    "sid": 3,
+    "start_ticks": 101245362
+  },
+  "raw_status": "Name:\tpython3\nUmask:\t0077\nState:\tS (sleeping)\nTgid:\t3\nNgid:\t0\nPid:\t3\nPPid:\t2\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t65534 65534 65534 65534 65534 65534 65534 65534 0 \nNStgid:\t3\nNSpid:\t3\nNSpgid:\t3\nNSsid:\t3\nKthread:\t0\nVmPeak:\t   45904 kB\nVmSize:\t   45904 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   31928 kB\nVmRSS:\t   31928 kB\nRssAnon:\t   18528 kB\nRssFile:\t   13400 kB\nRssShmem:\t       0 kB\nVmData:\t   20160 kB\nVmStk:\t     132 kB\nVmExe:\t    3608 kB\nVmLib:\t    8260 kB\nVmPTE:\t     124 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/100179\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000004003\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t0000000000000000\nCapAmb:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffff\nCpus_allowed_list:\t0-23\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t18\nnonvoluntary_ctxt_switches:\t18\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n"
+}

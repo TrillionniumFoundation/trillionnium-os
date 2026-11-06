@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/suite/provider/source/daily_phone_local.py",
+    "--state",
+    "/work/owned-tests/capacity/state",
+    "--config",
+    "/work/owned-tests/capacity/config.json",
+    "--port",
+    "18103",
+    "--workers",
+    "1",
+    "--timeout",
+    "1",
+    "--retained-claims",
+    "/work/owned-tests/capacity/retained.json",
+    "--retained-claims-sha256",
+    "6de5006a6cd58d6b52e93b057a13f4515dc8b9826070246af141a8b5308f0c35",
+    "--max-evidence-bytes",
+    "1073741824"
+  ],
+  "monotonic": 1012453.623935369,
+  "original": {
+    "pgid": 3,
+    "pid": 3,
+    "ppid": 2,
+    "raw_stat": "3 (python3) R 2 3 3 0 -1 4194304 29 0 0 0 0 0 0 0 30 10 1 0 101245362 9707520 113 18446744073709551615 4333568 8024065 140729030641120 0 0 0 0 0 0 0 0 0 17 19 0 0 0 0 0 11038136 11672456 818987008 140729030643245 140729030643619 140729030643619 140729030643687 0\n",
+    "sid": 3,
+    "start_ticks": 101245362
+  },
+  "pidfd_acquired": true,
+  "this_invocation_owned": true
+}

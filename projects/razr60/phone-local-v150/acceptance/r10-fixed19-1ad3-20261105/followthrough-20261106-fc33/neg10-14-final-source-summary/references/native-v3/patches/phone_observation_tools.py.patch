@@ -1,0 +1,265 @@
+--- native-v2/phone_observation_tools.py
++++ native-v3/phone_observation_tools.py
+@@ -74,7 +74,108 @@
+     return base64.b64encode(raw).decode() if raw else '-'
+ 
+ 
+-def native_streams(reply, call_id, expected_tool='adb.exec', *, expected_call):
++def _native_hash_field(hasher, name, value):
++    name = name.encode('ascii')
++    hasher.update(len(name).to_bytes(8, 'big'))
++    hasher.update(name)
++    hasher.update(len(value).to_bytes(8, 'big'))
++    hasher.update(value)
++
++
++def native_bound_call(call, scope):
++    """Bind the qualified argv mapping before dispatch and again on receipt.
++
++    This source qualifies the owner-open default executables and null config
++    generation. The producer independently checks both claims against its active
++    configuration before spawn; a different configuration fails closed.
++    """
++    claims = {'config_generation', 'request_sha256', 'binding_fingerprint'}
++    names = {'session_id', 'profile_id', 'task_id', 'turn_id', 'turn_stream_id'}
++    require(isinstance(scope, dict) and set(scope) == names
++            and all(type(scope[key]) is str and scope[key] and '\0' not in scope[key]
++                    for key in names), 'phone native binding lacks the accepted turn scope')
++    require(isinstance(call, dict) and {'call_id', 'tool', 'argv'} <= set(call)
++            and set(call) <= {'call_id', 'tool', 'argv', 'target', 'target_id'} | claims
++            and (not set(call) & claims or set(call) & claims == claims)
++            and type(call['call_id']) is str and SAFE_CALL.fullmatch(call['call_id'])
++            and type(call['tool']) is str and call['tool'] in {'shell.exec', 'adb.exec'}
++            and isinstance(call['argv'], list) and call['argv']
++            and all(type(arg) is str and '\0' not in arg for arg in call['argv'])
++            and call['argv'][0], 'phone native binding has an unqualified argv call')
++    alias, target = call.get('target'), call.get('target_id')
++    require((alias is None or type(alias) is str)
++            and (target is None or type(target) is str)
++            and (alias is None or target is None or alias == target),
++            'phone mapped target aliases or types differ')
++    target = target if target is not None else alias
++    require(target is None or (target and '\0' not in target),
++            'phone mapped target is empty or contains NUL')
++    canonical = {key: scope[key] for key in names - {'turn_stream_id'}}
++    canonical.update(tool=call['tool'], argv=list(call['argv']),
++                     config_generation=None, mode='argv', pty=False, timeout_ms=0,
++                     stream=True, protocol='trillionnium.agent.turn.v1', protocol_version=1)
++    if 'target' in call or 'target_id' in call:
++        canonical['target_id'] = target
++    try:
++        require(all(len(scope[key].encode('utf-8')) <= 256 for key in names),
++                'phone accepted native scope exceeds its byte bound')
++        raw = json.dumps(canonical, ensure_ascii=False, sort_keys=True,
++                         separators=(',', ':'), allow_nan=False).encode('utf-8')
++    except (TypeError, ValueError, UnicodeError) as error:
++        raise ProviderError('phone native binding is not canonical UTF-8') from error
++    fingerprint = hashlib.sha256()
++    for name, value in (
++            ('schema', b'trillionnium.owner-open.binding.v1'),
++            ('tool', call['tool'].encode('ascii')),
++            ('executable', b'/bin/sh' if call['tool'] == 'shell.exec' else b'adb'),
++            ('config_generation', b'null')):
++        _native_hash_field(fingerprint, name, value)
++    expected = {'config_generation': None, 'request_sha256': sha(raw),
++                'binding_fingerprint': fingerprint.hexdigest()}
++    require(not set(call) & claims or all(type(call[key]) is type(value)
++            and call[key] == value for key, value in expected.items()),
++            'phone native call claims differ from the trusted scope or qualified configuration')
++    bound = dict(call, **expected)
++    bound['argv'] = list(call['argv'])
++    return bound
++
++
++def _native_observation_sha256(call, reply, target):
++    # Inputs have already passed the complete current-schema/type/byte checks.
++    # The producer assigns generation during claim_spawn. This digest and the
++    # terminal registry receipt establish consistency, not an independent MAC.
++    digest = hashlib.sha256()
++    for name, value in (
++            ('schema', b'trillionnium.owner-open.local-observation.v1'),
++            ('call_id', call['call_id'].encode('utf-8')),
++            ('tool', call['tool'].encode('ascii')),
++            ('target_id', target.encode('utf-8') if target is not None else b''),
++            ('spawn_generation', reply['generation'].to_bytes(8, 'big'))):
++        _native_hash_field(digest, name, value)
++    for index, record in enumerate(reply['events']):
++        event = record['event']
++        _native_hash_field(digest, 'event_ordinal', index.to_bytes(8, 'big'))
++        _native_hash_field(digest, 'kind', event['kind'].encode('ascii'))
++        if event['kind'] == 'started':
++            _native_hash_field(digest, 'pid', event['pid'].to_bytes(4, 'big'))
++        elif event['kind'] == 'output':
++            _native_hash_field(digest, 'stream', event['stream'].encode('ascii'))
++            _native_hash_field(digest, 'bytes', base64.b64decode(event['data'], validate=True))
++        elif event['kind'] == 'terminal':
++            terminal = event['terminal']
++            _native_hash_field(digest, 'terminal_kind', terminal['kind'].encode('ascii'))
++            for name in ('exit_code', 'signal'):
++                value = terminal[name] if terminal[name] is not None else -2147483648
++                _native_hash_field(digest, name, value.to_bytes(4, 'big', signed=True))
++            for name in ('stdout_bytes', 'stderr_bytes'):
++                _native_hash_field(digest, name, terminal[name].to_bytes(8, 'big'))
++            _native_hash_field(digest, 'output_truncated', bytes([int(terminal['output_truncated'])]))
++            _native_hash_field(digest, 'elapsed_ms', terminal['elapsed_ms'].to_bytes(8, 'big'))
++            _native_hash_field(digest, 'error', (terminal['error'] or '').encode('utf-8'))
++    return digest.hexdigest()
++
++
++def native_streams(reply, call_id, expected_tool='adb.exec', *, expected_call, expected_scope):
+     # Bind returned routing metadata to the trusted mapped call, never to the
+     # result's own (possibly self-consistent) target assertions.
+     require(type(expected_tool) is str and expected_tool in {'adb.exec', 'shell.exec'},
+@@ -83,21 +184,42 @@
+             and expected_call.get('call_id') == call_id
+             and expected_call.get('tool') == expected_tool,
+             'phone result lacks its trusted mapped wire call')
++    expected_call = native_bound_call(expected_call, expected_scope)
+     target_alias, target_id = expected_call.get('target'), expected_call.get('target_id')
+     require((target_alias is None or type(target_alias) is str)
+             and (target_id is None or type(target_id) is str)
+             and (target_alias is None or target_id is None or target_alias == target_id),
+             'phone mapped target aliases or types differ')
+     expected_target = target_id if target_id is not None else target_alias
+-    require(isinstance(reply, dict) and reply.get('call_id') == call_id
+-            and reply.get('status') == 'terminal',
++    require(isinstance(reply, dict) and set(reply) == {
++                'protocol', 'kind', 'seq', 'call_id', 'status', 'generation',
++                'events', 'terminal', 'observation_sha256', 'registry'}
++            and reply['protocol'] == 'trillionnium.owner-open.provider-jsonl.v1'
++            and reply['kind'] == 'tool.result' and type(reply['seq']) is int
++            and 0 <= reply['seq'] <= 18446744073709551615
++            and reply['call_id'] == call_id and reply['status'] == 'terminal'
++            and type(reply['generation']) is int
++            and 1 <= reply['generation'] < 18446744073709551615,
+             'phone result lacks matching terminal identity')
+     registry = reply.get('registry')
+-    require(isinstance(registry, dict) and registry.get('call_id') == call_id
++    require(isinstance(registry, dict) and set(registry) == {
++                'call_id', 'request_sha256', 'binding_fingerprint', 'tool', 'target_id',
++                'state', 'cancellation_requested', 'connection_lost',
++                'earliest_history_seq', 'next_event_seq'}
++            and registry.get('call_id') == call_id
+             and registry.get('tool') == expected_tool and 'target_id' in registry
+             and type(registry['target_id']) is type(expected_target)
+             and registry['target_id'] == expected_target,
+             'phone registry identity differs from the mapped wire call')
++    require(registry['request_sha256'] == expected_call['request_sha256']
++            and registry['binding_fingerprint'] == expected_call['binding_fingerprint']
++            and type(registry['cancellation_requested']) is bool
++            and type(registry['connection_lost']) is bool
++            and type(registry['earliest_history_seq']) is int
++            and type(registry['next_event_seq']) is int
++            and 0 <= registry['earliest_history_seq'] <= registry['next_event_seq']
++            <= 18446744073709551615,
++            'phone registry request, configuration or history differs from the trusted call')
+     terminal = reply.get('terminal')
+     require(isinstance(terminal, dict) and set(terminal) == {
+                 'kind', 'exit_code', 'signal', 'stdout_bytes', 'stderr_bytes',
+@@ -159,6 +281,17 @@
+         require(type(terminal[name + '_bytes']) is int
+                 and terminal[name + '_bytes'] == len(raw), 'phone terminal count differs')
+     require(not streams['stderr'], 'phone semantic tool reported stderr')
++    observed_sha = _native_observation_sha256(expected_call, reply, expected_target)
++    require(type(reply['observation_sha256']) is str
++            and reply['observation_sha256'] == observed_sha,
++            'phone observation digest differs from the complete native bytes')
++    receipt = ('Terminal { generation: ' + str(reply['generation'])
++               + ', terminal: TerminalRecord { terminal_kind: "exited", exit_code: Some(0), '
++               + 'signal: None, observation_sha256: "' + observed_sha
++               + '", stdout_bytes: ' + str(terminal['stdout_bytes'])
++               + ', stderr_bytes: ' + str(terminal['stderr_bytes']) + ' } }')
++    require(type(registry['state']) is str and registry['state'] == receipt,
++            'phone terminal registry receipt differs from the native generation or observation')
+     return bytes(streams['stdout'])
+ 
+ def validate_viewport(text):
+@@ -339,7 +472,24 @@
+         return '[ "$(getprop ro.serialno)" = ' + shlex.quote(SERIAL) + ' ] || exit 64; '
+ 
+     def _wire_call(self, call_id, shell):
+-        return {'call_id': call_id, 'tool': 'adb.exec', 'argv': ['-s', SERIAL, 'shell', shell]}
++        return native_bound_call(
++            {'call_id': call_id, 'tool': 'adb.exec', 'argv': ['-s', SERIAL, 'shell', shell]},
++            self.binding)
++
++    def dispatch_call(self, call):
++        require(isinstance(call, dict) and type(call.get('call_id')) is str,
++                'native dispatch lacks a call identity')
++        record = self.calls.get(call['call_id'])
++        if record is None:
++            return call
++        require(record['turn'] == self.binding,
++                'native dispatch belongs to a different accepted turn')
++        bound = native_bound_call(record['wire_call'], self.binding)
++        base = {key: value for key, value in bound.items()
++                if key not in {'config_generation', 'request_sha256', 'binding_fingerprint'}}
++        require(call == bound or call == base,
++                'native dispatch differs from its complete trusted mapping')
++        return bound
+ 
+     def map(self, decision):
+         call_id, tool = decision['call_id'], decision['tool']
+@@ -484,7 +634,7 @@
+                     and sha(self._read_image(Path(old['path']))) == old['image_sha256'],
+                     'retained screenshot observation changed')
+             return old
+-        raw = native_streams(reply, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
++        raw = native_streams(reply, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn'])
+         require(len(raw) <= 600000, 'screenshot JSON exceeds its transport bound')
+         envelope = strict_json(raw)
+         require(set(envelope) == {'schema', 'capture_id', 'page_before_b64', 'page_after_b64', 'screenshot'}
+@@ -603,7 +753,7 @@
+                     attached.append(image)
+             elif call['semantic_tool'] == 'phone.focus_input_text':
+                 actual = strict_json(original['content'])
+-                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']))
++                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn']))
+                 readback = verify_focus_input(value, call_id, call['package'], call['view_id'],
+                                               call['expected_text'], call['requested_text'])
+                 reply['_hepta_verified_text_input'] = {'call_id': call_id, 'package': call['package'],
+@@ -618,7 +768,7 @@
+                     'input_contract': 'hepta.focused-unicode-input.v2', 'focus_verified': True,
+                     'evidence_type': 'native_focus_then_unicode_exact_readback'}
+             elif call['semantic_tool'] == 'phone.input_text':
+-                actual = strict_json(original['content']); raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']); value = strict_json(raw)
++                actual = strict_json(original['content']); raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn']); value = strict_json(raw)
+                 expected = call['requested_text'].encode()
+                 require(value.get('schema') == 'hepta.focused-unicode-input.v1'
+                         and value.get('status') in {'set_verified', 'already_exact'}
+@@ -651,7 +801,7 @@
+                     'evidence_type': 'focused_unicode_helper_exact_readback'}
+             elif call['semantic_tool'] == 'phone.tap':
+                 actual = strict_json(original['content'])
+-                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
++                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn'])
+                 require(raw == b'', 'qualified tap produced unexpected output')
+                 self.verified_facts[call_id] = {'kind': 'visual_tap_executed', 'call_id': call_id,
+                     'package': call['package'], 'source_image_call_id': call['source_image_call_id'],
+@@ -660,7 +810,7 @@
+                     'exact_pixel_and_focus_guard': True}
+             elif call['semantic_tool'] == 'phone.read_text':
+                 actual = strict_json(original['content'])
+-                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
++                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn'])
+                 require(len(raw) <= 400000, 'public text receipt exceeds transport bound')
+                 observation, viewport = verify_public_text(strict_json(raw), call['capture_id'],
+                                                             call['package'], call['view_ids'])
+@@ -672,7 +822,7 @@
+                 reply['_hepta_verified_public_text'] = fact
+             elif call['semantic_tool'] == 'phone.read_text_anchor':
+                 actual = strict_json(original['content'])
+-                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'])
++                raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn'])
+                 require(len(raw) <= 400000, 'public anchor receipt exceeds transport bound')
+                 observation, viewport = verify_public_text_anchor(strict_json(raw), call['capture_id'],
+                     call['package'], call['title_view_id'], call['anchor_text'], call['value_view_id'])
+@@ -684,7 +834,7 @@
+                 reply['_hepta_verified_public_anchor'] = fact
+             elif call['semantic_tool'] == 'phone.return_hepta':
+                 actual = strict_json(original['content'])
+-                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']))
++                value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn']))
+                 observed, viewport = verify_return(value, call['capture_id'])
+                 validate_viewport(viewport)
+                 fact = {'kind': 'foreground_hepta', 'call_id': call_id,

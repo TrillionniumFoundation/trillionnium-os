@@ -1,0 +1,302 @@
+{
+  "PINS_sha256": "f79991e29ddf5aa5c282a73b3b4a34b50a741f2e7c590b8e6db72d877002bb26",
+  "actual_BUILD": null,
+  "checks": [
+    {
+      "errors": [
+        {
+          "errno": 13,
+          "filename": "/work/owned-tests/unreadable/evidence.json",
+          "message": "[Errno 13] Permission denied: '/work/owned-tests/unreadable/evidence.json'",
+          "name": "actual_lstat_EACCES",
+          "type": "PermissionError"
+        },
+        {
+          "errno": 13,
+          "filename": "/work/owned-tests/unreadable",
+          "message": "[Errno 13] Permission denied: '/work/owned-tests/unreadable'",
+          "name": "actual_scandir_EACCES",
+          "type": "PermissionError"
+        }
+      ],
+      "name": "real_kernel_EACCES_through_lstat_and_scanner",
+      "passed": true,
+      "synthetic_exception_injection": false
+    },
+    {
+      "below_limit": 939524095,
+      "direct_child_wait_and_group_absence": {
+        "actual_direct_child_wait": true,
+        "group_after": {
+          "kernel": "ESRCH",
+          "members": [],
+          "pgid": 3
+        },
+        "monotonic": 1012455.360293365,
+        "original_identity": {
+          "pgid": 3,
+          "pid": 3,
+          "ppid": 2,
+          "raw_stat": "3 (python3) R 2 3 3 0 -1 4194304 29 0 0 0 0 0 0 0 30 10 1 0 101245362 9707520 113 18446744073709551615 4333568 8024065 140729030641120 0 0 0 0 0 0 0 0 0 17 19 0 0 0 0 0 11038136 11672456 818987008 140729030643245 140729030643619 140729030643619 140729030643687 0\n",
+          "sid": 3,
+          "start_ticks": 101245362
+        },
+        "pidfd_terminal": true,
+        "returncode": 1,
+        "signals": [],
+        "timed_out": false
+      },
+      "first_rejected_total": 939524096,
+      "maximum": 1073741824,
+      "name": "public_daily_logical_capacity_first_boundary_refusal",
+      "no_client_or_model_started": true,
+      "ownership_lock_reacquired": true,
+      "passed": true,
+      "retained_claims": {
+        "dispatch_records": 0,
+        "extra_claims": 0,
+        "model_requests": 0,
+        "phone_calls": 0,
+        "provider_connections": 0,
+        "retained_claim_bytes_and_full9_unchanged": true,
+        "retained_claim_count": 1,
+        "task_template_bindings": 0,
+        "worker_spawned_records": 0
+      },
+      "validate_executor_bypassed": false
+    },
+    {
+      "actual_worker_spawned_for_orphan_fixture": false,
+      "consumption": {
+        "dispatch_records": 0,
+        "extra_claims": 0,
+        "model_requests": 0,
+        "phone_calls": 0,
+        "provider_connections": 0,
+        "retained_claim_bytes_and_full9_unchanged": true,
+        "retained_claim_count": 1,
+        "task_template_bindings": 0,
+        "worker_spawned_records": 0
+      },
+      "direct_child_wait_and_group_absence": {
+        "actual_direct_child_wait": true,
+        "group_after": {
+          "kernel": "ESRCH",
+          "members": [],
+          "pgid": 4
+        },
+        "monotonic": 1012455.58412137,
+        "original_identity": {
+          "pgid": 4,
+          "pid": 4,
+          "ppid": 2,
+          "raw_stat": "4 (python3) R 2 4 4 0 -1 4194304 11 0 0 0 0 0 0 0 30 10 1 0 101245536 8372224 0 18446744073709551615 4333568 8024065 140734301019216 0 0 0 0 0 0 0 0 0 17 17 0 0 0 0 0 11038136 11672456 191508480 140734301023795 140734301024163 140734301024163 140734301024231 0\n",
+          "sid": 4,
+          "start_ticks": 101245536
+        },
+        "pidfd_terminal": true,
+        "returncode": 1,
+        "signals": [],
+        "timed_out": false
+      },
+      "intent_bytes_and_full9_unchanged": true,
+      "name": "public_daily_orphan_spawn_receipt_refusal",
+      "ownership_lock_reacquired": true,
+      "passed": true
+    },
+    {
+      "FD_and_thread_baseline_restored": true,
+      "RSS_return_claimed": false,
+      "all_owned_groups_ESRCH": true,
+      "child_CPU_return_claimed": false,
+      "children_waited": 2,
+      "name": "owned_child_groups_files_and_fd_thread_baseline",
+      "owned_test_tree_removed": true,
+      "passed": true
+    }
+  ],
+  "control_count": 4,
+  "elapsed_seconds": 1.9776926399208605,
+  "fatal_error": null,
+  "installed_tuple": null,
+  "limits": [
+    "Logical evidence byte budget is exhausted at the original public minimum; disk ENOSPC and 200000-file bounds are not forced.",
+    "Two actual isolated daily processes are waited and absent. No existing model/service/phone process is targeted.",
+    "Orphan input is an explicit synthetic retained spawn-intent with no real old worker.",
+    "FD/thread/owned process and directory cleanup are measured. Full installed runtime RSS/slot cleanup remain separate.",
+    "No private credential content or digest is preserved. Sparse capacity input is preserved as complete metadata, not 896 MiB of zeros."
+  ],
+  "model_requests": 0,
+  "namespaces": {
+    "mnt": "mnt:[4026534438]",
+    "net": "net:[4026534443]",
+    "pid": "pid:[4026534441]"
+  },
+  "native_dispatches": 0,
+  "phone_calls": 0,
+  "prior_selected13_count_not_added": true,
+  "production_sources": [
+    {
+      "bytes": 15587,
+      "path": "provider/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "path": "provider/source/daily_phone_local.py",
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8"
+    },
+    {
+      "bytes": 11439,
+      "path": "provider/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "path": "provider/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "path": "provider/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "path": "provider/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "path": "provider/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13927,
+      "path": "provider/source/phone_local_tools.py",
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930"
+    },
+    {
+      "bytes": 55981,
+      "path": "provider/source/phone_observation_tools.py",
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086"
+    },
+    {
+      "bytes": 22825,
+      "path": "provider/source/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41618,
+      "path": "provider/source/provider_codex_host.py",
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa"
+    },
+    {
+      "bytes": 17730,
+      "path": "provider/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70303,
+      "path": "provider/source/provider_phone_local.py",
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee"
+    },
+    {
+      "bytes": 9802,
+      "path": "provider/source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "path": "provider/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "resources": {
+    "after": {
+      "child_system_seconds": 0.044112,
+      "child_user_seconds": 0.31129599999999996,
+      "fds": {
+        "0": [
+          7,
+          5,
+          8630,
+          "/dev/null"
+        ],
+        "1": [
+          66306,
+          39846352,
+          33152,
+          "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/RUN01/namespace.stdout"
+        ],
+        "2": [
+          66306,
+          39846353,
+          33152,
+          "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/RUN01/namespace.stderr"
+        ],
+        "3": [
+          66306,
+          108020388,
+          33188,
+          "/usr/lib/x86_64-linux-gnu/libffi.so.8.2.0"
+        ]
+      },
+      "maxrss_lifetime_KiB": 31352,
+      "raw_proc_status": "Name:\tpython3\nUmask:\t0077\nState:\tR (running)\nTgid:\t2\nNgid:\t0\nPid:\t2\nPPid:\t1\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t65534 65534 65534 65534 65534 65534 65534 65534 0 \nNStgid:\t2\nNSpid:\t2\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t   47844 kB\nVmSize:\t   47844 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   32932 kB\nVmRSS:\t   32932 kB\nRssAnon:\t   19336 kB\nRssFile:\t   13596 kB\nRssShmem:\t       0 kB\nVmData:\t   21928 kB\nVmStk:\t     132 kB\nVmExe:\t    3608 kB\nVmLib:\t    8384 kB\nVmPTE:\t     124 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/100179\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t0000000000000000\nCapAmb:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffff\nCpus_allowed_list:\t0-23\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t151\nnonvoluntary_ctxt_switches:\t21\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          129626349658432,
+          true
+        ]
+      ]
+    },
+    "before": {
+      "child_system_seconds": 0.0,
+      "child_user_seconds": 0.0,
+      "fds": {
+        "0": [
+          7,
+          5,
+          8630,
+          "/dev/null"
+        ],
+        "1": [
+          66306,
+          39846352,
+          33152,
+          "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/RUN01/namespace.stdout"
+        ],
+        "2": [
+          66306,
+          39846353,
+          33152,
+          "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/RUN01/namespace.stderr"
+        ],
+        "3": [
+          66306,
+          108020388,
+          33188,
+          "/usr/lib/x86_64-linux-gnu/libffi.so.8.2.0"
+        ]
+      },
+      "maxrss_lifetime_KiB": 31352,
+      "raw_proc_status": "Name:\tpython3\nUmask:\t0077\nState:\tR (running)\nTgid:\t2\nNgid:\t0\nPid:\t2\nPPid:\t1\nTracerPid:\t0\nUid:\t0\t0\t0\t0\nGid:\t0\t0\t0\t0\nFDSize:\t64\nGroups:\t65534 65534 65534 65534 65534 65534 65534 65534 0 \nNStgid:\t2\nNSpid:\t2\nNSpgid:\t1\nNSsid:\t1\nKthread:\t0\nVmPeak:\t   46876 kB\nVmSize:\t   46876 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   32788 kB\nVmRSS:\t   32788 kB\nRssAnon:\t   19320 kB\nRssFile:\t   13468 kB\nRssShmem:\t       0 kB\nVmData:\t   20960 kB\nVmStk:\t     132 kB\nVmExe:\t    3608 kB\nVmLib:\t    8384 kB\nVmPTE:\t     124 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/100179\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000000000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t0000000000000000\nCapAmb:\t0000000000000000\nNoNewPrivs:\t1\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffff\nCpus_allowed_list:\t0-23\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t69\nnonvoluntary_ctxt_switches:\t20\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          129626349658432,
+          true
+        ]
+      ]
+    }
+  },
+  "schema": "fc33.neg14.final15.actual-owned-host-controls.v1",
+  "script_sha256": "1f25743641dbc672c2f3f55346f18cb20085023fc1dccbd3014cadfad65835d4",
+  "source_count": 15,
+  "status": "PASS_SELECTED_HOST_SCOPE",
+  "whole_NEG14_qualified": false
+}

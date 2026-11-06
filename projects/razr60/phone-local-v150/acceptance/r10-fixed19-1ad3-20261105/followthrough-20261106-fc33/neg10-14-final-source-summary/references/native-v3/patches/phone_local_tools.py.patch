@@ -1,0 +1,29 @@
+--- native-v2/phone_local_tools.py
++++ native-v3/phone_local_tools.py
+@@ -15,7 +15,7 @@
+ from provider_openai_compatible import ProviderError
+ from retirement_recovery import EXECUTOR_BINDING
+ from phone_observation_tools import (PhoneTools, SERIAL, PHYSICAL_DISPLAY,
+-                                    strict_json, native_streams, validate_viewport, sha)
++                                    strict_json, native_streams, native_bound_call, validate_viewport, sha)
+ from phone_task_guards import (page_capture, b64_variable, page_state, component,
+                                decode_text, public_text_command, verify_public_text, app_open_command, verify_app_open)
+ from task_postconditions import resolve_task_apps
+@@ -126,7 +126,7 @@
+                 '--action-id', action_id,
+                 '--command-b64', base64.b64encode(shell.encode()).decode(),
+                 '--timeout-ms', str(self.executor['timeout_ms'])]
+-        return {'call_id': call_id, 'tool': 'shell.exec', 'argv': argv}
++        return native_bound_call({'call_id': call_id, 'tool': 'shell.exec', 'argv': argv}, self.binding)
+ 
+     def _focus_input_precondition(self):
+         return current_viewport_guard()
+@@ -202,7 +202,7 @@
+                 updated.append(projected)
+                 continue
+             actual = strict_json(original['content'])
+-            value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call']))
++            value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'), expected_call=call['wire_call'], expected_scope=call['turn']))
+             token = call['capture_id']
+             if call['semantic_tool'] == 'phone.open_app':
+                 observed, viewport = verify_app_open(value, token, call['component'])

@@ -1,0 +1,66 @@
+--- verify_probe_result_host.py
++++ verify_probe_result_host_v2.py
+@@ -126,8 +126,41 @@
+     need(0<a.bytes<=12*1024*1024,'durable result cap')
+     raw,descriptor=read_exact(path,a.bytes,a.sha256);operation=strict(raw)
+     need(operation['label']==LABEL and operation['status']=='command_exited' and operation['model_decision'] is False and operation['native_task_result'] is False,'actual one read-only operation')
+-    command=operation['phone']['command'];outer=shlex.split(command);need(outer[:2]==['/debug_ramdisk/su','-c'],'original Root transport')
++    actor_path=Path('/home/alex/razr60-local-model-v150/ops/phone_once.py')
++    actor_raw,actor_descriptor=read_exact(actor_path,5652,'179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22')
++    request_path=Path('/home/alex/razr60-local-model-v150/requests')/(LABEL+'.json')
++    request_raw,request_descriptor=read_exact(request_path,24502,'0f49925c1eee833bdfeeddef788bb1ce51b3336b824a6ea07ca5a7919c092342')
++    request=strict(request_raw)
++    need(set(request)=={'kind','root','timeout_seconds','command'} and request['kind']=='shell'
++         and request['root'] is True and request['timeout_seconds']==70,'exact actual published request')
++    # Exact transformation from the fully reviewed, SHA-pinned phone_once.py:
++    # if req.get('root'): command='/debug_ramdisk/su -c '+shlex.quote(command)
++    command=operation['phone']['command']
++    need(command=='/debug_ramdisk/su -c '+shlex.quote(request['command']),'exact pinned actor root=true transformation')
++    outer=shlex.split(request['command']);need(len(outer)==3 and outer[:2]==['/debug_ramdisk/su','-c'],'exact request-owned Root wrapper')
+     inner=shlex.split(outer[2]);need(inner[-5:-1]==['/usr/bin/python3','-I','-B','-c'],'original Python runner')
++    operation_inputs={}
++    for filename in ('intent.json','baseline.json'):
++        original_path=path.parent/filename
++        size=original_path.lstat().st_size
++        need(0<size<=1048576,'bounded operation input original')
++        # First read obtains a full digest; the pinned re-read then proves full9
++        # and byte equality independently before these originals are preserved.
++        fd=os.open(original_path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
++        try:
++            before=os.fstat(fd);need(stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_size==size,'operation input type/size')
++            with os.fdopen(fd,'rb',closefd=False) as stream:body=stream.read(size+1)
++            need(len(body)==size and full9(before)==full9(os.fstat(fd))==full9(original_path.lstat()),'operation input first read raced')
++        finally:os.close(fd)
++        original_raw,original_descriptor=read_exact(original_path,size,sha(body))
++        operation_inputs[filename]=(original_raw,original_descriptor)
++    intent=strict(operation_inputs['intent.json'][0]);baseline_operation=strict(operation_inputs['baseline.json'][0])
++    need(intent['label']==LABEL and intent['request']==request and intent['request_sha256']==sha(request_raw)
++         and intent['automatic_replay'] is False,'actual actor intent binds exact request')
++    need(baseline_operation['rc']==0 and baseline_operation['stdout'].splitlines()==[
++        'f8019f83-20a7-4f18-bea1-51c980621e4d',
++        'motorola/leap_cn/leap:16/W1VL36H.59-53-11/643c83-3ed541:user/release-keys','adb','Enforcing','3021'],
++        'actual actor phone baseline original')
+     loader=ast.parse(inner[-1]);node=next(n for n in loader.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='data' for t in n.targets))
+     zipped=base64.b64decode(ast.literal_eval(node.value.args[0]),validate=True)
+     source=decode_zlib(zipped,SOURCE_BYTES,SOURCE_SHA,65535)
+@@ -144,6 +177,9 @@
+     out=Path(a.out);need(out.parent.resolve(strict=True)==out.parent and not out.exists(),'new host output directory only')
+     out.mkdir(mode=0o700)
+     outputs=[write_new(out,'result.original.json',raw),write_new(out,'packet.original.json',packet_raw),write_new(out,'probe-source.original.py',source),write_new(out,'probe-inputs.original.json',g['INPUTS_RAW'])]
++    outputs.append(write_new(out,'phone-actor.original.py',actor_raw))
++    outputs.append(write_new(out,'phone-request.original.json',request_raw))
++    for filename,(body,_) in operation_inputs.items():outputs.append(write_new(out,filename+'.original',body))
+     for digest,b in blobs.items():outputs.append(write_new(out,'originals/'+digest+'.bin',b))
+     checks=None;error=None
+     try:
+@@ -151,7 +187,9 @@
+         checks=validate(value,g,blobs)
+     except BaseException as exc:error={'type':type(exc).__name__,'detail':str(exc)[:2048]}
+     report={'schema':'hepta.fc33.failed-scope-readonly-host-verification.v1','state':'FULL_FRESH_CAPTURE_VERIFIED_NO_CLOSURE' if error is None else 'ORIGINALS_PRESERVED_PROBE_OR_VALIDATION_INCOMPLETE',
+-        'actual_result':descriptor,'phone_rc':operation['phone']['rc'],'probe_state':value['state'],'probe_error':value['terminal_error'],
++        'actual_result':descriptor,'actual_actor':actor_descriptor,'actual_request':request_descriptor,
++        'actual_operation_inputs':{name:pin for name,(_,pin) in operation_inputs.items()},
++        'phone_rc':operation['phone']['rc'],'probe_state':value['state'],'probe_error':value['terminal_error'],
+         'host_validation_error':error,'checks':checks,'preserved_unique_originals':len(blobs),'preserved_original_bytes':sum(map(len,blobs.values())),
+         'output_descriptors':outputs,'phone_calls_by_host_verifier':0,'scope_closure':False,'deletion_authorized':False}
+     report_raw=enc(report);report_pin=write_new(out,'HOST-VERIFICATION.json',report_raw)

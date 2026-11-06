@@ -1,0 +1,50 @@
+{
+  "conclusion": "NO_CONCRETE_SOURCE_BLOCKER_FOUND_FOR_THIS_READ_ONLY_PROBE",
+  "limits": [
+    "Static source review does not establish current device files, locks, group absence or successful45second/output budgets.",
+    "Kernel signal0 establishes current recorded-group absence only; no historical provider absence, sender draft state or old failed cmdline is reconstructed.",
+    "Any read/lock/census deadline/byte cap/output failure remains unknown. Root must require full actual controller success and complete validated packet.",
+    "Probe grants no deletion authority, scope closure,source-parent qualification or current case credit."
+  ],
+  "phone_calls_by_reviewer": 0,
+  "review_kind": "complete extension static review; exact input/source AST and16 donor helper byte comparisons; no phone dispatch or new fixture simulation",
+  "reviewer": "source_audit",
+  "schema": "fc33.final05.fresh-readonly-source-independent-review.v1",
+  "source": {
+    "bytes": 63646,
+    "path": "/workspace/scratch/fc33eac909ab/review/R5-final05-probe01/SOURCE.py",
+    "sha256": "70c4dc710368da58f609208879f1fb83af5e0b428b712cfd31b8bced1907bc44"
+  },
+  "source_modified_by_reviewer": false,
+  "verified": {
+    "all_non_ESRCH_or_reused_groups_fail_closed": true,
+    "automatic_replay": false,
+    "baseline_entries": 3823,
+    "baseline_hashed_bytes_each_window": 44353573,
+    "complete_failed_packet_is_explicit_partial_unknown": true,
+    "complete_private_roots": 3,
+    "donor_helpers_whole_bytes_equal": 16,
+    "exact_stage_members": 61,
+    "existing_lock_aliases": 28,
+    "existing_lock_inode_groups": 15,
+    "file_creation_deletion_or_rewrite_by_probe": false,
+    "full9_label_bytes_hash_and_directory_membership_bookends": true,
+    "full_baseline_roots": 44,
+    "locks_held_through_both_windows": true,
+    "only_nonself_signal_call": [
+      {
+        "call": "os.kill(-pgid, 0)",
+        "line": 557
+      }
+    ],
+    "partial_write_or_cap_failure_is_not_success": true,
+    "runtime_manifest_members": 37,
+    "signal_zero_calls_at_runtime": 4,
+    "signal_zero_targets_from_exact_known_identities": [
+      29207,
+      30384
+    ],
+    "source_namespace_alias_full9_names_labels_checked": true,
+    "target_source_import_or_execution": false
+  }
+}

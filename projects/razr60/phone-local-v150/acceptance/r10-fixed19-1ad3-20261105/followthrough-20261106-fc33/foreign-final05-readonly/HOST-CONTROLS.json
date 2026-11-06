@@ -1,0 +1,93 @@
+{
+  "actual_archive_host_check": null,
+  "actual_phone_calls": 0,
+  "actual_proc_reads": 0,
+  "actual_signal_queries": 0,
+  "control_count": 19,
+  "controls": [
+    {
+      "name": "all_constructed_function_globals_resolve",
+      "passed": true
+    },
+    {
+      "name": "actual_scope_and_counts",
+      "passed": true
+    },
+    {
+      "name": "complete_phone_wire_reconstructs_exact_source",
+      "passed": true
+    },
+    {
+      "name": "phone_wire_bounds",
+      "passed": true
+    },
+    {
+      "name": "only_signal_zero_query_expression",
+      "passed": true
+    },
+    {
+      "name": "no_filesystem_mutator_or_process_launcher",
+      "passed": true
+    },
+    {
+      "name": "no_dynamic_target_code_execution",
+      "passed": true
+    },
+    {
+      "name": "two_windows_exact_four_signal_zero_queries",
+      "passed": true
+    },
+    {
+      "name": "EPERM_remains_unknown",
+      "passed": true
+    },
+    {
+      "name": "existing_kernel_group_refused",
+      "passed": true
+    },
+    {
+      "name": "matching_session_member_refused_even_with_ESRCH",
+      "passed": true
+    },
+    {
+      "name": "unknown_proc_IO_refused",
+      "passed": true
+    },
+    {
+      "name": "exact_inventory_projection_accepts_only_equal_fields",
+      "passed": true
+    },
+    {
+      "name": "baseline_full9_change_refused",
+      "passed": true
+    },
+    {
+      "name": "baseline_new_child_refused",
+      "passed": true
+    },
+    {
+      "name": "absence_only_observation_time_is_not_a_content_change",
+      "passed": true
+    },
+    {
+      "name": "absence_parent_full9_is_still_strict",
+      "passed": true
+    },
+    {
+      "name": "packet_descriptor_covers_complete_exact_bytes",
+      "passed": true
+    },
+    {
+      "name": "output_cap_refuses_whole_packet",
+      "passed": true
+    }
+  ],
+  "native_or_model_requests": 0,
+  "schema": "hepta.fc33.failed-final05-readonly.host-controls.v1",
+  "source": {
+    "bytes": 63646,
+    "sha256": "70c4dc710368da58f609208879f1fb83af5e0b428b712cfd31b8bced1907bc44"
+  },
+  "state": "HOST_ONLY_CONTROLS_PASSED_NO_PHONE_EXECUTION",
+  "synthetic_controls_do_not_grant_scope_closure": true
+}

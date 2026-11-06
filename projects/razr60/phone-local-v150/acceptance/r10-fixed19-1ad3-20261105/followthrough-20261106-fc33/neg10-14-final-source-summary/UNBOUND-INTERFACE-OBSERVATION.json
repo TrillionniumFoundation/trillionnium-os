@@ -1,0 +1,14 @@
+{
+  "actual_source_graph_positive_run": false,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_NEG_case_count": 0,
+  "phone_calls": 0,
+  "read_callback_count": 0,
+  "schema": "fc33.neg10-neg14.summary-unbound-interface-observation.v1",
+  "source": {
+    "bytes": 10445,
+    "sha256": "79220134f60e1a543f803347ad378a00ee261257a0a608d74555248b4c4cbae5"
+  },
+  "unbound_malformed_input_rejection": "UNBOUND_ACTUAL_SOURCE_GRAPH_INPUTS_NO_IO"
+}

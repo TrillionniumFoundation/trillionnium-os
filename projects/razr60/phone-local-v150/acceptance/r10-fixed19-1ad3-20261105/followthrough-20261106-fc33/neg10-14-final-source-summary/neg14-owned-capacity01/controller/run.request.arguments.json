@@ -1,0 +1,18 @@
+{
+  "host": "pocket4",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/run_owned_neg14.py",
+    "--execute-once",
+    "--self-sha256",
+    "1f25743641dbc672c2f3f55346f18cb20085023fc1dccbd3014cadfad65835d4"
+  ],
+  "cwd": "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01",
+  "idempotency_key": "fc33-neg14-native-v3-owned-capacity-run01",
+  "timeout_seconds": 60,
+  "memory_max_bytes": 536870912,
+  "cpu_quota_percent": 100,
+  "nice": 10
+}

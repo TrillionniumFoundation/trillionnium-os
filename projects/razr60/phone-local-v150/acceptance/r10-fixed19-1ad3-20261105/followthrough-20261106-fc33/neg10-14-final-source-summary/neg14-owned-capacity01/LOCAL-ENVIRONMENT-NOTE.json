@@ -1,0 +1,10 @@
+{
+  "fallback_without_isolation": false,
+  "local_preflight_exit_code": 1,
+  "local_preflight_observed_stderr": "bwrap: loopback: Failed to create NETLINK_ROUTE socket: Operation not permitted",
+  "local_preflight_scope": "Namespace capability preflight only; no production test or phone/model task started.",
+  "note_is_reconstructed_from_observed_tool_output_not_a_retained_raw_controller_receipt": true,
+  "schema": "fc33.neg14.host-environment-observation.v1",
+  "successful_actual_environment": "Existing root-authorized pocket4 bwrap path; user/pid/net/ipc/uts isolation retained.",
+  "successful_actual_run_job": "1a1b1f12896-fc05-7b9d"
+}

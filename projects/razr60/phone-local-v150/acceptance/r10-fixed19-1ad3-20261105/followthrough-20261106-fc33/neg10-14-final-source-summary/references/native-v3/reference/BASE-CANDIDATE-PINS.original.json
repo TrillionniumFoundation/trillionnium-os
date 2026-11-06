@@ -1,0 +1,215 @@
+{
+  "adopted": false,
+  "base_candidate_pins_sha256": "ccdb924f7b8e1556008a443f8412b4d35604e884dc171c9e7d855299f40b1fb4",
+  "candidate_scope": "Host-only consumer candidate; current NEG01 full six-field records and eight-field terminal, explicit trusted mapped target binding",
+  "candidate_source_count": 15,
+  "changed_source_files": [
+    "daily_phone_local.py",
+    "phone_local_tools.py",
+    "phone_observation_tools.py"
+  ],
+  "current_combination": {
+    "archived_path": "reference/CURRENT-COMBINATION.original.json",
+    "bytes": 4695,
+    "sha256": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708"
+  },
+  "files": [
+    {
+      "bytes": 15587,
+      "git_blob_sha1": "9779079985636df58686330571222ce582f69944",
+      "path": "reference/production/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "git_blob_sha1": "45abd3810d3909b5c9cb16d2c964f3f89c848a4a",
+      "path": "reference/production/daily_phone_local.py",
+      "sha256": "ca23c60bbb4114960c6a571492cacd9e0bdc3404191409ac78bcf0c34a06c1d0"
+    },
+    {
+      "bytes": 11439,
+      "git_blob_sha1": "556bbf50b9849e0fbe1ea507ad35cc98b6f58945",
+      "path": "reference/production/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "git_blob_sha1": "b98fa2e0e04dca525ad5442cccbc7acb5ec91efc",
+      "path": "reference/production/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "git_blob_sha1": "fbe2e8832dcc2a3958e9dc790a1ecf394023eb37",
+      "path": "reference/production/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "git_blob_sha1": "339f98ec195a62d4dfd4538c1cb8ff634596a0d0",
+      "path": "reference/production/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "git_blob_sha1": "34b67ebbc6338e66f0c43ae19059ab0ffda7aba2",
+      "path": "reference/production/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13813,
+      "git_blob_sha1": "7867462013e746ebab9821850295e0846a291ee1",
+      "path": "reference/production/phone_local_tools.py",
+      "sha256": "0302a8bac9dac18234c9493aa512e1efcf43d7cc5eaab884882dad42c2182c54"
+    },
+    {
+      "bytes": 43445,
+      "git_blob_sha1": "e916fc4a25b9e51343d2b822313f67355b974fb7",
+      "path": "reference/production/phone_observation_tools.py",
+      "sha256": "2c5ebb75e34fcce4c14638939809dade1f6d129504270930c8f94e2c2ce15b66"
+    },
+    {
+      "bytes": 22825,
+      "git_blob_sha1": "9cdba9872fd2637c144dc889ba38643300bef568",
+      "path": "reference/production/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41510,
+      "git_blob_sha1": "b4c4111db218d876a963d941c93fb84505bdf3eb",
+      "path": "reference/production/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "git_blob_sha1": "d5755ca4129da5c5ed1da9b8771a116be3b3efa5",
+      "path": "reference/production/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70237,
+      "git_blob_sha1": "c10674ead1db55221374fcdc2a74af516aef4194",
+      "path": "reference/production/provider_phone_local.py",
+      "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+    },
+    {
+      "bytes": 9802,
+      "git_blob_sha1": "938ad60ef2b1b33103384c6ef50d764d9da8e5e3",
+      "path": "reference/production/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "git_blob_sha1": "1da225de785769d3dd5329ab48b4ad207f3c77c8",
+      "path": "reference/production/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    },
+    {
+      "bytes": 15587,
+      "git_blob_sha1": "9779079985636df58686330571222ce582f69944",
+      "path": "candidate/source/action_ledger.py",
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907"
+    },
+    {
+      "bytes": 22059,
+      "git_blob_sha1": "18da6ca1189de38c91fdd645fb1c17c32248f21a",
+      "path": "candidate/source/daily_phone_local.py",
+      "sha256": "203862a29023c827804d4e2a7ccc0217f917f789f49272dc09f4ab64ec029027"
+    },
+    {
+      "bytes": 11439,
+      "git_blob_sha1": "556bbf50b9849e0fbe1ea507ad35cc98b6f58945",
+      "path": "candidate/source/health_contracts.py",
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "bytes": 15135,
+      "git_blob_sha1": "b98fa2e0e04dca525ad5442cccbc7acb5ec91efc",
+      "path": "candidate/source/ledger_round_evidence.py",
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d"
+    },
+    {
+      "bytes": 8251,
+      "git_blob_sha1": "fbe2e8832dcc2a3958e9dc790a1ecf394023eb37",
+      "path": "candidate/source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 37375,
+      "git_blob_sha1": "339f98ec195a62d4dfd4538c1cb8ff634596a0d0",
+      "path": "candidate/source/model_slot_cleanup.py",
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183"
+    },
+    {
+      "bytes": 10453,
+      "git_blob_sha1": "34b67ebbc6338e66f0c43ae19059ab0ffda7aba2",
+      "path": "candidate/source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 13846,
+      "git_blob_sha1": "691a33f20a4dd47d08c012434c753a9f111524c2",
+      "path": "candidate/source/phone_local_tools.py",
+      "sha256": "6621f3463e525aa9eedeff927671045daca1065b3210ac0e34e0c2e9867afcd2"
+    },
+    {
+      "bytes": 46743,
+      "git_blob_sha1": "55447680b2220f0351c7b1ac4d4e373173735a98",
+      "path": "candidate/source/phone_observation_tools.py",
+      "sha256": "ec015260f64e2c61c8f9953f6abe0d8dc4a7a62ce86943ce3c9cfcd250c35162"
+    },
+    {
+      "bytes": 22825,
+      "git_blob_sha1": "9cdba9872fd2637c144dc889ba38643300bef568",
+      "path": "candidate/source/phone_task_guards.py",
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    {
+      "bytes": 41510,
+      "git_blob_sha1": "b4c4111db218d876a963d941c93fb84505bdf3eb",
+      "path": "candidate/source/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "git_blob_sha1": "d5755ca4129da5c5ed1da9b8771a116be3b3efa5",
+      "path": "candidate/source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 70237,
+      "git_blob_sha1": "c10674ead1db55221374fcdc2a74af516aef4194",
+      "path": "candidate/source/provider_phone_local.py",
+      "sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6"
+    },
+    {
+      "bytes": 9802,
+      "git_blob_sha1": "938ad60ef2b1b33103384c6ef50d764d9da8e5e3",
+      "path": "candidate/source/retirement_recovery.py",
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827"
+    },
+    {
+      "bytes": 23211,
+      "git_blob_sha1": "1da225de785769d3dd5329ab48b4ad207f3c77c8",
+      "path": "candidate/source/task_postconditions.py",
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3"
+    }
+  ],
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "phone_calls": 0,
+  "production_source_count": 15,
+  "reference_runner": {
+    "bytes": 30125,
+    "commit": "744fc422a28bd6f505701503bf0d113ab49d4634",
+    "git_blob_sha1": "3934392492e1d9f454dde71f93a8fa3ba357f12e",
+    "historical_seal_not_rebound_or_modified": true,
+    "path": "reference/host_negative_runner.r7-r3.original.py",
+    "repository_path": "projects/razr60/phone-local-v150/acceptance/r7-r3/host-negative/namespace-component-r1/host_negative_runner.py",
+    "sha256": "1bb72cfc192c002388ef108ea4d97868a27f2ff36b7c4ebae62a406d41a7b871"
+  },
+  "schema": "razr60-native-streams-v2-full15-source-pins/v1",
+  "whole_NEG11_qualified": false,
+  "whole_NEG12_qualified": false,
+  "whole_NEG13_qualified": false
+}

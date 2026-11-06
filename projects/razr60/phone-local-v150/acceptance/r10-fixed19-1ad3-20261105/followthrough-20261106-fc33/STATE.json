@@ -1,7 +1,7 @@
 {
-  "schema": "hepta.fc33.fixed19-followthrough-checkpoint.v6",
-  "recorded_at": "2026-11-06 17:46:10 UTC",
-  "repository_base_commit": "81ec9e53b0d94cd12b18bec101f36991e92355a7",
+  "schema": "hepta.fc33.fixed19-followthrough-checkpoint.v7",
+  "recorded_at": "2026-11-06 18:20:28 UTC",
+  "repository_base_commit": "c9dee9d69dc3a96ea4e7b708ed79a4650a7d55d0",
   "scope": "USER_REQUESTED_ALL_19_CURRENT_TUPLE_QUALIFICATION_CONTINUES",
   "new_whole_cases_closed": [],
   "current_tuple_component_cases_closed": [],
@@ -222,11 +222,10 @@
     }
   },
   "remaining_actual_dependencies": [
-    "Resolve the exact existing final05 footprint from its own original lifecycle and retirement evidence; do not widen the parent gate or replay its identity",
-    "Retain current failed attempt and its permanently consumed nonce; only then consider a separately reviewed fresh attempt",
-    "Fresh successful NEG-01 then NEG-02 closures on the same adopted final tuple",
-    "Actual BUILD/install/start/retention and four-role READY",
-    "Actual E2E/COMP and physical NEG03..09 plus final-source NEG10..14 consolidation"
+    "Complete exact final05 recovery after private XML import, original sender host termination proof and fresh locked checks; preserve failure and every original identity",
+    "Fresh successful NEG-01 bound02 then NEG-02 bound01 on the same current tuple",
+    "Actual sealed BUILD, install, stage/start retention and four-role READY",
+    "Actual E2E/COMP and physical NEG03..09; bind final-source NEG10..14 host evidence to actual installed tuple"
   ],
   "full19_qualified": false,
   "current_attempt": {
@@ -331,7 +330,60 @@
       "complete_37_runtime_not_yet_freshly_read": true,
       "independent_kernel_absence_not_yet_observed": true,
       "new_readonly_probe_preparing": true
-    }
+    },
+    "fresh_core_readonly": {
+      "job_id": "1a1b1f9ec0b-fc05-7bd5",
+      "actor_exit_code": 0,
+      "phone_exit_code": 0,
+      "result": {
+        "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-final05-failed-scope-readonly01/result.json",
+        "bytes": 4493463,
+        "sha256": "1d796adcb3b40a575ab98b3047435ddedc1729a0221dcdeb245a88a74c2984a9"
+      },
+      "host_verifier_job": "1a1b1fff391-fc05-7bf6",
+      "host_verifier_exit_code": 0,
+      "host_verification": {
+        "bytes": 25011,
+        "sha256": "0e84d8aa6f2d49c479f6d1bf5fabd5bafc57ed505b342d7bfeec51bc7b232ddf"
+      },
+      "baseline_roots": 44,
+      "baseline_entries": 3823,
+      "baseline_files": 3495,
+      "baseline_bytes_per_window": 44353573,
+      "complete_read_windows": 2,
+      "runtime_members": 37,
+      "stage_archive_members": 61,
+      "private_entries": 98,
+      "private_bytes": 4515947,
+      "private_originals_archived_on_pocket4": true,
+      "complete_process_census_and_four_kernel_ESRCH_checks": true,
+      "claims_operator_actions_empty": true,
+      "fixture_actual_ENOENT": true,
+      "file_writes": 0,
+      "file_deletes": 0,
+      "ui_calls": 0,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "scope_closure": false,
+      "historical_effect_count_inferred": false
+    },
+    "fresh_xml_readonly": {
+      "job_id": "1a1b20e2e5a-fc05-7c3b",
+      "actor_exit_code": 0,
+      "phone_exit_code": 0,
+      "result": {
+        "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-final05-owned-xml-readonly01/result.json",
+        "bytes": 138954,
+        "sha256": "00c8c8b2f78d8eef7b02ebaf5d71d049550a3200f3b6406bc6631e3fcf7c23d9"
+      },
+      "expected_finite_paths": 11,
+      "host_verification_pending": true,
+      "file_deletes": 0,
+      "ui_calls": 0,
+      "scope_closure": false
+    },
+    "cleanup_dispatched": false,
+    "exact_recovery_plan_pending": true
   },
   "source_packages_preserved": [
     {
@@ -408,7 +460,8 @@
       "stderr_bytes": 0,
       "both_output_directories_actual_ENOENT": true
     },
-    "source_correction_in_progress": true
+    "source_correction_in_progress": false,
+    "retained_unchanged": true
   },
   "successor_preparer_source_only": {
     "source_sha256": "90edc36bb790641b39e3a81d938237e48506976fcf1bd37c51fdf567416a7c1b",
@@ -421,6 +474,102 @@
     "identity_generated": false,
     "host_plan_create_executed": false,
     "phone_calls": 0,
-    "requires_fresh_recovery_admission": true
+    "requires_fresh_recovery_admission": true,
+    "actual_source_published": true,
+    "preview_job_id": "1a1b2082b40-fc05-7c1e",
+    "preview_exit_code": 0,
+    "preview_stdout_bytes": 3043,
+    "preview_stderr_bytes": 0,
+    "preview_state": "EXACT_FROZEN_TUPLE_AND_PURE_ROOT_VALIDATION_PASSED_NO_IDENTITY"
+  },
+  "source_publication_attempt02": {
+    "job_id": "1a1b1ff0f2e-fc05-7bef",
+    "state": "SOURCE_CANDIDATES_PUBLISHED_ACTUAL_EXECUTION_UNBOUND",
+    "exit_code": 0,
+    "stdout_bytes": 2051,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "publisher_bytes": 141651,
+    "publisher_sha256": "477bb8c20d4868428761e403456e9c8b333b72607c8ff51aac404b2429dda342",
+    "one_line_full_byte_inverse": true,
+    "original_payload_unchanged": true,
+    "prepublication_controls": 2,
+    "binding_output_files": 8,
+    "derived_output_files": 21,
+    "derived_source_files": 14,
+    "binding_receipt": {
+      "bytes": 2548,
+      "sha256": "5699b0817fd6d4de93eafdc5ff9bb444620f0b097a18c3fcd6a7c2d9f2f1710c"
+    },
+    "derivation": {
+      "bytes": 44922,
+      "sha256": "09ea015625df33e992160a2b58569079586a2b501087a6c23e51e3f869b1ca37"
+    },
+    "source_binding": {
+      "bytes": 3608,
+      "sha256": "c7b074b529b4bbe258303842b3d0b2f3912d8cdf606f803522775b79ba147003"
+    },
+    "consumer": {
+      "bytes": 249860,
+      "sha256": "d65923a2323f4590d41291f3606e4b7bc550eaf800826f819c8f4bb1a102f479"
+    },
+    "phone_calls": 0,
+    "actual_BUILD": null,
+    "actual_install": null,
+    "actual_READY": null
+  },
+  "actual_e2e_source_binding": {
+    "job_id": "1a1b204a568-fc05-7c0c",
+    "exit_code": 0,
+    "stdout_bytes": 385,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "files": 49,
+    "binding": {
+      "bytes": 60062,
+      "sha256": "00a6cc4850c40cc710d348480f0d6b2871a145c89ee6801bd195432659a8da15"
+    },
+    "operator_manifest": {
+      "bytes": 5011,
+      "sha256": "f078a6ccaac60874a37ef269aed4ca168c599eaf1e5b184067b6e47533fbab3f"
+    },
+    "coordinator": {
+      "bytes": 20208,
+      "sha256": "d1959bfc46c0dc0e347a1a438062f6f6259d85bd6f17cf0b4aae967f1e488b53"
+    },
+    "phone_calls": 0,
+    "nonce_generated": false,
+    "actual_BUILD": null,
+    "actual_READY": null,
+    "fixed19_credit": 0
+  },
+  "final_source_NEG10_NEG14": {
+    "state": "ACTUAL_FINAL_SOURCE_HOST_EVIDENCE_COMPLETE_PENDING_ACTUAL_BUILD_AND_INSTALLED_READY_BINDING",
+    "evidence_prefix": "neg10-14-final-source-summary/",
+    "actual_git_files": 165,
+    "bytes": 3557728,
+    "condition_map_rows": 23,
+    "protocol_NEG14_layer": "host_isolated",
+    "baseline_requirement": "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline.",
+    "added_RSS_or_model_slot_gate": false,
+    "groups_must_not_be_summed": true,
+    "additional_required_NEG14_controls": {
+      "job_id": "1a1b1f12896-fc05-7b9d",
+      "exit_code": 0,
+      "count": 4,
+      "actual_lstat_scandir_errno": 13,
+      "actual_daily_byte_budget_boundary": 939524096,
+      "sparse_logical_size_not_disk_ENOSPC": true,
+      "orphan_intent_preserved_and_refused": true,
+      "two_original_children_waited_and_groups_absent": true,
+      "fd_and_thread_baseline_restored": true
+    },
+    "actual_BUILD": null,
+    "actual_installed_READY": null,
+    "whole_cases_closed": []
   }
 }

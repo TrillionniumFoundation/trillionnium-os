@@ -1,0 +1,11 @@
+--- native-v2/provider_codex_host.py
++++ native-v3/provider_codex_host.py
+@@ -287,6 +287,8 @@
+             kind, fields = terminal_fields(kind, fields, outcome, bool(self.dispatched_calls))
+             outcome.update(emitted_protocol_terminal=kind, identity=self.accepted_identity)
+             self.atomic_record(self.run_dir / "business-outcome.json", outcome)
++        if kind == "tool.call":
++            fields["call"] = self.phone_tools.dispatch_call(fields["call"])
+         raw = json.dumps({"protocol": PROTOCOL, "kind": kind,
+                           "seq": self.out_seq, **fields}, ensure_ascii=False,
+                          separators=(",", ":")) + "\n"

@@ -1,0 +1,42 @@
+{
+  "consumption": {
+    "dispatch_records": 0,
+    "extra_claims": 0,
+    "model_requests": 0,
+    "phone_calls": 0,
+    "provider_connections": 0,
+    "retained_claim_bytes_and_full9_unchanged": true,
+    "retained_claim_count": 1,
+    "task_template_bindings": 0,
+    "worker_spawned_records": 0
+  },
+  "monotonic": 1012454.992827281,
+  "ready": {
+    "accepting": true,
+    "backend": "phone_local_http",
+    "config_sha256": "35db51a4f16f792ead44abed226ce7fe4aff8bfe663ecbe459801a89bcb4e8b1",
+    "http_worker_sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "inference_location_operator_attestation": "phone",
+    "instance": "c32b6af908d741348206acbd66161db5",
+    "model": "synthetic-capacity-no-real-inference",
+    "model_health_path": "/work/owned-tests/capacity/state/model-health-phone-local.json",
+    "pid": 3,
+    "port": 18103,
+    "readiness_scope": "transport_only",
+    "schema": "hepta.daily-provider.ready.v1",
+    "service_manifest_sha256": "273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58",
+    "source_sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8",
+    "workers": 1
+  },
+  "sparse_full9": [
+    66306,
+    39846368,
+    33152,
+    1,
+    0,
+    0,
+    939523707,
+    1793986744331331925,
+    1793986744331331925
+  ]
+}

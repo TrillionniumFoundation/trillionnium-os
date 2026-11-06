@@ -1,0 +1,41 @@
+{
+  "bounds": {
+    "MAX_FILE": 262144,
+    "MAX_READ": 8388608,
+    "actor_timeout_seconds": 30,
+    "input_expected_sum_bytes": 223418,
+    "self_deadline_seconds": 20
+  },
+  "checks": {
+    "ENOENT_requires_leaf_and_parent_bookends": true,
+    "GNU_env_chroot_python_route_only": true,
+    "all_held_fds_finally_closed": true,
+    "exact_11_paths_sequences_1_to_11": true,
+    "exact_embedded_inputs_bytes": true,
+    "existing_xml_full_bytes_full9_labels_two_windows": true,
+    "full_source_equals_command_decompressed_bytes": true,
+    "one_root_actor_no_nested_su": true,
+    "partial_or_output_failure_retains_unknown_no_qualification": true,
+    "read_existing_only_no_dump_create_glob_delete": true,
+    "self_SIGALRM_only_no_cross_process_signal": true
+  },
+  "new_test_cases": 0,
+  "phone_calls": 0,
+  "request": {
+    "bytes": 8361,
+    "sha256": "485e888fae619849d2d74e34c2cd630c1045509726eb8242e5d5382807109b7c"
+  },
+  "review_only": true,
+  "schema": "fc33.final05.xml-readonly.independent-source-review.v1",
+  "scope_limits": [
+    "This review did not reread every one of the 144 private sender originals; the exact public derivation manifest is pinned by the builder and its source is reviewed.",
+    "No kernel liveness or old44 resource closure is granted by this XML supplement.",
+    "Complete original controller output and private packet preservation remain necessary; this source review does not qualify an actual run.",
+    "No deletion/cleanup/source-parent authorization is granted."
+  ],
+  "source": {
+    "bytes": 16908,
+    "sha256": "0da3844a26c87a994f3c69e926d312f0e3fe944c8515e8824c960963fa2beed4"
+  },
+  "state": "NO_CONCRETE_SOURCE_BLOCKER_IN_REVIEWED_READ_ONLY_SCOPE"
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.fc33.final05-readonly-controller-originals.v1",
+  "request": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-B",
+      "-"
+    ],
+    "stdin": "from pathlib import Path\nimport hashlib,os,stat\na=Path('/home/alex/razr60-local-model-v150/ops/phone_once.py')\nr=Path('/home/alex/razr60-local-model-v150/requests/ng-fc33-final05-failed-scope-readonly01.json')\nkeys=('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')\nfor p,h in [(a,'179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22'),(r,'0f49925c1eee833bdfeeddef788bb1ce51b3336b824a6ea07ca5a7919c092342')]:\n assert p.resolve(strict=True)==p\n fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)\n with os.fdopen(fd,'rb') as f:\n  before=os.fstat(f.fileno());assert stat.S_ISREG(before.st_mode) and before.st_nlink==1 and before.st_size<=1048576\n  body=f.read(1048577);after=os.fstat(f.fileno())\n assert hashlib.sha256(body).hexdigest()==h and len(body)==before.st_size and [getattr(before,k)for k in keys]==[getattr(after,k)for k in keys]==[getattr(p.lstat(),k)for k in keys]\nos.execv('/usr/bin/python3',['/usr/bin/python3','-I','-B',str(a),'ng-fc33-final05-failed-scope-readonly01',str(r)])\n",
+    "idempotency_key": "fc33-final05-failed-scope-readonly01",
+    "timeout_seconds": 180
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1793987308555,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"pocket4\",\n    \"id\": \"1a1b1f9ec0b-fc05-7bd5\",\n    \"idempotency_key\": \"fc33-final05-failed-scope-readonly01\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b1f9ec0b-fc05-7bd5\",\n    \"request_digest\": \"d571e6e9b67b0c92d757262bbb4713614b47663fa2a50cec08a376611d250872\",\n    \"request_fingerprint\": 15380328093910240402,\n    \"ssh_target\": \"hepta-pocket4\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1b1f9ec0b-fc05-7bd5\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1b1f9ec0b-fc05-7bd5\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1793987316847,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1b1f9ec0b-fc05-7bd5\",\n  \"launch_nonce\": \"48fce67a09e967d8f0aa28cb7af630ac\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 292,\n      \"stored\": 292\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b1f9ec0b-fc05-7bd5\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b2272756e223a20222f686f6d652f616c65782f72617a7236302d6c6f63616c2d6d6f64656c2d763135302f6f7065726174696f6e732f6e672d666333332d66696e616c30352d6661696c65642d73636f70652d726561646f6e6c793031222c2022737461747573223a2022636f6d6d616e645f657869746564222c2022736861323536223a202231643739366164636233623430613537356162393862333034373433356464656463313732396130323231646364656232343561383861373463323938346139222c2022656c61707365645f7365636f6e6473223a20322e3937313739313035353938343739352c2022687474705f737461747573223a206e756c6c2c202270686f6e655f7263223a20302c20226572726f72223a206e756c6c7d0a\",\n    \"eof\": true,\n    \"next_offset\": 292,\n    \"offset\": 0,\n    \"size\": 292,\n    \"text\": \"{\\\"run\\\": \\\"/home/alex/razr60-local-model-v150/operations/ng-fc33-final05-failed-scope-readonly01\\\", \\\"status\\\": \\\"command_exited\\\", \\\"sha256\\\": \\\"1d796adcb3b40a575ab98b3047435ddedc1729a0221dcdeb245a88a74c2984a9\\\", \\\"elapsed_seconds\\\": 2.971791055984795, \\\"http_status\\\": null, \\\"phone_rc\\\": 0, \\\"error\\\": null}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "request_publication": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"mode\":384,\"sha256\":\"0f49925c1eee833bdfeeddef788bb1ce51b3336b824a6ea07ca5a7919c092342\",\"size\":24502,\"version\":\"66306:39767110:24502:1793987280085507573:1793987280085530873\",\"written\":24502}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "operation_info": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/alex/razr60-local-model-v150/operations/ng-fc33-final05-failed-scope-readonly01/result.json\",\"sha256\":\"1d796adcb3b40a575ab98b3047435ddedc1729a0221dcdeb245a88a74c2984a9\",\"size\":4493463,\"version\":\"66306:59118231:4493463:1793987316800542762:1793987316800542762\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}
+

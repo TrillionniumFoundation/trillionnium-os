@@ -1,0 +1,190 @@
+{
+  "FD_and_thread_baseline_restored": true,
+  "actual_BUILD": null,
+  "complete_input_bytes_unchanged": true,
+  "inner_result": {
+    "bytes": 13063,
+    "full9": [
+      66306,
+      39846311,
+      33152,
+      1,
+      1000,
+      1000,
+      13063,
+      1793986746303197707,
+      1793986746303197707
+    ],
+    "path": "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/RUN01/RESULT.json",
+    "sha256": "5a3690d3111a5cca31332aa363853ab1d821d71e153997465484fd190075f648"
+  },
+  "installed_tuple": null,
+  "model_requests": 0,
+  "original_child": {
+    "actual_direct_child_wait": true,
+    "group_after": {
+      "kernel": "ESRCH",
+      "members": [],
+      "pgid": 466620
+    },
+    "monotonic": 1012455.696829802,
+    "original_identity": {
+      "pgid": 466620,
+      "pid": 466620,
+      "ppid": 466615,
+      "raw_stat": "466620 (bwrap) D 466615 466620 466620 0 -1 4194304 1 0 0 0 0 0 0 0 30 10 1 0 101245336 217088 0 18446744073709551615 0 0 140730553664806 0 0 0 0 0 0 1 0 0 17 17 0 0 0 0 0 0 0 0 140730553664806 0 0 0 0\n",
+      "sid": 466620,
+      "start_ticks": 101245336
+    },
+    "pidfd_terminal": true,
+    "returncode": 0,
+    "signals": [],
+    "timed_out": false
+  },
+  "original_namespace_argv": [
+    "/usr/bin/bwrap",
+    "--unshare-user",
+    "--uid",
+    "0",
+    "--gid",
+    "0",
+    "--unshare-pid",
+    "--unshare-net",
+    "--unshare-ipc",
+    "--unshare-uts",
+    "--die-with-parent",
+    "--new-session",
+    "--ro-bind",
+    "/usr",
+    "/usr",
+    "--symlink",
+    "usr/lib",
+    "/lib",
+    "--symlink",
+    "usr/lib64",
+    "/lib64",
+    "--symlink",
+    "usr/bin",
+    "/bin",
+    "--symlink",
+    "usr/sbin",
+    "/sbin",
+    "--proc",
+    "/proc",
+    "--dev",
+    "/dev",
+    "--tmpfs",
+    "/tmp",
+    "--dir",
+    "/var/lib/trillionnium/owner-open/phone-local-v150",
+    "--ro-bind",
+    "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/inputs",
+    "/suite",
+    "--dir",
+    "/harness",
+    "--ro-bind",
+    "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/run_owned_neg14.py",
+    "/harness/run_owned_neg14.py",
+    "--bind",
+    "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/RUN01",
+    "/work",
+    "--ro-bind",
+    "/home/alex/razr60-local-model-v150/fc33-neg14-capacity-native-v3-01/inputs/client/tool_client_r6.py",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py",
+    "--clearenv",
+    "--setenv",
+    "PATH",
+    "/usr/bin:/bin",
+    "--setenv",
+    "LANG",
+    "C.UTF-8",
+    "--setenv",
+    "PYTHONDONTWRITEBYTECODE",
+    "1",
+    "--chdir",
+    "/work",
+    "--cap-drop",
+    "ALL",
+    "--",
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/harness/run_owned_neg14.py",
+    "--inside"
+  ],
+  "phone_calls": 0,
+  "resources": {
+    "after": {
+      "child_system_seconds": 0.002241,
+      "child_user_seconds": 0.000455,
+      "fds": {
+        "0": [
+          7,
+          5,
+          8630,
+          "/dev/null"
+        ],
+        "1": [
+          16,
+          3455781191,
+          4480,
+          "pipe:[3455781191]"
+        ],
+        "2": [
+          16,
+          3455781192,
+          4480,
+          "pipe:[3455781192]"
+        ]
+      },
+      "maxrss_lifetime_KiB": 24260,
+      "raw_proc_status": "Name:\tpython3\nUmask:\t0077\nState:\tR (running)\nTgid:\t466615\nNgid:\t0\nPid:\t466615\nPPid:\t466613\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nFDSize:\t64\nGroups:\t4 24 27 30 46 100 114 992 1000 \nNStgid:\t466615\nNSpid:\t466615\nNSpgid:\t466615\nNSsid:\t466615\nKthread:\t0\nVmPeak:\t   37344 kB\nVmSize:\t   37036 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   24588 kB\nVmRSS:\t   24588 kB\nRssAnon:\t   11912 kB\nRssFile:\t   12676 kB\nRssShmem:\t       0 kB\nVmData:\t   13080 kB\nVmStk:\t     132 kB\nVmExe:\t    3608 kB\nVmLib:\t    7440 kB\nVmPTE:\t     108 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/100179\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000800000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffff\nCpus_allowed_list:\t0-23\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t104\nnonvoluntary_ctxt_switches:\t1\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          128937628254720,
+          true
+        ]
+      ]
+    },
+    "before": {
+      "child_system_seconds": 0.0,
+      "child_user_seconds": 0.0,
+      "fds": {
+        "0": [
+          7,
+          5,
+          8630,
+          "/dev/null"
+        ],
+        "1": [
+          16,
+          3455781191,
+          4480,
+          "pipe:[3455781191]"
+        ],
+        "2": [
+          16,
+          3455781192,
+          4480,
+          "pipe:[3455781192]"
+        ]
+      },
+      "maxrss_lifetime_KiB": 24260,
+      "raw_proc_status": "Name:\tpython3\nUmask:\t0077\nState:\tR (running)\nTgid:\t466615\nNgid:\t0\nPid:\t466615\nPPid:\t466613\nTracerPid:\t0\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\nFDSize:\t64\nGroups:\t4 24 27 30 46 100 114 992 1000 \nNStgid:\t466615\nNSpid:\t466615\nNSpgid:\t466615\nNSsid:\t466615\nKthread:\t0\nVmPeak:\t   37188 kB\nVmSize:\t   37188 kB\nVmLck:\t       0 kB\nVmPin:\t       0 kB\nVmHWM:\t   24456 kB\nVmRSS:\t   24456 kB\nRssAnon:\t   11844 kB\nRssFile:\t   12612 kB\nRssShmem:\t       0 kB\nVmData:\t   13232 kB\nVmStk:\t     132 kB\nVmExe:\t    3608 kB\nVmLib:\t    7440 kB\nVmPTE:\t     108 kB\nVmSwap:\t       0 kB\nHugetlbPages:\t       0 kB\nCoreDumping:\t0\nTHP_enabled:\t1\nuntag_mask:\t0xffffffffffffffff\nThreads:\t1\nSigQ:\t0/100179\nSigPnd:\t0000000000000000\nShdPnd:\t0000000000000000\nSigBlk:\t0000000000000000\nSigIgn:\t0000000001001000\nSigCgt:\t0000000000000002\nCapInh:\t0000000800000000\nCapPrm:\t0000000000000000\nCapEff:\t0000000000000000\nCapBnd:\t000001ffffffffff\nCapAmb:\t0000000000000000\nNoNewPrivs:\t0\nSeccomp:\t0\nSeccomp_filters:\t0\nSpeculation_Store_Bypass:\tthread vulnerable\nSpeculationIndirectBranch:\tconditional enabled\nCpus_allowed:\tffffff\nCpus_allowed_list:\t0-23\nMems_allowed:\t00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000000,00000001\nMems_allowed_list:\t0\nvoluntary_ctxt_switches:\t48\nnonvoluntary_ctxt_switches:\t0\nx86_Thread_features:\t\nx86_Thread_features_locked:\t\n",
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          128937628254720,
+          true
+        ]
+      ]
+    }
+  },
+  "schema": "fc33.neg14.final15.owned-namespace-result.v1",
+  "source_bodies_modified": false,
+  "status": "PASS_SELECTED_HOST_SCOPE",
+  "whole_NEG14_qualified": false
+}

@@ -1,0 +1,524 @@
+{
+  "excluded": [
+    {
+      "allocated_bytes": 0,
+      "full9": [
+        66306,
+        39846368,
+        33152,
+        1,
+        0,
+        0,
+        939523708,
+        1793986745704413603,
+        1793986745704413603
+      ],
+      "path": "capacity/state/evidence/20261106-000000-91a6d48be74153f53c78a3d6b05fd0ce/capacity.logical-budget",
+      "reason": "logical byte-budget input is ftruncate size, not file contents"
+    },
+    {
+      "path": "capacity/synthetic-only-api.key",
+      "reason": "synthetic credential; no content or digest retained"
+    },
+    {
+      "path": "orphan/synthetic-only-api.key",
+      "reason": "synthetic credential; no content or digest retained"
+    }
+  ],
+  "files": [
+    {
+      "archive": "originals/capacity/BEFORE-BOUNDARY.json",
+      "source": {
+        "bytes": 1322,
+        "full9": [
+          66306,
+          39846381,
+          33152,
+          1,
+          0,
+          0,
+          1322,
+          1793986745704413603,
+          1793986745704413603
+        ],
+        "path": "/work/owned-tests/capacity/BEFORE-BOUNDARY.json",
+        "sha256": "d919cbc0e788593b1678aa1fa44015424bcdc60dd974cab908a5fdb8bd1509d3"
+      }
+    },
+    {
+      "archive": "originals/capacity/BOUNDARY-EXHAUSTED.json",
+      "source": {
+        "bytes": 285,
+        "full9": [
+          66306,
+          39846382,
+          33152,
+          1,
+          0,
+          0,
+          285,
+          1793986745705996129,
+          1793986745705996129
+        ],
+        "path": "/work/owned-tests/capacity/BOUNDARY-EXHAUSTED.json",
+        "sha256": "6d7206e6ebd161004027272257fbe406d5304e4242306f460c24f7583f09f862"
+      }
+    },
+    {
+      "archive": "originals/capacity/FIXTURE-DECLARATION.json",
+      "source": {
+        "bytes": 438,
+        "full9": [
+          66306,
+          39846366,
+          33152,
+          1,
+          0,
+          0,
+          438,
+          1793986744330347073,
+          1793986744330347073
+        ],
+        "path": "/work/owned-tests/capacity/FIXTURE-DECLARATION.json",
+        "sha256": "288e74735cf984b63496905efeed25cd1e358d439cc338d298c25e9c07c52db1"
+      }
+    },
+    {
+      "archive": "originals/capacity/PUBLIC-LIMIT.json",
+      "source": {
+        "bytes": 506,
+        "full9": [
+          66306,
+          39846369,
+          33152,
+          1,
+          0,
+          0,
+          506,
+          1793986744333201496,
+          1793986744333201496
+        ],
+        "path": "/work/owned-tests/capacity/PUBLIC-LIMIT.json",
+        "sha256": "381128c3fe3d091bb67930d8d676d8b34f52b7b11071d90fa5834e86ddde233d"
+      }
+    },
+    {
+      "archive": "originals/capacity/config.json",
+      "source": {
+        "bytes": 1482,
+        "full9": [
+          66306,
+          39846363,
+          33152,
+          1,
+          0,
+          0,
+          1482,
+          1793986744326986915,
+          1793986744326986915
+        ],
+        "path": "/work/owned-tests/capacity/config.json",
+        "sha256": "35db51a4f16f792ead44abed226ce7fe4aff8bfe663ecbe459801a89bcb4e8b1"
+      }
+    },
+    {
+      "archive": "originals/capacity/daily-capacity-BELOW-LIMIT.json",
+      "source": {
+        "bytes": 2099,
+        "full9": [
+          66306,
+          39846380,
+          33152,
+          1,
+          0,
+          0,
+          2099,
+          1793986745701149063,
+          1793986745701149063
+        ],
+        "path": "/work/owned-tests/capacity/daily-capacity-BELOW-LIMIT.json",
+        "sha256": "5e2dad3da3b279d06b37fda135f7d44a79282216e23986eba967b14d2b77f5e9"
+      }
+    },
+    {
+      "archive": "originals/capacity/daily-capacity-JOIN.json",
+      "source": {
+        "bytes": 638,
+        "full9": [
+          66306,
+          39846379,
+          33152,
+          1,
+          0,
+          0,
+          638,
+          1793986746071920123,
+          1793986746071920123
+        ],
+        "path": "/work/owned-tests/capacity/daily-capacity-JOIN.json",
+        "sha256": "bc85bdc08e31adeb77287232c7c7a18e752ea300469821495b299c114fac05fc"
+      }
+    },
+    {
+      "archive": "originals/capacity/daily-capacity-SPAWN.json",
+      "source": {
+        "bytes": 1018,
+        "full9": [
+          66306,
+          39846372,
+          33152,
+          1,
+          0,
+          0,
+          1018,
+          1793986744335616549,
+          1793986744335616549
+        ],
+        "path": "/work/owned-tests/capacity/daily-capacity-SPAWN.json",
+        "sha256": "da217bde686358df7ca072d98ae441766e1c22574b5edcd53a302a58b97c25bd"
+      }
+    },
+    {
+      "archive": "originals/capacity/daily-capacity.stderr",
+      "source": {
+        "bytes": 521,
+        "full9": [
+          66306,
+          39846371,
+          33152,
+          1,
+          0,
+          0,
+          521,
+          1793986746014328395,
+          1793986746014328395
+        ],
+        "path": "/work/owned-tests/capacity/daily-capacity.stderr",
+        "sha256": "99fbab3c92ebe51ff4515b479237beddb5e4680de519b1c0afb01c88a3fcb3ef"
+      }
+    },
+    {
+      "archive": "originals/capacity/daily-capacity.stdout",
+      "source": {
+        "bytes": 0,
+        "full9": [
+          66306,
+          39846370,
+          33152,
+          1,
+          0,
+          0,
+          0,
+          1793986744333331921,
+          1793986744333331921
+        ],
+        "path": "/work/owned-tests/capacity/daily-capacity.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "archive": "originals/capacity/retained.json",
+      "source": {
+        "bytes": 382,
+        "full9": [
+          66306,
+          39846364,
+          33152,
+          1,
+          0,
+          0,
+          382,
+          1793986744328057716,
+          1793986744328057716
+        ],
+        "path": "/work/owned-tests/capacity/retained.json",
+        "sha256": "6de5006a6cd58d6b52e93b057a13f4515dc8b9826070246af141a8b5308f0c35"
+      }
+    },
+    {
+      "archive": "originals/capacity/state/daemon.lock",
+      "source": {
+        "bytes": 0,
+        "full9": [
+          66306,
+          39846374,
+          33152,
+          1,
+          0,
+          0,
+          0,
+          1793986744494331579,
+          1793986744494331579
+        ],
+        "path": "/work/owned-tests/capacity/state/daemon.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "archive": "originals/capacity/state/evidence/claims/11b1fb880f2e71727e80eb9b49da54dfa72ae1c41738bf0db8f67e7a09f5a7dd",
+      "source": {
+        "bytes": 388,
+        "full9": [
+          66306,
+          39846365,
+          33152,
+          1,
+          0,
+          0,
+          388,
+          1793986744329211491,
+          1793986744329211491
+        ],
+        "path": "/work/owned-tests/capacity/state/evidence/claims/11b1fb880f2e71727e80eb9b49da54dfa72ae1c41738bf0db8f67e7a09f5a7dd",
+        "sha256": "eb8fff41353781a9738c8fa7a6974e8a72839bce9fd6a40a5dfba4f25d400537"
+      }
+    },
+    {
+      "archive": "originals/capacity/state/model-health-phone-local.json",
+      "source": {
+        "bytes": 290,
+        "full9": [
+          66306,
+          39846378,
+          33152,
+          1,
+          0,
+          0,
+          290,
+          1793986744496171276,
+          1793986744496331575
+        ],
+        "path": "/work/owned-tests/capacity/state/model-health-phone-local.json",
+        "sha256": "5338aee80f401c0c008d5b7a05c4bef456044453c30577252baedb8f75eee6db"
+      }
+    },
+    {
+      "archive": "originals/capacity/state/ready.json",
+      "source": {
+        "bytes": 122,
+        "full9": [
+          66306,
+          39846383,
+          33152,
+          1,
+          0,
+          0,
+          122,
+          1793986746007691133,
+          1793986746012328399
+        ],
+        "path": "/work/owned-tests/capacity/state/ready.json",
+        "sha256": "722140c6b23d0af8e07731fa370d16369f9863c395bcd2c6aa0bd696930e5e1b"
+      }
+    },
+    {
+      "archive": "originals/orphan/FIXTURE-DECLARATION.json",
+      "source": {
+        "bytes": 438,
+        "full9": [
+          66306,
+          39846392,
+          33152,
+          1,
+          0,
+          0,
+          438,
+          1793986746077910916,
+          1793986746077910916
+        ],
+        "path": "/work/owned-tests/orphan/FIXTURE-DECLARATION.json",
+        "sha256": "288e74735cf984b63496905efeed25cd1e358d439cc338d298c25e9c07c52db1"
+      }
+    },
+    {
+      "archive": "originals/orphan/config.json",
+      "source": {
+        "bytes": 1480,
+        "full9": [
+          66306,
+          39846389,
+          33152,
+          1,
+          0,
+          0,
+          1480,
+          1793986746074863633,
+          1793986746074863633
+        ],
+        "path": "/work/owned-tests/orphan/config.json",
+        "sha256": "1b1b7b63f649cee32ab6aad3fa556bb0a31ddbe9bd58a68c2458133b065b2290"
+      }
+    },
+    {
+      "archive": "originals/orphan/daily-orphan-JOIN.json",
+      "source": {
+        "bytes": 635,
+        "full9": [
+          66306,
+          39846311,
+          33152,
+          1,
+          0,
+          0,
+          635,
+          1793986746295691622,
+          1793986746295691622
+        ],
+        "path": "/work/owned-tests/orphan/daily-orphan-JOIN.json",
+        "sha256": "926632b5e5b101be371978ca68f971b9a0402c19e37bb05e0a5e3b7968ad2940"
+      }
+    },
+    {
+      "archive": "originals/orphan/daily-orphan-SPAWN.json",
+      "source": {
+        "bytes": 1010,
+        "full9": [
+          66306,
+          39846397,
+          33152,
+          1,
+          0,
+          0,
+          1010,
+          1793986746080489484,
+          1793986746080489484
+        ],
+        "path": "/work/owned-tests/orphan/daily-orphan-SPAWN.json",
+        "sha256": "8fd06d834b266ed64d95554e69f9e25c9c257fdeeebdc17bde1087822f6b42ca"
+      }
+    },
+    {
+      "archive": "originals/orphan/daily-orphan.stderr",
+      "source": {
+        "bytes": 751,
+        "full9": [
+          66306,
+          39846396,
+          33152,
+          1,
+          0,
+          0,
+          751,
+          1793986746225327965,
+          1793986746225327965
+        ],
+        "path": "/work/owned-tests/orphan/daily-orphan.stderr",
+        "sha256": "7755fe28415ca3bcbcd6cd4c42cda8454cb3a382cfe1680900a2dda8569d30fe"
+      }
+    },
+    {
+      "archive": "originals/orphan/daily-orphan.stdout",
+      "source": {
+        "bytes": 0,
+        "full9": [
+          66306,
+          39846395,
+          33152,
+          1,
+          0,
+          0,
+          0,
+          1793986746079328263,
+          1793986746079328263
+        ],
+        "path": "/work/owned-tests/orphan/daily-orphan.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "archive": "originals/orphan/retained.json",
+      "source": {
+        "bytes": 382,
+        "full9": [
+          66306,
+          39846390,
+          33152,
+          1,
+          0,
+          0,
+          382,
+          1793986746075823186,
+          1793986746075823186
+        ],
+        "path": "/work/owned-tests/orphan/retained.json",
+        "sha256": "9eb99a398e50df8d28ee447846afdab90e45d1dd6d9cac402194df8d53755c51"
+      }
+    },
+    {
+      "archive": "originals/orphan/state/daemon.lock",
+      "source": {
+        "bytes": 0,
+        "full9": [
+          66306,
+          39846399,
+          33152,
+          1,
+          0,
+          0,
+          0,
+          1793986746222327971,
+          1793986746222327971
+        ],
+        "path": "/work/owned-tests/orphan/state/daemon.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "archive": "originals/orphan/state/evidence/20261106-000001-51a976fe918559b31a99c9cbe00fd691/local-01.spawn-intent.json",
+      "source": {
+        "bytes": 97,
+        "full9": [
+          66306,
+          39846394,
+          33152,
+          1,
+          0,
+          0,
+          97,
+          1793986746078913119,
+          1793986746078913119
+        ],
+        "path": "/work/owned-tests/orphan/state/evidence/20261106-000001-51a976fe918559b31a99c9cbe00fd691/local-01.spawn-intent.json",
+        "sha256": "f62127625a43208959f426610d4aa003c6c9156be198e455bfa9d666d8537c0a"
+      }
+    },
+    {
+      "archive": "originals/orphan/state/evidence/claims/5a29a990fb99700e6ed8fb0e9a98d08e9eca4e00a296f2a602a88c8b33b85e1b",
+      "source": {
+        "bytes": 388,
+        "full9": [
+          66306,
+          39846391,
+          33152,
+          1,
+          0,
+          0,
+          388,
+          1793986746076770345,
+          1793986746076770345
+        ],
+        "path": "/work/owned-tests/orphan/state/evidence/claims/5a29a990fb99700e6ed8fb0e9a98d08e9eca4e00a296f2a602a88c8b33b85e1b",
+        "sha256": "4fe6708ab6dc797702e7328c69efe50e4d47f25cada267031a5feeeb8571ce7d"
+      }
+    },
+    {
+      "archive": "originals/unreadable/evidence.json",
+      "source": {
+        "bytes": 61,
+        "full9": [
+          66306,
+          39846357,
+          33152,
+          1,
+          0,
+          0,
+          61,
+          1793986744325465302,
+          1793986744325465302
+        ],
+        "path": "/work/owned-tests/unreadable/evidence.json",
+        "sha256": "c51eba0cd910ebe3205d4ebacd1a91249fa6d21df37a1036a251483bb6cb975b"
+      }
+    }
+  ]
+}
