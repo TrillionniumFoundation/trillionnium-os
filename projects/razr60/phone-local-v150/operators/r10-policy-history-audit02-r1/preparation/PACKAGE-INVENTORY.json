@@ -1,0 +1,62 @@
+{
+  "files": [
+    {
+      "bytes": 3328,
+      "path": "PREPARATION-SEAL.json",
+      "sha256": "1d2f6a7341ffa0393cb43b703940e958dee5127286d3c64d460371a1050e32a8"
+    },
+    {
+      "bytes": 2782,
+      "path": "PREPARED-SOURCE.patch",
+      "sha256": "d34e56f2bcb4a6959bccc5305c814a95971614eb5cbe5005304b2e5ac18989e9"
+    },
+    {
+      "bytes": 5690,
+      "path": "README.md",
+      "sha256": "84393981174fff57b8b8df13545bbd1c75facbd22fa13359a04e9eec907c3992"
+    },
+    {
+      "bytes": 9906,
+      "path": "evidence/LOCAL-PREPARATION-REGRESSIONS.json",
+      "sha256": "4258ce6f075e0f60642d8240a5c8274656423205fae8eb9444bef0506ac637a7"
+    },
+    {
+      "bytes": 1821,
+      "path": "evidence/MAC-PROBE-stdout.original",
+      "sha256": "ca9f9df8ff993ad3a2f3390d88a6a51a8a290783385d7432a9d97f035f3eb3af"
+    },
+    {
+      "bytes": 674,
+      "path": "process-start.NOT-EXECUTED.json",
+      "sha256": "69fe33ba5dbdcf8a687854520d9b330d28ffda8812d41b6d762e7eaa418648e8"
+    },
+    {
+      "bytes": 608,
+      "path": "source/SOURCE-MANIFEST.json",
+      "sha256": "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f"
+    },
+    {
+      "bytes": 30525,
+      "path": "source/audit_policy_history_once.py",
+      "sha256": "4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86"
+    },
+    {
+      "bytes": 54516,
+      "path": "source/run_policy_history_owned_once.py",
+      "sha256": "9f5c8555c781bde2950bd44b7659225ebc6889027f6bc26c64a72c9d9b25235c"
+    },
+    {
+      "bytes": 13114,
+      "path": "tests/guard_regression_cases.py",
+      "sha256": "e07d8717051bf34eb4af309b2a8f1de13230530493611217d5a59a18b76a475c"
+    },
+    {
+      "bytes": 12312,
+      "path": "tests/verify_preparation.py",
+      "sha256": "2c33ed0b8574793c08e632023a8e971d28c27d2760a7e828622ad82f3a1ca5b6"
+    }
+  ],
+  "inventory_self_included": false,
+  "schema": "hepta.reviewable-package-inventory.v1",
+  "scope": "local audit02 preparation, not staged or executed"
+}

@@ -1,0 +1,90 @@
+{
+  "audit_calls": 0,
+  "baseline_stager": {
+    "bytes": 11752,
+    "path": "evidence/BASELINE-STAGER.py.original",
+    "sha256": "390a82412a730954bf9a757e9ee1ebdde1fd6152bf49a2ebfbe544d997cc3a69"
+  },
+  "controller_seconds": 30,
+  "external_complete_readback_required": true,
+  "idempotency_key": "hepta-cp09-audit02-source-stage-dirguard-4b572de398a74ce0",
+  "idempotency_key_consumed": false,
+  "limits": {
+    "base_names_per_snapshot": 4096,
+    "directory_entries_observed": 8256,
+    "name_utf8_bytes": 1024,
+    "names_and_receipt_bytes": 524288,
+    "owned_fds": 64,
+    "parent_depth": 24,
+    "physical_source_read_bytes": 171304,
+    "seconds": 18,
+    "source_body_bytes": 65536,
+    "source_pool_bytes": 131072,
+    "source_write_bytes": 85649,
+    "stdin_bytes": 262144,
+    "stdout_bytes": 262144,
+    "terminal_seconds": 1
+  },
+  "local_regression_report": {
+    "bytes": 6471,
+    "failed": 0,
+    "passed": 25,
+    "path": "evidence/LOCAL-STAGER-REGRESSIONS.json",
+    "sha256": "83d5dc486d1aa07af3e3aaddefa95f08896ce0b4f921fec5dc160d96152e5101"
+  },
+  "partial_failure_policy": "retain every partial output; never cleanup, retry or choose another suffix",
+  "payload": {
+    "bytes": 114386,
+    "path": "SOURCE-PAYLOAD.json",
+    "sha256": "75213e221fe5366946f16894f69354e70c9a205e5f1679429f9308875615e71e"
+  },
+  "phone_calls": 0,
+  "prepared_package_inventory_sha256": "21326b074b83ac512eea55a33fdb097caa720e88c288c2ab60f7a7548eb55b8e",
+  "remote_jobs_started": 0,
+  "request": {
+    "bytes": 145503,
+    "path": "process-start.NOT-EXECUTED.json",
+    "sha256": "15380938bbaab91ca07ae9bb29f0babca5ef0a1ec3a7465cbd1f3ac01155fb2b"
+  },
+  "retained_names_fixture": {
+    "bytes": 45051,
+    "origin_bytes": 94606,
+    "origin_field": "parent_names_before",
+    "origin_path": "checkpoint09 actual_epoch_policy_history_audit01/source-stage02/STAGE-RESULT.original.json",
+    "origin_sha256": "734c4ee59ba071f977e2f1ef6cd55bcb3d3e2d4510f76e93c819a9a0213378e8",
+    "path": "evidence/CP09-PARENT-NAMES-BEFORE.json",
+    "scope": "retained cp09 data copied for synthetic local capacity test; not a current Mac observation",
+    "sha256": "2bb37c4595424b274b169035c35d9bd66fa556c5da969891f162eccb226d0370"
+  },
+  "schema": "hepta.audit02.create-only-source-stage-preparation.v1",
+  "script": {
+    "bytes": 30141,
+    "path": "stage_sources_once.py",
+    "sha256": "68951c4ed2c0165b2091c034ef926b6aaacf775ad90834bad42d025437d09c5e"
+  },
+  "self_report_is_not_source_authority": true,
+  "source_pins": [
+    {
+      "bytes": 608,
+      "path": "SOURCE-MANIFEST.json",
+      "sha256": "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f"
+    },
+    {
+      "bytes": 30525,
+      "path": "audit_policy_history_once.py",
+      "sha256": "4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86"
+    },
+    {
+      "bytes": 54516,
+      "path": "run_policy_history_owned_once.py",
+      "sha256": "9f5c8555c781bde2950bd44b7659225ebc6889027f6bc26c64a72c9d9b25235c"
+    }
+  ],
+  "stage_scope": "create only fixed source directory and three exact source data files; no staged source execution",
+  "state": "PREPARED_NOT_EXECUTED",
+  "targets": {
+    "audit_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-1ad3-02-dirguard-4b572de398a74ce0",
+    "caller_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-owned-1ad3-02-dirguard-4b572de398a74ce0",
+    "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-source-1ad3-02-dirguard-4b572de398a74ce0"
+  }
+}

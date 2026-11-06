@@ -1,0 +1,368 @@
+{
+  "cases": [
+    {
+      "name": "exact_two_source_manifest",
+      "observation": {
+        "closed_source_members": [
+          "SOURCE-MANIFEST.json",
+          "audit_policy_history_once.py",
+          "run_policy_history_owned_once.py"
+        ],
+        "manifest_sha256": "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f"
+      },
+      "passed": true
+    },
+    {
+      "name": "auditor_exact_mechanical_delta",
+      "observation": {
+        "changes": "one reviewed guard plus two fixed paths",
+        "full_byte_reconstruction_of_baseline": true
+      },
+      "passed": true
+    },
+    {
+      "name": "caller_exact_mechanical_delta",
+      "observation": {
+        "changes": "three fixed paths and actual auditor byte/SHA pin",
+        "full_byte_reconstruction_of_baseline": true
+      },
+      "passed": true
+    },
+    {
+      "name": "fixed_paths_and_literal_pin",
+      "observation": {
+        "caller_literal_matches_actual_auditor": true,
+        "remote_path_absence_observed": false
+      },
+      "passed": true
+    },
+    {
+      "name": "historical_pins_and_budgets",
+      "observation": {
+        "auditor_child_caller_seconds": [
+          90,
+          100,
+          120
+        ],
+        "original_verifier_pin_retained": true
+      },
+      "passed": true
+    },
+    {
+      "name": "physical_read_and_fd_forecast",
+      "observation": {
+        "physical_read_forecast": 66992038,
+        "remaining_bytes": 116826
+      },
+      "passed": true
+    },
+    {
+      "name": "nonexecuted_process_template",
+      "observation": {
+        "live_preconditions_satisfied_by_this_test": false,
+        "process_started_by_this_test": false,
+        "template_sha256": "69fe33ba5dbdcf8a687854520d9b330d28ffda8812d41b6d762e7eaa418648e8"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_actual_create_write_readback",
+      "observation": {
+        "actual_complete_readback": true,
+        "actual_files_created": 2,
+        "physical_read_bytes": 103
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_recorded_mac_counter_actual_class",
+      "observation": {
+        "actual_files_created": 2,
+        "actual_mac_candidate_execution": false,
+        "mac_probe_key": "hepta-cp09-owned-dir-probe-acceptanceaudit-01-4b572de398a74ce0",
+        "observations": [
+          {
+            "physical_members": [],
+            "projected_nlink": 2
+          },
+          {
+            "physical_members": [],
+            "projected_nlink": 2
+          },
+          {
+            "physical_members": [],
+            "projected_nlink": 2
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json"
+            ],
+            "projected_nlink": 3
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          },
+          {
+            "physical_members": [
+              "INTENT.json",
+              "READSET.json"
+            ],
+            "projected_nlink": 4
+          }
+        ],
+        "scope": "actual class and filesystem writes with recorded-platform counter projection"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_directory_replacement",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_directory_symlink",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_directory_permissions",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_unexpected_member",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_missing_member",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_leaf_hardlink",
+      "observation": {
+        "message": "already written output member changed identity",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_leaf_same_bytes_replacement",
+      "observation": {
+        "message": "already written output member changed identity",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_leaf_symlink",
+      "observation": {
+        "message": "already written output member changed identity",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_parent_full9_change",
+      "observation": {
+        "message": "owned output canonical path differs",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_held_named_full9_mismatch",
+      "observation": {
+        "message": "owned output directory changed",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_fixed_field_st_dev",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_fixed_field_st_ino",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_fixed_field_st_mode",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_fixed_field_st_uid",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    },
+    {
+      "name": "prepared_auditor_fixed_field_st_gid",
+      "observation": {
+        "message": "owned output directory changed",
+        "scope": "synthetic fixed-field fault over actual class/held directory",
+        "type": "ValueError"
+      },
+      "passed": true
+    }
+  ],
+  "elapsed_seconds": 0.13897830300265923,
+  "failed": 0,
+  "historical_verifier_called": false,
+  "live_preconditions_satisfied_by_this_test": false,
+  "mac_jobs_started": 0,
+  "passed": 24,
+  "phone_calls": 0,
+  "pre_execution_facts_missing": [
+    "current same-family auditor/caller processes and coordination status",
+    "create-only target source directory absence and identity observation",
+    "create-only audit/caller output absence",
+    "independent staging complete body/full9 readback of both sources and manifest",
+    "reviewed caller/source authority bound to actual staged bytes and controller request"
+  ],
+  "production_main_called": false,
+  "real_prepared_auditor_class_exercised": true,
+  "remote_staging_performed": false,
+  "schema": "hepta.policy-history-audit02-preparation-regressions.v1",
+  "source_bytes_unchanged": true,
+  "status": "PASS",
+  "whole_modules_imported": [
+    "auditor",
+    "caller"
+  ]
+}

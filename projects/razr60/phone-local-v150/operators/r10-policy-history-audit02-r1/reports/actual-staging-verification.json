@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.audit02-real-source-stage-root-verification.v1",
+  "state": "ACTUAL_STAGE_EXIT0_FULL_RECEIPT_VERIFIED_INDEPENDENT_READBACK_PENDING",
+  "job_id": "1a1ae23a6b0-fc05-5db1",
+  "stdout": {
+    "bytes": 98719,
+    "sha256": "2f598131c305f55311e695577ec39faceb9101d4e9ff4e184ecce54f71edbf48"
+  },
+  "stderr_bytes": 0,
+  "stream_both_eof": true,
+  "source_files": 3,
+  "source_write_bytes": 85649,
+  "physical_source_read_bytes": 171298,
+  "base_name_counts": [
+    1625,
+    1626
+  ],
+  "only_fixed_source_directory_added": true,
+  "owned_fds_closed": true,
+  "audit_and_caller_outputs_still_absent": true,
+  "stager_elapsed_seconds": 0.045270875,
+  "phone_calls": 0,
+  "case_credit": 0,
+  "independent_source_readback_required": true
+}

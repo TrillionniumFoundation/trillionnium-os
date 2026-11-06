@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.fixed-audit02-readback-preparation.v1",
+  "state": "PREPARED_NOT_EXECUTED",
+  "source": {
+    "path": "readback_sources_once.py",
+    "bytes": 7270,
+    "sha256": "25e28bc10a966ff9780d7c952b04ecd92f8fd8e6e9d01a718d330bb870b1cf81"
+  },
+  "request": {
+    "path": "process-start.NOT-EXECUTED.json",
+    "bytes": 7762,
+    "sha256": "b413916ae6db977cf9a01c60bbbbde91bae0d7db0cb109ea8905e48f99f09aa2"
+  },
+  "source_files": 3,
+  "source_bytes": 85649,
+  "inner_seconds": 10,
+  "controller_seconds": 25,
+  "remote_writes": 0,
+  "phone_calls": 0,
+  "case_credit": 0,
+  "reviewer": "root",
+  "review_basis": "Complete new standalone fixed-target read-only source reviewed; Python parsed. No staged source is imported or run.",
+  "independent_review_applied": [
+    "Final held/named full9 checks cover all three open leaves after all reads",
+    "O_NONBLOCK rejects a substituted FIFO before waiting for input"
+  ]
+}

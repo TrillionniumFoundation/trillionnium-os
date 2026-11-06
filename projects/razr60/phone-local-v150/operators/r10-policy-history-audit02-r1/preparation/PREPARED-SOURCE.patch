@@ -1,0 +1,47 @@
+--- checkpoint09/reviewable/audit_policy_history_once.py
++++ source/audit_policy_history_once.py
+@@ -21,8 +21,8 @@
+ 
+ BASE = Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/'
+             'stock16-hepta-local-model-Root-v150-r1')
+-SOURCE = BASE/'epoch-policy-history-audit-source-1ad3-01/audit_policy_history_once.py'
+-OUT = BASE/'epoch-policy-history-audit-1ad3-01'
++SOURCE = BASE/'epoch-policy-history-audit-source-1ad3-02-dirguard-4b572de398a74ce0/audit_policy_history_once.py'
++OUT = BASE/'epoch-policy-history-audit-1ad3-02-dirguard-4b572de398a74ce0'
+ ADOPTION = {'path': str(BASE/'policy-runtime-properties-r10-live-02/POLICY-ADOPTION.json'),
+             'bytes': 208226,
+             'sha256': '527374778e62717d837d546cfa56bd144c8415b52006a9be4a33935c8592d08a'}
+@@ -325,7 +325,10 @@
+         self.budget.check()
+         current = metadata(os.fstat(self.fd))
+         named = metadata(os.stat(OUT.name, dir_fd=self.parent_fds[-1], follow_symlinks=False))
+-        need(current == named and current[:6] == self.identity[:6]
++        # Own member creation can change directory nlink, size and timestamps.
++        # Keep device/inode/type+permissions/uid/gid fixed; current held/named
++        # full9, the exact member set and every leaf's full9/nlink checks remain.
++        need(current == named and current[:5] == self.identity[:5]
+              and sorted(os.listdir(self.fd)) == sorted(self.members), 'owned output directory changed')
+         reopened, chain = parent_chain(OUT, self.budget)
+         try:
+
+--- checkpoint09/reviewable/run_policy_history_owned_once.py
++++ source/run_policy_history_owned_once.py
+@@ -18,13 +18,13 @@
+ import time
+ 
+ BASE=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+-SOURCE_ROOT=BASE/'epoch-policy-history-audit-source-1ad3-01'
++SOURCE_ROOT=BASE/'epoch-policy-history-audit-source-1ad3-02-dirguard-4b572de398a74ce0'
+ SOURCE=SOURCE_ROOT/'run_policy_history_owned_once.py'
+ MANIFEST=SOURCE_ROOT/'SOURCE-MANIFEST.json'
+-AUDITOR={'path':str(SOURCE_ROOT/'audit_policy_history_once.py'),'bytes':30233,
+-    'sha256':'039f442f855ce27dc8c6f517785a4ca763b7729f1a5f17151f6a3deb2a99ef21'}
+-AUDIT_OUT=BASE/'epoch-policy-history-audit-1ad3-01'
+-OUT=BASE/'epoch-policy-history-audit-owned-1ad3-01'
++AUDITOR={'path':str(SOURCE_ROOT/'audit_policy_history_once.py'),'bytes':30525,
++    'sha256':'4cc7bdf1aac2325518724a973c74b89f5788ccb84932b82beacac4b2aad78b86'}
++AUDIT_OUT=BASE/'epoch-policy-history-audit-1ad3-02-dirguard-4b572de398a74ce0'
++OUT=BASE/'epoch-policy-history-audit-owned-1ad3-02-dirguard-4b572de398a74ce0'
+ PHASE='policy-history-audit'
+ ARGV=['/usr/bin/python3','-I','-B',AUDITOR['path'],'--execute-fixed-history-audit-once']
+ HOST_OUTPUT_LIMIT=65536

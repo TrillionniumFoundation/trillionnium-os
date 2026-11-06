@@ -1,0 +1,90 @@
+{
+  "all_package_bytes_match_frozen_original_after_tests": true,
+  "candidate_directory": "/workspace/scratch/2438ae2c67d8/acceptance-audit/cp09-policy-history-audit02-execution-preparation-r1",
+  "case_credit": 0,
+  "decoded_three_bodies_equal_previously_reviewed_preparation": true,
+  "exact_create_only_namespace": {
+    "audit_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-1ad3-02-dirguard-4b572de398a74ce0",
+    "caller_output": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-owned-1ad3-02-dirguard-4b572de398a74ce0",
+    "source": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-source-1ad3-02-dirguard-4b572de398a74ce0"
+  },
+  "full_request_code_equals_source": true,
+  "full_request_stdin_equals_payload": true,
+  "idempotency_key": "hepta-cp09-audit02-source-stage-dirguard-4b572de398a74ce0",
+  "independent_regressions": {
+    "bytes": 6471,
+    "elapsed_seconds": 0.3203573359933216,
+    "failed": 0,
+    "passed": 25,
+    "path": "/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/cp09-stage-review/independent-stager-results.json",
+    "sha256": "8359ec06123561fa3556fe1325db719bbd5dc8ece3c22f986465cbed58f2467a"
+  },
+  "independent_source_readback_static_review": {
+    "bytes": 7270,
+    "final_all_three_leaf_full9_recheck": true,
+    "nonblocking_leaf_opens": true,
+    "path": "/workspace/scratch/2438ae2c67d8/current-runtime-evidence/audit02-independent-readback-preparation/readback_sources_once.py",
+    "sha256": "25e28bc10a966ff9780d7c952b04ecd92f8fd8e6e9d01a718d330bb870b1cf81"
+  },
+  "inventory": {
+    "bytes": 1961,
+    "sha256": "a8dcd039b867ef5482cbde6111a53353471479663c95f2fc4813b9c794fb18a7"
+  },
+  "limits": {
+    "base_names_per_snapshot": 4096,
+    "directory_entries_observed": 8256,
+    "name_utf8_bytes": 1024,
+    "names_and_receipt_bytes": 524288,
+    "owned_fds": 64,
+    "parent_depth": 24,
+    "physical_source_read_bytes": 171304,
+    "seconds": 18,
+    "source_body_bytes": 65536,
+    "source_pool_bytes": 131072,
+    "source_write_bytes": 85649,
+    "stdin_bytes": 262144,
+    "stdout_bytes": 262144,
+    "terminal_seconds": 1
+  },
+  "package_files": 12,
+  "payload": {
+    "bytes": 114386,
+    "sha256": "75213e221fe5366946f16894f69354e70c9a205e5f1679429f9308875615e71e"
+  },
+  "phone_calls_by_reviewer": 0,
+  "remote_actions_by_reviewer": 0,
+  "request": {
+    "bytes": 145503,
+    "sha256": "15380938bbaab91ca07ae9bb29f0babca5ef0a1ec3a7465cbd1f3ac01155fb2b"
+  },
+  "resolved_review_findings": [
+    "StageAlarm during individual/bulk close cannot falsely claim all owned descriptors closed.",
+    "StageAlarm after acquisition before registration retains unresolved ownership and propagates.",
+    "Scandir context acquisition/use/close has the same conservative unresolved marker.",
+    "No numeric unknown descriptor is retried."
+  ],
+  "schema": "hepta.audit02-stage.independent-review.v1",
+  "scope_limits": [
+    "Local host regression and exact request preparation only; not real Mac staging success.",
+    "Actual stage originals and independent whole-byte readback still determine execution outcome.",
+    "No new phone case credit or audit execution credit."
+  ],
+  "script": {
+    "bytes": 30141,
+    "sha256": "68951c4ed2c0165b2091c034ef926b6aaacf775ad90834bad42d025437d09c5e"
+  },
+  "seal": {
+    "bytes": 3751,
+    "sha256": "76bd66444371a771d6c1b0b3c8b1f5b29c8f7d610202a3c7f88771b04bf89ea3"
+  },
+  "snapshot_directory": "/workspace/scratch/2438ae2c67d8/repo-evidence-readonly/cp09-stage-review/candidate",
+  "state": "PASS_FOR_EXACT_CREATE_ONLY_STAGING_REQUEST",
+  "static_review_confirmed": [
+    "Fixed three-target absence is checked before create; existing targets cause rejection.",
+    "No-follow parent/leaf identity and exact member checks remain; only source dir plus exact three pinned data files are created.",
+    "Whole source bodies are physically read twice and retained parent names are fully reversibly encoded, not replaced with hashes.",
+    "Count/byte/FD/deadline ceilings are checked incrementally and expected final name count/metadata capacity before mkdir.",
+    "Partial failure retains files, full available observations and unknown status; no delete, retry, alternate suffix, source import or subprocess/network/phone call.",
+    "Terminal alarm remains BaseException and is not swallowed by ordinary OSError cleanup."
+  ]
+}

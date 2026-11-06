@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+"""Create exactly one fixed source directory from three independently pinned bodies."""
+import base64,hashlib,json,os,re,stat,sys,time
+from pathlib import Path
+BASE=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+DEST=BASE/'epoch-policy-history-audit-source-1ad3-01'
+EXPECTED={'SOURCE-MANIFEST.json':(582,'b7fd456f9285c479b35c9875df85c7ff0e7b7d901a53327a259ee88b51320c83'),
+ 'audit_policy_history_once.py':(30233,'039f442f855ce27dc8c6f517785a4ca763b7729f1a5f17151f6a3deb2a99ef21'),
+ 'run_policy_history_owned_once.py':(54438,'0aa5342c32d28105b5229ad0f4128068f45ffc80c79498fa29c09cad6b96f4e1')}
+START=time.monotonic()
+def need(v,s):
+    if not v:raise ValueError(s)
+def check():need(time.monotonic()-START<30,'source staging deadline')
+def meta(s):return [getattr(s,k) for k in ('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')]
+def enc(v):return (json.dumps(v,sort_keys=True,ensure_ascii=False,indent=2,allow_nan=False)+'\n').encode()
+def pin(b):return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def sha(b):return hashlib.sha256(b).hexdigest()
+# Lossless directory-name data only. It neither authorizes nor reads a path.
+def parent_names_wire(value):
+    return (json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False)+'\n').encode('utf-8','strict')
+
+
+def parent_names_decode(value):
+    need(type(value) is dict and set(value)=={'schema','encoding','count','decoded','rows'}
+        and value['schema']=='hepta.directory-name-prefix-table.v1'
+        and value['encoding']=='unicode-prefix-length-and-suffix',
+        'fixed parent name data encoding required')
+    need(type(value['count']) is int and 0<=value['count']<=4096
+        and type(value['rows']) is list and len(value['rows'])==value['count'],
+        'original name count bound exceeded')
+    pin=value['decoded']
+    need(type(pin) is dict and set(pin)=={'bytes','sha256'} and type(pin['bytes']) is int
+        and 3<=pin['bytes']<=524288 and type(pin['sha256']) is str
+        and re.fullmatch('[0-9a-f]{64}',pin['sha256']),
+        'bounded full decoded name descriptor required')
+    need(len(parent_names_wire(value))<=65536,'prefix data exceeds original serialized field bound')
+    names=[];previous='';decoded_charge=3
+    for row in value['rows']:
+        need(type(row) is list and len(row)==2 and type(row[0]) is int
+            and 0<=row[0]<=len(previous) and type(row[1]) is str,
+            'typed bounded prefix/suffix row required')
+        name=previous[:row[0]]+row[1]
+        need(name and '/' not in name and '\x00' not in name and name not in ('.','..')
+            and (not names or previous<name),'complete names must be strict sorted unique basenames')
+        common=0
+        while common<min(len(previous),len(name)) and previous[common]==name[common]:common+=1
+        need(row[0]==common,'prefix length must be canonical maximal common prefix')
+        decoded_charge+=len(parent_names_wire(name))-1+(1 if names else 0)
+        need(decoded_charge<=pin['bytes']<=524288,'decoded names exceed bounded original bytes')
+        names.append(name);previous=name
+    raw=parent_names_wire(names)
+    need(len(raw)==pin['bytes'] and sha(raw)==pin['sha256'],'complete decoded names bytes/SHA differ')
+    return names
+
+
+def parent_names_encode(names):
+    need(type(names) is list and len(names)<=4096 and all(type(x) is str for x in names)
+        and names==sorted(set(names)),'original complete name count/order differs')
+    raw=parent_names_wire(names)
+    need(len(raw)<=524288,'complete decoded parent names exceed the shared metadata pool')
+    rows=[];previous=''
+    for name in names:
+        common=0
+        while common<min(len(previous),len(name)) and previous[common]==name[common]:common+=1
+        rows.append([common,name[common:]]);previous=name
+    value={'schema':'hepta.directory-name-prefix-table.v1','encoding':'unicode-prefix-length-and-suffix',
+        'count':len(names),'decoded':{'bytes':len(raw),'sha256':sha(raw)},'rows':rows}
+    need(len(parent_names_wire(value))<=65536 and parent_names_decode(value)==names,
+        'lossless complete prefix data exceeds original serialized field bound')
+    return value
+
+def parse(b):
+    def pairs(rows):
+        v={}
+        for k,x in rows:need(k not in v,'duplicate field');v[k]=x
+        return v
+    return json.loads(b,object_pairs_hook=pairs,parse_constant=lambda _:need(False,'nonfinite'))
+def open_chain():
+    fds=[];rows=[];at=Path('/')
+    try:
+        fds.append(os.open('/',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC));rows.append({'path':'/','metadata':meta(os.fstat(fds[-1]))})
+        for part in BASE.parts[1:]:
+            check();s=os.stat(part,dir_fd=fds[-1],follow_symlinks=False);need(stat.S_ISDIR(s.st_mode),'ordinary parent')
+            need(len(fds)<24,'parent depth');fd=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=fds[-1]);fds.append(fd);at/=part
+            need(meta(os.fstat(fd))==meta(s),'parent changed at open');rows.append({'path':str(at),'metadata':meta(s)})
+        return fds,rows
+    except BaseException:
+        for fd in reversed(fds):os.close(fd)
+        raise
+def read_file(rootfd,name,body):
+    before=os.stat(name,dir_fd=rootfd,follow_symlinks=False)
+    need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and stat.S_IMODE(before.st_mode)==0o600
+         and before.st_nlink==1 and before.st_size==len(body),'staged file identity')
+    fd=os.open(name,os.O_RDONLY|os.O_NONBLOCK|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=rootfd)
+    try:
+        need(meta(os.fstat(fd))==meta(before),'file changed at open');parts=[];count=0
+        while True:
+            check();part=os.read(fd,min(65536,len(body)+1-count))
+            if not part:break
+            count+=len(part);need(count<=len(body),'staged body grew');parts.append(part)
+        need(b''.join(parts)==body and meta(os.fstat(fd))==meta(before)
+             ==meta(os.stat(name,dir_fd=rootfd,follow_symlinks=False)),'staged whole body/full9 differs')
+        return {'path':str(DEST/name),**pin(body),'metadata':meta(before)}
+    finally:os.close(fd)
+def main():
+    need(sys.platform=='darwin' and os.geteuid()==501 and len(sys.argv)==1,'fixed Mac staging context')
+    os.umask(0o077);raw=sys.stdin.buffer.read(262145);need(len(raw)<=262144,'bounded source transport')
+    value=parse(raw);need(type(value) is dict and set(value)=={'schema','files'} and value['schema']=='hepta.fixed-policy-source-stage.v1','source transport shape')
+    need(type(value['files']) is dict and set(value['files'])==set(EXPECTED),'exact three source bodies')
+    bodies={}
+    for name,(size,digest) in EXPECTED.items():
+        text=value['files'][name];need(type(text) is str and len(text)<=4*((65536+2)//3),'bounded source encoding')
+        body=base64.b64decode(text,validate=True);need(base64.b64encode(body).decode()==text and pin(body)=={'bytes':size,'sha256':digest},'fixed full source pin')
+        body.decode('utf-8','strict');bodies[name]=body
+    mf=parse(bodies['SOURCE-MANIFEST.json'])
+    need(mf=={'schema':'hepta.native-guard.policy-history-owned-source.v1','target_root':str(DEST),
+       'files':[{'path':n,'bytes':EXPECTED[n][0],'sha256':EXPECTED[n][1]} for n in sorted(EXPECTED) if n.endswith('.py')]},'actual source manifest closure')
+    fds,before=open_chain();rootfd=None;other=[];created=False
+    try:
+        names_before=sorted(os.listdir(fds[-1]));names_before_data=parent_names_encode(names_before)
+        names_decoded_bytes=names_before_data['decoded']['bytes']
+        need(names_decoded_bytes+len(parent_names_wire(names_before_data))<=262144,'bounded complete names before mutation')
+        need(DEST.name not in names_before,'fixed source directory already exists; no retry')
+        try:os.stat(DEST.name,dir_fd=fds[-1],follow_symlinks=False)
+        except FileNotFoundError:pass
+        else:raise ValueError('fixed source path is not absent')
+        os.mkdir(DEST.name,0o700,dir_fd=fds[-1]);created=True;os.fsync(fds[-1])
+        rootfd=os.open(DEST.name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=fds[-1])
+        first=meta(os.fstat(rootfd));need(first==meta(os.stat(DEST.name,dir_fd=fds[-1],follow_symlinks=False)) and first[3]==501 and stat.S_IMODE(first[2])==0o700 and os.listdir(rootfd)==[],'new private source directory')
+        first_reads={}
+        for name,body in sorted(bodies.items()):
+            check();fd=os.open(name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600,dir_fd=rootfd)
+            try:
+                count=0
+                while count<len(body):
+                    check();w=os.write(fd,body[count:]);need(w>0,'source write progress');count+=w
+                os.fsync(fd)
+            finally:os.close(fd)
+            os.fsync(rootfd);first_reads[name]=read_file(rootfd,name,body)
+        need(sorted(os.listdir(rootfd))==sorted(EXPECTED),'source closed set after writes')
+        final_directory=meta(os.fstat(rootfd));other,after=open_chain()
+        names_after=sorted(os.listdir(other[-1]));names_after_data=parent_names_encode(names_after)
+        names_decoded_bytes+=names_after_data['decoded']['bytes']
+        need(parent_names_decode(names_after_data)==sorted(parent_names_decode(names_before_data)+[DEST.name]),'unexpected complete parent namespace change')
+        for a,b in zip(before,after):
+            need(a['path']==b['path'] and (a['metadata'][:5]==b['metadata'][:5] if a['path']==str(BASE) else a==b),'source ancestor transition')
+        need(meta(os.stat(DEST.name,dir_fd=other[-1],follow_symlinks=False))==final_directory,'canonical source directory differs')
+        second=os.open(DEST.name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=other[-1])
+        try:
+            need(meta(os.fstat(second))==final_directory and sorted(os.listdir(second))==sorted(EXPECTED),'reopened source directory differs')
+            final_reads={n:read_file(second,n,b) for n,b in sorted(bodies.items())};need(final_reads==first_reads,'staged files changed between complete reads')
+        finally:os.close(second)
+        need(meta(os.fstat(rootfd))==final_directory==meta(os.stat(DEST.name,dir_fd=fds[-1],follow_symlinks=False)),'source directory final full9')
+        for fd,row in zip(other,after):need(meta(os.fstat(fd))==row['metadata'],'final source parent changed')
+        result={'schema':'hepta.fixed-policy-source-stage-result.v1','state':'FIXED_THREE_SOURCES_CREATED_AND_FULLY_READ_TWICE','source_root':str(DEST),
+          'source_directory_metadata':final_directory,'files':[final_reads[n] for n in sorted(final_reads)],
+          'parents_before':before,'parents_after':after,'parent_names_before':names_before_data,'parent_names_after':names_after_data,
+          'parent_names_decoded_bytes':names_decoded_bytes,'parent_names_charge_is_canonical_expanded_data_not_kernel_dirent_bytes':True,
+          'only_declared_directory_added':True,'base_all_time_full9_stable_claim':False,'created':created,
+          'physical_source_read_bytes':2*sum(map(len,bodies.values())),'input_bytes':len(raw),'source_bytes':sum(map(len,bodies.values())),
+          'staged_source_execution':False,'phone_calls':0,'case_credit':0,'automatic_retry':False}
+        encoded=parent_names_wire(result);need(len(encoded)+names_decoded_bytes<=262144,'bounded receipt plus complete decoded names');check()
+    finally:
+        if rootfd is not None:os.close(rootfd)
+        for fd in reversed(other):os.close(fd)
+        for fd in reversed(fds):os.close(fd)
+    sys.stdout.buffer.write(encoded);sys.stdout.buffer.flush()
+if __name__=='__main__':main()

@@ -1,0 +1,237 @@
+{
+  "actual_pinned_payload_verified": true,
+  "cases": [
+    {
+      "name": "actual_create_fsync_two_readbacks",
+      "observation": {
+        "actual_complete_reads": 6,
+        "actual_files": 3,
+        "peak_owned_fds": 23,
+        "read_bytes": 171298,
+        "receipt_bytes": 6557,
+        "unicode_emoji_newline_names_exact": true,
+        "write_bytes": 85649
+      },
+      "passed": true
+    },
+    {
+      "name": "retained_complete_name_domain",
+      "observation": {
+        "actual_read_bytes": 171298,
+        "after_name_count": 1618,
+        "before_name_count": 1617,
+        "decoded_name_bytes": 151972,
+        "encoded_name_bytes": 90936,
+        "receipt_bytes": 96909,
+        "scope": "synthetic local tree using retained complete cp09 names plus 40 synthetic names",
+        "total_charged_bytes": 339817
+      },
+      "passed": true
+    },
+    {
+      "name": "existing_dest",
+      "observation": {
+        "before_mutation": true,
+        "existing_target_retained": true,
+        "rejected_target": "DEST"
+      },
+      "passed": true
+    },
+    {
+      "name": "existing_audit_out",
+      "observation": {
+        "before_mutation": true,
+        "existing_target_retained": true,
+        "rejected_target": "AUDIT_OUT"
+      },
+      "passed": true
+    },
+    {
+      "name": "existing_caller_out",
+      "observation": {
+        "before_mutation": true,
+        "existing_target_retained": true,
+        "rejected_target": "CALLER_OUT"
+      },
+      "passed": true
+    },
+    {
+      "name": "existing_dangling_target_symlink",
+      "observation": {
+        "dangling_target_symlink_rejected_before_mkdir": true
+      },
+      "passed": true
+    },
+    {
+      "name": "changed_transport_rejected",
+      "observation": {
+        "filesystem_called": false,
+        "full_transport_pin_and_size_rejections": 3
+      },
+      "passed": true
+    },
+    {
+      "name": "unexpected_base_member_retained",
+      "observation": {
+        "complete_after_names_retained": true,
+        "three_created_sources_retained": true
+      },
+      "passed": true
+    },
+    {
+      "name": "ancestor_full9_change",
+      "observation": {
+        "ancestor_full9_change_rejected": true,
+        "partial_files_retained": 1
+      },
+      "passed": true
+    },
+    {
+      "name": "unexpected_source_member",
+      "observation": {
+        "exact_source_members_enforced": true,
+        "partial_state_retained": true
+      },
+      "passed": true
+    },
+    {
+      "name": "source_permission_change",
+      "observation": {
+        "actual_directory_mode_change_rejected": true
+      },
+      "passed": true
+    },
+    {
+      "name": "source_directory_replacement",
+      "observation": {
+        "both_directories_retained": true,
+        "held_source_vs_replacement_rejected": true
+      },
+      "passed": true
+    },
+    {
+      "name": "source_leaf_hardlink",
+      "observation": {
+        "partial_state_retained": true,
+        "single_link_leaf_enforced": true
+      },
+      "passed": true
+    },
+    {
+      "name": "same_bytes_leaf_replacement_before_read",
+      "observation": {
+        "same_bytes_substitution_rejected": true,
+        "write_fd_identity_preserved_into_first_reopen": true
+      },
+      "passed": true
+    },
+    {
+      "name": "actual_partial_write_preserved",
+      "observation": {
+        "actual_partial_file_retained_bytes": 7,
+        "fds_closed": true,
+        "no_retry_or_suffix": true
+      },
+      "passed": true
+    },
+    {
+      "name": "complete_name_count_forecast",
+      "observation": {
+        "forecast_reserves_source_name_before_mutation": true
+      },
+      "passed": true
+    },
+    {
+      "name": "global_enumeration_budget",
+      "observation": {
+        "global_scandir_entry_budget_rejected_before_mkdir": true
+      },
+      "passed": true
+    },
+    {
+      "name": "name_bytes_charged_during_enumeration",
+      "observation": {
+        "per_entry_byte_charge_rejected_before_mkdir": true
+      },
+      "passed": true
+    },
+    {
+      "name": "owned_fd_budget_cleanup",
+      "observation": {
+        "partial_parent_open_fds_closed": true
+      },
+      "passed": true
+    },
+    {
+      "name": "operation_deadline",
+      "observation": {
+        "alarm_not_swallowed_by_oserror_cleanup": true,
+        "expired_operation_rejected_before_open": true
+      },
+      "passed": true
+    },
+    {
+      "name": "production_nonmac_entry_guard",
+      "observation": {
+        "actual_production_entry_rejected_nonmac": true,
+        "local_test_harness_subprocesses": 1,
+        "mac_jobs_started": 0,
+        "stager_subprocesses_started": 0
+      },
+      "passed": true
+    },
+    {
+      "name": "alarm_close_fd_truthful_unknown",
+      "observation": {
+        "owned_fds_closed_claim": false,
+        "real_fd_still_open_at_rejection": true,
+        "terminal_alarm_propagated": true,
+        "unknown_fd_not_retried": true
+      },
+      "passed": true
+    },
+    {
+      "name": "alarm_bulk_close_truthful_unknown",
+      "observation": {
+        "owned_fds_closed_claim": false,
+        "real_fd_still_open_at_rejection": true,
+        "terminal_alarm_propagated": true,
+        "unknown_fd_not_retried": true
+      },
+      "passed": true
+    },
+    {
+      "name": "alarm_open_before_registration_truthful_unknown",
+      "observation": {
+        "owned_fds_closed_claim": false,
+        "real_unregistered_fd_at_rejection": true,
+        "terminal_alarm_propagated": true,
+        "unknown_fd_not_retried": true
+      },
+      "passed": true
+    },
+    {
+      "name": "alarm_scandir_acquisition_truthful_unknown",
+      "observation": {
+        "owned_fds_closed_claim": false,
+        "scandir_acquisition_uncertainty_retained": true,
+        "terminal_alarm_propagated": true
+      },
+      "passed": true
+    }
+  ],
+  "complete_source_imported": true,
+  "elapsed_seconds": 0.3203573359933216,
+  "failed": 0,
+  "fixture_bindings": "BASE/three fixed child paths and owner uid rebound only to private local fixtures; restored",
+  "mac_jobs_started": 0,
+  "passed": 25,
+  "payload_sha256": "75213e221fe5366946f16894f69354e70c9a205e5f1679429f9308875615e71e",
+  "phone_calls": 0,
+  "production_mac_main_called": false,
+  "remote_staging_performed": false,
+  "schema": "hepta.create-only-source-stager.local-regressions.v1",
+  "source_sha256": "68951c4ed2c0165b2091c034ef926b6aaacf775ad90834bad42d025437d09c5e",
+  "source_unchanged": true,
+  "status": "PASS"
+}

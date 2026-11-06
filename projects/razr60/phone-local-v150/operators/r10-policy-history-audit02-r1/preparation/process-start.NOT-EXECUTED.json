@@ -1,0 +1,15 @@
+{
+  "args": [
+    "-I",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/epoch-policy-history-audit-source-1ad3-02-dirguard-4b572de398a74ce0/run_policy_history_owned_once.py",
+    "--source-manifest-sha256",
+    "d23837daefb96368544889a4a4c1a87fd4cada74c3edb7b092ea74f6cc75b57f",
+    "--execute-fixed-owned-history-once"
+  ],
+  "cwd": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1",
+  "executable": "/usr/bin/python3",
+  "host": "mac",
+  "idempotency_key": "hepta-cp09-policy-history-audit02-dirguard-4b572de398a74ce0",
+  "timeout_seconds": 150
+}
