@@ -1,6 +1,7 @@
 # Dedicated owner-open product supplement.
-# Inherit the sealed common overlay first, then perform the explicit owner-open
-# graph cut. A product must opt into this file; common.mk remains migration
-# history for non-owner-open targets.
-$(call inherit-product, vendor/trillionnium/config/common.mk)
+# Android merges inherit-product tags after each product node is evaluated.
+# Select the generated shared base before inheritance; filtering a sibling's
+# package list inside owner-open/product.mk cannot remove inherited packages.
+# common.mk retains the sealed compatibility graph for other products.
+$(call inherit-product, vendor/trillionnium/config/common_owner_open_base.mk)
 $(call inherit-product, vendor/trillionnium/owner-open/product.mk)

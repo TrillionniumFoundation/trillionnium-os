@@ -32,6 +32,129 @@ fn terminal(seed: char) -> JobTerminal {
 }
 
 #[test]
+fn public_registry_owned_spare_capacity_cannot_bypass_manager_admission() {
+    let registry = JobRegistry::default();
+    let mut excessive = request('a');
+    excessive.target_id.as_mut().unwrap().reserve(1024 * 1024);
+    assert_eq!(
+        registry.begin(key("spare-target"), excessive).unwrap_err(),
+        JobRegistryError::CapacityExhausted
+    );
+    let mut excessive = key("spare-key");
+    excessive.job_id.reserve(1024 * 1024);
+    assert_eq!(
+        registry.begin(excessive, request('a')).unwrap_err(),
+        JobRegistryError::CapacityExhausted
+    );
+    assert!(registry.is_empty().unwrap());
+    let owner = key("valid");
+    let request = request('a');
+    registry.begin(owner.clone(), request.clone()).unwrap();
+    let SpawnClaim::Granted { generation, .. } = registry
+        .claim_spawn(&owner, &request.request_sha256)
+        .unwrap()
+    else {
+        panic!("new claim");
+    };
+    registry
+        .record_started(&owner, generation, 1234, true)
+        .unwrap();
+    let before = registry.snapshot(&owner).unwrap();
+    let mut hash = String::with_capacity(1024 * 1024);
+    hash.push_str(&"a".repeat(64));
+    assert_eq!(
+        registry
+            .record_output(&owner, generation, "stdout", 1, hash)
+            .unwrap_err(),
+        JobRegistryError::CapacityExhausted
+    );
+    let mut attachment = String::with_capacity(1024 * 1024);
+    attachment.push_str("reader");
+    assert_eq!(
+        registry.attach(&owner, attachment).unwrap_err(),
+        JobRegistryError::CapacityExhausted
+    );
+    let mut terminal = terminal('a');
+    terminal.terminal_kind.reserve(1024 * 1024);
+    assert_eq!(
+        registry.complete(&owner, generation, terminal).unwrap_err(),
+        JobRegistryError::CapacityExhausted
+    );
+    assert_eq!(registry.snapshot(&owner).unwrap(), before);
+}
+
+#[test]
+fn independent_registries_share_memory_and_preserve_uncertain_keys_under_pressure() {
+    const ISOLATED: &str = "TRILLIONNIUM_REGISTRY_MEMORY_CHILD";
+    if std::env::var_os(ISOLATED).is_none() {
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "independent_registries_share_memory_and_preserve_uncertain_keys_under_pressure",
+                "--nocapture",
+            ])
+            .env(ISOLATED, "1")
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        return;
+    }
+    let registries = [JobRegistry::default(), JobRegistry::default()];
+    let mut accepted = Vec::new();
+    let request = request('a');
+    for index in 0..256 {
+        let owner = key(&format!("shared-{index}"));
+        let registry = &registries[index % 2];
+        match registry.begin(owner.clone(), request.clone()) {
+            Ok(_) => {
+                registry
+                    .claim_spawn(&owner, &request.request_sha256)
+                    .unwrap();
+                registry.mark_restart_uncertain(&owner).unwrap();
+                accepted.push((index % 2, owner));
+            }
+            Err(JobRegistryError::CapacityExhausted) => break,
+            Err(error) => panic!("unexpected error: {error}"),
+        }
+    }
+    assert!(
+        !accepted.is_empty() && accepted.len() < 256,
+        "aggregate memory admission was bypassed"
+    );
+    for (index, owner) in &accepted {
+        let registry = &registries[*index];
+        assert_eq!(
+            registry
+                .begin(owner.clone(), request.clone())
+                .unwrap()
+                .disposition,
+            BeginDisposition::Existing
+        );
+        assert_eq!(
+            registry
+                .begin(owner.clone(), self::request('b'))
+                .unwrap_err(),
+            JobRegistryError::JobIdConflict
+        );
+        let claim = registry
+            .claim_spawn(owner, &request.request_sha256)
+            .unwrap();
+        assert!(
+            matches!(claim, SpawnClaim::Existing(ref snapshot) if matches!(snapshot.state, JobEffectiveState::UnknownAfterRestart { .. }))
+        );
+        assert!(!registry.remove_terminal(owner).unwrap());
+    }
+    drop(registries);
+    let _released =
+        trillionnium_owner_open_job_registry::JobMemoryLease::acquire(48 * 1024 * 1024).unwrap();
+}
+
+#[test]
 fn exact_begin_is_idempotent_and_drift_conflicts() {
     let registry = JobRegistry::default();
     let job = key("job-1");

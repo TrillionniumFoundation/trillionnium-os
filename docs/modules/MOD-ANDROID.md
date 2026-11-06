@@ -19,6 +19,27 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `android-integration/working-tree/vendor/trillionnium/owner-open`
+- `android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk`
+- `tools/generate-owner-open-common-base.py`
+- `android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile_full.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_full_phone.mk`
+- `tools/generate-owner-open-phone-config.py`
+- `tools/owner-open-phone-chain.v1.json`
+- `android-integration/owner-open-profile/profile-v2.json`
+- `tools/verify-owner-open-android-source-closure.py`
+- `tools/verify-owner-open-android-source-closure-v2.py`
+- `android-integration/working-tree/trillionnium-sdk/Android.bp`
+- `android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml`
+- `tools/verify-owner-open-sdk-selection.py`
+
+- `android-integration/working-tree/build/make/core/Makefile`
+- `tools/verify_owner_target_files_binding.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -33,6 +54,11 @@ Operationally, the required flow is:
 The dogfood or userdebug product graph explicitly selects owner-open packages and policy, compiles the service graph, records target-files inventory, boots an authorized image and verifies installed identities. User/release variants fail closed unless separately authorized.
 
 Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
+
+The native ADB restart-service overlay returns an explicit failure when its
+optional root service is missing or fails. It grants no root access. Its frozen
+upstream baseline must match before application; the isolated diagnostic view
+does not qualify a dirty Android source tree or installed target.
 
 ## 3. Non-goals and authority boundary
 
@@ -74,6 +100,233 @@ The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
 `product.mk`, `Android.bp`, the init rc and the SELinux domain/context files under the owned Android overlay are the composition inputs. This verifier checks source selection only. Real Soong/policy compilation, target-files inventory and installed image binding remain distinct L3 operations.
+
+Android defers `inherit-product` expansion until it has evaluated each product
+node. A local `filter-out` cannot remove a sibling's inherited packages.
+`common_owner_open.mk` therefore inherits the generated
+`config/common_owner_open_base.mk` and the owner-open product node. Run
+`python3 tools/generate-owner-open-common-base.py --check` before composition.
+The generator preserves shared Android configuration from the sealed
+`config/common.mk`, removes its complete legacy Agent/RootFS/P01/debug-ADB
+section and excludes the old init module before inheritance. Sealed products
+retain their original common input. The owner-open init separately preserves
+TERMINFO and the ordinary bugreport key chord; it does not select the six old
+runtime control services. Same-source regression tests execute pinned Android
+inheritance macros under GNU Make for all variant/adb-root combinations. These
+tests use empty unrelated audio/version fixture includes with SDK disabled and
+cannot qualify a complete Android product. Rebuild target-files and inspect
+actual packages, init, SELinux and selected artifact identities after this
+graph change; an older image is not a compatible evidence substitute.
+Generator reads use bounded regular-file descriptors with identity checks;
+publication rejects a preexisting output symlink and replaces its directory
+entry with a completed private temporary inode. Publication is not a
+compare-and-swap against concurrent hostile writers. A late error can leave a
+complete output visible, so admission requires a successful standalone exit
+and a subsequent `--check`. Raw directory closure gets one attempt; unknown
+closure or asynchronous interruption requires the generator process to exit.
+
+The shared SDK library is also part of the product closure. Its sealed
+`required` feature XML, platform resource array and SystemServer dispatch can
+select the old Direct System API service even when no legacy runtime package
+appears in the local product list. The owner-open product exports the build
+boolean `trillionnium_owner_open.enabled`. The guarded SDK module definitions
+then remove the Agent identity/Binder static edges, the System API feature XML
+and the old Agent/Capability Lease/Open URI/plugin implementation sources.
+Unset or false uses the original sealed module inputs. The SDK's owner resource
+directory overlays only the external service array, retaining seven ordinary
+profile, hardware, display, trust, settings, global-action and health services.
+Ordinary shared SDK types and services can retain their platform namespace;
+that namespace alone is not proof of a legacy semantic service.
+
+Run `python3 tools/verify-owner-open-sdk-selection.py` with the other source
+gates. The constrained Blueprint/source regression is not a Soong evaluator.
+It checks typed literal properties and a restricted owned-product Make grammar,
+including one unconditional registered bool export. Dynamic setters, unknown
+conditional bodies, definitions and other namespace writes are rejected.
+Licensed upstream macro fixtures exercise the actual GNU Make export; the
+complete inherited Kati product and Soong configuration remain build gates.
+Full compilation must validate all remaining Java dependencies and prove the
+installed platform jar excludes the old implementation class definitions,
+the compiled resource array contains exactly the seven ordinary services,
+and the legacy feature XML is absent. Source tests, a stubbed Java startup
+fixture and package-name filtering do not qualify those built artifacts.
+
+The empty `android-integration/.find-ignore` is a registered Soong Finder
+template boundary. If this control repository is present inside an Android
+checkout, Finder prunes only this release-input mirror; apply its working-tree
+files to their declared Android project paths before building. The actual SDK,
+Authority, Shell and owner-open module directories remain discoverable. Do not
+place the marker at the control-repository root or an actual Android project
+root. This build rule does not qualify a source BOM or an installed image.
+
+### Owner source provenance and build-time META
+
+`tools/owner_source_provenance.py` produces the distinct
+`org.trillionnium.owner-source-bom.v4` receipt for
+`owner-open-whole-control-v4`. Its candidate includes the exact control commit,
+tree, source-archive digest and actual regular-file count. A new control tree
+must supply a newly measured count; a prior candidate count is not reusable.
+The current profile covers exactly 1170 resolved projects, with 38 explicitly
+bound private project generations and one whole control repository. This is a
+local measured composition. It does not migrate the canonical public manifest
+or assert that an unapproved private composition is a clean public source.
+
+Graph qualification requires all twelve exact input descriptors: resolved
+manifest, control archive, inventory index, canonical custody, original
+before/after vectors, manifest repository inventory, Motorola blob trees,
+generated source delta, owner source selection, manifest projections and
+private composition. `collect_owner_source_vector.py` measures the 1131
+original project work trees with Git filters, hooks and fsmonitor disabled.
+The raw status remains evidence: a hydrated LFS payload may appear modified
+under this policy. The content verifier must prove its canonical committed LFS
+pointer, committed attributes and complete actual payload size/SHA. Ordinary
+index or source modifications, uncommitted attributes, unhydrated pointers and
+missing projects reject the graph. No external filter or network hydration is
+run to make a checkout appear clean.
+
+Git content inventories use `org.trillionnium.owner-git-content-inventory.v3`.
+They keep `160000 commit` gitlinks separate from the measured `source_files`:
+the parent raw tree and committed index must retain each exact path and commit
+object name. A gitlink is not a blob, an empty payload or a measured child commit.
+An unmaterialized reference must have the same physical missing or empty state
+before and after collection, with held parent/directory identities and an
+explicit `submodule_content_measured=false`. The selected source view repeats
+these checks through `tools/owner_source_surface.py`; every other unknown
+directory, file or generated input remains a hold. Materialized submodules,
+symlink or special-file substitutes and changed references are rejected until
+a separate recursive content contract exists. No submodule is initialized or
+downloaded. A source graph receipt describes this exact checkout state; it does
+not prove the referenced child commit's contents, build usage or historical
+unreachability. Gitlinks cannot supply ordinary source files or manifest
+projection contents. Worktree-only ` D` status is accepted only for an exact
+committed gitlink with two identical physical missing observations, including
+its absence boundary. Ordinary blob deletion, staged changes and empty-directory
+deletion reports remain holds, and the original before/after vectors must retain
+the same full raw status as the measured inventory.
+
+For a slow complete checkout, `collect-git` and the original-vector collector
+can select `--git-query-seconds 120` within the finite 1..300-second range.
+The default remains 30 seconds, and every Git call is also capped by the
+remaining collection deadline. This changes no content, status or LFS
+admission rule. Manifest-projection queries keep their separate 30-second
+limit; retain actual collection invocations and failures with their source
+subject before running the image build.
+
+The v4 proposed set is the exact retained16 union affected24 in the fork catalog,
+with Frameworks and Nfc as the two overlaps: 38 private, 1131 original and one
+whole control project. It does not add manifest projects. The source input,
+BOM, build-time META and release consumer advance to v4 together; inventory.v3
+remains unchanged. Older outer profiles and 16-project compositions cannot
+qualify the new graph. The final composition.v2 must bind every actual complete
+fork receipt and the newly generated native/carrier subject, not prior evidence.
+
+The `android-integration/security-patches` directory contains the exact
+defensive patch inputs and `manifest.v1.json`. The Frameworks image
+header guard and NFC failure-state fix must be applied to complete exclusive
+private project forks; patch files must not be copied into Android working
+trees as overlays. The manifest binds before generations and file contents,
+ordered patches and expected after contents. The constrained image API returns
+null after rejecting a header, so its two new regression tests assert null;
+the upstream production guard is unchanged. Actual compiled tests, new whole
+fork generations, the source BOM and installed behavior remain required.
+These selected fixes do not establish complete bulletin, kernel or SoC coverage
+and do not authorize changing a security-patch date.
+
+The measured graph also binds the complete two Motorola non-Git trees, each
+manifest copy/link projection and actual destination bytes or directory
+closure, private/control generations and the complete selected source inputs.
+The current generated-delta contract accepts only a proved empty delta; a
+nonempty delta needs a new generator/input contract. Observations are
+sequential and explicitly do not claim a globally atomic snapshot.
+
+`tools/verify_owner_target_files_binding.py` materializes the distinct
+`org.trillionnium.owner-android-source-bom-binding.v4` projection from the exact
+BOM and `org.trillionnium.owner-android-build-source-inputs.v1`. Build inputs
+bind the same candidate, resolved manifest, raw BOM digest and finite ASCII
+stage ID. The owned `build/make/core/Makefile` overlay selects this path only
+when merged `PRODUCT_SYSTEM_EXT_PROPERTIES` contains
+`ro.trillionnium.owner_open.enabled=true`. It requires three explicit build
+inputs:
+
+```text
+TRILLINNIUM_OWNER_SOURCE_BOM_JSON
+TRILLINNIUM_OWNER_SOURCE_BUILD_INPUTS_JSON
+TRILLINNIUM_OWNER_SOURCE_BOM_BINDING_JSON
+```
+
+The target-files rule depends on these files and the three observer modules.
+Immediately after creating its private META directory, it runs
+`stage-binding-env` with a 120-second budget. The writer verifies the expected
+projection, rejects unsafe existing entries and publishes one new regular
+`META/trillionnium-owner-source-bom-binding.json` through its held directory
+descriptor. It runs before the META member list and final ZIP are generated.
+Failure terminates the rule. An existing target-files ZIP may not be patched
+afterward to claim this build provenance. Sealed products retain their existing
+rule and require no owner inputs.
+
+The ZIP reader checks the entire current ZIP digest on one stable descriptor,
+canonical unique members, finite central-directory allocation and the exact
+owner META bytes. A missing, duplicated or spliced projection rejects the
+artifact. This check does not prove every image entry's semantics, executable
+ART behavior, compiled SELinux policy, release signature or installed identity.
+Those remain separate Android and physical-target gates. The old P0 member and
+schema remain available only through their separate legacy mode.
+
+Observer code is executed from the same bounded FD-stable source bytes that
+were checked against its source contract. Existing Python bytecode caches and
+ambient modules cannot supply the executed implementation. Missing code,
+changed source or deadlines fail closed, including a late deadline after an
+otherwise complete observation.
+
+
+The phone entrypoint must inherit `config/common_owner_open_full_phone.mk`,
+which retains the ordinary full-phone and mobile configuration through
+`common_owner_open_mobile_full.mk` and `common_owner_open_mobile.mk`. Only
+its final common edge selects `common_owner_open.mk`. The three sealed
+mobile/full/phone snapshots remain byte-for-byte unchanged. Run
+`python3 tools/generate-owner-open-phone-config.py --check`; its fixed
+`tools/owner-open-phone-chain.v1.json` rules bind each snapshot to its
+project/head/tree/blob, byte count and SHA-256. Each owner output rewrites
+exactly one inherit edge. The generator bounds each source at 128 KiB,
+metadata at 16 KiB and the whole check at 15 seconds, rejects aliases,
+multiple links, changed inputs and duplicate metadata, and verifies every
+output and the unchanged inputs before returning success. A failed write
+is not a qualified source generation; rerun the check on all three outputs.
+
+For the declared private Fogos entrypoint, source composition must replace
+its sealed full-phone edge and remove its known appended owner product
+suffix, retaining every other byte, including its userdebug ADB opt-in.
+The closed before/after rule rejects unknown or already rewritten inputs.
+Importing the generic owner node in isolation cannot prove this actual
+phone entrypoint. The source fixture exercises the retained Android
+inherit macros across user/userdebug/eng, with unrelated hardware/core/audio
+inputs stubbed and SDK disabled; it does not qualify full Kati or Soong.
+Before image batches, inspect the actual generated product selection with
+the active main/debug/eng package fields: require the nine owner product
+modules, retain ordinary phone/SDK modules, and reject the complete retired
+runtime/P01/init selection. A typed owner boolean alone is insufficient.
+
+The source profile lists all three sealed baselines, owner outputs and
+phone generator/rules as required inputs; the source-closure check also
+runs the exact phone generator check. A source-only success keeps the
+actual phone entrypoint and compiled graph qualification false.
+The profile's implementation-path catalog covers the full module source,
+including those baseline inputs. Listing a baseline there does not select
+its sealed Make product edge; the generated owner phone wrappers determine
+the actual inheritance edges, which require a fresh compiled graph check.
+
+The source-closure verifier executes its common generator, phone generator and SDK checker
+from pinned raw source bytes, and its v2 facade admits the core verifier
+in the same way. Each single-link helper is bounded at 1 MiB with a five
+second whole binding deadline; every parent is opened without following
+symlinks, and the held descriptor, directory entry, SHA-256 and file
+identity are checked before and after execution. Bytecode caches supply
+no code to these entries. The facade registers only the admitted core
+namespace for dataclass annotation resolution and restores any prior
+namespace if admission fails. The cache regression includes an actual
+retired init in the source fixture: stale helper code must not turn that
+source rejection into success. These are source checks, and cannot replace
+the actual product graph, compiled SDK, target-files or installed tests.
 
 ## 6. State model and ownership
 
@@ -257,3 +510,5 @@ Exit evidence must demonstrate:
 - public release is explicitly enabled.
 
 A source change may reduce implementation risk, but the status stays open or source-closed-pending-evidence until an immutable, current, independently authorized receipt reaches the declared exit level.
+
+Proposed private38 source-only migration requires the exact retained16 union 24 declared affected projects (two overlaps), original1131 plus control1 and manifest1170. The 80 declared ordinary transforms (77 platform plus 3 kernel) are fixed in `android-integration/security-patches/owner-asb-fork-catalog.v1.json`. This catalog and its patches/evidence are declared canonical inputs, never working-tree overlay files. `prepare_owner_asb_fullforks.py` must produce all24 exclusive complete clones, full before/after inventories, unchanged original metadata maps, no unknown source surfaces, and an actual receipt. The final composition.v2 binds that receipt; vector/provenance/META/release consume v4 together. Inventory.v3, 128GiB whole content, 2GiB metadata, 120s recipe Git query, bounded helper9f9 and the source no-write guards remain binding. All whole-CVE, cumulative ASB, applicability, build/device/install and release claims remain unqualified. New candidate/source4/native/RootFS/final38/BOM observations must be actual; historical d9 captures or previews do not provide them.

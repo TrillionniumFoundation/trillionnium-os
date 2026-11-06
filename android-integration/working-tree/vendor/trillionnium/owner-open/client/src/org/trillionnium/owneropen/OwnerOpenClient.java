@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +21,8 @@ public final class OwnerOpenClient implements AutoCloseable {
     public interface Listener {
         void onFrame(String rawJsonLine);
         void onDisconnected(String reason);
+        default void onFrame(long generation, String rawJsonLine) { onFrame(rawJsonLine); }
+        default void onDisconnected(long generation, String reason) { onDisconnected(reason); }
     }
 
     private static final String SOCKET_NAME = "trillionnium_owner_open";
@@ -72,7 +75,7 @@ public final class OwnerOpenClient implements AutoCloseable {
                 ownedSocket = candidate;
                 ownedInput = candidateInput;
                 closed.set(false);
-                listener.onFrame(acknowledgement);
+                listener.onFrame(generation, acknowledgement);
             } catch (IOException | RuntimeException error) {
                 if (socket == candidate) {
                     closeLocked();
@@ -109,6 +112,23 @@ public final class OwnerOpenClient implements AutoCloseable {
         return send(frame, List.of("turn.inspect.result", "host.error"));
     }
 
+    public String inspectTurn(Map<String, Object> scope, String requestSha256, long cursor)
+            throws IOException {
+        return send(OwnerOpenFrame.turnInspect(scope, requestSha256, cursor, 256),
+                List.of("turn.inspect.result", "host.error"));
+    }
+
+    public String inspectRecovery(OwnerOpenFrame.RecoveryPlan plan) throws IOException {
+        String frame = plan.nextInspection();
+        if (frame == null) throw new IllegalArgumentException("recovery is already inspected");
+        return send(frame, List.of("turn.inspect.result", "job.inspect.result", "host.error", "job.error"));
+    }
+
+    public String resumeRecovery(OwnerOpenFrame.RecoveryPlan plan, long controlSequence)
+            throws IOException {
+        return send(plan.resume(controlSequence), List.of("stream.resume.ack", "host.error"));
+    }
+
     private String send(String frame, List<String> expectedKinds) throws IOException {
         String requestId = clientInstance + ":" + requestSequence.getAndIncrement();
         synchronized (lock) {
@@ -134,7 +154,12 @@ public final class OwnerOpenClient implements AutoCloseable {
         String reason = "owner-open ingress closed";
         try {
             while (isCurrent(generation, ownedSocket)) {
-                listener.onFrame(OwnerOpenFrame.readLine(ownedInput));
+                String frame = OwnerOpenFrame.readLine(ownedInput);
+                synchronized (lock) {
+                    if (isCurrentLocked(generation, ownedSocket)) {
+                        listener.onFrame(generation, frame);
+                    }
+                }
             }
         } catch (IOException | RuntimeException error) {
             reason = error.toString();
@@ -147,7 +172,11 @@ public final class OwnerOpenClient implements AutoCloseable {
                 }
             }
             if (notify) {
-                listener.onDisconnected(reason);
+                synchronized (lock) {
+                    if (generation == connectionGeneration) {
+                        listener.onDisconnected(generation, reason);
+                    }
+                }
             }
         }
     }

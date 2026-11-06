@@ -1,0 +1,13 @@
+--- actual-captured/frameworks/base/services/core/java/com/android/server/wm/WindowState.java
++++ owned-final/frameworks/base/services/core/java/com/android/server/wm/WindowState.java
+@@ -3131,8 +3131,9 @@
+     }
+ 
+     void setHiddenWhileSuspended(boolean hide) {
++        final int baseType = getBaseType();
+         if (mOwnerCanAddInternalSystemWindow
+-                || (!isSystemAlertWindowType(mAttrs.type) && mAttrs.type != TYPE_TOAST)) {
++                || (!isSystemAlertWindowType(baseType) && baseType != TYPE_TOAST)) {
+             return;
+         }
+         if (mHiddenWhileSuspended == hide) {

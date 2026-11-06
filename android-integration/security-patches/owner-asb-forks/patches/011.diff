@@ -1,0 +1,36 @@
+--- actual-captured/external/libppd/ppd/raster-interpret.c
++++ owned-final/external/libppd/ppd/raster-interpret.c
+@@ -17,6 +17,7 @@
+ #include <ppd/debug-internal.h>
+ #include <ppd/libcups2-private.h>
+ #include <math.h>
++#include <stdint.h>
+ 
+ 
+ //
+@@ -490,10 +491,23 @@
+ 	break;
+   }
+ 
+-  h->cupsBytesPerLine = (h->cupsBitsPerPixel * h->cupsWidth + 7) / 8;
++  uint64_t bpl = ((uint64_t)h->cupsBitsPerPixel * h->cupsWidth + 7) / 8;
++  if (bpl > UINT32_MAX)
++  {
++    _ppdRasterAddError("Invalid raster dimensions (overflow).\n");
++    return (-1);
++  }
++  h->cupsBytesPerLine = (unsigned int)bpl;
+ 
+   if (h->cupsColorOrder == CUPS_ORDER_BANDED)
+-    h->cupsBytesPerLine *= h->cupsNumColors;
++  {
++    uint64_t bpl = (uint64_t)h->cupsBytesPerLine * h->cupsNumColors;
++    if (bpl > UINT32_MAX) {
++      _ppdRasterAddError("Invalid raster dimensions/color (overflow).\n");
++      return (-1);
++    }
++    h->cupsBytesPerLine = (unsigned int)bpl;
++  }
+ 
+   return (status);
+ }

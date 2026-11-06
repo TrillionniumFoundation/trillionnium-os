@@ -57,17 +57,17 @@ class VerifyOwnerOpenMaterializedPayloadTest(unittest.TestCase):
             "staging_manifest_sha256": "0" * 64,
             "architecture": "aarch64",
             "libc": "glibc",
-            "entry_count": 1,
+            "entry_count": len(module.REQUIRED_PAYLOAD_PATHS),
             "entries": [
                 {
-                    "role": "fixture",
-                    "destination": "/etc/trillionnium/owner-open/config.json",
-                    "mode": "0444",
+                    "role": f"runtime_fixture_{index}",
+                    "destination": destination,
+                    "mode": "0555" if destination in module.REQUIRED_EXECUTABLE_PATHS else "0444",
                     "uid": 0,
                     "gid": 0,
                     "sha256": "0" * 64,
                     "bytes": 1,
-                }
+                } for index, destination in enumerate(module.REQUIRED_PAYLOAD_PATHS)
             ],
             "runtime_state_directory": "/var/lib/trillionnium/owner-open",
             "mksquashfs": {"sha256": "1" * 64},
@@ -144,6 +144,78 @@ class VerifyOwnerOpenMaterializedPayloadTest(unittest.TestCase):
         self.write_manifest(value)
         with self.assertRaisesRegex(module.MaterializationError, "entry inventory"):
             module.materialize("manifest", self.outputs / "out", [self.image, self.manifest])
+
+    def test_missing_native_provider_config_or_python_closure_is_rejected(self) -> None:
+        missing_paths = (
+            "/etc/trillionnium/codex-provider.json",
+            "/usr/libexec/trillionnium/owner-open/codex_app_server_provider.py",
+            "/usr/libexec/trillionnium/owner-open/codex_callback_observation.py",
+            "/usr/libexec/trillionnium/owner-open/jsonl_provider_runtime.py",
+            "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker_v2.py",
+            "/bin/sh",
+        )
+        for runtime in (module, android_module):
+            for missing in missing_paths:
+                with self.subTest(runtime=runtime.__name__, missing=missing):
+                    value = json.loads(json.dumps(self.value))
+                    self.assertIn(missing, [entry["destination"] for entry in value["entries"]])
+                    value["entries"] = [entry for entry in value["entries"] if entry["destination"] != missing]
+                    value["entry_count"] = len(value["entries"])
+                    self.write_manifest(value)
+                    output = self.outputs / "missing-runtime"
+                    with self.assertRaisesRegex(runtime.MaterializationError, "misses required runtime paths"):
+                        runtime.materialize("manifest", output, [self.image, self.manifest])
+                    self.assertFalse(output.exists())
+
+    def test_empty_nonexecutable_stdlib_inventory_is_preserved(self) -> None:
+        value = json.loads(json.dumps(self.value))
+        value["entries"].append({
+            "role": "empty_package_initializer",
+            "destination": "/usr/lib/python3.11/urllib/__init__.py",
+            "mode": "0444", "uid": 0, "gid": 0,
+            "sha256": hashlib.sha256(b"").hexdigest(), "bytes": 0,
+        })
+        value["entry_count"] = len(value["entries"])
+        self.write_manifest(value)
+        for index, runtime in enumerate((module, android_module)):
+            output = self.outputs / f"empty-stdlib-{index}"
+            runtime.materialize("manifest", output, [self.image, self.manifest])
+            self.assertEqual(output.read_bytes(), self.manifest.read_bytes())
+
+    def test_empty_critical_config_or_helper_is_rejected(self) -> None:
+        for required in (
+            "/etc/trillionnium/codex-provider.json",
+            "/usr/libexec/trillionnium/owner-open/jsonl_provider_runtime.py",
+        ):
+            value = json.loads(json.dumps(self.value))
+            entry = next(item for item in value["entries"] if item["destination"] == required)
+            entry.update(bytes=0, sha256=hashlib.sha256(b"").hexdigest())
+            self.write_manifest(value)
+            for runtime in (module, android_module):
+                with self.assertRaisesRegex(runtime.MaterializationError, "required runtime entry is empty"):
+                    runtime.materialize("manifest", self.outputs / "empty-critical", [self.image, self.manifest])
+                self.assertFalse((self.outputs / "empty-critical").exists())
+
+    def test_invalid_empty_digest_or_executable_inventory_is_rejected(self) -> None:
+        for mode, digest in (("0444", "0" * 64), ("0555", hashlib.sha256(b"").hexdigest())):
+            value = json.loads(json.dumps(self.value))
+            value["entries"].append({
+                "role": "empty_extra", "destination": "/usr/lib/python3.11/empty.py",
+                "mode": mode, "uid": 0, "gid": 0, "bytes": 0, "sha256": digest,
+            })
+            value["entry_count"] = len(value["entries"])
+            self.write_manifest(value)
+            for runtime in (module, android_module):
+                with self.assertRaisesRegex(runtime.MaterializationError, "invalid empty-file contract"):
+                    runtime.materialize("manifest", self.outputs / "empty-invalid", [self.image, self.manifest])
+
+    def test_fixed_provider_launcher_must_have_execute_permission(self) -> None:
+        value = json.loads(json.dumps(self.value))
+        next(entry for entry in value["entries"] if entry["destination"] == "/usr/libexec/trillionnium/provider-adapter")["mode"] = "0444"
+        self.write_manifest(value)
+        for runtime in (module, android_module):
+            with self.assertRaisesRegex(runtime.MaterializationError, "required runtime entry is not executable"):
+                runtime.materialize("manifest", self.outputs / "not-executable", [self.image, self.manifest])
 
     def test_entry_uid_and_gid_must_be_json_integers(self) -> None:
         for field in ("uid", "gid"):

@@ -96,9 +96,8 @@ pub(crate) fn run() -> Result<(), String> {
         })
         .map_err(|error| format!("failed to spawn v4 turn core: {error}"))?;
 
-    let stdout = std::io::stdout();
     process_job_host(
-        stdout.lock(),
+        trillionnium_owner_open_trace::caller_stdout(),
         outer_receiver,
         core_sender,
         manager,

@@ -2315,6 +2315,10 @@ impl ControllerState {
         let observations_digest = hex(&Sha256::digest(observation_bytes));
         let policy = self.shadow_policy.clone();
         let mut recommendations = Vec::with_capacity(observations.len());
+        // Stage changes until every observation and the final decision have
+        // passed validation. A later rejected identity must not leave an
+        // earlier identity's safety latch or dwell timer in authoritative state.
+        let mut pending_history = BTreeMap::new();
         for observation in observations {
             validate_registry_observation_binding(
                 registry,
@@ -2414,7 +2418,7 @@ impl ControllerState {
                 } else {
                     previous.map_or(generated_at_ms, |prior| prior.last_change_ms)
                 };
-                self.shadow_recommendations.insert(
+                pending_history.insert(
                     identity,
                     ShadowRecommendationState {
                         recommended_concurrency: recommended,
@@ -2453,6 +2457,7 @@ impl ControllerState {
             decision_digest: String::new(),
         };
         decision.decision_digest = decision.compute_digest()?;
+        self.shadow_recommendations.extend(pending_history);
         Ok(decision)
     }
 
@@ -2914,6 +2919,38 @@ mod tests {
             controller.shadow_decision(110).unwrap_err(),
             ControlError::LeaseExpired
         );
+    }
+
+    #[test]
+    fn rejected_shadow_projection_does_not_change_later_recommendations() {
+        let controller = Controller::new(ControlMode::Shadow, 1, config()).unwrap();
+        let first = issue(&controller, "a-jobs", "j-1", "p0", 10, Some(1_000));
+        let second = issue(&controller, "z-jobs", "j-2", "p0", 10, Some(1_000));
+        controller.observe(observation(&first)).unwrap();
+        controller.observe(observation(&second)).unwrap();
+        let initial = controller.shadow_decision(20).unwrap();
+        assert_eq!(initial.recommendations[0].recommended_concurrency, 8);
+
+        let mut guarded = observation(&first);
+        guarded.observed_at_ms = 21;
+        guarded.health_score = 0.1;
+        controller.observe(guarded).unwrap();
+        let mut future = observation(&second);
+        future.observed_at_ms = 40;
+        controller.observe(future).unwrap();
+        assert!(matches!(
+            controller.shadow_decision(30),
+            Err(ControlError::Invalid(message)) if message.contains("precedes")
+        ));
+
+        // The first identity was safe again before any successful projection
+        // saw its unhealthy sample. A rejected projection must not leave a
+        // safety latch or dwell timer that clamps this later valid decision.
+        let mut recovered = observation(&first);
+        recovered.observed_at_ms = 41;
+        controller.observe(recovered).unwrap();
+        let retry = controller.shadow_decision(42).unwrap();
+        assert_eq!(retry.recommendations[0].recommended_concurrency, 8);
     }
 
     #[test]

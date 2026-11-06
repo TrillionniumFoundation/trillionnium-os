@@ -504,8 +504,12 @@ fn process_job_host<W: IoWrite>(
     hello_barrier.configure_control_seq(control_seq, connection_id);
 
     loop {
+        // Dispatch and inspection helpers from the previous iteration have
+        // returned and released product locks. The streaming writer retains
+        // no stdout mutex while performing the separate evidence drain.
+        trillionnium_owner_open_trace::drain_stream_at_caller_boundary();
         match receiver.recv_timeout(JOB_POLL_INTERVAL) {
-            Ok(JobHostMessage::Input(encoded)) => match RunTurnFrame::decode(&encoded, &limits) {
+            Ok(JobHostMessage::Input(encoded)) => match trillionnium_owner_open_trace::measure(trillionnium_owner_open_trace::Stage::HostDecode, "core.selected-inbound", || RunTurnFrame::decode(&encoded, &limits)) {
                 Ok(frame) if frame.kind == FRAME_HELLO => {
                     // The first hello is forwarded to the core; all later
                     // hellos are rejected locally and can never reopen the
@@ -676,7 +680,7 @@ fn process_job_host<W: IoWrite>(
             }
             Ok(JobHostMessage::CoreLine(line)) => {
                 let line = augment_core_line(line, &manager, &limits);
-                let core_kind = RunTurnFrame::decode(&line, &limits)
+                let core_kind = trillionnium_owner_open_trace::measure(trillionnium_owner_open_trace::Stage::HostDecode, "core.internal-frame", || RunTurnFrame::decode(&line, &limits))
                     .ok()
                     .map(|frame| frame.kind);
                 if core_kind.as_deref() == Some(FRAME_TURN_END) && !hello_barrier.pending() {

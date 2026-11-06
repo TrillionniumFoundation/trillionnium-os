@@ -15,6 +15,7 @@ mod journal {
 }
 mod manager;
 mod process;
+mod resources;
 mod types;
 mod validate;
 

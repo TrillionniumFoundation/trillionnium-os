@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+import json
 from pathlib import Path
 import tempfile
 import threading
@@ -30,6 +31,7 @@ from g1_evidence import (  # noqa: E402
     EvidenceError,
     package_id,
     verify_evidence_directory,
+    promotion_plan,
     write_json,
 )
 
@@ -179,6 +181,50 @@ class G1EvidenceLiveHardeningTest(unittest.TestCase):
             self.assertFalse(report["all_gaps_promotable"])
             self.assertFalse(report["public_release"])
             self.assertFalse(report["automatic_redispatch"])
+
+    def test_closed_register_does_not_replace_live_exact_source_evidence(self) -> None:
+        from g1_evidence_core import verify_evidence_directory as verify_core
+
+        with evidence_fixture_directory() as directory:
+            write_json(directory / "historical.json", self.base)
+            register = json.loads(GAP_REGISTER.read_text())
+            for gap in register["gaps"]:
+                gap["status"] = "CLOSED"
+            register_path = directory.parent / "gap-register.json"
+            write_json(register_path, register)
+            for verify in (verify_core, verify_evidence_directory):
+                for now, source in ((NOW, "f" * 40),
+                                    (datetime(2026, 11, 1, tzinfo=timezone.utc), SOURCE_COMMIT)):
+                    with self.subTest(verifier=verify.__module__, now=now, source=source):
+                        report = verify(directory, register_path,
+                                        current_source_commit=source, now=now)
+                        self.assertEqual(report["promotable_gaps"], {})
+                        self.assertEqual(set(report["unresolved_gaps"]),
+                                         {gap["id"] for gap in register["gaps"]})
+                        self.assertFalse(report["all_gaps_promotable"])
+                        # Old reports may have cached an empty unresolved list.
+                        report["unresolved_gaps"] = []
+                        report["all_gaps_promotable"] = True
+                        plan = promotion_plan(report, register_path)
+                        self.assertFalse(plan["zero_gap_after_plan"])
+                        self.assertFalse(plan["public_release_after_plan"])
+                        self.assertEqual(plan["unresolved_gaps"],
+                                         sorted(gap["id"] for gap in register["gaps"]))
+
+    def test_gap_status_and_unknown_plan_coverage_fail_closed(self) -> None:
+        from g1_evidence_core import _gap_specs_digest, load_gap_specs
+
+        with evidence_fixture_directory() as directory:
+            register = json.loads(GAP_REGISTER.read_text())
+            register["gaps"][0]["status"] = "APPROVED_BY_SELF"
+            path = directory.parent / "gap-register.json"
+            write_json(path, register)
+            with self.assertRaisesRegex(EvidenceError, "status is unsupported"):
+                load_gap_specs(path)
+            report = {"gap_specs_sha256": _gap_specs_digest(load_gap_specs(GAP_REGISTER)),
+                      "promotable_gaps": {"GAP-UNKNOWN": "sha256:" + "a" * 64}}
+            with self.assertRaisesRegex(EvidenceError, "unknown promotable gaps"):
+                promotion_plan(report, GAP_REGISTER)
 
 
 class G1EvidenceFixtureIsolationTest(unittest.TestCase):

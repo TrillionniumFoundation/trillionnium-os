@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import fcntl
 import os
 from pathlib import Path
 import shutil
@@ -10,6 +11,7 @@ import sys
 import tempfile
 import time
 import unittest
+from types import SimpleNamespace
 from unittest import mock
 
 from tools.tests.authenticated_python_bootstrap_fixture import (
@@ -78,6 +80,257 @@ os._exit(0)
 
 
 class HostReproducibilityTests(unittest.TestCase):
+    def test_sealed_gcc_discovers_original_helper_prefix_and_compiles_without_ambient_flags(self) -> None:
+        compiler = shutil.which("gcc")
+        self.assertIsNotNone(compiler, "the sealed build recipe requires GNU GCC")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            custody = root / "custody"
+            custody.mkdir(mode=0o700)
+            pin = VERIFY.PinnedTool(Path(compiler).resolve(), custody, "cc")
+            runtime = SimpleNamespace(descriptors=(), environment=lambda: {})
+            try:
+                helpers = VERIFY.gcc_helper_configuration(pin, root, runtime)
+                self.assertFalse(helpers["helpers_recursively_attested"])
+                self.assertEqual(helpers["discovery_execution"], "sealed-cc-with-selected-source-argv0")
+                source = root / "hello.c"
+                source.write_text('int main(void) { return 0; }\n')
+                executable = root / "hello"
+                tools = {name: {"path": "/unused/" + name} for name in ("cargo", "rustc", "cc", "ar")}
+                tools["cc"]["gcc_helpers"] = helpers
+                with mock.patch.dict(os.environ, {"GCC_EXEC_PREFIX": "/hostile/", "COMPILER_PATH": "/hostile/", "LIBRARY_PATH": "/hostile/"}):
+                    _, env = VERIFY.recipe(root, root / "target", root / "home", root / "cache", tools, {"source_date_epoch": "123"})
+                self.assertEqual(env["GCC_EXEC_PREFIX"], helpers["gcc_exec_prefix"])
+                self.assertNotIn("COMPILER_PATH", env)
+                self.assertNotIn("LIBRARY_PATH", env)
+                env["PATH"] = "/usr/bin:/bin"
+                result = subprocess.run([str(pin.execution_path), str(source), "-o", str(executable)],
+                    env=env, pass_fds=(pin.descriptor,), capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(subprocess.run([str(executable)]).returncode, 0)
+                pin.assert_descriptor()
+                pin.assert_source_selection()
+            finally:
+                pin.close()
+
+    def query_split_group(self, stream: int | None, *, close_pipes: bool = False) -> str:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            marker = root / "child"
+            body = (f"while True: os.write({stream}, b'x' * 4096)"
+                    if stream is not None else "while True: time.sleep(1)")
+            close = "os.close(1); os.close(2)" if close_pipes else ""
+            script = f'''import os,signal,time
+from pathlib import Path
+child=os.fork()
+if child==0:
+    signal.signal(signal.SIGTERM,signal.SIG_IGN)
+    Path({str(marker)!r}).write_text(str(os.getpid()))
+    {close}
+    {body}
+while not Path({str(marker)!r}).exists(): time.sleep(0.001)
+os.write(1,b'identity\\n')
+os._exit(0)
+'''
+            started = time.monotonic()
+            try:
+                return VERIFY.query([sys.executable, "-c", script], root)
+            finally:
+                self.assertTrue(marker.exists(), "query did not start its native fork fixture")
+                wait_not_live(int(marker.read_text()))
+                self.assertLess(time.monotonic() - started, 6.0)
+
+    def test_identity_query_bounds_stdout_before_capture_and_cleans_exited_leader_child(self) -> None:
+        with self.assertRaisesRegex(VERIFY.VerificationError, "combined output bound"):
+            self.query_split_group(1)
+
+    def test_identity_query_bounds_stderr_before_capture_and_cleans_exited_leader_child(self) -> None:
+        with self.assertRaisesRegex(VERIFY.VerificationError, "combined output bound"):
+            self.query_split_group(2)
+
+    def test_identity_query_uses_one_shared_stdout_stderr_budget(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            script = "import os;os.write(1,b'x'*600);os.write(2,b'y'*600)"
+            with mock.patch.object(VERIFY.CORE, "MAX_QUERY_OUTPUT_BYTES", 1024):
+                with self.assertRaisesRegex(VERIFY.VerificationError, "combined output bound"):
+                    VERIFY.query([sys.executable, "-c", script], Path(directory))
+
+    def test_identity_query_timeout_cleans_child_after_leader_exit(self) -> None:
+        with mock.patch.object(VERIFY.CORE, "QUERY_TIMEOUT_SECONDS", 1.0):
+            with self.assertRaisesRegex(VERIFY.VerificationError, "timeout"):
+                self.query_split_group(None)
+
+    def test_successful_identity_query_cleans_child_that_closed_both_pipes(self) -> None:
+        self.assertEqual(self.query_split_group(None, close_pipes=True), "identity")
+
+    def test_identity_query_has_devnull_stdin_finite_env_and_explicit_fd_inheritance(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            read_fd, write_fd = os.pipe()
+            try:
+                os.write(write_fd, b"identity\n")
+                script = ("import os;assert os.read(0,1)==b'';"
+                          "assert set(os.environ)=={'PATH','LC_ALL'};"
+                          f"os.write(1,os.read({read_fd},64))")
+                self.assertEqual(VERIFY.query([sys.executable, "-c", script], Path(directory),
+                                              pass_fds=(read_fd,)), "identity")
+            finally:
+                os.close(read_fd)
+                os.close(write_fd)
+
+    def test_identity_query_nonzero_status_does_not_expose_stderr(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            script = "import os;os.write(2,b'private-fixture-token');os._exit(7)"
+            with self.assertRaisesRegex(VERIFY.VerificationError, "status 7") as failure:
+                VERIFY.query([sys.executable, "-c", script], Path(directory))
+            self.assertNotIn("private-fixture-token", str(failure.exception))
+
+    def test_identity_query_requires_strict_utf8_on_both_streams_without_disclosure(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            for stream in (1, 2):
+                with self.subTest(stream=stream):
+                    script = f"import os;os.write({stream},b'private-fixture-token'+bytes([255]))"
+                    with self.assertRaisesRegex(VERIFY.VerificationError, "strict UTF-8") as failure:
+                        VERIFY.query([sys.executable, "-c", script], Path(directory))
+                    self.assertNotIn("private-fixture-token", str(failure.exception))
+
+    def test_identity_query_selector_setup_failure_reaps_actual_process(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            original = VERIFY.CLEANUP.OwnedSessionPopen.__init__
+            processes = []
+
+            def observe(process, *args, **kwargs):
+                original(process, *args, **kwargs)
+                processes.append(process)
+
+            with mock.patch.object(VERIFY.CLEANUP.OwnedSessionPopen, "__init__", observe), \
+                    mock.patch.object(VERIFY.selectors, "DefaultSelector", side_effect=OSError("fixture setup")):
+                with self.assertRaisesRegex(OSError, "fixture setup"):
+                    VERIFY.query([sys.executable, "-c", "import time;time.sleep(20)"], Path(directory))
+            self.assertEqual(len(processes), 1)
+            self.assertIsNotNone(processes[0].returncode)
+            self.assertTrue(processes[0].stdout.closed)
+            self.assertTrue(processes[0].stderr.closed)
+            wait_not_live(processes[0].pid)
+
+    def make_runtime_sdk(self, root: Path) -> tuple[Path, Path]:
+        compiler = shutil.which("cc")
+        if compiler is None:
+            self.fail("the Linux reproducibility test requires the documented C compiler")
+        sdk, custody = root / "sdk", root / "custody"
+        (sdk / "bin").mkdir(parents=True)
+        (sdk / "lib").mkdir()
+        custody.mkdir(mode=0o700)
+        llvm = sdk / "lib/libLLVM.so.test"
+        driver = sdk / "lib/librustc_driver-deadbeef.so"
+        for text, output, arguments in (
+            ("int llvm_value(void) { return 17; }", llvm,
+             ["-shared", "-fPIC", "-Wl,-soname,libLLVM.so.test"]),
+            ("extern int llvm_value(void); int driver_value(void) { return llvm_value(); }",
+             driver, ["-shared", "-fPIC", "-L" + str(sdk / "lib"),
+                      "-Wl,--no-as-needed", "-l:libLLVM.so.test",
+                      "-Wl,-soname,librustc_driver-deadbeef.so",
+                      "-Wl,-rpath,$ORIGIN/../lib"]),
+            ('#include <stdio.h>\nextern int driver_value(void);\n'
+             'int main(void) { printf("%d\\n", driver_value()); return 0; }',
+             sdk / "bin/rustc", ["-L" + str(sdk / "lib"),
+                                 "-l:librustc_driver-deadbeef.so",
+                                 "-Wl,-rpath,$ORIGIN/../lib"]),
+        ):
+            subprocess.run([compiler, "-x", "c", "-", *arguments, "-o", str(output)],
+                           input=text, text=True, capture_output=True, check=True)
+        return sdk, custody
+
+    def test_sealed_runtime_executes_original_shared_elf_after_both_library_swaps(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sdk, custody = self.make_runtime_sdk(root)
+            pin = VERIFY.PinnedTool(sdk / "bin/rustc", custody, "rustc")
+            runtime = VERIFY.PinnedRustRuntime(sdk / "bin/rustc", custody)
+            try:
+                for library in runtime.pins.values():
+                    library.requested_path.write_bytes(b"hostile replacement")
+                    with self.assertRaises(OSError):
+                        os.pwrite(library.descriptor, b"X", 0)
+                    self.assertEqual(fcntl.fcntl(library.descriptor, fcntl.F_GET_SEALS), 15)
+                actual = VERIFY.query([str(pin.execution_path)], root,
+                                      pass_fds=(pin.descriptor, *runtime.descriptors),
+                                      runtime=runtime)
+                self.assertEqual(actual, "17")
+                marker = root / "mutable-executed"
+                pin.requested_path.write_text(f"#!/bin/sh\ntouch '{marker}'\nexit 99\n")
+                pin.requested_path.chmod(0o700)
+                self.assertEqual(VERIFY.query([str(pin.requested_path)], root,
+                    executable=pin.execution_path,
+                    pass_fds=(pin.descriptor, *runtime.descriptors), runtime=runtime), "17")
+                self.assertFalse(marker.exists())
+                runtime.assert_descriptor()
+                with self.assertRaisesRegex(VERIFY.VerificationError, "selected tool"):
+                    runtime.assert_source_selection()
+            finally:
+                runtime.close()
+                pin.close()
+
+    def test_runtime_query_and_recipe_discard_ambient_loader_variables(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sdk, custody = self.make_runtime_sdk(root)
+            pin = VERIFY.PinnedTool(sdk / "bin/rustc", custody, "rustc")
+            runtime = VERIFY.PinnedRustRuntime(sdk / "bin/rustc", custody)
+            marker = root / "ambient-executed"
+            preload = root / "preload.so"
+            payload = ('#include <stdio.h>\n__attribute__((constructor)) '
+                       f'void hostile(void) {{ FILE *f=fopen("{marker}", "w"); '
+                       'if(f) { fputs("executed",f); fclose(f); } }')
+            subprocess.run([shutil.which("cc"), "-x", "c", "-", "-shared", "-fPIC",
+                            "-o", str(preload)], input=payload, text=True,
+                           capture_output=True, check=True)
+            try:
+                with mock.patch.dict(os.environ, {"LD_PRELOAD": str(preload),
+                                                   "LD_LIBRARY_PATH": str(root)}):
+                    self.assertEqual(VERIFY.query([str(pin.execution_path)], root,
+                        pass_fds=(pin.descriptor, *runtime.descriptors), runtime=runtime), "17")
+                    tools = {name: {"path": "/tools/" + name}
+                             for name in ("cargo", "rustc", "cc", "ar")}
+                    tools["rust_runtime"] = runtime.identity()
+                    _, env = VERIFY.recipe(root, root / "target", root / "home", root / "cache",
+                                           tools, {"source_date_epoch": "123"})
+                self.assertFalse(marker.exists())
+                self.assertNotIn("LD_PRELOAD", env)
+                self.assertEqual(env["LD_LIBRARY_PATH"], str(runtime.execution_directory))
+                flags = env["CARGO_ENCODED_RUSTFLAGS"].split("\x1f")
+                self.assertEqual(flags[flags.index("--sysroot") + 1], str(sdk))
+            finally:
+                runtime.close()
+                pin.close()
+
+    def test_runtime_nonelf_symlink_ambiguity_and_aggregate_bound_fail_without_fd_leaks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sdk, _ = self.make_runtime_sdk(root)
+            originals = {path.name: path.read_bytes() for path in (sdk / "lib").iterdir()}
+            baseline = len(os.listdir("/proc/self/fd"))
+            for index, failure in enumerate(("nonelf", "symlink", "ambiguous", "budget")):
+                with self.subTest(failure=failure):
+                    for path in (sdk / "lib").iterdir():
+                        path.unlink()
+                    for name, data in originals.items():
+                        (sdk / "lib" / name).write_bytes(data)
+                    custody = root / f"failure-{index}"
+                    custody.mkdir(mode=0o700)
+                    driver = sdk / "lib/librustc_driver-deadbeef.so"
+                    if failure == "nonelf":
+                        driver.write_bytes(b"not an ELF")
+                    elif failure == "symlink":
+                        driver.unlink()
+                        driver.symlink_to(sdk / "lib/libLLVM.so.test")
+                    elif failure == "ambiguous":
+                        (sdk / "lib/librustc_driver-cafe.so").write_bytes(originals[driver.name])
+                    bound = 1 if failure == "budget" else VERIFY.MAX_PINNED_RUST_RUNTIME_BYTES
+                    with mock.patch.object(VERIFY.CORE, "MAX_PINNED_RUST_RUNTIME_BYTES", bound):
+                        with self.assertRaises((RuntimeError, OSError, VERIFY.VerificationError)):
+                            VERIFY.PinnedRustRuntime(sdk / "bin/rustc", custody)
+                    self.assertEqual(len(os.listdir("/proc/self/fd")), baseline)
+
     def test_only_two_successful_identical_builds_pass(self) -> None:
         self.assertTrue(VERIFY.compare_artifacts(builds())["passed"])
         with self.assertRaises(VERIFY.VerificationError):

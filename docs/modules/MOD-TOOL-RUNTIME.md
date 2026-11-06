@@ -136,6 +136,32 @@ Measurement status: **unmeasured until qualified evidence**.
 
 These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
+Direct substrate resource admission now checks both a conservative profile
+reservation and actual owned capacities within32 MiB, including reader/blocked
+send/current/output-copy buffers, stdin, request/spec/Command metadata, argv and
+environment nodes. Schema byte/count ceilings never override that aggregate
+gate. A linked-module shared64 MiB /16 active process-leader lease is acquired
+before Accepted and held through cleanup; a capacity refusal has no acceptance
+observation or process start. All four pipe/PTY shell/ADB entry points use it.
+
+The bridge acquires a movable `ExecutionCapacity` before registry begin/claim,
+consumes the request instead of keeping a stdin/argv/environment clone, and
+bounds enclosing cancellation flags to64 even for an infinite iterator. Existing
+terminal/live/unknown calls retain conflict/cancellation truth and do not need
+new process capacity or authorize redispatch. Capacity tokens are consumed once
+and rechecked against actual request/limit reservations before acceptance.
+
+Inherited host environment is snapshotted and checked at1 MiB before admission,
+then only the existing inheritance allowlist is copied from that snapshot before
+the explicit request delta is applied; no later host-env lookup can widen the
+admitted Command. Three MiB of fixed staging covers its normalized
+copies and operation controls. Standard-library snapshot capture may first
+allocate host-owned environment values before rejection; this is not a complete
+pre-allocation guarantee for arbitrary in-process environment mutation.
+Caller-held output/records, foreign buffers, allocator/thread-stack overhead and
+external descendant processes remain outside the owned substrate pool. This is
+source admission evidence, not a whole-RSS or installed resource qualification.
+
 ## 10. Persistence, recovery and reconciliation
 
 Process-group, pidfd or cgroup observations are used where available. Leader exit alone is not proof that descendants are absent. Ambiguous cleanup is reported as unknown and blocks automatic redispatch.

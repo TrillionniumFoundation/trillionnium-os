@@ -56,6 +56,8 @@ constexpr const char* kImageManifestSchema =
     "org.trillionnium.owner-open.rootfs-image-manifest.v1";
 constexpr const char* kStagingManifestSchema =
     "org.trillionnium.owner-open.rootfs-payload-manifest.v1";
+constexpr std::string_view kEmptyFileDigest =
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
 constexpr const char* kRuntimeProfileSchema =
     "org.trillionnium.owner-open.android-runtime-profile.v3";
 constexpr const char* kRuntimeProfileRevision = "2026-08-29-r5-android-source-closure";
@@ -349,8 +351,9 @@ bool ReadImageManifest(ImageManifest* manifest) {
     std::uint64_t gid = 0;
     std::uint64_t bytes = 0;
     if (!JsonUnsigned(item, "uid", &uid) || !JsonUnsigned(item, "gid", &gid) || uid != 0 ||
-        gid != 0 || !JsonUnsigned(item, "bytes", &bytes) || bytes == 0 ||
-        bytes > kMaximumEntryBytes) {
+        gid != 0 || !JsonUnsigned(item, "bytes", &bytes) ||
+        bytes > kMaximumEntryBytes ||
+        (bytes == 0 && ((entry.mode & 0111) != 0 || entry.digest != kEmptyFileDigest))) {
       errno = EBADMSG;
       return false;
     }
@@ -362,24 +365,65 @@ bool ReadImageManifest(ImageManifest* manifest) {
 
   // The image manifest is the complete pre-Android payload contract, not just
   // a digest envelope. Require every path that the supervisor will execute.
-  static constexpr std::array<std::string_view, 13> kRequiredPaths = {
+  static constexpr std::array<std::string_view, 34> kRequiredPaths = {
+      "/bin/sh",
       "/usr/bin/python3",
       "/usr/bin/adb",
       "/usr/bin/codex",
       "/usr/libexec/trillionnium/trillionnium-owner-open-r5-host",
       "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
-      "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
-      "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker.py",
-      "/usr/libexec/trillionnium/owner-open/codex_owner_open_mcp.py",
-      "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification_release.py",
-      "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_release.py",
-      "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_release.py",
       "/usr/libexec/trillionnium/provider-adapter",
+      "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_release.py",
+      "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_selected.py",
+      "/usr/libexec/trillionnium/owner-open/codex_app_server_provider.py",
+      "/usr/libexec/trillionnium/owner-open/codex_callback_observation.py",
+      "/usr/libexec/trillionnium/owner-open/codex_owner_open_mcp.py",
+      "/usr/libexec/trillionnium/owner-open/jsonl_provider_runtime.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_admission_v2.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_audit.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_base_v2.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_common.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_connections.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_convergence_v2.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_mux.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_runtime.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_broker_server_v2.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker_v2.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_mcp_common.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_mcp_host.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_mcp_jobs.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+      "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_release.py",
+      "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_selected.py",
+      "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification.py",
+      "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification_release.py",
       "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
+      "/etc/trillionnium/codex-provider.json",
   };
   for (const std::string_view required : kRequiredPaths) {
     if (std::none_of(manifest->entries.begin(), manifest->entries.end(),
-                     [required](const PayloadEntry& entry) { return entry.path == required; })) {
+                     [required](const PayloadEntry& entry) {
+                       return entry.path == required && entry.bytes > 0;
+                     })) {
+      errno = EBADMSG;
+      return false;
+    }
+  }
+  static constexpr std::array<std::string_view, 7> kRequiredExecutablePaths = {
+      "/bin/sh",
+      "/usr/bin/python3",
+      "/usr/bin/adb",
+      "/usr/bin/codex",
+      "/usr/libexec/trillionnium/trillionnium-owner-open-r5-host",
+      "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
+      "/usr/libexec/trillionnium/provider-adapter",
+  };
+  for (const std::string_view required : kRequiredExecutablePaths) {
+    if (std::none_of(manifest->entries.begin(), manifest->entries.end(),
+                     [required](const PayloadEntry& entry) {
+                       return entry.path == required && (entry.mode & 0111) != 0;
+                     })) {
       errno = EBADMSG;
       return false;
     }
@@ -483,29 +527,104 @@ bool HashImage(int fd, std::string* digest, std::size_t* bytes) {
   return true;
 }
 
-bool EnsureDirectory(const char* path, mode_t mode) {
-  std::string current;
-  for (const char* cursor = path; *cursor != '\0'; ++cursor) {
-    current.push_back(*cursor);
-    if (*cursor != '/' || current.size() == 1) continue;
-    current.pop_back();
+class DirectoryDescriptor {
+ public:
+  explicit DirectoryDescriptor(int descriptor) : descriptor_(descriptor) {}
+  DirectoryDescriptor(const DirectoryDescriptor&) = delete;
+  DirectoryDescriptor& operator=(const DirectoryDescriptor&) = delete;
+  ~DirectoryDescriptor() { reset(-1); }
+  int get() const { return descriptor_; }
+  int release() {
+    const int result = descriptor_;
+    descriptor_ = -1;
+    return result;
+  }
+  void reset(int descriptor) {
+    const int saved = errno;
+    if (descriptor_ >= 0) close(descriptor_);
+    descriptor_ = descriptor;
+    errno = saved;
+  }
+
+ private:
+  int descriptor_;
+};
+
+bool EnsureDirectoryAtRoot(int root, std::string_view path, mode_t mode) {
+  if (path.size() < 2 || path.size() > 4095 || path.front() != '/' ||
+      path.back() == '/' || path.find('\0') != std::string_view::npos || (mode & ~0777) != 0) {
+    errno = EINVAL;
+    return false;
+  }
+  // Validate the complete path before creating any component. The fixed /data
+  // ancestor belongs to Android system; only the target private directory must
+  // be root:root, and ancestor modes are never changed.
+  std::size_t begin = 1;
+  while (begin < path.size()) {
+    const std::size_t end = path.find('/', begin);
+    const std::size_t length = end == std::string_view::npos ? path.size() - begin : end - begin;
+    const std::string_view component = path.substr(begin, length);
+    if (length == 0 || length > 255 || component == "." || component == "..") {
+      errno = EINVAL;
+      return false;
+    }
+    if (end == std::string_view::npos) break;
+    begin = end + 1;
+  }
+  DirectoryDescriptor current(fcntl(root, F_DUPFD_CLOEXEC, 0));
+  if (current.get() < 0) return false;
+  begin = 1;
+  while (begin < path.size()) {
+    const std::size_t end = path.find('/', begin);
+    const std::string component(path.substr(
+        begin, end == std::string_view::npos ? path.size() - begin : end - begin));
+    int descriptor = openat(current.get(), component.c_str(),
+                            O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+    if (descriptor < 0 && errno == ENOENT) {
+      if (mkdirat(current.get(), component.c_str(), mode) != 0 && errno != EEXIST) return false;
+      descriptor = openat(current.get(), component.c_str(),
+                          O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+    }
+    DirectoryDescriptor next(descriptor);
+    if (next.get() < 0) return false;
     struct stat metadata {};
-    if (lstat(current.c_str(), &metadata) != 0) {
-      if (errno != ENOENT || mkdir(current.c_str(), mode) != 0) return false;
-    } else if (!S_ISDIR(metadata.st_mode) || S_ISLNK(metadata.st_mode)) {
+    if (fstat(next.get(), &metadata) != 0) return false;
+    if (!S_ISDIR(metadata.st_mode)) {
       errno = ENOTDIR;
       return false;
     }
-    current.push_back('/');
+    if (end == std::string_view::npos) {
+      if (metadata.st_uid != 0 || metadata.st_gid != 0) {
+        errno = EACCES;
+        return false;
+      }
+      // Ownership and chmod refer to this opened directory, even if its former
+      // pathname is concurrently replaced with a symlink or a different inode.
+      if (fchmod(next.get(), mode) != 0) return false;
+      struct stat named {};
+      if (fstatat(current.get(), component.c_str(), &named, AT_SYMLINK_NOFOLLOW) != 0) return false;
+      if (!S_ISDIR(named.st_mode) || named.st_dev != metadata.st_dev ||
+          named.st_ino != metadata.st_ino) {
+        errno = ESTALE;
+        return false;
+      }
+      return true;
+    }
+    current.reset(next.release());
+    begin = end + 1;
   }
-  struct stat metadata {};
-  if (lstat(path, &metadata) != 0) {
-    if (errno != ENOENT || mkdir(path, mode) != 0) return false;
-  } else if (!S_ISDIR(metadata.st_mode) || S_ISLNK(metadata.st_mode)) {
-    errno = ENOTDIR;
+  errno = EINVAL;
+  return false;
+}
+
+bool EnsureDirectory(const char* path, mode_t mode) {
+  if (path == nullptr) {
+    errno = EINVAL;
     return false;
   }
-  return chmod(path, mode) == 0;
+  DirectoryDescriptor root(open("/", O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
+  if (root.get() < 0) return false;
+  return EnsureDirectoryAtRoot(root.get(), path, mode);
 }
 
 bool EmergencyStopPresent() {
@@ -591,10 +710,11 @@ int OpenPayloadPath(int root, std::string_view absolute, bool directory) {
 }
 
 bool HashRegularDescriptor(int fd, std::size_t maximum, std::string* digest,
-                            std::size_t* bytes, struct stat* metadata_out) {
+                            std::size_t* bytes, struct stat* metadata_out, bool allow_empty = false) {
   struct stat before {};
   if (fstat(fd, &before) != 0 || !S_ISREG(before.st_mode) || before.st_nlink != 1 ||
-      before.st_size <= 0 || static_cast<unsigned long long>(before.st_size) > maximum ||
+      before.st_size < 0 || (!allow_empty && before.st_size == 0) ||
+      static_cast<unsigned long long>(before.st_size) > maximum ||
       (before.st_mode & 0022) != 0 || lseek(fd, 0, SEEK_SET) < 0) {
     return false;
   }
@@ -609,7 +729,7 @@ bool HashRegularDescriptor(int fd, std::size_t maximum, std::string* digest,
   while (true) {
     const ssize_t current = read(fd, buffer.data(), buffer.size());
     if (current < 0 && errno == EINTR) continue;
-    if (current < 0 || (current == 0 && count == 0)) {
+    if (current < 0) {
       ok = false;
       break;
     }
@@ -658,8 +778,9 @@ bool StagingEntriesMatch(const Json::Value& staging,
         !JsonString(item, "sha256", &digest) || !ParseMode(item, "mode", &mode) ||
         !JsonUnsigned(item, "uid", &uid) || !JsonUnsigned(item, "gid", &gid) ||
         !JsonUnsigned(item, "bytes", &bytes) || !IsCanonicalPayloadPath(path) ||
-        !IsHexDigest(digest) || uid != 0 || gid != 0 || bytes == 0 ||
-        bytes > kMaximumEntryBytes) {
+        !IsHexDigest(digest) || uid != 0 || gid != 0 ||
+        bytes > kMaximumEntryBytes ||
+        (bytes == 0 && ((mode & 0111) != 0 || digest != kEmptyFileDigest))) {
       return false;
     }
     for (std::size_t index = 0; index < image_entries.size(); ++index) {
@@ -688,7 +809,7 @@ bool RequiredPayloadEntriesExist(const ImageManifest& manifest) {
     struct stat metadata {};
     std::string digest;
     std::size_t bytes = 0;
-    if (!HashRegularDescriptor(fd, kMaximumEntryBytes, &digest, &bytes, &metadata) ||
+    if (!HashRegularDescriptor(fd, kMaximumEntryBytes, &digest, &bytes, &metadata, true) ||
         (metadata.st_mode & 07777) != entry.mode || metadata.st_uid != entry.uid ||
         metadata.st_gid != entry.gid || bytes != entry.bytes || digest != entry.digest) {
       close(fd);
@@ -805,7 +926,11 @@ int main() {
   if (!ReadImageManifest(&manifest)) return Fail("image manifest is missing or inconsistent");
   if (!EnsureDirectory("/data/trillionnium", 0700) ||
       !EnsureDirectory("/data/trillionnium/owner-open", 0700) ||
-      !EnsureDirectory(kStateRoot, 0700) || !EnsureDirectory(kMountRoot, 0700)) {
+      !EnsureDirectory(kStateRoot, 0700) || !EnsureDirectory(kMountRoot, 0700) ||
+      !EnsureDirectory("/data/trillionnium/owner-open/state/broker", 0700) ||
+      !EnsureDirectory("/data/trillionnium/owner-open/state/home", 0700) ||
+      !EnsureDirectory("/data/trillionnium/owner-open/state/codex-home", 0700) ||
+      !EnsureDirectory("/data/trillionnium/owner-open/state/provider-sessions", 0700)) {
     return Fail("cannot create private owner-open directories");
   }
   if (EmergencyStopPresent()) {

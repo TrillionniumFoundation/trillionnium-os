@@ -33,7 +33,7 @@ Operationally, the required flow is:
 
 A start reserves finite capacity before spawn, creates durable accepted state, performs process setup outside global registry locks, then publishes running identity. Stop, signal, observe and attach operations are serialized by job ID while unrelated shards progress independently.
 
-Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
+Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins. Every owned start request reserves its actual heap, including spare capacity, before any shard, recovery or startup wait. Resident exhaustion can reject an owned duplicate start without changing the existing identity; borrowed inspection remains a separate path. Journal waiting Values reserve heap before the codec lane, and owned buffers retire before their leases on early returns.
 
 ## 3. Non-goals and authority boundary
 
@@ -137,6 +137,81 @@ Measurement status: **unmeasured until qualified evidence**.
 
 These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
+The runtime enforces aggregate resident observation retention of 16 MiB and
+4096 events across keys, rather than multiplying a per-job allowance by retained
+jobs. It counts owned byte/string capacities and deque slots and reserves 1 MiB
+for bounded key/cursor metadata. Eviction frees prefix capacity and exposes the
+exact missing cursor range; it does not authorize effect replay or remove an
+uncertain registry identity. The manager retains at most 256 registry keys and
+16 registry history events per key. Native process channels have 16 entries.
+Default and maximum concurrent process ownership are eight; the checked raw
+buffer reservation (two initial-input copies, channel, readers, blocked sends
+and dispatcher staging) must fit 32 MiB before opening a journal or spawning.
+This is a public configuration/default change from the prior 256-job default.
+
+At registry pressure a full, request-matching durable terminal may release its
+resident registry/history/window only after its running/pending owner is gone.
+The authoritative journal is retained and remains the duplicate/conflict gate.
+Inspection derives archived runtime high-water from the existing envelope
+`event_seq` and exposes the archived prefix as a gap. Unknown or undurable
+terminals are never removed by this capacity path. Capacity remains exhausted
+when no safe durable terminal can be archived. Rollback to the previous binary
+must retain the journal and must not reinterpret a missing resident entry as
+permission to spawn.
+
+Runtime and journal observations use independent cursor domains. A true
+`durable_fallback_available` means the journal can be read; it does not prove
+that a missing runtime prefix has been recovered. See the scoped recovery
+contract in [MOD-TRANSPORT](MOD-TRANSPORT.md).
+
+All linked job-manager and job-registry instances now share one logical 64 MiB
+reservation: 48 MiB for active/retained owned state and 16 MiB for working
+copies. The active process reservation has an additional 32 MiB/16-owner
+ceiling and consumes the same 48 MiB pool; it is not another independent
+allowance. Registry entries reserve their future bounded history, attachments
+and terminal before acceptance. Observation windows charge their actual owned
+capacities to this pool. Shared pressure evicts only observation prefixes with
+their explicit cursor gaps; an uncertain identity is never evicted.
+
+Start preflight checks every owned string/path capacity, argv slots (4096),
+environment nodes (1024), total spec storage (1 MiB), and initial-stdin capacity
+before building its digest DOM. The inherited allowlist is captured before
+acceptance with 64 KiB per-value and 1 MiB aggregate limits; Command uses that
+snapshot and then applies the exact requested delta. The standard-library host
+environment lookup itself may allocate before validation, so this is not a
+preallocation guarantee against arbitrary in-process environment mutation.
+Reader, writer and reaper threads share the process reservation until their
+owned buffers/cleanup owners have dropped, including detached-worker error paths.
+
+Output's existing numeric-array JSON schema is preserved. A shared working
+lane and pre-DOM capacity reservation bound concurrent serialization across
+managers; profiles whose chunk DOM/encoder staging exceeds 16 MiB refuse before
+journal creation. The 64 KiB default remains valid. Generic journal writes also
+count JSON escaping through a bounded writer before cloning/encoding payloads.
+No resource refusal changes the producer terminal's output byte counts or
+pretends that an observation gap is output truncation.
+
+Durable operation/start/job terminals retain authenticated event references,
+not full payload DOMs. New derived identities reserve metadata and future
+reference headroom before WAL acceptance. Recovery borrows fixed headers and
+ignores payload DOM construction; reads load a reference on demand and verify
+scope, request and record hash. Capacity refusal preserves the WAL and a
+referenced-terminal integrity failure disables new journal acceptance. Explicit
+development memory-only mode shares terminal Values and limits each cached
+terminal to 8 KiB of owned storage. Qualified production continues to require
+the durable backend.
+
+Bulk job inspection visits one authenticated record at a time, preflights owned
+clones/metadata before retention, and can refuse its 16 MiB working envelope.
+It currently scans the journal and filters scope/job; an indexed scoped visitor
+is still needed to remove unrelated-record work. A refusal never establishes
+missing-prefix recovery coverage. See [MOD-EVENT-STORE](MOD-EVENT-STORE.md).
+These are logical reservations, not a measured whole-process 64 MiB RSS result:
+allocator overhead, event-store instances, other host modules, inherited host
+lookup, and caller-retained/cloned ordinary Vec/Value responses remain separate
+boundaries. Installed resource measurements and end-to-end allocation custody
+remain required; the catalog budget and qualification status are not raised.
+
 ## 10. Persistence, recovery and reconciliation
 
 Recovery replays the accepted/running/terminal journal, probes retained process identity, fences stale epochs and classifies ambiguous spawn or termination as unknown. Reservation release never grants permission to start a replacement.
@@ -202,6 +277,54 @@ This command qualifies only the source behavior that its assertions exercise.
 It neither installs the product nor grants L2-L6 evidence. Reproduce the specific
 failure before changing a timeout, disabling an assertion or modifying a budget.
 
+The terminal-generation control test waits for the real child to reach its
+stdin readiness barrier before committing the competing terminal transition.
+After the write attempt, the fixture closes the owned stdin pipe and requires
+the child's read-completion marker and the manager's actual running-map
+retirement. Only then does it assert `NotLive` and absence of the forbidden
+write marker. This makes a slow reader observable instead of accepting an
+arbitrary delay as proof that no bytes reached it. Fixture failure cleanup
+reports the close and signal results and retains uncertainty when the finite
+retirement deadline expires. These host barriers do not measure an installed
+cleanup SLO or prove descendant containment outside the owned process group.
+
+The process implementation requires Linux or Android `waitid(..., WNOWAIT)`,
+default `SIGCHLD` without `SA_NOCLDWAIT`, exclusive direct-child wait ownership,
+and a procfs namespace that exposes every member of the owned group. The
+original child remains unreaped through all group signals and two complete
+quiet observations. Each observation examines every matching process and all
+of its tasks: a zombie thread-group leader can still have live worker threads.
+Missing, unreadable, malformed or late observations retain uncertainty.
+Descendants that change their process group or session require separate
+installed cgroup containment evidence.
+
+Writes, stdin close, PTY resize, signals and the initial stdin writer share one
+control gate. Retirement closes admission before waiting for its admitted
+effect, and closes the gate before consuming the original child status. New
+controls return `NotLive` even if the manager has not consumed the terminal
+event. Gate acquisition has a three-second attempt budget; stdin writes check
+their two-second deadline around every write, including progress and `EINTR`.
+A late write reports failure with a possible partial effect. These are attempt
+budgets, with no hard completion guarantee during kernel or caller suspension.
+
+Cleanup failure publishes the existing unknown terminal classification while
+retaining the exact child, process identity and resource lease. Recovery uses
+bounded attempts and releases ownership only after complete quiet observations
+and a consuming wait. Loss of wait ownership or an unbound identity retains a
+quarantine; elapsed time, numeric PID disappearance and a successful no-op
+cannot release its charge. The shared process pool admits at most sixteen
+owners and 32 MiB of logical process staging, including retained cleanup
+owners. Persistent quarantine requires inhibited admission, full offline
+service and cgroup cleanup, external reconciliation and Host restart. There
+is no production quarantine-unlock API, and restarting alone supplies no
+cleanup proof.
+
+Source tests exercise real pipe and PTY retirement, a zombie leader with a
+live pthread, delayed writes, controls blocked behind an admitted effect,
+poisoned gates, lost wait ownership, and retained child/lease ownership after
+an actual injected cleanup error. Their barriers and child observations do
+not close the installed process-lifecycle gap.
+
 ## 16. Deployment and runbook
 
 On job-state disagreement, stop starts for the affected shard, bind registry, journal and process observations to the same job ID and epoch, then reconcile before capacity is returned.
@@ -218,7 +341,7 @@ Standard deployment sequence:
 
 ## 17. Open gaps and exit criteria
 
-Open machine gaps: `GAP-PROCESS-LIFECYCLE-001`, `GAP-STREAM-RECOVERY-001`, `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-JOB-START-HOTLOCK-001`, `GAP-CONC-REGISTRY-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
+Open machine gaps: `GAP-PROCESS-LIFECYCLE-001`, `GAP-STREAM-RECOVERY-001`, `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-JOB-START-HOTLOCK-001`, `GAP-CONC-REGISTRY-001`, `GAP-PERF-L2-BASELINE-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
 
 ### GAP-PROCESS-LIFECYCLE-001 — exit L2
 
@@ -267,12 +390,19 @@ Exit evidence must demonstrate:
 - bounded capacity.
 - contention benchmark.
 
-### GAP-PERF-SYSTEM-BASELINE-001 — exit L2
+### GAP-PERF-L2-BASELINE-001 — exit L2
+
+Installed WL-01 through WL-10 retain raw A1/A2/A3 and C1/C2/C3 batches,
+complete applicable stage/resource counters and qualified stability/comparison.
+WL-11 remains an L4 hold and WL-12 remains an L5 hold.
+
+### GAP-PERF-SYSTEM-BASELINE-001 — exit L5
 
 Mixed-workload throughput, latency, resource and recovery baselines are repeatable.
 
 Exit evidence must demonstrate:
-- WL-01 through WL-12 run.
+- WL-01 through WL-10 have installed L2 evidence, WL-11 has physical L4 evidence and WL-12 has destructive L5 evidence.
+- The exact subject and continuous L1 through L5 evidence lineage bind every phase.
 - P50, P95, P99 and maximum are recorded.
 - CPU, RSS, FD, thread, process and I/O are recorded.
 - system-objective delta gates changes.

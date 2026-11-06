@@ -427,6 +427,35 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
             "a mismatched live connection must fail before Host dispatch",
         )
 
+    def test_stdio_empty_job_arguments_preserve_pipe_and_pty_wire(self) -> None:
+        child = subprocess.Popen(
+            self.command(), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, text=True, env=self.env,
+        )
+        argv = ["program", "", "  原样🙂\n", ""]
+        try:
+            for request_id, mode in enumerate(("pipe", "pty"), 20):
+                response = self.request(child, {
+                    "jsonrpc": "2.0", "id": request_id, "method": "tools/call",
+                    "params": {"name": "trillionnium_job_start", "arguments": {
+                        "job_id": "job-" + mode, "operation_id": "start-" + mode,
+                        "bridge_instance_id": BRIDGE_ID, "mode": mode, "argv": argv,
+                    }},
+                })
+                self.assertNotIn("error", response)
+                self.assertFalse(response["result"]["isError"])
+        finally:
+            self.close_child(child)
+        requests = [json.loads(line) for line in self.record.read_text().splitlines()]
+        starts = [frame["payload"] for frame in requests if frame["kind"] == "job.start"]
+        self.assertEqual(len(starts), 2)
+        self.assertEqual([payload["mode"] for payload in starts], ["pipe", "pty"])
+        for payload in starts:
+            self.assertEqual(payload["argv"], argv)
+            self.assertNotIn("command", payload)
+        self.assertNotIn("pty", starts[0])
+        self.assertEqual(starts[1]["pty"], {"rows": 24, "cols": 80})
+
     def test_exact_duplicate_host_control_result_is_returned_without_server_retry(self) -> None:
         scope = module.Scope("session", "owner-open", "task", "turn", "stream")
         host_argv = [
@@ -479,6 +508,74 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
                 os.environ.pop("FAKE_HOST_RECORD", None)
             else:
                 os.environ["FAKE_HOST_RECORD"] = old
+
+
+class JobArgvContractTest(unittest.TestCase):
+    """Exercise the real MCP-to-job mapping without spawning a Host or job."""
+
+    class RecordingHost:
+        def __init__(self) -> None:
+            self.calls = []
+
+        def transact(self, kind, payload, **options):
+            self.calls.append((kind, payload, options))
+            return {"response": {"kind": "job.start.result"}}
+
+    def setUp(self) -> None:
+        self.host = self.RecordingHost()
+        self.bridge = module.JobBridge(
+            self.host, module.Scope("session", "profile", "task", "turn", "stream"),
+            BRIDGE_ID,
+        )
+
+    def call(self, *, mode="pipe", **fields):
+        return self.bridge.call(
+            "trillionnium_job_start",
+            {"job_id": "job", "operation_id": "operation", "mode": mode,
+             "bridge_instance_id": BRIDGE_ID, **fields},
+            module.threading.Event(),
+        )
+
+    def test_empty_arguments_reach_pipe_and_pty_host_unchanged(self) -> None:
+        for mode in ("pipe", "pty"):
+            for argv in (["/bin/printf", "<%s>", ""],
+                         ["program", "", "middle", ""],
+                         ["program", "", "  原样🙂\n", "$(untouched)"]):
+                with self.subTest(mode=mode, argv=argv):
+                    before = len(self.host.calls)
+                    self.call(mode=mode, argv=argv)
+                    self.assertEqual(len(self.host.calls), before + 1)
+                    kind, payload, options = self.host.calls[-1]
+                    self.assertEqual(kind, "job.start")
+                    self.assertEqual(payload["argv"], argv)
+                    self.assertIsNot(payload["argv"], argv)
+                    self.assertNotIn("command", payload)
+                    self.assertEqual(payload["mode"], mode)
+                    self.assertEqual(options["expected"], {"job.start.result"})
+                    if mode == "pty":
+                        self.assertEqual(payload["pty"], {"rows": 24, "cols": 80})
+                    else:
+                        self.assertNotIn("pty", payload)
+
+    def test_invalid_argv_does_not_reach_host(self) -> None:
+        invalid = (None, "program", [], [""], ["", "argument"], [False],
+                   ["program", None], ["program", 1], ["program", False],
+                   ["pro\0gram"], ["program", "bad\0argument"])
+        for mode in ("pipe", "pty"):
+            for argv in invalid:
+                with self.subTest(mode=mode, argv=argv):
+                    with self.assertRaises(module.InvalidArguments):
+                        self.call(mode=mode, argv=argv)
+        self.assertEqual(self.host.calls, [])
+
+    def test_command_exclusivity_and_connection_identity_still_fail_before_host(self) -> None:
+        for fields in ({"command": "printf ok", "argv": ["program", ""]},
+                       {"command": ""}, {},
+                       {"argv": ["program", ""], "bridge_instance_id": "stale"}):
+            with self.subTest(fields=fields):
+                with self.assertRaises(module.InvalidArguments):
+                    self.call(**fields)
+        self.assertEqual(self.host.calls, [])
 
 
 if __name__ == "__main__":

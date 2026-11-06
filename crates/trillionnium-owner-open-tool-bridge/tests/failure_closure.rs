@@ -2,7 +2,9 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use trillionnium_owner_open_call_registry::{CallKey, CallRegistry, EffectiveState, TurnScope};
-use trillionnium_owner_open_runtime::{ExecutionEventKind, ShellExecRequest};
+use trillionnium_owner_open_runtime::{
+    AdbExecRequest, ExecutionEventKind, MAX_RUNTIME_REQUEST_TIMEOUT, ShellExecRequest,
+};
 use trillionnium_owner_open_tool_bridge::{
     BoundToolCall, BridgeError, BridgeLimits, DirectToolBridge, DirectToolRequest,
 };
@@ -49,6 +51,39 @@ fn runtime_shape_is_rejected_before_registry_admission() {
         .unwrap_err();
     assert!(matches!(error, BridgeError::InvalidRequest(_)));
     assert!(registry.is_empty().unwrap());
+}
+
+#[test]
+fn oversized_shell_and_adb_timeouts_are_rejected_before_registry_admission() {
+    for tool in ["shell", "adb"] {
+        let registry = Arc::new(CallRegistry::default());
+        let bridge = DirectToolBridge::new(Arc::clone(&registry));
+        let request = if tool == "shell" {
+            let mut request = ShellExecRequest::command("call-timeout", ":");
+            request.timeout = Some(MAX_RUNTIME_REQUEST_TIMEOUT + Duration::from_millis(1));
+            DirectToolRequest::Shell(request)
+        } else {
+            let mut request =
+                AdbExecRequest::unconfigured("call-timeout", vec!["devices".to_string()]);
+            request.timeout = Some(MAX_RUNTIME_REQUEST_TIMEOUT + Duration::from_millis(1));
+            DirectToolRequest::Adb(request)
+        };
+        let call = BoundToolCall::new(
+            key("call-timeout"),
+            "ab".repeat(32),
+            None,
+            b"timeout-fixture".to_vec(),
+            request,
+        )
+        .unwrap();
+        let mut observed = false;
+        let error = bridge
+            .execute(call, &BridgeLimits::default(), |_| observed = true)
+            .unwrap_err();
+        assert!(matches!(error, BridgeError::InvalidRequest(_)), "{error}");
+        assert!(registry.is_empty().unwrap());
+        assert!(!observed);
+    }
 }
 
 #[test]

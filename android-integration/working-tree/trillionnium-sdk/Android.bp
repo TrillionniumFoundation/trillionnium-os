@@ -3,7 +3,25 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 
-android_app {
+// Owner-open selects the ordinary platform only. Unset/false preserves the
+// sealed source, resource and dependency inputs; no runtime property selects it.
+soong_config_module_type {
+    name: "trillionnium_owner_open_android_app",
+    module_type: "android_app",
+    config_namespace: "trillionnium_owner_open",
+    bool_variables: ["enabled"],
+    properties: ["resource_dirs"],
+}
+
+soong_config_module_type {
+    name: "trillionnium_owner_open_java_library",
+    module_type: "java_library",
+    config_namespace: "trillionnium_owner_open",
+    bool_variables: ["enabled"],
+    properties: ["exclude_srcs", "static_libs", "required"],
+}
+
+trillionnium_owner_open_android_app {
     name: "org.trillionnium.platform-res",
     use_resource_processor: false,
     sdk_version: "core_platform",
@@ -39,9 +57,15 @@ android_app {
         "63",
     ],
 
-    resource_dirs: [
-        "trillionnium/res/res",
-    ],
+    soong_config_variables: {
+        enabled: {
+            // Soong aar.go overlays later resource_dirs over the first one.
+            resource_dirs: ["trillionnium/res/res", "owner-open/res"],
+            conditions_default: {
+                resource_dirs: ["trillionnium/res/res"],
+            },
+        },
+    },
 
     // Create package-export.apk, which other packages can use to get
     // PRODUCT-agnostic resource data like IDs and type definitions.
@@ -283,7 +307,7 @@ java_defaults {
     ],
 }
 
-java_library {
+trillionnium_owner_open_java_library {
     name: "org.trillionnium.platform",
     defaults: ["trillionnium-sdk-defaults"],
     installable: true,
@@ -299,10 +323,25 @@ java_library {
         ":trillionnium-platform-library-sources",
     ],
 
-    static_libs: [
-        "trillionnium-agent-identity-product",
-        "trillionnium-capability-lease-binder-api",
-    ],
+    soong_config_variables: {
+        enabled: {
+            // These implementations belong to the non-activatable sealed typed
+            // profile. Ordinary SDK sources and platform services remain selected.
+            exclude_srcs: [
+                "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApi*.java",
+                "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLease*.java",
+                "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1*.java",
+                "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/*.java",
+            ],
+            conditions_default: {
+                static_libs: [
+                    "trillionnium-agent-identity-product",
+                    "trillionnium-capability-lease-binder-api",
+                ],
+                required: ["org.trillionnium.agent.system_api.xml"],
+            },
+        },
+    },
 
     // These implementations are explicitly source-only. The abstract-socket connector is
     // PRODUCT_WIRED=false and its hidden UnixSocketAddress factory must move behind a separately
@@ -326,7 +365,7 @@ java_library {
     // Accessibility APK. A cross-partition required edge from this system
     // framework library makes CF's system_other graph receive the same
     // odex/vdex from both system and system_ext.
-    required: ["org.trillionnium.agent.system_api.xml"],
+
 }
 
 python_test_host {

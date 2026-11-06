@@ -43,7 +43,7 @@ fn process_messages_with_control_seq<W: Write>(
         }
         match receiver.recv_timeout(HOST_POLL_INTERVAL) {
             Ok(HostMessage::Inbound(encoded)) => {
-                let frame = match RunTurnFrame::decode(&encoded, &limits) {
+                let frame = match trillionnium_owner_open_trace::measure(trillionnium_owner_open_trace::Stage::HostDecode, "core.selected-inbound", || RunTurnFrame::decode(&encoded, &limits)) {
                     Ok(frame) => frame,
                     Err(error) => {
                         deliver_host_error(

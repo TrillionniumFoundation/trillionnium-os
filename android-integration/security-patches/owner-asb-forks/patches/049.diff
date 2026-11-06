@@ -1,0 +1,16 @@
+--- actual-captured/kernel/motorola/sm6375/drivers/hid/hid-logitech-hidpp.c
++++ owned-final/kernel/motorola/sm6375/drivers/hid/hid-logitech-hidpp.c
+@@ -3743,10 +3743,12 @@
+ 
+ 	if (hidpp->quirks & HIDPP_QUIRK_CLASS_G920) {
+ 		ret = hidpp_ff_init(hidpp, &data);
+-		if (ret)
++		if (ret) {
+ 			hid_warn(hidpp->hid_dev,
+ 		     "Unable to initialize force feedback support, errno %d\n",
+ 				 ret);
++			ret = 0;
++		}
+ 	}
+ 
+ 	return ret;
