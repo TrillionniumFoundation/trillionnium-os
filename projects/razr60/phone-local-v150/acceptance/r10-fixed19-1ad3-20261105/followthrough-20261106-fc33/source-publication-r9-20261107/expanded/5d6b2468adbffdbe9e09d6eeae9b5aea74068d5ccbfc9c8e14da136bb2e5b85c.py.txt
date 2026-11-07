@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+"""Pure host-side core for this one failed R8 launch; no overall disposition.
+
+The original controller and UI-state parsers are reused exactly. This reader
+consumes original bytes supplied by a future fixed-family binder. It creates
+no observation, reads no filesystem, and cannot issue a nonce or phone action.
+"""
+import base64
+import hashlib
+import json
+from pathlib import Path, PurePosixPath
+import re
+import stat
+
+LABEL='root-r10-neg01-fc33-r8-bound01'
+NONCE='940fead822b9b65c9889016d7fee3451'
+BOOT='ac7e396b-271a-415e-b0b7-c58bbef4319f'
+BASE='/var/lib/trillionnium/owner-open/phone-local-v150'
+HOME=BASE+'/native-guard-r10-r1/'+LABEL
+PACKAGE={'bytes':65655,'sha256':'654f8b0ad50a4d930d7beff9421b5e9f988ecb74b55badc70cec9efeaa63130c'}
+OWNER='71a2d0f06fa7da2fa473a9caf30219744c169d0cd4fa204c2563925770d6e67a'
+MAX_ORIGINAL=16*1024*1024
+
+def need(value, message):
+    if not value:
+        raise ValueError(message)
+
+def pin(raw):
+    need(type(raw) is bytes, 'original bytes required')
+    return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+def encoded(value):
+    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\n').encode()
+
+def strict(raw):
+    need(type(raw) is bytes and len(raw)<=MAX_ORIGINAL, 'bounded complete JSON original')
+    def pairs(rows):
+        value={}
+        for k,v in rows:
+            need(k not in value,'duplicate original JSON key');value[k]=v
+        return value
+    def nonfinite(_):
+        raise ValueError('nonfinite original JSON')
+    return json.loads(raw,object_pairs_hook=pairs,parse_constant=nonfinite)
+
+def same(a,b):
+    return encoded(a)==encoded(b)
+
+def original_descriptor(row):
+    need(type(row) is dict and set(row)=={'path','bytes','sha256'},'exact input descriptor')
+    p=PurePosixPath(row['path'])
+    need(p.is_absolute() and str(p)==row['path'] and '..' not in p.parts and '\0' not in str(p), 'canonical input path')
+    need(type(row['bytes']) is int and 0<=row['bytes']<=MAX_ORIGINAL
+         and type(row['sha256']) is str and re.fullmatch('[0-9a-f]{64}',row['sha256']), 'original input byte pin')
+    return row
+
+def mcp(raw):
+    value=strict(raw)
+    need(value.get('isError') is False and type(value.get('content')) is list and len(value['content'])==1
+         and value['content'][0].get('type')=='text','one successful original MCP text result')
+    return strict(value['content'][0]['text'].encode())
+
+def controller(raw, prefix, *, job, code):
+    request=strict(raw[prefix+'_request']);start=mcp(raw[prefix+'_start'])
+    status=mcp(raw[prefix+'_status']);output=mcp(raw[prefix+'_read'])
+    record=start['job']
+    need(record['id']==status['job_id']==output['job_id']==job and start['reused'] is False
+         and record['launch_state']=='launched' and record['launch_error'] is None, 'one actual original job identity')
+    need(record['executable']==request['executable'] and record['args']==request['args']
+         and record['host']==request['host'] and record['idempotency_key']==request['idempotency_key'], 'actual job/request binding')
+    need(status['exit_code']==code and status['state']==('succeeded' if code==0 else 'failed')
+         and all(status[k] is True for k in ('output_complete','output_durable','terminal_publication_confirmed'))
+         and all(status[k] is False for k in ('timed_out','cancelled','automatic_retry')), 'actual terminal and durable complete streams')
+    streams={}
+    for name in ('stdout','stderr'):
+        row=output[name];data=bytes.fromhex(row['bytes_hex'])
+        need(row['offset']==0 and row['eof'] is True and row['next_offset']==row['size']==len(data)
+             and data.decode()==row['text'],'entire original stream, not a prefix')
+        streams[name]=data
+    return request,streams
+
+def verify_r8_host_failure(raw, lease, decode_state):
+    request,streams=controller(raw,'root',job='31cade7fe1c-2e98-3e95',code=1)
+    need(streams['stdout']==b'' and len(streams['stderr'])==1885
+         and b'actual phone command failed; no new key retry' in streams['stderr'],'actual Root failure streams')
+    plan=strict(raw['plan']);need(plan['label']==LABEL and plan['nonce']==NONCE and plan['case_id']=='NEG-01'
+         and {k:plan['package'][k] for k in ('bytes','sha256')}==PACKAGE
+         and plan['request']['sha256']==OWNER,'actual Root plan identity')
+    root_manifest=strict(raw['root_manifest'])
+    need(pin(raw['root_manifest'])=={k:plan['source_package'][k] for k in ('bytes','sha256')}
+         and len(root_manifest['files'])==3,'actual Root source manifest')
+    root_row=next(r for r in root_manifest['files'] if r['path']=='source/run_component_root_once.py')
+    need(pin(raw['source_root'])=={k:root_row[k] for k in ('bytes','sha256')},'actual original Root source bytes')
+    need('--plan' in request['args'] and '--plan-sha256' in request['args']
+         and request['args'][request['args'].index('--plan-sha256')+1]==pin(raw['plan'])['sha256'],'actual request pins actual plan')
+    root=strict(raw['root_failure']);phases=('prepare-material','host-stage-material','phone-push-material','phone-copy-material',
+       'phone-push-stage-source','phone-copy-stage-source','phone-stage','sender-preview','sender-prepared','phone-launch')
+    need(tuple(s['phase'] for s in root['steps'])==phases and all(s['state']=='ORIGINAL_HOST_CHILD_JOINED'
+         and s['returncode']==0 and s['automatic_retry'] is False for s in root['steps']), 'all10 actual known host phase producers joined')
+    need(root['root_fixture_attempts']==[] and root['signals_sent_by_coordinator']==0
+         and root['component_qualified'] is False and root['business_qualified'] is False
+         and all(root[k] is False for k in ('automatic_retry','new_identity_retry','send_again')),'Root failure facts preserved')
+    need(type(root['host_cleanup']['host_children'])is list and len(root['host_cleanup']['host_children'])==1,
+         'one actual sender cleanup original within full ROOT-FAILURE')
+    owned=root['host_cleanup']['host_children'][0]
+    need(root['host_cleanup']=={'host_children':[owned],'stream_cleanup_errors':[]},'one actual sender cleanup receipt')
+    out=owned['output_capture']
+    need(owned['child_wait_returned'] is True and owned['returncode']==0 and owned['signals_sent']==0
+         and owned['cleanup_errors']==[] and owned['remote_terminal_or_cleanup_proven'] is False
+         and out['remote_terminal_or_cleanup_proven'] is False,'host join does not claim remote retirement')
+    need(all(out[k] is True for k in ('child_wait_returned','worker_started','worker_joined','stdout_eof','stderr_eof'))
+         and out['error'] is None and out['persist_errors']==out['pipe_close_errors']==[]
+         and out['prefix_only_or_unknown'] is False,'actual complete sender child capture')
+    for n in ('stdout','stderr'):
+        need(out['captured'][n]==pin(raw['sender_'+n]) and {k:out['files'][n][k] for k in ('bytes','sha256')}==pin(raw['sender_'+n]),
+             'sender raw streams match original owned capture')
+    wire=strict(raw['sender_stdout']);actor=strict(wire['stdout'].encode())
+    need(wire['rc']==2 and wire['stderr']=='' and raw['sender_stderr']==b''
+         and actor['state']=='PRE_SEND_OR_ACTOR_FAILURE' and actor['native_status'] is None
+         and actor['send_attempt_count']==0 and actor['prompt_sha256']==OWNER
+         and actor['automatic_replay'] is False and actor['business_success_verified'] is False, 'actual no-Send actor failed outcome')
+    prepared=strict(raw['prepared']);need(prepared['nonce']==NONCE and prepared['owner_request_sha256']==OWNER
+         and prepared['send_attempt_count']==0 and prepared['provider_started_by_sender'] is False
+         and prepared['ready_path']==HOME+'/READY.json','original prepared no-Send binding')
+    preserved=strict(raw['preserved_draft']);draft=preserved['exact_text'].encode()
+    need(hashlib.sha256(draft).hexdigest()==preserved['utf8_sha256'] and preserved['submitted_original_draft'] is False,'exact original private draft')
+    effects=[]
+    for name,wanted in (('prompt_input',raw['request_text']),('draft_restore',draft)):
+        w=strict(raw[name]);need(w['rc']==0 and w['stderr']=='' and w['route']==[5037,'23'],'actual original UI return')
+        result=strict(w['stdout'].encode());observed=base64.b64decode(result['readback_text_b64'],validate=True)
+        need(observed==wanted and result['requested_utf8_sha256']==result['after_utf8_sha256']==pin(wanted)['sha256']
+             and result['action_accepted'] is True and result['action_attempted'] is True
+             and result['own_automation_disconnected'] is True, 'complete actual input/restore and exact text return')
+        effects.append({'operation':name,'raw_receipt':pin(raw[name]),'returned_utf8':pin(observed)})
+    restored=strict(raw['restore_result'])
+    need(restored['state']=='ORIGINAL_DRAFT_RESTORED' and restored['restore_attempts']==1
+         and restored['original_draft_submitted'] is False and restored['model_business_credit'] is False
+         and restored['utf8_sha256']==pin(draft)['sha256']
+         and actor['draft_restore']=={k:restored[k] for k in ('state','restore_attempts','original_draft_submitted')},'original exact draft restoration result')
+    selected=strict(raw['restore_selected']);need(selected['rc']==0 and selected['stderr']=='','actual selected-state read')
+    identity=decode_state(base64.b64decode(b''.join(selected['stdout'].encode().split()),validate=True))
+    gate=strict(raw['restore_gate'])['original_wire_receipt'];need(gate['rc']==0 and gate['stderr']=='','actual old-resolution gate read')
+    g=strict(gate['stdout'].encode());prior=strict(raw['prior_boundary']);previous=strict(raw['previous']);scope=prior['scope']
+    need(pin(raw['prior_boundary'])=={k:lease['prior_boundary'][k] for k in ('bytes','sha256')}
+         =={k:plan['prior_boundary_original'][k] for k in ('bytes','sha256')}
+         and prior['nonce']!=NONCE,'exact unchanged actual native predecessor original')
+    need(pin(raw['previous'])=={k:plan['previous'][k] for k in ('bytes','sha256')}
+         and previous['identity']==scope,'actual closed previous identity belongs to this native boundary')
+    need(g['global_action_gate_clear'] is True and g['old_request_replay_authorized'] is False
+         and identity['session_id']==lease['selected_session_id']==scope['session_id']
+         and identity['task_id']==scope['task_id'] and identity['turn_id']==scope['turn_id']
+         and identity['turn_request_sha256']==previous['request_sha256'],'actual original selected predecessor remains selected')
+    # R8 current census and complete phone scope are separate original inputs.
+    # This host-only reader never substitutes the old R7 observer or grants retirement.
+    return {'known_root_job_terminal':'failed','root_exit_code':1,'known_phase_children_joined':10,
+            'sender_host_joined':True,'sender_host_exit_code':0,'actor_exit_code':2,'send_attempt_count':0,
+            'root_fixture_attempts':0,'root_coordinator_signals':0,'actual_ui_receipts':effects,
+            'original_draft_restored':True,'selected_predecessor_preserved':True,
+            'original_root_namespace_anchor':{'path':plan['out']+'/ROOT-FAILURE.json',**pin(raw['root_failure'])},
+            'original_remote_cleanup_boolean':False,'global_unknown_effect_count':None,
+            'host_only_scope_reconciliation':True,'retirement_accepted':False,'native_case_credit':0,
+            'new_nonce_authorized':False,'original_failure_offender_identified':False}

@@ -1,0 +1,211 @@
+#!/usr/bin/env python3
+"""Pure fixed-original source-order proof for the one failed R8 launch.
+
+Callers supply whole original bytes and independently bind archive/controller
+provenance. This function reads no file and performs no observed action. A
+source-order inference never identifies the historic matching process, creates
+a disposition, or replaces present producer fencing/current observations.
+"""
+import ast
+import hashlib
+import json
+import shlex
+
+LABEL='root-r10-neg01-fc33-r8-bound01'
+NONCE='940fead822b9b65c9889016d7fee3451'
+BOOT='ac7e396b-271a-415e-b0b7-c58bbef4319f'
+HOME='/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/'+LABEL
+OPERATOR_LABEL='ng-'+NONCE+'-launch'
+PINS={'phone_launch_request': {'bytes': 1056, 'sha256': 'aca8f36bbaf3e83b11811d572b7c8014f429526187255db2363965c0a1a9821c'}, 'phone_launch_intent': {'bytes': 1358, 'sha256': '0c2bbd22bfd342764ed4729e3168a5d952fcced60295228de384041a1b49698c'}, 'phone_launch_result': {'bytes': 3244, 'sha256': '82e2704b8b495bd550943ec9780d2f2aaa2b65ad9788f043a52306519578859d'}, 'phone_launch_operation': {'bytes': 3400, 'sha256': 'dc81e5592183d82375b9265bd89e569b79e110bf36c123eeeba3c1ca2bab25a6'}, 'phone_launch_actor_stdout': {'bytes': 295, 'sha256': 'a1a5377e770b51a9ccb7ad8de77f1b59cbb50b0da960c34f63b2d4d156b27d9e'}, 'phone_launch_actor_stderr': {'bytes': 0, 'sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}, 'lease': {'bytes': 2506, 'sha256': 'f05ee53a7609972c18f6bab2263008a4c3de3b49b12b8654df94790b25c30a44'}, 'runtime_manifest': {'bytes': 65655, 'sha256': '654f8b0ad50a4d930d7beff9421b5e9f988ecb74b55badc70cec9efeaa63130c'}, 'source_common': {'bytes': 19138, 'sha256': '1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab'}, 'source_lifecycle': {'bytes': 48643, 'sha256': 'eb43d1f5df1b0e4295770c82328fd17e09b9eaa766861f3803928a0b1f9f4e18'}, 'source_late': {'bytes': 218894, 'sha256': '9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54'}, 'phone_launch_host_stdout': {'bytes': 3300, 'sha256': 'de87193f1e628e2ecdad04040272040fd44290951149731263bf690685ebbdf5'}, 'root_failure': {'bytes': 12992, 'sha256': 'ab8c85f7d403c6427931db66acfecb12137143cf3b78573a654346584dab7a31'}}
+TRACEBACK={'bytes':1836,'sha256':'75f5db6e286c2aed2e0958ae38357b77f5eca731f74af5a0bd1caa17a0af5c73'}
+MAX_ORIGINAL=1048576
+MAX_TOTAL=1048576
+
+
+def need(value,message):
+    if not value:raise ValueError(message)
+
+
+def pin(raw):
+    need(type(raw)is bytes,'complete original bytes required')
+    return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+
+def strict(raw):
+    need(type(raw)is bytes and len(raw)<=MAX_ORIGINAL,'bounded complete original JSON')
+    def pairs(items):
+        value={}
+        for key,item in items:
+            need(key not in value,'duplicate original JSON key');value[key]=item
+        return value
+    return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:need(False,'nonfinite JSON'))
+
+
+def only_function(tree,name):
+    rows=[n for n in tree.body if isinstance(n,ast.FunctionDef)and n.name==name]
+    need(len(rows)==1,'one exact source function: '+name)
+    return rows[0]
+
+
+def exact_ast(node, spelling, *, statement=False):
+    """Compare complete AST fields, never interpreter-specific pretty printing."""
+    parsed = ast.parse(spelling, mode='exec' if statement else 'eval')
+    if statement:
+        need(len(parsed.body) == 1, 'one exact reference statement')
+        expected = parsed.body[0]
+    else:
+        expected = parsed.body
+    return ast.dump(node, include_attributes=False) == ast.dump(expected, include_attributes=False)
+
+
+def only_call(function,name,*,line=None):
+    rows=[n for n in ast.walk(function)if isinstance(n,ast.Call)
+          and exact_ast(n.func,name)and(line is None or n.lineno==line)]
+    need(len(rows)==1,'one exact source call: '+name)
+    return rows[0]
+
+
+def verify_failed_r8_source_order(raw):
+    need(type(raw)is dict and set(PINS)<=set(raw),'all fixed source-order originals required')
+    need(sum(len(raw[k])for k in PINS)<=MAX_TOTAL,'bounded total original input bytes')
+    for key,expected in PINS.items():
+        need(pin(raw[key])==expected,'fixed actual original bytes differ: '+key)
+    request=strict(raw['phone_launch_request']);intent=strict(raw['phone_launch_intent'])
+    result=strict(raw['phone_launch_result']);operation=strict(raw['phone_launch_operation'])
+    host=strict(raw['phone_launch_host_stdout']);actor=strict(raw['phone_launch_actor_stdout'])
+    lease=strict(raw['lease']);manifest=strict(raw['runtime_manifest']);failure=strict(raw['root_failure'])
+    need((lease['label'],lease['nonce'],lease['boot_id'],lease['case_id'])==(LABEL,NONCE,BOOT,'NEG-01')
+         and lease['package_sha256']==PINS['runtime_manifest']['sha256']
+         and lease['prior_boundary']is not None,'same actual failed lease, runtime and predecessor')
+    members={row['path']:row for row in manifest['files']}
+    need(len(members)==len(manifest['files'])==38,'whole exact frozen runtime manifest')
+    for key,name in [('source_common','component_common.py'),('source_lifecycle','component_lifecycle.py'),
+                     ('source_late','late_boundary.py')]:
+        need({k:members['source/'+name][k]for k in ('bytes','sha256')}==PINS[key],
+             'actual staged source belongs to exact frozen manifest')
+    expected_command=(
+        '/data/adb/magisk/busybox env -i PATH=/usr/bin:/bin:/usr/libexec/trillionnium '
+        'PYTHONHOME=/usr PYTHONDONTWRITEBYTECODE=1 '
+        'LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu '
+        'LANG=C.UTF-8 LC_ALL=C.UTF-8 TMPDIR=/var/lib/trillionnium/owner-open/tmp NO_COLOR=1 TERM=dumb '
+        '/data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -B '
+        +HOME+'/package/source/component_lifecycle.py --lease '+HOME+' --lease-sha256 '
+        +PINS['lease']['sha256']+' --package '+HOME+'/package/MANIFEST.json --package-sha256 '
+        +PINS['runtime_manifest']['sha256']+' --execute-detached-launch-once')
+    need(request=={'command':expected_command,'kind':'shell','root':True,'timeout_seconds':90},
+         'the exact original bounded detached-launch request')
+    need(intent['schema']=='hepta.phone-local.operator-intent.v150.1'
+         and intent['label']==OPERATOR_LABEL and intent['request']==request
+         and intent['request_sha256']==PINS['phone_launch_request']['sha256']
+         and intent['automatic_replay']is False,'original operation intent binds exact request')
+    need(result['schema']=='hepta.phone-local.operator-result.v150.1'
+         and result['label']==OPERATOR_LABEL and result['status']=='command_exited'
+         and result['model_decision']is False and result['native_task_result']is False,
+         'original phone operator result does not assert native result')
+    phone=result['phone']
+    need(phone['command']=='/debug_ramdisk/su -c '+shlex.quote(expected_command)
+         and phone['route']==[5037,'23']and phone['rc']==1 and phone['stdout']=='',
+         'same actual root phone command, failed return and empty stdout')
+    need(operation==host and operation['actor_rc']==0 and operation['wrapper']==result
+         and operation['wrapper_sha256']==PINS['phone_launch_result']['sha256'],
+         'P4 full operation and Mac full launch stream bind the actual result')
+    need(actor['run']=='/home/PUBLICATION_ACCOUNT/razr60-local-model-v150/operations/'+OPERATOR_LABEL
+         and actor['sha256']==PINS['phone_launch_result']['sha256']
+         and actor['status']=='command_exited' and actor['phone_rc']==1
+         and actor['error']is None and actor['http_status']is None
+         and actor['elapsed_seconds']==result['elapsed_seconds']
+         and raw['phone_launch_actor_stderr']==b'','original actor receipt binds actual failed command')
+    steps=[row for row in failure['steps']if row['phase']=='phone-launch']
+    need(len(steps)==1 and steps[0]['state']=='ORIGINAL_HOST_CHILD_JOINED'
+         and steps[0]['returncode']==0 and steps[0]['automatic_retry']is False
+         and {k:steps[0]['stdout'][k]for k in ('bytes','sha256')}==PINS['phone_launch_host_stdout'],
+         'original root failure retains this full joined launch stream')
+    traceback=phone['stderr'].encode()
+    need(pin(traceback)==TRACEBACK,'entire actual traceback bytes, including caret columns')
+    sources={key:raw[key].decode('utf-8','strict')for key in ('source_common','source_lifecycle','source_late')}
+    trees={key:ast.parse(value)for key,value in sources.items()}
+    frames=[
+        ('source_lifecycle','component_lifecycle.py',797,'<module>'),
+        ('source_lifecycle','component_lifecycle.py',787,'main'),
+        ('source_lifecycle','component_lifecycle.py',465,'detached_launch'),
+        ('source_lifecycle','component_lifecycle.py',209,'verify_retired'),
+        ('source_late','late_boundary.py',1740,'verify_current'),
+        ('source_common','component_common.py',385,'absent_groups'),
+        ('source_common','component_common.py',47,'need')]
+    lines=traceback.decode().splitlines();need(lines[0]=='Traceback (most recent call last):'
+        and lines[-1]=='ValueError: owned group/session still observed','exact original failure type and reason')
+    frame_lines=[i for i,line in enumerate(lines)if line.startswith('  File ')]
+    need(len(frame_lines)==len(frames),'all original traceback frames retained')
+    frame_receipts=[]
+    for pos,(key,name,line,function)in zip(frame_lines,frames):
+        need(lines[pos]=='  File "'+HOME+'/package/source/'+name+'", line '+str(line)+', in '+function,
+             'exact actual traceback source frame')
+        source_line=sources[key].splitlines()[line-1]
+        need(lines[pos+1].strip()==source_line.strip(),'traceback code line equals full pinned staged source')
+        frame_receipts.append({'source':key,'line':line,'function':function})
+    life=trees['source_lifecycle'];late=trees['source_late'];common=trees['source_common']
+    launch=only_function(life,'detached_launch');retired=only_function(life,'verify_retired')
+    launch_try=[node for node in launch.body if isinstance(node,ast.Try)]
+    need(len(launch_try)==1 and isinstance(launch_try[0].body[0],ast.Assign)
+         and exact_ast(launch_try[0].body[0],'old_lock, retired = verify_retired(lease)',statement=True),
+         'retirement verification is the first statement of the launch try')
+    retiring=only_call(launch,'verify_retired',line=465)
+    boundary=only_call(retired,'late_boundary_module.verify_current',line=209)
+    old_open=only_call(retired,'os.open',line=214);old_flock=only_call(retired,'fcntl.flock',line=216)
+    need(boundary.lineno<old_open.lineno<old_flock.lineno,'actual failing boundary precedes old journal open and flock')
+    current=only_function(late,'verify_current')
+    assignments=[n for n in current.body if isinstance(n,ast.Assign)
+        and any(isinstance(t,ast.Name)and t.id=='absence'for t in n.targets)]
+    need(len(assignments)==1 and assignments[0].lineno==1740
+         and isinstance(assignments[0].value,ast.List)and len(assignments[0].value.elts)==2,
+         'the two original left-to-right absence calls')
+    calls=assignments[0].value.elts
+    need(all(isinstance(n,ast.Call)and exact_ast(n,'C.absent_groups(roles)')for n in calls),
+         'unchanged original role absence predicates')
+    index=frame_lines[4];code_line=lines[index+1];caret=lines[index+2]
+    need(set(caret.strip())=={'^'},'original explicit caret range')
+    begin=caret.index('^');end=len(caret)
+    src_line=sources['source_late'].splitlines()[1739]
+    indent=len(src_line)-len(src_line.lstrip())
+    columns=[(4+n.col_offset-indent,4+n.end_col_offset-indent)for n in calls]
+    need((begin,end)==columns[0] and (begin,end)!=columns[1]
+         and code_line[begin:end]=='C.absent_groups(roles)',
+         'actual traceback caret uniquely identifies the first list call')
+    absent=only_function(common,'absent_groups')
+    reject=only_call(absent,'need',line=385);signal=only_call(absent,'os.kill',line=388)
+    need(exact_ast(reject,"need(not members, 'owned group/session still observed')")
+         and reject.lineno<signal.lineno,'this failing first census stopped before its signal-zero loop')
+    intent_call=only_call(launch,'put',line=466)
+    output_open=only_call(launch,'os.open',line=472)
+    fork=only_call(launch,'os.fork',line=475)
+    setsid=only_call(launch,'os.setsid',line=478);execve=only_call(launch,'os.execve',line=485)
+    need(retiring.lineno<intent_call.lineno<output_open.lineno<fork.lineno<setsid.lineno<execve.lineno,
+         'the exact invocation failed before detached intent, output creation, fork, session and exec')
+    need(len(launch_try[0].finalbody)==2 and all(exact_ast(node,spelling,statement=True)
+         for node,spelling in zip(launch_try[0].finalbody,
+             ['for fd in outputs:\n    os.close(fd)','if old_lock is not None:\n    os.close(old_lock)'])),
+         'failed launch finally only closes already held descriptors')
+    return {
+        'schema':'hepta.r8.failed-launch.fixed-source-order.v1',
+        'state':'EXACT_ORIGINAL_FIRST_BOUNDARY_CENSUS_REJECTION_BEFORE_DETACHED_FORK',
+        'label':LABEL,'nonce':NONCE,'boot_id':BOOT,
+        'source_order_receipt':{'input_pins':PINS,'traceback':TRACEBACK,'frames':frame_receipts,
+            'first_absent_groups_call_index':0,'actual_caret_columns':[begin,end],
+            'other_call_columns':list(columns[1]),'source_statement_lines':{
+                'retirement_boundary':209,'old_journal_open':214,'old_journal_flock':216,
+                'detached_verification':465,'detached_intent':466,'supervisor_output_open':472,
+                'fork':475,'setsid':478,'execve':485,'late_absence_list':1740,
+                'common_member_rejection':385,'common_signal_zero':388},
+            'request_intent_result_root_stream_and_traceback_bound':True,
+            'source_members_belong_to_actual_frozen_package':True,
+            'source_order_is_inference_from_original_traceback_and_exact_program':True},
+        'this_invocation_reached_phone_actor_shell_and_launcher':True,
+        'this_invocation_reached_old_journal_open_or_lock':False,
+        'this_invocation_reached_detached_intent_or_supervisor_outputs':False,
+        'this_invocation_reached_detached_fork_setsid_or_exec':False,
+        'this_first_absence_call_reached_signal_zero':False,
+        'past_offender_unknown':True,'past_matching_members_not_recorded':True,
+        'global_unknown_effect_count':None,'old_remote_cleanup_boolean_rewritten':False,
+        'missing_markers_used_as_zero_effect':False,'current_observation_used_as_historical_cause':False,
+        'retirement_accepted':False,'runtime_admission':False,'native_case_credit':0,
+        'new_nonce_authorized':False,'phone_actions_by_reader':0}

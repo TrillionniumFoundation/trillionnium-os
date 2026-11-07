@@ -1,0 +1,206 @@
+#!/usr/bin/env python3
+"""Pure replay of the one actual R8 current-role observation.
+
+This is current evidence only. It does not rerun historical closure readers,
+does not assert kernel ESRCH, and cannot explain the original failed member.
+"""
+import ast
+import base64
+import hashlib
+import json
+import math
+from pathlib import Path
+import re
+import stat
+
+LABEL='root-r10-neg01-fc33-r8-bound01'
+NONCE='940fead822b9b65c9889016d7fee3451'
+BOOT='ac7e396b-271a-415e-b0b7-c58bbef4319f'
+BASE='/var/lib/trillionnium/owner-open/phone-local-v150'
+HOME=BASE+'/native-guard-r10-r1/'+LABEL
+CENSUS={'bytes':2660676,'sha256':'aed4d87b1e2126f502acf7a8f9ffb3b2f15e81cedfe411708dedef3a72ad5939'}
+SOURCE={'bytes':23688,'sha256':'0116f92a8718584e5eff5fee7c702feccc673a9c0973af4290472fc7544a2bf1'}
+PACKAGE={'bytes':65655,'sha256':'654f8b0ad50a4d930d7beff9421b5e9f988ecb74b55badc70cec9efeaa63130c'}
+COMMON={'bytes':19138,'sha256':'1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab'}
+LATE={'bytes':218894,'sha256':'9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54'}
+LEASE={'bytes':2506,'sha256':'f05ee53a7609972c18f6bab2263008a4c3de3b49b12b8654df94790b25c30a44'}
+FUNCTIONS=('literals','role_rows','roles_from_pinned_originals','parse_stat','matching_roles')
+
+def need(value,message):
+    if not value:raise ValueError(message)
+
+def pin(raw):
+    need(type(raw)is bytes,'original bytes required')
+    return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+def enc(value):
+    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\n').encode()
+
+def strict(raw):
+    need(type(raw)is bytes and len(raw)<=16*1024*1024,'bounded complete original JSON')
+    def pairs(rows):
+        value={}
+        for key,item in rows:
+            need(key not in value,'duplicate original field');value[key]=item
+        return value
+    return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:need(False,'nonfinite original JSON'))
+
+def raw_blob(row,*,path,maximum=8192,pseudo=True):
+    need(type(row)is dict and row['path']==path,'exact observed original path')
+    data=base64.b64decode(row['raw_base64'],validate=True)
+    need(0<len(data)<=maximum and pin(data)=={k:row[k]for k in ('bytes','sha256')},'complete bounded original bytes')
+    meta=row['metadata']
+    need(type(meta)is list and len(meta)==9 and all(type(n)is int for n in meta)
+         and stat.S_ISREG(meta[2]) and meta[5]==1,'complete original regular full9')
+    if not pseudo:need(meta[6]==len(data),'ordinary original byte size matches full9')
+    return data
+
+def clock(row):
+    need(type(row)is dict and set(row)=={'monotonic_ns','unix_ns'}
+         and all(type(n)is int and n>0 for n in row.values()),'actual integer clocks required')
+    return row
+
+def clone_observer_functions(source,namespace):
+    need(pin(source)==SOURCE,'the actual unchanged current-census source')
+    tree=ast.parse(source);nodes=[n for n in tree.body if isinstance(n,ast.FunctionDef)and n.name in FUNCTIONS]
+    need(tuple(n.name for n in nodes)==FUNCTIONS,'only the five original pure function bodies')
+    exec(compile(ast.Module(body=nodes,type_ignores=[]),'<actual R8 census pure parsers>','exec'),namespace)
+    return namespace
+
+def role_inputs(value,source,stage_files):
+    rows=value['original_role_inputs']
+    need(type(rows)is list and len(rows)==20 and len({r['path']for r in rows})==20
+         and all(r['full_metadata_bookends_equal']is True for r in rows),'all20 actual original role-source reads')
+    originals={r['path']:r for r in rows};seen=[]
+    def original(path,expected=None,*,limit=1048576,include_raw=True):
+        path=str(path);need(path in originals,'role extraction may read only the captured20 inputs')
+        row=originals[path]
+        if include_raw:
+            data=raw_blob(row,path=path,maximum=limit,pseudo=False)
+        else:
+            need('raw_base64'not in row and path in stage_files,'omitted source raw must be the same staged original')
+            data=stage_files[path]
+            need(len(data)<=limit and pin(data)=={k:row[k]for k in ('bytes','sha256')},'staged source exactly supplies the captured original')
+        if expected is not None:
+            need(type(expected)is dict and expected.get('path',path)==path
+                 and expected.get('bytes',len(data))==len(data) and expected['sha256']==pin(data)['sha256'],
+                 'same original role-source byte descriptor')
+            if 'metadata'in expected:need(expected['metadata']==row['metadata'],'same full9 original role source')
+        need(path not in seen,'original source function readset cannot duplicate inputs')
+        seen.append(path);return data
+    ns={'ast':ast,'Path':Path,'re':re,'need':need,'strict':strict,'original':original,
+        'BASE':Path(BASE),'HOME':Path(HOME),'PACKAGE':Path(HOME)/'package','LABEL':LABEL,'NONCE':NONCE,
+        'BOOT':BOOT,'LEASE_SHA256':LEASE['sha256'],'MANIFEST_PIN':PACKAGE,'LATE_PIN':LATE,'COMMON_PIN':COMMON}
+    clone_observer_functions(source,ns)
+    roles,chain=ns['roles_from_pinned_originals']()
+    need(seen==[r['path']for r in rows] and roles==value['roles'] and chain==value['native_boundary_descriptors'],
+         'exact original extraction consumes all20 sources and reproduces all42 roles/ten native descriptors')
+    need(len(roles)==42 and len(chain)==10,'fixed original historical input family')
+    counts={'original_retired':0,'native':0,'nonnative':0,'retained_r7':0}
+    for row in roles:
+        family=row['family'];key=('original_retired'if family=='original-retired-r9-r2'else
+            'native'if family.startswith('native:')else 'nonnative'if family.startswith('nonnative:')else
+            'retained_r7'if family=='retained-r7:18e5e7b483f6ace705ea1ebb23f97e97'else None)
+        need(key is not None,'fixed known original role family');counts[key]+=1
+    need(counts=={'original_retired':4,'native':30,'nonnative':6,'retained_r7':2},'all original role families remain included')
+    return roles,rows,ns,counts
+
+def validate_row(row,namespace,common,*,began,ended):
+    pid=row['pid'];need(type(pid)is int and 1<=pid<32768,'actual numeric PID range')
+    data=raw_blob(row['original'],path='/proc/'+str(pid)+'/stat')
+    parsed=namespace['parse_stat'](data,pid)
+    need(all(row[k]==v for k,v in parsed.items()),'original observer parser replay differs')
+    original=common.stat_identity(data,pid,census=True)
+    need(all(original[k]==row[k]for k in original) and common.generation(original)==row['identity'],
+         'independent unchanged Common parser and generation agree')
+    at=clock(row['observed_at'])
+    need(all(began[k]<=at[k]<=ended[k]for k in began),'every stat read lies within actual census clocks')
+    need('parse_error'not in row,'no failed row may count as absence')
+    return data
+
+def replay_current_census(census_raw,source,stage_files,common):
+    need(pin(census_raw)==CENSUS,'this entire original current census is required')
+    value=strict(census_raw);need(enc(value)==census_raw,'complete actual canonical census bytes')
+    need(value['schema']=='hepta.r8.failed-launch-current-role-observation.v1'
+         and value['state']=='READ_ONLY_CURRENT_OBSERVATIONS_RETAINED_NO_DISPOSITION'
+         and value['label']==LABEL and value['nonce']==NONCE and value['original_root_job']=='31cade7fe1c-2e98-3e95',
+         'one actual failed R8 identity')
+    need(value['global_unknown_effect_count']is None
+         and all(value[k]is False for k in ('automatic_retry','kernel_group_absence_asserted','runtime_admission',
+             'retirement_accepted','past_failure_offender_identified','past_failed_attempt_effect_count_asserted'))
+         and value['original_failure_members_were_not_recorded']is True,
+         'current observations preserve the original unknowns and cannot grant admission')
+    need(all(type(value[k])is int and value[k]==0 for k in ('signals_sent_by_probe','locks_acquired_by_probe',
+         'files_written_by_probe','sockets_opened_by_probe','child_processes_created_by_probe',
+         'native_submissions_by_probe','new_nonces_by_probe')),'strictly read-only original observer')
+    need(value['limits']=={'seconds':20,'census_seconds':2,'pids':4096,'raw_read_bytes':16777216,
+         'result_bytes':25165824,'matching_details':128} and 0<=value['elapsed_seconds']<20
+         and math.isfinite(value['elapsed_seconds']),'unchanged original observation budgets')
+    need(value['role_originals_final_bookend_equal']is True and value['two_current_census_scans_completed']is True
+         and value['observer_generation_stable']is True and value['observer_uid']==0
+         and value['clock_ticks_per_second']==100,'actual complete bookends and observer')
+    begun=clock(value['began']);end=clock(value['ended'])
+    need(0<end['monotonic_ns']-begun['monotonic_ns']<20_000_000_000
+         and end['unix_ns']>=begun['unix_ns'],'bounded original full observation clocks')
+    roles,inputs,namespace,families=role_inputs(value,source,stage_files)
+    for row in inputs:
+        at=clock(row['read_at']);need(all(begun[k]<=at[k]<=end[k]for k in begun),'role read within full observation')
+    totals=2*sum(row['bytes']for row in inputs)
+    for key in ('boot_before','boot_after'):
+        data=raw_blob(value[key],path='/proc/sys/kernel/random/boot_id',maximum=128)
+        need(data==(BOOT+'\n').encode(),'same original boot on both sides');totals+=len(data)
+    for key,path,maximum in (('pid_max','/proc/sys/kernel/pid_max',128),('uptime_before','/proc/uptime',256),('uptime_after','/proc/uptime',256)):
+        need(value[key]['read_succeeded']is True,'the actual optional pseudo-file succeeded')
+        data=raw_blob(value[key],path=path,maximum=maximum);totals+=len(data)
+        if key=='pid_max':need(data==b'32768\n','same original PID namespace range')
+        else:need(len(data.split())==2 and all(math.isfinite(float(n))and float(n)>=0 for n in data.split()),'complete actual uptime original')
+    for key in ('observer_before','observer_after'):
+        totals+=len(validate_row(value[key],namespace,common,began=begun,ended=end))
+        need(value[key]['pid']==value['observer_pid']==17892 and value[key]['identity']==[17892,17891,17891,39977458],
+             'one stable actual observer generation')
+    snapshots=value['snapshots'];need(type(snapshots)is list and len(snapshots)==2,'two actual full scans')
+    counts=[];bounds=[]
+    for index,snapshot in enumerate(snapshots,1):
+        pids=snapshot['pid_names_begin']
+        need(type(pids)is list and pids==snapshot['pid_names_end']==sorted(set(pids))
+             and len(pids)==946<=4096 and snapshot['index']==index,
+             'complete stable numeric PID names on both sides of each scan')
+        need(snapshot['scan_complete']is True and snapshot['all_enumerated_stats_read']is True
+             and snapshot['snapshot_atomic']is False and snapshot['read_errors']==[]
+             and 'scan_error'not in snapshot and snapshot['original_failure_offender_identified']is False,
+             'no missing/error/atomic historical claim')
+        started=clock(snapshot['began']);scanned=clock(snapshot['scan_ended']);finished=clock(snapshot['ended'])
+        need(all(begun[k]<=started[k]<=scanned[k]<=finished[k]<=end[k]for k in begun)
+             and scanned['monotonic_ns']-started['monotonic_ns']<2_000_000_000,'each actual scan remains under original two seconds')
+        need([row['pid']for row in snapshot['rows']]==pids,'each enumerated PID has one complete raw stat')
+        matching=[]
+        for row in snapshot['rows']:
+            totals+=len(validate_row(row,namespace,common,began=started,ended=scanned))
+            computed=namespace['matching_roles'](row,roles)
+            need(computed==row.get('matches',[]),'same exact original matching reasons')
+            if computed:matching.append(row['pid'])
+        need(matching==[] and snapshot['original_predicate_matching_pids']==[] and snapshot['matching_rows']==0
+             and snapshot['details']==[] and snapshot['detail_limit']==128 and snapshot['all_matching_rows_detailed']is True,
+             'both actual censuses must explicitly exclude all generation/PGID/SID and numeric PID-only matches')
+        counts.append(len(pids));bounds.append({'began':started,'scan_ended':scanned,'ended':finished})
+    need(bounds[0]['ended']['monotonic_ns']<=bounds[1]['began']['monotonic_ns'],'the original two observations are ordered')
+    need(totals==value['raw_read_bytes']==2877851<=16777216,'every actual original read byte is independently accounted')
+    return value,{'schema':'hepta.r8.current-census.pure-replay.v1','capture':CENSUS,'observer_source':SOURCE,
+        'role_families':families,'role_count':42,'source_count':20,'native_boundary_count':10,
+        'complete_census_rows':counts,'original_predicate_matches':[0,0],'numeric_pid_only_matches':[0,0],
+        'current_boot_id':BOOT,'original_read_bytes':totals,'clocks':bounds,
+        'kernel_ESRCH_asserted':False,'historical_closure_validators_replayed':False,
+        'past_failure_offender_identified':False,'past_failure_cause':'UNKNOWN',
+        'global_unknown_effect_count':None,'retirement_accepted':False,'new_nonce_authorized':False}
+
+def bind_census_to_scope(census,scope):
+    """The later complete scope capture re-reads all the same full9 originals."""
+    need(census['ended']['unix_ns']<=scope['began']['unix_ns']
+         and census['ended']['monotonic_ns']<=scope['began']['monotonic_ns'],
+         'complete scope capture follows the actual current-role census')
+    readset=scope['readset']
+    for row in census['original_role_inputs']:
+        need(readset.get(row['path'])=={k:row[k]for k in ('path','bytes','sha256','metadata')},
+             'all20 role-source full9 byte identities persist through full scope capture')
+    return {'original_role_sources_preserved_through_later_scope_capture':20,
+        'census_precedes_full_scope_capture':True,'past_failure_offender_identified':False}

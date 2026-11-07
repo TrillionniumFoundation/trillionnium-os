@@ -1,0 +1,156 @@
+{
+  "Mac_existing_Python314_execution_required_before_publication": true,
+  "all_original_14_source_hashes_and_redaction_spans_unchanged": true,
+  "all_source_and_expanded_members_byte_identical_to_v1": true,
+  "created_utc": "2026-11-07T17:36:21.909849+00:00",
+  "formal_GitHub_independent_approval_granted": false,
+  "members": [
+    {
+      "bytes": 8693,
+      "member": "sources/dependencies/admission/admission_entry.py.txt",
+      "sha256": "f3e677bd70710855366a888289eaf8c2f0f7fe939a9d9b7d05265c33b03317e4"
+    },
+    {
+      "bytes": 85199,
+      "member": "sources/dependencies/admission/bound02_disposition.py.txt",
+      "sha256": "dd0240d5382055e1fd5a3b0a9947ecb4d3f247da4b6b6045054e93358c1b1b70"
+    },
+    {
+      "bytes": 8718,
+      "member": "sources/dependencies/admission/build_fence_plan.py.txt",
+      "sha256": "57ef9cae7de417864c5c78aa14fc5378427cdc8945f521555d623bb9ee30645c"
+    },
+    {
+      "bytes": 9847,
+      "member": "sources/dependencies/admission/prepare_fresh_admission_input.py.txt",
+      "sha256": "0243f2085b9d983068227433b38ebe07943859f108184579ac538ed3c80e215c"
+    },
+    {
+      "bytes": 37406,
+      "member": "sources/dependencies/admission/verify_retained_preaccept.py.txt",
+      "sha256": "078d73cce2a6eb2005aedc02aa8a61cf380895222a556c295acd2fa18f16a92f"
+    },
+    {
+      "bytes": 96636,
+      "member": "sources/dependencies/admission/verify_retained_staged_r8.py.txt",
+      "sha256": "14dd63c72a26f4d8593c6e95f43f38e5c006f1d1a0c9fc6e08d9a9889484b512"
+    },
+    {
+      "bytes": 25592,
+      "member": "sources/prepare_native_bound_components_r9_fc33_UNBOUND.py.txt",
+      "sha256": "97143d8cda67937cf28ef7657659ba2351aef0fec9873826b36411b9b2443893"
+    },
+    {
+      "bytes": 8101,
+      "member": "sources/root-chain/source/phone_chain_bridge.py.txt",
+      "sha256": "5a990250ddd6e9ab95541959c5fd78e420d6e8e4b75c1dbc828490bd363369fe"
+    },
+    {
+      "bytes": 83872,
+      "member": "sources/root-chain/source/run_component_root_once.py.txt",
+      "sha256": "898b0ce5ed3209a7c71479da31cb9e3d2bf500c1c483c27f7a7ed6c0bdfedf0c"
+    },
+    {
+      "bytes": 114428,
+      "member": "sources/runtime/source/close_component.py.txt",
+      "sha256": "7b813796e5ed636ac1e506e5326ce28112b181b2cd701eb68ce946cd81268b15"
+    },
+    {
+      "bytes": 48643,
+      "member": "sources/runtime/source/component_lifecycle.py.txt",
+      "sha256": "437f43aa569cda6e43abcf6f368e8a5d343acecd23017afe6492625b15f741cd"
+    },
+    {
+      "bytes": 30957,
+      "member": "sources/runtime/source/component_snapshot.py.txt",
+      "sha256": "6e944c4783fa64abe1a2c741a76cc98165122b6e3b709f2147698fdbe0416263"
+    },
+    {
+      "bytes": 251751,
+      "member": "sources/runtime/source/late_boundary.py.txt",
+      "sha256": "d8274892d67a81cd16271cea7384d2b8616b346f5723efd5ab17823b8de2e6f0"
+    },
+    {
+      "bytes": 47418,
+      "member": "sources/runtime/source/send_new_native_guard_task_r10_r4.py.txt",
+      "sha256": "a1d3d98c8c74fd7718d668e894968f2c2fd90670e5da4290731acf7db6b1bb47"
+    },
+    {
+      "bytes": 13789,
+      "member": "expanded/23f0756748b643d1461e6e371860e5393c107d495ba70b955504380cf9868a81.py.txt",
+      "sha256": "0e3bea837164f1c1423e93641a176220b2abe9b327c701d1f41b94fe34acfb05"
+    },
+    {
+      "bytes": 409,
+      "member": "expanded/247ebf979d69cfd5b9b55b5cdbe55b2d1a57c481d3ceb67ef5e4ece91f7d78f6.json.txt",
+      "sha256": "b44ac419e4ecbffa7353d21bba0a5385b048ae96af2f025ee9bdeed2d31e4979"
+    },
+    {
+      "bytes": 6672,
+      "member": "expanded/4830a668492a69b43b1bad3cb716377eae00e4c208bc3ac4df048c317e28a2d0.py.txt",
+      "sha256": "f6148eb0a784a01481e5a6821b99ae06ca7f5cf2afa5ac1975f8f69ce176c857"
+    },
+    {
+      "bytes": 413,
+      "member": "expanded/4a3cb5afc08092f6a30ccf92e443b664ac511c7f764d9ef8aab86955e1aaa4ab.json.txt",
+      "sha256": "5e04a3060121e985d0c383303b7e667ae5073a7456db5c11cb6551e93d0a3f98"
+    },
+    {
+      "bytes": 37406,
+      "member": "expanded/5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21.py.txt",
+      "sha256": "078d73cce2a6eb2005aedc02aa8a61cf380895222a556c295acd2fa18f16a92f"
+    },
+    {
+      "bytes": 11585,
+      "member": "expanded/5d6b2468adbffdbe9e09d6eeae9b5aea74068d5ccbfc9c8e14da136bb2e5b85c.py.txt",
+      "sha256": "235a66e45232098ef8cd091880d8ef453a0bf5a9ed0e640dda97e11f08e711dd"
+    },
+    {
+      "bytes": 14906,
+      "member": "expanded/8ef9f341b196f523a0eaa8e313b8a463d57d700ab72ca2fdb24ef2ef41236bd1.py.txt",
+      "sha256": "a1ff966f7abbb2aa73106eb57aa59709db150a91cf017e2bcda6f66d98604230"
+    },
+    {
+      "bytes": 21865,
+      "member": "expanded/937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38.py.txt",
+      "sha256": "d198ae31951a41c6178a7eb3ff0fabf263b5d086157e880428f50c69fc5d60fe"
+    },
+    {
+      "bytes": 14027,
+      "member": "expanded/9ec8f4289f07ea63b3d6d2c4060d6b55d7cf96ee5e83caeea450fab453573f0b.py.txt",
+      "sha256": "68e5a358aed3fb93e61aa0953dee080e82917aa14b56a9f60bc873856944bcf6"
+    }
+  ],
+  "native_or_phone_actions": 0,
+  "original_normalized_proof_hashes_unchanged": true,
+  "prior_review": {
+    "file": "INDEPENDENT-PUBLICATION-REVIEW.json",
+    "sha256": "d577ec3568cc8739b3accced70684163792f299e604e366a000250d82d65418d"
+  },
+  "private_binding_unchanged": true,
+  "review_scope": "Public source publication and exact reconstruction tooling only",
+  "reviewed_delta": [
+    "Import sys and declare the exact normalizer identity.",
+    "Require Python >=3.12 for proof serialization.",
+    "Python3.12 retains the existing ast.dump representation; newer runtimes explicitly include empty fields.",
+    "Continue complete AST field comparison and the original normalized hash; no semantic fields are ignored."
+  ],
+  "reviewer": "root independent of source_integration author",
+  "runtime_adopted": false,
+  "schema": "razr60.r9.public-source-independent-review.v2",
+  "source_execution_count": 0,
+  "source_manifest": {
+    "bytes": 134993,
+    "sha256": "5e8f476f160559fbe7e4b22c6d964905299d996ecf4e78ff315f56cf2de59a20"
+  },
+  "tools": {
+    "reconstruct_sources.py": {
+      "bytes": 9174,
+      "sha256": "450187d82aa8da226abfb2e66194d313c9afba0c06f747dc21084b7453790223"
+    },
+    "verify_public_archive.py": {
+      "bytes": 6498,
+      "sha256": "6d32e8674eb5583d7c50a35431c4a1d5dc1c180a788e0b1567ab0541db13fa30"
+    }
+  }
+}

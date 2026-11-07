@@ -1,0 +1,23 @@
+{
+  "actual_original_source_hashes_matched": 14,
+  "original_and_public_AST_pairs_verified": 14,
+  "phone_calls": 0,
+  "public_archive_verification": {
+    "embedded_payload_links_verified": true,
+    "expanded_review_sources": 9,
+    "fixed19_credit": 0,
+    "private_binding_included": false,
+    "public_ast_identities_verified": true,
+    "public_member_hashes_verified": true,
+    "redaction_count": 258,
+    "runtime_adopted": false,
+    "schema": "razr60.r9.public-archive-verification.v1",
+    "source_execution_count": 0,
+    "source_file_count": 14,
+    "source_manifest_sha256": "5e8f476f160559fbe7e4b22c6d964905299d996ecf4e78ff315f56cf2de59a20"
+  },
+  "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+  "schema": "razr60.r9.publication-python314-verification.v1",
+  "source_execution_count": 0,
+  "source_manifest_sha256": "5e8f476f160559fbe7e4b22c6d964905299d996ecf4e78ff315f56cf2de59a20"
+}

@@ -1,0 +1,16 @@
+{
+  "embedded_payload_links_verified": true,
+  "expanded_review_sources": 9,
+  "fixed19_credit": 0,
+  "private_binding_included": false,
+  "public_ast_identities_verified": true,
+  "public_member_hashes_verified": true,
+  "redaction_count": 258,
+  "runtime_adopted": false,
+  "schema": "razr60.r9.public-archive-verification.v1",
+  "source_execution_count": 0,
+  "source_file_count": 14,
+  "source_manifest_sha256": "5e8f476f160559fbe7e4b22c6d964905299d996ecf4e78ff315f56cf2de59a20",
+  "verified_at_utc": "2026-11-07T17:34:50.941125+00:00",
+  "verifier_sha256": "6d32e8674eb5583d7c50a35431c4a1d5dc1c180a788e0b1567ab0541db13fa30"
+}

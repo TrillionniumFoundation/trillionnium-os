@@ -1,0 +1,14 @@
+{
+  "schema": "razr60.r9.source-publication-sanitization.v1",
+  "source_file_count": 14,
+  "original_source_bytes": 856082,
+  "public_source_bytes": 857261,
+  "literal_redaction_count": 258,
+  "expanded_code_or_manifest_count": 9,
+  "private_binding_sha256": "403d2f78146e5e8b91c91681d6664e7b1bdc1ccfb4f4c9eb7c4e650b821fe0c1",
+  "predicate_structure_and_numeric_literals_preserved": true,
+  "known_private_literal_leak_count": 0,
+  "original_sensitive_values_not_published": true,
+  "original_private_literals_retained_only_in_private_binding": true,
+  "source_manifest_sha256": "5e8f476f160559fbe7e4b22c6d964905299d996ecf4e78ff315f56cf2de59a20"
+}
