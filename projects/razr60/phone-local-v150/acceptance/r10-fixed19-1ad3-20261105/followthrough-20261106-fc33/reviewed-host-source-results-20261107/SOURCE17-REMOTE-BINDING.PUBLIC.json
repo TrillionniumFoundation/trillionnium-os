@@ -1,0 +1,199 @@
+{
+  "actual_phone_success_inferred": false,
+  "all_full_byte_equalities_passed": true,
+  "build_qualified": false,
+  "combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+  "commit": "1ff53c92238f8c60619f86fba359d41d2b222fc4",
+  "complete_material_bytes": 387843,
+  "four_roles_ready": false,
+  "installed_source_qualified": false,
+  "material_count": 17,
+  "materials": [
+    {
+      "bytes": 1493,
+      "git_blob_sha": "2d9871a199a1a759f38badf6467e376525f49838",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/local-config-r10-r1.json",
+      "kind": "configuration",
+      "material": "production-config.json",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/local-config-r10-r1.json"
+    },
+    {
+      "bytes": 10654,
+      "git_blob_sha": "89405ceb319ac26c2c052065885913107a36723f",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+      "kind": "service_inputs",
+      "material": "production-service.json",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/PHONE-SERVICE-INPUTS-v150-r10-r1.json"
+    },
+    {
+      "bytes": 15587,
+      "git_blob_sha": "9779079985636df58686330571222ce582f69944",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/action_ledger.py",
+      "kind": "production_source",
+      "material": "provider/source/action_ledger.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/action_ledger.py"
+    },
+    {
+      "bytes": 22059,
+      "git_blob_sha": "59e2c8594b88a58793d7ba3c6761bd5d277df725",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/daily_phone_local.py",
+      "kind": "production_source",
+      "material": "provider/source/daily_phone_local.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/daily_phone_local.py"
+    },
+    {
+      "bytes": 11439,
+      "git_blob_sha": "556bbf50b9849e0fbe1ea507ad35cc98b6f58945",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/health_contracts.py",
+      "kind": "production_source",
+      "material": "provider/source/health_contracts.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/health_contracts.py"
+    },
+    {
+      "bytes": 15135,
+      "git_blob_sha": "b98fa2e0e04dca525ad5442cccbc7acb5ec91efc",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/ledger_round_evidence.py",
+      "kind": "production_source",
+      "material": "provider/source/ledger_round_evidence.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/ledger_round_evidence.py"
+    },
+    {
+      "bytes": 8251,
+      "git_blob_sha": "fbe2e8832dcc2a3958e9dc790a1ecf394023eb37",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_health.py",
+      "kind": "production_source",
+      "material": "provider/source/model_health.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_health.py"
+    },
+    {
+      "bytes": 37375,
+      "git_blob_sha": "339f98ec195a62d4dfd4538c1cb8ff634596a0d0",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_slot_cleanup.py",
+      "kind": "production_source",
+      "material": "provider/source/model_slot_cleanup.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_slot_cleanup.py"
+    },
+    {
+      "bytes": 10453,
+      "git_blob_sha": "34b67ebbc6338e66f0c43ae19059ab0ffda7aba2",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_http_worker.py",
+      "kind": "production_source",
+      "material": "provider/source/phone_local_http_worker.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_http_worker.py"
+    },
+    {
+      "bytes": 13927,
+      "git_blob_sha": "03800a9aab65d102477cbb6f6c7d8867fe0a16ef",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_tools.py",
+      "kind": "production_source",
+      "material": "provider/source/phone_local_tools.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_tools.py"
+    },
+    {
+      "bytes": 55981,
+      "git_blob_sha": "598544ec9460977b374744d053c5a83d490c8f99",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_observation_tools.py",
+      "kind": "production_source",
+      "material": "provider/source/phone_observation_tools.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_observation_tools.py"
+    },
+    {
+      "bytes": 22825,
+      "git_blob_sha": "9cdba9872fd2637c144dc889ba38643300bef568",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_task_guards.py",
+      "kind": "production_source",
+      "material": "provider/source/phone_task_guards.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_task_guards.py"
+    },
+    {
+      "bytes": 41618,
+      "git_blob_sha": "6c430b9f14f1cb17e5e6585229ee9fa212f550e5",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_codex_host.py",
+      "kind": "production_source",
+      "material": "provider/source/provider_codex_host.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_codex_host.py"
+    },
+    {
+      "bytes": 17730,
+      "git_blob_sha": "d5755ca4129da5c5ed1da9b8771a116be3b3efa5",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_openai_compatible.py",
+      "kind": "production_source",
+      "material": "provider/source/provider_openai_compatible.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_openai_compatible.py"
+    },
+    {
+      "bytes": 70303,
+      "git_blob_sha": "78be7653d6af6784b30871c1e1054e398e29e4ab",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_phone_local.py",
+      "kind": "production_source",
+      "material": "provider/source/provider_phone_local.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_phone_local.py"
+    },
+    {
+      "bytes": 9802,
+      "git_blob_sha": "938ad60ef2b1b33103384c6ef50d764d9da8e5e3",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/retirement_recovery.py",
+      "kind": "production_source",
+      "material": "provider/source/retirement_recovery.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/retirement_recovery.py"
+    },
+    {
+      "bytes": 23211,
+      "git_blob_sha": "1da225de785769d3dd5329ab48b4ad207f3c77c8",
+      "git_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/task_postconditions.py",
+      "kind": "production_source",
+      "material": "provider/source/task_postconditions.py",
+      "remote_bytes_equal_current_combination_material": true,
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/1ff53c92238f8c60619f86fba359d41d2b222fc4/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/task_postconditions.py"
+    }
+  ],
+  "phone_calls": 0,
+  "phone_component_pair_qualified": false,
+  "production_source_count": 15,
+  "remote_blobs_fetched": 17,
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "runtime_manifest_sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5",
+  "schema": "hepta.r6.shared17.remote-complete-bytes-binding.v1",
+  "scope": "Exact source-material presence and complete-byte identity only; deployment and physical qualification remain separate.",
+  "shared_materials_manifest_sha256": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1",
+  "source_seal_sha256": "b8ace9d8c6cd7f1a6dbeab83f20ccb3675dff76e47bc445c5d2c286eba58681a",
+  "state": "ALL_17_MATERIAL_BYTES_MATCH_EXACT_REMOTE_COMMIT_AND_R6_COMBINATION",
+  "tree": "9d8e387703107c8419aa34b150ff2a960bf70194",
+  "tree_blob_count": 7215,
+  "tree_entries": 8856,
+  "whole_fixed19_cases_closed": [],
+  "whole_tree_returned_without_truncation": true
+}
