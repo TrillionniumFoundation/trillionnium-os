@@ -1,0 +1,670 @@
+#!/usr/bin/env python3
+"""Root-only one-identity orchestration of the frozen native-guard package.
+
+Default is a host preview. No nonce is generated. The 600-second lease is
+fixed only after explicit execution starts. Any unknown/failure stops without
+replay, extension, second Send, or signalling an unknown process.
+"""
+import argparse
+import ast
+import base64
+import contextlib
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import re
+import shlex
+import stat
+import subprocess
+import sys
+import tarfile
+import time
+import types
+
+B=Path('/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1')
+G='/var/lib/trillionnium/owner-open/phone-local-v150'
+N='/data/trillionnium/owner-open/state/phone-local-v150'
+BOOT='f8019f83-20a7-4f18-bea1-51c980621e4d'
+PKG='1cd57949621b36e46dc72d3df55e6ec3814fa76fb046c15ae71524463e3e8996'  # Filled only after actual legacy publication and the final r4 runtime freeze.
+SENDER='aafd40345c6dc35b7b7d34ab8b04c860ebf17d326d842ed733d0404cd0a051ad'
+READY_HELPER='f3b83e55a07edd370946c40cec8694f310c9713082604646d264b625e7314d99'
+ACTOR='179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22'
+RET='e3c8411f3d85440018392597d4f9f8795cfd7a60c44fc1680068a60949d20999'
+SHARED='121416839ffdac15485270cda0e95445e376b0a24801fa283659a3da084ae45f'
+CONFIG='780754928709871d3e70f432acb6a021c6c97ab822aaf7c32c887c132cac8c34'
+SERVICE='2739a0af53650363e065bb71a448481998c68fc8b8632e61262c319dae6b586a'
+MATERIAL_ROOT=B/'r10-boundary-consumers-material-r1/actual-material-01'
+SSH=['ssh','-J','ai395-usb4','-o','HostName=10.77.0.4','-p','22','-o','BatchMode=yes',
+     '-o','StrictHostKeyChecking=yes','-o','ConnectTimeout=5','pocket4-usb4-fast','/usr/bin/python3','-I','-B','-']
+ENV='/data/adb/magisk/busybox env -i PATH=/usr/bin:/bin:/usr/libexec/trillionnium PYTHONHOME=/usr PYTHONDONTWRITEBYTECODE=1 LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu LANG=C.UTF-8 LC_ALL=C.UTF-8 TMPDIR=/var/lib/trillionnium/owner-open/tmp NO_COLOR=1 TERM=dumb /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root '
+HERE=Path(__file__).resolve().parent
+
+def need(v,s):
+    if not v:raise ValueError(s)
+def sha(b):return hashlib.sha256(b).hexdigest()
+def enc(v):return (json.dumps(v,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\n').encode()
+def strict(b):
+    def pairs(v):
+        d={}
+        for k,x in v:need(k not in d,'duplicate JSON key');d[k]=x
+        return d
+    return json.loads(b,object_pairs_hook=pairs,parse_constant=lambda _:(_ for _ in ()).throw(ValueError('nonfinite JSON')))
+def desc(p,b):return {'path':str(p),'bytes':len(b),'sha256':sha(b)}
+def read(p,n=64*1024*1024):
+    p=Path(p);need(p.is_absolute() and p.resolve(strict=True)==p,'canonical original')
+    fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+    try:
+        a=os.fstat(fd);need(stat.S_ISREG(a.st_mode) and a.st_nlink==1 and 0<=a.st_size<=n,'bounded regular original')
+        with os.fdopen(fd,'rb',closefd=False) as f:b=f.read(n+1)
+        z=os.fstat(fd);s=p.lstat();keys=('st_dev','st_ino','st_mode','st_uid','st_gid','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+        need(len(b)==a.st_size and all(getattr(a,k)==getattr(z,k)==getattr(s,k) for k in keys),'changed original')
+    finally:os.close(fd)
+    return b
+def pin(row):
+    need(isinstance(row,dict) and set(row)=={'path','bytes','sha256'} and type(row['bytes']) is int
+        and row['bytes']>=0 and re.fullmatch('[0-9a-f]{64}',row['sha256']),'exact original descriptor')
+    b=read(row['path']);need(len(b)==row['bytes'] and sha(b)==row['sha256'],'original pin');return b
+def put(p,b):
+    fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'wb') as f:f.write(b);f.flush();os.fsync(f.fileno())
+    syncdir(p.parent)
+def syncdir(p):
+    fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+    try:os.fsync(fd)
+    finally:os.close(fd)
+def newdir(p):
+    p.mkdir(mode=0o700);syncdir(p);syncdir(p.parent)
+def original_stream(p):
+    fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    try:
+        os.fsync(fd);syncdir(p.parent);return os.fdopen(fd,'wb')
+    except BaseException:
+        os.close(fd);raise
+def close_streams_owned(streams):
+    errors=[]
+    for label,stream in streams:
+        if stream is None or stream.closed:continue
+        try:stream.flush();os.fsync(stream.fileno())
+        except BaseException as error:
+            errors.append({'stream':label,'operation':'flush_fsync','error_type':type(error).__name__})
+        finally:
+            try:stream.close()
+            except BaseException as error:
+                errors.append({'stream':label,'operation':'close','error_type':type(error).__name__})
+    return errors
+
+def finish_stream(stream):
+    errors=close_streams_owned([('output',stream)])
+    need(not errors,'stream finalization failed: '+repr(errors))
+def filedesc(p):return desc(p,read(p))
+
+REMOTE_IO='''from pathlib import Path
+import base64,hashlib,json,os,stat,subprocess
+os.umask(0o077)
+def enc(v):return (json.dumps(v,sort_keys=True,indent=2,ensure_ascii=False,allow_nan=False)+'\\n').encode()
+def syncdir(p):
+ fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ try:os.fsync(fd)
+ finally:os.close(fd)
+def newdir(p):
+ p.mkdir(mode=0o700);syncdir(p);syncdir(p.parent)
+def put(p,b):
+ fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+ with os.fdopen(fd,'wb') as f:f.write(b);f.flush();os.fsync(f.fileno())
+ syncdir(p.parent)
+def stream(p):
+ fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+ os.fsync(fd);syncdir(p.parent);return os.fdopen(fd,'wb')
+def finish(f):f.flush();os.fsync(f.fileno());f.close()
+def private_dir(p,create=False):
+ if create:
+  try:newdir(p)
+  except FileExistsError:pass
+ s=p.lstat();assert p.resolve(strict=True)==p and stat.S_ISDIR(s.st_mode) and s.st_uid==os.getuid() and stat.S_IMODE(s.st_mode)==0o700
+def parents(root,relative):
+ p=root;private_dir(p)
+ for part in relative.parts:
+  assert part not in ('','..','.');p=p/part;private_dir(p,True)
+ return p
+'''
+
+def validate_adoption(adoption,expected_live_sha256,adoption_raw):
+    # Root's explicit adoption must name the exact hash. Its independent full
+    # proof is validated by the release/adoption workflow, never read from sysfs here.
+    need(re.fullmatch('[0-9a-f]{64}',expected_live_sha256) and expected_live_sha256 not in ('bfe7acc92ba8c5b7a3a1c2360d6faf53f804a19c3e25e20aad336e3220fa0e38','0'*64),
+        'explicit new adopted policy hash required')
+    decision=adoption.get('root_decision');actual=pin(adoption['actual_export'])
+    need(adoption['schema']=='hepta.r10.explicit-policy-adoption.v1' and adoption['release_id']=='v150-r10-r1'
+        and adoption['boot_id']==BOOT and adoption['comparison_route']=='verified_semantic_export'
+        and adoption['retirement_sha256']=='b139e096969f5a860f5e7cb9e3e988db3d0b2e868528dd4c38b8c9411df4fb90',
+        'explicit actual policy adoption identity differs')
+    need(isinstance(decision,dict) and set(decision)=={'state','release_id','adopted_policy','offline_comparison_sha256',
+        'live_operation_sha256','post_live_comparison_sha256','pre_live_expectation_sha256'}
+        and decision['state']=='ROOT_EXPLICITLY_ADOPTS_VERIFIED_ACTUAL_EXPORT' and decision['release_id']=='v150-r10-r1'
+        and decision['adopted_policy']=={'bytes':len(actual),'sha256':sha(actual)}
+        and sha(actual)==expected_live_sha256,'explicit Root adoption decision required; no current-policy inference')
+    for key in ('offline_comparison','live_operation','post_live_comparison','pre_live_expectation'):
+        b=pin(adoption[key]);need(sha(b)==decision[key+'_sha256'],'Root adoption decision does not bind original '+key)
+    pre=strict(pin(adoption['pre_live_expectation']));post=strict(pin(adoption['post_live_comparison']))
+    need(pre['comparison_route']=='verified_semantic_export' and pre['expected_live_export'] is None
+        and pre['policy_adoption_authorized'] is False and post['comparison_kind']=='post_live_export'
+        and post['state']=='EXACT_ONE_APPROVED_PERMISSION_DELTA_VERIFIED'
+        and post['candidate']['sha256']==sha(actual) and post['candidate']['bytes']==len(actual)
+        and post['check_count']==post['passed_count']==len(post['checks']) and len(post['checks'])>=14
+        and all(r['passed'] is True for r in post['checks']), 'actual post-live full comparison required')
+    # Reuse the independently reviewed complete original-chain verifier. These
+    # exact source bytes only define pure/host functions; no main or write is called.
+    modules={}
+    for name,size,digest in (
+        ('release_boundaries',47128,'d48f05514b250511c40f8674b20a60d2e84b1a34a9a5abd8cc43c3620e770524'),
+        ('make_policy_adoption',8409,'71048f36a9c29b6c56de506f95233d01a2ce8909a922f07a4259c09f8b0509de')):
+        path=HERE.parent/'reference'/(name+'.py');raw=read(path,65536)
+        need(len(raw)==size and sha(raw)==digest,'reviewed policy verifier differs')
+        module=types.ModuleType('exact_root_chain_'+name);module.__file__=str(path)
+        exec(compile(raw,str(path),'exec'),module.__dict__);modules[name]=module
+    state,_=modules['make_policy_adoption'].verify_originals(modules['release_boundaries'],adoption,adoption_raw)
+    need(state['runtime_policy']=={'bytes':len(actual),'sha256':sha(actual)},'complete adoption recheck differs')
+    return {'bytes':len(actual),'sha256':sha(actual)}
+
+def validate_sender_marker(marker,contract_raw,prepared,owner_sha,nonce,provider_sha):
+    need(marker['schema']=='hepta.native-guard.sender-prepared.v1' and marker['state']=='PREPARED_NO_SEND'
+        and type(marker['send_attempt_count']) is int and marker['send_attempt_count']==0 and marker['provider_started_by_sender'] is False,
+        'only the actual no-Send rendezvous admits one launch')
+    need(marker['nonce']==nonce and marker['owner_request_sha256']==owner_sha
+        and marker['contract_sha256']==sha(contract_raw)==prepared['sender_contract_sha256']
+        and marker['provider_source_sha256']==provider_sha,'original sender prepared identity differs')
+
+def prior_reader(runtime,manifest):
+    # Execute only two source rows already bound by the exact current package.
+    # No ordinary import is permitted to substitute an unindexed bytecode file.
+    saved=sys.modules.get('component_common');old_path=list(sys.path);old_dwb=sys.dont_write_bytecode
+    try:
+        sys.dont_write_bytecode=True
+        loaded={}
+        for name in ('component_common','late_boundary'):
+            rel='source/'+name+'.py';rows=[r for r in manifest['files'] if r['path']==rel]
+            need(len(rows)==1,'single reviewed prior-reader source required')
+            raw=read(runtime/rel);row=rows[0]
+            need(len(raw)==row['bytes'] and sha(raw)==row['sha256'],'reviewed prior-reader bytes changed')
+            mod=types.ModuleType(name);mod.__file__=str(runtime/rel)
+            if name=='component_common':sys.modules[name]=mod
+            else:mod.__reviewed_source_sha256__=sha(raw)
+            exec(compile(raw,mod.__file__,'exec'),mod.__dict__);loaded[name]=mod
+        return loaded['late_boundary']
+    finally:
+        if saved is None:sys.modules.pop('component_common',None)
+        else:sys.modules['component_common']=saved
+        sys.path[:]=old_path;sys.dont_write_bytecode=old_dwb
+
+
+def validate_current_prior(p,previous,runtime,manifest):
+    need(p['prior_boundary_descriptor'] is not None and p['prior_boundary_original'] is not None,
+         'r4 cannot drop the actual failed predecessor or return to the retired previous')
+    prior=strict(pin(p['prior_boundary_descriptor']));original=pin(p['prior_boundary_original'])
+    need(sha(original)==prior['sha256'] and len(original)==prior['bytes'],'explicit prior boundary original')
+    reader=prior_reader(runtime,manifest)
+    boundary=reader.boundary_from_original(original,original_descriptor=prior,
+        combination_sha256=reader.LEGACY_COMBINATION_SHA256,package_sha256=PKG)
+    need(boundary['nonce']!=p['nonce'] and boundary['scope']==previous['identity']
+         and previous.get('known_all_dispatched_tools_confirmed_terminal') is True,
+         'new component must use its actual terminal predecessor native scope')
+    if boundary['schema']==reader.LEGACY_SCHEMA:
+        need(p['case_id']=='NEG-01','the one unqualified external ancestor only precedes a new NEG01')
+    else:
+        need(boundary['case_id']=='NEG-01' and p['case_id']=='NEG-02',
+             'NEG02 must follow an actually closed current-package NEG01')
+    need(boundary['boot_id']==p['boot_id']
+         and boundary['retirement']==strict(pin(p['retirement_descriptor']))['files'],
+         'component predecessor boot or actual retirement differs')
+
+
+def validate_plan(raw):
+    need(isinstance(PKG,str) and re.fullmatch('[0-9a-f]{64}',PKG),
+         'final r4 runtime and exact legacy predecessor are not frozen')
+    p=strict(raw)
+    required={'schema','label','case_id','nonce','boot_id','session_id','profile_id','request','previous','preserved_draft',
+        'sender_retirement_resolution','package','shared_materials','shared_root','artifacts','policy_adoption','live_policy_sha256',
+        'retirement_descriptor','retirement_originals','prior_boundary_descriptor','prior_boundary_original','source_package','out'}
+    need(set(p)==required and p['schema']=='hepta.native-guard.root-chain-plan.v1','exact Root orchestration plan')
+    need(re.fullmatch('[a-z0-9][a-z0-9-]{5,35}',p['label']) and p['case_id'] in ('NEG-01','NEG-02')
+        and re.fullmatch('[0-9a-f]{32}',p['nonce']) and p['boot_id']==BOOT,'explicit new Root identity')
+    need(p['package']['sha256']==PKG and p['retirement_descriptor']['sha256']==RET,'frozen package/actual retirement')
+    source_package=strict(pin(p['source_package']))
+    need(source_package['schema']=='hepta.native-guard.root-chain-source-package.v1'
+        and Path(p['source_package']['path']).parent==HERE.parent
+        and {r['path'] for r in source_package['files']}=={'source/phone_chain_bridge.py','source/run_component_root_once.py',
+            'reference/release_boundaries.py','reference/make_policy_adoption.py'}
+        and len(source_package['files'])==4,'explicit reviewed coordinator source package required')
+    for row in source_package['files']:
+        b=read(HERE.parent/row['path']);need(len(b)==row['bytes'] and sha(b)==row['sha256'],'coordinator source pin')
+    owner=pin(p['request']);need(20<=len(owner)<=16000 and owner.decode().count(p['nonce'])==1 and b'\0' not in owner,'exact owner nonce binding')
+    previous=strict(pin(p['previous']));need(previous['identity']['session_id']==p['session_id']
+        and previous['identity']['profile_id']==p['profile_id'],'actual selected previous session/profile')
+    draft=strict(pin(p['preserved_draft']));d=base64.b64decode(draft['exact_utf8_b64'],validate=True)
+    need(d and sha(d)==draft['utf8_sha256'] and d!=owner,'nonempty preserved draft')
+    manifest=strict(pin(p['package']));need(manifest['schema']=='hepta.native-guard.adapter-package.v1','package schema')
+    runtime=Path(p['package']['path']).parent
+    for row in manifest['files']:
+        b=read(runtime/row['path']);need(len(b)==row['bytes'] and sha(b)==row['sha256'],'frozen package bytes')
+    validate_current_prior(p,previous,runtime,manifest)
+    for name,h in (('send_new_native_guard_task_r10_r4.py',SENDER),('sender_native_guard_ready_r10_r4.py',READY_HELPER)):
+        need(sha(read(B/name))==h,'original B-root sender helper pin')
+    pin(p['sender_retirement_resolution']);pin(p['artifacts']);pin(p['retirement_descriptor'])
+    need(p['shared_materials']['sha256']==SHARED and p['shared_materials']['bytes']==3519
+        and Path(p['shared_root'])==MATERIAL_ROOT,'actual same-builder shared production material required')
+    shared=strict(pin(p['shared_materials']));rows=shared['files'];root=Path(p['shared_root'])
+    need(shared['schema']=='hepta.r10.shared-production-materials.v1'
+        and shared['state']=='HOST_SHARED_PRODUCTION_BYTES_NOT_INSTALLABLE'
+        and shared['release_id']=='v150-r10-r1' and shared['production_source_count']==15
+        and shared['phone_calls']==0 and shared['phone_qualification'] is False
+        and shared['policy_adoption_inferred'] is False,'actual shared material state differs')
+    reviewed=strict(read(runtime/'reference/REVIEWED-PRODUCTION-PINS.json'))
+    expected={'provider/source/'+name for name in reviewed}|{'local-config-r10-r1.json','PHONE-SERVICE-INPUTS-v150-r10-r1.json'}
+    need(len(rows)==17 and {r['path'] for r in rows}==expected,'complete same-builder shared material set')
+    for row in rows:
+        b=read(root/row['path']);need(len(b)==row['bytes'] and sha(b)==row['sha256'],'shared material exact bytes')
+        if row['path'].startswith('provider/source/'):need(row['sha256']==reviewed[Path(row['path']).name],'actual 15 production source pins')
+    need(sha(read(root/'local-config-r10-r1.json'))==CONFIG and sha(read(root/'PHONE-SERVICE-INPUTS-v150-r10-r1.json'))==SERVICE,
+        'actual shared configuration/service bytes differ')
+    adoption_raw=pin(p['policy_adoption']);validate_adoption(strict(adoption_raw),p['live_policy_sha256'],adoption_raw)
+    out=Path(p['out']);need(out.parent==B/'native-guard-root-chains-r10-r1' and out.name==p['label'],'fixed new Root output namespace')
+    return p,manifest
+
+class Chain:
+    def __init__(self,plan,raw):
+        self.p=plan;self.out=Path(plan['out']);newdir(self.out)
+        put(self.out/'ROOT-PLAN.original.json',raw)
+        self.steps=[];self.sender=None;self.sender_files=None
+        self.remote_root='/home/alex/codex-native-guard-chain-r10-r1/'+plan['nonce']
+        self.material=None;self.lease=None;self.prepared=None;self.root_attempts=[]
+        self.bridge=read(HERE/'phone_chain_bridge.py',65536)
+        source_manifest=strict(pin(plan['source_package']))
+        bridge_row=next(r for r in source_manifest['files'] if r['path']=='source/phone_chain_bridge.py')
+        need(len(self.bridge)==bridge_row['bytes'] and sha(self.bridge)==bridge_row['sha256'],'reviewed bridge bytes changed')
+        compile(self.bridge,'phone_chain_bridge.py','exec')
+    def execute_process(self,name,argv,timeout,input_raw=None,async_start=False):
+        need(re.fullmatch('[a-z0-9-]{1,55}',name),'phase name')
+        need(type(timeout) in (int,float) and 0<timeout<float('inf'),'finite positive host execution budget')
+        d=self.out/name;newdir(d)
+        intent={'schema':'hepta.native-guard.root-host-command.v1','phase':name,'argv':argv,
+            'stdin_sha256':None if input_raw is None else sha(input_raw),'maximum_starts':1,
+            'maximum_wait_seconds':timeout,'automatic_retry':False,'signals_on_timeout':False,
+            'deadline_scope':'popen_start_through_actual_join',
+            'input_transport':'retained_readonly_regular_fd_child_reads_within_execution_budget',
+            'hard_bound_on_filesystem_spawn_or_cleanup':False}
+        put(d/'INTENT.json',enc(intent))
+        if input_raw is not None:put(d/'stdin.original',input_raw)
+        stdin_file=stdout=stderr=child=None
+        group=session=None;wait_returned=False;result_recorded=False;cleanup_errors=[]
+        stdin_metadata=None
+        owners=self.__dict__.setdefault('_owned_host_children',{})
+        deadlines=self.__dict__.setdefault('_owned_host_deadlines',{})
+        streams=self.__dict__.setdefault('_owned_host_streams',{})
+        deadline=None
+
+        def input_metadata(value):
+            return tuple(getattr(value,key) for key in ('st_dev','st_ino','st_mode','st_uid','st_gid',
+                'st_nlink','st_size','st_mtime_ns','st_ctime_ns'))
+
+        def pin_retained_input(fd,expected_metadata):
+            held=os.fstat(fd)
+            need(stat.S_ISREG(held.st_mode) and held.st_nlink==1 and held.st_size==len(input_raw)
+                and held.st_uid==os.geteuid() and stat.S_IMODE(held.st_mode)==0o600,
+                'retained stdin must be the private exact-size regular input')
+            need(input_metadata(held)==expected_metadata==input_metadata((d/'stdin.original').lstat()),
+                'retained stdin file identity changed')
+            os.lseek(fd,0,os.SEEK_SET)
+            digest=hashlib.sha256();total=0;remaining=len(input_raw)+1
+            while remaining:
+                chunk=os.read(fd,min(65536,remaining))
+                if not chunk:break
+                total+=len(chunk);remaining-=len(chunk);digest.update(chunk)
+            need(total==len(input_raw) and digest.hexdigest()==intent['stdin_sha256'],
+                'retained stdin content differs from original input')
+            need(input_metadata(os.fstat(fd))==expected_metadata==input_metadata((d/'stdin.original').lstat()),
+                'retained stdin changed during content pin')
+            os.lseek(fd,0,os.SEEK_SET)
+
+        def close_owned_streams():
+            errors=[]
+            for label,stream in (('stdin',stdin_file),('stdout',stdout),('stderr',stderr)):
+                if stream is None or stream.closed:continue
+                try:
+                    if label!='stdin':stream.flush();os.fsync(stream.fileno())
+                except BaseException as error:
+                    errors.append({'stream':label,'operation':'flush_fsync','error_type':type(error).__name__})
+                finally:
+                    try:stream.close()
+                    except BaseException as error:
+                        errors.append({'stream':label,'operation':'close','error_type':type(error).__name__})
+            return errors
+
+        try:
+            if input_raw is not None:
+                # The already retained input is the child's readable fd. No parent
+                # pipe write can delay ownership publication or entry into wait().
+                stdin_metadata=input_metadata((d/'stdin.original').lstat())
+                fd=os.open(d/'stdin.original',os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
+                try:
+                    pin_retained_input(fd,stdin_metadata)
+                    stdin_file=os.fdopen(fd,'rb')
+                except BaseException:os.close(fd);raise
+            stdout=original_stream(d/'stdout.original');stderr=original_stream(d/'stderr.original')
+            deadline=time.monotonic()+float(timeout)
+            child=subprocess.Popen(argv,stdin=stdin_file if stdin_file is not None else subprocess.DEVNULL,
+                stdout=stdout,stderr=stderr,start_new_session=True,close_fds=True)
+            # Retain the actual Popen handle before fallible identity/file recording.
+            # This is not permission to signal, restart, or replay the child.
+            owners[name]=child;deadlines[name]=deadline;streams[name]=(stdout,stderr)
+            try:group,session=os.getpgid(child.pid),os.getsid(child.pid)
+            except ProcessLookupError:
+                need(child.poll() is not None,'host child identity unknown before wait')
+                group=session=None
+            put(d/'CHILD.json',enc({'pid':child.pid,'pgid':group,'sid':session,
+                'source_intent_sha256':sha(enc(intent)),'maximum_starts':1,
+                'execution_deadline_monotonic':deadline,
+                'deadline_validity':'this_running_coordinator_only',
+                'identity_missing_only_if_actual_child_already_joined':group is None}))
+            if async_start:
+                need(time.monotonic()<deadline,'host async launch exceeded execution deadline')
+                if stdin_file is not None:stdin_file.close()
+                return child,d,stdout,stderr
+            # The same monotonic budget includes child input consumption and
+            # identity publication. Blocking OS calls remain non-preemptible;
+            # a late join is recorded as failure rather than late success.
+            rc=child.wait(timeout=max(0.0,deadline-time.monotonic()));wait_returned=True
+            owners.pop(name,None);deadlines.pop(name,None)
+            need(time.monotonic()<=deadline,'host child joined after execution deadline')
+            if stdin_file is not None:pin_retained_input(stdin_file.fileno(),stdin_metadata)
+            cleanup_errors+=close_owned_streams();streams.pop(name,None)
+            need(not cleanup_errors,'owned host stream finalization failed: '+repr(cleanup_errors))
+            o=read(d/'stdout.original');e=read(d/'stderr.original')
+            result={'state':'ORIGINAL_HOST_CHILD_JOINED','phase':name,'pid':child.pid,'returncode':rc,
+                'stdout':desc(d/'stdout.original',o),'stderr':desc(d/'stderr.original',e),'automatic_retry':False}
+            put(d/'RESULT.json',enc(result));self.steps.append(result);result_recorded=True
+            need(rc==0,'original phase failed; no replay: '+name)
+            return o
+        except BaseException as error:
+            cleanup_errors+=close_owned_streams();streams.pop(name,None)
+            if child is not None and not result_recorded:
+                failure={'state':'OWNED_HOST_CHILD_JOINED_PHASE_RECORD_FAILED' if child.returncode is not None
+                    else 'OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY',
+                    'phase':name,'pid':child.pid,'pgid':group,'sid':session,
+                    'source_intent_sha256':sha(enc(intent)),'child_wait_returned':wait_returned,
+                    'child_returncode':child.returncode,'error_type':type(error).__name__,
+                    'cleanup_errors':cleanup_errors,'automatic_retry':False,'signals_sent':0}
+                # The outer retainer already preserves self.steps in FAILURE.json.
+                # Keep that ownership path even if CHILD/UNKNOWN file creation fails.
+                self.steps.append(failure)
+                try:put(d/'UNKNOWN.json',enc(failure))
+                except BaseException as record_error:
+                    failure['unknown_record_error_type']=type(record_error).__name__
+                if child.returncode is not None:owners.pop(name,None);deadlines.pop(name,None)
+            if isinstance(error,subprocess.TimeoutExpired):
+                raise RuntimeError('unknown original phase '+name) from error
+            raise
+    def close_owned_host_outputs(self):
+        # Releasing our file descriptors never proves a remote process stopped.
+        # Preserve child handles and record each outstanding identity on failure.
+        errors=[]
+        streams=self.__dict__.setdefault('_owned_host_streams',{})
+        owners=self.__dict__.setdefault('_owned_host_children',{})
+        for name,(stdout,stderr) in list(streams.items()):
+            errors.extend(close_streams_owned([(name+':stdout',stdout),(name+':stderr',stderr)]))
+            streams.pop(name,None)
+        rows=[]
+        for name,child in list(owners.items()):
+            row={'phase':name,'pid':child.pid,'returncode':child.returncode,
+                'state':'OWNED_HOST_CHILD_NOT_JOINED_NO_SIGNAL_OR_RETRY' if child.returncode is None
+                    else 'OWNED_HOST_CHILD_JOINED_NO_BUSINESS_QUALIFICATION',
+                'automatic_retry':False,'signals_sent':0}
+            rows.append(row)
+            try:put(self.out/name/'OWNED-CHILD-FAILURE.json',enc(row))
+            except BaseException as error:
+                row['record_error_type']=type(error).__name__
+        return {'stream_cleanup_errors':errors,'host_children':rows}
+    def remote(self,name,code,timeout=60):
+        compile(code,'root_p4_'+name,'exec')
+        raw=self.execute_process(name,SSH,timeout,code.encode())
+        return strict(raw)
+    def remote_files(self,name,files,create_root=False):
+        payload={path:base64.b64encode(raw).decode() for path,raw in files.items()}
+        pins={path:[len(raw),sha(raw)] for path,raw in files.items()}
+        code=REMOTE_IO+"R=Path("+repr(self.remote_root)+")\n"
+        if create_root:code+="private_dir(R.parent,True)\nnewdir(R)\n"
+        code+="private_dir(R)\nfiles="+repr(payload)+"\npins="+repr(pins)+"\n"
+        code+="for rel,data in files.items():\n p=Path(rel);assert not p.is_absolute() and '..' not in p.parts\n b=base64.b64decode(data,validate=True);assert [len(b),hashlib.sha256(b).hexdigest()]==pins[rel]\n parents(R,p.parent);q=R/p;put(q,b)\n assert q.read_bytes()==b\nprint(json.dumps({'state':'EXACT_NEW_HOST_FILES_WRITTEN','files':pins},sort_keys=True))\n"
+        return self.remote(name,code,90)
+    def remote_read(self,name,paths,wait_path=None,wait_seconds=0,prepared=False):
+        code="from pathlib import Path\nimport base64,hashlib,json,os,stat,time\npaths="+repr(paths)+"\n"
+        if wait_path:
+            code+="p=Path("+repr(wait_path)+");deadline=time.monotonic()+"+repr(wait_seconds)+"\nwhile not p.exists():\n assert time.monotonic()<deadline,'one original wait expired'\n time.sleep(.1)\n"
+        code+="rows={}\nfor key,path in paths.items():\n p=Path(path);assert p.resolve(strict=True)==p\n fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n with os.fdopen(fd,'rb') as f:\n  a=os.fstat(f.fileno());assert stat.S_ISREG(a.st_mode) and a.st_nlink==1 and a.st_size<=16777216\n  b=f.read(16777217);z=os.fstat(f.fileno())\n assert len(b)==a.st_size and (a.st_dev,a.st_ino,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==(z.st_dev,z.st_ino,z.st_size,z.st_mtime_ns,z.st_ctime_ns)\n rows[key]={'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'base64':base64.b64encode(b).decode()}\n"
+        if prepared:
+            code+="v=json.loads(base64.b64decode(rows['prepared']['base64']));assert v['state']=='PREPARED_NO_SEND' and v['send_attempt_count']==0 and v['provider_started_by_sender'] is False\nassert v['pre_send_deadline_monotonic_ns']-time.monotonic_ns()>40_000_000_000,'insufficient original sender margin'\n"
+        code+="print(json.dumps({'state':'ORIGINAL_HOST_FILES_READ','files':rows},sort_keys=True))\n"
+        return self.remote(name,code,wait_seconds+30)
+    def remote_program(self,name,argv,timeout):
+        code=REMOTE_IO+"R=Path("+repr(self.remote_root)+")\nD=R/"+repr(name)+"\nnewdir(D)\nargv="+repr(argv)+"\n"
+        code+="put(D/'ARGV.json',enc(argv))\no=stream(D/'stdout.original');e=stream(D/'stderr.original');p=subprocess.Popen(argv,stdin=subprocess.DEVNULL,stdout=o,stderr=e,start_new_session=True)\n"
+        code+="try:rc=p.wait(timeout="+repr(timeout)+")\nexcept subprocess.TimeoutExpired:\n put(D/'UNKNOWN.json',enc({'pid':p.pid,'automatic_retry':False,'signals_sent':0}));raise\nfinally:finish(o);finish(e)\nr={'returncode':rc,'stdout':(D/'stdout.original').read_text(),'stderr':(D/'stderr.original').read_text(),'automatic_retry':False}\nput(D/'RESULT.json',enc(r))\nprint(json.dumps(r,sort_keys=True))\n"
+        value=self.remote(name,code,timeout+30)
+        need(value['returncode']==0,'actual P4 child failed; no replay: '+name)
+        return value
+    def phone(self,tag,req):
+        need(req['kind'] in ('shell','push') and type(req['timeout_seconds']) is int and 0<req['timeout_seconds']<=300,'fixed phone actor bound')
+        if req['kind']=='shell':
+            need(req.get('root') is True,'explicit reviewed root shell request required')
+            wire=('shell,v2,raw:/debug_ramdisk/su -c '+shlex.quote(req['command'])).encode()
+            need(len(wire)<65536,'fixed ADB wire bound')
+        label='ng-'+self.p['nonce']+'-'+tag
+        need(re.fullmatch('[a-z0-9-]{1,70}',label),'fixed one-use phone label')
+        code=REMOTE_IO+"B=Path('/home/alex/razr60-local-model-v150');a=B/'ops/phone_once.py'\nassert hashlib.sha256(a.read_bytes()).hexdigest()=="+repr(ACTOR)+"\nlabel="+repr(label)+"\nreq="+repr(req)+"\np=B/'requests'/(label+'.json')\nput(p,enc(req))\n"
+        code+="D=Path("+repr(self.remote_root)+")/"+repr('phone-'+tag)+"\nnewdir(D)\no=stream(D/'actor.stdout');e=stream(D/'actor.stderr')\np=subprocess.Popen(['/usr/bin/python3','-I','-B',str(a),label,str(B/'requests'/(label+'.json'))],stdout=o,stderr=e,start_new_session=True)\n"
+        code+="try:rc=p.wait(timeout="+repr(req['timeout_seconds']+20)+")\nexcept subprocess.TimeoutExpired:\n put(D/'UNKNOWN.json',enc({'pid':p.pid,'automatic_retry':False,'signals_sent':0}));raise\nfinally:finish(o);finish(e)\nraw=(B/'operations'/label/'result.json').read_bytes();v={'actor_rc':rc,'wrapper_sha256':hashlib.sha256(raw).hexdigest(),'wrapper':json.loads(raw)}\nput(D/'ORIGINAL-OPERATION.json',enc(v))\nprint(json.dumps(v,sort_keys=True))\n"
+        result=self.remote('phone-'+tag,code,req['timeout_seconds']+55)
+        need(result['actor_rc']==0,'phone actor unknown/nonzero; inspect original without replay')
+        w=result['wrapper']
+        if req['kind']=='push':
+            need(w['status']=='pushed_and_hash_verified' and w['sha256']==req['sha256'] and w['readback']['rc']==0,'actual push not confirmed')
+            return w
+        ph=w['phone'];need(type(ph['rc']) is int and ph['rc']==0,'actual phone command failed; no new key retry');return strict(ph['stdout'])
+    def bridge_call(self,tag,operation,extra=(),timeout=40):
+        argv=['phone_chain_bridge.py',operation,'--label',self.p['label']]
+        if self.lease:argv+=['--lease-sha256',self.prepared['lease']['sha256']]
+        argv+=list(extra)+['--execute-root-bridge-once']
+        code='import sys\nsys.argv='+repr(argv)+'\n'+self.bridge.decode()
+        command=ENV+'/usr/bin/python3 -I -B -c '+shlex.quote(code)
+        return self.phone(tag,{'kind':'shell','root':True,'timeout_seconds':timeout,'command':command})
+    def push_copy(self,tag,remote_path,name,byte_size,digest):
+        self.phone('push-'+tag,{'kind':'push','source':remote_path,'destination':'/data/local/tmp/hepta-phone-local-v150-r1/hepta-native-guard-'+name,
+            'sha256':digest,'timeout_seconds':90})
+        return self.bridge_call('copy-'+tag,'copy-input',['--name',name,'--bytes',str(byte_size),'--sha256',digest])
+    def frozen_phone(self,tag,argv,timeout=90):
+        return self.phone(tag,{'kind':'shell','root':True,'timeout_seconds':timeout,'command':ENV+shlex.join(argv)})
+    def remaining(self,minimum=1):
+        left=(self.lease['expires_unix_ms']-time.time_ns()//1000000)/1000
+        need(left>minimum,'same lease exhausted; no extension/restart');return left
+
+    def run(self):
+        p=self.p;runtime=Path(p['package']['path']).parent;shared=Path(p['shared_root'])
+        expiry=time.time_ns()//1000000+600000
+        put(self.out/'CHAIN-INTENT.json',enc({'schema':'hepta.native-guard.root-chain-intent.v1','nonce':p['nonce'],
+            'label':p['label'],'case_id':p['case_id'],'lease_expires_unix_ms':expiry,'maximum_native_sends':1,
+            'maximum_detached_launches':1,'automatic_retry':False,'automatic_lease_extension':False,'model_requests':0}))
+        args=['/usr/bin/python3','-I','-B',str(runtime/'source/prepare_component.py')]
+        values={'label':p['label'],'case-id':p['case_id'],'nonce':p['nonce'],'boot-id':BOOT,'session-id':p['session_id'],
+            'profile-id':p['profile_id'],'package':p['package']['path'],'package-sha256':PKG,
+            'production-source':str(shared/'provider/source'),'config-file':str(shared/'local-config-r10-r1.json'),
+            'config-sha256':sha(read(shared/'local-config-r10-r1.json')),
+            'service-file':str(shared/'PHONE-SERVICE-INPUTS-v150-r10-r1.json'),'service-sha256':sha(read(shared/'PHONE-SERVICE-INPUTS-v150-r10-r1.json')),
+            'artifacts-file':p['artifacts']['path'],'artifacts-sha256':p['artifacts']['sha256'],'live-policy-sha256':p['live_policy_sha256'],
+            'retirement-descriptor':p['retirement_descriptor']['path'],'retirement-descriptor-sha256':RET,
+            'retirement-originals':p['retirement_originals'],'owner-request-file':p['request']['path'],
+            'owner-request-sha256':p['request']['sha256'],'expires-unix-ms':expiry,'out':str(self.out/'material')}
+        if p['prior_boundary_descriptor']:
+            values.update({'prior-boundary-descriptor':p['prior_boundary_descriptor']['path'],
+                'prior-boundary-descriptor-sha256':p['prior_boundary_descriptor']['sha256'],'prior-boundary-original':p['prior_boundary_original']['path']})
+        for k,v in values.items():args+=['--'+k,str(v)]
+        self.execute_process('prepare-material',args,30)
+        self.material=self.out/'material';self.prepared=strict(read(self.material/'PREPARED.json'))
+        self.lease=strict(read(self.material/'tree/LEASE.json'));self.remaining(480)
+        files={}
+        for file in (self.material/'tree').rglob('*'):
+            if file.is_file():files['material/tree/'+str(file.relative_to(self.material/'tree'))]=read(file)
+        archive=read(self.material/'component-inputs.tar.gz');files['inputs/component-inputs.tar.gz']=archive
+        files['inputs/stage_component.py']=read(runtime/'source/stage_component.py')
+        for k in ('request','previous','preserved_draft'):files['inputs/'+k+'.original']=pin(p[k])
+        self.remote_files('host-stage-material',files,True)
+        for tag,name,rel in [('material',p['label']+'.tar.gz','inputs/component-inputs.tar.gz'),('stage-source',p['label']+'.stage.py','inputs/stage_component.py')]:
+            b=files[rel];self.push_copy(tag,self.remote_root+'/'+rel,name,len(b),sha(b))
+        home=self.prepared['phone_home'];staging=G+'/native-guard-staging-r10-r1/'
+        self.frozen_phone('stage',['/usr/bin/python3','-I','-B',staging+p['label']+'.stage.py',
+            '--archive',staging+p['label']+'.tar.gz','--archive-sha256',sha(archive),
+            '--lease-sha256',self.prepared['lease']['sha256'],'--package-sha256',PKG,'--execute-private-stage-once'],90)
+        self.remaining(465)
+        sender=['/usr/bin/python3','-I','-B',str(B/'send_new_native_guard_task_r10_r4.py'),p['label'],p['request']['path'],p['previous']['path'],
+            '--preserved-draft',p['preserved_draft']['path'],'--retirement-resolution',p['sender_retirement_resolution']['path'],
+            '--evidence-root','component','--component-contract',str(self.material/'tree/sender-contract.json'),
+            '--component-package',p['package']['path'],'--component-package-sha256',PKG]
+        self.execute_process('sender-preview',sender,20)
+        self.sender=self.execute_process('sender-execute',sender+['--execute-once'],600,async_start=True)
+        sender_dir='/home/alex/codex-hepta-natural-'+p['label']+'-root-v150'
+        marker=self.remote_read('sender-prepared',{'prepared':sender_dir+'/COMPONENT-PREPARED-NO-SEND.json'},
+            sender_dir+'/COMPONENT-PREPARED-NO-SEND.json',90,True)
+        mr=strict(base64.b64decode(marker['files']['prepared']['base64'],validate=True))
+        contract_raw=read(self.material/'tree/sender-contract.json')
+        provider_sha=next(r['sha256'] for r in strict(pin(p['package']))['files'] if r['path']=='source/component_listener.py')
+        validate_sender_marker(mr,contract_raw,self.prepared,p['request']['sha256'],p['nonce'],provider_sha)
+        # Frozen listener requires more than 420 seconds before its sole listen.
+        # Leave a small launch margin; never extend the original 600-second lease.
+        self.remaining(445)
+        self.frozen_phone('launch',self.prepared['root_detached_launcher_argv'],35)
+        for phase in ('setup','before-guard','after-guard'):
+            self.remaining(25)
+            value=self.bridge_call('plan-'+phase,'phase-originals',['--phase',phase])
+            need(value['state']=='ACTUAL_PHASE_ORIGINALS_READ','component ended before phase; preserve, no additional Root UI')
+            phasefiles={}
+            for name,row in value['files'].items():
+                raw=base64.b64decode(row['base64'],validate=True);need(len(raw)==row['bytes'] and sha(raw)==row['sha256'],'original phase file')
+                phasefiles['plans/'+phase+'/'+name]=raw
+            self.remote_files('store-plan-'+phase,phasefiles)
+            directory=self.remote_root+'/plans/'+phase+'/';planrow=value['files']['ROOT-'+phase.upper()+'-PLAN.json']
+            parent='/home/alex/codex-hepta-native-guard-fixtures-r10-r1/'+p['nonce']+'/'+phase
+            entry=self.remote_root+'/material/tree/package/source/'
+            argv=['/usr/bin/python3','-I','-B',entry+'run_root_fixture_phase.py','--material',self.remote_root+'/material/tree',
+                '--lease-sha256',self.prepared['lease']['sha256'],'--package-sha256',PKG,
+                '--plan',directory+'ROOT-'+phase.upper()+'-PLAN.json','--plan-sha256',planrow['sha256'],
+                '--bound-contract',directory+'BOUND-CONTRACT.json','--bound-contract-sha256',value['files']['BOUND-CONTRACT.json']['sha256'],
+                '--accepted',directory+'ACCEPTED.json','--accepted-sha256',value['files']['ACCEPTED.json']['sha256'],
+                '--out',parent,'--execute-root-fixture-phase-once']
+            put(self.out/('ROOT-FIXTURE-'+phase+'.INTENT.json'),enc({'phase':phase,'parent_out':parent,
+                'expected_terminal_path':parent+'/HOST-TERMINAL.json','argv':argv,'maximum_child_starts':1,
+                'terminal_unknown_until_actual_original_read':True,'automatic_retry':False}))
+            self.remote_program('fixture-'+phase,argv,min(250,max(1,int(self.remaining())-5)))
+            terminal=self.remote_read('fixture-originals-'+phase,{'terminal':parent+'/HOST-TERMINAL.json','index':parent+'/actor/ORIGINAL-INDEX.json'})
+            tr=terminal['files']['terminal'];tv=strict(base64.b64decode(tr['base64'],validate=True))
+            need(tv['state']=='OWNED_ROOT_FIXTURE_CHILD_JOINED' and tv['child_wait_returned'] is True
+                and tv['child_returncode']==0 and len(tv['group_absence_observations'])==2,'actual Root actor unknown')
+            self.root_attempts.append({'phase':phase,'terminal':{k:tr[k] for k in ('path','bytes','sha256')}})
+            packout=self.remote_root+'/witness-'+phase
+            packargv=['/usr/bin/python3','-I','-B',entry+'witness_bundle.py','pack','--plan',directory+'ROOT-'+phase.upper()+'-PLAN.json',
+                '--plan-sha256',planrow['sha256'],'--original-index',parent+'/actor/ORIGINAL-INDEX.json',
+                '--original-index-sha256',terminal['files']['index']['sha256'],'--nonce',p['nonce'],'--boot-id',BOOT,'--out',packout]
+            packed=strict(self.remote_program('pack-'+phase,packargv,30)['stdout'])
+            row=packed['archive'];self.push_copy('witness-'+phase,packout+'/witness.tar.gz',p['label']+'-'+phase+'.witness.tar.gz',row['bytes'],row['sha256'])
+            self.frozen_phone('publish-'+phase,['/usr/bin/python3','-I','-B',home+'/package/source/witness_bundle.py','publish',
+                '--lease',home,'--lease-sha256',self.prepared['lease']['sha256'],'--archive',staging+p['label']+'-'+phase+'.witness.tar.gz',
+                '--archive-sha256',row['sha256'],'--execute-publish-original-bytes-once'],35)
+        child,d,so,se=self.sender
+        try:rc=child.wait(timeout=380)
+        except subprocess.TimeoutExpired:raise RuntimeError('original sender still running; no signal/replay')
+        finally:finish_stream(so);finish_stream(se)
+        put(d/'JOINED.json',enc({'pid':child.pid,'returncode':rc,'wait_returned':True,'automatic_retry':False}))
+        need(rc==0,'original sender child failed')
+        sent=strict(read(B/(p['label']+'.send-result.json')))
+        need(sent.get('rc')==0 and sent.get('stderr')=='','actual P4 sender failed/unknown; retain originals')
+        actor_result=strict(sent['stdout'].strip().splitlines()[-1])
+        need(actor_result['state']=='ORIGINAL_NATIVE_TERMINAL_OBSERVED' and actor_result['draft_restore']['state']=='ORIGINAL_DRAFT_RESTORED',
+            'native terminal/draft restoration not proven')
+        self.bridge_call('role-end','role-end')
+        capture_out=G+'/native-guard-snapshots-r10-r1/'+p['label']+'-capture-01'
+        snap=self.frozen_phone('snapshot',['/usr/bin/python3','-I','-B',home+'/package/source/component_snapshot.py',
+            '--lease',home,'--lease-sha256',self.prepared['lease']['sha256'],'--package-sha256',PKG,'--out',capture_out,
+            '--execute-original-snapshot-once'],100)
+        archive=snap['archive'];need(0<archive['bytes']<=64*1024*1024,'actual snapshot archive bound')
+        chunks=[]
+        for index in range((archive['bytes']+524287)//524288):
+            row=self.bridge_call('chunk-'+str(index),'snapshot-chunk',['--sha256',archive['sha256'],'--bytes',str(archive['bytes']),'--index',str(index)],35)
+            b=base64.b64decode(row['base64'],validate=True);need(len(b)==row['bytes'] and sha(b)==row['sha256'] and row['offset']==index*524288,'actual snapshot chunk')
+            chunks.append(b)
+        body=b''.join(chunks);need(len(body)==archive['bytes'] and sha(body)==archive['sha256'],'full actual snapshot hash')
+        put(self.out/'ORIGINALS.tar.gz',body)
+        hostfiles={'closure-inputs/ORIGINALS.tar.gz':body}
+        for source,key in ((B/(p['label']+'.send-result.json'),'sender_host_result'),(B/(p['label']+'.local-once.json'),'sender_local_once'),
+            (B/(p['label']+'.actor.py'),'sender_actor')):hostfiles['closure-inputs/'+key+'.original']=read(source)
+        self.remote_files('stage-closure-inputs',hostfiles)
+        def remote_desc(relative,raw):return desc(self.remote_root+'/'+relative,raw)
+        closure={'schema':'hepta.native-guard.closure-plan.v1','label':p['label'],
+            'archive':remote_desc('closure-inputs/ORIGINALS.tar.gz',body),'capture_sha256':snap['capture']['sha256'],
+            'package':remote_desc('material/tree/package/MANIFEST.json',pin(p['package'])),'sender_dir':sender_dir,
+            'request':remote_desc('inputs/request.original',pin(p['request'])),
+            'previous':remote_desc('inputs/previous.original',pin(p['previous'])),
+            'preserved_draft':remote_desc('inputs/preserved_draft.original',pin(p['preserved_draft'])),
+            'root_fixture_attempts':self.root_attempts}
+        for key in ('sender_host_result','sender_local_once','sender_actor'):
+            closure[key]=remote_desc('closure-inputs/'+key+'.original',hostfiles['closure-inputs/'+key+'.original'])
+        cr=enc(closure);self.remote_files('stage-closure-plan',{'CLOSURE-PLAN.json':cr});closeout=self.remote_root+'/closure'
+        self.remote_program('close',['/usr/bin/python3','-I','-B',entry+'close_component.py','--plan',self.remote_root+'/CLOSURE-PLAN.json',
+            '--plan-sha256',sha(cr),'--out',closeout,'--execute-host-closure-once'],150)
+        closed=self.remote_read('closed-originals',{'closure':closeout+'/CLOSURE.original.json','inventory':closeout+'/AFTER-INVENTORY.original.json'})
+        for key,extension in (('closure','CLOSURE.json'),('inventory','INVENTORY.json')):
+            row=closed['files'][key];put(self.out/extension,base64.b64decode(row['base64'],validate=True))
+            self.push_copy('closed-'+key,row['path'],p['label']+'.'+extension,row['bytes'],row['sha256'])
+        published=self.frozen_phone('late-publish',['/usr/bin/python3','-I','-B',home+'/package/source/late_boundary.py',
+            '--lease',home,'--lease-sha256',self.prepared['lease']['sha256'],'--closure',staging+p['label']+'.CLOSURE.json',
+            '--closure-sha256',closed['files']['closure']['sha256'],'--inventory',staging+p['label']+'.INVENTORY.json',
+            '--inventory-sha256',closed['files']['inventory']['sha256'],'--execute-publish-once'],100)
+        boundary=self.bridge_call('boundary-read','boundary-original')['file']
+        need({k:boundary[k] for k in ('path','bytes','sha256','metadata')}==published['boundary'],'actual published boundary')
+        put(self.out/'LATE-BOUNDARY.original.json',base64.b64decode(boundary['base64'],validate=True))
+        put(self.out/'LATE-BOUNDARY-DESCRIPTOR.json',enc({k:boundary[k] for k in ('path','bytes','sha256','metadata')}))
+        value=strict(read(self.out/'CLOSURE.json'))
+        latency=self.remote_read('latest-previous-original',{'latency':sender_dir+'/SEND-NATIVE-LATENCY.json'})
+        lat=strict(base64.b64decode(latency['files']['latency']['base64'],validate=True));need(lat['scope']==value['scope'],'closed previous scope')
+        previous={'schema':'hepta.native-guard.closed-previous.v1','identity':value['scope'],
+            'request_sha256':lat['original_observation']['native_request_sha256'],'terminal':{'status':value['native_status']},
+            'known_all_dispatched_tools_confirmed_terminal':True,'complete_business_success':False,
+            'component_qualified':value['component_qualified'],'closed_component':filedesc(self.out/'CLOSURE.json'),
+            'late_boundary':{k:boundary[k] for k in ('path','bytes','sha256','metadata')},'automatic_replay':False}
+        put(self.out/'ACTUAL-PREVIOUS-INPUT.json',enc(previous))
+        final={'state':'ORIGINAL_COMPONENT_CLOSED_AND_LATE_BOUNDARY_PUBLISHED','component_qualified':value['component_qualified'],
+            'business_qualified':False,'model_requests':0,'four_role_qualification':False,'native_status':value['native_status'],
+            'scope':value['scope'],'late_boundary':published['boundary'],'previous':filedesc(self.out/'ACTUAL-PREVIOUS-INPUT.json'),
+            'automatic_retry':False,'steps':self.steps}
+        put(self.out/'ROOT-RESULT.json',enc(final));print(json.dumps({k:v for k,v in final.items() if k!='steps'},sort_keys=True));return 0
+
+def main():
+    a=argparse.ArgumentParser(description=__doc__);a.add_argument('--plan',type=Path,required=True);a.add_argument('--plan-sha256',required=True)
+    a.add_argument('--execute-root-chain-once',action='store_true');v=a.parse_args()
+    raw=read(v.plan,262144);need(sha(raw)==v.plan_sha256,'Root plan pin')
+    if not v.execute_root_chain_once:
+        print(json.dumps({'state':'HOST_PREVIEW_NO_PHONE_NO_NONCE_NO_LEASE','plan_sha256':sha(raw),
+            'phone_calls':0,'native_sends':0,'lease_fixed':False,'requires':'All explicit actual original descriptors, Root policy adoption, and execute flag.'},sort_keys=True));return 0
+    p,_=validate_plan(raw);os.umask(0o077)
+    parent=Path(p['out']).parent
+    try:newdir(parent)
+    except FileExistsError:pass
+    need(parent.resolve(strict=True)==parent and stat.S_IMODE(parent.stat().st_mode)==0o700,'private Root output parent')
+    c=Chain(p,raw)
+    try:return c.run()
+    except BaseException as error:
+        value={'state':'FAILED_OR_UNKNOWN_ORIGINALS_PRESERVED_NO_AUTOMATIC_CONTINUATION',
+            'error_type':type(error).__name__,'detail':str(error)[:1024],'steps':c.steps,'root_fixture_attempts':c.root_attempts,
+            'automatic_retry':False,'new_identity_retry':False,'send_again':False,'signals_sent_by_coordinator':0,
+            'policy_changes':0,'model_requests':0,'component_qualified':False,'business_qualified':False,
+            'note':'Inspect existing process/actor/phone receipts. No missing record is treated as no effect.'}
+        put(c.out/'ROOT-FAILURE.json',enc(value));raise
+if __name__=='__main__':raise SystemExit(main())

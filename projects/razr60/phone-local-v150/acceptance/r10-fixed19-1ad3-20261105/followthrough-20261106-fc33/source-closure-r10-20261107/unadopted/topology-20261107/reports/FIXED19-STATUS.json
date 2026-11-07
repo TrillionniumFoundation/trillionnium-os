@@ -1,0 +1,500 @@
+{
+  "actual_current_geometry_observed_by_this_report": false,
+  "automatic_execution": false,
+  "automatic_schedule": false,
+  "current_attempt": {
+    "global_unknown_effect_count": null,
+    "host_export_result_sha256": "72ba98e0da0b6f296e9f95079901d3baf3ea53bc641559c596fad103fac5f9c4",
+    "host_export_state": "COMPLETE_HOST_ORIGINALS_EXPORTED_NOT_RETIRED_OR_QUALIFIED",
+    "label": "root-r10-neg01-fc33-r10-bound01",
+    "native_case_credit": 0,
+    "nonce": "4e5480a8952443bd18fa603b81f8efe9",
+    "original_nonce_consumed": true,
+    "root_failure_sha256": "0b012cbb380e28065fa724edae6bda6878fe156c68199e29939e594f94dcabf7",
+    "root_job": "1a1b7ef6a3a-12894-cbf",
+    "runtime_admission": false,
+    "state": "FAILED_OR_UNKNOWN_ORIGINALS_PRESERVED_NO_AUTOMATIC_CONTINUATION"
+  },
+  "daily_use_qualified": false,
+  "fixed19_credit_awarded": 0,
+  "historical_table": {
+    "path": "originals/FIXED19-TABLE.v4.original.json",
+    "sha256": "4699ad5f62ae6ec7b74f19422d455c56c258b1a06be75fc273a38f063eebd804"
+  },
+  "independent_run_qualified": false,
+  "limits_from_original_protocol": {
+    "default_model_round_deadline_seconds": 120,
+    "do_not_silently_raise_limits_to_pass": true,
+    "live_configuration_must_be_verified_before_use": true,
+    "maximum_sequential_tool_calls_before_final_summary": 7,
+    "model_rounds": 8,
+    "turn_deadline_seconds": 300
+  },
+  "physical_layers": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09"
+  ],
+  "protocol": {
+    "path": "originals/ORIGINAL-PROTOCOL.json",
+    "set_id": "stock16-phone-local-fixed-set-r4",
+    "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+  },
+  "qualified_geometry_from_original_protocol": {
+    "display_id": 0,
+    "external_display_qualification": false,
+    "height": 2992,
+    "rotation": 0,
+    "width": 1224
+  },
+  "rows": [
+    {
+      "case_id": "E2E-01",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "新截图 JPEG 与 native receipt/实际模型请求同 hash；只选择一次；同屏挑战码与 HEPTA_VISUAL_OK 回执相符；真实返回 HEPTA；原 native complete + entire_request business_verified=true。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "FAIL"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Actual local HTTP model request includes the newly captured verified JPEG and its hash matches the bound native result.",
+        "Exactly one choice was dispatched; no recapture-to-guess or second challenge attempt is hidden.",
+        "Public challenge is literal 挑战码： plus exactly eight uppercase hex characters.",
+        "Public receipt is HEPTA_VISUAL_OK plus one space and the same code from the same UI snapshot.",
+        "Final actual focus/resumed activity is the fixed HEPTA activity on qualified display 0.",
+        "Native terminal is complete and business_verified=true for coverage=entire_request."
+      ],
+      "required_layers": [
+        "model_e2e"
+      ],
+      "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA"
+    },
+    {
+      "case_id": "E2E-02",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "全新中文、emoji、真实换行及特殊字符输入逐 UTF-8 字节一致；提交一次；编辑器、公开读回及四行公开回执均吻合；真实返回；缺任一条件须 turn.fail。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "FAIL"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Helper operation/package/view/old-text/requested/after hashes and exact UTF8 readback all match.",
+        "Public unicode_readback equals the fresh literal input byte for byte.",
+        "Public receipt exactly equals the source-defined four-line format in unicode_receipt_formula.",
+        "Literal newline remains a newline; XML normalization to a space is a failure, not an allowed rewrite.",
+        "Actual HEPTA focus is verified after return.",
+        "Input-only success without confirmation, public receipt or return must end as turn.fail/business_verified=false."
+      ],
+      "required_layers": [
+        "model_e2e"
+      ],
+      "title": "全新中文/emoji/换行输入、确认、公开回执与返回"
+    },
+    {
+      "case_id": "E2E-03",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "新随机 (a*b)+c；独立预算期望值；已安装计算器唯一公开结果 view 的实测字符串吻合；按请求真实返回；未知作用不能重复计算。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [],
+      "historical_table_scanned_attempts": 0,
+      "original_pass_postconditions": [
+        "Expression and expected result use the fresh parameters, not values from prior examples.",
+        "A public visible result proves the arithmetic; a model mental calculation is insufficient.",
+        "No repeated evaluation after an uncertain effect.",
+        "The exact result contract and requested return both pass."
+      ],
+      "required_layers": [
+        "model_e2e"
+      ],
+      "title": "计算器完成全新随机简单表达式并核验结果"
+    },
+    {
+      "case_id": "E2E-04",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "当前 Settings 包、唯一公开字段、焦点与独立只读系统观察吻合；零设置变更；任务未要求返回时不能强制返回。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [],
+      "historical_table_scanned_attempts": 0,
+      "original_pass_postconditions": [
+        "The app field, package, focus and unique view are independently verified.",
+        "No settings value, permission, network configuration or account state is changed.",
+        "The result is based on actual UI text rather than a prefilled model answer.",
+        "No return is forced by generic completion; the contract covers exactly the read-only request."
+      ],
+      "required_layers": [
+        "model_e2e"
+      ],
+      "title": "只读查看设置中的公开系统版本字段"
+    },
+    {
+      "case_id": "COMP-01",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "一次 return_hepta；立即保存 launch rc=0、恰一个 Status: ok 与精确 activity；inner display focus/app/top-resumed 一致且 keyguard=false；仅授予 component 层。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [],
+      "historical_table_scanned_attempts": 0,
+      "original_pass_postconditions": [
+        "Launch rc is captured immediately and is zero.",
+        "One Status: ok and the exact known activity occur in launch output.",
+        "Inner display focus/app/top-resumed all name HEPTA and keyguard is false.",
+        "Mark only direct component acceptance, not model or native-task acceptance."
+      ],
+      "required_layers": [
+        "component_direct"
+      ],
+      "title": "显式返回：launch状态和实际焦点双核验"
+    },
+    {
+      "case_id": "NEG-01",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "R10_PRE_STAGE_TIMEOUT_NO_CASE_CLOSURE",
+      "current_state": "HOLD",
+      "gate_summary_zh": "新截图后安全切换焦点；待执行 tap 仅一次；guard=70 或明确已知更早前置拒绝；独立前后公开计数证明两页零 input；image 消耗、不重试；本次 closure/late boundary 齐全。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [
+        "native-root:root-r10-neg01-a1055-final04"
+      ],
+      "historical_table_protocol_results": [],
+      "historical_table_scanned_attempts": 22,
+      "original_pass_postconditions": [
+        "Guard exits 70 or fails earlier with an explicitly recorded known precondition.",
+        "No input effect is observed on either old or new page.",
+        "The image is consumed and the effect is not retried."
+      ],
+      "required_layers": [
+        "component_direct"
+      ],
+      "title": "截图后焦点切换：必须在input之前拒绝"
+    },
+    {
+      "case_id": "NEG-02",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "WAIT_FOR_FRESH_NEG01_CLOSURE_AND_LATE_BOUNDARY",
+      "current_state": "HOLD",
+      "gate_summary_zh": "NEG-01 完整结算后新身份；viewport/focus 保持不变、PNG SHA 改变；guard=71 且在 input 前；公开状态/计数无作用、不重试；本次 closure/late boundary 齐全。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Viewport and focus remain the same, but PNG SHA differs.",
+        "Guard exits 71 before input.",
+        "No selection/submission/other app effect and no automatic retry occur."
+      ],
+      "required_layers": [
+        "component_direct"
+      ],
+      "title": "同viewport内容变化：精确像素guard必须拒绝"
+    },
+    {
+      "case_id": "NEG-03",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "拒绝 display 0 portrait 资格外的截图/tap/公开返回；不得向其他显示注入 input；fixture 与实机结果分开。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Screenshot/tap/public-return qualification rejects anything outside the qualified display 0 portrait geometry.",
+        "No input is injected on another display.",
+        "Fixture and physical-device outcomes remain separately labelled."
+      ],
+      "required_layers": [
+        "component_direct"
+      ],
+      "title": "外屏或旋转：拒绝未资格显示配置"
+    },
+    {
+      "case_id": "NEG-04",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "准入后、dispatch 前断开自有测试传输；零 tool dispatch；原 claim 消耗；无自动新流/请求重放；未见原终态时保留 UNKNOWN；另补实际安装组合 physical_native_task。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "No tool is dispatched and the accepted semantic identity remains consumed.",
+        "No automatic request/stream replay occurs.",
+        "No business success is emitted; unknown transport outcome remains unknown where no terminal is observed."
+      ],
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "title": "断连发生于dispatch之前"
+    },
+    {
+      "case_id": "NEG-05",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "作用开始后结果到达前断连；独立计数至多一次；未知不推成功、不重试；重连不能重用原身份；另补实机层。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Effect count is at most one.",
+        "Unknown result is not inferred as success and not retried.",
+        "A reconnect/new stream cannot reuse the semantic identity."
+      ],
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "title": "作用已开始后断连：保持未知且不重放"
+    },
+    {
+      "case_id": "NEG-06",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "隔离 HTTP model fixture 超时；原 fail frame 含 model_timeout；business=false、零 dispatch；原进程组/slot 有界收尾；无模型/账号 fallback、重启或 claim 释放。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Existing fail frame contains model_timeout; business_verified=false.",
+        "No tool dispatch, child process group leak, account/model fallback or relaunch occurs.",
+        "The claim remains consumed."
+      ],
+      "required_layers": [
+        "host_isolated"
+      ],
+      "title": "模型超时：有界结束且清理原进程组"
+    },
+    {
+      "case_id": "NEG-07",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "执行器结果超时；保留原 dispatch；迟到结果仅作证据，不改写原终态/UNKNOWN、不再执行；business=false、cleanup 明确；另补实机层。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "No second effect is executed.",
+        "Late or unmatched results do not rewrite the accepted terminal/unknown outcome.",
+        "Business remains false and cancellation/cleanup state is explicit."
+      ],
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "title": "执行器结果超时：不能用迟到结果认定成功或再执行"
+    },
+    {
+      "case_id": "NEG-08",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "准入后首次 dispatch 前取消；保留 turn.cancelled 或丢失确认对应 UNKNOWN；零 phone 作用、无自动导航；business=false；原 HTTP-client 进程组确认收尾；另补实机层。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Existing turn.cancelled (or explicitly unknown transport outcome if the cancel acknowledgement is lost) is retained.",
+        "Zero phone effects; no automatic navigation on cancellation; business_verified=false.",
+        "No original HTTP-client process group remains after confirmed cleanup."
+      ],
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "title": "dispatch前取消"
+    },
+    {
+      "case_id": "NEG-09",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "一次确认作用后取消；只保留已观察的一次作用，无后续 input/强制返回；不得宣称业务完成；不重放、不释放身份；另补实机层。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Exactly the already-observed effect remains; no follow-up input or forced return occurs.",
+        "Cancellation is not labelled complete business success.",
+        "No automatic replay or identity release occurs."
+      ],
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "title": "首次作用后取消"
+    },
+    {
+      "case_id": "NEG-10",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "独立新 fixture 分别拒绝图像预算不足、>120s 旧图、错误 call_id 和旧 round；在 dispatch 前拒绝；单图≤196608B、整 turn 图像≤393216B，不提额。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Each invalid condition fails before dispatch.",
+        "No budget extension, stale-image fallback or guessed generic tap occurs.",
+        "Maximum single image remains 196608 bytes and turn image budget 393216 bytes."
+      ],
+      "required_layers": [
+        "host_isolated"
+      ],
+      "title": "图片字节预算/过期图像/旧round绑定"
+    },
+    {
+      "case_id": "NEG-11",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "分别损坏 call_id、sequence、byte count、exit、truncation、Base64、source/hash；每项均拒收 image/text/return 事实，不能合成业务成功；fixture 明示 synthetic。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Each malformed envelope is rejected as insufficient evidence.",
+        "No image/text/return fact is admitted and no business success is synthesized.",
+        "Original test fixtures remain clearly labelled synthetic."
+      ],
+      "required_layers": [
+        "host_isolated"
+      ],
+      "title": "native输出损坏/截断/错误身份"
+    },
+    {
+      "case_id": "NEG-12",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "只有 input helper receipt、缺公开回执/return/entire_request coverage 时，wire=turn.fail/business_not_verified，业务 sidecar 列缺项；native complete/model completed 不得覆盖缺项。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Existing wire kind is turn.fail with business_not_verified.",
+        "business-outcome.json lists missing conditions and business_verified=false.",
+        "Native complete or model summary cannot hide a missing app receipt/return/full-request coverage."
+      ],
+      "required_layers": [
+        "host_isolated"
+      ],
+      "title": "部分任务被模型说成完成：必须失败终态"
+    },
+    {
+      "case_id": "NEG-13",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "两个不同 semantic turns 竞争一个新 nonce/request：恰一次 O_EXCL 绑定；错误 scope 不消耗模板；已消耗模板不能再准入/dispatch；保留所有 claims/bindings。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Exactly one O_EXCL binding succeeds; wrong scope does not consume the template.",
+        "Consumed template cannot qualify or dispatch another task.",
+        "All claims/bindings remain; no deletion/reset to obtain a pass."
+      ],
+      "required_layers": [
+        "host_isolated"
+      ],
+      "title": "一次性模板并发/旧nonce重用"
+    },
+    {
+      "case_id": "NEG-14",
+      "current_component_or_suite_closure_asserted": false,
+      "current_qualification_credit": 0,
+      "current_reason": "NO_CURRENT_INSTALLED_COMBINATION_QUALIFICATION_ORIGINAL",
+      "current_state": "HOLD",
+      "gate_summary_zh": "仅识别的 enumerate→rename→lstat 临时名竞态可容忍；未知文件/I/O/canonical evidence 丢失须 fail closed；不为容量删 claim；已确认 worker/child/fd 收尾回到实测基线。",
+      "historical_rows_counted_for_current_qualification": false,
+      "historical_table_component_closure_ids": [],
+      "historical_table_protocol_results": [
+        "PASS"
+      ],
+      "historical_table_scanned_attempts": 1,
+      "original_pass_postconditions": [
+        "Only the exact recognized rename race is tolerated.",
+        "Unknown files/I/O failures fail closed; no accepted claim is deleted for capacity.",
+        "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline."
+      ],
+      "required_layers": [
+        "host_isolated"
+      ],
+      "title": "容量/原子rename竞态与资源收尾"
+    }
+  ],
+  "schema": "hepta.current-fixed19-hold-overlay.v1",
+  "source_candidate_tests_do_not_award_case_credit": true,
+  "state": "ALL_19_HOLD"
+}

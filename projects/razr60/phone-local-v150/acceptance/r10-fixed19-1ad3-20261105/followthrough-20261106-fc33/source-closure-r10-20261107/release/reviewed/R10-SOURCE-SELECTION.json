@@ -1,0 +1,691 @@
+{
+  "P4_observer_transport_closure": {
+    "actual_actor": {
+      "bytes": 7578,
+      "metadata": [
+        66306,
+        35414531,
+        33152,
+        1000,
+        1000,
+        1,
+        7578,
+        1794072964502032342,
+        1794072964502032342
+      ],
+      "path": "/home/alex/codex-razr60-listener-generation-20261107-01/phone_once.py",
+      "sha256": "c74aec49cd4fa84238194242653d5d3798b7f5cdc4659f90bcb50ec0c424902f"
+    },
+    "actual_stage_publication": null,
+    "additional_controller_source_file": "source/observe_p4_install_phase_UNBOUND.py",
+    "both_controller_producer_and_consumer_reconstruct_exact_source": true,
+    "candidate": {
+      "bytes": 8523,
+      "sha256": "2f9312bbafa722eeff1ac1e982382c4878c5302bf0b5125a2a29a95069bbb806"
+    },
+    "independent_review": {
+      "bytes": 1708,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r10-preparation/development03-preparation/P4-OBSERVER-INDEPENDENT-SOURCE-REVIEW.json",
+      "sha256": "9dfc5c115a76837b78e90dc1eff13b4826c69c5daa1bb30ad4f6eb7af6be6752"
+    },
+    "old_request_and_operation_namespace_unchanged": true,
+    "original": {
+      "bytes": 8346,
+      "sha256": "e07d8e48fb81c6f80cf688b991c1d3fd2d939af85137df3f99104160cf628d32"
+    },
+    "source_parent": {
+      "bytes": 64682,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller01/source/derive_release_install_stages_UNBOUND.py",
+      "sha256": "60c6d2e84216798037133199882c5d34101808eb9035a741c64f22d6aa3fbece"
+    }
+  },
+  "actual_BUILD": null,
+  "actual_NEG01": null,
+  "actual_NEG02": null,
+  "actual_R10_freeze": null,
+  "actual_READY": null,
+  "actual_install": null,
+  "complete_inventory_roots": [
+    49,
+    52,
+    55
+  ],
+  "consumer_bytes": 258644,
+  "consumer_exact_PACKAGE_SHA_bound_preview_bytes": 258706,
+  "consumer_maximum_bytes_unchanged": 262144,
+  "install_transport_closure": {
+    "actor": {
+      "bytes": 7578,
+      "metadata": [
+        66306,
+        35414531,
+        33152,
+        1000,
+        1000,
+        1,
+        7578,
+        1794072964502032342,
+        1794072964502032342
+      ],
+      "path": "/home/alex/codex-razr60-listener-generation-20261107-01/phone_once.py",
+      "sha256": "c74aec49cd4fa84238194242653d5d3798b7f5cdc4659f90bcb50ec0c424902f"
+    },
+    "exact_two_edit_intermediate": {
+      "bytes": 12854,
+      "sha256": "2ca90ff6e8d7f51ca10ac680822ae6b80c5a9a7e0569dd49a1884cf3a95e128b"
+    },
+    "independent_review": {
+      "bytes": 1687,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r10-preparation/development02/INSTALL-PROTOCOL-INDEPENDENT-REVIEW.json",
+      "sha256": "0b8a36604a9c73b863ec9781067f6d787b5f9cadc79b39da0df4cb68c3a312ab"
+    },
+    "original": {
+      "bytes": 12782,
+      "sha256": "79f2a227e0d0c991bcc08c9edf6d5916faed798c358f27906d53a226beeda353"
+    },
+    "original_installer_and_READY_cascade_retained": true
+  },
+  "native_chain_cap": 12,
+  "native_component_role_cap": 42,
+  "new_native_nonces": 0,
+  "original_runtime_members": 38,
+  "parents": {
+    "constructor": {
+      "bytes": 40393,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/actual-source-binding01/source/derive_reviewed_release_sources_UNBOUND.py",
+      "sha256": "78715d60742de8ed53a1cd386c38bf9f5b2cfeb6f395553dcca8be311b63f84f"
+    },
+    "consumer": {
+      "bytes": 266044,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/actual-source-binding01/source/release_boundaries_UNBOUND.py",
+      "sha256": "b602d95ae343297e7e05700b757f93d48028bc70f5909ec07545868f9225e686"
+    },
+    "factory": {
+      "bytes": 54369,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/actual-source-binding01/source/derive_r9_release_source_rebindings_UNBOUND.py",
+      "sha256": "2555b1930ccb4b174aae5cac329668bc01911df332feb051e381cbae6d3f9ba8"
+    },
+    "helper": {
+      "bytes": 39828,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/actual-source-binding01/source/derive_component_build_inputs_UNBOUND.py",
+      "sha256": "0a0cac3c8d75de22fcddc3cc8fa649244e9a4c8cf37f0b8f130fe000a008cd5b"
+    }
+  },
+  "phone_calls": 0,
+  "plain_consumer_source_compaction": {
+    "bytes": 6053,
+    "path": "/dev/shm/razr60-d39712953a2d-continuation-01/ci-r8-review/consumer-plain-literal-r10-source01/compact_fixed_consumer_json.py",
+    "sha256": "d4bb3f0527fc5bbba36198210e275f8aa051253c53873aea12c995fa9a208af0"
+  },
+  "previous_source_selection": {
+    "bytes": 19727,
+    "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r10-preparation/development02/SOURCE-SELECTION.json",
+    "sha256": "459a1efd23cb6d767e34278b5ff6a33389ff7786a00c1db45932c1452aac29ea"
+  },
+  "retained_R7_role_count": 2,
+  "retained_R8_and_R9_role_counts": [
+    0,
+    0
+  ],
+  "retained_proof_capture_members": 3,
+  "schema": "hepta.r10.p1-exact-source-preparation.v1",
+  "selected": {
+    "current_release_labels": {
+      "NEG-01": "root-r10-neg01-fc33-r10-bound01",
+      "NEG-02": "root-r10-neg02-fc33-r10-bound01"
+    },
+    "delta_bundle": {
+      "bytes": 536920,
+      "sha256": "576b3e70a60c6b9cba427937e12042bbc9cd0c7bc0dfb8813e3e463611b94d4f"
+    },
+    "dependencies": {
+      "bytes": 35360,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/DEPENDENCIES.json",
+      "sha256": "e15ea67c76bcc17a80627abe9a5ff19c79c87a10c977c2643416571f88f26fb7"
+    },
+    "initial_prior_selection": "exact_source_parent44_plus_retained_failed_r7_r8_r9_49",
+    "late_boundary": {
+      "bytes": 259866,
+      "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+    },
+    "required_freeze_checks": [
+      "retained_R8_explicit_typed_host_and_phone_adapter",
+      "failed_R8_two_roots_zero_roles_and_original_unknowns_preserved",
+      "retained_R9_explicit_typed_host_and_phone_adapter",
+      "failed_R9_zero_added_roots_roles_and_original_unknowns_preserved",
+      "failed_R9_first_launch_receipt_gap_and_original_reused_true_preserved",
+      "separate_R10_runtime_adapter_preserves_R9_three_file_proof_publication"
+    ],
+    "retained_failed_staged_binding": {
+      "absent_fixture_path": "/proc/1/root/data/local/tmp/hepta-native-guard-aa06c3b8d035dcd0c0047105f620b3bf",
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "combination": {
+        "bytes": 4695,
+        "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+      },
+      "component_qualified": false,
+      "component_role_identities": {},
+      "evidence_archive": {
+        "archive": {
+          "bytes": 2066079,
+          "sha256": "d66d286bfb7890e0b32358326b669ac4a47d5f4ba43c524bc3f129f5bf631e93"
+        },
+        "raw_archive": {
+          "bytes": 6389760,
+          "sha256": "2f0e98f48f0f1449cf1fe588ffe6b5a30f69f252fae67e5fd1682a25b713a213"
+        }
+      },
+      "fixture_is_inventory_root": false,
+      "global_unknown_effect_count": null,
+      "inventory": {
+        "bytes": 1403291,
+        "sha256": "2008db913728ff0c3836cb6edb361e37f427d7663f2832163fe93b2adb18f432"
+      },
+      "label": "root-r10-neg01-fc33-r8-bound01",
+      "lease": {
+        "bytes": 2506,
+        "sha256": "f05ee53a7609972c18f6bab2263008a4c3de3b49b12b8654df94790b25c30a44"
+      },
+      "native_case_credit": 0,
+      "native_terminal": null,
+      "nonce": "aa06c3b8d035dcd0c0047105f620b3bf",
+      "original_native_predecessor": {
+        "bytes": 29342,
+        "metadata": [
+          65086,
+          154717,
+          33152,
+          0,
+          0,
+          1,
+          29342,
+          1793954246107886895,
+          1793954246107886895
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+        "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+      },
+      "original_nonce_consumed": true,
+      "original_remote_cleanup_boolean": false,
+      "original_root_namespace_anchor": {
+        "bytes": 12992,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-r8-bound01/ROOT-FAILURE.json",
+        "sha256": "ab8c85f7d403c6427931db66acfecb12137143cf3b78573a654346584dab7a31"
+      },
+      "package": {
+        "bytes": 65655,
+        "sha256": "654f8b0ad50a4d930d7beff9421b5e9f988ecb74b55badc70cec9efeaa63130c"
+      },
+      "private_roots": [
+        "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r8-bound01",
+        "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r8-bound01/executor"
+      ],
+      "retained_preaccept_binding": {
+        "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+        "combination": {
+          "bytes": 4695,
+          "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+        },
+        "component_qualified": false,
+        "component_role_identities": {
+          "sidecar": [
+            14026,
+            14026,
+            14026,
+            39106597
+          ],
+          "supervisor": [
+            12513,
+            12513,
+            12513,
+            39102689
+          ]
+        },
+        "evidence_archive": {
+          "archive": {
+            "bytes": 3000200,
+            "sha256": "4010779b9a3810dc7d0d51072dc76dd52be2327301b857df2b04ddb004a5edca"
+          },
+          "raw_archive": {
+            "bytes": 11427840,
+            "sha256": "a50abed2fea44393468bd058c9c97d72330e9bf0b98e36aa196f0a0d05affcdd"
+          }
+        },
+        "inventory": {
+          "bytes": 1378036,
+          "sha256": "dfdadedaded0eced586cc680f39d8ab58c336db2d25d75daf7460fc32ae74f7f"
+        },
+        "label": "root-r10-neg01-fc33-r7-bound01",
+        "lease": {
+          "bytes": 2506,
+          "sha256": "03f1d2a383384e74743e3331adf39a50bdd8e3d4c9a8d4e618bd8b6012557a5c"
+        },
+        "native_case_credit": 0,
+        "nonce": "4808fbf1e81fd1542e7ffb60d7f57ca6",
+        "original_native_predecessor": {
+          "bytes": 29342,
+          "metadata": [
+            65086,
+            154717,
+            33152,
+            0,
+            0,
+            1,
+            29342,
+            1793954246107886895,
+            1793954246107886895
+          ],
+          "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+          "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+        },
+        "package": {
+          "bytes": 61701,
+          "sha256": "643d4e17475293532aa02489194c01175d263f54d8a5979ae96ff802d4f5150a"
+        },
+        "private_roots": [
+          "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01",
+          "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01/executor",
+          "/proc/1/root/data/local/tmp/hepta-native-guard-4808fbf1e81fd1542e7ffb60d7f57ca6"
+        ],
+        "schema": "hepta.r7.retained-preaccept-binding.v1"
+      },
+      "schema": "hepta.r8.retained-staged-failure-binding.v1",
+      "standalone_execution_authorized": false
+    },
+    "retained_failed_transport_binding": {
+      "baseline_device_shell_wire_dispatched": null,
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "business_qualified": false,
+      "combination": {
+        "bytes": 4695,
+        "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+      },
+      "component_qualified": false,
+      "component_role_identities": {},
+      "current_kernel_ESRCH_asserted": false,
+      "evidence_archive": {
+        "archive": {
+          "bytes": 2174339,
+          "sha256": "18da9626e5ae687adb4087b5a5484d9d2a8dc8885fdaabfd57b829ec02d20fd3"
+        },
+        "raw_archive": {
+          "bytes": 3788800,
+          "sha256": "ca76e0854be12cb004bef057df668374b851c0a2a90604f1ae7c8ea422b368d6"
+        }
+      },
+      "first_launch_receipt_gap": true,
+      "first_push_scope_only": true,
+      "global_unknown_effect_count": null,
+      "historical_failed_listener_identity": null,
+      "historical_failed_route_callsite": null,
+      "inventory": {
+        "bytes": 1403290,
+        "sha256": "bb8cfb6dd2f108046e8296956e514f7b3eec0ea5aaac5794ad86c70174478609"
+      },
+      "label": "root-r10-neg01-fc33-r9-bound01",
+      "lease": {
+        "bytes": 2506,
+        "sha256": "c56261e8a905de9a3e12d81d16c2a9fb15e90103a4fc0324d6f93c74ec5a6c17"
+      },
+      "native_case_credit": 0,
+      "native_terminal": null,
+      "new_nonce_authorized": false,
+      "nonce": "299483481a678cbd589aeba54ed8b68f",
+      "original_native_predecessor": {
+        "bytes": 29342,
+        "metadata": [
+          65086,
+          154717,
+          33152,
+          0,
+          0,
+          1,
+          29342,
+          1793954246107886895,
+          1793954246107886895
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+        "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+      },
+      "original_nonce_consumed": true,
+      "original_retried_launch": false,
+      "original_root_namespace_anchor": {
+        "bytes": 3274,
+        "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-r9-bound01/ROOT-FAILURE.json",
+        "sha256": "29b5b67cc99280b36c3250d87aaf3ecfeec8a19a79d22e715338447bd6095763"
+      },
+      "original_start_reused": true,
+      "original_wrapper_status": "failed_or_unknown_no_retry",
+      "package": {
+        "bytes": 73225,
+        "sha256": "bcabd6171f84738300b1a1e1bbac5263356339f9d9c5e9ee3079db16ca820734"
+      },
+      "private_roots": [],
+      "remote_cleanup_proven": false,
+      "replay_authorized": false,
+      "retained_failed_staged_binding": {
+        "absent_fixture_path": "/proc/1/root/data/local/tmp/hepta-native-guard-aa06c3b8d035dcd0c0047105f620b3bf",
+        "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+        "combination": {
+          "bytes": 4695,
+          "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+        },
+        "component_qualified": false,
+        "component_role_identities": {},
+        "evidence_archive": {
+          "archive": {
+            "bytes": 2066079,
+            "sha256": "d66d286bfb7890e0b32358326b669ac4a47d5f4ba43c524bc3f129f5bf631e93"
+          },
+          "raw_archive": {
+            "bytes": 6389760,
+            "sha256": "2f0e98f48f0f1449cf1fe588ffe6b5a30f69f252fae67e5fd1682a25b713a213"
+          }
+        },
+        "fixture_is_inventory_root": false,
+        "global_unknown_effect_count": null,
+        "inventory": {
+          "bytes": 1403291,
+          "sha256": "2008db913728ff0c3836cb6edb361e37f427d7663f2832163fe93b2adb18f432"
+        },
+        "label": "root-r10-neg01-fc33-r8-bound01",
+        "lease": {
+          "bytes": 2506,
+          "sha256": "f05ee53a7609972c18f6bab2263008a4c3de3b49b12b8654df94790b25c30a44"
+        },
+        "native_case_credit": 0,
+        "native_terminal": null,
+        "nonce": "aa06c3b8d035dcd0c0047105f620b3bf",
+        "original_native_predecessor": {
+          "bytes": 29342,
+          "metadata": [
+            65086,
+            154717,
+            33152,
+            0,
+            0,
+            1,
+            29342,
+            1793954246107886895,
+            1793954246107886895
+          ],
+          "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+          "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+        },
+        "original_nonce_consumed": true,
+        "original_remote_cleanup_boolean": false,
+        "original_root_namespace_anchor": {
+          "bytes": 12992,
+          "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-chains-r10-r1/root-r10-neg01-fc33-r8-bound01/ROOT-FAILURE.json",
+          "sha256": "ab8c85f7d403c6427931db66acfecb12137143cf3b78573a654346584dab7a31"
+        },
+        "package": {
+          "bytes": 65655,
+          "sha256": "654f8b0ad50a4d930d7beff9421b5e9f988ecb74b55badc70cec9efeaa63130c"
+        },
+        "private_roots": [
+          "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r8-bound01",
+          "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r8-bound01/executor"
+        ],
+        "retained_preaccept_binding": {
+          "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+          "combination": {
+            "bytes": 4695,
+            "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+          },
+          "component_qualified": false,
+          "component_role_identities": {
+            "sidecar": [
+              14026,
+              14026,
+              14026,
+              39106597
+            ],
+            "supervisor": [
+              12513,
+              12513,
+              12513,
+              39102689
+            ]
+          },
+          "evidence_archive": {
+            "archive": {
+              "bytes": 3000200,
+              "sha256": "4010779b9a3810dc7d0d51072dc76dd52be2327301b857df2b04ddb004a5edca"
+            },
+            "raw_archive": {
+              "bytes": 11427840,
+              "sha256": "a50abed2fea44393468bd058c9c97d72330e9bf0b98e36aa196f0a0d05affcdd"
+            }
+          },
+          "inventory": {
+            "bytes": 1378036,
+            "sha256": "dfdadedaded0eced586cc680f39d8ab58c336db2d25d75daf7460fc32ae74f7f"
+          },
+          "label": "root-r10-neg01-fc33-r7-bound01",
+          "lease": {
+            "bytes": 2506,
+            "sha256": "03f1d2a383384e74743e3331adf39a50bdd8e3d4c9a8d4e618bd8b6012557a5c"
+          },
+          "native_case_credit": 0,
+          "nonce": "4808fbf1e81fd1542e7ffb60d7f57ca6",
+          "original_native_predecessor": {
+            "bytes": 29342,
+            "metadata": [
+              65086,
+              154717,
+              33152,
+              0,
+              0,
+              1,
+              29342,
+              1793954246107886895,
+              1793954246107886895
+            ],
+            "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+            "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+          },
+          "package": {
+            "bytes": 61701,
+            "sha256": "643d4e17475293532aa02489194c01175d263f54d8a5979ae96ff802d4f5150a"
+          },
+          "private_roots": [
+            "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01",
+            "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01/executor",
+            "/proc/1/root/data/local/tmp/hepta-native-guard-4808fbf1e81fd1542e7ffb60d7f57ca6"
+          ],
+          "schema": "hepta.r7.retained-preaccept-binding.v1"
+        },
+        "schema": "hepta.r8.retained-staged-failure-binding.v1",
+        "standalone_execution_authorized": false
+      },
+      "retained_preaccept_binding": {
+        "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+        "combination": {
+          "bytes": 4695,
+          "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+        },
+        "component_qualified": false,
+        "component_role_identities": {
+          "sidecar": [
+            14026,
+            14026,
+            14026,
+            39106597
+          ],
+          "supervisor": [
+            12513,
+            12513,
+            12513,
+            39102689
+          ]
+        },
+        "evidence_archive": {
+          "archive": {
+            "bytes": 3000200,
+            "sha256": "4010779b9a3810dc7d0d51072dc76dd52be2327301b857df2b04ddb004a5edca"
+          },
+          "raw_archive": {
+            "bytes": 11427840,
+            "sha256": "a50abed2fea44393468bd058c9c97d72330e9bf0b98e36aa196f0a0d05affcdd"
+          }
+        },
+        "inventory": {
+          "bytes": 1378036,
+          "sha256": "dfdadedaded0eced586cc680f39d8ab58c336db2d25d75daf7460fc32ae74f7f"
+        },
+        "label": "root-r10-neg01-fc33-r7-bound01",
+        "lease": {
+          "bytes": 2506,
+          "sha256": "03f1d2a383384e74743e3331adf39a50bdd8e3d4c9a8d4e618bd8b6012557a5c"
+        },
+        "native_case_credit": 0,
+        "nonce": "4808fbf1e81fd1542e7ffb60d7f57ca6",
+        "original_native_predecessor": {
+          "bytes": 29342,
+          "metadata": [
+            65086,
+            154717,
+            33152,
+            0,
+            0,
+            1,
+            29342,
+            1793954246107886895,
+            1793954246107886895
+          ],
+          "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+          "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+        },
+        "package": {
+          "bytes": 61701,
+          "sha256": "643d4e17475293532aa02489194c01175d263f54d8a5979ae96ff802d4f5150a"
+        },
+        "private_roots": [
+          "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01",
+          "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01/executor",
+          "/proc/1/root/data/local/tmp/hepta-native-guard-4808fbf1e81fd1542e7ffb60d7f57ca6"
+        ],
+        "schema": "hepta.r7.retained-preaccept-binding.v1"
+      },
+      "same_boot_complete_scope_original": {
+        "bytes": 11658275,
+        "sha256": "7323e266eed8e2e0413f4a04e4368b703953103c214a569a0fe175bcc76b2ddd"
+      },
+      "schema": "hepta.r9.retained-transport-failure-binding.v1",
+      "standalone_execution_authorized": false
+    },
+    "retained_failed_transport_runtime_adapter": {
+      "bytes": 23623,
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-runtime-dependencies-r10-r1/fc33-r10-01/retained_transport_r9_adapter.py",
+      "sha256": "eaf52438100706edb6734efea64299f6ff1b414485c2c353c9172f7c6f670857"
+    },
+    "retained_preaccept_binding": {
+      "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+      "combination": {
+        "bytes": 4695,
+        "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411"
+      },
+      "component_qualified": false,
+      "component_role_identities": {
+        "sidecar": [
+          14026,
+          14026,
+          14026,
+          39106597
+        ],
+        "supervisor": [
+          12513,
+          12513,
+          12513,
+          39102689
+        ]
+      },
+      "evidence_archive": {
+        "archive": {
+          "bytes": 3000200,
+          "sha256": "4010779b9a3810dc7d0d51072dc76dd52be2327301b857df2b04ddb004a5edca"
+        },
+        "raw_archive": {
+          "bytes": 11427840,
+          "sha256": "a50abed2fea44393468bd058c9c97d72330e9bf0b98e36aa196f0a0d05affcdd"
+        }
+      },
+      "inventory": {
+        "bytes": 1378036,
+        "sha256": "dfdadedaded0eced586cc680f39d8ab58c336db2d25d75daf7460fc32ae74f7f"
+      },
+      "label": "root-r10-neg01-fc33-r7-bound01",
+      "lease": {
+        "bytes": 2506,
+        "sha256": "03f1d2a383384e74743e3331adf39a50bdd8e3d4c9a8d4e618bd8b6012557a5c"
+      },
+      "native_case_credit": 0,
+      "nonce": "4808fbf1e81fd1542e7ffb60d7f57ca6",
+      "original_native_predecessor": {
+        "bytes": 29342,
+        "metadata": [
+          65086,
+          154717,
+          33152,
+          0,
+          0,
+          1,
+          29342,
+          1793954246107886895,
+          1793954246107886895
+        ],
+        "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/ac03e3864c1798742c472957b06ca843.json",
+        "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+      },
+      "package": {
+        "bytes": 61701,
+        "sha256": "643d4e17475293532aa02489194c01175d263f54d8a5979ae96ff802d4f5150a"
+      },
+      "private_roots": [
+        "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01",
+        "/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/root-r10-neg01-fc33-r7-bound01/executor",
+        "/proc/1/root/data/local/tmp/hepta-native-guard-4808fbf1e81fd1542e7ffb60d7f57ca6"
+      ],
+      "schema": "hepta.r7.retained-preaccept-binding.v1"
+    },
+    "root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10",
+    "root_chain_manifest": {
+      "bytes": 74044,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "43bbc6ac86758d31ed03d55a5cac0e24db5a021b161d2161a4f52a58980d8da2"
+    },
+    "runtime_manifest": {
+      "bytes": 87655,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/runtime/MANIFEST.json",
+      "sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02"
+    }
+  },
+  "separate_runtime_adapter_capture_members": 1,
+  "source_chain_inventory_count_unchanged": 20,
+  "source_child_count_unchanged": 14,
+  "sources": {
+    "derive_component_build_inputs_UNBOUND.py": {
+      "bytes": 43541,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r10-preparation/development03/source/derive_component_build_inputs_UNBOUND.py",
+      "sha256": "2aef3f2821d1f5973373a161e9401ceb79c11d4258a86e96da9c7a693adf5115"
+    },
+    "derive_r10_release_source_rebindings_UNBOUND.py": {
+      "bytes": 66697,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r10-preparation/development03/source/derive_r10_release_source_rebindings_UNBOUND.py",
+      "sha256": "7a075e19f5537bd4c11836f756707464f5828f064bc039047ec4259092d2b4c1"
+    },
+    "derive_reviewed_release_sources_UNBOUND.py": {
+      "bytes": 45022,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r10-preparation/development03/source/derive_reviewed_release_sources_UNBOUND.py",
+      "sha256": "58e75a532184ecc58cdb438e64610f8e574844bc9fe3f22a8b3d9886623e017e"
+    },
+    "release_boundaries_UNBOUND.py": {
+      "bytes": 258644,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r10-preparation/development03/source/release_boundaries_UNBOUND.py",
+      "sha256": "85f404f7375fb2bed51a211a5e357f2483eea7aae1b8bc5c7c2b2fe830bf5ac4"
+    }
+  },
+  "state": "R10_P1_SOURCES_ONLY_ACTUAL_EXECUTION_UNBOUND",
+  "whole_case_credit": 0
+}

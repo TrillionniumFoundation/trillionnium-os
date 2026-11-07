@@ -1,0 +1,85 @@
+{
+  "functions": [
+    {
+      "derived_complete_source_if_composed": {
+        "bytes": 153177,
+        "sha256": "7e41d223e1359a25749080571fe2ea9fcb620c9bf851633c7394bb9636486c81"
+      },
+      "derived_function": {
+        "bytes": 3827,
+        "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+      },
+      "fragment": {
+        "bytes": 4028,
+        "path": "candidate/derived/source_parent_inventory_value.py",
+        "sha256": "6428e3834749b21a92eb896b51d74cd4aa2dccca9b647dd9dc5df5e7c81c8b8b"
+      },
+      "historical_reader_function_replaced_in_runtime": false,
+      "historical_source_bytes_changed": false,
+      "id": "source-parent-inventory",
+      "original_function": {
+        "bytes": 3788,
+        "line": 73,
+        "name": "inventory_value",
+        "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+      },
+      "original_module_provenance_reassigned": false,
+      "original_source": {
+        "bytes": 153138,
+        "path": "originals/source_parent_late_boundary_r4.original.py",
+        "sha256": "27350db238c5ca31796af91c77b5c2fdb9d02b838d35140f759df907903d4fa4"
+      },
+      "patch": {
+        "bytes": 1241,
+        "path": "candidate/derived/source-parent-inventory.patch",
+        "sha256": "ae911fc6327cd5af7acdd423a9cff6728bc2ffefeccf448c241b407a8298840c"
+      },
+      "production_selector_implemented": false,
+      "validation_result_cache": false,
+      "whole_byte_inverse_verified": true
+    },
+    {
+      "derived_complete_source_if_composed": {
+        "bytes": 22151,
+        "sha256": "520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed"
+      },
+      "derived_function": {
+        "bytes": 8369,
+        "sha256": "51bd57dffe1a2beca21a3d01288477030f61988daa3d294fdf8d371ade6c9f89"
+      },
+      "fragment": {
+        "bytes": 8570,
+        "path": "candidate/derived/retained_r8_verify_complete_scope.py",
+        "sha256": "5c4850c66658d52a058e11397c3c4553b750f7942a382f404fd5f870f63ff76e"
+      },
+      "historical_reader_function_replaced_in_runtime": false,
+      "historical_source_bytes_changed": false,
+      "id": "retained-r8-scope",
+      "original_function": {
+        "bytes": 8083,
+        "line": 206,
+        "name": "verify_complete_scope",
+        "sha256": "798ffcd349da388ba6985b0b5e9a34beb436656aed300d3980280cea100d64a6"
+      },
+      "original_module_provenance_reassigned": false,
+      "original_source": {
+        "bytes": 21865,
+        "path": "originals/retained_r8_scope.original.py",
+        "sha256": "937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38"
+      },
+      "patch": {
+        "bytes": 1624,
+        "path": "candidate/derived/retained-r8-scope.patch",
+        "sha256": "d7ca68dc9a7e31d6d63ebd7a7fedc904c3ce9f494b35d9453822e788393f61ac"
+      },
+      "production_selector_implemented": false,
+      "validation_result_cache": false,
+      "whole_byte_inverse_verified": true
+    }
+  ],
+  "native_case_credit": 0,
+  "runtime_admission": false,
+  "schema": "hepta.offline.derived-topology-fragments.v1",
+  "state": "UNADOPTED_DERIVED_FUNCTION_CANDIDATES",
+  "whole_stage_budget_verified": false
+}

@@ -1,0 +1,40 @@
+{
+  "candidate_fragment": {
+    "bytes": 4040,
+    "path": "candidate/inventory_value.py",
+    "sha256": "36062323fcaac20c2a7e9e50d2d1134f79faea3dc8b00b3fbc01caa588d27f52"
+  },
+  "candidate_function": {
+    "bytes": 3827,
+    "line_in_derived_source": 218,
+    "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+  },
+  "change": "Only root non-overlap uses strict Path.parts prefixes; existing sets move before this guard.",
+  "derived_full_source_if_applied": {
+    "bytes": 259905,
+    "sha256": "0cf8b290df3e546edf81cb2d72a290fac549740f4c7d078a40ae3900e0ee8620"
+  },
+  "historical_sources_changed": false,
+  "native_case_credit": 0,
+  "original_function": {
+    "bytes": 3788,
+    "line": 218,
+    "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+  },
+  "original_source": {
+    "bytes": 259866,
+    "path": "originals/late_boundary.r10.original.py",
+    "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+  },
+  "other_source_bytes_unchanged": true,
+  "patch": {
+    "bytes": 1253,
+    "path": "candidate/late_boundary.inventory_value.patch",
+    "sha256": "4de7a34eb8cc0493797426d085af4b9b7633da0196996beca993ba070b99bb56"
+  },
+  "runtime_admission": false,
+  "schema": "hepta.offline.inventory-topology-candidate.v1",
+  "state": "UNADOPTED_PURE_FUNCTION_CANDIDATE",
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

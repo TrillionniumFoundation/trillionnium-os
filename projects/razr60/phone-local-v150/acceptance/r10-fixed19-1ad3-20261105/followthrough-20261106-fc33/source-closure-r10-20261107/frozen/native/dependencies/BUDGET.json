@@ -1,0 +1,94 @@
+{
+  "root": {
+    "automatic_retry": false,
+    "launch_observation_budget": {
+      "automatic_retry": false,
+      "initial_lease_seconds": 900,
+      "listener_service_seconds_unchanged": 420,
+      "minimum_prelaunch_reserve_relative_to_listener_seconds": 90,
+      "native_turn_seconds_unchanged": 300,
+      "new_identity_initial_budget_only": true,
+      "p4_actor_wait_seconds": 110,
+      "prelaunch_remaining_required_strictly_greater_than_seconds": 510,
+      "prior_initial_lease_seconds": 600,
+      "request_seconds": 90,
+      "root_remote_seconds": 145,
+      "waits_are_observation_budgets_not_no_effect_proofs": true
+    },
+    "new_identity_preparation_budget": {
+      "before_after_bridge_seconds_unchanged": 25,
+      "before_after_phone_request_seconds_unchanged": 40,
+      "component_pre_send_seconds": 240,
+      "component_sender_total_seconds": 660,
+      "current_launch_and_READY_time_not_yet_measured": true,
+      "existing_common_unused_MAX_LEASE_SECONDS_declaration_preserved": 600,
+      "existing_leases_modified": false,
+      "historical_retained_stage_600_unchanged": true,
+      "initial_lease_seconds": 900,
+      "launch_p4_actor_wait_seconds": 110,
+      "launch_phone_request_seconds": 90,
+      "launch_root_remote_seconds": 145,
+      "lease_extension": false,
+      "listener_seconds_unchanged": 420,
+      "native_turn_seconds_unchanged": 300,
+      "non_component_pre_send_seconds_unchanged": 150,
+      "non_component_sender_total_seconds_unchanged": 600,
+      "prelaunch_remaining_required_seconds_unchanged": 510,
+      "prior_initial_lease_seconds": 600,
+      "root_sender_async_seconds": 660,
+      "schema": "hepta.fc33.new-identity-preparation-budget.v1",
+      "setup_bridge_observation_seconds": 120,
+      "setup_p4_actor_wait_seconds": 155,
+      "setup_phone_request_seconds": 135,
+      "setup_root_remote_seconds": 190,
+      "single_send_single_fork_unchanged": true,
+      "timeout_is_UNKNOWN_not_no_effect_proof": true
+    },
+    "phase_wait_budgets": {
+      "after-guard": {
+        "reader_seconds": 25,
+        "request_seconds": 40
+      },
+      "before-guard": {
+        "reader_seconds": 25,
+        "request_seconds": 40
+      },
+      "setup": {
+        "reader_seconds": 120,
+        "request_seconds": 135
+      }
+    }
+  },
+  "runtime": {
+    "automatic_retry": false,
+    "new_identity_preparation_budget": {
+      "before_after_bridge_seconds_unchanged": 25,
+      "before_after_phone_request_seconds_unchanged": 40,
+      "component_pre_send_seconds": 240,
+      "component_sender_total_seconds": 660,
+      "current_launch_and_READY_time_not_yet_measured": true,
+      "existing_common_unused_MAX_LEASE_SECONDS_declaration_preserved": 600,
+      "existing_leases_modified": false,
+      "historical_retained_stage_600_unchanged": true,
+      "initial_lease_seconds": 900,
+      "launch_p4_actor_wait_seconds": 110,
+      "launch_phone_request_seconds": 90,
+      "launch_root_remote_seconds": 145,
+      "lease_extension": false,
+      "listener_seconds_unchanged": 420,
+      "native_turn_seconds_unchanged": 300,
+      "non_component_pre_send_seconds_unchanged": 150,
+      "non_component_sender_total_seconds_unchanged": 600,
+      "prelaunch_remaining_required_seconds_unchanged": 510,
+      "prior_initial_lease_seconds": 600,
+      "root_sender_async_seconds": 660,
+      "schema": "hepta.fc33.new-identity-preparation-budget.v1",
+      "setup_bridge_observation_seconds": 120,
+      "setup_p4_actor_wait_seconds": 155,
+      "setup_phone_request_seconds": 135,
+      "setup_root_remote_seconds": 190,
+      "single_send_single_fork_unchanged": true,
+      "timeout_is_UNKNOWN_not_no_effect_proof": true
+    }
+  }
+}

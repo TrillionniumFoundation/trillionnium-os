@@ -1,0 +1,59 @@
+{
+  "extract_job": "1a1b84d8ec4-12894-e2b",
+  "fixtures": [
+    {
+      "bytes": 1403290,
+      "compressed_bytes": 237802,
+      "compressed_sha256": "62e91bc3769ca52f459f2c8e62a5af43e5362b3c7f2b969c1661e78ab7d0db5f",
+      "encoding": "zlib",
+      "entries": 3991,
+      "json_path": [
+        "full_inventory_before"
+      ],
+      "kind": "fixture",
+      "name": "r9-full_inventory_before",
+      "original_retained_pin_match": false,
+      "path": "fixtures/r9-full_inventory_before.json.zlib",
+      "roots": 49,
+      "sha256": "c2fcb22737d1b5db2ac137b704247c1e5e489fa65f95d715c49b0cae8dd3a544",
+      "source_archive_sha256": "18da9626e5ae687adb4087b5a5484d9d2a8dc8885fdaabfd57b829ec02d20fd3",
+      "source_outer_sha256": "e6ec9a6d3812c6801cb2f0b2aa44c9fb51db0ea1b68c7f83762f1cbda660f795",
+      "source_scope_bytes": 11658275,
+      "source_scope_sha256": "7323e266eed8e2e0413f4a04e4368b703953103c214a569a0fe175bcc76b2ddd"
+    },
+    {
+      "bytes": 1403290,
+      "compressed_bytes": 237802,
+      "compressed_sha256": "ace32827b0f2d6b6ca9ef6aa595ee238fd2c6bd010b76afafe3bc98a0031f4e4",
+      "encoding": "zlib",
+      "entries": 3991,
+      "json_path": [
+        "full_inventory_after"
+      ],
+      "kind": "fixture",
+      "name": "r9-full_inventory_after",
+      "original_retained_pin_match": true,
+      "path": "fixtures/r9-full_inventory_after.json.zlib",
+      "roots": 49,
+      "sha256": "bb8cfb6dd2f108046e8296956e514f7b3eec0ea5aaac5794ad86c70174478609",
+      "source_archive_sha256": "18da9626e5ae687adb4087b5a5484d9d2a8dc8885fdaabfd57b829ec02d20fd3",
+      "source_outer_sha256": "e6ec9a6d3812c6801cb2f0b2aa44c9fb51db0ea1b68c7f83762f1cbda660f795",
+      "source_scope_bytes": 11658275,
+      "source_scope_sha256": "7323e266eed8e2e0413f4a04e4368b703953103c214a569a0fe175bcc76b2ddd"
+    }
+  ],
+  "historical_function": {
+    "line": 218,
+    "member": "scope_library_late",
+    "path": "originals/inventory_value.r8.fragment.py",
+    "source_pin": {
+      "bytes": 218894,
+      "sha256": "9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54"
+    }
+  },
+  "native_case_credit": 0,
+  "runtime_admission": false,
+  "schema": "hepta.offline.topology-fixture-provenance.v1",
+  "scope": "Pinned retained R9 offline inventory data; no device observation performed by this test.",
+  "source_archive_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-transport-r9-failed01/ORIGINALS.zlib"
+}

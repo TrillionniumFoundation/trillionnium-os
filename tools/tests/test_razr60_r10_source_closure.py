@@ -1,0 +1,295 @@
+"""Source custody and an unadopted pure guard; no installed-target claims."""
+
+from __future__ import annotations
+
+import ast
+import copy
+import hashlib
+import itertools
+import json
+import os
+from pathlib import Path, PurePosixPath
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
+import types
+import unittest
+
+from tools.verify_razr60_r10_source_closure import (
+    CHECKPOINT, NEGATIVE_CLAIMS, materialize_checkpoint, member_path, strict_json,
+    stable_stat_identity, verify_checkpoint, verify_members,
+)
+
+
+ROOT = Path(__file__).resolve().parents[2]
+PACKAGE = ROOT / CHECKPOINT
+CANDIDATE = PACKAGE / "unadopted/topology-20261107"
+
+
+class R10SourceCheckpointTest(unittest.TestCase):
+    def test_exact_frozen_closure_and_claim_ceiling(self):
+        report = verify_checkpoint(PACKAGE)
+        self.assertEqual(report["native_runtime_members"], 38)
+        self.assertEqual(report["root_chain_members"], 3)
+        self.assertFalse(report["runtime_imported"])
+        self.assertEqual(report["fixed19_credits_added"], 0)
+
+    def test_manifest_claims_do_not_supply_github_review_or_adoption(self):
+        manifest = json.loads((PACKAGE / "MANIFEST.json").read_text())
+        self.assertEqual(manifest["negative_claims"], NEGATIVE_CLAIMS)
+        self.assertFalse(manifest["negative_claims"]["github_independent_review_supplied"])
+
+    def test_path_traversal_and_aliases_are_rejected(self):
+        for value in ("", "../x.py", "/x.py", "x/../y.py", "x//y.py", "./x.py"):
+            with self.subTest(path=value), self.assertRaises(ValueError):
+                member_path(Path("/unused"), value)
+
+    def test_symlink_member_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "a.py").write_text("pass\n")
+            (root / "b.py").symlink_to(root / "a.py")
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                member_path(root, "b.py")
+
+    def test_source_tampering_and_duplicate_members_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = b"pass\n"
+            (root / "a.py").write_bytes(raw)
+            row = {"path": "a.py", "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+            self.assertEqual(verify_members(root, [row]), {"a.py": raw})
+            with self.assertRaisesRegex(ValueError, "unique"):
+                verify_members(root, [row, row])
+            (root / "a.py").write_bytes(b"#pass")
+            with self.assertRaisesRegex(ValueError, "source bytes differ"):
+                verify_members(root, [row])
+
+    def test_first_read_allows_access_time_only_and_preserves_nanosecond_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            raw = b"# fresh source\n"
+            path = root / "fresh.py"
+            path.write_bytes(raw)
+            initial = path.stat()
+            row = {"path": path.name, "bytes": len(raw),
+                   "sha256": hashlib.sha256(raw).hexdigest()}
+            self.assertEqual(verify_members(root, [row]), {path.name: raw})
+            fields = {name: getattr(initial, name) for name in (
+                "st_dev", "st_ino", "st_mode", "st_uid", "st_gid", "st_nlink",
+                "st_size", "st_mtime_ns", "st_ctime_ns", "st_atime_ns")}
+            access_only = types.SimpleNamespace(**(fields | {"st_atime_ns": fields["st_atime_ns"] + 1}))
+            self.assertEqual(stable_stat_identity(initial), stable_stat_identity(access_only))
+            for timestamp in ("st_mtime_ns", "st_ctime_ns"):
+                changed = types.SimpleNamespace(**(fields | {timestamp: fields[timestamp] + 1}))
+                self.assertNotEqual(stable_stat_identity(initial), stable_stat_identity(changed))
+
+    def test_private_archive_is_not_a_source_member(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            row = {"path": "ORIGINALS.zlib", "bytes": 0, "sha256": "0" * 64}
+            with self.assertRaisesRegex(ValueError, "archive"):
+                verify_members(root, [row])
+
+    def test_ambiguous_json_is_rejected(self):
+        for raw in (b'{"a":1,"a":2}', b'{"a":NaN}'):
+            with self.subTest(raw=raw), self.assertRaises(ValueError):
+                strict_json(raw)
+
+    def test_third_party_materialization_rebuilds_all_current_source_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "reconstructed"
+            report = materialize_checkpoint(PACKAGE, output)
+            self.assertEqual(report["native_runtime_members"], 38)
+            manifest = json.loads((PACKAGE / "MANIFEST.json").read_text())
+            for row in manifest["files"]:
+                if row["path"].startswith(("frozen/", "preparation/", "release/", "external-source/")):
+                    self.assertEqual((output / row["path"]).read_bytes(),
+                                     (PACKAGE / row["path"]).read_bytes())
+            self.assertFalse(report["runtime_adopted"])
+            with self.assertRaisesRegex(ValueError, "output must be absent"):
+                materialize_checkpoint(PACKAGE, output)
+
+    def test_missing_dependency_and_reassigned_source_identity_fail_before_materialization(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            copied = root / "checkpoint"
+            shutil.copytree(PACKAGE, copied)
+            dependency = "frozen/native/dependencies/p4/phone_once.py"
+            (copied / dependency).unlink()
+            manifest = json.loads((copied / "MANIFEST.json").read_text())
+            manifest["files"] = [row for row in manifest["files"] if row["path"] != dependency]
+            (copied / "MANIFEST.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "selected external dependency is missing"):
+                materialize_checkpoint(copied, root / "must-not-exist")
+            self.assertFalse((root / "must-not-exist").exists())
+            (copied / dependency).write_bytes((PACKAGE / dependency).read_bytes())
+            manifest = json.loads((PACKAGE / "MANIFEST.json").read_text())
+            source = "frozen/native/runtime/source/late_boundary.py"
+            raw = (copied / source).read_bytes() + b"\n"
+            (copied / source).write_bytes(raw)
+            for row in manifest["files"]:
+                if row["path"] == source:
+                    row.update(bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
+            (copied / "MANIFEST.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "frozen R10 identity was reassigned"):
+                verify_checkpoint(copied)
+
+    def test_missing_native_member_cannot_be_hidden_by_editing_the_public_membership(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / "checkpoint"
+            shutil.copytree(PACKAGE, copied)
+            member = "frozen/native/runtime/source/component_common.py"
+            (copied / member).unlink()
+            manifest = json.loads((copied / "MANIFEST.json").read_text())
+            manifest["files"] = [row for row in manifest["files"] if row["path"] != member]
+            (copied / "MANIFEST.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "original family source is missing"):
+                verify_checkpoint(copied)
+
+    def test_missing_nonselected_external_source_cannot_be_hidden_by_membership_edit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / "checkpoint"
+            shutil.copytree(PACKAGE, copied)
+            bindings = json.loads((copied / "EXTERNAL-SOURCE-BINDINGS.json").read_text())
+            row = next(row for row in bindings["source_bindings"]
+                       if row.get("checkpoint_path", "").startswith("external-source/"))
+            member = row["checkpoint_path"]
+            (copied / member).unlink()
+            manifest = json.loads((copied / "MANIFEST.json").read_text())
+            manifest["files"] = [row for row in manifest["files"] if row["path"] != member]
+            (copied / "MANIFEST.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "resolved external source member is missing"):
+                verify_checkpoint(copied)
+
+    def test_ancestor_exemption_must_bind_its_original_json_field(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / "checkpoint"
+            shutil.copytree(PACKAGE, copied)
+            name = "EXTERNAL-SOURCE-BINDINGS.json"
+            bindings = json.loads((copied / name).read_text())
+            bindings["unmaterialized_development_ancestors"][0]["metadata_references"][0]["json_pointer"] = "/absent"
+            raw = json.dumps(bindings).encode()
+            (copied / name).write_bytes(raw)
+            manifest = json.loads((copied / "MANIFEST.json").read_text())
+            for row in manifest["files"]:
+                if row["path"] == name:
+                    row.update(bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
+            (copied / "MANIFEST.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "source JSON pointer does not resolve"):
+                verify_checkpoint(copied)
+
+
+class UnadoptedTopologyGuardTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        common = ast.parse((PACKAGE / "frozen/native/runtime/source/component_common.py").read_text())
+        nodes = [n for n in common.body if
+                 (isinstance(n, ast.FunctionDef) and n.name == "need") or
+                 (isinstance(n, ast.Assign) and isinstance(n.targets[0], ast.Name)
+                  and n.targets[0].id == "HASH")]
+        namespace = {"re": re}
+        exec(compile(ast.Module(body=nodes, type_ignores=[]), "<pinned-common-pure>", "exec"), namespace)
+        support = types.SimpleNamespace(need=namespace["need"], HASH=namespace["HASH"])
+        implementations = []
+        for path in (PACKAGE / "frozen/native/runtime/source/late_boundary.py",
+                     CANDIDATE / "candidate/inventory_value.py"):
+            nodes = [n for n in ast.parse(path.read_text()).body
+                     if isinstance(n, ast.FunctionDef) and n.name == "inventory_value"]
+            if len(nodes) != 1:
+                raise AssertionError("one pure inventory function is required")
+            namespace = {"C": support, "Path": Path, "re": re, "stat": stat}
+            exec(compile(ast.Module(body=nodes, type_ignores=[]), "<pure-inventory>", "exec"), namespace)
+            implementations.append(namespace["inventory_value"])
+        cls.implementations = implementations
+
+    @staticmethod
+    def inventory(roots):
+        return {"schema": "hepta.native-guard.complete-inventory.v1", "roots": list(roots),
+                "entries": {r: {"kind": "directory", "metadata":
+                                  [1, i + 1, stat.S_IFDIR | 0o700, 0, 0, 2, 0, 0, 0],
+                                  "names": []} for i, r in enumerate(roots)},
+                "file_bytes_hashed": 0, "elapsed_seconds": 0.0,
+                "inventory_is_closure_or_retirement": False}
+
+    @staticmethod
+    def result(function, value):
+        original = copy.deepcopy(value)
+        try:
+            outcome = ("accepted", function(value))
+        except Exception as error:
+            outcome = ("rejected", type(error).__name__, str(error))
+        if original != value:
+            raise AssertionError("pure validator mutated input")
+        return outcome
+
+    def test_complete_pure_function_preserves_posix_edges_and_rejection_order(self):
+        names = ["/", "//", "/a", "//a", "/a/b", "//a/b", "/b", "/A", "/Å", "/A\u030a",
+                 "relative", "/a/", "/a//b", "/a/../b"]
+        old, new = self.implementations
+        for roots in itertools.product(names, repeat=2):
+            with self.subTest(roots=roots):
+                value = self.inventory(roots)
+                self.assertEqual(self.result(old, copy.deepcopy(value)),
+                                 self.result(new, copy.deepcopy(value)))
+        for count in (1, 2, 49, 64, 65):
+            value = self.inventory(["/scope/r-%03d" % i for i in range(count)])
+            self.assertEqual(self.result(old, copy.deepcopy(value)),
+                             self.result(new, copy.deepcopy(value)))
+
+    def test_candidate_is_one_declared_source_change_and_has_no_admission(self):
+        source = (PACKAGE / "frozen/native/runtime/source/late_boundary.py").read_text()
+        build = ast.parse((CANDIDATE / "tools/build_candidate.py").read_text())
+        literals = {n.targets[0].id: ast.literal_eval(n.value) for n in build.body
+                    if isinstance(n, ast.Assign) and isinstance(n.targets[0], ast.Name)
+                    and n.targets[0].id in {"OLD_BLOCK", "NEW_BLOCK"}}
+        self.assertEqual(source.count(literals["OLD_BLOCK"]), 1)
+        derived = source.replace(literals["OLD_BLOCK"], literals["NEW_BLOCK"], 1)
+        self.assertEqual(derived.replace(literals["NEW_BLOCK"], literals["OLD_BLOCK"], 1), source)
+        manifest = json.loads((CANDIDATE / "CANDIDATE-MANIFEST.json").read_text())
+        self.assertEqual(hashlib.sha256(derived.encode()).hexdigest(),
+                         manifest["derived_full_source_if_applied"]["sha256"])
+        self.assertFalse(manifest["runtime_admission"])
+        self.assertFalse(manifest["whole_stage_budget_verified"])
+
+    def test_portable_constructors_rebuild_exact_fragments_and_synthetic_differentials(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "candidate"
+            shutil.copytree(CANDIDATE, target)
+            environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", HEPTA_TOPOLOGY_SYNTHETIC_ONLY="1")
+            for script, manifest in (
+                ("tools/build_candidate.py", "CANDIDATE-MANIFEST.json"),
+                ("tools/build_derived_fragments.py", "DERIVED-CANDIDATE-MANIFEST.json"),
+            ):
+                result = subprocess.run([sys.executable, script], cwd=target, env=environment,
+                                        text=True, capture_output=True, timeout=60)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertEqual((target / manifest).read_bytes(), (CANDIDATE / manifest).read_bytes())
+            for source in (CANDIDATE / "candidate").rglob("*"):
+                if source.is_file():
+                    self.assertEqual(source.read_bytes(), (target / source.relative_to(CANDIDATE)).read_bytes())
+            for script, report in (
+                ("tests/test_inventory_topology.py", "reports/differential-synthetic-results.json"),
+                ("tests/test_derived_topology.py", "reports/derived-differential-synthetic-results.json"),
+            ):
+                result = subprocess.run([sys.executable, script], cwd=target, env=environment,
+                                        text=True, capture_output=True, timeout=60)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                value = json.loads((target / report).read_text())
+                self.assertEqual(value["state"], "PASS")
+                self.assertFalse(value["runtime_admission"])
+                self.assertFalse(value["whole_stage_budget_verified"])
+                self.assertEqual(value["native_case_credit"], 0)
+            inventory = json.loads((target / "reports/differential-synthetic-results.json").read_text())
+            scope = json.loads((target / "reports/derived-differential-synthetic-results.json").read_text())
+            self.assertEqual(inventory["inventory_comparisons"], 788)
+            self.assertEqual(inventory["topology_comparisons"], 1754)
+            self.assertEqual(scope["source_parent_inventory"]["inventory_comparisons"], 788)
+            self.assertEqual(scope["scope_topology_subgraph"]["comparisons"], 285)
+
+
+if __name__ == "__main__":
+    unittest.main()
