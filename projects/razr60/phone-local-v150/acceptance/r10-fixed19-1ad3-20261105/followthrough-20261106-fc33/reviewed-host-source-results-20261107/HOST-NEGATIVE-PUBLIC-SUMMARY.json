@@ -1,0 +1,164 @@
+{
+  "BUILD_READY_installation_inferred": false,
+  "NEG10_14_executed": false,
+  "all_checks_passed": true,
+  "cases": [
+    {
+      "case_id": "NEG-04",
+      "direct_fixture_children": 2,
+      "effect_counter": 0,
+      "elapsed_seconds": 0.9319893339416012,
+      "fd_after": 5,
+      "fd_before": 5,
+      "fixed19_whole_case_closed": false,
+      "layer": "host_isolated",
+      "original_check_count": 26,
+      "physical_layer_qualified": false,
+      "result_original": {
+        "bytes": 8171,
+        "path": "originals/five-evidence/NEG-04/RESULT.json",
+        "sha256": "80f93d6cd63795bdc039bb936faf0f65addbd165200d82ada9bbf8fb799f7f0a"
+      },
+      "status": "PASS",
+      "threads_after": 1,
+      "threads_before": 1
+    },
+    {
+      "case_id": "NEG-05",
+      "direct_fixture_children": 3,
+      "effect_counter": 1,
+      "elapsed_seconds": 1.6082789869979024,
+      "fd_after": 5,
+      "fd_before": 5,
+      "fixed19_whole_case_closed": false,
+      "layer": "host_isolated",
+      "original_check_count": 34,
+      "physical_layer_qualified": false,
+      "result_original": {
+        "bytes": 10636,
+        "path": "originals/five-evidence/NEG-05/RESULT.json",
+        "sha256": "726eb9686a1e129b4f80ffbefdbdf641320fc82562ef46cad5e68afdf47be0b1"
+      },
+      "status": "PASS",
+      "threads_after": 1,
+      "threads_before": 1
+    },
+    {
+      "case_id": "NEG-06",
+      "direct_fixture_children": 2,
+      "effect_counter": 0,
+      "elapsed_seconds": 1.857905199052766,
+      "fd_after": 5,
+      "fd_before": 5,
+      "fixed19_whole_case_closed": false,
+      "fixture_http_posts": 1,
+      "installed_deployment_binding_qualified": false,
+      "layer": "host_isolated",
+      "original_check_count": 22,
+      "result_original": {
+        "bytes": 4885,
+        "path": "originals/neg06-evidence/NEG-06/RESULT.json",
+        "sha256": "3b39302191663b68b93f56914e3b799dcb6630250d614eeeb78b43aec30f24ac"
+      },
+      "status": "PASS",
+      "threads_after": 1,
+      "threads_before": 1,
+      "worker_returncode": -15
+    },
+    {
+      "case_id": "NEG-07",
+      "direct_fixture_children": 3,
+      "effect_counter": 1,
+      "elapsed_seconds": 2.2798850289545953,
+      "fd_after": 5,
+      "fd_before": 5,
+      "fixed19_whole_case_closed": false,
+      "layer": "host_isolated",
+      "original_check_count": 35,
+      "physical_layer_qualified": false,
+      "result_original": {
+        "bytes": 10791,
+        "path": "originals/five-evidence/NEG-07/RESULT.json",
+        "sha256": "7fa5743d38084c0fa738fb2d3ddf9d302adf8f2dfd75ecc730cadc68d15d27bb"
+      },
+      "status": "PASS",
+      "threads_after": 1,
+      "threads_before": 1
+    },
+    {
+      "case_id": "NEG-08",
+      "direct_fixture_children": 2,
+      "effect_counter": 0,
+      "elapsed_seconds": 0.9071418569656089,
+      "fd_after": 5,
+      "fd_before": 5,
+      "fixed19_whole_case_closed": false,
+      "layer": "host_isolated",
+      "original_check_count": 26,
+      "physical_layer_qualified": false,
+      "result_original": {
+        "bytes": 8198,
+        "path": "originals/five-evidence/NEG-08/RESULT.json",
+        "sha256": "df44489099b7406dfa73c3d1495624282c1a615da6e839ec9c6ced7be02b41ac"
+      },
+      "status": "PASS",
+      "threads_after": 1,
+      "threads_before": 1
+    },
+    {
+      "case_id": "NEG-09",
+      "direct_fixture_children": 3,
+      "effect_counter": 1,
+      "elapsed_seconds": 0.9786512670107186,
+      "fd_after": 5,
+      "fd_before": 5,
+      "fixed19_whole_case_closed": false,
+      "layer": "host_isolated",
+      "original_check_count": 33,
+      "physical_layer_qualified": false,
+      "result_original": {
+        "bytes": 10522,
+        "path": "originals/five-evidence/NEG-09/RESULT.json",
+        "sha256": "9a131999f26b99e22cb31b31db9b92f648b9fd73d58eb868349ae928c596bf33"
+      },
+      "status": "PASS",
+      "threads_after": 1,
+      "threads_before": 1
+    }
+  ],
+  "complete_review": {
+    "bytes": 111713,
+    "path": "HOST-NEGATIVE-INDEPENDENT-REVIEW.json",
+    "sha256": "9b17d717f6e932ee6ebc55655a1a3e926e839734b6ffc526e73e49ec9a69bf1f"
+  },
+  "fixed19_whole_cases_closed_by_this_review": 0,
+  "model_cost_or_energy_measured": false,
+  "new_acceptance_nonces_by_this_agent": 0,
+  "new_fixture_launches_by_this_agent": 0,
+  "original_jobs": {
+    "five": "1a1b3383b35-fc05-8128",
+    "neg06": "1a1b33784d4-fc05-8120"
+  },
+  "originals_preserved": {
+    "bytes": 2383187,
+    "files": 615,
+    "source_manifest_five": "594dcdb0a83028c2d11f9ed90585cb93fd47c982cfcba7127fb7686ace0b2368",
+    "source_manifest_neg06": "e73b631a88949d4c7cae59d0b31f3624beb5264a126cea7c630bc54d169ceae4"
+  },
+  "phone_calls_by_this_agent": 0,
+  "physical_native_layers_remaining": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09"
+  ],
+  "production15_and_configuration_and_service_match_current_R6": true,
+  "production_mutations_by_this_agent": 0,
+  "production_source_count": 15,
+  "readonly_five_verifier_job": "1a1b3439b2e-fc05-8190",
+  "schema": "hepta.razr60.r6.host-negative-independent-review.v1",
+  "source_pins_verified_after_original_runs": true,
+  "state": "SIX_EXISTING_HOST_LAYERS_VERIFIED_NO_NEW_CASE_EXECUTION",
+  "verification_check_count": 801
+}

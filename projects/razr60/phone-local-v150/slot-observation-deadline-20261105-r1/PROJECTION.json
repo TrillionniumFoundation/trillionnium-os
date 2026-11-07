@@ -1,0 +1,557 @@
+{
+  "apply_source_candidate": {
+    "accepted_provider_inputs": 2,
+    "daily_inputs_paired_by_exact_sha256": true,
+    "deployment_or_activation_performed": false,
+    "explicit_worker_input_required": true,
+    "full_source_outputs_excluded_from_publication": true,
+    "full_source_outputs_may_contain_private_bindings": true,
+    "inputs_never_written": true,
+    "only_three_full_source_files_emitted": true,
+    "output_directory_must_be_new": true,
+    "output_inside_public_package_refused": true,
+    "runtime_code_never_imported_or_executed": true
+  },
+  "baseline_definition_byte_equal_public_r7_and_private_current": true,
+  "baseline_definition_sha256": "3a7097b62168eaf3163631748c881d292c67a3814c9e5212aa7373eda06125d7",
+  "claim_limits": {
+    "business_qualified": false,
+    "component_qualified": false,
+    "daily_use_qualified": false,
+    "deployed": false,
+    "fixed19_credits_added": 0,
+    "installable": false,
+    "model_requests": 0,
+    "phone_requests": 0,
+    "policy_operations": 0,
+    "production_ready": false,
+    "whole_program_deadline_proven": false
+  },
+  "definition_mappings": [
+    {
+      "ast_sha256": "6f267acabffacfc2fa029cb6c76ba187fc34b2faec45261d9055271d21ff4928",
+      "definition": "_remaining_http_seconds",
+      "exact_definition_bytes": true,
+      "original_candidate_definition_sha256": "0f5fdbca53afc8dcabb77d919032a0dd3a93486bbc0050c708cf1848ae3ab74c",
+      "public_definition_sha256": "0f5fdbca53afc8dcabb77d919032a0dd3a93486bbc0050c708cf1848ae3ab74c"
+    },
+    {
+      "ast_sha256": "5357a1fe5eea12699e2d45b44fb5269ea94b7158db8629013ad7f41b5d62c8c6",
+      "definition": "_DeadlineRead",
+      "exact_definition_bytes": true,
+      "original_candidate_definition_sha256": "ae7c2dafdf788dc296c47f13c7f21e32ef4d2f9d02125494e084ed5565c3bac3",
+      "public_definition_sha256": "ae7c2dafdf788dc296c47f13c7f21e32ef4d2f9d02125494e084ed5565c3bac3"
+    },
+    {
+      "ast_sha256": "aebba182820cd10bb6a40ed6217ab727a963e5fa3357cd1c72ff6fa00867f70c",
+      "definition": "_DeadlineSocket",
+      "exact_definition_bytes": true,
+      "original_candidate_definition_sha256": "005d8d7cc75d3941c27cc97b5a40114580ccc883fdb76048bd55794c06190635",
+      "public_definition_sha256": "005d8d7cc75d3941c27cc97b5a40114580ccc883fdb76048bd55794c06190635"
+    },
+    {
+      "ast_sha256": "fde4ec2fed3c881ec7d83c4e67e8d590bfe58eafa1f12c22afd5342345e36d97",
+      "definition": "_DeadlineHTTPConnection",
+      "exact_definition_bytes": true,
+      "original_candidate_definition_sha256": "50d4192595449fe6884e82aa50353a2deb2b8829a67e6ae441461f8137d4a2cc",
+      "public_definition_sha256": "50d4192595449fe6884e82aa50353a2deb2b8829a67e6ae441461f8137d4a2cc"
+    },
+    {
+      "ast_sha256": "483a8d934e8bc5a3a80a84074845db70eaa153eb372e1f83c55bea19f968277c",
+      "definition": "inspect_single_slot",
+      "exact_definition_bytes": true,
+      "original_candidate_definition_sha256": "f8e445edba42392abddf8398b7d6a592a55e817965c285481d4c27863460f402",
+      "public_definition_sha256": "f8e445edba42392abddf8398b7d6a592a55e817965c285481d4c27863460f402"
+    },
+    {
+      "ast_sha256": "1af765cb16fc80968ff691e697032a2b22c49a8502995b940f8586f00e946e0e",
+      "definition": "phone_local_http_worker.once",
+      "exact_definition_bytes": true,
+      "original_candidate_definition_sha256": "20cd75e9d6159dde5a9170b1ea13e7fa77521bf96efa7cfcbb06004df275ced1",
+      "public_definition_sha256": "20cd75e9d6159dde5a9170b1ea13e7fa77521bf96efa7cfcbb06004df275ced1"
+    }
+  ],
+  "excluded": [
+    "Full private source set and deployment manifests",
+    "Device serials and boot/process identities",
+    "Keys, key-content digests and actual credentials",
+    "Private requests, nonces and user data",
+    "Private runtime binding tables",
+    "Raw phone/native logs and screenshots",
+    "Model weights, compiled executables and binary policies",
+    "Generated full-provider and daily source outputs"
+  ],
+  "files": [
+    {
+      "bytes": 7202,
+      "path": "HOST-FIXTURES.PUBLIC.json",
+      "sha256": "e0eb8f94b7190bc9da6764c8cdb53ab4563f226466628dbc4bfda5ad3a73288b"
+    },
+    {
+      "bytes": 6798,
+      "path": "README.md",
+      "sha256": "47ae6c9ac8bb8bd54b4b59042f872858e0907a7b013b4a0bc0b42184eacb7d8c"
+    },
+    {
+      "bytes": 1275,
+      "path": "SOURCE-APPLICATION-CHECKS.PUBLIC.json",
+      "sha256": "6ec0e7a396627daea0ba1f828c90e3463daee10fbeb16e2ac79e4626190316bc"
+    },
+    {
+      "bytes": 13748,
+      "path": "apply_source_candidate.py",
+      "sha256": "4323ea3aefdd39bf1cdc238da417a3aa565b93a660c5b0a373e4f6fe830c1396"
+    },
+    {
+      "bytes": 1579,
+      "path": "changes/http-worker.PUBLIC.patch",
+      "sha256": "56a275292270ba38cca71025f0b09a1cd339aad7b515d09d645127c2cd3bd61b"
+    },
+    {
+      "bytes": 3516,
+      "path": "changes/slot-observation.PUBLIC.patch",
+      "sha256": "9b0cdb26d4d87c7b397de5b01b1b043790d8ca7a07811dfe7a1a2342be0cef75"
+    },
+    {
+      "bytes": 5551,
+      "path": "reference/http_worker.BASELINE.PUBLIC.py",
+      "sha256": "b7a8ddddb27c480450847cd15ac07a76d4a1aaef4cfca9b66596b905923dcba2"
+    },
+    {
+      "bytes": 1714,
+      "path": "reference/slot_observation.BASELINE.PUBLIC.py",
+      "sha256": "1c320fc358e4a616b0aba48b6c2dc84f0cbe7d45283c932c1ed0ee6c06762893"
+    },
+    {
+      "bytes": 5983,
+      "path": "source/http_worker.CANDIDATE.PUBLIC.py",
+      "sha256": "51247ea72cb0e3444941185c6189eb8faea877e475706941de4831ff565be81a"
+    },
+    {
+      "bytes": 3862,
+      "path": "source/slot_observation.CANDIDATE.PUBLIC.py",
+      "sha256": "d898434fd99c482ba1b6db558817e0289d5332e5ecf5f325c479ce0a9b928c5b"
+    },
+    {
+      "bytes": 4565,
+      "path": "tests/fixture_support.py",
+      "sha256": "0b661b4f8c54b9adaae1a199ea6658706e9edddd9024673fb54b7145d9ae4a93"
+    },
+    {
+      "bytes": 14452,
+      "path": "tests/test_slot_deadline_projection.py",
+      "sha256": "fefa5c53ab6f4d3612f8c36d81823668575304a524eb20068150251e3957121f"
+    },
+    {
+      "bytes": 6265,
+      "path": "tests/test_source_application.py",
+      "sha256": "aa06c2c6123825c42d5d9d5ef4a0d9960fb29e2cc463b33b804b0371f2cdeca5"
+    }
+  ],
+  "fixture_dependency_mappings": [
+    {
+      "current_private_definition_byte_equal_public": true,
+      "definition": "ProviderError",
+      "definition_sha256": "168959ff59a60fa368f5b2a8a09558fed75669160f52edbeaa9d4a3296ecefe4",
+      "public_path": "provider/r7/source/provider_openai_compatible.py"
+    },
+    {
+      "current_private_definition_byte_equal_public": true,
+      "definition": "require",
+      "definition_sha256": "dc58f97b0ff6e13195e9d8d43595b2e7103397f25c4e3fcf62a914cad28956b2",
+      "public_path": "provider/r7/source/provider_phone_local.py"
+    },
+    {
+      "current_private_definition_byte_equal_public": true,
+      "definition": "strict_json",
+      "definition_sha256": "b9e5720b8e42fbcd4f425a0f76365ac337f7cee5c4bd0fe13133d4642a044d55",
+      "public_path": "provider/r7/source/phone_local_http_worker.py"
+    },
+    {
+      "current_private_definition_byte_equal_public": true,
+      "definition": "endpoint_parts",
+      "definition_sha256": "1b6b7fac2701ce87b91c8c435bc5e6051117bce65f1e0430552ff92c3b64844f",
+      "public_path": "provider/r7/source/phone_local_http_worker.py"
+    },
+    {
+      "current_private_definition_byte_equal_public": true,
+      "definition": "private_api_key",
+      "definition_sha256": "4927d2b4c9a27dd7099c8fc4e33e596e92469c966f2b90029d254f7ebd77ae0a",
+      "public_path": "provider/r7/source/phone_local_http_worker.py"
+    },
+    {
+      "current_private_definition_byte_equal_public": true,
+      "definition": "exclusive_bytes",
+      "definition_sha256": "d3a103c3a65564b8931fc23a99a7c0221f5f8ef86ec8a83c169dc6dbf3d2a9d7",
+      "public_path": "provider/r7/source/phone_local_http_worker.py"
+    },
+    {
+      "current_private_definition_byte_equal_public": true,
+      "definition": "load_input",
+      "definition_sha256": "3003e889f3db51306804ae7f4adab0694cfc3879dedacb2728e0675e7e68d6d4",
+      "public_path": "provider/r7/source/phone_local_http_worker.py"
+    }
+  ],
+  "local_source_application_validation": {
+    "cases": [
+      {
+        "case": "public_r7-exact-output",
+        "passed": true
+      },
+      {
+        "case": "private_current-exact-output",
+        "passed": true
+      },
+      {
+        "case": "unknown-provider-hash",
+        "passed": true
+      },
+      {
+        "case": "unknown-worker-hash",
+        "passed": true
+      },
+      {
+        "case": "unknown-daily-hash",
+        "passed": true
+      },
+      {
+        "case": "mixed-public-private-source-set",
+        "passed": true
+      },
+      {
+        "case": "symlink-input",
+        "passed": true
+      },
+      {
+        "case": "existing-output-refusal",
+        "passed": true
+      },
+      {
+        "case": "tampered-projection",
+        "passed": true
+      },
+      {
+        "case": "public-package-output-refusal",
+        "passed": true
+      },
+      {
+        "case": "all-input-bytes-unchanged",
+        "passed": true
+      }
+    ],
+    "failed": 0,
+    "full_outputs_retained": false,
+    "model_requests": 0,
+    "passed": 11,
+    "phone_requests": 0,
+    "private_source_bytes_published": false,
+    "private_source_set_checked": true,
+    "public_source_set_checked": true,
+    "qualification_credits_added": 0,
+    "schema": "hepta.slot-deadline.source-application-checks.v1",
+    "scope": "Local source transformation only; no provider or worker imports, deployment or device calls"
+  },
+  "local_validation": {
+    "all_finite_fixture_servers_joined": true,
+    "automatic_retries": 0,
+    "cases": [
+      {
+        "case": "public-package-file-identities",
+        "passed": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "original-slow_headers",
+        "classification": "original_defect_reproduced",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 3.607802,
+        "error_type": null,
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": null,
+        "idle": true,
+        "kind": "slot_observation",
+        "observed": true,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "candidate-slow_headers",
+        "classification": "candidate_regression",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 2.000341,
+        "error_type": "TimeoutError",
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": 0.5,
+        "idle": false,
+        "kind": "slot_observation",
+        "observed": false,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "original-slow_body",
+        "classification": "original_defect_reproduced",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 3.604972,
+        "error_type": null,
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": null,
+        "idle": true,
+        "kind": "slot_observation",
+        "observed": true,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "candidate-slow_body",
+        "classification": "candidate_regression",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 2.000728,
+        "error_type": "TimeoutError",
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": 0.5,
+        "idle": false,
+        "kind": "slot_observation",
+        "observed": false,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "original-truncated_length",
+        "classification": "original_defect_reproduced",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 0.002888,
+        "error_type": null,
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": null,
+        "idle": true,
+        "kind": "slot_observation",
+        "observed": true,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "candidate-truncated_length",
+        "classification": "candidate_regression",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 0.00052,
+        "error_type": "ProviderError",
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": null,
+        "idle": false,
+        "kind": "slot_observation",
+        "observed": false,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "candidate-fast",
+        "classification": "candidate_regression",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 0.000738,
+        "error_type": null,
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": null,
+        "idle": true,
+        "kind": "slot_observation",
+        "observed": true,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "candidate-fast-busy",
+        "classification": "candidate_regression",
+        "configured_socket_seconds": 2,
+        "elapsed_seconds": 0.000681,
+        "error_type": null,
+        "fd_baseline_restored": true,
+        "fixture_deadline_margin_seconds": null,
+        "idle": false,
+        "kind": "slot_observation",
+        "observed": true,
+        "passed": true,
+        "request_count": 1,
+        "server_joined": true
+      },
+      {
+        "automatic_retry": false,
+        "case": "original-worker-complete",
+        "classification": "candidate_or_fixture_regression",
+        "declared_bytes": 89,
+        "error_type": null,
+        "exact_response_bytes_preserved": true,
+        "exit_code": 0,
+        "fd_baseline_restored": true,
+        "inference_terminal": "stop",
+        "kind": "http_worker",
+        "passed": true,
+        "received_bytes": 89,
+        "request_count": 1,
+        "server_joined": true,
+        "transport_terminal": "complete_http_response"
+      },
+      {
+        "automatic_retry": false,
+        "case": "original-worker-truncated",
+        "classification": "original_defect_reproduced",
+        "declared_bytes": 96,
+        "error_type": null,
+        "exact_response_bytes_preserved": true,
+        "exit_code": 0,
+        "fd_baseline_restored": true,
+        "inference_terminal": "stop",
+        "kind": "http_worker",
+        "passed": true,
+        "received_bytes": 89,
+        "request_count": 1,
+        "server_joined": true,
+        "transport_terminal": "complete_http_response"
+      },
+      {
+        "automatic_retry": false,
+        "case": "candidate-worker-complete",
+        "classification": "candidate_or_fixture_regression",
+        "declared_bytes": 89,
+        "error_type": null,
+        "exact_response_bytes_preserved": true,
+        "exit_code": 0,
+        "fd_baseline_restored": true,
+        "inference_terminal": "stop",
+        "kind": "http_worker",
+        "passed": true,
+        "received_bytes": 89,
+        "request_count": 1,
+        "server_joined": true,
+        "transport_terminal": "complete_http_response"
+      },
+      {
+        "automatic_retry": false,
+        "case": "candidate-worker-truncated",
+        "classification": "candidate_or_fixture_regression",
+        "declared_bytes": 96,
+        "error_type": "IncompleteRead",
+        "exact_response_bytes_preserved": true,
+        "exit_code": 1,
+        "fd_baseline_restored": true,
+        "inference_terminal": "unknown",
+        "kind": "http_worker",
+        "passed": true,
+        "received_bytes": 89,
+        "request_count": 1,
+        "server_joined": true,
+        "transport_terminal": "transport_error_result_unknown"
+      },
+      {
+        "case": "slot_observation-public-patch-roundtrip",
+        "passed": true
+      },
+      {
+        "case": "http_worker-public-patch-roundtrip",
+        "passed": true
+      },
+      {
+        "case": "direct-entry-refusal-reference/slot_observation.BASELINE.PUBLIC.py",
+        "passed": true
+      },
+      {
+        "case": "direct-entry-refusal-source/slot_observation.CANDIDATE.PUBLIC.py",
+        "passed": true
+      },
+      {
+        "case": "direct-entry-refusal-reference/http_worker.BASELINE.PUBLIC.py",
+        "passed": true
+      },
+      {
+        "case": "direct-entry-refusal-source/http_worker.CANDIDATE.PUBLIC.py",
+        "passed": true
+      },
+      {
+        "case": "direct-entry-refusal-tests/fixture_support.py",
+        "passed": true
+      }
+    ],
+    "failed": 0,
+    "fixed19_credits_added": 0,
+    "full_private_source_imported": false,
+    "model_requests": 0,
+    "passed": 20,
+    "phone_or_business_qualification": false,
+    "phone_requests": 0,
+    "policy_operations": 0,
+    "schema": "hepta.slot-deadline.public-loopback-fixtures.v1",
+    "scope": "Synthetic numeric-loopback fixture and public selected source definitions only"
+  },
+  "public_allowlist": [
+    "HOST-FIXTURES.PUBLIC.json",
+    "PROJECTION.json",
+    "README.md",
+    "SOURCE-APPLICATION-CHECKS.PUBLIC.json",
+    "apply_source_candidate.py",
+    "changes/http-worker.PUBLIC.patch",
+    "changes/slot-observation.PUBLIC.patch",
+    "reference/http_worker.BASELINE.PUBLIC.py",
+    "reference/slot_observation.BASELINE.PUBLIC.py",
+    "source/http_worker.CANDIDATE.PUBLIC.py",
+    "source/slot_observation.CANDIDATE.PUBLIC.py",
+    "tests/fixture_support.py",
+    "tests/test_slot_deadline_projection.py",
+    "tests/test_source_application.py"
+  ],
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "repository_base_commit": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+  "repository_directory": "projects/razr60/phone-local-v150/slot-observation-deadline-20261105-r1",
+  "schema": "hepta.slot-observation-deadline.public-projection.v1",
+  "scope": "Selected slot-observation and worker response-framing definitions and synthetic loopback tests only; not an installed provider.",
+  "self_binding": "The Git tree and cumulative publication index bind this manifest; no self hash.",
+  "source_pairs": {
+    "private_current": {
+      "daily_after_bytes": 22059,
+      "daily_after_sha256": "d07e9231f7c8ae7275405e0f308a4ebe7f770e56dc163bebd2bb1671d861ca84",
+      "daily_before_bytes": 22059,
+      "daily_before_sha256": "07cd44148050e48b972a992a47c8422da81b334298fc684be9909795a1ece812",
+      "daily_change": "Only PARENTS provider/worker entries and WORKER_SHA change.",
+      "provider_after_bytes": 72385,
+      "provider_after_sha256": "8959793db36e4c0174651195fc44124fc7ccc4f6b7d7ed841c2ac86686508f03",
+      "provider_before_bytes": 70237,
+      "provider_before_sha256": "082b02a473dc4d75d46a895895b64b96cf25ae24fc61795cb292fc70fd8d9ad6",
+      "worker_after_bytes": 10885,
+      "worker_after_sha256": "c99ad016803182e7b697e03f015ddc73d7115e79e27eb7584a326e28d9ea6795",
+      "worker_before_bytes": 10453,
+      "worker_before_sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    "public_r7": {
+      "daily_after_bytes": 19981,
+      "daily_after_sha256": "83b279c8b0eb515aa75af61c4a42a399d29fa41b4adb1a0b7389523f705e8a65",
+      "daily_before_bytes": 19981,
+      "daily_before_sha256": "92122fcc8bf01511971075fce2ad94b628dadf2c0c342f0fb940e8b00c636ec3",
+      "daily_change": "Only PARENTS provider/worker entries and WORKER_SHA change.",
+      "provider_after_bytes": 57473,
+      "provider_after_sha256": "283a9cc357b838cdc5090c9c88aa0734b7c9bbc3b0f052130498387b4b5e2388",
+      "provider_before_bytes": 55325,
+      "provider_before_sha256": "8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6",
+      "worker_after_bytes": 10885,
+      "worker_after_sha256": "c99ad016803182e7b697e03f015ddc73d7115e79e27eb7584a326e28d9ea6795",
+      "worker_before_bytes": 10453,
+      "worker_before_sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    }
+  },
+  "transformation": [
+    "Select only the named HTTP observation definitions without changing their bytes.",
+    "Add standard-library imports and a direct-entry refusal for the public fragment.",
+    "Keep full private source files, unrelated private bindings and all deployment inputs out of this package."
+  ]
+}

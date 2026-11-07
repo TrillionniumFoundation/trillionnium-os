@@ -1,0 +1,59 @@
+{
+  "cases": [
+    {
+      "case": "public_r7-exact-output",
+      "passed": true
+    },
+    {
+      "case": "private_current-exact-output",
+      "passed": true
+    },
+    {
+      "case": "unknown-provider-hash",
+      "passed": true
+    },
+    {
+      "case": "unknown-worker-hash",
+      "passed": true
+    },
+    {
+      "case": "unknown-daily-hash",
+      "passed": true
+    },
+    {
+      "case": "mixed-public-private-source-set",
+      "passed": true
+    },
+    {
+      "case": "symlink-input",
+      "passed": true
+    },
+    {
+      "case": "existing-output-refusal",
+      "passed": true
+    },
+    {
+      "case": "tampered-projection",
+      "passed": true
+    },
+    {
+      "case": "public-package-output-refusal",
+      "passed": true
+    },
+    {
+      "case": "all-input-bytes-unchanged",
+      "passed": true
+    }
+  ],
+  "failed": 0,
+  "full_outputs_retained": false,
+  "model_requests": 0,
+  "passed": 11,
+  "phone_requests": 0,
+  "private_source_bytes_published": false,
+  "private_source_set_checked": true,
+  "public_source_set_checked": true,
+  "qualification_credits_added": 0,
+  "schema": "hepta.slot-deadline.source-application-checks.v1",
+  "scope": "Local source transformation only; no provider or worker imports, deployment or device calls"
+}

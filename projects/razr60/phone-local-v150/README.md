@@ -146,3 +146,51 @@ Build/operator corrections are retained as versioned history. Root rejected the 
 The five physical fault layers, E2E-03/E2E-04, COMP-01 and NEG-01/NEG-02 still require their original evidence under unchanged limits. Visual and Unicode require fresh complete tasks on a separately frozen candidate if a correction is adopted; old tasks and effects must not be replayed.
 
 A trustworthy daily-use claim also needs repeated representative business outcomes and measured latency/resource behavior. This checkpoint establishes phone-local inference, a fresh bounded health pass, two successful individual application opens and the preserved failures of the two complete business requests.
+
+## Separate host transport source candidate — 2026-11-05
+
+The [host transport source candidate](operators/transport-source-candidate-r1/README.md) publishes review-only projections of a later coordinator/policy-driver repair, with explicit original-source/public-source hash mappings, synthetic local fault reproductions and public delta patches. It is separate from the measured r7-r3 checkpoint above. Its placeholders are not an installable package, and its host tests and read-only historical-plan compatibility check add **zero** phone, fixed-nineteen, component or business qualification. The historical measurements and failures above are unchanged.
+
+## Separate HTTP-observation and sender-failure source candidates — 2026-11-05
+
+Two narrow source-review packages follow the measured checkpoint and transport
+candidate above:
+
+- [Slot observation and HTTP response framing](slot-observation-deadline-20261105-r1/README.md):
+  a monotonic deadline for the synchronous slot GET, rejection of truncated
+  declared response bodies, exact three-file source application and loopback
+  regressions.
+- [Owned sender drain after phase failure](operators/failure-sender-drain-20261105-r1/README.md):
+  retain the original sender's bounded output wait after an ordinary phase
+  failure, preserve the Root failure and unknown remote effect, and propagate
+  control exits after owned cleanup.
+
+The selected definitions and host fixtures are public review material. The
+application tools create new local outputs and refuse unknown inputs or output
+replacement. Generated complete sources may retain private bindings and must
+stay outside the public packages. No current runtime, policy, source seal,
+device task, nonce or qualification is changed by publication. These packages
+add zero phone, fixed-nineteen, component, model-health, business or daily-use
+credits. The historical r7 sources and measured results above remain unchanged.
+
+## Combined review-only source inventory
+
+The [r8 host transport projection](operators/native-guard-property-root-r8-transport-r1/README-PUBLIC.md)
+is now included alongside the r4 transport, HTTP-observation and sender-drain
+packages. Its eleven sealed public files are copied byte for byte from source
+commit `fed5452e8a94939c6d88bc24c47844b37f8f7368` and are listed in both cumulative
+publication inventories. The shared documentation rendering and email-autolink
+repairs were already byte-identical in the selected base and are retained.
+
+The r8 and r4 transport helper definitions agree for retained input, child
+ownership, the original execution deadline and owned stream cleanup. Their
+whole launchers have different admission and historical bindings. The later
+sender-drain source also depends on a newer capture implementation. Each
+source-application helper therefore retains its own exact-input requirement;
+this inventory does not authorize substituting one launcher or private source
+for another.
+
+This integration adds no private production combination, live adoption, phone
+request or qualification credit. The historical checkpoint above retains its
+original meaning. Fresh CI, a protected integration path and non-author review
+remain required for this new source head.

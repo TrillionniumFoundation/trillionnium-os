@@ -256,6 +256,7 @@ public final class ShellStateHarness {
      require(OwnerOpenClient.connectEntered.await(2,java.util.concurrent.TimeUnit.SECONDS),"normal connect did not block");
     }
     java.util.concurrent.CountDownLatch controlRelease=new java.util.concurrent.CountDownLatch(1);
+    java.util.concurrent.Future<?> statusQueueDrained=null;
     if(args[0].equals("emergency-confirm-destroy")) {
      java.util.concurrent.ExecutorService queue=(java.util.concurrent.ExecutorService)field(restored,"STOP_OPERATIONS");
      queue.execute(()->{try{controlRelease.await();}catch(InterruptedException error){throw new RuntimeException(error);}});
@@ -263,7 +264,7 @@ public final class ShellStateHarness {
     if(args[0].equals("emergency-control-priority")) {
      java.util.concurrent.ExecutorService statusQueue=(java.util.concurrent.ExecutorService)field(restored,"EMERGENCY_OPERATIONS");
      statusQueue.execute(()->{try{controlRelease.await();}catch(InterruptedException e){throw new RuntimeException(e);}});
-     statusQueue.execute(()->{}); // Status channel is full, not the stop channel.
+     statusQueueDrained=statusQueue.submit(()->{}); // Status channel is full, not the stop channel.
     }
     if(args[0].equals("emergency-slow-persistence")) android.content.SharedPreferences.blockCommit=true;
     if(args[0].equals("emergency-persistence-failure-restart")) android.content.SharedPreferences.commitFail=true;
@@ -272,7 +273,15 @@ public final class ShellStateHarness {
     android.app.AlertDialog.positive.onClick(null,1);
     if(args[0].equals("emergency-confirm-destroy")){call(restored,"onDestroy");controlRelease.countDown();}
     waitFor("stop:");
-    if(args[0].equals("emergency-control-priority")) controlRelease.countDown();
+    if(args[0].equals("emergency-control-priority")) {
+     call(restored,"emergencyStatus");
+     require(OwnerOpenClient.events.stream().noneMatch(e->e.startsWith("status:")),"full status queue dispatched a request");
+     require(((TextView)field(restored,"transcript")).getText().toString().contains("local control queue unavailable; outcome unknown"),"full status queue rejection was not retained");
+     controlRelease.countDown();
+     // Releasing the worker does not establish that its queued work has drained.
+     // Observe the original queued marker before the later explicit status request.
+     statusQueueDrained.get(2,java.util.concurrent.TimeUnit.SECONDS);
+    }
     if(args[0].equals("emergency-slow-persistence")) {
      require(android.content.SharedPreferences.commitEntered.await(2,java.util.concurrent.TimeUnit.SECONDS),"prefs were not slow");
      require(OwnerOpenClient.events.stream().filter(e->e.startsWith("stop:")).count()==1,"storage delayed or repeated stop");

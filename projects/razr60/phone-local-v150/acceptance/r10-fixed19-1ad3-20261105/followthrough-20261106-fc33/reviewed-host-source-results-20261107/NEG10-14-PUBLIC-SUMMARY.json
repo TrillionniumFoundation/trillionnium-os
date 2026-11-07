@@ -1,0 +1,180 @@
+{
+  "NEG14_actual_supplement": {
+    "below_boundary_bytes": 939524095,
+    "first_rejected_total_bytes": 939524096,
+    "inner_and_outer_FD_thread_baselines_restored": true,
+    "kernel_lstat_and_scandir_EACCES_errno": 13,
+    "logical_sparse_size_not_disk_ENOSPC": true,
+    "outer_namespace_child_separately_waited": true,
+    "own_daily_children_waited": 2,
+    "own_groups_empty_and_kernel_ESRCH": true,
+    "public_max_evidence_bytes": 1073741824,
+    "real_model_worker_admissions": 0,
+    "retained_claim_and_orphan_intent_preserved": true
+  },
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_binding_consumer": {
+    "FROZEN_INPUTS": null,
+    "all_five_actual_descriptor_slots_null": true,
+    "positive_binding_executed": false,
+    "requires_original_bound_install_reader_and_release_reader": true,
+    "source": {
+      "bytes": 10445,
+      "sha256": "79220134f60e1a543f803347ad378a00ee261257a0a608d74555248b4c4cbae5"
+    }
+  },
+  "all15_tested_source_bytes_equal_preserved_actual_R6": true,
+  "archive": {
+    "all_exact_byte_pins_verified": true,
+    "original_bytes": 1454312,
+    "original_files": 520
+  },
+  "condition_map_rows": 23,
+  "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+  "current_service_binding": {
+    "bytes": 10654,
+    "sha256": "273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58"
+  },
+  "currentness_basis": "Parent-designated R6 frozen source stage, matched byte-for-byte to three preserved actual source readbacks; no new live phone or role readiness measurement.",
+  "fixed19_credit": 0,
+  "historical_candidate_reference_combination_label_preserved": "02c2a26af79e367afe48cb1bc378808f3c5a32800548498a0262ea0265c9f708",
+  "independent_review": {
+    "checks_passed": 4728,
+    "original_files_read": 213,
+    "result": {
+      "bytes": 877732,
+      "sha256": "d54974b0741c8f2e7c82d6688889dd32a6ab79b5050c85222b60faa91d24a012"
+    },
+    "script": {
+      "bytes": 15841,
+      "sha256": "61abc555204cf3ef2d8a7d21bf6ebc2ebeea9c4e6f59b3384a7b8e50c54f69ac"
+    }
+  },
+  "installed_tuple": null,
+  "layers": {
+    "NEG-10": "host_isolated",
+    "NEG-11": "host_isolated",
+    "NEG-12": "host_isolated",
+    "NEG-13": "host_isolated",
+    "NEG-14": "host_isolated"
+  },
+  "limits": [
+    "Historical original test counts remain separate and are not summed into a new whole-case count.",
+    "Current test results do not establish an installed BUILD, four-role READY, or whole fixed19 qualification.",
+    "Unsigned generation rewritten together with all receipt/digest hashes has no independent counter/MAC attestation in the original protocol.",
+    "RSS and real-model-slot measurements were not added as NEG14 gates."
+  ],
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "new_test_runs": 0,
+  "original_run_groups_not_added_together": {
+    "native": {
+      "consumer_chains": 12,
+      "dispatch_binding_cases": 9,
+      "parser_cases": 73,
+      "trust_consumer_chains": 11,
+      "trust_parser_cases": 40
+    },
+    "owned": {
+      "checks": 4
+    },
+    "selected": {
+      "cases": 13
+    },
+    "shared": {
+      "cases": 14
+    }
+  },
+  "original_runs": {
+    "native": {
+      "elapsed_seconds": 0.084884125,
+      "original_controller": {
+        "automatic_retry": false,
+        "job_id": "1a1b18b95c3-fc05-7980",
+        "original_success_full_durable_double_EOF": true,
+        "stderr_bytes": 0,
+        "stdout_bytes": 548
+      },
+      "result": {
+        "bytes": 61293,
+        "sha256": "6c62408d6d19460757d0160ac49aaf3b2fa3b1e1673a5220bbf4ba1a1e945968"
+      },
+      "scope": "original synthetic host-isolated execution"
+    },
+    "owned": {
+      "elapsed_seconds": 1.9776926399208605,
+      "original_controller": {
+        "automatic_retry": false,
+        "job_id": "1a1b1f12896-fc05-7b9d",
+        "original_success_full_durable_double_EOF": true,
+        "stderr_bytes": 0,
+        "stdout_bytes": 307
+      },
+      "result": {
+        "bytes": 13063,
+        "sha256": "5a3690d3111a5cca31332aa363853ab1d821d71e153997465484fd190075f648"
+      },
+      "scope": "original synthetic host-isolated execution"
+    },
+    "selected": {
+      "elapsed_seconds": 0.0031581250000000116,
+      "original_controller": {
+        "automatic_retry": false,
+        "job_id": "1a1b19980ee-fc05-79c6",
+        "original_success_full_durable_double_EOF": true,
+        "stderr_bytes": 0,
+        "stdout_bytes": 340
+      },
+      "result": {
+        "bytes": 11071,
+        "sha256": "1a0e24bb1d9caa9e7b95669bdedea9470ff769f4ac3335b0aef1e898cc0d4d90"
+      },
+      "scope": "original synthetic host-isolated execution"
+    },
+    "shared": {
+      "elapsed_seconds": 0.049540833000000006,
+      "original_controller": {
+        "automatic_retry": false,
+        "job_id": "1a1b18878e5-fc05-7966",
+        "original_success_full_durable_double_EOF": true,
+        "stderr_bytes": 0,
+        "stdout_bytes": 627
+      },
+      "result": {
+        "bytes": 79208,
+        "sha256": "0250099e4209e1f13d5def2b38298826b3e574e3adf95048986f45f3362a75f2"
+      },
+      "scope": "original synthetic host-isolated execution"
+    }
+  },
+  "original_summary_exactly_reproduced": {
+    "bytes": 6016,
+    "sha256": "c11b916174d3e2231a55f279a84132bd45b0c0f128c4142e5b73588e28dd1ae8"
+  },
+  "owned_NEG14_configuration_equals_current_R6": {
+    "bytes": 1493,
+    "sha256": "5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48"
+  },
+  "package": {
+    "bytes": 3557728,
+    "file_count": 165,
+    "manifest": {
+      "bytes": 32743,
+      "sha256": "c3f8b4153f5f6c8d18e65619f59fe94d4df7cb5b1414609b98bfedab4d6d37a4"
+    }
+  },
+  "phone_calls": 0,
+  "remaining_explicit_gates": [
+    "Exact current actual sealed BUILD originals verified by the reviewed current release reader",
+    "Exact installed/start/READY originals verified by the reviewed current install reader"
+  ],
+  "remote_jobs_started": 0,
+  "reuse_basis": "Complete all15 source-byte equality with current R6, retaining original run identities and original candidate labels.",
+  "schema": "razr60.r6.neg10-neg14.public-existing-evidence-reconciliation.v1",
+  "service_input_is_not_claimed_tested_by_NEG10_NEG14": true,
+  "source_and_protocol_modified": false,
+  "source_count": 15,
+  "state": "EXISTING_HOST_SOURCE_EVIDENCE_RECONCILED_ACTUAL_BUILD_AND_READY_BINDING_PENDING",
+  "whole_cases_closed": []
+}

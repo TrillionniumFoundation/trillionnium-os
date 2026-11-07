@@ -1,0 +1,66 @@
+{
+  "additional_manifest_files": [
+    "PUBLISH-ALLOWLIST.PUBLIC.json",
+    "SHA256SUMS.PUBLIC"
+  ],
+  "files": [
+    {
+      "bytes": 622,
+      "path": "CANDIDATE-BINDING.PUBLIC.json",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/CANDIDATE-BINDING.PUBLIC.json",
+      "sha256": "378bc5ea95fb4abb9f539cc30bd7b634631edada821cb4028b7a694d77bd70b3"
+    },
+    {
+      "bytes": 9322,
+      "path": "HOST-TEST-SUMMARY.PUBLIC.json",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/HOST-TEST-SUMMARY.PUBLIC.json",
+      "sha256": "6db0fcba5830c4c694ff3cad6b78698cb9c85306eebab0dc78e86a58a61e0474"
+    },
+    {
+      "bytes": 8372,
+      "path": "PROJECTION-RULES.PUBLIC.json",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/PROJECTION-RULES.PUBLIC.json",
+      "sha256": "17d4c5cfcd33d2424489028fe3463576f1bd10c6a7c8333991b89531e524e519"
+    },
+    {
+      "bytes": 6898,
+      "path": "README-PUBLIC.md",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/README-PUBLIC.md",
+      "sha256": "c7f9941664b05c67bbc8d18863a6bd19e0dc1081187906ac5a51b343cedb50ba"
+    },
+    {
+      "bytes": 3488,
+      "path": "SOURCE-SEAL.PUBLIC.json",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/SOURCE-SEAL.PUBLIC.json",
+      "sha256": "d2fd1b9d4f9d95760f2535dbe29157761933e37606d8c810498183087384f38c"
+    },
+    {
+      "bytes": 15081,
+      "path": "TRANSPORT.PUBLIC.patch",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/TRANSPORT.PUBLIC.patch",
+      "sha256": "dfe5eed6e269bf46ed283f551337b08c087b135bfa07c7e0c22952589d8c353a"
+    },
+    {
+      "bytes": 46176,
+      "path": "base/run_component_root_once.py",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/base/run_component_root_once.py",
+      "sha256": "3eacd09518e4a729bab879fa63dff327a6e3e192d89722dc27d955333c7cce8d"
+    },
+    {
+      "bytes": 54762,
+      "path": "candidate/run_component_root_once.py",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/candidate/run_component_root_once.py",
+      "sha256": "88a37c17ceda4664e1d8a1b6d5f14351526cd8288ceed7bc00b863084ef095da"
+    },
+    {
+      "bytes": 16691,
+      "path": "test_transport_public.py",
+      "repository_path": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1/test_transport_public.py",
+      "sha256": "141a67e624f97ddc2ab911b50efbb6e1090a80176a83adf202f130b956488c6a"
+    }
+  ],
+  "git_or_external_publication_performed": false,
+  "no_other_paths_allowed": true,
+  "repository_directory": "projects/razr60/phone-local-v150/operators/native-guard-property-root-r8-transport-r1",
+  "schema": "razr60.publication-file-allowlist.v1"
+}

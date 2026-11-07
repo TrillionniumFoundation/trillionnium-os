@@ -1,0 +1,106 @@
+--- a/host_transport.py
++++ b/host_transport.py
+@@ -22,6 +22,7 @@
+ HOST_OUTPUT_LIMIT=64*1024*1024
+ HOST_CAPTURE_POLL=0.025
+ HOST_CAPTURE_STOP_WAIT=1.0
++HOST_FAILURE_SENDER_DRAIN_WAIT=30.0
+ 
+ def need(v,s):
+     if not v:raise ValueError(s)
+@@ -445,15 +446,58 @@
+             if isinstance(error,subprocess.TimeoutExpired):raise RuntimeError('unknown original phase '+name) from error
+             raise
+ 
+-    def close_owned_host_outputs(self):
+-        # Stopping our readers never establishes child/remote terminal cleanup.
+-        # Every worker is held until joined; captured prefixes remain unknown.
++    def close_owned_host_outputs(self,*,drain_sender=False):
++        # An ordinary phase failure must not discard the already-owned sender's
++        # last output before its original budget ends. Control exits skip this
++        # wait. Neither path starts a process, signals, or establishes a phone
++        # terminal; the Root operation remains failed in all cases.
+         errors=[]
+         captures=self.__dict__.setdefault('_owned_host_captures',{})
+         streams=self.__dict__.setdefault('_owned_host_streams',{})
+         owners=self.__dict__.setdefault('_owned_host_children',{})
++        sender_drain={'state':'NOT_REQUESTED','maximum_wait_seconds':HOST_FAILURE_SENDER_DRAIN_WAIT,
++            'original_deadline_extended':False,'new_child_starts':0,'signals_sent':0,
++            'automatic_retry':False,'root_failure_preserved':True,
++            'remote_terminal_or_cleanup_proven':False}
++        complete_sender=False
++        self._failure_drain_control_exit=None
++        if drain_sender:
++            name='sender-execute';child=owners.get(name);capture=captures.get(name)
++            if child is None:
++                sender_drain['state']='NO_OWNED_SENDER'
++            else:
++                sender_drain.update({'pid':child.pid,'started_monotonic':time.monotonic()})
++                try:
++                    need(self.sender is not None and self.sender[0] is child
++                        and capture is not None and capture['child'] is child,
++                        'failure drain requires the original owned sender handle')
++                    deadline=self._owned_host_deadlines[name]
++                    sender_drain['execution_deadline_monotonic']=deadline
++                    need(not capture['persist_attempted'] and not capture['stop'].is_set(),
++                        'original sender capture was already stopped or finalized')
++                    need(time.monotonic()<deadline,'original sender deadline expired; no renewed wait')
++                    rc=self.join_host_capture(name,child,maximum_wait=HOST_FAILURE_SENDER_DRAIN_WAIT)
++                    complete_sender=True
++                    sender_drain.update({'state':'ORIGINAL_SENDER_JOINED_OUTPUT_COMPLETE_ROOT_STILL_FAILED',
++                        'child_returncode':rc,'child_wait_returned':True})
++                except BaseException as error:
++                    # Keep control exits until owned readers are closed and the
++                    # original phase failure is recorded. Never replace the
++                    # caller's KeyboardInterrupt/SystemExit with that failure.
++                    if not isinstance(error,Exception):
++                        self._failure_drain_control_exit=error
++                        sender_drain['control_exit_pending']=True
++                    sender_drain.update({'state':'ORIGINAL_SENDER_OR_OUTPUT_UNKNOWN',
++                        'error_type':type(error).__name__,'detail':str(error)[:512],
++                        'child_returncode':child.returncode,
++                        'child_wait_returned':capture is not None and capture['child'] is child
++                            and capture['child_wait_returned']})
++                sender_drain['finished_monotonic']=time.monotonic()
++        # Stopping our readers never establishes child/remote terminal cleanup.
++        # Only the successful original-handle wait plus both EOFs above keeps a
++        # complete host capture; every other captured prefix remains unknown.
+         for name,capture in list(captures.items()):
+-            capture['qualified_capture']=False
++            if not (name=='sender-execute' and complete_sender):capture['qualified_capture']=False
+             errors.extend(self.stop_host_capture(name));errors.extend(self.persist_host_capture(name))
+         for name,(stdout,stderr) in list(streams.items()):
+             errors.extend(close_streams_owned([(name+':stdout',stdout),(name+':stderr',stderr)]));streams.pop(name,None)
+@@ -467,7 +511,7 @@
+             rows.append(row)
+             try:put(self.out/name/'OWNED-CHILD-FAILURE.json',enc(row))
+             except BaseException as error:row['record_error_type']=type(error).__name__
+-        return {'stream_cleanup_errors':errors,'host_children':rows}
++        return {'stream_cleanup_errors':errors,'host_children':rows,'sender_failure_drain':sender_drain}
+ 
+ 
+ def validate_plan(_raw):
+@@ -488,14 +532,21 @@
+     c=Chain(p,raw)
+     try:return c.run()
+     except BaseException as error:
+-        host_cleanup=c.close_owned_host_outputs()
++        host_cleanup=c.close_owned_host_outputs(drain_sender=isinstance(error,Exception))
+         value={'state':'FAILED_OR_UNKNOWN_ORIGINALS_PRESERVED_NO_AUTOMATIC_CONTINUATION',
+             'host_cleanup':host_cleanup,
+             'error_type':type(error).__name__,'detail':str(error)[:1024],'steps':c.steps,'root_fixture_attempts':c.root_attempts,
+             'automatic_retry':False,'new_identity_retry':False,'send_again':False,'signals_sent_by_coordinator':0,
+             'policy_changes':0,'model_requests':0,'component_qualified':False,'business_qualified':False,
+             'note':'Inspect existing process/actor/phone receipts. No missing record is treated as no effect.'}
+-        put(c.out/'ROOT-FAILURE.json',enc(value));raise
++        control_exit=getattr(c,'_failure_drain_control_exit',None)
++        if control_exit is not None:
++            value['control_exit_after_cleanup']={'error_type':type(control_exit).__name__,
++                'detail':str(control_exit)[:512],'original_phase_failure_preserved':True}
++        try:put(c.out/'ROOT-FAILURE.json',enc(value))
++        finally:
++            if control_exit is not None:raise control_exit from error
++        raise
+ 
+ if __name__ == '__main__':
+     raise SystemExit('Host-only extracted fixture; use the local regression harness')
