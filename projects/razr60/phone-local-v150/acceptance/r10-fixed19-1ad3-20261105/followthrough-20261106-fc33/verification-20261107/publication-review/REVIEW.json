@@ -1,0 +1,188 @@
+{
+  "schema": "hepta.fixed19.independent-publication-review.v1",
+  "reviewed_at_utc": "2026-11-07T00:58:30.058469+00:00",
+  "scope": "Only local delivery_repo and delivery inputs; no remote tools, execution, or mutation of export files.",
+  "status": "REDACTION_FIX_REQUIRED",
+  "findings": [
+    {
+      "severity": "publication_blocker",
+      "id": "PUB-01",
+      "file": "verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "locations": [
+        "status_query_original.content[0].text",
+        "log_query_original.content[0].text"
+      ],
+      "issue": "Configured SSH target remains in nested raw error text although metadata redacted_fields and README say the SSH target is absent.",
+      "evidence": "Both nested messages contain the remote-helper configured SSH alias. Do not preserve the raw alias in the public copy.",
+      "suggestion": "Redact the alias in both nested error strings; label those query payloads as redacted rather than original; preserve original source SHA and redaction paths without changing the UNKNOWN verdict.",
+      "unknown_unchanged": true
+    }
+  ],
+  "accepted_boundaries": {
+    "UNKNOWN_not_success_or_zero_effects": true,
+    "prepared_plan_not_treated_as_execution": true,
+    "correct_original_host_mac": true,
+    "earlier_success_and_later_failure_separate": true,
+    "later_host_exit0_not_phone_success": true,
+    "source_regressions_not_fixed19_credit": true,
+    "private_actual_gate_failure_retained": true,
+    "public_metadata_exact_except_declared_redactions": true,
+    "full_metadata_large_integer_precision_preserved": true
+  },
+  "cloud_run_file_checks": [
+    {
+      "label": "selected-guards-01",
+      "exit_code": 0,
+      "checks": {
+        "result": true,
+        "run_record": true,
+        "stdout": true,
+        "stderr": true
+      }
+    },
+    {
+      "label": "shared-business-01",
+      "exit_code": 0,
+      "checks": {
+        "result": true,
+        "run_record": true,
+        "stdout": true,
+        "stderr": true
+      }
+    },
+    {
+      "label": "native-require-actual-01",
+      "exit_code": 1,
+      "checks": {
+        "result": true,
+        "run_record": true,
+        "stdout": true,
+        "stderr": true
+      }
+    },
+    {
+      "label": "native-public-fixtures-01",
+      "exit_code": 0,
+      "checks": {
+        "result": true,
+        "run_record": true,
+        "stdout": true,
+        "stderr": true
+      }
+    }
+  ],
+  "integrity_and_links": {
+    "archive_check": {
+      "bytes": 300649,
+      "sha256": "8fa303a313bd8384162f3eacde61209140c38f48376b8e67efe0173c0a1fb6c2",
+      "matches": true
+    },
+    "archive_file_count": 908,
+    "archive_bytes": 2514217,
+    "archive_counts_match_manifest": true,
+    "archive_errors": [],
+    "archive_configured_alias_hits": [],
+    "archive_private_key_markers": [],
+    "markdown_relative_links": [
+      {
+        "file": "README.md",
+        "target": "recovery/README.md",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "recovery/SUMMARY.json",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "recovery/ARTIFACT-INTEGRITY.json",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "CONTROLLER-RECONCILIATION.PUBLIC.json",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "CONTROLLER-RECONCILIATION-REVIEW.json",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "cloud/RUN-SUMMARY.json",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "cloud/SOURCE15-R6-COMPARISON.json",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "cloud-host-regressions.tar.gz",
+        "exists_in_export": true
+      },
+      {
+        "file": "README.md",
+        "target": "CLOUD-ARCHIVE-MANIFEST.json",
+        "exists_in_export": true
+      }
+    ],
+    "recovery_integrity_entries": 22,
+    "recovery_integrity_errors": [],
+    "configured_ssh_alias_hits": [
+      {
+        "file": "CONTROLLER-RECONCILIATION.PUBLIC.json",
+        "count": 2
+      }
+    ],
+    "private_body_or_credential_markers": [],
+    "unredacted_idempotency_fields": [],
+    "parent_readme_history_baseline_available": false,
+    "reason": "delivery_repo is an export delta without .git; no original parent README in either allowed input directory."
+  },
+  "history_preservation": {
+    "independently_verified": false,
+    "reason": "The allowed local export is a delta without .git and contains no baseline parent README; history is visibly marked but byte preservation cannot be independently proved from these inputs.",
+    "not_a_demonstrated_history_change": true
+  },
+  "section4_placeholder": {
+    "present_at_review": true,
+    "treated_as_final_defect": false,
+    "reason": "Owner explicitly deferred this section pending the two other agents."
+  },
+  "reviewed_input_fingerprints": [
+    {
+      "path": "/workspace/scratch/78e391d818f2/delivery_repo/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "bytes": 8743,
+      "sha256": "33205e63f3efe8db0f1f56e87c00603cbf6c83013b56e5597cb315507cf52f53"
+    },
+    {
+      "path": "/workspace/scratch/78e391d818f2/delivery_repo/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+      "bytes": 3169,
+      "sha256": "ef5fcbddbd1fb5ea32963acbd424968937a7065a0395db25a4a9850a43d1314f"
+    },
+    {
+      "path": "/workspace/scratch/78e391d818f2/delivery_repo/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "bytes": 15759,
+      "sha256": "5fb970c951034c4ffef39c2aee1037da4a373ad26c700a2c81f4cca404187734"
+    },
+    {
+      "path": "/workspace/scratch/78e391d818f2/delivery_repo/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION-REVIEW.json",
+      "bytes": 916,
+      "sha256": "cd9f5ee4fa945867698cdab0fc6f2e2b8151b133ad2d399d8cb24cfeb41ddaae"
+    },
+    {
+      "path": "/workspace/scratch/78e391d818f2/delivery_repo/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud/RUN-SUMMARY.json",
+      "bytes": 13378,
+      "sha256": "1f18d414d8fc220f862190343f51ff7d34f9188602bb10168f2d60b298a3e61d"
+    },
+    {
+      "path": "/workspace/scratch/78e391d818f2/delivery_repo/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/SUMMARY.json",
+      "bytes": 2668,
+      "sha256": "7e7da9ca782931f88f751d7effcfd2124d1ec76fa02f9c71472c882d7858db1c"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.fixed19.bound02-exact-original-path-observation.v1",
+  "recorded_at_utc": "2026-11-07 00:58:06 UTC",
+  "source_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "original_controller_host": "mac",
+  "original_job_id": "1a1b3420986-fc05-8183",
+  "label": "root-r10-neg01-fc33-r6-bound02",
+  "nonce": "731dc46ccaad6e5717306d0c5f029a82",
+  "source": {
+    "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/checkpoint10/R6-root-final01/root-chain/source/run_component_root_once.py",
+    "git_blob_sha1": "74ef273e628b70bead31650c22ae5f334cd3d1c1",
+    "bytes": 78567,
+    "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257"
+  },
+  "path_derivation": {
+    "remote_chain": "/home/alex/codex-native-guard-chain-r10-r1/731dc46ccaad6e5717306d0c5f029a82",
+    "sender": "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound02-root-v150"
+  },
+  "original_tool_returns": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "ssh://pocket4/home/alex/codex-native-guard-chain-r10-r1/731dc46ccaad6e5717306d0c5f029a82",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Path not found: ssh://pocket4/home/alex/codex-native-guard-chain-r10-r1/731dc46ccaad6e5717306d0c5f029a82 (resolved to ssh://pocket4/home/alex/codex-native-guard-chain-r10-r1/731dc46ccaad6e5717306d0c5f029a82)"
+            }
+          ],
+          "structuredContent": {
+            "error_code": "INVALID_ARGUMENT"
+          },
+          "isError": true
+        }
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "path": "ssh://pocket4/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound02-root-v150",
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Path not found: ssh://pocket4/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound02-root-v150 (resolved to ssh://pocket4/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound02-root-v150)"
+            }
+          ],
+          "structuredContent": {
+            "error_code": "INVALID_ARGUMENT"
+          },
+          "isError": true
+        }
+      }
+    }
+  ],
+  "conclusion": "UNKNOWN_ORIGINAL_TERMINAL_STILL_UNAVAILABLE",
+  "limits": [
+    "Exact host paths were missing at the current bounded read.",
+    "No missing directory is proof of no prior execution, no effect, or a closed recovery.",
+    "No device, ADB, model, actor, launch, cancellation, lease extension, or replay was performed by these path reads."
+  ],
+  "new_phone_effect_dispatches": 0,
+  "replayed_requests": 0,
+  "fixed19_credit": 0
+}

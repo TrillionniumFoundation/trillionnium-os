@@ -1,0 +1,13 @@
+{
+  "budgets_changed": false,
+  "candidate_bytes": 25791,
+  "candidate_sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+  "fixed19_credit": 0,
+  "parent_bytes": 24731,
+  "parent_sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+  "phone_calls": 0,
+  "remote_cleanup_claimed": false,
+  "route_migration": false,
+  "state": "ISOLATED_SOURCE_CANDIDATE_NOT_ADOPTED",
+  "wire_commands_changed": false
+}

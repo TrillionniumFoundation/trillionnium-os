@@ -1,0 +1,68 @@
+{
+  "all_files_mode_0600": true,
+  "existing_output_unchanged": true,
+  "fixed19_credit": 0,
+  "original_source_bytes": 856082,
+  "phone_calls": 0,
+  "predicate_structure_verified_against_restored_originals": true,
+  "private_binding_sha256": "403d2f78146e5e8b91c91681d6664e7b1bdc1ccfb4f4c9eb7c4e650b821fe0c1",
+  "python": "3.12.14",
+  "reconstructor_sha256": "450187d82aa8da226abfb2e66194d313c9afba0c06f747dc21084b7453790223",
+  "refusals_created_no_output": true,
+  "runtime_adopted": false,
+  "schema": "razr60.r9.source-reconstruction-verification.v1",
+  "source_execution_count": 0,
+  "source_files_restored_exactly": 14,
+  "source_manifest_sha256": "5e8f476f160559fbe7e4b22c6d964905299d996ecf4e78ff315f56cf2de59a20",
+  "tests": [
+    {
+      "case": "restore-all-14",
+      "output_created": true,
+      "passed": true,
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "5a5ac46137e3e5ee040420c321a80a3528c459fbc578fd2c0042ae5abbaf8972"
+    },
+    {
+      "case": "existing-output-refused",
+      "output_created": true,
+      "passed": true,
+      "returncode": 1,
+      "stderr_sha256": "c7572ab9e7867ece0e9d1e3a5302604b825b641872af517597b0b197b32aa092",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "tampered-binding-refused",
+      "output_created": false,
+      "passed": true,
+      "returncode": 1,
+      "stderr_sha256": "850c10628ec588d52b465f22fdf845297b5b4e33e67441c3c5eabf9c1436b415",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "wrong-manifest-pin-refused",
+      "output_created": false,
+      "passed": true,
+      "returncode": 1,
+      "stderr_sha256": "0ba4c552d57b11c683b59fd411d5c8a541710387820a1938575fd8a069063e5b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "tampered-public-source-refused",
+      "output_created": false,
+      "passed": true,
+      "returncode": 1,
+      "stderr_sha256": "fcb2f12f2150e4c27d5be380834049d333ca986799a943071af16d1dcef2d1e5",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "public-source-symlink-refused",
+      "output_created": false,
+      "passed": true,
+      "returncode": 1,
+      "stderr_sha256": "5b2d54f8f7b87e8d5e4b9395661a694108a6051b00e38dee4e2ec0ecdc2cf857",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "verified_at_utc": "2026-11-07T17:34:50.289773+00:00"
+}

@@ -1,0 +1,21 @@
+{
+  "current_status_and_log_queries_failed": true,
+  "fixed19_credit": 0,
+  "host": "mac",
+  "job_id": "1a1b3420986-fc05-8183",
+  "label": "root-r10-neg01-fc33-r6-bound02",
+  "missing_directory_is_not_proof_of_nonexecution": true,
+  "nonce": "731dc46ccaad6e5717306d0c5f029a82",
+  "originals_sha256": "1b696172276e6d874d3fdbe34bc47534e1a8736f536b6f486e363290cb81b4e8",
+  "plan_and_admitted_request_exactly_match": true,
+  "plan_preparation_is_not_execution": true,
+  "plan_sha256": "0fbfd5aa0ed86e0bad846f2e541c3117ee1c7a46c98af7000c96f2e7d25a4bfa",
+  "replay_authorized_by_this_review": false,
+  "replay_performed": false,
+  "schema": "hepta.fixed19.controller-reconciliation-review.v1",
+  "source_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "success_proven": false,
+  "verdict": "UNKNOWN_PRESERVED_NO_TERMINAL_RECEIPT",
+  "zero_effects_proven": false,
+  "private_originals_not_in_public_package": true
+}

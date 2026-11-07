@@ -1,0 +1,13 @@
+{
+  "severity": "publication_blocker",
+  "id": "PUB-01",
+  "file": "verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+  "locations": [
+    "status_query_original.content[0].text",
+    "log_query_original.content[0].text"
+  ],
+  "issue": "Configured SSH target remains in nested raw error text although metadata redacted_fields and README say the SSH target is absent.",
+  "evidence": "Both nested messages contain the remote-helper configured SSH alias. Do not preserve the raw alias in the public copy.",
+  "suggestion": "Redact the alias in both nested error strings; label those query payloads as redacted rather than original; preserve original source SHA and redaction paths without changing the UNKNOWN verdict.",
+  "unknown_unchanged": true
+}

@@ -1,0 +1,19 @@
+{
+  "actual_stage_interpreter": "/opt/homebrew/bin/python3.14",
+  "default_mac_python_39_supported": false,
+  "diagnosed_additional_host_python": "3.14.3",
+  "initial_failure": "normalized public predicate identity mismatch",
+  "initial_host_python": "3.9.6",
+  "initial_stage": "failed before commit/push",
+  "new_source_manifest_sha256": "5e8f476f160559fbe7e4b22c6d964905299d996ecf4e78ff315f56cf2de59a20",
+  "normalizer": "python312-compatible-ast-dump.v1",
+  "original_archive_sha256": "5530cca343a6566c730ed5c74f0fa853ad24916e45e28ba35ce3300d930e347c",
+  "original_normalized_ast_hashes_changed": 0,
+  "python314_default_ast_dump_match_count": 0,
+  "python314_show_empty_true_match_count": 14,
+  "schema": "razr60.r9.publication-ast-compatibility.v1",
+  "semantic_fields_omitted": 0,
+  "unchanged_original_source_bytes": 856082,
+  "unchanged_original_source_files": 14,
+  "unchanged_private_binding_sha256": "403d2f78146e5e8b91c91681d6664e7b1bdc1ccfb4f4c9eb7c4e650b821fe0c1"
+}

@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+"""Lossless projection of the exact actual full-scope dispatch carrier.
+
+Projection is allowed only after the full original outer bytes are read and
+the compressed phone output is independently verified. Reconstruction must
+match both the original compression bytes and the entire dispatch file.
+"""
+import base64
+import copy
+import hashlib
+import json
+import shlex
+import zlib
+
+OUTER={'bytes':3138951,'sha256':'9dd9424ca5eb2c5184d3817846d4a9722e87278250f18f61fd76736f92d5ee9a'}
+CAPTURE={'bytes':13060990,'sha256':'634f27497d2e953c2d2b3dd7826e83d7ae9bd5236c23840f55abcf9ebbe2ff49'}
+REQUEST={'bytes':13601,'sha256':'90984f571c6657a3315d24840460bfbd0d33367b484123be6b46a3449b759756'}
+LABEL='ro-r8-failed01-full-scope-20261107-01'
+SCHEMA='hepta.r8.actual-scope-carrier.lossless-projection.v1'
+FIELDS={'schema','outer_original','capture','outer_template','envelope_without_payload','compression_replay_contract','outer_encoding'}
+
+def need(value,message):
+    if not value:raise ValueError(message)
+
+def pin(raw):
+    need(type(raw)is bytes,'complete original bytes required')
+    return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+def enc(value):
+    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=True,allow_nan=False)+'\n').encode()
+
+def strict(raw):
+    need(type(raw)is bytes and len(raw)<=64*1024*1024,'bounded complete original JSON')
+    def pairs(rows):
+        value={}
+        for key,item in rows:
+            need(key not in value,'duplicate actual JSON key');value[key]=item
+        return value
+    return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:need(False,'nonfinite actual JSON'))
+
+def decode(outer_raw,request_raw):
+    need(pin(outer_raw)==OUTER and pin(request_raw)==REQUEST,'complete actual outer and original phone request')
+    outer=strict(outer_raw);request=strict(request_raw)
+    need(enc(outer)==outer_raw and outer['schema']=='hepta.r8.failed-scope-dispatch-result.v1'
+         and outer['label']==LABEL and outer['actor_rc']==0
+         and outer['request']=={'path':'/home/PUBLICATION_ACCOUNT/razr60-local-model-v150/requests/'+LABEL+'.json',**REQUEST},
+         'one complete original bounded dispatch carrier')
+    need(all(type(outer[k])is int and outer[k]==0 for k in ('signals_sent_by_dispatch','native_submissions','new_nonces'))
+         and outer['automatic_retry']is False and outer['past_failure_offender_identified']is False,
+         'original read-only dispatcher did not imply a new native task')
+    wrapper=outer['wrapper']
+    need(wrapper['schema']=='hepta.phone-local.operator-result.v150.1'and wrapper['label']==LABEL
+         and wrapper['status']=='command_exited'and wrapper['model_decision']is False
+         and wrapper['native_task_result']is False,'same complete actual phone operator result')
+    phone=wrapper['phone']
+    need(set(request)=={'kind','root','timeout_seconds','command'}and request['kind']=='shell'
+         and request['root']is True and request['timeout_seconds']==90
+         and shlex.split(phone['command'])==['/debug_ramdisk/su','-c',request['command']]
+         and phone['route']==[5037,'23']and phone['rc']==0 and phone['stderr']=='',
+         'same exact source-bearing phone request and successful read-only execution')
+    wire=phone['stdout'].encode();envelope=strict(wire)
+    need(enc(envelope)==wire and set(envelope)=={'schema','encoding','raw_bytes','raw_sha256',
+        'compressed_bytes','compressed_sha256','payload','returncode'}
+         and envelope['schema']=='hepta.r8.failed-scope.compressed-originals.v1'
+         and envelope['encoding']=='zlib-base64'and envelope['returncode']==0,'complete actual phone compressed envelope')
+    packed=base64.b64decode(envelope['payload'],validate=True)
+    need(pin(packed)=={'bytes':envelope['compressed_bytes'],'sha256':envelope['compressed_sha256']}
+         and 0<len(packed)<=8*1024*1024,'actual whole compressed byte pin and original bound')
+    decoder=zlib.decompressobj();captured=decoder.decompress(packed,64*1024*1024+1)
+    need(decoder.eof and not decoder.unused_data and not decoder.unconsumed_tail
+         and pin(captured)==CAPTURE=={'bytes':envelope['raw_bytes'],'sha256':envelope['raw_sha256']},
+         'single complete exact captured raw original')
+    return outer,envelope,captured
+
+def reconstruct(projection_raw,capture_raw,request_raw):
+    need(pin(capture_raw)==CAPTURE,'complete original captured raw required')
+    value=strict(projection_raw)
+    need(type(value)is dict and set(value)==FIELDS and value['schema']==SCHEMA
+         and value['outer_original']==OUTER and value['capture']==CAPTURE
+         and value['compression_replay_contract']=='zlib_level_9_exact_output_pin'
+         and value['outer_encoding']=='json_sorted_compact_ensure_ascii_true_with_lf',
+         'one fixed lossless carrier projection family')
+    envelope=copy.deepcopy(value['envelope_without_payload'])
+    need('payload'not in envelope and set(envelope)=={'schema','encoding','raw_bytes','raw_sha256',
+        'compressed_bytes','compressed_sha256','returncode'},'only the original payload was projected')
+    packed=zlib.compress(capture_raw,9)
+    need(pin(packed)=={'bytes':envelope['compressed_bytes'],'sha256':envelope['compressed_sha256']},
+         'recompression must reproduce actual original bytes, not merely equivalent JSON')
+    envelope['payload']=base64.b64encode(packed).decode()
+    outer=copy.deepcopy(value['outer_template'])
+    need(outer['wrapper']['phone']['stdout']=='','only the original phone stdout slot is reconstructed')
+    outer['wrapper']['phone']['stdout']=enc(envelope).decode()
+    original=enc(outer)
+    need(pin(original)==OUTER,'entire original dispatch carrier must reconstruct byte-for-byte')
+    parsed,parsed_envelope,decoded=decode(original,request_raw)
+    need(decoded==capture_raw,'reconstructed complete carrier returns the same exact full capture')
+    return original,parsed
+
+def project(outer_raw,request_raw):
+    outer,envelope,capture=decode(outer_raw,request_raw)
+    template=copy.deepcopy(outer);template['wrapper']['phone']['stdout']=''
+    value={'schema':SCHEMA,'outer_original':OUTER,'capture':CAPTURE,'outer_template':template,
+        'envelope_without_payload':{k:v for k,v in envelope.items()if k!='payload'},
+        'compression_replay_contract':'zlib_level_9_exact_output_pin',
+        'outer_encoding':'json_sorted_compact_ensure_ascii_true_with_lf'}
+    projected=enc(value);rebuilt,parsed=reconstruct(projected,capture,request_raw)
+    need(rebuilt==outer_raw and parsed==outer,'the complete actual outer original is preserved')
+    return projected,capture

@@ -1,0 +1,16 @@
+{
+  "environment_status_tool_exposed": false,
+  "euid": 1000,
+  "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "kernel": "6.18.57",
+  "machine": "x86_64",
+  "network_policy_snapshot_available": false,
+  "observed_at_utc": "2026-11-07T00:43:45.129955+00:00",
+  "private_NEG01_originals_available": false,
+  "private_NEG01_schema_available": false,
+  "python": "3.12.14",
+  "schema": "razr60.cloud-regression-environment.v1",
+  "source_acquisition": "authorized GitHub connector only; no executor network workaround",
+  "sudo_available": false,
+  "system": "Linux"
+}

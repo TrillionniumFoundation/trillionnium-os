@@ -1,0 +1,108 @@
+{
+  "actual_source_readback_matches_reviewed_source": true,
+  "files": [
+    {
+      "bytes": 8654,
+      "logical_path": "dependencies/admission/admission_entry.py",
+      "matches_reviewed_source": true,
+      "sha256": "f80218457da9acf8a843aaa4257c29e61c00c65abcd094743ec85a3243fbfdb1"
+    },
+    {
+      "bytes": 85169,
+      "logical_path": "dependencies/admission/bound02_disposition.py",
+      "matches_reviewed_source": true,
+      "sha256": "421ed1291ecf1855a67de62034f60d4d4889d0e00b25d1733fc404ecdcfd5949"
+    },
+    {
+      "bytes": 8645,
+      "logical_path": "dependencies/admission/build_fence_plan.py",
+      "matches_reviewed_source": true,
+      "sha256": "7089b91b3c1cb93fbca6c3cee28f339819ed9e438d76c8f21004adae31c33313"
+    },
+    {
+      "bytes": 9834,
+      "logical_path": "dependencies/admission/prepare_fresh_admission_input.py",
+      "matches_reviewed_source": true,
+      "sha256": "e7a4b6779a3cfef8f3ca1ec23e4228819a7fe3daaa95128195e2bb6e6086c79a"
+    },
+    {
+      "bytes": 37404,
+      "logical_path": "dependencies/admission/verify_retained_preaccept.py",
+      "matches_reviewed_source": true,
+      "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+    },
+    {
+      "bytes": 96088,
+      "logical_path": "dependencies/admission/verify_retained_staged_r8.py",
+      "matches_reviewed_source": true,
+      "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+    },
+    {
+      "bytes": 25501,
+      "logical_path": "prepare_native_bound_components_r9_fc33_UNBOUND.py",
+      "matches_reviewed_source": true,
+      "sha256": "b696e314801aa0098444e26e62b46c775017055672279d6c4ecac7187f217f6b"
+    },
+    {
+      "bytes": 8101,
+      "logical_path": "root-chain/source/phone_chain_bridge.py",
+      "matches_reviewed_source": true,
+      "sha256": "0d560652a28341c1bed206fc1331c16f7c475adbbb906776bb18288b6efae7ee"
+    },
+    {
+      "bytes": 83705,
+      "logical_path": "root-chain/source/run_component_root_once.py",
+      "matches_reviewed_source": true,
+      "sha256": "68fbb8c6f94f30a6c09946e5965355c9c3c61ea2644ed1109b3a34c6fd0947f0"
+    },
+    {
+      "bytes": 114413,
+      "logical_path": "runtime/source/close_component.py",
+      "matches_reviewed_source": true,
+      "sha256": "534a857c9aeabef3a0fb1e714a64f8242ec407fe4f3c6ce699827fff487aeb27"
+    },
+    {
+      "bytes": 48643,
+      "logical_path": "runtime/source/component_lifecycle.py",
+      "matches_reviewed_source": true,
+      "sha256": "eb43d1f5df1b0e4295770c82328fd17e09b9eaa766861f3803928a0b1f9f4e18"
+    },
+    {
+      "bytes": 30957,
+      "logical_path": "runtime/source/component_snapshot.py",
+      "matches_reviewed_source": true,
+      "sha256": "6e944c4783fa64abe1a2c741a76cc98165122b6e3b709f2147698fdbe0416263"
+    },
+    {
+      "bytes": 251644,
+      "logical_path": "runtime/source/late_boundary.py",
+      "matches_reviewed_source": true,
+      "sha256": "df022013e154af46bd7c033cba7711d16974bf191fde096b4cce4f397fbbb543"
+    },
+    {
+      "bytes": 47324,
+      "logical_path": "runtime/source/send_new_native_guard_task_r10_r4.py",
+      "matches_reviewed_source": true,
+      "sha256": "c295a69e3b9fb4f7cd882f7b4eaaddce3147390eb7f160aff8e113c2842cba4f"
+    }
+  ],
+  "full_fixed19_credit": 0,
+  "native_success_credit": 0,
+  "phone_calls": 0,
+  "predecessor": {
+    "base_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+    "head": "22e6105c2effe102c0f120a906752003aedfb37d",
+    "protected_base_ref": "integration/razr60-r9-20261107",
+    "pull_request": 112,
+    "selected_original_blobs_present_in_predecessor": 0
+  },
+  "private_literal_binding_sha256": "403d2f78146e5e8b91c91681d6664e7b1bdc1ccfb4f4c9eb7c4e650b821fe0c1",
+  "private_original_readback_bytes": 6517,
+  "private_original_readback_sha256": "0142825369f622ea97e6babb841c746c0c9e74bdae55541cea8c84ebdf7fe61a",
+  "readback_at_utc": "2026-11-07T17:13:14.302121+00:00",
+  "repository_visibility": "public",
+  "runtime_adopted": false,
+  "schema": "razr60.r9.source-publication-provenance.v1",
+  "source_execution_count": 0,
+  "source_scope": "13 frozen modules plus retained unbound preparer; actual bound preparer and deployment inputs are separate"
+}

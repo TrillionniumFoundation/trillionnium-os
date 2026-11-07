@@ -1,0 +1,116 @@
+{
+  "controls": [
+    {
+      "name": "complete exact launch/focus/resumed accepted",
+      "passed": true
+    },
+    {
+      "name": "nonzero launch",
+      "passed": true,
+      "rejection": "[phone_postcondition] return receipt identity or launch exit status differs"
+    },
+    {
+      "name": "boolean launch exit",
+      "passed": true,
+      "rejection": "[phone_postcondition] return receipt identity or launch exit status differs"
+    },
+    {
+      "name": "wrong operation",
+      "passed": true,
+      "rejection": "[phone_postcondition] return receipt identity or launch exit status differs"
+    },
+    {
+      "name": "missing launch Activity",
+      "passed": true,
+      "rejection": "[phone_postcondition] activity launch reported a different target"
+    },
+    {
+      "name": "duplicate launch status",
+      "passed": true,
+      "rejection": "[phone_postcondition] activity launch did not report one successful status"
+    },
+    {
+      "name": "wrong Activity same package",
+      "passed": true,
+      "rejection": "[phone_postcondition] activity launch reported a different target"
+    },
+    {
+      "name": "launch error alongside ok",
+      "passed": true,
+      "rejection": "[phone_postcondition] activity launch did not report one successful status"
+    },
+    {
+      "name": "top resumed disagreement",
+      "passed": true,
+      "rejection": "[phone_postcondition] focused window, focused app and resumed activity disagree"
+    },
+    {
+      "name": "current window disagreement",
+      "passed": true,
+      "rejection": "[phone_postcondition] focused window, focused app and resumed activity disagree"
+    },
+    {
+      "name": "focused app disagreement",
+      "passed": true,
+      "rejection": "[phone_postcondition] focused window, focused app and resumed activity disagree"
+    },
+    {
+      "name": "external focused display",
+      "passed": true,
+      "rejection": "[phone_postcondition] top focused display is not the qualified inner display"
+    },
+    {
+      "name": "keyguard active",
+      "passed": true,
+      "rejection": "[phone_postcondition] inner display focus or unlocked state is unconfirmed"
+    },
+    {
+      "name": "missing actual resumed",
+      "passed": true,
+      "rejection": "[phone_postcondition] resumed activity is missing or ambiguous"
+    },
+    {
+      "name": "extra receipt field",
+      "passed": true,
+      "rejection": "[phone_postcondition] return receipt identity or launch exit status differs"
+    },
+    {
+      "exit_code": 73,
+      "name": "public collector dump137 single attempt no receipt own XML removed",
+      "passed": true
+    },
+    {
+      "exit_code": 17,
+      "name": "failed return launch remains nonzero and is not retried",
+      "passed": true
+    }
+  ],
+  "fixed19_credit": 0,
+  "native_dispatches": 0,
+  "passed": 17,
+  "phone_calls": 0,
+  "physical_qualification": false,
+  "production_source_changes": 0,
+  "schema": "hepta.navigation-readonly-source-review.v1",
+  "sender_actor_constructions": 0,
+  "source_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "source_files": {
+    "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_local_tools.py": {
+      "bytes": 13927,
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930"
+    },
+    "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_observation_tools.py": {
+      "bytes": 55981,
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086"
+    },
+    "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_task_guards.py": {
+      "bytes": 22825,
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+    },
+    "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/provider_openai_compatible.py": {
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    }
+  },
+  "total": 17
+}

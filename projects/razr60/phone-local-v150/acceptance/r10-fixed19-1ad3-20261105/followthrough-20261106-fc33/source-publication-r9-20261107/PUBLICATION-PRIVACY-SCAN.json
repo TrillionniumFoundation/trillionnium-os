@@ -1,0 +1,11 @@
+{
+  "all_direct_private_spans_rechecked_against_all_members": true,
+  "all_source_and_expanded_views_unchanged_from_initial_complete_scan": true,
+  "credential_pattern_hits": 0,
+  "distinct_original_private_literals_checked": 41,
+  "embedded_original_payloads_decoded_as_data": 22,
+  "original_private_literal_leaks": 0,
+  "public_member_count_excluding_this_report": 34,
+  "schema": "razr60.r9.publication-final-privacy-scan.v1",
+  "source_execution_count": 0
+}

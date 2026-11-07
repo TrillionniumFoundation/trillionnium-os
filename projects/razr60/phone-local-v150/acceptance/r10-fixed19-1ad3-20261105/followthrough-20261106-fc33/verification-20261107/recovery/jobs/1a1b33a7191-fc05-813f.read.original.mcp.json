@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1b33a7191-fc05-813f\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b2272756e223a20222f686f6d652f616c65782f72617a7236302d6c6f63616c2d6d6f64656c2d763135302f6f7065726174696f6e732f6e672d666333332d6e656730312d72362d626f756e6430312d6f776e65642d7265636f7665727930322d6672657368222c2022737461747573223a2022636f6d6d616e645f657869746564222c2022736861323536223a202263363435393564396439366662666634333764373537383634613736313366376366366438646461366561633434356266393961323132303438366162383433222c2022656c61707365645f7365636f6e6473223a20332e3430373335383631393936363534342c2022687474705f737461747573223a206e756c6c2c202270686f6e655f7263223a20302c20226572726f72223a206e756c6c7d0a\",\n    \"eof\": true,\n    \"next_offset\": 300,\n    \"offset\": 0,\n    \"size\": 300,\n    \"text\": \"{\\\"run\\\": \\\"/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-r6-bound01-owned-recovery02-fresh\\\", \\\"status\\\": \\\"command_exited\\\", \\\"sha256\\\": \\\"c64595d9d96fbff437d757864a7613f7cf6d8dda6eac445bf99a2120486ab843\\\", \\\"elapsed_seconds\\\": 3.407358619966544, \\\"http_status\\\": null, \\\"phone_rc\\\": 0, \\\"error\\\": null}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

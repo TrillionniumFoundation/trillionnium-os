@@ -1,0 +1,69 @@
+{
+  "archive_conclusion": {
+    "absence_inside_compressed_or_private_original_archives_not_asserted": true,
+    "checkpoint11_declares_partial_source_subset": true,
+    "complete_public_runtime_dependency_closure_verified": false,
+    "full_original_private_archive_inspected": false,
+    "standalone_control_blob_absent_from_checked_subtree": true
+  },
+  "fixed19_credit": 0,
+  "observed_failure": {
+    "no_new_dispatch_authorized_by_review": true,
+    "original_bound01_exit_code": 137,
+    "remote_cleanup_verified": false,
+    "remote_process_group_identity_observed": false,
+    "root_cause": null,
+    "socket_timeout_would_raise_instead_of_synthesize_exit_137": true
+  },
+  "operations": {
+    "actor_constructions": 0,
+    "github_writes": 0,
+    "heptaruntime_read_multiple_files_calls": 1,
+    "heptaruntime_view_calls": 0,
+    "mac_writes": 0,
+    "native_dispatches": 0,
+    "phone_calls": 0
+  },
+  "runtime_config": {
+    "read": false,
+    "reason": "Not required to inspect the pinned socket implementation; no unpinned runtime input was retrieved.",
+    "runtime_path": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/preserved-ui-package-config.json",
+    "source_content_pin_present": false
+  },
+  "schema": "hepta.sender-external-dependency-closure-review.v1",
+  "sender": {
+    "bytes": 41355,
+    "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/checkpoint10/R6-business-sender-01/candidate/send_new_native_task_r5_fc33_r6.py",
+    "sha256": "f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73"
+  },
+  "socket_helper": {
+    "bytes": 24731,
+    "exact_public_archived_paths": [
+      "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/physical-neg03-09-source/review/neg03-09-plan/reference/physical-fault-final01/package/reference/preserved_ui_package_phase_r7.py",
+      "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/physical-fault-final01/package/reference/preserved_ui_package_phase_r7.py"
+    ],
+    "git_blob_sha1": "9b9f019ff279ec5a2cf482c389d8b8c9d3cf4dcb",
+    "import_dependencies_in_shell_path": "Python standard library only; no further pinned code dependency",
+    "runtime_path": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/preserved_ui_package_phase_r7.py",
+    "sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+    "source_manifest_entry_verified": true
+  },
+  "source_reference_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "tree_query": {
+    "entry_count": 7095,
+    "git_tree_sha": "c2b0ad858b6b100c83746509d38846f2940c903a",
+    "recursive": true,
+    "scope": "projects/razr60",
+    "truncated": false
+  },
+  "ui_helper": {
+    "actual_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-control-check-Root-v146-r1/control_send_once.py",
+    "bytes": 6301,
+    "complete_read_eof": true,
+    "exact_standalone_blob_matches_in_subtree": [],
+    "git_blob_sha1": "5bb0ab40b1a55ca7b7e018bb1414cb7ff7760f5a",
+    "independently_computed_sha256_matches_sender_pin": true,
+    "sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70",
+    "version": "16777233:586178166:6301:1793666780788030255:1793666780788030255"
+  }
+}

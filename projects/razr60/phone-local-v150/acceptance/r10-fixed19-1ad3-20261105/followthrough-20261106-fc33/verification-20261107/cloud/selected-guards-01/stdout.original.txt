@@ -1,0 +1,1 @@
+{"case_count": 13, "fatal_error": null, "native_dispatches": 0, "phone_calls": 0, "resources_restored": true, "result": {"bytes": 10552, "sha256": "a47eea4ac4c38855eba19793d1cf00893dc1b295cfa5a11e826d83df8ddee318"}, "script_sha256": "8840f0c97aaa26cf9581a8d061b130497328837a3fe0a53d2ab7a1a96e7a7ea0", "state": "PASSED_SELECTED_HOST_SCOPE"}

@@ -1,0 +1,72 @@
+{
+  "archive_check": {
+    "bytes": 300649,
+    "sha256": "8fa303a313bd8384162f3eacde61209140c38f48376b8e67efe0173c0a1fb6c2",
+    "matches": true
+  },
+  "archive_file_count": 908,
+  "archive_bytes": 2514217,
+  "archive_counts_match_manifest": true,
+  "archive_errors": [],
+  "archive_configured_alias_hits": [],
+  "archive_private_key_markers": [],
+  "markdown_relative_links": [
+    {
+      "file": "README.md",
+      "target": "recovery/README.md",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "recovery/SUMMARY.json",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "recovery/ARTIFACT-INTEGRITY.json",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "CONTROLLER-RECONCILIATION-REVIEW.json",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "cloud/RUN-SUMMARY.json",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "cloud/SOURCE15-R6-COMPARISON.json",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "cloud-host-regressions.tar.gz",
+      "exists_in_export": true
+    },
+    {
+      "file": "README.md",
+      "target": "CLOUD-ARCHIVE-MANIFEST.json",
+      "exists_in_export": true
+    }
+  ],
+  "recovery_integrity_entries": 22,
+  "recovery_integrity_errors": [],
+  "configured_ssh_alias_hits": [
+    {
+      "file": "CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "count": 2
+    }
+  ],
+  "private_body_or_credential_markers": [],
+  "unredacted_idempotency_fields": [],
+  "parent_readme_history_baseline_available": false,
+  "reason": "delivery_repo is an export delta without .git; no original parent README in either allowed input directory."
+}

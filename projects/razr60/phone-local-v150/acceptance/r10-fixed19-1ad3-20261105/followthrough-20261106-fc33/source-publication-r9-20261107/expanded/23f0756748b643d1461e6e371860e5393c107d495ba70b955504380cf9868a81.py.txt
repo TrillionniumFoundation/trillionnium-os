@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+"""Lossless fixed-family projection of the actual complete R8 scope capture.
+
+The complete capture must be supplied and byte-verified before project() can
+produce anything. reconstruct() restores its exact canonical bytes from the
+accepted old47 inventory, actual staged archive, and actual stage receipt.
+No filesystem, phone, process, lock, publishing or admission operation exists.
+"""
+import base64
+import copy
+import hashlib
+import io
+import json
+import math
+from pathlib import PurePosixPath
+import stat
+import tarfile
+import zlib
+
+LABEL='root-r10-neg01-fc33-r8-bound01'
+NONCE='940fead822b9b65c9889016d7fee3451'
+BASE='/var/lib/trillionnium/owner-open/phone-local-v150'
+HOME=BASE+'/native-guard-r10-r1/'+LABEL
+JOURNAL='/proc/1/root/data/trillionnium/owner-open/state/phone-local-v150/native-guard-r10-r1/'+LABEL+'/executor'
+FIXTURE='/proc/1/root/data/local/tmp/hepta-native-guard-'+NONCE
+CAPTURE={'bytes':13060990,'sha256':'634f27497d2e953c2d2b3dd7826e83d7ae9bd5236c23840f55abcf9ebbe2ff49'}
+PRIOR={'bytes':1378036,'sha256':'dfdadedaded0eced586cc680f39d8ab58c336db2d25d75daf7460fc32ae74f7f'}
+STAGE_ARCHIVE={'bytes':836563,'sha256':'50e5ac5f3fb819c40bdedbaa482aa6147c1d296ea64bffefa58b396c151f1f6d'}
+BEFORE={'bytes':1403290,'sha256':'d4229c821fb8de087e2636b48c6958658a92b5a15b92e256c04a255d9cf55c26'}
+AFTER={'bytes':1403291,'sha256':'2008db913728ff0c3836cb6edb361e37f427d7663f2832163fe93b2adb18f432'}
+SCHEMA='hepta.r8.fixed-staged-scope.lossless-observation-projection.v1'
+DROPPED=frozenset(('full_inventory_before','full_inventory_after','original_files','readset',
+    'scope_labels_before','scope_labels_after','scope_roots_after','markers_after','parents_after','prior_roots'))
+FIELDS=frozenset(('schema','capture','prior_inventory','stage_archive','stage_complete',
+    'new_entries','before_elapsed','after_elapsed','extra_readset','scope_label_values','remaining_actual_fields'))
+MAX_ORIGINAL=64*1024*1024
+
+
+def need(v,message):
+    if not v:raise ValueError(message)
+
+
+def pin(raw):
+    need(type(raw)is bytes,'exact original bytes required')
+    return {'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+
+def enc(value):
+    return (json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False,allow_nan=False)+'\n').encode()
+
+
+def strict(raw):
+    need(type(raw)is bytes and len(raw)<=MAX_ORIGINAL,'bounded complete original bytes')
+    def pairs(rows):
+        value={}
+        for key,item in rows:
+            need(key not in value,'duplicate original JSON field');value[key]=item
+        return value
+    return json.loads(raw,object_pairs_hook=pairs,parse_constant=lambda _:need(False,'nonfinite original JSON'))
+
+
+def under(path,root):
+    p=PurePosixPath(path);r=PurePosixPath(root)
+    return p==r or r in p.parents
+
+
+def actual_stage_files(raw):
+    need(pin(raw)==STAGE_ARCHIVE,'the actual original R8 staged tar.gz is required')
+    decoder=zlib.decompressobj(31);tar=decoder.decompress(raw,16*1024*1024+1)
+    need(decoder.eof and not decoder.unused_data and not decoder.unconsumed_tail
+         and len(tar)<=16*1024*1024,'one bounded complete actual gzip member')
+    files={};offset=0
+    with tarfile.open(fileobj=io.BytesIO(tar),mode='r:')as reader:
+        rows=reader.getmembers()
+        need(len(rows)==62 and [r.name for r in rows]==sorted(set(r.name for r in rows)),
+             'all62 original staged members, in original canonical order')
+        for row in rows:
+            p=PurePosixPath(row.name)
+            need(not p.is_absolute() and str(p)==row.name and '..' not in p.parts
+                 and row.type==tarfile.REGTYPE and row.linkname=='' and row.pax_headers=={}
+                 and row.mode==0o600 and row.uid==row.gid==row.mtime==0
+                 and row.uname==row.gname=='' and 0<=row.size<=64*1024*1024
+                 and row.offset==offset and row.offset_data==offset+512,'exact private ordinary staged member')
+            stream=reader.extractfile(row);need(stream is not None,'actual staged member stream')
+            data=stream.read(row.size+1);need(len(data)==row.size,'complete original staged member')
+            files[HOME+'/'+row.name]=data
+            offset+=512+((row.size+511)//512)*512
+    need(sum(map(len,files.values()))==3890462
+         and len(tar)==((offset+1024+10239)//10240)*10240
+         and tar[offset:]==bytes(len(tar)-offset),'exact original staged byte total and tar terminator')
+    return files
+
+
+def original_inventory(prior_raw,validate_inventory):
+    need(pin(prior_raw)==PRIOR,'exact already-accepted old47 original required')
+    old=strict(prior_raw);validate_inventory(old)
+    need(enc(old)==prior_raw and len(old['roots'])==47 and len(old['entries'])==3918
+         and old['file_bytes_hashed']==49087670,'fixed old47 complete inventory accounting')
+    need(all(root not in old['roots'] for root in (HOME,JOURNAL,FIXTURE)),
+         'R8 failed scope cannot already be part of the native or R7 predecessor')
+    return old
+
+
+def actual_inventory(old,new_entries,elapsed,expected,validate_inventory):
+    need(type(new_entries)is dict and len(new_entries)==73
+         and not set(new_entries)&set(old['entries'])
+         and all(sum(under(path,root)for root in (HOME,JOURNAL))==1 for path in new_entries),
+         'exact complete73-entry extension only in the two actually observed roots')
+    need(type(elapsed)in(int,float) and math.isfinite(elapsed) and 0<=elapsed<30,
+         'preserve the actual finite original inventory elapsed measurement')
+    entries={**old['entries'],**new_entries}
+    value=dict(old,roots=old['roots']+[HOME,JOURNAL],entries=entries,
+        elapsed_seconds=elapsed,file_bytes_hashed=sum(row['bytes']for row in entries.values()if row['kind']=='file'))
+    validate_inventory(value)
+    need(pin(enc(value))==expected and len(value['roots'])==49 and len(entries)==3991
+         and value['file_bytes_hashed']==53016728,'exact actual full49 inventory bytes required')
+    need(FIXTURE not in value['roots'] and FIXTURE not in entries,'R8 absent fixture is a separate current observation')
+    for path,row in new_entries.items():
+        m=row.get('metadata')
+        need(type(m)is list and len(m)==9 and all(type(n)is int for n in m)
+             and m[3:5]==[0,0],'all original fixed R8 private full9 identities')
+        if row['kind']=='directory':
+            need(stat.S_ISDIR(m[2]) and stat.S_IMODE(m[2])==0o700,'private directory mode')
+        else:
+            need(row['kind']=='file' and stat.S_ISREG(m[2]) and stat.S_IMODE(m[2])==0o600
+                 and m[5]==1,'private single-link file mode')
+        need(PurePosixPath(path).name!='lock' and not PurePosixPath(path).name.endswith('.lock'),
+             'this staged-before-fork scope gained no lock inode')
+    for path in (HOME+'/claims',HOME+'/operator',HOME+'/executor',JOURNAL):
+        need(new_entries[path]['kind']=='directory' and new_entries[path]['names']==[],
+             'this exact unstarted scope keeps claims/operator/executor empty')
+    need(new_entries[HOME+'/executor']==new_entries[JOURNAL],
+         'GNU and Android empty executor aliases are one exact original generation')
+    return value
+
+
+def reconstruct(projection_raw,prior_raw,stage_archive_raw,stage_complete_raw,*,validate_inventory):
+    """Rebuild exact complete actual capture bytes; this is not disposition."""
+    projection=strict(projection_raw)
+    need(type(projection)is dict and set(projection)==FIELDS and projection['schema']==SCHEMA
+         and projection['capture']==CAPTURE and projection['prior_inventory']==PRIOR
+         and projection['stage_archive']==STAGE_ARCHIVE and projection['stage_complete']==pin(stage_complete_raw),
+         'fixed complete lossless projection family')
+    old=original_inventory(prior_raw,validate_inventory)
+    before=actual_inventory(old,projection['new_entries'],projection['before_elapsed'],BEFORE,validate_inventory)
+    after=actual_inventory(old,projection['new_entries'],projection['after_elapsed'],AFTER,validate_inventory)
+    original_files=actual_stage_files(stage_archive_raw)
+    need(HOME+'/STAGE-COMPLETE.json' not in original_files and len(stage_complete_raw)==38596,
+         'the actual stage result is separate from its input archive')
+    stage=strict(stage_complete_raw)
+    need(stage.get('schema')=='hepta.native-guard.private-stage.v1'
+         and stage.get('state')=='PRIVATE_COMPONENT_INPUTS_STAGED_NO_ROLES'
+         and stage.get('members')==62 and stage.get('archive_sha256')==STAGE_ARCHIVE['sha256']
+         and stage.get('existing_files_overwritten')==stage.get('service_launches')==stage.get('native_tasks')==0
+         and stage.get('model_requests')==stage.get('existing_helper_or_policy_changes')==0
+         and stage.get('automatic_retry')is False and stage.get('component_qualified')is False,
+         'same complete actual no-role stage result')
+    original_files[HOME+'/STAGE-COMPLETE.json']=stage_complete_raw
+    rows={p:r for p,r in projection['new_entries'].items()if r['kind']=='file'}
+    need(set(rows)==set(original_files) and len(rows)==63
+         and sum(map(len,original_files.values()))==3929058,'all63 actual staged-scope raw files, none omitted')
+    captured={}
+    for path,raw in original_files.items():
+        row=rows[path]
+        need(pin(raw)=={k:row[k]for k in ('bytes','sha256')},'staged raw member equals its actual full49 inventory row')
+        captured[path]={'path':path,**pin(raw),'metadata':row['metadata'],'raw_base64':base64.b64encode(raw).decode()}
+    readset={path:{'path':path,**{k:row[k]for k in ('bytes','sha256','metadata')}}
+        for path,row in after['entries'].items()if row['kind']=='file'}
+    extra=projection['extra_readset']
+    need(type(extra)is dict and len(extra)<=64 and not set(extra)&set(readset),'only distinct additional actually read originals')
+    for path,row in extra.items():
+        need(type(row)is dict and set(row)=={'path','bytes','sha256','metadata'} and row['path']==path
+             and PurePosixPath(path).is_absolute() and '..' not in PurePosixPath(path).parts,
+             'additional exact original descriptor')
+        m=row['metadata']
+        need(type(m)is list and len(m)==9 and all(type(n)is int for n in m)
+             and stat.S_ISREG(m[2]) and m[5]==1 and m[6]==row['bytes'],
+             'extra original full9 regular identity')
+    readset.update(extra)
+    labels=projection['scope_label_values']
+    need(type(labels)is dict and set(labels)==set(projection['new_entries']),'every original new scope entry label')
+    reconstructed_labels={}
+    for path,encoded_label in labels.items():
+        raw=base64.b64decode(encoded_label,validate=True)
+        need(0<len(raw)<=512,'bounded actual SELinux label original')
+        reconstructed_labels[path]={'metadata':projection['new_entries'][path]['metadata'],'selinux_raw_base64':encoded_label}
+    fields=copy.deepcopy(projection['remaining_actual_fields'])
+    need(type(fields)is dict and not set(fields)&DROPPED,'remaining fields cannot override reconstructed original sections')
+    fields.update(full_inventory_before=before,full_inventory_after=after,original_files=captured,readset=readset,
+        scope_labels_before=reconstructed_labels,scope_labels_after=copy.deepcopy(reconstructed_labels),
+        prior_roots=old['roots'],scope_roots_after=copy.deepcopy(fields['scope_roots_before']),
+        markers_after=copy.deepcopy(fields['markers_before']),parents_after=copy.deepcopy(fields['parents_before']))
+    raw=enc(fields)
+    need(pin(raw)==CAPTURE,'lossless reconstruction must equal the complete actual original, including all clocks')
+    return raw,fields
+
+
+def project(capture_raw,prior_raw,stage_archive_raw,stage_complete_raw,*,validate_inventory):
+    """Pure extraction from a complete actual original, never a generated observation."""
+    need(pin(capture_raw)==CAPTURE,'complete actual byte-pinned capture required before projection')
+    value=strict(capture_raw);need(enc(value)==capture_raw,'actual capture must be canonical exact original bytes')
+    old=original_inventory(prior_raw,validate_inventory)
+    before=value['full_inventory_before'];after=value['full_inventory_after']
+    validate_inventory(before);validate_inventory(after)
+    need(validate_inventory(before)==validate_inventory(after),'the two actual full inventories agree excluding elapsed only')
+    need(value['scope_labels_before']==value['scope_labels_after']
+         and value['scope_roots_before']==value['scope_roots_after']
+         and value['markers_before']==value['markers_after']
+         and value['parents_before']==value['parents_after'],'only actually identical original sections may be compacted')
+    entries={path:row for path,row in after['entries'].items()if path not in old['entries']}
+    inventory_files={p for p,r in after['entries'].items()if r['kind']=='file'}
+    projection={'schema':SCHEMA,'capture':CAPTURE,'prior_inventory':PRIOR,'stage_archive':STAGE_ARCHIVE,
+        'stage_complete':pin(stage_complete_raw),'new_entries':entries,
+        'before_elapsed':before['elapsed_seconds'],'after_elapsed':after['elapsed_seconds'],
+        'extra_readset':{path:row for path,row in value['readset'].items()if path not in inventory_files},
+        'scope_label_values':{path:row['selinux_raw_base64']for path,row in value['scope_labels_before'].items()},
+        'remaining_actual_fields':{key:item for key,item in value.items()if key not in DROPPED}}
+    raw=enc(projection);rebuilt,restored=reconstruct(raw,prior_raw,stage_archive_raw,stage_complete_raw,
+                                                   validate_inventory=validate_inventory)
+    need(rebuilt==capture_raw and restored==value,'entire actual original reconstructed without a projection-only comparison')
+    return raw

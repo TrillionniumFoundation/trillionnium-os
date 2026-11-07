@@ -1,0 +1,33 @@
+{
+  "bound01_exit137_root_cause": null,
+  "dump_attempts": 1,
+  "fixed19_credit": 0,
+  "frozen_R6_changed": false,
+  "native_dispatches": 0,
+  "original_failure_preserved": {
+    "command": "test ! -e /data/local/tmp/hepta-natural-isolated-source-control-v150-1.xml && uiautomator dump /data/local/tmp/hepta-natural-isolated-source-control-v150-1.xml && cat /data/local/tmp/hepta-natural-isolated-source-control-v150-1.xml",
+    "rc": 137,
+    "route": [
+      5037,
+      "23"
+    ],
+    "stderr": "Killed\n",
+    "stdout": ""
+  },
+  "passed": 1,
+  "phone_calls": 0,
+  "remote_process_cleanup_verified": false,
+  "schema": "hepta.sender-ui-dump-failure-source-control.v1",
+  "sender_actor_constructions": 0,
+  "sender_sha256": "f90c6ffbf3278b22bf3a48bf055c5ca1cf43c3073c5cc7a852dd09a4cf2eab73",
+  "successful_dump_receipts": 0,
+  "total": 1,
+  "ui_helper_fragment_evaluated": true,
+  "ui_helper_sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70",
+  "wire_calls": [
+    {
+      "command": "test ! -e /data/local/tmp/hepta-natural-isolated-source-control-v150-1.xml && uiautomator dump /data/local/tmp/hepta-natural-isolated-source-control-v150-1.xml && cat /data/local/tmp/hepta-natural-isolated-source-control-v150-1.xml",
+      "timeout": 25
+    }
+  ]
+}
