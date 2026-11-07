@@ -1,0 +1,29 @@
+{
+  "checked_at_utc": "2026-11-07T01:01:42.877053+00:00",
+  "controller_public_sha256": "8c4b0483454ca40db348ac72d8f23cd61a419c424cecf0baf4f5d104357c23a8",
+  "checks": [
+    {
+      "original_key": "unknown_status_current",
+      "public_key": "status_query_redacted",
+      "error_metadata_unchanged": true,
+      "configured_alias_removed": true,
+      "only_exact_alias_span_changed": true,
+      "replacement_marker": "[CONFIGURED_SSH_TARGET_REDACTED]",
+      "redaction_hash_and_byte_count_matches": true
+    },
+    {
+      "original_key": "unknown_read_current",
+      "public_key": "log_query_redacted",
+      "error_metadata_unchanged": true,
+      "configured_alias_removed": true,
+      "only_exact_alias_span_changed": true,
+      "replacement_marker": "[CONFIGURED_SSH_TARGET_REDACTED]",
+      "redaction_hash_and_byte_count_matches": true
+    }
+  ],
+  "private_source_bundle_unchanged": true,
+  "configured_ssh_alias_absent": true,
+  "verdict": "UNKNOWN_PRESERVED_NO_TERMINAL_RECEIPT",
+  "fixed19_credit": 0,
+  "PUB-01": "CLOSED_IN_REVIEWED_EXPORT"
+}
