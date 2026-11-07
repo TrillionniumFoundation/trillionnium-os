@@ -1,0 +1,2505 @@
+{
+  "schema": "razr60.current-head-all-attempt-ci-audit.v1",
+  "captured_at": "2026-11-07T05:41:30.504Z",
+  "filter": "all",
+  "rows": [
+    {
+      "pr": 104,
+      "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/2541c380f3f718803983c918f6a20793479c1127/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 12,
+      "returned_count": 12,
+      "inventory_complete": true,
+      "counts": {
+        "success": 11,
+        "failure": 1
+      },
+      "checks": [
+        {
+          "id": 125990557191,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:49:40Z",
+          "completed_at": "2026-11-03T14:49:44Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165360/job/125990557191"
+        },
+        {
+          "id": 125990309979,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-03T14:49:35Z",
+          "completed_at": "2026-11-03T14:49:46Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165273/job/125990309979"
+        },
+        {
+          "id": 125986918096,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:42:09Z",
+          "completed_at": "2026-11-03T14:42:41Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656166013/job/125986918096"
+        },
+        {
+          "id": 125986916877,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:46:19Z",
+          "completed_at": "2026-11-03T14:46:26Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165273/job/125986916877"
+        },
+        {
+          "id": 125986916515,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:42:38Z",
+          "completed_at": "2026-11-03T14:43:06Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165273/job/125986916515"
+        },
+        {
+          "id": 125986916443,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:46:10Z",
+          "completed_at": "2026-11-03T14:46:42Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165273/job/125986916443"
+        },
+        {
+          "id": 125986916435,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:46:09Z",
+          "completed_at": "2026-11-03T14:47:14Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165273/job/125986916435"
+        },
+        {
+          "id": 125986916385,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:44:53Z",
+          "completed_at": "2026-11-03T14:45:03Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165710/job/125986916385"
+        },
+        {
+          "id": 125986916027,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:45:48Z",
+          "completed_at": "2026-11-03T14:45:58Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165710/job/125986916027"
+        },
+        {
+          "id": 125986915800,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:42:07Z",
+          "completed_at": "2026-11-03T14:46:03Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165273/job/125986915800"
+        },
+        {
+          "id": 125986915478,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:42:07Z",
+          "completed_at": "2026-11-03T14:42:21Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165579/job/125986915478"
+        },
+        {
+          "id": 125986914808,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-03T14:41:42Z",
+          "completed_at": "2026-11-03T14:47:40Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165360/job/125986914808"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 125990309979,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41656165273/job/125990309979",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/125990309979.txt",
+          "evidence_lines": [
+            "2026-11-03T14:49:37.5388320Z   DOCS_RESULT: success",
+            "2026-11-03T14:49:37.5388583Z   RUST_RESULT: success",
+            "2026-11-03T14:49:37.5388830Z   PLANNED_RESULT: success",
+            "2026-11-03T14:49:37.5389095Z   GOVERNANCE_RESULT: success",
+            "2026-11-03T14:49:37.5389557Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-03T14:49:41.1312654Z Ran 34 tests in 0.697s",
+            "2026-11-03T14:49:43.8531725Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-03T14:49:43.8656519Z ##[error]Process completed with exit code 2."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 105,
+      "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/c3f10ff04485b4d365572ef0fff8495d2daf4d16/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 25,
+      "returned_count": 25,
+      "inventory_complete": true,
+      "counts": {
+        "success": 24,
+        "failure": 1
+      },
+      "checks": [
+        {
+          "id": 126443806273,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T07:14:43Z",
+          "completed_at": "2026-11-04T07:14:46Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41790187744/job/126443806273"
+        },
+        {
+          "id": 126441493652,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T07:08:27Z",
+          "completed_at": "2026-11-04T07:08:37Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41790187822/job/126441493652"
+        },
+        {
+          "id": 126441493543,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T07:08:28Z",
+          "completed_at": "2026-11-04T07:08:41Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41790187708/job/126441493543"
+        },
+        {
+          "id": 126441493504,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T07:08:27Z",
+          "completed_at": "2026-11-04T07:14:41Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41790187744/job/126441493504"
+        },
+        {
+          "id": 126441493489,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T07:08:27Z",
+          "completed_at": "2026-11-04T07:08:36Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41790187822/job/126441493489"
+        },
+        {
+          "id": 126439640140,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T07:03:26Z",
+          "completed_at": "2026-11-04T07:03:29Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906076/job/126439640140"
+        },
+        {
+          "id": 126439044541,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T07:01:47Z",
+          "completed_at": "2026-11-04T07:01:55Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788855004/job/126439044541"
+        },
+        {
+          "id": 126439028168,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-04T07:01:44Z",
+          "completed_at": "2026-11-04T07:01:55Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906047/job/126439028168"
+        },
+        {
+          "id": 126437412794,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T06:58:17Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906047/job/126437412794"
+        },
+        {
+          "id": 126437412568,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T06:57:19Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906047/job/126437412568"
+        },
+        {
+          "id": 126437412453,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T06:57:34Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906047/job/126437412453"
+        },
+        {
+          "id": 126437412319,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T07:01:41Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906047/job/126437412319"
+        },
+        {
+          "id": 126437412256,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T06:57:21Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906131/job/126437412256"
+        },
+        {
+          "id": 126437412133,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T07:03:23Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906076/job/126437412133"
+        },
+        {
+          "id": 126437412125,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T06:57:37Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906047/job/126437412125"
+        },
+        {
+          "id": 126437412111,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T06:57:20Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906039/job/126437412111"
+        },
+        {
+          "id": 126437412027,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:09Z",
+          "completed_at": "2026-11-04T06:57:17Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906067/job/126437412027"
+        },
+        {
+          "id": 126437411894,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:57:19Z",
+          "completed_at": "2026-11-04T06:57:27Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906067/job/126437411894"
+        },
+        {
+          "id": 126437241955,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:56:40Z",
+          "completed_at": "2026-11-04T07:01:44Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788855004/job/126437241955"
+        },
+        {
+          "id": 126437241883,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:56:39Z",
+          "completed_at": "2026-11-04T06:56:48Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788855055/job/126437241883"
+        },
+        {
+          "id": 126437241882,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:56:39Z",
+          "completed_at": "2026-11-04T06:57:13Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788855004/job/126437241882"
+        },
+        {
+          "id": 126437241835,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:56:39Z",
+          "completed_at": "2026-11-04T06:57:49Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788855004/job/126437241835"
+        },
+        {
+          "id": 126437241828,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:56:39Z",
+          "completed_at": "2026-11-04T06:57:08Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788855004/job/126437241828"
+        },
+        {
+          "id": 126437241626,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:56:39Z",
+          "completed_at": "2026-11-04T06:56:47Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788855004/job/126437241626"
+        },
+        {
+          "id": 126437241588,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-04T06:56:39Z",
+          "completed_at": "2026-11-04T06:56:50Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788854919/job/126437241588"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 126439028168,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41788906047/job/126439028168",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/126439028168.txt",
+          "evidence_lines": [
+            "2026-11-04T07:01:46.1188587Z   DOCS_RESULT: success",
+            "2026-11-04T07:01:46.1189546Z   RUST_RESULT: success",
+            "2026-11-04T07:01:46.1190436Z   PLANNED_RESULT: success",
+            "2026-11-04T07:01:46.1191348Z   GOVERNANCE_RESULT: success",
+            "2026-11-04T07:01:46.1192344Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-04T07:01:51.9381174Z Ran 34 tests in 1.060s",
+            "2026-11-04T07:01:53.7661881Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-04T07:01:53.7826050Z ##[error]Process completed with exit code 2."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 106,
+      "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/fed5452e8a94939c6d88bc24c47844b37f8f7368/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 20,
+      "returned_count": 20,
+      "inventory_complete": true,
+      "counts": {
+        "success": 19,
+        "failure": 1
+      },
+      "checks": [
+        {
+          "id": 127362077679,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T21:38:29Z",
+          "completed_at": "2026-11-05T21:38:47Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174413/job/127362077679"
+        },
+        {
+          "id": 127347484852,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-05T21:33:36Z",
+          "completed_at": "2026-11-05T21:33:57Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180162/job/127347484852"
+        },
+        {
+          "id": 127243368104,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T19:26:54Z",
+          "completed_at": "2026-11-05T19:26:57Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180217/job/127243368104"
+        },
+        {
+          "id": 127170185347,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:55:58Z",
+          "completed_at": "2026-11-05T15:56:32Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174413/job/127170185347"
+        },
+        {
+          "id": 127170185281,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:40:07Z",
+          "completed_at": "2026-11-05T15:40:47Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174413/job/127170185281"
+        },
+        {
+          "id": 127170185209,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:43:03Z",
+          "completed_at": "2026-11-05T15:47:29Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174413/job/127170185209"
+        },
+        {
+          "id": 127170185190,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:51:43Z",
+          "completed_at": "2026-11-05T15:52:00Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174413/job/127170185190"
+        },
+        {
+          "id": 127170184895,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T16:01:35Z",
+          "completed_at": "2026-11-05T16:02:42Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174413/job/127170184895"
+        },
+        {
+          "id": 127167850318,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:37:16Z",
+          "completed_at": "2026-11-05T15:37:30Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180162/job/127167850318"
+        },
+        {
+          "id": 127167850242,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:36:50Z",
+          "completed_at": "2026-11-05T15:37:19Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180162/job/127167850242"
+        },
+        {
+          "id": 127167850102,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:36:50Z",
+          "completed_at": "2026-11-05T15:37:24Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180162/job/127167850102"
+        },
+        {
+          "id": 127167850037,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:13:15Z",
+          "completed_at": "2026-11-05T15:14:26Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180162/job/127167850037"
+        },
+        {
+          "id": 127167849845,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T15:29:42Z",
+          "completed_at": "2026-11-05T15:34:25Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180162/job/127167849845"
+        },
+        {
+          "id": 127148453318,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T12:19:18Z",
+          "completed_at": "2026-11-05T12:25:01Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180217/job/127148453318"
+        },
+        {
+          "id": 127130021428,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T10:38:30Z",
+          "completed_at": "2026-11-05T10:38:40Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180171/job/127130021428"
+        },
+        {
+          "id": 127130021156,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T10:30:52Z",
+          "completed_at": "2026-11-05T10:31:02Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180171/job/127130021156"
+        },
+        {
+          "id": 127130020564,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T10:11:28Z",
+          "completed_at": "2026-11-05T10:11:41Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180206/job/127130020564"
+        },
+        {
+          "id": 127130020336,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T10:19:19Z",
+          "completed_at": "2026-11-05T10:19:35Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180186/job/127130020336"
+        },
+        {
+          "id": 127130001690,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T10:07:20Z",
+          "completed_at": "2026-11-05T10:07:31Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174368/job/127130001690"
+        },
+        {
+          "id": 127130001510,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T10:23:19Z",
+          "completed_at": "2026-11-05T10:23:29Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993174363/job/127130001510"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 127347484852,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41993180162/job/127347484852",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/127347484852.txt",
+          "evidence_lines": [
+            "2026-11-05T21:33:38.1441018Z   DOCS_RESULT: success",
+            "2026-11-05T21:33:38.1441468Z   RUST_RESULT: success",
+            "2026-11-05T21:33:38.1441879Z   PLANNED_RESULT: success",
+            "2026-11-05T21:33:38.1442314Z   GOVERNANCE_RESULT: success",
+            "2026-11-05T21:33:38.1442774Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-05T21:33:53.4835750Z Ran 34 tests in 0.755s",
+            "2026-11-05T21:33:55.6487387Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-05T21:33:55.6626219Z ##[error]Process completed with exit code 2."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 107,
+      "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/8cccf753229eb53d666a6eae5a330552a2d110cc/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 34,
+      "returned_count": 34,
+      "inventory_complete": true,
+      "counts": {
+        "failure": 5,
+        "success": 23,
+        "cancelled": 6
+      },
+      "checks": [
+        {
+          "id": 127668339531,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:10:13Z",
+          "completed_at": "2026-11-06T03:10:34Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127668339531"
+        },
+        {
+          "id": 127654210354,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:56:01Z",
+          "completed_at": "2026-11-06T02:56:04Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438075/job/127654210354"
+        },
+        {
+          "id": 127617813745,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:21:23Z",
+          "completed_at": "2026-11-05T08:21:32Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127617813745"
+        },
+        {
+          "id": 127617790892,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:21:46Z",
+          "completed_at": "2026-11-05T08:22:36Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127617790892"
+        },
+        {
+          "id": 127617752626,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T19:11:30Z",
+          "completed_at": "2026-11-05T19:15:21Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127617752626"
+        },
+        {
+          "id": 127617752131,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:23:23Z",
+          "completed_at": "2026-11-05T08:23:52Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127617752131"
+        },
+        {
+          "id": 127617750036,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:16:14Z",
+          "completed_at": "2026-11-06T02:16:49Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127617750036"
+        },
+        {
+          "id": 127579918114,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T01:31:58Z",
+          "completed_at": "2026-11-06T01:36:50Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438075/job/127579918114"
+        },
+        {
+          "id": 127472604703,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-05T23:45:17Z",
+          "completed_at": "2026-11-05T23:45:21Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127472604703"
+        },
+        {
+          "id": 127232010365,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:21:46Z",
+          "completed_at": "2026-11-05T08:22:36Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127232010365"
+        },
+        {
+          "id": 127231999603,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:23:23Z",
+          "completed_at": "2026-11-05T08:23:52Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127231999603"
+        },
+        {
+          "id": 127231988702,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:21:23Z",
+          "completed_at": "2026-11-05T08:21:32Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127231988702"
+        },
+        {
+          "id": 127231932270,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-05T08:12:37Z",
+          "completed_at": "2026-11-05T08:12:39Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127231932270"
+        },
+        {
+          "id": 127231929674,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T19:11:30Z",
+          "completed_at": "2026-11-05T19:15:21Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127231929674"
+        },
+        {
+          "id": 127158512281,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-05T09:29:37Z",
+          "completed_at": "2026-11-05T09:29:39Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427338/job/127158512281"
+        },
+        {
+          "id": 127134131298,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-05T09:09:27Z",
+          "completed_at": "2026-11-05T09:09:31Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127134131298"
+        },
+        {
+          "id": 127124927811,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-05T09:33:49Z",
+          "completed_at": "2026-11-05T09:33:54Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438075/job/127124927811"
+        },
+        {
+          "id": 127089048941,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-05T08:00:56Z",
+          "completed_at": "2026-11-05T08:03:42Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438075/job/127089048941"
+        },
+        {
+          "id": 127089048905,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-05T08:22:13Z",
+          "completed_at": "2026-11-05T08:26:16Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127089048905"
+        },
+        {
+          "id": 127089048795,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:21:46Z",
+          "completed_at": "2026-11-05T08:22:36Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127089048795"
+        },
+        {
+          "id": 127089048753,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:23:23Z",
+          "completed_at": "2026-11-05T08:23:52Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127089048753"
+        },
+        {
+          "id": 127089048743,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:21:23Z",
+          "completed_at": "2026-11-05T08:21:32Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127089048743"
+        },
+        {
+          "id": 127089048614,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-05T08:12:37Z",
+          "completed_at": "2026-11-05T08:12:39Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127089048614"
+        },
+        {
+          "id": 127089048557,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T07:57:51Z",
+          "completed_at": "2026-11-05T07:58:01Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438106/job/127089048557"
+        },
+        {
+          "id": 127089048432,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:05:42Z",
+          "completed_at": "2026-11-05T08:05:50Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438073/job/127089048432"
+        },
+        {
+          "id": 127089048215,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:00:31Z",
+          "completed_at": "2026-11-05T08:00:44Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438099/job/127089048215"
+        },
+        {
+          "id": 127089048019,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:05:28Z",
+          "completed_at": "2026-11-05T08:05:39Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438073/job/127089048019"
+        },
+        {
+          "id": 127089015450,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-05T09:20:31Z",
+          "completed_at": "2026-11-05T09:22:03Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427338/job/127089015450"
+        },
+        {
+          "id": 127089015369,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:25:13Z",
+          "completed_at": "2026-11-05T08:26:21Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427338/job/127089015369"
+        },
+        {
+          "id": 127089015358,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:23:11Z",
+          "completed_at": "2026-11-05T08:23:20Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427338/job/127089015358"
+        },
+        {
+          "id": 127089015341,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:13:22Z",
+          "completed_at": "2026-11-05T08:13:35Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427347/job/127089015341"
+        },
+        {
+          "id": 127089015266,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T08:21:25Z",
+          "completed_at": "2026-11-05T08:21:54Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427338/job/127089015266"
+        },
+        {
+          "id": 127089015242,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-05T07:52:32Z",
+          "completed_at": "2026-11-05T07:52:42Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427367/job/127089015242"
+        },
+        {
+          "id": 127089015019,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-05T08:12:35Z",
+          "completed_at": "2026-11-05T08:47:35Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427338/job/127089015019"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 127668339531,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127668339531",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/127668339531.txt",
+          "evidence_lines": [
+            "2026-11-06T03:10:15.9791826Z   DOCS_RESULT: success",
+            "2026-11-06T03:10:15.9792556Z   RUST_RESULT: success",
+            "2026-11-06T03:10:15.9793194Z   PLANNED_RESULT: success",
+            "2026-11-06T03:10:15.9793851Z   GOVERNANCE_RESULT: success",
+            "2026-11-06T03:10:15.9794502Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-06T03:10:30.9140754Z Ran 34 tests in 0.958s",
+            "2026-11-06T03:10:33.0558923Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-06T03:10:33.0732670Z ##[error]Process completed with exit code 2."
+          ]
+        },
+        {
+          "job_id": 127472604703,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127472604703",
+          "conclusion": "failure",
+          "cause": "REQUIRED_UPSTREAM_JOB_CANCELLED_CAUSE_NOT_ESTABLISHED",
+          "original_log": "logs/127472604703.txt",
+          "evidence_lines": [
+            "2026-11-05T23:45:19.1651436Z   DOCS_RESULT: success",
+            "2026-11-05T23:45:19.1652063Z   RUST_RESULT: success",
+            "2026-11-05T23:45:19.1652601Z   PLANNED_RESULT: success",
+            "2026-11-05T23:45:19.1653152Z   GOVERNANCE_RESULT: success",
+            "2026-11-05T23:45:19.1653734Z   ANDROID_PACKAGING_RESULT: cancelled",
+            "2026-11-05T23:45:19.1775600Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127158512281,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980427338/job/127158512281",
+          "conclusion": "failure",
+          "cause": "REQUIRED_UPSTREAM_JOB_CANCELLED_CAUSE_NOT_ESTABLISHED",
+          "original_log": "logs/127158512281.txt",
+          "evidence_lines": [
+            "2026-11-05T09:29:38.5896162Z   DOCS_RESULT: cancelled",
+            "2026-11-05T09:29:38.5896583Z   RUST_RESULT: success",
+            "2026-11-05T09:29:38.5897042Z   PLANNED_RESULT: success",
+            "2026-11-05T09:29:38.5897475Z   GOVERNANCE_RESULT: success",
+            "2026-11-05T09:29:38.5897938Z   ANDROID_PACKAGING_RESULT: cancelled",
+            "2026-11-05T09:29:38.6007260Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127134131298,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438118/job/127134131298",
+          "conclusion": "failure",
+          "cause": "REQUIRED_UPSTREAM_JOB_CANCELLED_CAUSE_NOT_ESTABLISHED",
+          "original_log": "logs/127134131298.txt",
+          "evidence_lines": [
+            "2026-11-05T09:09:29.0476596Z   DOCS_RESULT: cancelled",
+            "2026-11-05T09:09:29.0477259Z   RUST_RESULT: success",
+            "2026-11-05T09:09:29.0477855Z   PLANNED_RESULT: success",
+            "2026-11-05T09:09:29.0478457Z   GOVERNANCE_RESULT: success",
+            "2026-11-05T09:09:29.0479062Z   ANDROID_PACKAGING_RESULT: cancelled",
+            "2026-11-05T09:09:29.0582278Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127124927811,
+          "name": "L1 exact-source-head aggregate candidate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/41980438075/job/127124927811",
+          "conclusion": "failure",
+          "cause": "REQUIRED_UPSTREAM_JOB_CANCELLED_CAUSE_NOT_ESTABLISHED",
+          "original_log": "logs/127124927811.txt",
+          "evidence_lines": [
+            "2026-11-05T09:33:51.7546570Z   SYNTHETIC_RESULT: cancelled",
+            "2026-11-05T09:33:51.7698034Z ##[error]Process completed with exit code 1."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 108,
+      "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/653ce1942c3c7d1d3faa1260b53765dd082f32fb/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 20,
+      "returned_count": 20,
+      "inventory_complete": true,
+      "counts": {
+        "failure": 10,
+        "success": 10
+      },
+      "checks": [
+        {
+          "id": 127688114312,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:49:29Z",
+          "completed_at": "2026-11-06T03:49:31Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127688114312"
+        },
+        {
+          "id": 127687330788,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:53:44Z",
+          "completed_at": "2026-11-06T03:53:47Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127687330788"
+        },
+        {
+          "id": 127684445080,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:36:58Z",
+          "completed_at": "2026-11-06T03:37:01Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169680/job/127684445080"
+        },
+        {
+          "id": 127664760912,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:13:40Z",
+          "completed_at": "2026-11-06T03:14:56Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127664760912"
+        },
+        {
+          "id": 127664760842,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:13:40Z",
+          "completed_at": "2026-11-06T03:13:59Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127664760842"
+        },
+        {
+          "id": 127664760532,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:10:42Z",
+          "completed_at": "2026-11-06T03:11:20Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127664760532"
+        },
+        {
+          "id": 127664760439,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:09:34Z",
+          "completed_at": "2026-11-06T03:10:16Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127664760439"
+        },
+        {
+          "id": 127664760277,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:04:27Z",
+          "completed_at": "2026-11-06T03:05:03Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127664760277"
+        },
+        {
+          "id": 127664402844,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:11:23Z",
+          "completed_at": "2026-11-06T03:12:03Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127664402844"
+        },
+        {
+          "id": 127664402682,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:11:22Z",
+          "completed_at": "2026-11-06T03:12:38Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127664402682"
+        },
+        {
+          "id": 127664402674,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:08:11Z",
+          "completed_at": "2026-11-06T03:08:29Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127664402674"
+        },
+        {
+          "id": 127664402563,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:07:22Z",
+          "completed_at": "2026-11-06T03:08:04Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127664402563"
+        },
+        {
+          "id": 127664402383,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:07:03Z",
+          "completed_at": "2026-11-06T03:07:55Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127664402383"
+        },
+        {
+          "id": 127664267754,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:03:41Z",
+          "completed_at": "2026-11-06T03:04:11Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169680/job/127664267754"
+        },
+        {
+          "id": 127658065470,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:09:18Z",
+          "completed_at": "2026-11-06T03:09:41Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169669/job/127658065470"
+        },
+        {
+          "id": 127658065097,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:07:54Z",
+          "completed_at": "2026-11-06T03:08:14Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169669/job/127658065097"
+        },
+        {
+          "id": 127658064827,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:59:09Z",
+          "completed_at": "2026-11-06T02:59:34Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169679/job/127658064827"
+        },
+        {
+          "id": 127658064410,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T02:55:53Z",
+          "completed_at": "2026-11-06T02:56:14Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169675/job/127658064410"
+        },
+        {
+          "id": 127658043854,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T02:57:17Z",
+          "completed_at": "2026-11-06T02:57:34Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163123/job/127658043854"
+        },
+        {
+          "id": 127658043312,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:56:43Z",
+          "completed_at": "2026-11-06T02:57:07Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163151/job/127658043312"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 127688114312,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127688114312",
+          "conclusion": "failure",
+          "cause": "REQUIRED_UPSTREAM_SOURCE_OR_GOVERNANCE_FAILED",
+          "original_log": "logs/127688114312.txt",
+          "evidence_lines": [
+            "2026-11-06T03:49:30.9136878Z   DOCS_RESULT: failure",
+            "2026-11-06T03:49:30.9137581Z   RUST_RESULT: success",
+            "2026-11-06T03:49:30.9138050Z   PLANNED_RESULT: success",
+            "2026-11-06T03:49:30.9138544Z   GOVERNANCE_RESULT: failure",
+            "2026-11-06T03:49:30.9139050Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-06T03:49:30.9260491Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127687330788,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127687330788",
+          "conclusion": "failure",
+          "cause": "REQUIRED_UPSTREAM_SOURCE_OR_GOVERNANCE_FAILED",
+          "original_log": "logs/127687330788.txt",
+          "evidence_lines": [
+            "2026-11-06T03:53:45.8514351Z   DOCS_RESULT: failure",
+            "2026-11-06T03:53:45.8514720Z   RUST_RESULT: success",
+            "2026-11-06T03:53:45.8515248Z   PLANNED_RESULT: success",
+            "2026-11-06T03:53:45.8515643Z   GOVERNANCE_RESULT: failure",
+            "2026-11-06T03:53:45.8516048Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-06T03:53:45.8608075Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127684445080,
+          "name": "L1 exact-source-head aggregate candidate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169680/job/127684445080",
+          "conclusion": "failure",
+          "cause": "REQUIRED_SYNTHETIC_MERGE_FAILED",
+          "original_log": "logs/127684445080.txt",
+          "evidence_lines": [
+            "2026-11-06T03:36:59.9016013Z   SYNTHETIC_RESULT: failure",
+            "2026-11-06T03:36:59.9286668Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127664760842,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127664760842",
+          "conclusion": "failure",
+          "cause": "LICENSE_EMAIL_AUTOLINK_REJECTED_BY_DOCUMENT_READER",
+          "original_log": "logs/127664760842.txt",
+          "evidence_lines": [
+            "2026-11-06T03:13:57.8747712Z repository authority verification failed: projects/razr60/phone-local-v150/executor/r4/vendor/hash/rotate-bits/LICENSE.md: paragraph at visible line 3: malformed or ambiguously parsed HTML tag",
+            "2026-11-06T03:13:57.8814568Z G1 documentation verification failed: repository authority/profile verification failed",
+            "2026-11-06T03:13:57.8903872Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127664760277,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169722/job/127664760277",
+          "conclusion": "failure",
+          "cause": "LICENSE_EMAIL_AUTOLINK_REJECTED_BY_DOCUMENT_READER",
+          "original_log": "logs/127664760277.txt",
+          "evidence_lines": [
+            "2026-11-06T03:05:00.3577007Z repository authority verification failed: projects/razr60/phone-local-v150/executor/r4/vendor/hash/rotate-bits/LICENSE.md: paragraph at visible line 3: malformed or ambiguously parsed HTML tag",
+            "2026-11-06T03:05:00.3617377Z G1 documentation verification failed: repository authority/profile verification failed",
+            "2026-11-06T03:05:00.3679561Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127664402674,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127664402674",
+          "conclusion": "failure",
+          "cause": "LICENSE_EMAIL_AUTOLINK_REJECTED_BY_DOCUMENT_READER",
+          "original_log": "logs/127664402674.txt",
+          "evidence_lines": [
+            "2026-11-06T03:08:27.7328425Z repository authority verification failed: projects/razr60/phone-local-v150/executor/r4/vendor/hash/rotate-bits/LICENSE.md: paragraph at visible line 3: malformed or ambiguously parsed HTML tag",
+            "2026-11-06T03:08:27.7394498Z G1 documentation verification failed: repository authority/profile verification failed",
+            "2026-11-06T03:08:27.7485116Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127664402383,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163136/job/127664402383",
+          "conclusion": "failure",
+          "cause": "LICENSE_EMAIL_AUTOLINK_REJECTED_BY_DOCUMENT_READER",
+          "original_log": "logs/127664402383.txt",
+          "evidence_lines": [
+            "2026-11-06T03:07:51.5322443Z repository authority verification failed: projects/razr60/phone-local-v150/executor/r4/vendor/hash/rotate-bits/LICENSE.md: paragraph at visible line 3: malformed or ambiguously parsed HTML tag",
+            "2026-11-06T03:07:51.5381815Z G1 documentation verification failed: repository authority/profile verification failed",
+            "2026-11-06T03:07:51.5452951Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127664267754,
+          "name": "L1 exact two-parent merge source qualification",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169680/job/127664267754",
+          "conclusion": "failure",
+          "cause": "ORDERED_MERGE_PARENT_IDENTITY_GUARD_REFUSAL_NO_TIP_VALUES_RECORDED",
+          "original_log": "logs/127664267754.txt",
+          "evidence_lines": [
+            "2026-11-06T03:04:08.5508328Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127658064410,
+          "name": "R5 alias to canonical G1 source checks",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146169675/job/127658064410",
+          "conclusion": "failure",
+          "cause": "LICENSE_EMAIL_AUTOLINK_REJECTED_BY_DOCUMENT_READER",
+          "original_log": "logs/127658064410.txt",
+          "evidence_lines": [
+            "2026-11-06T02:56:11.5197729Z repository authority verification failed: projects/razr60/phone-local-v150/executor/r4/vendor/hash/rotate-bits/LICENSE.md: paragraph at visible line 3: malformed or ambiguously parsed HTML tag",
+            "2026-11-06T02:56:11.5257346Z G1 documentation verification failed: repository authority/profile verification failed",
+            "2026-11-06T02:56:11.5333971Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 127658043854,
+          "name": "R5 alias to canonical G1 source checks",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42146163123/job/127658043854",
+          "conclusion": "failure",
+          "cause": "LICENSE_EMAIL_AUTOLINK_REJECTED_BY_DOCUMENT_READER",
+          "original_log": "logs/127658043854.txt",
+          "evidence_lines": [
+            "2026-11-06T02:57:33.6025100Z repository authority verification failed: projects/razr60/phone-local-v150/executor/r4/vendor/hash/rotate-bits/LICENSE.md: paragraph at visible line 3: malformed or ambiguously parsed HTML tag",
+            "2026-11-06T02:57:33.6096473Z G1 documentation verification failed: repository authority/profile verification failed",
+            "2026-11-06T02:57:33.6194115Z ##[error]Process completed with exit code 1."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 109,
+      "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/75cb48b0098664f68d19dbb878a3a902a5a6c3b0/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 20,
+      "returned_count": 20,
+      "inventory_complete": true,
+      "counts": {
+        "success": 19,
+        "failure": 1
+      },
+      "checks": [
+        {
+          "id": 127688910371,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:45:13Z",
+          "completed_at": "2026-11-06T03:45:16Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399225/job/127688910371"
+        },
+        {
+          "id": 127668017926,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:09:43Z",
+          "completed_at": "2026-11-06T03:09:59Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080433/job/127668017926"
+        },
+        {
+          "id": 127667817019,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T03:07:05Z",
+          "completed_at": "2026-11-06T03:07:25Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399154/job/127667817019"
+        },
+        {
+          "id": 127601865855,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:10:26Z",
+          "completed_at": "2026-11-06T02:11:42Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399154/job/127601865855"
+        },
+        {
+          "id": 127601865812,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:03:35Z",
+          "completed_at": "2026-11-06T02:04:12Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399154/job/127601865812"
+        },
+        {
+          "id": 127601865803,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:11:25Z",
+          "completed_at": "2026-11-06T02:11:46Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399154/job/127601865803"
+        },
+        {
+          "id": 127601865764,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:11:15Z",
+          "completed_at": "2026-11-06T02:15:24Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399154/job/127601865764"
+        },
+        {
+          "id": 127601865502,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:04:14Z",
+          "completed_at": "2026-11-06T02:04:34Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399033/job/127601865502"
+        },
+        {
+          "id": 127601865420,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:11:15Z",
+          "completed_at": "2026-11-06T02:11:53Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399154/job/127601865420"
+        },
+        {
+          "id": 127601865323,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:06:17Z",
+          "completed_at": "2026-11-06T02:06:39Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129398951/job/127601865323"
+        },
+        {
+          "id": 127601865216,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T03:11:10Z",
+          "completed_at": "2026-11-06T03:17:14Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399225/job/127601865216"
+        },
+        {
+          "id": 127601864648,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:04:00Z",
+          "completed_at": "2026-11-06T02:04:18Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129398951/job/127601864648"
+        },
+        {
+          "id": 127601863311,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:03:36Z",
+          "completed_at": "2026-11-06T02:03:57Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129398897/job/127601863311"
+        },
+        {
+          "id": 127600893973,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:11:05Z",
+          "completed_at": "2026-11-06T02:11:41Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080433/job/127600893973"
+        },
+        {
+          "id": 127600893968,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:10:40Z",
+          "completed_at": "2026-11-06T02:11:56Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080433/job/127600893968"
+        },
+        {
+          "id": 127600893966,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:10:53Z",
+          "completed_at": "2026-11-06T02:11:12Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080433/job/127600893966"
+        },
+        {
+          "id": 127600893944,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:10:35Z",
+          "completed_at": "2026-11-06T02:11:29Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080433/job/127600893944"
+        },
+        {
+          "id": 127600893933,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T01:56:59Z",
+          "completed_at": "2026-11-06T01:57:18Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080438/job/127600893933"
+        },
+        {
+          "id": 127600893926,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T01:57:33Z",
+          "completed_at": "2026-11-06T01:57:51Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080451/job/127600893926"
+        },
+        {
+          "id": 127600893910,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T02:11:04Z",
+          "completed_at": "2026-11-06T02:15:57Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129080433/job/127600893910"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 127667817019,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42129399154/job/127667817019",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/127667817019.txt",
+          "evidence_lines": [
+            "2026-11-06T03:07:07.3097968Z   DOCS_RESULT: success",
+            "2026-11-06T03:07:07.3098372Z   RUST_RESULT: success",
+            "2026-11-06T03:07:07.3098748Z   PLANNED_RESULT: success",
+            "2026-11-06T03:07:07.3099141Z   GOVERNANCE_RESULT: success",
+            "2026-11-06T03:07:07.3099567Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-06T03:07:21.5769449Z Ran 34 tests in 0.827s",
+            "2026-11-06T03:07:23.0687816Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-06T03:07:23.0818031Z ##[error]Process completed with exit code 2."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 110,
+      "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/a98aff68ea3f7277272cfa2bf9df02454a3b05fe/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 20,
+      "returned_count": 20,
+      "inventory_complete": true,
+      "counts": {
+        "success": 19,
+        "failure": 1
+      },
+      "checks": [
+        {
+          "id": 127915908169,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:22:12Z",
+          "completed_at": "2026-11-06T13:22:14Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224076083/job/127915908169"
+        },
+        {
+          "id": 127915588693,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-06T13:21:29Z",
+          "completed_at": "2026-11-06T13:21:52Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224075752/job/127915588693"
+        },
+        {
+          "id": 127914868020,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:19:53Z",
+          "completed_at": "2026-11-06T13:20:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967276/job/127914868020"
+        },
+        {
+          "id": 127913007616,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:34Z",
+          "completed_at": "2026-11-06T13:16:54Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224076131/job/127913007616"
+        },
+        {
+          "id": 127913007167,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:15:53Z",
+          "completed_at": "2026-11-06T13:22:09Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224076083/job/127913007167"
+        },
+        {
+          "id": 127913007067,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:15:48Z",
+          "completed_at": "2026-11-06T13:16:09Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224076151/job/127913007067"
+        },
+        {
+          "id": 127913007061,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:15:56Z",
+          "completed_at": "2026-11-06T13:16:17Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224076131/job/127913007061"
+        },
+        {
+          "id": 127913006971,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:22Z",
+          "completed_at": "2026-11-06T13:16:46Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224076134/job/127913006971"
+        },
+        {
+          "id": 127913006229,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:28Z",
+          "completed_at": "2026-11-06T13:17:04Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224075752/job/127913006229"
+        },
+        {
+          "id": 127913006051,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:34Z",
+          "completed_at": "2026-11-06T13:16:54Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224075752/job/127913006051"
+        },
+        {
+          "id": 127913005917,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:19Z",
+          "completed_at": "2026-11-06T13:16:53Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224075752/job/127913005917"
+        },
+        {
+          "id": 127913005781,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:27Z",
+          "completed_at": "2026-11-06T13:17:35Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224075752/job/127913005781"
+        },
+        {
+          "id": 127913005464,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:08Z",
+          "completed_at": "2026-11-06T13:21:26Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224075752/job/127913005464"
+        },
+        {
+          "id": 127912639546,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:12Z",
+          "completed_at": "2026-11-06T13:16:32Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967276/job/127912639546"
+        },
+        {
+          "id": 127912639400,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:15:25Z",
+          "completed_at": "2026-11-06T13:15:46Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967379/job/127912639400"
+        },
+        {
+          "id": 127912639209,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:15:45Z",
+          "completed_at": "2026-11-06T13:16:23Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967276/job/127912639209"
+        },
+        {
+          "id": 127912639177,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:11Z",
+          "completed_at": "2026-11-06T13:17:26Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967276/job/127912639177"
+        },
+        {
+          "id": 127912639166,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:16:09Z",
+          "completed_at": "2026-11-06T13:16:55Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967276/job/127912639166"
+        },
+        {
+          "id": 127912638972,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:15:34Z",
+          "completed_at": "2026-11-06T13:15:57Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967313/job/127912638972"
+        },
+        {
+          "id": 127912638716,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T13:15:43Z",
+          "completed_at": "2026-11-06T13:19:50Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42223967276/job/127912638716"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 127915588693,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42224075752/job/127915588693",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/127915588693.txt",
+          "evidence_lines": [
+            "2026-11-06T13:21:31.1512497Z   DOCS_RESULT: success",
+            "2026-11-06T13:21:31.1512896Z   RUST_RESULT: success",
+            "2026-11-06T13:21:31.1513279Z   PLANNED_RESULT: success",
+            "2026-11-06T13:21:31.1513666Z   GOVERNANCE_RESULT: success",
+            "2026-11-06T13:21:31.1514072Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-06T13:21:49.1010774Z Ran 34 tests in 1.409s",
+            "2026-11-06T13:21:51.1434067Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-06T13:21:51.1569247Z ##[error]Process completed with exit code 2."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 111,
+      "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/ca3f26100c57579bcb740488e4a7f9ec8b912e4d/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 28,
+      "returned_count": 28,
+      "inventory_complete": true,
+      "counts": {
+        "failure": 2,
+        "cancelled": 7,
+        "success": 19
+      },
+      "checks": [
+        {
+          "id": 128249969877,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-07T01:22:07Z",
+          "completed_at": "2026-11-07T01:22:11Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631911/job/128249969877"
+        },
+        {
+          "id": 128247307327,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-07T01:00:46Z",
+          "completed_at": "2026-11-07T01:09:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631911/job/128247307327"
+        },
+        {
+          "id": 128247307296,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-07T01:00:46Z",
+          "completed_at": "2026-11-07T01:09:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631911/job/128247307296"
+        },
+        {
+          "id": 128247307273,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-07T01:00:46Z",
+          "completed_at": "2026-11-07T01:09:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631911/job/128247307273"
+        },
+        {
+          "id": 128247307164,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-07T01:00:46Z",
+          "completed_at": "2026-11-07T01:09:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631911/job/128247307164"
+        },
+        {
+          "id": 128247307081,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-07T01:00:46Z",
+          "completed_at": "2026-11-07T01:09:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631825/job/128247307081"
+        },
+        {
+          "id": 128247306891,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-07T01:00:46Z",
+          "completed_at": "2026-11-07T01:09:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631826/job/128247306891"
+        },
+        {
+          "id": 128247306890,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-07T01:00:46Z",
+          "completed_at": "2026-11-07T01:09:10Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631911/job/128247306890"
+        },
+        {
+          "id": 128231036576,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:29:44Z",
+          "completed_at": "2026-11-07T00:29:47Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908537/job/128231036576"
+        },
+        {
+          "id": 128230353376,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:19:02Z",
+          "completed_at": "2026-11-07T00:19:23Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899896/job/128230353376"
+        },
+        {
+          "id": 128230151060,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-07T00:10:30Z",
+          "completed_at": "2026-11-07T00:10:52Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908535/job/128230151060"
+        },
+        {
+          "id": 128228315467,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:49Z",
+          "completed_at": "2026-11-07T00:05:08Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908558/job/128228315467"
+        },
+        {
+          "id": 128228315445,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:49Z",
+          "completed_at": "2026-11-07T00:05:30Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908535/job/128228315445"
+        },
+        {
+          "id": 128228315297,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:47Z",
+          "completed_at": "2026-11-07T00:05:52Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908535/job/128228315297"
+        },
+        {
+          "id": 128228315263,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:39Z",
+          "completed_at": "2026-11-07T00:09:19Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908535/job/128228315263"
+        },
+        {
+          "id": 128228315253,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:40Z",
+          "completed_at": "2026-11-07T00:05:02Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908535/job/128228315253"
+        },
+        {
+          "id": 128228315058,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:41Z",
+          "completed_at": "2026-11-07T00:05:05Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908454/job/128228315058"
+        },
+        {
+          "id": 128228315051,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:26Z",
+          "completed_at": "2026-11-07T00:04:52Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908539/job/128228315051"
+        },
+        {
+          "id": 128228314956,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:37Z",
+          "completed_at": "2026-11-07T00:05:14Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908535/job/128228314956"
+        },
+        {
+          "id": 128228314941,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:31Z",
+          "completed_at": "2026-11-07T00:11:48Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908537/job/128228314941"
+        },
+        {
+          "id": 128228314829,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:15Z",
+          "completed_at": "2026-11-07T00:04:37Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908454/job/128228314829"
+        },
+        {
+          "id": 128228287962,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:38Z",
+          "completed_at": "2026-11-07T00:05:01Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899896/job/128228287962"
+        },
+        {
+          "id": 128228287916,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:45Z",
+          "completed_at": "2026-11-07T00:09:53Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899896/job/128228287916"
+        },
+        {
+          "id": 128228287847,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:39Z",
+          "completed_at": "2026-11-07T00:05:22Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899896/job/128228287847"
+        },
+        {
+          "id": 128228287840,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:46Z",
+          "completed_at": "2026-11-07T00:06:02Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899896/job/128228287840"
+        },
+        {
+          "id": 128228287578,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:22Z",
+          "completed_at": "2026-11-07T00:05:04Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899896/job/128228287578"
+        },
+        {
+          "id": 128228287448,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:30Z",
+          "completed_at": "2026-11-07T00:04:59Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899894/job/128228287448"
+        },
+        {
+          "id": 128228287087,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T00:04:15Z",
+          "completed_at": "2026-11-07T00:04:38Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315899985/job/128228287087"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 128249969877,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42321631911/job/128249969877",
+          "conclusion": "failure",
+          "cause": "REQUIRED_UPSTREAM_JOB_CANCELLED_CAUSE_NOT_ESTABLISHED",
+          "original_log": "logs/128249969877.txt",
+          "evidence_lines": [
+            "2026-11-07T01:22:09.9012553Z   DOCS_RESULT: cancelled",
+            "2026-11-07T01:22:09.9013076Z   RUST_RESULT: cancelled",
+            "2026-11-07T01:22:09.9013652Z   PLANNED_RESULT: cancelled",
+            "2026-11-07T01:22:09.9014202Z   GOVERNANCE_RESULT: cancelled",
+            "2026-11-07T01:22:09.9014779Z   ANDROID_PACKAGING_RESULT: cancelled",
+            "2026-11-07T01:22:09.9145140Z ##[error]Process completed with exit code 1."
+          ]
+        },
+        {
+          "job_id": 128230151060,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42315908535/job/128230151060",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/128230151060.txt",
+          "evidence_lines": [
+            "2026-11-07T00:10:32.1159852Z   DOCS_RESULT: success",
+            "2026-11-07T00:10:32.1160300Z   RUST_RESULT: success",
+            "2026-11-07T00:10:32.1161038Z   PLANNED_RESULT: success",
+            "2026-11-07T00:10:32.1161487Z   GOVERNANCE_RESULT: success",
+            "2026-11-07T00:10:32.1161963Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-07T00:10:47.8852494Z Ran 34 tests in 0.837s",
+            "2026-11-07T00:10:50.2418083Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-07T00:10:50.2573555Z ##[error]Process completed with exit code 2."
+          ]
+        }
+      ]
+    },
+    {
+      "pr": 112,
+      "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/commits/22e6105c2effe102c0f120a906752003aedfb37d/check-runs?per_page=100&filter=all",
+      "filter": "all",
+      "total_count": 20,
+      "returned_count": 20,
+      "inventory_complete": true,
+      "counts": {
+        "success": 19,
+        "failure": 1
+      },
+      "checks": [
+        {
+          "id": 128260405405,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T02:03:22Z",
+          "completed_at": "2026-11-07T02:03:45Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456857/job/128260405405"
+        },
+        {
+          "id": 128256247799,
+          "name": "L1 exact-head direct-source aggregate",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-07T01:53:57Z",
+          "completed_at": "2026-11-07T01:54:18Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594887/job/128256247799"
+        },
+        {
+          "id": 128255902490,
+          "name": "L1 exact-source-head aggregate candidate",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:52:04Z",
+          "completed_at": "2026-11-07T01:52:08Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594952/job/128255902490"
+        },
+        {
+          "id": 128253932941,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:42:14Z",
+          "completed_at": "2026-11-07T01:42:54Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456857/job/128253932941"
+        },
+        {
+          "id": 128253932937,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:43:55Z",
+          "completed_at": "2026-11-07T01:44:13Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456857/job/128253932937"
+        },
+        {
+          "id": 128253932911,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:41:00Z",
+          "completed_at": "2026-11-07T01:42:12Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456857/job/128253932911"
+        },
+        {
+          "id": 128253932902,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:39:14Z",
+          "completed_at": "2026-11-07T01:45:04Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456857/job/128253932902"
+        },
+        {
+          "id": 128253932554,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:38:44Z",
+          "completed_at": "2026-11-07T01:39:29Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456857/job/128253932554"
+        },
+        {
+          "id": 128250402955,
+          "name": "L1 Android adbroot source-head evaluated matrix",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:22:19Z",
+          "completed_at": "2026-11-07T01:22:38Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594953/job/128250402955"
+        },
+        {
+          "id": 128250402872,
+          "name": "L1 Android and packaging source-contract closure",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:25:08Z",
+          "completed_at": "2026-11-07T01:25:53Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594887/job/128250402872"
+        },
+        {
+          "id": 128250402846,
+          "name": "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:24:24Z",
+          "completed_at": "2026-11-07T01:25:32Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594887/job/128250402846"
+        },
+        {
+          "id": 128250402826,
+          "name": "L1 graph, documentation, broker and MCP source closure",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:25:08Z",
+          "completed_at": "2026-11-07T01:30:18Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594887/job/128250402826"
+        },
+        {
+          "id": 128250402787,
+          "name": "L1 planned control, telemetry and baseline source checks",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:22:57Z",
+          "completed_at": "2026-11-07T01:23:40Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594887/job/128250402787"
+        },
+        {
+          "id": 128250402786,
+          "name": "L1 exact two-parent merge source qualification",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:22:06Z",
+          "completed_at": "2026-11-07T01:29:04Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594952/job/128250402786"
+        },
+        {
+          "id": 128250402696,
+          "name": "Observe exact-head governance facts without authorizing integration",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:22:07Z",
+          "completed_at": "2026-11-07T01:22:31Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594911/job/128250402696"
+        },
+        {
+          "id": 128250402621,
+          "name": "L1 protected-main and exact-head independent-review readiness",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:21:55Z",
+          "completed_at": "2026-11-07T01:22:20Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594887/job/128250402621"
+        },
+        {
+          "id": 128250402605,
+          "name": "L1 Android adbroot synthetic-merge evaluated matrix",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:21:45Z",
+          "completed_at": "2026-11-07T01:22:07Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594953/job/128250402605"
+        },
+        {
+          "id": 128250402539,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:21:54Z",
+          "completed_at": "2026-11-07T01:22:17Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594970/job/128250402539"
+        },
+        {
+          "id": 128249971739,
+          "name": "Build exact-head source snapshot",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:21:31Z",
+          "completed_at": "2026-11-07T01:22:05Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456834/job/128249971739"
+        },
+        {
+          "id": 128249971596,
+          "name": "R5 alias to canonical G1 source checks",
+          "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-07T01:22:01Z",
+          "completed_at": "2026-11-07T01:22:23Z",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322456815/job/128249971596"
+        }
+      ],
+      "failures": [
+        {
+          "job_id": 128256247799,
+          "name": "L1 exact-head direct-source aggregate",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42322594887/job/128256247799",
+          "conclusion": "failure",
+          "cause": "INTEGRATION_BRANCH_NOT_PROTECTED",
+          "original_log": "logs/128256247799.txt",
+          "evidence_lines": [
+            "2026-11-07T01:53:59.4957951Z   DOCS_RESULT: success",
+            "2026-11-07T01:53:59.4958439Z   RUST_RESULT: success",
+            "2026-11-07T01:53:59.4958897Z   PLANNED_RESULT: success",
+            "2026-11-07T01:53:59.4959379Z   GOVERNANCE_RESULT: success",
+            "2026-11-07T01:53:59.4959889Z   ANDROID_PACKAGING_RESULT: success",
+            "2026-11-07T01:54:15.8442413Z Ran 34 tests in 1.000s",
+            "2026-11-07T01:54:17.1902150Z G1 PR source aggregate failed: integration branch is not protected",
+            "2026-11-07T01:54:17.2055743Z ##[error]Process completed with exit code 2."
+          ]
+        }
+      ]
+    }
+  ]
+}

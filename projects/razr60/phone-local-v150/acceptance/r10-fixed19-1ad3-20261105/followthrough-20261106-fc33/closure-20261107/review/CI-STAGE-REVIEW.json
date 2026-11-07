@@ -1,0 +1,97 @@
+{
+  "schema": "razr60.deadline-stage-readonly-review.v1",
+  "reviewed_at": "2026-11-07T05:59:16.275843+00:00",
+  "stage_prefix": "projects/razr60/phone-local-v150",
+  "reference_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "stage_modified_by_reviewer": false,
+  "deadline_package_members": [
+    {
+      "path": "DERIVATION.json",
+      "bytes": 5516,
+      "sha256": "ec6e00e05e95f29622471b103b5d190312b74f89c6e56663158aea6e7109aa0b",
+      "stage_identical": true
+    },
+    {
+      "path": "EXECUTION-LOCK.json",
+      "bytes": 659,
+      "sha256": "6b2cc8a04a5e6c959e97dd8b662cfeb653fb4bc6ca0f22af7186738c79111f6e",
+      "stage_identical": true
+    },
+    {
+      "path": "FOLLOWTHROUGH.patch",
+      "bytes": 10373,
+      "sha256": "9d37858ebd377a90e088c2503a2cde062e59fa484b76dc0f11ebe6760cd754fb",
+      "stage_identical": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 6906,
+      "sha256": "588a6f1477367fb5f3436737ce5c1b7ccb9fdc1343e453953fcd6d3b9b800f86",
+      "stage_identical": true
+    },
+    {
+      "path": "SOURCE-MANIFEST.json",
+      "bytes": 2036,
+      "sha256": "a5d50c6079f1d0dd2a224193971b63b05293fa089a9a33568a7fd01c297e4821",
+      "stage_identical": true
+    },
+    {
+      "path": "candidate/control_send_once.py",
+      "bytes": 8240,
+      "sha256": "a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace",
+      "stage_identical": true
+    },
+    {
+      "path": "candidate/preserved_ui_package_phase_r7.py",
+      "bytes": 25791,
+      "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+      "stage_identical": true
+    },
+    {
+      "path": "candidate/send_new_native_guard_task_r10_r4.py",
+      "bytes": 41936,
+      "sha256": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69",
+      "stage_identical": true
+    },
+    {
+      "path": "check_deadline_candidate.py",
+      "bytes": 24531,
+      "sha256": "1019dbdf1fb1e05de52089824ac58f99e094b7a948d7d4e68efd69fd03dd7a08",
+      "stage_identical": true
+    }
+  ],
+  "all_9_stage_files_identical": true,
+  "current_snapshot": {
+    "CURRENT.md": {
+      "bytes": 8439,
+      "sha256": "a1f39c8ea888942eaf7ae70e1c82d2b288da35833fb48f4cf805a4d3274fac2e"
+    },
+    "CURRENT.json": {
+      "bytes": 8617,
+      "sha256": "23958b34db3084bc1b57b883700baf5eed38cfc23e523c53b880c7366e3d2fe0"
+    }
+  },
+  "current_ci_and_source_scope_review": {
+    "pr112_head_and_counts_consistent": true,
+    "pr_aggregate_not_protected_failure_consistent": true,
+    "push_does_not_clear_pr_failure_consistent": true,
+    "pr108_path_and_blob_counts_consistent": true,
+    "source_only_not_installed_or_runtime_adopted_consistent": true,
+    "complete_runtime_not_frozen_consistent": true,
+    "original_unknown_not_cleared_consistent": true,
+    "wording_recommendation": "Use 202 changed paths rather than 202 added paths; audit selection was the complete changed-filename inventory."
+  },
+  "control_receipts": [
+    "deadline-controls-freeze.json",
+    "deadline-controls-freeze.run.json",
+    "deadline-controls-freeze.stdout.original.txt",
+    "deadline-controls-freeze.stderr.original.txt"
+  ],
+  "publication_allowlist": {
+    "path": "PUBLICATION-ALLOWLIST.json",
+    "sha256": "c67c483e253cacb8d3ca6025be2a12194b8f618098615e300ec51dfa7735e490"
+  },
+  "does_not_review_parent_p0_private_originals": true,
+  "phone_calls": 0,
+  "fixed19_credit": 0
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "razr60.publication-projection-delta-review.v1",
+  "state": "PASS",
+  "projection_checks": [
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/observations/bound02-status.public-projection.json",
+      "bytes": 922,
+      "sha256": "6cdce825050a806c4714b29209f381ece4fdca6aad7a07790f433cf9aeb5cc75",
+      "private_capture_bytes": 441,
+      "private_capture_sha256": "04f65e6e7e0ebc79ee9c75a3e55f2396ebb2694aa77a4db6f487c4d569d598ca",
+      "exact_original_bytes": false,
+      "response_differs_only_by_configured_alias_redaction": true,
+      "original_error_class_and_job_identity_preserved": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/observations/bound02-log-read.public-projection.json",
+      "bytes": 922,
+      "sha256": "6cdce825050a806c4714b29209f381ece4fdca6aad7a07790f433cf9aeb5cc75",
+      "private_capture_bytes": 441,
+      "private_capture_sha256": "04f65e6e7e0ebc79ee9c75a3e55f2396ebb2694aa77a4db6f487c4d569d598ca",
+      "exact_original_bytes": false,
+      "response_differs_only_by_configured_alias_redaction": true,
+      "original_error_class_and_job_identity_preserved": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/observations/bound02-status-after-cancel.public-projection.json",
+      "bytes": 933,
+      "sha256": "516bba07fbfba62092098efbb16d415ed4139791b1795a6474cb9be8b5671aa3",
+      "private_capture_bytes": 390,
+      "private_capture_sha256": "f3190d5bdbf3ff63cdbee76c640af1b5fd156b3ce4fd223c3285b17fd32239e3",
+      "exact_original_bytes": false,
+      "response_differs_only_by_configured_alias_redaction": true,
+      "original_error_class_and_job_identity_preserved": true
+    }
+  ],
+  "exact_control_value_fields_scanned": [
+    "ssh_target",
+    "idempotency_key"
+  ],
+  "exact_control_value_hits": [],
+  "raw_private_values_in_report": false
+}

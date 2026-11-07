@@ -1,0 +1,554 @@
+{
+  "schema": "razr60.protocol-map.v1",
+  "document_role": "READ_ONLY_PROTOCOL_INDEX_NOT_EXECUTION_INPUT_OR_ADMISSION_AUTHORITY",
+  "as_of_date_utc": "2026-11-07",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "reference_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "host_project_root": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1",
+  "current_combination": {
+    "sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+    "runtime_manifest_sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5",
+    "runtime_manifest_path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/runtime/MANIFEST.json",
+    "policy_sha256": "69aa6433a11ac4cffb2f1d349cc9f36ec2349a601911c173ebe7d92fff9e0c5b",
+    "shared_materials_sha256": "cc7eb624333216e510b540c3af8277e948aa689a108950fa78e8d01c2177e5b1",
+    "configuration_sha256": "5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48",
+    "service_inputs_sha256": "273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58",
+    "source_material_count": 15,
+    "shared_material_count": 17,
+    "shared_material_bytes": 387843,
+    "bound_boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+    "qualification_state": "FROZEN_FOR_NEW_NEG01_THEN_NEG02_NOT_QUALIFIED",
+    "installed_combination_verified": false,
+    "current_whole_fixed19_pass_count": 0
+  },
+  "current_p0": {
+    "state": "UNKNOWN_PRESERVED_NO_TERMINAL_RECEIPT",
+    "label": "root-r10-neg01-fc33-r6-bound02",
+    "host": "mac",
+    "job_id": "1a1b3420986-fc05-8183",
+    "nonce": "731dc46ccaad6e5717306d0c5f029a82",
+    "launch_state": "launch_unknown",
+    "plan": {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-r6-bound02/ROOT-PLAN.json",
+      "bytes": 4842,
+      "sha256": "0fbfd5aa0ed86e0bad846f2e541c3117ee1c7a46c98af7000c96f2e7d25a4bfa"
+    },
+    "request_bytes": 317,
+    "request_sha256": "b25d5c139aebdec8a222ca4298e91cd57500b0836c0c9f1629cb4ce769ad6d3f",
+    "controller_request_digest": "bd0a05f5d0e196efe71a3e18012d241a11214cca994c6fc240b9a70206485629",
+    "original_terminal": null,
+    "unknown_effect_count": null,
+    "accepted_settlement": null,
+    "worker_directory_missing_is_nonexecution_proof": false,
+    "next_device_action_eligibility": "NOT_ESTABLISHED",
+    "next_legal_work": "核对同一原job及host/P4/phone原件与所有权；取得既有读者接受的终态或完整独立退休处置后，再确定下一合法身份和case。",
+    "source_refs": [
+      "pr112_reconciliation",
+      "current_component_root"
+    ]
+  },
+  "separately_preserved_recoveries": [
+    {
+      "label": "recovery02-fresh",
+      "scope_label": "root-r10-neg01-fc33-r6-bound01",
+      "scope_nonce": "5f94c6a88805eefb0e2320cae5265d46",
+      "job_id": "1a1b33a7191-fc05-813f",
+      "reader_job_id": "1a1b33b9725-fc05-814c",
+      "host_exit_code": 0,
+      "phone_rc": 0,
+      "owned_recovery_closed": true,
+      "removed_files": 67,
+      "removed_directories": 9,
+      "closes_bound02": false,
+      "current_case_credit": 0
+    },
+    {
+      "label": "recovery02",
+      "scope_label": "root-r10-neg01-fc33-r6-bound01",
+      "scope_nonce": "5f94c6a88805eefb0e2320cae5265d46",
+      "job_id": "1a1b3426151-fc05-8186",
+      "reader_job_id": "1a1b3456b55-fc05-81a2",
+      "host_exit_code": 0,
+      "phone_rc": 1,
+      "state": "PRE_MUTATION_REJECTED",
+      "removed_files": 0,
+      "removed_directories": 0,
+      "closes_bound02": false,
+      "current_case_credit": 0
+    }
+  ],
+  "original_root_admission": {
+    "reader_ref": "current_component_root",
+    "required_originals": [
+      "原ROOT-PLAN与原request",
+      "前驱ACTUAL-PREVIOUS-INPUT.json",
+      "前驱CLOSURE.json",
+      "原LATE-BOUNDARY及descriptor",
+      "完整连续INVENTORY",
+      "精确runtime/source/policy/boot绑定"
+    ],
+    "admitted_transitions": [
+      "精确已通过source-parent进入当前NEG-01",
+      "当前同case：前驱provider_failed或cancelled，完整闭合且unknown_effects为整数0",
+      "当前NEG-01完整通过后进入当前NEG-02"
+    ],
+    "required_previous_fact": "known_all_dispatched_tools_confirmed_terminal == true",
+    "unknown_is_accepted_previous": false,
+    "missing_adapter_if_terminal_unrecoverable": "尚未核实存在绑定当前bound02、保留原UNKNOWN并证明旧生产者不能再作用的独立退休verifier和其fresh-admission consumer；不得用新JSON布尔值替代。",
+    "historical_tools_are_not_generic_settlement": [
+      "old_preadmission_closure",
+      "retirement_proposal"
+    ]
+  },
+  "actual_execution_slots": {
+    "actual_NEG01": null,
+    "actual_NEG02": null,
+    "actual_BUILD": null,
+    "actual_LEASE_originals": null,
+    "actual_READY": null,
+    "model_health_originals": null,
+    "actual_installation": null,
+    "state": "HOST_SOURCE_CONTROLLERS_BOUND_ACTUAL_CASE_BUILD_INSTALL_INPUTS_UNBOUND"
+  },
+  "contracts": {
+    "pinned_descriptor": {
+      "required_fields": [
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "requirements": [
+        "实际绝对规范路径",
+        "完整正数byte长度及SHA256",
+        "不得用null、占位摘要或目录存在代替原件",
+        "按原读者要求保留full9元数据和前后读回"
+      ]
+    },
+    "bind_actual_controller_input": {
+      "source_ref": "actual_input_binder",
+      "schema": "hepta.fc33.actual-constructor-input-binding.v1",
+      "fields": [
+        "schema",
+        "constructor",
+        "actual_inputs",
+        "output_root",
+        "execution_idempotency_key",
+        "execution_timeout_seconds"
+      ],
+      "constructors": [
+        "component_build",
+        "release_install_stage"
+      ],
+      "execution_timeout_seconds": {
+        "minimum": 1,
+        "maximum": 300
+      },
+      "output_request": "requests/EXECUTE-CONSTRUCTOR.json",
+      "success_state": "EXACT_INPUT_LITERAL_BOUND_CONSTRUCTION_REQUEST_NOT_DISPATCHED",
+      "dispatches_requests": false
+    },
+    "component_build": {
+      "source_ref": "component_build_constructor",
+      "schema": "hepta.fc33.actual-component-build-construction-inputs.v1",
+      "fields": [
+        "schema",
+        "case_results",
+        "output_root",
+        "build_output_root",
+        "build_idempotency_key",
+        "build_timeout_seconds"
+      ],
+      "case_result_keys": [
+        "NEG-01",
+        "NEG-02"
+      ],
+      "current_slot": "FROZEN_INPUTS=None",
+      "actual_prerequisite": "两项当前原ROOT-RESULT及全部连续闭合边界被既有consumer接受；历史资格不继承。",
+      "success_state": "ACTUAL_COMPONENT_INPUTS_VERIFIED_BUILD_NOT_EXECUTED",
+      "output_request": "requests/BUILD.REQUEST.json",
+      "dispatches_requests": false
+    },
+    "progressive_install": {
+      "source_ref": "install_stage_constructor",
+      "schema": "hepta.fc33.release-install-stage-construction-inputs.v1",
+      "fields": [
+        "schema",
+        "stage",
+        "output_root",
+        "actual"
+      ],
+      "current_slot": "FROZEN_INPUTS=None",
+      "stages": [
+        {
+          "stage": "actual_build",
+          "actual_fields": [
+            "component_construction",
+            "build_result",
+            "build_process"
+          ],
+          "successful_construction_state": "ACTUAL_BUILD_VERIFIED_INSTALLATION_NOT_STARTED"
+        },
+        {
+          "stage": "install_plan",
+          "actual_fields": [
+            "release_inputs",
+            "actor_path",
+            "delivery_directory",
+            "identity_prefix",
+            "request_directory",
+            "phase_timeouts"
+          ],
+          "successful_construction_state": "ACTUAL_BUILD_BOUND_PHASE_REQUESTS_DERIVED_NOT_DISPATCHED"
+        },
+        {
+          "stage": "ingest_phase",
+          "actual_fields": [
+            "plan_construction",
+            "phase",
+            "actor_controller",
+            "before_observer",
+            "after_observer"
+          ],
+          "successful_construction_state": "ACTUAL_ACTOR_AND_HOST_FILE_ORIGINALS_RETAINED_COMPLETE_READER_PENDING",
+          "qualification": "PENDING_EXISTING_COMPLETE_READER"
+        },
+        {
+          "stage": "phase_authority",
+          "actual_fields": [
+            "release_inputs",
+            "execution_plan",
+            "phase",
+            "phase_carriers"
+          ],
+          "successful_construction_state": "ACTUAL_PHASE_VERIFIED_RETENTION_SCOPE_DERIVED_NOT_CAPTURED"
+        },
+        {
+          "stage": "retention_first",
+          "actual_fields": [
+            "phase_authority_construction",
+            "identity_prefix",
+            "request_directory"
+          ],
+          "successful_construction_state": "ACTUAL_PHASE_BOUND_FIRST_RETENTION_MANIFEST_REQUEST_NOT_DISPATCHED"
+        },
+        {
+          "stage": "ingest_capture",
+          "actual_fields": [
+            "capture_plan",
+            "operation_index",
+            "actor_controller",
+            "before_observer",
+            "after_observer"
+          ],
+          "successful_construction_state": "ACTUAL_ACTOR_AND_HOST_FILE_ORIGINALS_RETAINED_COMPLETE_READER_PENDING",
+          "qualification": "PENDING_EXISTING_COMPLETE_READER"
+        },
+        {
+          "stage": "retention_remaining",
+          "actual_fields": [
+            "first_capture_plan",
+            "first_capture_carrier",
+            "identity_prefix",
+            "request_directory"
+          ],
+          "successful_construction_state": "ACTUAL_FIRST_MANIFEST_VERIFIED_REMAINING_CAPTURE_REQUESTS_NOT_DISPATCHED"
+        },
+        {
+          "stage": "retention_finish",
+          "actual_fields": [
+            "capture_plan",
+            "capture_carriers",
+            "retention_output_root"
+          ],
+          "successful_construction_state": "ACTUAL_INSTALLATION_ORIGINAL_BYTES_RETAINED",
+          "prepublication_state": "ACTUAL_COMPLETE_RETENTION_OPERATIONS_VERIFIED_PUBLICATION_PENDING"
+        },
+        {
+          "stage": "exact8_inputs",
+          "actual_fields": [
+            "release_inputs",
+            "execution_plan",
+            "phase_carriers",
+            "retention_constructions",
+            "installed_original_map"
+          ],
+          "successful_construction_state": "ACTUAL_EIGHT_STREAM_INPUTS_VERIFIED_FINAL_INSTALL_READER_NOT_YET_BOUND"
+        },
+        {
+          "stage": "final_install_reader",
+          "actual_fields": [
+            "exact8_construction"
+          ],
+          "successful_construction_state": "ACTUAL_INSTALL_START_READY_READER_BOUND_AND_ORIGINALS_VERIFIED"
+        }
+      ],
+      "actor_phase_order": [
+        "stage",
+        "start",
+        "ready"
+      ],
+      "phase_order_gate": "每个原phase必须先取得原terminal、原输出和before/after observer，再开始后继phase。",
+      "host_prepare_is_installation": false,
+      "required_resident_stream_count": 8,
+      "dispatches_requests": false
+    },
+    "installed_case_gate": {
+      "source_ref": "actual_installation_gate",
+      "function": "verify_actual_installation(construction, *, read_pinned)",
+      "construction_kind": "final_install_reader 的真实DERIVATION完整descriptor",
+      "required_construction_state": "ACTUAL_INSTALL_START_READY_READER_BOUND_AND_ORIGINALS_VERIFIED",
+      "required_reader_state": "VERIFIED_ACTUAL_INSTALL_START_READY_EXECUTION_ORIGINALS",
+      "required_ready_scope": "TRANSPORT_ONLY_AT_ORIGINAL_OBSERVATION",
+      "business_qualified": false,
+      "acceptance_checks": [
+        "实际BUILD目录内原字节仍一致",
+        "完整安装原件及delta重算",
+        "stage/start/ready三个原actor终态与输出",
+        "四角色八条完整输出来源",
+        "所有保留原件bookends",
+        "当前组合SHA一致"
+      ]
+    },
+    "e2e": {
+      "source_ref": "e2e_request_constructor",
+      "schema": "hepta.fc33.e2e.original-entry-request-construction.v1",
+      "fields": [
+        "schema",
+        "stage",
+        "setup",
+        "output_root",
+        "actual"
+      ],
+      "current_slot": "FROZEN_INPUTS=None",
+      "stages": [
+        "materialize_request",
+        "prepare_request",
+        "dispatch_request"
+      ],
+      "setup_schema": "hepta.fc33.e2e.actual-case-setup.v1",
+      "setup_fields": [
+        "schema",
+        "case_id",
+        "actual_installation",
+        "previous",
+        "preserved_draft",
+        "retirement_resolution",
+        "material_directory",
+        "workflow_directory",
+        "sender_label",
+        "operation_keys"
+      ],
+      "operation_key_names": [
+        "materialize",
+        "prepare",
+        "dispatch"
+      ],
+      "exact_runtime_coordinator": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r6-01/source/run_fixed19_e2e_root_once.py",
+      "coordinator_phase_order": [
+        "register",
+        "sender-preview",
+        "sender-execute",
+        "capture-export",
+        "collect",
+        "close"
+      ],
+      "duplicate_export_allowed": false,
+      "comp01_rule": "对E2E-01/02/03中的原始return另作独立判定，保留component_direct层；不发第五个Send。",
+      "existing_attempt_rule": "已存在phase或sender label先查原尝试；不重新生成nonce或机械重跑。"
+    }
+  },
+  "ready_and_health": {
+    "roles": [
+      "supervisor",
+      "model",
+      "sidecar",
+      "provider"
+    ],
+    "required_stdout_stderr_streams": 8,
+    "readiness_state": "EXACT_COMBINATION_READY_TRANSPORT_ONLY",
+    "model_startup_binding_state": "READY_BOUND_IMAGE_CANCEL_REQUIRED",
+    "readiness_checks": [
+      "原PID/PGID/SID/start_ticks与角色claim",
+      "UID/GID/SELinux/executable及二进制pin",
+      "源/配置/service/policy/boot一致",
+      "18087/18080 listener和sidecar socket inode归原角色",
+      "唯一idle slot及取消能力",
+      "读前读后进程身份、源和boot一致"
+    ],
+    "readiness_model_requests": 0,
+    "readiness_health_qualified": false,
+    "health_requirement": "保留新请求下的实际模型image/cancel健康原件及原reader结论；进程存在、slot idle和transport READY不替代。",
+    "fresh_health_accepted_result": null
+  },
+  "observation_candidate": {
+    "reference": "pr112_navigation",
+    "rc137_supported_fact": "137来自shell-v2原exit frame；timeout异常路径不会合成137。",
+    "killed_process": null,
+    "killer": null,
+    "cause": null,
+    "causal_fix_proven": false,
+    "candidate_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/candidate/preserved_ui_package_phase_r7.py",
+    "candidate_sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+    "adoption_in_this_map": "NOT_ADOPTED_IN_FROZEN_R6",
+    "remaining_binding_requirement": "将外部helper、完整调用链、配置及预算重新精确绑定；有源码变化则形成新组合。",
+    "config_dependency_path": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/preserved-ui-package-config.json"
+  },
+  "p2": {
+    "outside_fixed19_count": true,
+    "new_boot_requires_new_binding": true,
+    "required_originals": [
+      "新boot下自启、四角色READY、新健康和真实业务回执",
+      "USB脱离桌面后手机本地新任务及回执",
+      "重连后原身份/终态核对",
+      "真实测试时长及延迟/内存/温升/电量测量"
+    ],
+    "accepted_current_results": [],
+    "uptime_is_cold_boot_evidence": false
+  },
+  "sources": {
+    "fixed19_definition": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/fixed-acceptance-set-r7.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r7-r3/fixed-acceptance-set-r7.json",
+      "git_blob": "b8fdee07cc39bf5929d80e28b88e8c21248208f0",
+      "scope": "仅继承19项名称、规定层及通过条件；不继承旧组合结果。"
+    },
+    "pr112_reconciliation": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "git_blob": "2cf0e348f9682e632b60c1c011de9ffee6723c2d",
+      "scope": "原R6 bound02身份和UNKNOWN；目录缺失不能证明未执行。"
+    },
+    "pr112_recoveries": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/SUMMARY.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/SUMMARY.json",
+      "git_blob": "d5e90fa7a32632808f1f74fe5a3425f6b78e9ee5",
+      "scope": "两条bound01 recovery分别保留；不结算bound02。"
+    },
+    "pr112_host_runs": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud/RUN-SUMMARY.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud/RUN-SUMMARY.json",
+      "git_blob": "d031e6719a6c5564701e72192d8f1d86b238c9bd",
+      "scope": "13项selected guards、14场景shared business及native fixture；整项fixed19 credit=0。"
+    },
+    "pr112_archived_originals": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/actual-originals/ACTUAL-ORIGINALS-RECHECK.PUBLIC.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/actual-originals/ACTUAL-ORIGINALS-RECHECK.PUBLIC.json",
+      "git_blob": "256e01aadd21d357615204436336845be4bed487",
+      "scope": "当前R6同源读取历史13份原件；parser/consumer范围，整项credit=0。"
+    },
+    "pr112_navigation": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/SENDER-DEPENDENCY-REVIEW.md",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/SENDER-DEPENDENCY-REVIEW.md",
+      "git_blob": "6788167d9a429bbf42ffa9f6538f1af14f178346",
+      "scope": "137证据边界、deadline候选和外部依赖；不表示候选已采用。"
+    },
+    "controller_derivation": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/DERIVATION.json",
+      "bytes": 4380,
+      "sha256": "897294862510d7805bd92d4fd24544f185e23d8dd75532aada3643b5c5c4d514",
+      "scope": "当前R6源码控制器派生；actual case/BUILD/LEASE/READY 槽位均未绑定。"
+    },
+    "actual_input_binder": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/bind_actual_controller_input.py",
+      "bytes": 9462,
+      "sha256": "0f7af3752228f720640d9449ef54eb7d5aa7740b5b4d096f5542eceb9db447b1",
+      "scope": "仅绑定已存在实际输入，产出完整逆变换与下一构造请求；不派发。"
+    },
+    "component_build_constructor": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_component_build_inputs_UNBOUND.py",
+      "bytes": 34376,
+      "sha256": "07c243da62566e77c4695d650470487706a49d9992089d74fa894a5ce491d198",
+      "scope": "当前NEG-01/NEG-02原件→BUILD.REQUEST；FROZEN_INPUTS=None。"
+    },
+    "install_stage_constructor": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/derive_release_install_stages_UNBOUND.py",
+      "bytes": 64815,
+      "sha256": "71a4b6598c2d8907410fe1a2b69d49979aa193c76e85684124334c653d1f405d",
+      "scope": "十种渐进构造阶段；FROZEN_INPUTS=None；不派发生成的请求。"
+    },
+    "actual_installation_gate": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-install-build-controller-r6-01/source/verify_actual_installation_for_cases.py",
+      "bytes": 7083,
+      "sha256": "3235dafa57e077e5e8b56063eece6ea5c551d101ce770b440d7161fb0cf3b99f",
+      "scope": "重跑完整实际安装读者，只有transport READY资格。"
+    },
+    "e2e_request_constructor": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-execution-controller-r6-01/source/derive_e2e_requests_UNBOUND.py",
+      "bytes": 29377,
+      "sha256": "7b35b9a0f57ddd9e56948bbcab012b662fd84628d9502e9350d012a2de126acf",
+      "scope": "四个既有E2E入口；COMP-01复用原E2E return独立判定，不发第五个Send。"
+    },
+    "current_component_root": {
+      "kind": "exact_host_file_readback",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/root-chain/source/run_component_root_once.py",
+      "bytes": 78567,
+      "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257",
+      "inspected_local_copy": "/workspace/scratch/00f8328876d8/private-evidence/run_component_root_once.py",
+      "scope": "当前实际Root源码；validate_current_prior无launch_unknown直接放行分支。"
+    },
+    "release_source_derivation": {
+      "kind": "pinned_dependency_descriptor",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-source-chain-r6-derived01/DERIVATION.json",
+      "bytes": 9587,
+      "sha256": "d965569c4f53d2835b442c9e2c5edc5a7a85f1fbab24a50769033dcf876954db",
+      "scope": "由实际R6构造器固定引用；使用时必须完整重读其成员。"
+    },
+    "e2e_source_binding": {
+      "kind": "pinned_dependency_descriptor",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-bound-source-r6-01/BINDING.json",
+      "bytes": 23883,
+      "sha256": "6e770848dcebe85a5bdbd3bdb49a8e70e7baceea99ad54edbe09a00b6c2a8827",
+      "scope": "现有R6 E2E构造器绑定48份成员；SOURCE_BOUND_TASK_EXECUTION_UNBOUND。"
+    },
+    "old_preadmission_closure": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/pre-admission-neg01-closure-r10-r1-candidate01/source/host_closure.py",
+      "bytes": 34801,
+      "sha256": "932f40069e370860ffed943557622dd57f6e6a6a53a24211e8fa1af268ef8600",
+      "scope": "硬编码root-r10-neg01-20261104-01及nonce9c3da08af7120c56dc3f248c17b18581；不能结算当前bound02。"
+    },
+    "retirement_proposal": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retirement-recovery-r1/PROPOSED-RESOLUTION.schema.json",
+      "bytes": 3023,
+      "sha256": "a650bc37ff23bb4f68f822ea6ffe2697de4725512095ec9a8786cb89ce53deff",
+      "scope": "历史executor退休proposal；schema不是通用独立verifier。"
+    }
+  }
+}
+

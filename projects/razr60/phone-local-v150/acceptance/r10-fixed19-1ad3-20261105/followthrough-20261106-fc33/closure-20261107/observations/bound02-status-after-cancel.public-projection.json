@@ -1,0 +1,23 @@
+{
+  "exact_original_bytes": false,
+  "redaction": "configured SSH target alias omitted from error text; error class and original job identity preserved",
+  "response": {
+    "content": [
+      {
+        "text": "remote helper on [configured-host-redacted] failed with 1\nstdout:\n\nstderr:\nTraceback (most recent call last):\n  File \"<string>\", line 6, in <module>\n  File \"<string>\", line 25, in private_job_directory\nFileNotFoundError: [Errno 2] No such file or directory: '1a1b3420986-fc05-8183'",
+        "type": "text"
+      }
+    ],
+    "isError": true,
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    }
+  },
+  "schema": "razr60.mcp-error-observation.public-projection.v1",
+  "source_capture": {
+    "bytes": 390,
+    "kind": "MCP response capture saved before projection",
+    "private_capture_retained": true,
+    "sha256": "f3190d5bdbf3ff63cdbee76c640af1b5fd156b3ce4fd223c3285b17fd32239e3"
+  }
+}

@@ -1,0 +1,321 @@
+{
+  "schema": "razr60.candidate-adoption-and-ci-audit.v1",
+  "captured_at": "2026-11-07T05:41:30.504Z",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "current_source": {
+    "pr": 112,
+    "head": "22e6105c2effe102c0f120a906752003aedfb37d",
+    "tree": "019ac4d3e59b2a3b77f71a340d3fe2d368b5b524",
+    "parent": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+    "source_selected_only": true,
+    "phone_runtime_adopted": false,
+    "installed_verified": false,
+    "fixed19_credit": 0
+  },
+  "scope": "Audit and isolated source-candidate recommendation only. This record is not a runtime or phone admission receipt.",
+  "candidates": [
+    {
+      "pr": 104,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/104",
+      "role": "v149 CLI executable binding and provider-round provenance; historical source material",
+      "head_ref": "fix/razr60-v149-cli-executable-binding-20261103",
+      "head_sha": "2541c380f3f718803983c918f6a20793479c1127",
+      "base_ref": "codex/razr60-stock16-v149-20261103",
+      "reported_pr_base_sha": "0152dc425b6eec188dfd0efdd62aa004b59c76c5",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "fe094b21b0c6d3395d0c80b5b8ad4e4ec1422a2a",
+      "adoption_decision": "RETAIN_AS_INCLUDED_HISTORICAL_SOURCE_DO_NOT_TREAT_AS_CURRENT_INSTALL",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 55,
+        "counts": {
+          "identical": 55
+        }
+      },
+      "ci_counts": {
+        "success": 11,
+        "failure": 1
+      }
+    },
+    {
+      "pr": 105,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/105",
+      "role": "Documentation qualification and literal-email parser fix; preserves historical raw documents",
+      "head_ref": "codex/razr60-email-autolinks-20261104",
+      "head_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+      "base_ref": "codex/razr60-phone-local-v150-20261103",
+      "reported_pr_base_sha": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "tree_sha": "7c0b0abcc51e75204776f1b81cbaf5c1ad119322",
+      "adoption_decision": "RETAIN_INCLUDED_FIX_AND_PRESERVED_ORIGINALS_NO_SEPARATE_PHONE_ADOPTION",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 17,
+        "counts": {
+          "changed_in112": 3,
+          "identical": 14
+        }
+      },
+      "ci_counts": {
+        "success": 24,
+        "failure": 1
+      }
+    },
+    {
+      "pr": 106,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/106",
+      "role": "Sealed r8 transport/ownership/deadline source package; separate launcher contract",
+      "head_ref": "codex/razr60-r8-transport-20261105",
+      "head_sha": "fed5452e8a94939c6d88bc24c47844b37f8f7368",
+      "base_ref": "codex/razr60-phone-local-v150-20261103",
+      "reported_pr_base_sha": "11d427995808c05943ecbf90b4fbd2a74af9247d",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "4fd5d944c2cffb751b0b490acac56f5e6df15af4",
+      "adoption_decision": "RETAIN_SEALED_PACKAGE_AS_SOURCE_REFERENCE_NO_LAUNCHER_SWAP",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 28,
+        "counts": {
+          "changed_in112": 3,
+          "identical": 25
+        }
+      },
+      "ci_counts": {
+        "success": 19,
+        "failure": 1
+      }
+    },
+    {
+      "pr": 107,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/107",
+      "role": "Reviewed host transport source candidate; source package only",
+      "head_ref": "codex/razr60-transport-source-candidate-20261105",
+      "head_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+      "base_ref": "codex/razr60-email-autolinks-20261104",
+      "reported_pr_base_sha": "c3f10ff04485b4d365572ef0fff8495d2daf4d16",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "a96eb842c4804ea8e5b30a6b34a0adfb47f71a54",
+      "adoption_decision": "RETAIN_SEALED_PACKAGE_AS_SOURCE_REFERENCE_NO_LAUNCHER_SWAP",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 13,
+        "counts": {
+          "changed_in112": 3,
+          "identical": 10
+        }
+      },
+      "ci_counts": {
+        "failure": 5,
+        "success": 23,
+        "cancelled": 6
+      }
+    },
+    {
+      "pr": 108,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/108",
+      "role": "Independent native validation/capacity, owned audit output, external recipe, cancellation coordinator, epoch-v2 preparer line; not contained at its published paths in PR112",
+      "head_ref": "codex/razr60-native-validation-20261105-2438",
+      "head_sha": "653ce1942c3c7d1d3faa1260b53765dd082f32fb",
+      "base_ref": "codex/razr60-fixed19-r10-20261105-1ad3",
+      "reported_pr_base_sha": "a87b2fc4b99880e3820d2fffd285943777ac4057",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "41ed3c9cab77aaa362032cd9323e2be5fe2ccff8",
+      "adoption_decision": "EXCLUDE_FROM_NEXT_RUNTIME_SELECTION_UNTIL_EXPLICIT_COMPATIBILITY_AND_NEEDED_DELTA_REVIEW",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 202,
+        "counts": {
+          "absent_from112": 202
+        }
+      },
+      "ci_counts": {
+        "failure": 10,
+        "success": 10
+      }
+    },
+    {
+      "pr": 109,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/109",
+      "role": "Bounded HTTP observation and owned-sender drain source packages",
+      "head_ref": "codex/razr60-http-deadline-failure-drain-20261105",
+      "head_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+      "base_ref": "codex/razr60-transport-source-candidate-20261105",
+      "reported_pr_base_sha": "8cccf753229eb53d666a6eae5a330552a2d110cc",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "206a1ccfd8568d188bb560e41a94b3968dabd242",
+      "adoption_decision": "RETAIN_SEALED_SOURCE_PACKAGES_NO_AUTOMATIC_RUNTIME_ADOPTION",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 25,
+        "counts": {
+          "changed_in112": 3,
+          "identical": 22
+        }
+      },
+      "ci_counts": {
+        "success": 19,
+        "failure": 1
+      }
+    },
+    {
+      "pr": 110,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/110",
+      "role": "Two-parent source inventory integration of PR109 + PR106; no runtime adoption",
+      "head_ref": "codex/razr60-source-integration-20261106",
+      "head_sha": "a98aff68ea3f7277272cfa2bf9df02454a3b05fe",
+      "base_ref": "codex/razr60-http-deadline-failure-drain-20261105",
+      "reported_pr_base_sha": "75cb48b0098664f68d19dbb878a3a902a5a6c3b0",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "4d21565def0820e3614e75c683beb283624aaff4",
+      "adoption_decision": "RETAIN_INCLUDED_COMPOSITE_SOURCE_INVENTORY",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 15,
+        "counts": {
+          "identical": 15
+        }
+      },
+      "ci_counts": {
+        "success": 19,
+        "failure": 1
+      }
+    },
+    {
+      "pr": 111,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/111",
+      "role": "R6 source lineage integration, checkpoint11 public source subset, Activity fixture schedule repair, shared17/negative summaries",
+      "head_ref": "codex/razr60-r6-source-integration-20261106",
+      "head_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+      "base_ref": "codex/razr60-fixed19-r10-20261105-1ad3",
+      "reported_pr_base_sha": "6fd42bf80571391771e82c50db6968b65e17a20f",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "3b805316ffdb03fc1fb581896d56910bf96c77ab",
+      "adoption_decision": "RETAIN_INCLUDED_R6_SOURCE_LINEAGE_AS_PR112_PARENT",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": {
+        "count": 94,
+        "counts": {
+          "identical": 94
+        }
+      },
+      "ci_counts": {
+        "failure": 2,
+        "cancelled": 7,
+        "success": 19
+      }
+    },
+    {
+      "pr": 112,
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/pull/112",
+      "role": "R6 bound02 and recovery reconciliation, archived-native verification, isolated socket deadline candidate; current source/evidence review base",
+      "head_ref": "codex/razr60-fixed19-reconcile-20261107-78e391d8",
+      "head_sha": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "base_ref": "codex/razr60-r6-source-integration-20261106",
+      "reported_pr_base_sha": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "tree_sha": "019ac4d3e59b2a3b77f71a340d3fe2d368b5b524",
+      "adoption_decision": "SELECT_EXACT_SOURCE_EVIDENCE_BASE_FOR_ISOLATED_SUCCESSOR_PREPARATION_ONLY",
+      "runtime_adopted_by_this_audit": false,
+      "source_path_comparison": null,
+      "ci_counts": {
+        "success": 19,
+        "failure": 1
+      }
+    }
+  ],
+  "governance": {
+    "integration_base": "codex/razr60-r6-source-integration-20261106",
+    "live_base_tip": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+    "live_base_protected": false,
+    "repository_rulesets": [],
+    "formal_pr112_reviews": [],
+    "protection_modified": false,
+    "required_checks_weakened": false
+  },
+  "provenance": {
+    "method": "Non-truncated recursive Git trees and complete per-PR changed-filename lists; compare path/blob/type/mode; PR108 also checks exact blob presence anywhere in current tree, excluding compressed-member contents",
+    "detail_file": "PROVENANCE-COMPARISON.json",
+    "pr112_tree_entries": 8968,
+    "pr108_unchanged_published_path_count": 0,
+    "pr108_absent_published_paths": 202,
+    "pr108_same_blob_elsewhere_count": 62,
+    "pr108_no_blob_match_anywhere_count": 140,
+    "shared17_fresh_full_byte_readback": "shared17-fresh-readback.json",
+    "shared17_full_bytes": 387843,
+    "shared17_full_byte_hashes_verified": true
+  },
+  "deadline_candidate": {
+    "selected_for_isolated_successor": true,
+    "adopted_in_frozen_R6": false,
+    "original_helper_sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+    "candidate_helper_sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+    "candidate_bytes": 25791,
+    "reason": "The local socketpair reproduction demonstrates the original per-recv timeout exceeding the supplied total observation budget. The candidate uses a shared monotonic deadline across route and shell observation.",
+    "fresh_controls": {
+      "socket_passed": 5,
+      "route_passed": 2,
+      "baseline_seconds": 0.400884375001624,
+      "budget_seconds": 0.2,
+      "candidate_drip_seconds": 0.20053040600032546,
+      "phone_calls": 0
+    },
+    "exit137_root_cause": "UNKNOWN",
+    "remote_process_cleanup_proved": false,
+    "whole_actor_deadline_proved": false
+  },
+  "execution_gate": {
+    "state": "BLOCKED",
+    "required": [
+      "authoritative original bound02 settlement/disposition accepted by existing readers",
+      "fresh single-owner admission tied to exact next combination",
+      "complete direct UI-helper and actual runtime-wrapper cascade with unchanged budgets",
+      "runtime configuration exact bytes pinned and parsed only after same-byte validation",
+      "exact plan/request/nonce/owner and current physical context readback"
+    ],
+    "no_original_request_replay": true,
+    "new_phone_executions": 0
+  },
+  "ci": {
+    "detail_file": "CI-CHECKS.json",
+    "all_failed_jobs_have_original_logs": true,
+    "filter_all_retains_prior_attempts": true,
+    "warning": "PR107 filter=all returns 34 checks vs prior default latest-attempt inventory 20; the difference is historical attempt coverage, not evidence of newly failed runs."
+  },
+  "read_only_remote_observer": {
+    "job_id": "1a1b4812f28-fc05-87e3",
+    "host": "mac",
+    "purpose": "GET-only GitHub inventory; no phone, model, install, or file-write payload",
+    "launch_state": "launch_unknown",
+    "status_read_observation": "private_job_directory FileNotFoundError",
+    "authoritative_settlement": false,
+    "new_key_retry": false,
+    "not_used_to_justify_ci_conclusion": true
+  },
+  "files": [
+    "CANDIDATE-ADOPTION.json",
+    "CANDIDATE-ADOPTION.md",
+    "CI-CHECKS.json",
+    "PROVENANCE-COMPARISON.json",
+    "shared17-fresh-readback.json",
+    "fresh-timeout-result.json",
+    "fresh-route-result.json"
+  ]
+}

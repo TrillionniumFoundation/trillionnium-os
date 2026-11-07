@@ -1,0 +1,60 @@
+{
+  "schema": "razr60.deadline-successor-source-manifest.v1",
+  "state": "SOURCE_ONLY_LOCKED",
+  "reference_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "files": [
+    {
+      "path": "DERIVATION.json",
+      "bytes": 5516,
+      "sha256": "ec6e00e05e95f29622471b103b5d190312b74f89c6e56663158aea6e7109aa0b"
+    },
+    {
+      "path": "EXECUTION-LOCK.json",
+      "bytes": 659,
+      "sha256": "6b2cc8a04a5e6c959e97dd8b662cfeb653fb4bc6ca0f22af7186738c79111f6e"
+    },
+    {
+      "path": "FOLLOWTHROUGH.patch",
+      "bytes": 10373,
+      "sha256": "9d37858ebd377a90e088c2503a2cde062e59fa484b76dc0f11ebe6760cd754fb"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6906,
+      "sha256": "588a6f1477367fb5f3436737ce5c1b7ccb9fdc1343e453953fcd6d3b9b800f86"
+    },
+    {
+      "path": "candidate/control_send_once.py",
+      "bytes": 8240,
+      "sha256": "a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace"
+    },
+    {
+      "path": "candidate/preserved_ui_package_phase_r7.py",
+      "bytes": 25791,
+      "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0"
+    },
+    {
+      "path": "candidate/send_new_native_guard_task_r10_r4.py",
+      "bytes": 41936,
+      "sha256": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69"
+    },
+    {
+      "path": "check_deadline_candidate.py",
+      "bytes": 24531,
+      "sha256": "1019dbdf1fb1e05de52089824ac58f99e094b7a948d7d4e68efd69fd03dd7a08"
+    }
+  ],
+  "source_files": 3,
+  "component_identity_sha256": "a343e6cea77dce682db343e1587dda6d4a1e60c7ca94663ba004b489a65e281c",
+  "identity_scope": "Selected deadline/config/sender component only, not the whole runtime",
+  "ci_entry": {
+    "repository_path": "tools/tests/test_razr60_r6_followthrough.py",
+    "suite_factory": "load_suite(repo_root)",
+    "external_to_package": true,
+    "combined_entry_integration_pending": true
+  },
+  "private_config_body_included": false,
+  "phone_execution_allowed": false,
+  "runtime_manifest_adopted": false,
+  "fixed19_credit": 0
+}

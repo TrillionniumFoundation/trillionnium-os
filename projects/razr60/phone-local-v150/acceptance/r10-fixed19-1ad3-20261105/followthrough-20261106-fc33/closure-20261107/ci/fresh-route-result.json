@@ -1,0 +1,134 @@
+{
+  "adb_daemon_connections": 0,
+  "candidate_sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+  "controls": [
+    {
+      "budget_seconds": 0.2,
+      "connections": [
+        {
+          "port": 5037,
+          "timeout": 0.19994631900044624
+        },
+        {
+          "port": 5037,
+          "timeout": 0.1993383619992528
+        },
+        {
+          "port": 5061,
+          "timeout": 0.19900302599853603
+        },
+        {
+          "port": 5061,
+          "timeout": 0.19874819200049387
+        },
+        {
+          "port": 5037,
+          "timeout": 0.19851145500069833
+        }
+      ],
+      "effect_service_requests": 1,
+      "elapsed_seconds": 0.0017732939995767083,
+      "error": null,
+      "fixture_threads_joined": true,
+      "result": {
+        "command": "fixture-one-observation",
+        "rc": 0,
+        "route": [
+          5037,
+          "23"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      "services": [
+        [
+          5037,
+          "host:version"
+        ],
+        [
+          5037,
+          "host:devices-l"
+        ],
+        [
+          5061,
+          "host:version"
+        ],
+        [
+          5061,
+          "host:devices-l"
+        ],
+        [
+          5037,
+          "host:transport-id:23"
+        ],
+        [
+          5037,
+          "shell,v2,raw:fixture-one-observation"
+        ]
+      ],
+      "slow_route": false,
+      "sockets_closed": true,
+      "subprocess_calls": [
+        {
+          "argv": [
+            "ss",
+            "-ltnp",
+            "sport = :5037"
+          ],
+          "timeout": 0.19999653500053682
+        },
+        {
+          "argv": [
+            "ss",
+            "-ltnp",
+            "sport = :5061"
+          ],
+          "timeout": 0.19901285100058885
+        }
+      ]
+    },
+    {
+      "budget_seconds": 0.2,
+      "connections": [
+        {
+          "port": 5037,
+          "timeout": 0.19998664000013378
+        }
+      ],
+      "effect_service_requests": 0,
+      "elapsed_seconds": 0.20071884299977683,
+      "error": {
+        "message": "timed out",
+        "type": "TimeoutError"
+      },
+      "fixture_threads_joined": true,
+      "result": null,
+      "services": [
+        [
+          5037,
+          "host:version"
+        ]
+      ],
+      "slow_route": true,
+      "sockets_closed": true,
+      "subprocess_calls": [
+        {
+          "argv": [
+            "ss",
+            "-ltnp",
+            "sport = :5037"
+          ],
+          "timeout": 0.1999961239998811
+        }
+      ]
+    }
+  ],
+  "fixed19_credit": 0,
+  "frozen_R6_adopted": false,
+  "native_dispatches": 0,
+  "passed": 2,
+  "phone_calls": 0,
+  "remote_process_cleanup_verified": false,
+  "schema": "hepta.sender-route-deadline-source-review.v1",
+  "total": 2
+}

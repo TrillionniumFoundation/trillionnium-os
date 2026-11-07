@@ -1,0 +1,25 @@
+{
+  "schema": "razr60.assembled-source-suite.v1",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/tests",
+    "-p",
+    "test_razr60_r6_followthrough.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/00f8328876d8/verify-tree",
+  "exit_code": 0,
+  "elapsed_seconds": 2.310672429000988,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e728428e68d6e30906ccb1e205396ee431b2d8174e07c60e7e960f21aec524cd",
+  "existing_workflow_changed": false,
+  "suite_count_expected": 38,
+  "phone_calls": 0,
+  "fixed19_credit": 0,
+  "uses_exact_base_reference_files": true
+}

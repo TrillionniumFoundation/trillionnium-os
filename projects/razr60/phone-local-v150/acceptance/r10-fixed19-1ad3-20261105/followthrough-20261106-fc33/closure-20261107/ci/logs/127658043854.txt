@@ -1,0 +1,509 @@
+﻿2026-11-06T02:57:17.9522467Z Current runner version: '2.338.2'
+2026-11-06T02:57:17.9548184Z ##[group]Runner Image Provisioner
+2026-11-06T02:57:17.9549085Z Hosted Compute Agent
+2026-11-06T02:57:17.9549748Z Version: 20261028.624
+2026-11-06T02:57:17.9550457Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-06T02:57:17.9551205Z Build Date: 2026-10-28T21:51:42Z
+2026-11-06T02:57:17.9552303Z Worker ID: {4f513843-59ab-4539-afe9-824e5dd0b466}
+2026-11-06T02:57:17.9553083Z Region: eastus
+2026-11-06T02:57:17.9553725Z Cloud: Azure
+2026-11-06T02:57:17.9554287Z ##[endgroup]
+2026-11-06T02:57:17.9555819Z ##[group]Operating System
+2026-11-06T02:57:17.9556569Z Ubuntu
+2026-11-06T02:57:17.9557399Z 24.04.5
+2026-11-06T02:57:17.9557980Z LTS
+2026-11-06T02:57:17.9558528Z ##[endgroup]
+2026-11-06T02:57:17.9559088Z ##[group]Runner Image
+2026-11-06T02:57:17.9559734Z Image: ubuntu-24.04
+2026-11-06T02:57:17.9560389Z Version: 20261101.360.1
+2026-11-06T02:57:17.9561672Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-06T02:57:17.9563235Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-06T02:57:17.9564308Z ##[endgroup]
+2026-11-06T02:57:17.9565593Z ##[group]GITHUB_TOKEN Permissions
+2026-11-06T02:57:17.9568386Z Actions: read
+2026-11-06T02:57:17.9569302Z Contents: read
+2026-11-06T02:57:17.9569956Z Metadata: read
+2026-11-06T02:57:17.9570614Z PullRequests: read
+2026-11-06T02:57:17.9571265Z ##[endgroup]
+2026-11-06T02:57:17.9573390Z Secret source: Actions
+2026-11-06T02:57:17.9574322Z Cache mode: write
+2026-11-06T02:57:17.9575448Z Prepare workflow directory
+2026-11-06T02:57:18.0110184Z Prepare all required actions
+2026-11-06T02:57:18.0160544Z Getting action download info
+2026-11-06T02:57:18.1895687Z Download action repository 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' (SHA:11bd71901bbe5b1630ceea73d27597364c9af683)
+2026-11-06T02:57:18.3297711Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-06T02:57:18.4239389Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-06T02:57:18.7011847Z Complete job name: R5 alias to canonical G1 source checks
+2026-11-06T02:57:18.7852025Z ##[group]Run actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+2026-11-06T02:57:18.7853114Z with:
+2026-11-06T02:57:18.7853561Z   fetch-depth: 0
+2026-11-06T02:57:18.7854062Z   ref: 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:18.7854663Z   persist-credentials: false
+2026-11-06T02:57:18.7855253Z   repository: TrillionniumFoundation/trillionnium-os
+2026-11-06T02:57:18.7859807Z   token: ***
+2026-11-06T02:57:18.7860268Z   ssh-strict: true
+2026-11-06T02:57:18.7860720Z   ssh-user: git
+2026-11-06T02:57:18.7861139Z   clean: true
+2026-11-06T02:57:18.7861587Z   sparse-checkout-cone-mode: true
+2026-11-06T02:57:18.7862101Z   fetch-tags: false
+2026-11-06T02:57:18.7862563Z   show-progress: true
+2026-11-06T02:57:18.7863001Z   lfs: false
+2026-11-06T02:57:18.7863405Z   submodules: false
+2026-11-06T02:57:18.7863841Z   set-safe-directory: true
+2026-11-06T02:57:18.7864626Z env:
+2026-11-06T02:57:18.7865140Z   SOURCE_HEAD_SHA: 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:18.7865876Z   ALIAS_AUTHORITY: ALIAS_ONLY_NO_EVIDENCE_AUTHORITY
+2026-11-06T02:57:18.7866487Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T02:57:18.7867229Z ##[endgroup]
+2026-11-06T02:57:19.3254855Z Syncing repository: TrillionniumFoundation/trillionnium-os
+2026-11-06T02:57:19.3256950Z ##[group]Getting Git version info
+2026-11-06T02:57:19.3258248Z Working directory is '/home/runner/work/trillionnium-os/trillionnium-os'
+2026-11-06T02:57:19.3259520Z [command]/usr/bin/git version
+2026-11-06T02:57:19.3369209Z git version 2.56.0
+2026-11-06T02:57:19.3393082Z ##[endgroup]
+2026-11-06T02:57:19.3408913Z Temporarily overriding HOME='/home/runner/work/_temp/3c189354-df00-423a-997a-68b208d2e327' before making global git config changes
+2026-11-06T02:57:19.3411948Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T02:57:19.3414465Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/trillionnium-os/trillionnium-os
+2026-11-06T02:57:19.3757236Z Deleting the contents of '/home/runner/work/trillionnium-os/trillionnium-os'
+2026-11-06T02:57:19.3762569Z ##[group]Initializing the repository
+2026-11-06T02:57:19.3767326Z [command]/usr/bin/git init /home/runner/work/trillionnium-os/trillionnium-os
+2026-11-06T02:57:19.3898520Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-06T02:57:19.3900640Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-06T02:57:19.3902441Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-06T02:57:19.3903933Z hint: call:
+2026-11-06T02:57:19.3904780Z hint:
+2026-11-06T02:57:19.3905782Z hint: 	git config --global init.defaultBranch <name>
+2026-11-06T02:57:19.3907278Z hint:
+2026-11-06T02:57:19.3908365Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-06T02:57:19.3910064Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-06T02:57:19.3911398Z hint:
+2026-11-06T02:57:19.3912133Z hint: 	git branch -m <name>
+2026-11-06T02:57:19.3912960Z hint:
+2026-11-06T02:57:19.3914050Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-06T02:57:19.3926775Z Initialized empty Git repository in /home/runner/work/trillionnium-os/trillionnium-os/.git/
+2026-11-06T02:57:19.3942426Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/trillionnium-os
+2026-11-06T02:57:19.4010005Z ##[endgroup]
+2026-11-06T02:57:19.4010967Z ##[group]Disabling automatic garbage collection
+2026-11-06T02:57:19.4011762Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-06T02:57:19.4055434Z ##[endgroup]
+2026-11-06T02:57:19.4056702Z ##[group]Setting up auth
+2026-11-06T02:57:19.4058266Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T02:57:19.4188570Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T02:57:19.4790517Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T02:57:19.4837910Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T02:57:19.5089891Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-06T02:57:19.5142341Z ##[endgroup]
+2026-11-06T02:57:19.5143243Z ##[group]Fetching the repository
+2026-11-06T02:57:19.5157524Z [command]/usr/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+2026-11-06T02:57:30.9394279Z From https://github.com/TrillionniumFoundation/trillionnium-os
+2026-11-06T02:57:30.9396828Z  * [new branch]        archive/pr72-pre-main-rebind-522be785 -> origin/archive/pr72-pre-main-rebind-522be785
+2026-11-06T02:57:30.9399580Z  * [new branch]        archive/pr72-pre-rebase-458f5016 -> origin/archive/pr72-pre-rebase-458f5016
+2026-11-06T02:57:30.9401683Z  * [new branch]        ci/trillionniumgame-exact-head-relay-v1 -> origin/ci/trillionniumgame-exact-head-relay-v1
+2026-11-06T02:57:30.9403322Z  * [new branch]        codex/adversarial-audit-20261002 -> origin/codex/adversarial-audit-20261002
+2026-11-06T02:57:30.9404489Z  * [new branch]        codex/android-source-navigation-20261004 -> origin/codex/android-source-navigation-20261004
+2026-11-06T02:57:30.9405549Z  * [new branch]        codex/audit-hardening-20260908 -> origin/codex/audit-hardening-20260908
+2026-11-06T02:57:30.9407742Z  * [new branch]        codex/desktop-android-device-ci-20260902 -> origin/codex/desktop-android-device-ci-20260902
+2026-11-06T02:57:30.9410006Z  * [new branch]        codex/effect-lifecycle-model-20260908 -> origin/codex/effect-lifecycle-model-20260908
+2026-11-06T02:57:30.9411638Z  * [new branch]        codex/effect-lifecycle-model-20260909 -> origin/codex/effect-lifecycle-model-20260909
+2026-11-06T02:57:30.9413372Z  * [new branch]        codex/executable-module-contracts-v3-main-20260910 -> origin/codex/executable-module-contracts-v3-main-20260910
+2026-11-06T02:57:30.9415215Z  * [new branch]        codex/export-telemetry-repair-34663187904-1 -> origin/codex/export-telemetry-repair-34663187904-1
+2026-11-06T02:57:30.9416700Z  * [new branch]        codex/g1-all-gap-closure-20260904 -> origin/codex/g1-all-gap-closure-20260904
+2026-11-06T02:57:30.9418033Z  * [new branch]        codex/g1-audit-repair-20260905 -> origin/codex/g1-audit-repair-20260905
+2026-11-06T02:57:30.9418947Z  * [new branch]        codex/g1-evidence-byte-binding-20260905 -> origin/codex/g1-evidence-byte-binding-20260905
+2026-11-06T02:57:30.9419879Z  * [new branch]        codex/g1-evidence-closure-r3-20260901 -> origin/codex/g1-evidence-closure-r3-20260901
+2026-11-06T02:57:30.9420711Z  * [new branch]        codex/g1-evidence-plan-binding-20260905 -> origin/codex/g1-evidence-plan-binding-20260905
+2026-11-06T02:57:30.9421506Z  * [new branch]        codex/g1-full-gap-closure-20260907 -> origin/codex/g1-full-gap-closure-20260907
+2026-11-06T02:57:30.9422581Z  * [new branch]        codex/g1-full-gap-closure-r2-20260901 -> origin/codex/g1-full-gap-closure-r2-20260901
+2026-11-06T02:57:30.9423705Z  * [new branch]        codex/g1-gap-closure-r1-20260831 -> origin/codex/g1-gap-closure-r1-20260831
+2026-11-06T02:57:30.9424506Z  * [new branch]        codex/g1-gap-closure-ready-20260902 -> origin/codex/g1-gap-closure-ready-20260902
+2026-11-06T02:57:30.9425287Z  * [new branch]        codex/g1-live-consolidation-20260906 -> origin/codex/g1-live-consolidation-20260906
+2026-11-06T02:57:30.9426114Z  * [new branch]        codex/g1-module-docs-gap-closure-20260902 -> origin/codex/g1-module-docs-gap-closure-20260902
+2026-11-06T02:57:30.9427394Z  * [new branch]        codex/gap-closure-contract-admission-20260912 -> origin/codex/gap-closure-contract-admission-20260912
+2026-11-06T02:57:30.9428530Z  * [new branch]        codex/gap-status-truth-20260912 -> origin/codex/gap-status-truth-20260912
+2026-11-06T02:57:30.9429260Z  * [new branch]        codex/gap-status-truth-v2-20260912 -> origin/codex/gap-status-truth-v2-20260912
+2026-11-06T02:57:30.9429987Z  * [new branch]        codex/github-device-ci-20260902 -> origin/codex/github-device-ci-20260902
+2026-11-06T02:57:30.9430772Z  * [new branch]        codex/global-modular-docs-g1-20260831 -> origin/codex/global-modular-docs-g1-20260831
+2026-11-06T02:57:30.9431588Z  * [new branch]        codex/host-job-exit-convergence-20260908 -> origin/codex/host-job-exit-convergence-20260908
+2026-11-06T02:57:30.9432571Z  * [new branch]        codex/module-contracts-lab-v2-20260909 -> origin/codex/module-contracts-lab-v2-20260909
+2026-11-06T02:57:30.9433406Z  * [new branch]        codex/module-schema-parity-20260912 -> origin/codex/module-schema-parity-20260912
+2026-11-06T02:57:30.9434186Z  * [new branch]        codex/module-schema-parity-v2-20260912 -> origin/codex/module-schema-parity-v2-20260912
+2026-11-06T02:57:30.9435104Z  * [new branch]        codex/observe-shadow-telemetry-v2-20260911 -> origin/codex/observe-shadow-telemetry-v2-20260911
+2026-11-06T02:57:30.9436111Z  * [new branch]        codex/observe-shadow-telemetry-v3-20260912 -> origin/codex/observe-shadow-telemetry-v3-20260912
+2026-11-06T02:57:30.9436877Z  * [new branch]        codex/os-overhead-audit-20261002 -> origin/codex/os-overhead-audit-20261002
+2026-11-06T02:57:30.9438136Z  * [new branch]        codex/owner-open-r13-source-hardening-20260831 -> origin/codex/owner-open-r13-source-hardening-20260831
+2026-11-06T02:57:30.9439135Z  * [new branch]        codex/owner-open-r13-source-hardening-20260831-v2 -> origin/codex/owner-open-r13-source-hardening-20260831-v2
+2026-11-06T02:57:30.9440337Z  * [new branch]        codex/owner-open-r13-source-hardening-20260831-v3 -> origin/codex/owner-open-r13-source-hardening-20260831-v3
+2026-11-06T02:57:30.9441325Z  * [new branch]        codex/owner-open-r13-source-hardening-20260831-v4 -> origin/codex/owner-open-r13-source-hardening-20260831-v4
+2026-11-06T02:57:30.9442326Z  * [new branch]        codex/owner-open-r13-source-hardening-20260831-v5 -> origin/codex/owner-open-r13-source-hardening-20260831-v5
+2026-11-06T02:57:30.9443302Z  * [new branch]        codex/owner-open-r15-runtime-hardening-20260831 -> origin/codex/owner-open-r15-runtime-hardening-20260831
+2026-11-06T02:57:30.9444204Z  * [new branch]        codex/owner-open-r4-foundation-20260827 -> origin/codex/owner-open-r4-foundation-20260827
+2026-11-06T02:57:30.9445049Z  * [new branch]        codex/owner-open-r5-gap-closure-20260829 -> origin/codex/owner-open-r5-gap-closure-20260829
+2026-11-06T02:57:30.9446005Z  * [new branch]        codex/owner-open-r5-live-target-probe-20260907-r2 -> origin/codex/owner-open-r5-live-target-probe-20260907-r2
+2026-11-06T02:57:30.9446909Z  * [new branch]        codex/owner-open-r5-tool-loop-20260827 -> origin/codex/owner-open-r5-tool-loop-20260827
+2026-11-06T02:57:30.9448363Z  * [new branch]        codex/owner-open-r5-tool-loop-20260827-lifecycle-fix -> origin/codex/owner-open-r5-tool-loop-20260827-lifecycle-fix
+2026-11-06T02:57:30.9449714Z  * [new branch]        codex/owner-open-r6-development-hardening-20260830 -> origin/codex/owner-open-r6-development-hardening-20260830
+2026-11-06T02:57:30.9451624Z  * [new branch]        codex/owner-open-r6-evidence-trust-hardening-20260830 -> origin/codex/owner-open-r6-evidence-trust-hardening-20260830
+2026-11-06T02:57:30.9452700Z  * [new branch]        codex/owner-open-r6-governance-baseline-20260830 -> origin/codex/owner-open-r6-governance-baseline-20260830
+2026-11-06T02:57:30.9453749Z  * [new branch]        codex/owner-open-r6-governance-control-plane-20260830 -> origin/codex/owner-open-r6-governance-control-plane-20260830
+2026-11-06T02:57:30.9454900Z  * [new branch]        codex/owner-open-r6-lifecycle-evidence-hardening-20260830 -> origin/codex/owner-open-r6-lifecycle-evidence-hardening-20260830
+2026-11-06T02:57:30.9456247Z  * [new branch]        codex/owner-open-r7-runtime-hardening-20260830 -> origin/codex/owner-open-r7-runtime-hardening-20260830
+2026-11-06T02:57:30.9457732Z  * [new branch]        codex/owner-open-r7-runtime-hardening-20260830-v2 -> origin/codex/owner-open-r7-runtime-hardening-20260830-v2
+2026-11-06T02:57:30.9458790Z  * [new branch]        codex/owner-open-r7-runtime-hardening-20260830-v3 -> origin/codex/owner-open-r7-runtime-hardening-20260830-v3
+2026-11-06T02:57:30.9459801Z  * [new branch]        codex/owner-open-r7-runtime-hardening-20260830-v4 -> origin/codex/owner-open-r7-runtime-hardening-20260830-v4
+2026-11-06T02:57:30.9460778Z  * [new branch]        codex/owner-open-r7-source-promotion-20260830 -> origin/codex/owner-open-r7-source-promotion-20260830
+2026-11-06T02:57:30.9461769Z  * [new branch]        codex/owner-open-r7-source-promotion-20260830-v2 -> origin/codex/owner-open-r7-source-promotion-20260830-v2
+2026-11-06T02:57:30.9463470Z  * [new branch]        codex/owner-open-r7-workspace-integrity-20260830 -> origin/codex/owner-open-r7-workspace-integrity-20260830
+2026-11-06T02:57:30.9465298Z  * [new branch]        codex/owner-open-r7-workspace-integrity-20260830-v2 -> origin/codex/owner-open-r7-workspace-integrity-20260830-v2
+2026-11-06T02:57:30.9467686Z  * [new branch]        codex/owner-open-r7-workspace-integrity-20260830-v3 -> origin/codex/owner-open-r7-workspace-integrity-20260830-v3
+2026-11-06T02:57:30.9469845Z  * [new branch]        codex/owner-open-r7-workspace-integrity-20260830-v4 -> origin/codex/owner-open-r7-workspace-integrity-20260830-v4
+2026-11-06T02:57:30.9471884Z  * [new branch]        codex/owner-open-r9-live-target-probe-20260907 -> origin/codex/owner-open-r9-live-target-probe-20260907
+2026-11-06T02:57:30.9474050Z  * [new branch]        codex/perf-harness-isolation-20260908 -> origin/codex/perf-harness-isolation-20260908
+2026-11-06T02:57:30.9475729Z  * [new branch]        codex/performance-measurement-v2-20260910 -> origin/codex/performance-measurement-v2-20260910
+2026-11-06T02:57:30.9477835Z  * [new branch]        codex/process-snapshot-deadline-20261004 -> origin/codex/process-snapshot-deadline-20261004
+2026-11-06T02:57:30.9479702Z  * [new branch]        codex/profile-dependency-closure-20260912 -> origin/codex/profile-dependency-closure-20260912
+2026-11-06T02:57:30.9481792Z  * [new branch]        codex/profile-dependency-closure-v2-20260912 -> origin/codex/profile-dependency-closure-v2-20260912
+2026-11-06T02:57:30.9483546Z  * [new branch]        codex/provider-deadline-retirement-20260908 -> origin/codex/provider-deadline-retirement-20260908
+2026-11-06T02:57:30.9485266Z  * [new branch]        codex/razr-fixed-component-measurement-20261009 -> origin/codex/razr-fixed-component-measurement-20261009
+2026-11-06T02:57:30.9486964Z  * [new branch]        codex/razr-owner-open-integration-20261009 -> origin/codex/razr-owner-open-integration-20261009
+2026-11-06T02:57:30.9488922Z  * [new branch]        codex/razr-p1-durable-identity-inspect-20261009 -> origin/codex/razr-p1-durable-identity-inspect-20261009
+2026-11-06T02:57:30.9490528Z  * [new branch]        codex/razr-r52-owner-client-emergency -> origin/codex/razr-r52-owner-client-emergency
+2026-11-06T02:57:30.9491940Z  * [new branch]        codex/razr60-email-autolinks-20261104 -> origin/codex/razr60-email-autolinks-20261104
+2026-11-06T02:57:30.9493341Z  * [new branch]        codex/razr60-fixed19-r10-20261105-1ad3 -> origin/codex/razr60-fixed19-r10-20261105-1ad3
+2026-11-06T02:57:30.9495211Z  * [new branch]        codex/razr60-http-deadline-failure-drain-20261105 -> origin/codex/razr60-http-deadline-failure-drain-20261105
+2026-11-06T02:57:30.9496350Z  * [new branch]        codex/razr60-native-validation-20261105-2438 -> origin/codex/razr60-native-validation-20261105-2438
+2026-11-06T02:57:30.9497504Z  * [new branch]        codex/razr60-phone-local-v150-20261103 -> origin/codex/razr60-phone-local-v150-20261103
+2026-11-06T02:57:30.9498293Z  * [new branch]        codex/razr60-r8-transport-20261105 -> origin/codex/razr60-r8-transport-20261105
+2026-11-06T02:57:30.9499240Z  * [new branch]        codex/razr60-stock16-v149-20261103 -> origin/codex/razr60-stock16-v149-20261103
+2026-11-06T02:57:30.9500112Z  * [new branch]        codex/razr60-transport-source-candidate-20261105 -> origin/codex/razr60-transport-source-candidate-20261105
+2026-11-06T02:57:30.9501043Z  * [new branch]        codex/repository-truth-profiles-20260908 -> origin/codex/repository-truth-profiles-20260908
+2026-11-06T02:57:30.9501905Z  * [new branch]        codex/runtime-journal-fail-closed-20260908 -> origin/codex/runtime-journal-fail-closed-20260908
+2026-11-06T02:57:30.9502769Z  * [new branch]        codex/rust199-current-build-msrv-20261004 -> origin/codex/rust199-current-build-msrv-20261004
+2026-11-06T02:57:30.9503644Z  * [new branch]        codex/source-profile-claim-ceiling-20261004 -> origin/codex/source-profile-claim-ceiling-20261004
+2026-11-06T02:57:30.9504607Z  * [new branch]        diagnostic/telemetry-v2-unqualified-source-20260911 -> origin/diagnostic/telemetry-v2-unqualified-source-20260911
+2026-11-06T02:57:30.9505563Z  * [new branch]        docs/clear-public-homepage-readme-20261029 -> origin/docs/clear-public-homepage-readme-20261029
+2026-11-06T02:57:30.9506939Z  * [new branch]        export/profile-dependency-20260912-34670176954 -> origin/export/profile-dependency-20260912-34670176954
+2026-11-06T02:57:30.9508880Z  * [new branch]        export/schema-parity-20260912-34669670906 -> origin/export/schema-parity-20260912-34669670906
+2026-11-06T02:57:30.9509730Z  * [new branch]        feat/android17-leap-bringup-20261007 -> origin/feat/android17-leap-bringup-20261007
+2026-11-06T02:57:30.9510578Z  * [new branch]        fix/android-recovery-button-layout-20261004 -> origin/fix/android-recovery-button-layout-20261004
+2026-11-06T02:57:30.9511713Z  * [new branch]        fix/event-store-decode-drift-20261004 -> origin/fix/event-store-decode-drift-20261004
+2026-11-06T02:57:30.9512535Z  * [new branch]        fix/integrated-runtime-android-20261004 -> origin/fix/integrated-runtime-android-20261004
+2026-11-06T02:57:30.9513399Z  * [new branch]        fix/job-recovery-budget-symmetry-20261004 -> origin/fix/job-recovery-budget-symmetry-20261004
+2026-11-06T02:57:30.9514221Z  * [new branch]        fix/mcp-empty-job-arguments-20261004 -> origin/fix/mcp-empty-job-arguments-20261004
+2026-11-06T02:57:30.9515100Z  * [new branch]        fix/provider-callback-receiver-budget-20261004 -> origin/fix/provider-callback-receiver-budget-20261004
+2026-11-06T02:57:30.9516065Z  * [new branch]        fix/razr60-v149-cli-executable-binding-20261103 -> origin/fix/razr60-v149-cli-executable-binding-20261103
+2026-11-06T02:57:30.9517223Z  * [new branch]        fix/runtime-admitted-environment-20261004 -> origin/fix/runtime-admitted-environment-20261004
+2026-11-06T02:57:30.9518143Z  * [new branch]        fix/trace-evidence-fifo-admission-20261004 -> origin/fix/trace-evidence-fifo-admission-20261004
+2026-11-06T02:57:30.9518927Z  * [new branch]        main                 -> origin/main
+2026-11-06T02:57:30.9519691Z  * [new branch]        ops/android-readonly-smoke-approval-v1-20260906 -> origin/ops/android-readonly-smoke-approval-v1-20260906
+2026-11-06T02:57:30.9520624Z  * [new branch]        ops/canonical-gap-route-executor-20260910 -> origin/ops/canonical-gap-route-executor-20260910
+2026-11-06T02:57:30.9521565Z  * [new branch]        ops/chatgpt-effect-lifecycle-controller-20260909 -> origin/ops/chatgpt-effect-lifecycle-controller-20260909
+2026-11-06T02:57:30.9522685Z  * [new branch]        ops/chatgpt-external-prerequisite-audit-20260909 -> origin/ops/chatgpt-external-prerequisite-audit-20260909
+2026-11-06T02:57:30.9523576Z  * [new branch]        ops/chatgpt-issue54-builder-20260909 -> origin/ops/chatgpt-issue54-builder-20260909
+2026-11-06T02:57:30.9524561Z  * [new branch]        ops/chatgpt-issue54-carrier-export-20260909 -> origin/ops/chatgpt-issue54-carrier-export-20260909
+2026-11-06T02:57:30.9525537Z  * [new branch]        ops/chatgpt-module-contracts-controller-20260909 -> origin/ops/chatgpt-module-contracts-controller-20260909
+2026-11-06T02:57:30.9526817Z  * [new branch]        ops/chatgpt-module-contracts-convergence-v2-20260909 -> origin/ops/chatgpt-module-contracts-convergence-v2-20260909
+2026-11-06T02:57:30.9528378Z  * [new branch]        ops/chatgpt-module-contracts-preflight-20260909 -> origin/ops/chatgpt-module-contracts-preflight-20260909
+2026-11-06T02:57:30.9529328Z  * [new branch]        ops/chatgpt-pr63-bootstrap-builder-20260909 -> origin/ops/chatgpt-pr63-bootstrap-builder-20260909
+2026-11-06T02:57:30.9530150Z  * [new branch]        ops/chatgpt-pr63-converge-20260909 -> origin/ops/chatgpt-pr63-converge-20260909
+2026-11-06T02:57:30.9530962Z  * [new branch]        ops/chatgpt-pr63-custody-carrier-20260909 -> origin/ops/chatgpt-pr63-custody-carrier-20260909
+2026-11-06T02:57:30.9532026Z  * [new branch]        ops/chatgpt-pr63-custody-fix-20260909 -> origin/ops/chatgpt-pr63-custody-fix-20260909
+2026-11-06T02:57:30.9533166Z  * [new branch]        ops/chatgpt-pr63-openat-builder-20260909 -> origin/ops/chatgpt-pr63-openat-builder-20260909
+2026-11-06T02:57:30.9534031Z  * [new branch]        ops/chatgpt-pr63-openat-carrier-20260909 -> origin/ops/chatgpt-pr63-openat-carrier-20260909
+2026-11-06T02:57:30.9535338Z  * [new branch]        ops/chatgpt-pr63-source-export-20260909 -> origin/ops/chatgpt-pr63-source-export-20260909
+2026-11-06T02:57:30.9639396Z  * [new branch]        ops/chatgpt-pr71-authority-builder-20260909 -> origin/ops/chatgpt-pr71-authority-builder-20260909
+2026-11-06T02:57:30.9641221Z  * [new branch]        ops/chatgpt-pr71-authority-carrier-20260909 -> origin/ops/chatgpt-pr71-authority-carrier-20260909
+2026-11-06T02:57:30.9642878Z  * [new branch]        ops/chatgpt-pr71-convergence-controller-20260909 -> origin/ops/chatgpt-pr71-convergence-controller-20260909
+2026-11-06T02:57:30.9644956Z  * [new branch]        ops/chatgpt-pr71-source-export-20260909 -> origin/ops/chatgpt-pr71-source-export-20260909
+2026-11-06T02:57:30.9646529Z  * [new branch]        ops/chatgpt-pr72-source-export-20260909 -> origin/ops/chatgpt-pr72-source-export-20260909
+2026-11-06T02:57:30.9648501Z  * [new branch]        ops/chatgpt-source-export-20260908 -> origin/ops/chatgpt-source-export-20260908
+2026-11-06T02:57:30.9649770Z  * [new branch]        ops/chatgpt-stage-issue53 -> origin/ops/chatgpt-stage-issue53
+2026-11-06T02:57:30.9650972Z  * [new branch]        ops/final-zero-gap-gate-20260910 -> origin/ops/final-zero-gap-gate-20260910
+2026-11-06T02:57:30.9652420Z  * [new branch]        ops/g1-adb-race-materialized-v11-20260906 -> origin/ops/g1-adb-race-materialized-v11-20260906
+2026-11-06T02:57:30.9653821Z  * [new branch]        ops/g1-adb-race-v11-20260906 -> origin/ops/g1-adb-race-v11-20260906
+2026-11-06T02:57:30.9655415Z  * [new branch]        ops/g1-aggregate-artifact-materialized-v19-20260906 -> origin/ops/g1-aggregate-artifact-materialized-v19-20260906
+2026-11-06T02:57:30.9657451Z  * [new branch]        ops/g1-aggregate-artifact-v19-20260906 -> origin/ops/g1-aggregate-artifact-v19-20260906
+2026-11-06T02:57:30.9658673Z  * [new branch]        ops/g1-audit-repair-builder-20260905 -> origin/ops/g1-audit-repair-builder-20260905
+2026-11-06T02:57:30.9659512Z  * [new branch]        ops/g1-audit-source-snapshot-20260905 -> origin/ops/g1-audit-source-snapshot-20260905
+2026-11-06T02:57:30.9660365Z  * [new branch]        ops/g1-be6e-external-runner-probe-20260902 -> origin/ops/g1-be6e-external-runner-probe-20260902
+2026-11-06T02:57:30.9661191Z  * [new branch]        ops/g1-be6e-signing-request-20260902 -> origin/ops/g1-be6e-signing-request-20260902
+2026-11-06T02:57:30.9661974Z  * [new branch]        ops/g1-broker-bounds-publish-20260905 -> origin/ops/g1-broker-bounds-publish-20260905
+2026-11-06T02:57:30.9662810Z  * [new branch]        ops/g1-broker-lifetime-validation-20260905 -> origin/ops/g1-broker-lifetime-validation-20260905
+2026-11-06T02:57:30.9663661Z  * [new branch]        ops/g1-codeql-materialized-v12-20260906 -> origin/ops/g1-codeql-materialized-v12-20260906
+2026-11-06T02:57:30.9664675Z  * [new branch]        ops/g1-codeql-materialized-v13-20260906 -> origin/ops/g1-codeql-materialized-v13-20260906
+2026-11-06T02:57:30.9665612Z  * [new branch]        ops/g1-codeql-new-alerts-materialized-v12-20260906 -> origin/ops/g1-codeql-new-alerts-materialized-v12-20260906
+2026-11-06T02:57:30.9666509Z  * [new branch]        ops/g1-codeql-new-alerts-v12-20260906 -> origin/ops/g1-codeql-new-alerts-v12-20260906
+2026-11-06T02:57:30.9667548Z  * [new branch]        ops/g1-codeql-v12-20260906 -> origin/ops/g1-codeql-v12-20260906
+2026-11-06T02:57:30.9668173Z  * [new branch]        ops/g1-codeql-v13-20260906 -> origin/ops/g1-codeql-v13-20260906
+2026-11-06T02:57:30.9668881Z  * [new branch]        ops/g1-evidence-byte-binding-20260905 -> origin/ops/g1-evidence-byte-binding-20260905
+2026-11-06T02:57:30.9669712Z  * [new branch]        ops/g1-exact-source-recover-v13-20260906 -> origin/ops/g1-exact-source-recover-v13-20260906
+2026-11-06T02:57:30.9670494Z  * [new branch]        ops/g1-final-closure-v10-20260906 -> origin/ops/g1-final-closure-v10-20260906
+2026-11-06T02:57:30.9671227Z  * [new branch]        ops/g1-final-governor-v12-20260906 -> origin/ops/g1-final-governor-v12-20260906
+2026-11-06T02:57:30.9672020Z  * [new branch]        ops/g1-integrity-repair-builder-20260905 -> origin/ops/g1-integrity-repair-builder-20260905
+2026-11-06T02:57:30.9672799Z  * [new branch]        ops/g1-job-startup-macos-20260906 -> origin/ops/g1-job-startup-macos-20260906
+2026-11-06T02:57:30.9673623Z  * [new branch]        ops/g1-job-startup-prtarget-trigger-20260906 -> origin/ops/g1-job-startup-prtarget-trigger-20260906
+2026-11-06T02:57:30.9674479Z  * [new branch]        ops/g1-job-startup-validation-20260905 -> origin/ops/g1-job-startup-validation-20260905
+2026-11-06T02:57:30.9675225Z  * [new branch]        ops/g1-live-gap-audit-v2-20260909 -> origin/ops/g1-live-gap-audit-v2-20260909
+2026-11-06T02:57:30.9676154Z  * [new branch]        ops/g1-pending-run-cleanup-v1-20260906 -> origin/ops/g1-pending-run-cleanup-v1-20260906
+2026-11-06T02:57:30.9676918Z  * [new branch]        ops/g1-provider-recovery-20260905 -> origin/ops/g1-provider-recovery-20260905
+2026-11-06T02:57:30.9678068Z  * [new branch]        ops/g1-provider-retirement-validation-20260905 -> origin/ops/g1-provider-retirement-validation-20260905
+2026-11-06T02:57:30.9678898Z  * [new branch]        ops/g1-retained-412169ed-20260906 -> origin/ops/g1-retained-412169ed-20260906
+2026-11-06T02:57:30.9679604Z  * [new branch]        ops/g1-retained-c67a5b79-20260906 -> origin/ops/g1-retained-c67a5b79-20260906
+2026-11-06T02:57:30.9680303Z  * [new branch]        ops/g1-source-inspection-20260905 -> origin/ops/g1-source-inspection-20260905
+2026-11-06T02:57:30.9681095Z  * [new branch]        ops/g1-supervisor-lifecycle-build-20260905 -> origin/ops/g1-supervisor-lifecycle-build-20260905
+2026-11-06T02:57:30.9681991Z  * [new branch]        ops/g1-supervisor-state-validation-20260905 -> origin/ops/g1-supervisor-state-validation-20260905
+2026-11-06T02:57:30.9682859Z  * [new branch]        ops/g1-synthetic-retirement-fix-20260906 -> origin/ops/g1-synthetic-retirement-fix-20260906
+2026-11-06T02:57:30.9683673Z  * [new branch]        ops/human-race-review-route-20260911 -> origin/ops/human-race-review-route-20260911
+2026-11-06T02:57:30.9684469Z  * [new branch]        ops/human-race-review-route-v2-20260911 -> origin/ops/human-race-review-route-v2-20260911
+2026-11-06T02:57:30.9685283Z  * [new branch]        ops/human-race-v2-review-brief-20260911 -> origin/ops/human-race-v2-review-brief-20260911
+2026-11-06T02:57:30.9686086Z  * [new branch]        ops/human-race-v2-review-route-20260911 -> origin/ops/human-race-v2-review-route-20260911
+2026-11-06T02:57:30.9686917Z  * [new branch]        ops/human-race-v2-review-route-r2-20260911 -> origin/ops/human-race-v2-review-route-r2-20260911
+2026-11-06T02:57:30.9688070Z  * [new branch]        ops/human-telemetry-review-route-20260911 -> origin/ops/human-telemetry-review-route-20260911
+2026-11-06T02:57:30.9688979Z  * [new branch]        ops/human-telemetry-review-route-v2-20260911 -> origin/ops/human-telemetry-review-route-v2-20260911
+2026-11-06T02:57:30.9690125Z  * [new branch]        ops/init-activation-atime-identity-repair-v2-20260911 -> origin/ops/init-activation-atime-identity-repair-v2-20260911
+2026-11-06T02:57:30.9691092Z  * [new branch]        ops/l2-l6-environment-hardening-20260911 -> origin/ops/l2-l6-environment-hardening-20260911
+2026-11-06T02:57:30.9691945Z  * [new branch]        ops/l2-l6-infrastructure-audit-v2-20260911 -> origin/ops/l2-l6-infrastructure-audit-v2-20260911
+2026-11-06T02:57:30.9692799Z  * [new branch]        ops/l2-l6-live-prerequisite-audit-20260911 -> origin/ops/l2-l6-live-prerequisite-audit-20260911
+2026-11-06T02:57:30.9693619Z  * [new branch]        ops/live-closure-auditor-20260911-001 -> origin/ops/live-closure-auditor-20260911-001
+2026-11-06T02:57:30.9694479Z  * [new branch]        ops/live-closure-auditor-probe-noop-20260911 -> origin/ops/live-closure-auditor-probe-noop-20260911
+2026-11-06T02:57:30.9695370Z  * [new branch]        ops/module-contracts-final-rebind-20260909 -> origin/ops/module-contracts-final-rebind-20260909
+2026-11-06T02:57:30.9696221Z  * [new branch]        ops/module-contracts-finalizer-20260909 -> origin/ops/module-contracts-finalizer-20260909
+2026-11-06T02:57:30.9697401Z  * [new branch]        ops/module-contracts-protection-merge-v2-20260910 -> origin/ops/module-contracts-protection-merge-v2-20260910
+2026-11-06T02:57:30.9698355Z  * [new branch]        ops/module-contracts-v2-preflight-20260909 -> origin/ops/module-contracts-v2-preflight-20260909
+2026-11-06T02:57:30.9699215Z  * [new branch]        ops/module-contracts-v3-builder-20260910 -> origin/ops/module-contracts-v3-builder-20260910
+2026-11-06T02:57:30.9700130Z  * [new branch]        ops/module-contracts-v3-final-qualifier-20260910 -> origin/ops/module-contracts-v3-final-qualifier-20260910
+2026-11-06T02:57:30.9701210Z  * [new branch]        ops/module-contracts-v3-preflight-20260909 -> origin/ops/module-contracts-v3-preflight-20260909
+2026-11-06T02:57:30.9702128Z  * [new branch]        ops/module-contracts-v3-preflight-fix-20260910 -> origin/ops/module-contracts-v3-preflight-fix-20260910
+2026-11-06T02:57:30.9703033Z  * [new branch]        ops/owner-open-r13-atomic-builder-20260831 -> origin/ops/owner-open-r13-atomic-builder-20260831
+2026-11-06T02:57:30.9703923Z  * [new branch]        ops/owner-open-r13-atomic-builder-20260831-v2 -> origin/ops/owner-open-r13-atomic-builder-20260831-v2
+2026-11-06T02:57:30.9704828Z  * [new branch]        ops/owner-open-r13-atomic-builder-20260831-v3 -> origin/ops/owner-open-r13-atomic-builder-20260831-v3
+2026-11-06T02:57:30.9705722Z  * [new branch]        ops/owner-open-r13-atomic-builder-20260831-v4 -> origin/ops/owner-open-r13-atomic-builder-20260831-v4
+2026-11-06T02:57:30.9706644Z  * [new branch]        ops/owner-open-r13-atomic-builder-20260831-v5 -> origin/ops/owner-open-r13-atomic-builder-20260831-v5
+2026-11-06T02:57:30.9707852Z  * [new branch]        ops/owner-open-r13-bootstrap-bundle-20260831 -> origin/ops/owner-open-r13-bootstrap-bundle-20260831
+2026-11-06T02:57:30.9708767Z  * [new branch]        ops/owner-open-r13-check-reporter-20260831-v5 -> origin/ops/owner-open-r13-check-reporter-20260831-v5
+2026-11-06T02:57:30.9709710Z  * [new branch]        ops/owner-open-r13-exact-head-qualifier-20260831 -> origin/ops/owner-open-r13-exact-head-qualifier-20260831
+2026-11-06T02:57:30.9710665Z  * [new branch]        ops/owner-open-r13-governance-probe-20260831-v5 -> origin/ops/owner-open-r13-governance-probe-20260831-v5
+2026-11-06T02:57:30.9711676Z  * [new branch]        ops/owner-open-r13-integration-controller-20260831-v5 -> origin/ops/owner-open-r13-integration-controller-20260831-v5
+2026-11-06T02:57:30.9712644Z  * [new branch]        ops/owner-open-r13-pr-orchestrator-20260831 -> origin/ops/owner-open-r13-pr-orchestrator-20260831
+2026-11-06T02:57:30.9713518Z  * [new branch]        ops/owner-open-r13-runner-probe-20260831 -> origin/ops/owner-open-r13-runner-probe-20260831
+2026-11-06T02:57:30.9714367Z  * [new branch]        ops/owner-open-r13-source-builder-20260831 -> origin/ops/owner-open-r13-source-builder-20260831
+2026-11-06T02:57:30.9715443Z  * [new branch]        ops/owner-open-r13-source-builder-latest-20260831 -> origin/ops/owner-open-r13-source-builder-latest-20260831
+2026-11-06T02:57:30.9716453Z  * [new branch]        ops/owner-open-r13-target-runner-probe-20260831-v5 -> origin/ops/owner-open-r13-target-runner-probe-20260831-v5
+2026-11-06T02:57:30.9717707Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831 -> origin/ops/owner-open-r15-atomic-builder-20260831
+2026-11-06T02:57:30.9718621Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v10 -> origin/ops/owner-open-r15-atomic-builder-20260831-v10
+2026-11-06T02:57:30.9719546Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v11 -> origin/ops/owner-open-r15-atomic-builder-20260831-v11
+2026-11-06T02:57:30.9720481Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v12 -> origin/ops/owner-open-r15-atomic-builder-20260831-v12
+2026-11-06T02:57:30.9721395Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v2 -> origin/ops/owner-open-r15-atomic-builder-20260831-v2
+2026-11-06T02:57:30.9722336Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v3 -> origin/ops/owner-open-r15-atomic-builder-20260831-v3
+2026-11-06T02:57:30.9723251Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v4 -> origin/ops/owner-open-r15-atomic-builder-20260831-v4
+2026-11-06T02:57:30.9724147Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v5 -> origin/ops/owner-open-r15-atomic-builder-20260831-v5
+2026-11-06T02:57:30.9725046Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v6 -> origin/ops/owner-open-r15-atomic-builder-20260831-v6
+2026-11-06T02:57:30.9725954Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v7 -> origin/ops/owner-open-r15-atomic-builder-20260831-v7
+2026-11-06T02:57:30.9727318Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v8 -> origin/ops/owner-open-r15-atomic-builder-20260831-v8
+2026-11-06T02:57:30.9728315Z  * [new branch]        ops/owner-open-r15-atomic-builder-20260831-v9 -> origin/ops/owner-open-r15-atomic-builder-20260831-v9
+2026-11-06T02:57:30.9729295Z  * [new branch]        ops/owner-open-r15-final-materializer-20260831-v17 -> origin/ops/owner-open-r15-final-materializer-20260831-v17
+2026-11-06T02:57:30.9730239Z  * [new branch]        ops/owner-open-r15-patch-inspect-20260831 -> origin/ops/owner-open-r15-patch-inspect-20260831
+2026-11-06T02:57:30.9731163Z  * [new branch]        ops/owner-open-r15-source-materializer-20260831 -> origin/ops/owner-open-r15-source-materializer-20260831
+2026-11-06T02:57:30.9732098Z  * [new branch]        ops/owner-open-r15-success-extractor-20260831 -> origin/ops/owner-open-r15-success-extractor-20260831
+2026-11-06T02:57:30.9732988Z  * [new branch]        ops/owner-open-r5-l2-runner-probe-20260829 -> origin/ops/owner-open-r5-l2-runner-probe-20260829
+2026-11-06T02:57:30.9733792Z  * [new branch]        ops/owner-open-r6-pr-ready-20260830 -> origin/ops/owner-open-r6-pr-ready-20260830
+2026-11-06T02:57:30.9734667Z  * [new branch]        ops/owner-open-r7-governance-api-attempt-20260830 -> origin/ops/owner-open-r7-governance-api-attempt-20260830
+2026-11-06T02:57:30.9735660Z  * [new branch]        ops/owner-open-r7-governance-enforcement-20260830 -> origin/ops/owner-open-r7-governance-enforcement-20260830
+2026-11-06T02:57:30.9736636Z  * [new branch]        ops/owner-open-r7-retire-superseded-20260830 -> origin/ops/owner-open-r7-retire-superseded-20260830
+2026-11-06T02:57:30.9737837Z  * [new branch]        ops/owner-open-r7-ruleset-test-sentinel-20260830 -> origin/ops/owner-open-r7-ruleset-test-sentinel-20260830
+2026-11-06T02:57:30.9738915Z  * [new branch]        ops/owner-open-r7-runtime-hardening-controller-20260830 -> origin/ops/owner-open-r7-runtime-hardening-controller-20260830
+2026-11-06T02:57:30.9739961Z  * [new branch]        ops/owner-open-r7-runtime-v4-controller-20260830 -> origin/ops/owner-open-r7-runtime-v4-controller-20260830
+2026-11-06T02:57:30.9741113Z  * [new branch]        ops/owner-open-r7-runtime-v4-retry-prep-20260830 -> origin/ops/owner-open-r7-runtime-v4-retry-prep-20260830
+2026-11-06T02:57:30.9742156Z  * [new branch]        ops/owner-open-r7-source-promotion-controller-20260830 -> origin/ops/owner-open-r7-source-promotion-controller-20260830
+2026-11-06T02:57:30.9743294Z  * [new branch]        ops/owner-open-r7-source-promotion-v2-controller-20260830 -> origin/ops/owner-open-r7-source-promotion-v2-controller-20260830
+2026-11-06T02:57:30.9744341Z  * [new branch]        ops/owner-open-r7-workspace-controller-20260830 -> origin/ops/owner-open-r7-workspace-controller-20260830
+2026-11-06T02:57:30.9745335Z  * [new branch]        ops/owner-open-r7-workspace-v3-controller-20260830 -> origin/ops/owner-open-r7-workspace-v3-controller-20260830
+2026-11-06T02:57:30.9746370Z  * [new branch]        ops/owner-open-r7-workspace-v4-controller-20260830 -> origin/ops/owner-open-r7-workspace-v4-controller-20260830
+2026-11-06T02:57:30.9747662Z  * [new branch]        ops/performance-qualification-v2-builder-20260910 -> origin/ops/performance-qualification-v2-builder-20260910
+2026-11-06T02:57:30.9748631Z  * [new branch]        ops/post-observation-review-route-20260911 -> origin/ops/post-observation-review-route-20260911
+2026-11-06T02:57:30.9749551Z  * [new branch]        ops/post-observation-review-route-v2-20260911 -> origin/ops/post-observation-review-route-v2-20260911
+2026-11-06T02:57:30.9750504Z  * [new branch]        ops/post-observation-source-convergence-20260911 -> origin/ops/post-observation-source-convergence-20260911
+2026-11-06T02:57:30.9751389Z  * [new branch]        ops/pr47-exact-source-export-20260908 -> origin/ops/pr47-exact-source-export-20260908
+2026-11-06T02:57:30.9752147Z  * [new branch]        ops/pr47-merge-controller-20260908 -> origin/ops/pr47-merge-controller-20260908
+2026-11-06T02:57:30.9753024Z  * [new branch]        ops/pr47-parser-repair-20260908 -> origin/ops/pr47-parser-repair-20260908
+2026-11-06T02:57:30.9753701Z  * [new branch]        ops/pr71-base-refresh-20260909 -> origin/ops/pr71-base-refresh-20260909
+2026-11-06T02:57:30.9754424Z  * [new branch]        ops/pr72-bounded-ci-recovery-20260910 -> origin/ops/pr72-bounded-ci-recovery-20260910
+2026-11-06T02:57:30.9755229Z  * [new branch]        ops/pr72-convergence-controller-20260910 -> origin/ops/pr72-convergence-controller-20260910
+2026-11-06T02:57:30.9756040Z  * [new branch]        ops/pr72-dispatch-controller-20260910 -> origin/ops/pr72-dispatch-controller-20260910
+2026-11-06T02:57:30.9756853Z  * [new branch]        ops/pr72-final-head-converger-v2-20260910 -> origin/ops/pr72-final-head-converger-v2-20260910
+2026-11-06T02:57:30.9757790Z  * [new branch]        ops/pr72-final-republish-20260909 -> origin/ops/pr72-final-republish-20260909
+2026-11-06T02:57:30.9758610Z  * [new branch]        ops/pr72-final-test-contract-repair-20260910 -> origin/ops/pr72-final-test-contract-repair-20260910
+2026-11-06T02:57:30.9759369Z  * [new branch]        ops/pr72-finalizer-20260909 -> origin/ops/pr72-finalizer-20260909
+2026-11-06T02:57:30.9760107Z  * [new branch]        ops/pr72-formal-recovery-repair-20260909 -> origin/ops/pr72-formal-recovery-repair-20260909
+2026-11-06T02:57:30.9760967Z  * [new branch]        ops/pr72-ordinary-merge-controller-20260910 -> origin/ops/pr72-ordinary-merge-controller-20260910
+2026-11-06T02:57:30.9761883Z  * [new branch]        ops/pr72-protection-aligned-merge-v2-20260910 -> origin/ops/pr72-protection-aligned-merge-v2-20260910
+2026-11-06T02:57:30.9762719Z  * [new branch]        ops/pr72-test-contract-fix-20260909 -> origin/ops/pr72-test-contract-fix-20260909
+2026-11-06T02:57:30.9763487Z  * [new branch]        ops/pr72-test-contract-fix-v2-20260909 -> origin/ops/pr72-test-contract-fix-v2-20260909
+2026-11-06T02:57:30.9764342Z  * [new branch]        ops/pr75-contract-boundary-repair-v1-20260910 -> origin/ops/pr75-contract-boundary-repair-v1-20260910
+2026-11-06T02:57:30.9765251Z  * [new branch]        ops/pr75-contract-boundary-repair-v2-20260910 -> origin/ops/pr75-contract-boundary-repair-v2-20260910
+2026-11-06T02:57:30.9766283Z  * [new branch]        ops/pr75-contract-boundary-repair-v3-20260910 -> origin/ops/pr75-contract-boundary-repair-v3-20260910
+2026-11-06T02:57:30.9767436Z  * [new branch]        ops/pr75-custody-finalizer-v1-20260911 -> origin/ops/pr75-custody-finalizer-v1-20260911
+2026-11-06T02:57:30.9768270Z  * [new branch]        ops/pr75-custody-finalizer-v2-20260911 -> origin/ops/pr75-custody-finalizer-v2-20260911
+2026-11-06T02:57:30.9769084Z  * [new branch]        ops/pr75-custody-v5-observer-20260911 -> origin/ops/pr75-custody-v5-observer-20260911
+2026-11-06T02:57:30.9769956Z  * [new branch]        ops/pr75-review-class-state-machine-v1-20260910 -> origin/ops/pr75-review-class-state-machine-v1-20260910
+2026-11-06T02:57:30.9770982Z  * [new branch]        ops/pr75-review-packet-custody-repair-v2-20260911 -> origin/ops/pr75-review-packet-custody-repair-v2-20260911
+2026-11-06T02:57:30.9771992Z  * [new branch]        ops/pr75-review-packet-custody-repair-v3-20260911 -> origin/ops/pr75-review-packet-custody-repair-v3-20260911
+2026-11-06T02:57:30.9772977Z  * [new branch]        ops/pr75-review-packet-custody-repair-v4-20260911 -> origin/ops/pr75-review-packet-custody-repair-v4-20260911
+2026-11-06T02:57:30.9773954Z  * [new branch]        ops/pr75-review-packet-custody-repair-v5-20260911 -> origin/ops/pr75-review-packet-custody-repair-v5-20260911
+2026-11-06T02:57:30.9774862Z  * [new branch]        ops/pr75-review-packet-repair-v1-20260910 -> origin/ops/pr75-review-packet-repair-v1-20260910
+2026-11-06T02:57:30.9775710Z  * [new branch]        ops/pr75-review-packet-repair-v2-20260911 -> origin/ops/pr75-review-packet-repair-v2-20260911
+2026-11-06T02:57:30.9776625Z  * [new branch]        ops/pr76-performance-and-determinism-v4-20260911 -> origin/ops/pr76-performance-and-determinism-v4-20260911
+2026-11-06T02:57:30.9778026Z  * [new branch]        ops/pr76-performance-qualification-repair-v1-20260910 -> origin/ops/pr76-performance-qualification-repair-v1-20260910
+2026-11-06T02:57:30.9779104Z  * [new branch]        ops/pr76-performance-qualification-repair-v2-20260910 -> origin/ops/pr76-performance-qualification-repair-v2-20260910
+2026-11-06T02:57:30.9780170Z  * [new branch]        ops/pr76-performance-qualification-repair-v3-20260910 -> origin/ops/pr76-performance-qualification-repair-v3-20260910
+2026-11-06T02:57:30.9781109Z  * [new branch]        ops/pr76-post-pr75-finalizer-v1-20260911 -> origin/ops/pr76-post-pr75-finalizer-v1-20260911
+2026-11-06T02:57:30.9781916Z  * [new branch]        ops/pr76-post-pr75-restack-v1-20260911 -> origin/ops/pr76-post-pr75-restack-v1-20260911
+2026-11-06T02:57:30.9782719Z  * [new branch]        ops/pr76-restack-controller-v2-20260911 -> origin/ops/pr76-restack-controller-v2-20260911
+2026-11-06T02:57:30.9783539Z  * [new branch]        ops/pr76-restack-controller-v3-20260911 -> origin/ops/pr76-restack-controller-v3-20260911
+2026-11-06T02:57:30.9784304Z  * [new branch]        ops/pr76-source-export-v1-20260910 -> origin/ops/pr76-source-export-v1-20260910
+2026-11-06T02:57:30.9785090Z  * [new branch]        ops/pr77-post-pr76-finalizer-v1-20260911 -> origin/ops/pr77-post-pr76-finalizer-v1-20260911
+2026-11-06T02:57:30.9785891Z  * [new branch]        ops/pr77-post-pr76-restack-v1-20260911 -> origin/ops/pr77-post-pr76-restack-v1-20260911
+2026-11-06T02:57:30.9786686Z  * [new branch]        ops/pr77-restack-controller-v1-20260911 -> origin/ops/pr77-restack-controller-v1-20260911
+2026-11-06T02:57:30.9787815Z  * [new branch]        ops/pr77-restack-controller-v2-20260911 -> origin/ops/pr77-restack-controller-v2-20260911
+2026-11-06T02:57:30.9788807Z  * [new branch]        ops/product-baseline-pid-publication-repair-v2-20260911 -> origin/ops/product-baseline-pid-publication-repair-v2-20260911
+2026-11-06T02:57:30.9789857Z  * [new branch]        ops/profile-dependency-source-prepare-20260912 -> origin/ops/profile-dependency-source-prepare-20260912
+2026-11-06T02:57:30.9790842Z  * [new branch]        ops/profile-dependency-stack-controller-20260912 -> origin/ops/profile-dependency-stack-controller-20260912
+2026-11-06T02:57:30.9791933Z  * [new branch]        ops/retire-stale-contract-workflows-20260909 -> origin/ops/retire-stale-contract-workflows-20260909
+2026-11-06T02:57:30.9792944Z  * [new branch]        ops/retire-stale-module-contract-controllers-20260909 -> origin/ops/retire-stale-module-contract-controllers-20260909
+2026-11-06T02:57:30.9793886Z  * [new branch]        ops/review-routing-controller-20260911 -> origin/ops/review-routing-controller-20260911
+2026-11-06T02:57:30.9794734Z  * [new branch]        ops/schema-parity-source-prepare-20260912 -> origin/ops/schema-parity-source-prepare-20260912
+2026-11-06T02:57:30.9795614Z  * [new branch]        ops/schema-parity-stack-controller-20260912 -> origin/ops/schema-parity-stack-controller-20260912
+2026-11-06T02:57:30.9796520Z  * [new branch]        ops/self-hosted-runner-availability-20260902 -> origin/ops/self-hosted-runner-availability-20260902
+2026-11-06T02:57:30.9797489Z  * [new branch]        ops/source-gap-sequencer-20260910 -> origin/ops/source-gap-sequencer-20260910
+2026-11-06T02:57:30.9798449Z  * [new branch]        ops/source-qualification-observation-race-repair-20260911 -> origin/ops/source-qualification-observation-race-repair-20260911
+2026-11-06T02:57:30.9799630Z  * [new branch]        ops/source-qualification-observation-race-repair-v2-20260911 -> origin/ops/source-qualification-observation-race-repair-v2-20260911
+2026-11-06T02:57:30.9800586Z  * [new branch]        ops/stale-probe-cleanup-20260911 -> origin/ops/stale-probe-cleanup-20260911
+2026-11-06T02:57:30.9801381Z  * [new branch]        ops/telemetry-contract-regenerate-20260912 -> origin/ops/telemetry-contract-regenerate-20260912
+2026-11-06T02:57:30.9802244Z  * [new branch]        ops/telemetry-durability-binding-20260912 -> origin/ops/telemetry-durability-binding-20260912
+2026-11-06T02:57:30.9803299Z  * [new branch]        ops/telemetry-observe-shadow-v2-builder-20260910 -> origin/ops/telemetry-observe-shadow-v2-builder-20260910
+2026-11-06T02:57:30.9804238Z  * [new branch]        ops/telemetry-restack-final-main-v3-20260911 -> origin/ops/telemetry-restack-final-main-v3-20260911
+2026-11-06T02:57:30.9805158Z  * [new branch]        ops/telemetry-restack-materialized-v3-20260911 -> origin/ops/telemetry-restack-materialized-v3-20260911
+2026-11-06T02:57:30.9806058Z  * [new branch]        ops/telemetry-restack-preflight-20260911 -> origin/ops/telemetry-restack-preflight-20260911
+2026-11-06T02:57:30.9807296Z  * [new branch]        ops/telemetry-v2-borrow-and-clippy-qualifier-20260911 -> origin/ops/telemetry-v2-borrow-and-clippy-qualifier-20260911
+2026-11-06T02:57:30.9808350Z  * [new branch]        ops/telemetry-v2-borrow-scope-qualifier-20260911 -> origin/ops/telemetry-v2-borrow-scope-qualifier-20260911
+2026-11-06T02:57:30.9809305Z  * [new branch]        ops/telemetry-v2-source-materializer-20260911 -> origin/ops/telemetry-v2-source-materializer-20260911
+2026-11-06T02:57:30.9810298Z  * [new branch]        recovery/library-os-supervisor-state-71a71dde-20261103 -> origin/recovery/library-os-supervisor-state-71a71dde-20261103
+2026-11-06T02:57:30.9811296Z  * [new branch]        reviewer/ci-governance-simplification-20260908 -> origin/reviewer/ci-governance-simplification-20260908
+2026-11-06T02:57:30.9812196Z  * [new branch]        staging/trillionniumgame-materialized-v17 -> origin/staging/trillionniumgame-materialized-v17
+2026-11-06T02:57:30.9813111Z  * [new branch]        test/failed-admission-observation-bound-20261004 -> origin/test/failed-admission-observation-bound-20261004
+2026-11-06T02:57:30.9813857Z  * [new branch]        tmp-do-not-use-probe -> origin/tmp-do-not-use-probe
+2026-11-06T02:57:30.9814362Z  * [new branch]        tmp-probe-2          -> origin/tmp-probe-2
+2026-11-06T02:57:30.9815040Z  * [new branch]        workbench/telemetry-review-repair-20260912 -> origin/workbench/telemetry-review-repair-20260912
+2026-11-06T02:57:30.9816725Z [command]/usr/bin/git rev-parse --verify --quiet 653ce1942c3c7d1d3faa1260b53765dd082f32fb^{object}
+2026-11-06T02:57:30.9817469Z 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:30.9818510Z ##[endgroup]
+2026-11-06T02:57:30.9819005Z ##[group]Determining the checkout info
+2026-11-06T02:57:30.9819494Z ##[endgroup]
+2026-11-06T02:57:30.9819789Z [command]/usr/bin/git sparse-checkout disable
+2026-11-06T02:57:30.9820602Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-06T02:57:30.9821580Z ##[group]Checking out the ref
+2026-11-06T02:57:30.9822063Z [command]/usr/bin/git checkout --progress --force 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:31.5248247Z Note: switching to '653ce1942c3c7d1d3faa1260b53765dd082f32fb'.
+2026-11-06T02:57:31.5248833Z 
+2026-11-06T02:57:31.5249257Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-06T02:57:31.5250328Z changes and commit them, and you can discard any commits you make in this
+2026-11-06T02:57:31.5251292Z state without impacting any branches by switching back to a branch.
+2026-11-06T02:57:31.5251905Z 
+2026-11-06T02:57:31.5252343Z If you want to create a new branch to retain commits you create, you may
+2026-11-06T02:57:31.5253691Z do so (now or later) by using -c with the switch command. Example:
+2026-11-06T02:57:31.5254167Z 
+2026-11-06T02:57:31.5254318Z   git switch -c <new-branch-name>
+2026-11-06T02:57:31.5254695Z 
+2026-11-06T02:57:31.5254887Z Or undo this operation with:
+2026-11-06T02:57:31.5255227Z 
+2026-11-06T02:57:31.5255398Z   git switch -
+2026-11-06T02:57:31.5255642Z 
+2026-11-06T02:57:31.5256444Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-06T02:57:31.5258984Z 
+2026-11-06T02:57:31.5259576Z HEAD is now at 653ce194 fix(razr60): connect cancel originals and replay epoch v2 admissions
+2026-11-06T02:57:31.5302264Z ##[endgroup]
+2026-11-06T02:57:31.5362334Z [command]/usr/bin/git log -1 --format=%H
+2026-11-06T02:57:31.5398553Z 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:31.5409332Z ##[group]Removing auth
+2026-11-06T02:57:31.5412679Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T02:57:31.5454219Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T02:57:31.5713062Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T02:57:31.5749734Z http.https://github.com/.extraheader
+2026-11-06T02:57:31.5757489Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-06T02:57:31.5798854Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T02:57:31.6042623Z ##[endgroup]
+2026-11-06T02:57:31.6256493Z ##[group]Run set -euo pipefail
+2026-11-06T02:57:31.6256858Z [36;1mset -euo pipefail[0m
+2026-11-06T02:57:31.6257692Z [36;1mtest "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"[0m
+2026-11-06T02:57:31.6258500Z [36;1mif ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then[0m
+2026-11-06T02:57:31.6259246Z [36;1m  printf '%s\n' 'Cannot verify repository worktree state' >&2[0m
+2026-11-06T02:57:31.6259600Z [36;1m  exit 1[0m
+2026-11-06T02:57:31.6259808Z [36;1mfi[0m
+2026-11-06T02:57:31.6260014Z [36;1mtest -z "$worktree_status"[0m
+2026-11-06T02:57:31.6282644Z shell: /usr/bin/bash -e {0}
+2026-11-06T02:57:31.6282900Z env:
+2026-11-06T02:57:31.6283157Z   SOURCE_HEAD_SHA: 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:31.6283533Z   ALIAS_AUTHORITY: ALIAS_ONLY_NO_EVIDENCE_AUTHORITY
+2026-11-06T02:57:31.6283876Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T02:57:31.6284154Z ##[endgroup]
+2026-11-06T02:57:32.1271802Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-11-06T02:57:32.1272222Z with:
+2026-11-06T02:57:32.1272425Z   python-version: 3.13
+2026-11-06T02:57:32.1272657Z   check-latest: false
+2026-11-06T02:57:32.1275361Z   token: ***
+2026-11-06T02:57:32.1275581Z   update-environment: true
+2026-11-06T02:57:32.1275834Z   allow-prereleases: false
+2026-11-06T02:57:32.1276069Z   freethreaded: false
+2026-11-06T02:57:32.1276273Z env:
+2026-11-06T02:57:32.1276524Z   SOURCE_HEAD_SHA: 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:32.1276890Z   ALIAS_AUTHORITY: ALIAS_ONLY_NO_EVIDENCE_AUTHORITY
+2026-11-06T02:57:32.1277502Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T02:57:32.1277752Z ##[endgroup]
+2026-11-06T02:57:32.2754939Z ##[group]Installed versions
+2026-11-06T02:57:32.2876588Z (node:2379) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-06T02:57:32.2878259Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-06T02:57:32.2879058Z Successfully set up CPython (3.13.18)
+2026-11-06T02:57:32.2879834Z ##[endgroup]
+2026-11-06T02:57:32.3055948Z ##[group]Run set -euo pipefail
+2026-11-06T02:57:32.3056428Z [36;1mset -euo pipefail[0m
+2026-11-06T02:57:32.3056953Z [36;1mtest "$ALIAS_AUTHORITY" = ALIAS_ONLY_NO_EVIDENCE_AUTHORITY[0m
+2026-11-06T02:57:32.3057912Z [36;1mpython3 tools/docs/generate_global_docs.py --check[0m
+2026-11-06T02:57:32.3058518Z [36;1mpython3 tools/docs/verify_global_docs.py[0m
+2026-11-06T02:57:32.3059112Z [36;1mpython3 tools/docs/verify_module_documentation.py[0m
+2026-11-06T02:57:32.3060024Z [36;1mpython3 tools/verify_g1_repository_closure.py --json > "${RUNNER_TEMP}/repository-closure.json"[0m
+2026-11-06T02:57:32.3061066Z [36;1mpython3 -m json.tool "${RUNNER_TEMP}/repository-closure.json" >/dev/null[0m
+2026-11-06T02:57:32.3061947Z [36;1mpython3 -m unittest tools.tests.test_verify_g1_repository_closure -v[0m
+2026-11-06T02:57:32.3063558Z [36;1mif ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then[0m
+2026-11-06T02:57:32.3064831Z [36;1m  printf '%s\n' 'Cannot verify repository worktree state' >&2[0m
+2026-11-06T02:57:32.3065407Z [36;1m  exit 1[0m
+2026-11-06T02:57:32.3065714Z [36;1mfi[0m
+2026-11-06T02:57:32.3066036Z [36;1mtest -z "$worktree_status"[0m
+2026-11-06T02:57:32.3105847Z shell: /usr/bin/bash -e {0}
+2026-11-06T02:57:32.3106105Z env:
+2026-11-06T02:57:32.3106374Z   SOURCE_HEAD_SHA: 653ce1942c3c7d1d3faa1260b53765dd082f32fb
+2026-11-06T02:57:32.3106744Z   ALIAS_AUTHORITY: ALIAS_ONLY_NO_EVIDENCE_AUTHORITY
+2026-11-06T02:57:32.3107358Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T02:57:32.3107687Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-06T02:57:32.3108132Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.18/x64/lib/pkgconfig
+2026-11-06T02:57:32.3108576Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-06T02:57:32.3108973Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-06T02:57:32.3109363Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.18/x64
+2026-11-06T02:57:32.3109754Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.18/x64/lib
+2026-11-06T02:57:32.3110077Z ##[endgroup]
+2026-11-06T02:57:32.9146700Z {"android_build_host_invalid": 384, "android_build_host_valid": 48, "public_release": false}
+2026-11-06T02:57:32.9424893Z {"module_contracts": true, "public_release": false, "result": "PASS"}
+2026-11-06T02:57:33.1350391Z effect lifecycle verification passed
+2026-11-06T02:57:33.6025100Z repository authority verification failed: projects/razr60/phone-local-v150/executor/r4/vendor/hash/rotate-bits/LICENSE.md: paragraph at visible line 3: malformed or ambiguously parsed HTML tag
+2026-11-06T02:57:33.6096473Z G1 documentation verification failed: repository authority/profile verification failed
+2026-11-06T02:57:33.6194115Z ##[error]Process completed with exit code 1.
+2026-11-06T02:57:33.6368005Z Post job cleanup.
+2026-11-06T02:57:33.7251015Z [command]/usr/bin/git version
+2026-11-06T02:57:33.7298973Z git version 2.56.0
+2026-11-06T02:57:33.7345038Z Temporarily overriding HOME='/home/runner/work/_temp/eed129fd-b15d-4db6-bb30-2fe0782d632a' before making global git config changes
+2026-11-06T02:57:33.7346126Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T02:57:33.7351856Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/trillionnium-os/trillionnium-os
+2026-11-06T02:57:33.7395396Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T02:57:33.7450568Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T02:57:33.7738937Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T02:57:33.7790952Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T02:57:33.8258266Z Cleaning up orphan processes
+2026-11-06T02:57:33.8649859Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

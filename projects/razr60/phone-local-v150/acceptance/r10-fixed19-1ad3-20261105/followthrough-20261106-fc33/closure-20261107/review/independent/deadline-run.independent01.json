@@ -1,0 +1,34 @@
+{
+  "scope": "INDEPENDENT_HOST_SOURCE_REGRESSION_ONLY",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-I",
+    "-B",
+    "/workspace/scratch/00f8328876d8/ci-candidate-audit/deadline-successor-r1/check_deadline_candidate.py",
+    "--repo-root",
+    "/workspace/scratch/00f8328876d8/ci-candidate-audit/source-fixture-root",
+    "--private-config-mcp",
+    "/workspace/scratch/00f8328876d8/private-evidence/transport-config.json",
+    "--out",
+    "/workspace/scratch/00f8328876d8/independent-review/deadline-tests.independent01.json"
+  ],
+  "returncode": 0,
+  "report": {
+    "path": "/workspace/scratch/00f8328876d8/independent-review/deadline-tests.independent01.json",
+    "bytes": 1089,
+    "sha256": "bd9694223e85317ed63495f3421ea07a9f0cd3eb06048d6f098795af00a3d26a"
+  },
+  "candidate_input_hashes": {
+    "candidate/preserved_ui_package_phase_r7.py": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+    "candidate/send_new_native_guard_task_r10_r4.py": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69",
+    "candidate/control_send_once.py": "a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace",
+    "check_deadline_candidate.py": "1019dbdf1fb1e05de52089824ac58f99e094b7a948d7d4e68efd69fd03dd7a08",
+    "DERIVATION.json": "ec6e00e05e95f29622471b103b5d190312b74f89c6e56663158aea6e7109aa0b",
+    "EXECUTION-LOCK.json": "6b2cc8a04a5e6c959e97dd8b662cfeb653fb4bc6ca0f22af7186738c79111f6e",
+    "FOLLOWTHROUGH.patch": "9d37858ebd377a90e088c2503a2cde062e59fa484b76dc0f11ebe6760cd754fb"
+  },
+  "candidate_bytes_unchanged_before_after": true,
+  "phone_calls": 0,
+  "native_dispatches": 0,
+  "current_fixed19_credit": 0
+}

@@ -1,0 +1,36 @@
+--- reference/prepare_native_bound_components_r6_fc33_successor02.py
++++ prepare_native_bound_components_r6_fc33_successor02.py
+@@ -123,7 +123,17 @@
+     entry=f['files']['root-chain/source/run_component_root_once.py'];need(h.literal(files['root-chain/source/run_component_root_once.py'],'PKG')==f['runtime_manifest']['sha256'],'actual root package constant')
+     return f,files,entry,transport
+ 
++def require_original_attempt_admission(stage):
++    # Exact sidecar source, before helper loading/reservation/nonce generation.
++    path=Path(__file__).absolute().with_name('original_attempt_admission.py')
++    row={'path':str(path),'bytes':10422,'sha256':'e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b'}
++    raw=initial(row)
++    guard=module(raw,'reviewed_original_attempt_admission',path)
++    guard.require_successor_admission(stage=stage)
++
++
+ def selected_context(h,o,args):
++    require_original_attempt_admission('preparer.selected_context')
+     f,files,entry,transport=verify_freeze(h,o)
+     label=LABELS[args.case];directory,out=h.require_unused(label)
+     previous_row={'path':args.previous,'bytes':args.previous_bytes,'sha256':args.previous_sha256}
+@@ -166,6 +176,7 @@
+         'actual_previous':previous_row,'case_id':args.case,'freeze_controller':transport}
+ 
+ def create(h,o,c,source,source_raw,preview):
++    require_original_attempt_admission('preparer.before_nonce_and_reservation')
+     directory,out=h.require_unused(c['selected_label']);need((directory,out)==(c['directory'],c['out']),'fresh selected namespaces unchanged')
+     o.recheck();os.umask(0o077);h.reserve(directory);attempts=0;generated=0
+     try:
+@@ -209,6 +220,7 @@
+     ap.add_argument('--case',choices=sorted(LABELS),required=True);ap.add_argument('--previous',required=True)
+     ap.add_argument('--previous-bytes',type=int,required=True);ap.add_argument('--previous-sha256',required=True)
+     ap.add_argument('--create-host-plan-once',action='store_true');args=ap.parse_args()
++    require_original_attempt_admission('preparer.main')
+     need(type(FROZEN_INPUTS)is dict and set(FROZEN_INPUTS)=={'freeze','source','controller'},'UNBOUND_ACTUAL_FREEZE_OR_SUCCESSFUL_CONTROLLER_NO_IO_OR_NONCE')
+     helper_raw=initial(HELPER);h=module(helper_raw,'fc33_exact_plan_helpers',HELPER['path']);sys.addaudithook(h.audit)
+     o=h.Originals();need(o.read(HELPER)==helper_raw,'executed helper unchanged')

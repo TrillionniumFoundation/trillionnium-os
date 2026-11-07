@@ -1,0 +1,116 @@
+{
+  "baseline_observation_performed_by_phone_once": true,
+  "case_credit": 0,
+  "elapsed_seconds": 0.7796276919543743,
+  "establishes_original_fencing": false,
+  "establishes_original_nonexecution": false,
+  "establishes_original_terminal": false,
+  "host": "pocket4",
+  "idempotency_key_published": false,
+  "idempotency_key_sha256": "67362bdfb7c231c47baf5b8f0decfab83c7c39e8341875dc26fbb6eb0c5ee367",
+  "job_id": "1a1b48b2250-fc05-883c",
+  "job_terminal": {
+    "at_unix_ms": 1794030381906,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b48b2250-fc05-883c",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 587,
+        "stored": 587
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "job_terminal_is_public_projection": true,
+  "job_terminal_omitted_control_fields": [
+    "launch_nonce"
+  ],
+  "label": "ro-r6-bound02-native-20261107-00f832",
+  "new_model_requests": 0,
+  "new_native_task_sends": 0,
+  "observed_at_utc": "2026-11-07T05:46:21.065006+00:00",
+  "original_owner_request_sha256": "b25d5c139aebdec8a222ca4298e91cd57500b0836c0c9f1629cb4ce769ad6d3f",
+  "originals": [
+    {
+      "bytes": 12710,
+      "exact_original_bytes": true,
+      "path": "/home/alex/razr60-local-model-v150/operations/ro-r6-bound02-native-20261107-00f832/result.json",
+      "retained_public_path": "originals/readonly-native-result.original.json",
+      "sha256": "fe7b2e302418286679272fd4979119315d7abeb0f574cfceeed04cb576fade59",
+      "version": "66306:59135457:12710:1794030381844935498:1794030381844935498"
+    },
+    {
+      "bytes": 348,
+      "exact_original_bytes": true,
+      "path": "/home/alex/razr60-local-model-v150/operations/ro-r6-bound02-native-20261107-00f832/baseline.json",
+      "retained_public_path": "originals/readonly-native-baseline.original.json",
+      "sha256": "7aafb064b7af71d94cc8042903a06461df02666f882bdd01a6d8ac6190a7ec43",
+      "version": "66306:59135456:348:1794030381452029447:1794030381452029447"
+    },
+    {
+      "bytes": 8080,
+      "exact_original_bytes": true,
+      "path": "/home/alex/razr60-local-model-v150/operations/ro-r6-bound02-native-20261107-00f832/intent.json",
+      "retained_public_path": "originals/readonly-native-intent.original.json",
+      "sha256": "26ee0bf912629643f86ef3cb052109be16b3d83af78fcda3a996004c24e9ce90",
+      "version": "66306:59135455:8080:1794030381065288910:1794030381065288910"
+    }
+  ],
+  "phone_command_rc": 0,
+  "phone_once_source": {
+    "bytes": 5652,
+    "sha256": "179a3a57ad8859a256f7e244e34171e9dd90544012928d65405efd22c8a74b22"
+  },
+  "phone_writes_by_probe": false,
+  "probe_dispatches": 1,
+  "probe_source": {
+    "extracted_from_sender_sha256": "de6c90187ad15995cbd85c662fb7d0a0ee40809bc54d9c1a51c46e164d75b354",
+    "extraction": "AST literal only; sender was not imported or executed",
+    "sha256": "29b7d9aac7f2d3f0450abd1906d8761a8b43cf9c81ec587cf2c23363d1230ba3"
+  },
+  "raw_probe_stdout": {
+    "business_qualified": false,
+    "model_requests": 0,
+    "native_hash_chain_verified": false,
+    "owner_utf8_sha256": "b25d5c139aebdec8a222ca4298e91cd57500b0836c0c9f1629cb4ce769ad6d3f",
+    "phone_writes": false,
+    "provider_match_count": 0,
+    "schema": "hepta.read-only-new-turn-observation.v150.r4",
+    "state": "no_matching_provider_start",
+    "tool_dispatches": 0
+  },
+  "request": {
+    "bytes": 7784,
+    "sha256": "0f4b800aafb90d7bf39038114b6469bae62e1ac5ef861ecc852cb2bae7296341"
+  },
+  "schema": "razr60.original-bound02.read-only-native-observation.v1",
+  "scope_limits": [
+    "One bounded read of existing provider evidence using the exact frozen observer and original REQUEST hash.",
+    "No matching start in this view does not prove the original never ran or cannot launch later.",
+    "The terminal above belongs only to the observation job; it is not the original bound02 terminal."
+  ]
+}

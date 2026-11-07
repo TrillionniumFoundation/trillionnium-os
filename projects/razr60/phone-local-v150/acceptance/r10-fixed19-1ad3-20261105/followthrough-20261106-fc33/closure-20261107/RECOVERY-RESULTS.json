@@ -1,0 +1,70 @@
+{
+  "bound02_settled": false,
+  "captured_at_utc": "2026-11-07T05:57:49.838269+00:00",
+  "merging_results_allowed": false,
+  "rows": [
+    {
+      "bound02_disposition": false,
+      "fixed19_credit": 0,
+      "historical_deletion_operations": 76,
+      "interpretation": "Exact 67 files and 9 directories / 76 operations verified; 14 locks and complete 44-root, 3823-entry, 44353573-byte census checked. Current process liveness and whole scope closure are not claimed.",
+      "new_deletions_this_followthrough": 0,
+      "operation_job_id": "1a1b33a7191-fc05-813f",
+      "operation_outer_exit_code": 0,
+      "original_label": "root-r10-neg01-fc33-r6-bound01",
+      "original_nonce": "5f94c6a88805eefb0e2320cae5265d46",
+      "phone_rc": 0,
+      "reader_exit_code": 0,
+      "reader_job_id": "1a1b33b9725-fc05-814c",
+      "reader_original": {
+        "bytes": 35431,
+        "exact_original_bytes": true,
+        "path": "/home/alex/razr60-local-model-v150/fc33-neg01-r6-bound01-owned-recovery02-fresh-import01/HOST-VERIFICATION.PUBLIC.json",
+        "retained_public_path": "originals/recovery02-fresh-HOST-VERIFICATION.original.json",
+        "sha256": "64464e62d363b367a1efecd17d39357481fa7cb1a1b97da777fca07e3803c3e6",
+        "version": "66306:39847979:35431:1794008391329932212:1794008391329932212"
+      },
+      "reader_state": "EXACT_UNSTARTED_RECOVERY_INDEPENDENTLY_VERIFIED_NO_CASE_CREDIT",
+      "recovery_id": "recovery02-fresh",
+      "recovery_scope": "exact retained unstarted bound01 resource set",
+      "result_original": {
+        "bytes": 933670,
+        "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-r6-bound01-owned-recovery02-fresh/result.json",
+        "sha256": "c64595d9d96fbff437d757864a7613f7cf6d8dda6eac445bf99a2120486ab843"
+      },
+      "scope_closure": false
+    },
+    {
+      "bound02_disposition": false,
+      "fixed19_credit": 0,
+      "historical_deletion_operations": 0,
+      "interpretation": "Outer wrapper exit 0 does not erase phone rc 1. PRE_MUTATION_REJECTED / zero deletion attempts are retained as incomplete recovery; no successful recovery credit.",
+      "new_deletions_this_followthrough": 0,
+      "operation_job_id": "1a1b3426151-fc05-8186",
+      "operation_outer_exit_code": 0,
+      "original_label": "root-r10-neg01-fc33-r6-bound01",
+      "original_nonce": "5f94c6a88805eefb0e2320cae5265d46",
+      "phone_rc": 1,
+      "reader_exit_code": 1,
+      "reader_job_id": "1a1b3456b55-fc05-81a2",
+      "reader_original": {
+        "bytes": 61852,
+        "exact_original_bytes": true,
+        "path": "/home/alex/razr60-local-model-v150/fc33-neg01-r6-bound01-owned-recovery02-import01/HOST-VERIFICATION.PUBLIC.json",
+        "retained_public_path": "originals/recovery02-HOST-VERIFICATION.original.json",
+        "sha256": "a8f867ca8c1c14e1eb093e4fcbaa0c7223837d70d9588462affe50c83a6e376e",
+        "version": "66306:39848021:61852:1794009035553130095:1794009035553130095"
+      },
+      "reader_state": "ORIGINALS_PRESERVED_RECOVERY_INCOMPLETE_OR_UNKNOWN",
+      "recovery_id": "recovery02",
+      "recovery_scope": "exact retained unstarted bound01 resource set",
+      "result_original": {
+        "bytes": 59535,
+        "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-r6-bound01-owned-recovery02/result.json",
+        "sha256": "5c30d5fe6f8d351ea380eecc8bd36423aaf870fa08fee3c8cfdcf0294e984404"
+      },
+      "scope_closure": false
+    }
+  ],
+  "schema": "razr60.distinct-recovery-originals.v1"
+}

@@ -1,0 +1,132 @@
+{
+  "author_verification": {
+    "current_check": "verification/CURRENT-CHECK.author01.json",
+    "qualification": "HOST_SOURCE_ENTRY_REGRESSION_ONLY",
+    "result": "verification/HOST-TESTS.author01.json",
+    "test_count": 23
+  },
+  "component_qualified": false,
+  "current_contract": {
+    "checker": "current_check.py",
+    "consistent_blocked_exit_code": 2,
+    "decision_field": "original_attempt_admission",
+    "decision_fragment": "CURRENT.fragment.json",
+    "inconsistent_or_unverifiable_exit_code": 3,
+    "other_current_fields_validated": false,
+    "required_top_level_execution_eligible": false
+  },
+  "files": [
+    {
+      "bytes": 707,
+      "path": "CI-WRAPPER.example.py",
+      "sha256": "77f59c403bf0860ec2ee161f8a79cae4816a7564223d5b224b15ff91c798321f"
+    },
+    {
+      "bytes": 3693,
+      "path": "CURRENT.fragment.json",
+      "sha256": "1e3dfb43bcecd04392233ec38c094c32f40b7a65a5328767a785261c33a96533"
+    },
+    {
+      "bytes": 2943,
+      "path": "ORIGINAL-ATTEMPTS.json",
+      "sha256": "331e135d43cbe8dc8fa4136ff2b1af40a2fb2fab1e83ed71533e2d29df3dde70"
+    },
+    {
+      "bytes": 9508,
+      "path": "README.md",
+      "sha256": "1a0a9ccd63841a89dfe79f4431fe0be866bf70b0edfca50300f3d92d8a410bf9"
+    },
+    {
+      "bytes": 3017,
+      "path": "SOURCE-DERIVATION.json",
+      "sha256": "9127a441191828bf544ce0fd88cac5fea2112e5790f490abe676d0ed36fe0ef5"
+    },
+    {
+      "bytes": 2409,
+      "path": "changes/prepare_native_bound_components_r6_fc33_successor02.py.patch",
+      "sha256": "350ff927e36c59e49f8fa4aeacc273b83b4c2e00ec9aaab93bfe8a999a27e6b2"
+    },
+    {
+      "bytes": 2591,
+      "path": "changes/run_component_root_once.py.patch",
+      "sha256": "64d6b15989268ca8d455750effe0836bd0a6022ef0f373347c4d1db0246ffb24"
+    },
+    {
+      "bytes": 3887,
+      "path": "current_check.py",
+      "sha256": "b0015fb4455bf87c97e99a206c65235456cc9e7a8e9986fa9fbe2719d8bb1a59"
+    },
+    {
+      "bytes": 12903,
+      "path": "derive_guarded_sources.py",
+      "sha256": "88d6f991055ebd9939ac840f626f88038a616654e7a945414097215f6938103a"
+    },
+    {
+      "bytes": 10422,
+      "path": "original_attempt_admission.py",
+      "sha256": "e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b"
+    },
+    {
+      "bytes": 21567,
+      "path": "prepare_native_bound_components_r6_fc33_successor02.py",
+      "sha256": "df4d2a40d2df631cc598b6b79b6b6a095a3350287ad3925b62a6b9072d75751f"
+    },
+    {
+      "bytes": 20902,
+      "path": "reference/prepare_native_bound_components_r6_fc33_successor02.py",
+      "sha256": "ff7f83db52bd067ffd6c41ebfd734a5414245c6e48224266da35fd2c37b9f77c"
+    },
+    {
+      "bytes": 78567,
+      "path": "reference/run_component_root_once.py",
+      "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257"
+    },
+    {
+      "bytes": 79408,
+      "path": "run_component_root_once.py",
+      "sha256": "66324bd333190b2dbfc62a4ef6badc1f4e6829ff3bba6f551e39eacaeb53c3be"
+    },
+    {
+      "bytes": 23192,
+      "path": "tests/test_original_attempt_admission.py",
+      "sha256": "77379b40979f6810d7c99b8c812ae0c2c0e439a9cb7e67b411b3614a276f04e5"
+    },
+    {
+      "bytes": 4397,
+      "path": "verification/CURRENT-CHECK.author01.json",
+      "sha256": "3a83b1b7586cfa69a6370df275591599d9a8ea3eccfeda9941d728fb9613da8c"
+    },
+    {
+      "bytes": 482,
+      "path": "verification/HOST-TESTS.author01.json",
+      "sha256": "ab32df1d7963e6ea786a9c840986739f20e99ef5c689826052d6f6299a7ecc95"
+    }
+  ],
+  "full19_qualified": false,
+  "independent_review_record": "Maintained separately by the independent reviewer; not self-attested here.",
+  "live_guard_enforcement_proven": false,
+  "manifest_self_excluded": true,
+  "new_runtime_combination": null,
+  "old_mac_files_modified": false,
+  "original_outcome_rewritten": false,
+  "phone_calls_by_this_work": 0,
+  "publication_root": "projects/razr60/phone-local-v150/operators/r6-followthrough-20261107/admission",
+  "runtime_jobs_created_by_this_work": 0,
+  "schema": "hepta.r6.original-attempt-guard-review-package.v1",
+  "source_baselines": {
+    "preparer": {
+      "bytes": 20902,
+      "existing_same_named_git_file_claimed": false,
+      "origin": "ACTUAL_MAC_SUCCESSOR02_SOURCE_READ_THIS_SESSION",
+      "sha256": "ff7f83db52bd067ffd6c41ebfd734a5414245c6e48224266da35fd2c37b9f77c"
+    },
+    "root": {
+      "bytes": 78567,
+      "existing_public_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "existing_public_git_blob": "74ef273e628b70bead31650c22ae5f334cd3d1c1",
+      "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257"
+    }
+  },
+  "source_derivation": "SOURCE-DERIVATION.json",
+  "state": "SOURCE_ONLY_LOCAL_HOST_TESTS_PASSED_NOT_ADOPTED"
+}

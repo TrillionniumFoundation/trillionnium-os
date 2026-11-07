@@ -1,0 +1,162 @@
+{
+  "schema": "razr60.independent-final-publication-review.v1",
+  "state": "PASS_FOR_SOURCE_AND_EVIDENCE_PUBLICATION_ONLY",
+  "reference_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "scope": {
+    "reviewed_file_count": 112,
+    "snapshot_file": "PUBLICATION-SNAPSHOT-REVIEWED.json",
+    "snapshot_bytes": 30370,
+    "snapshot_sha256": "cb7b55a39f1d3f2e68cae79cb2cf31daec9d454d229b98bab4fb0d5a5c8a1016",
+    "source_candidate_directories": [
+      "operators/r6-followthrough-20261107/admission",
+      "operators/r6-followthrough-20261107/deadline"
+    ],
+    "current_and_closure_reviewed": true,
+    "new_reports_and_final_manifest_refresh_require_byte_manifest_binding": true,
+    "incremental_review": {
+      "replaced_files": 3,
+      "unchanged_previously_reviewed_files": 109,
+      "source_files_changed": 0,
+      "source_tests_rerun": false,
+      "prior_snapshot_sha256": "340ae2aa8e2172e7c08237f1b7ab409e00f3cc99cdc4696a0b4454dd868aa6f9",
+      "delta_report_file": "PROJECTION-DELTA-REVIEW.json",
+      "delta_report_bytes": 2095,
+      "delta_report_sha256": "ebf4722ec03d1dd1eac100f0a4f8f6bf259f2503fabd6e04db94e49b5c2964cc"
+    }
+  },
+  "checks": {
+    "raw_original_metadata_removed": true,
+    "metadata_projection_is_labelled_non_original": true,
+    "metadata_projection_omits_control_fields": true,
+    "original_launch_metadata_omits_control_fields": true,
+    "probe_key_not_published": true,
+    "probe_launch_nonce_not_published": true,
+    "execution_stays_blocked": true,
+    "original_owner_unresolved": true,
+    "original_terminal_null": true,
+    "original_effect_counts_all_null": true,
+    "cancel_signal_count_null": true,
+    "no_universal_disposition_verifier": true,
+    "current_whole_pass_0_of_19": true,
+    "new_source_not_runtime_adoption": true,
+    "source_selection_hash_matches": true,
+    "budget_projection_hash_matches": true,
+    "native_probe_does_not_close_original": true,
+    "actual_build_and_ready_unqualified": true,
+    "selected_source_file_pins_match": true,
+    "current_admission_matches_existing_pinned_guard": true,
+    "native_intent_contains_exact_published_readonly_probe": true,
+    "native_result_wraps_same_command": true,
+    "both_host_verifications_are_existing_public_bytes": true,
+    "reviewed_files_unchanged_during_scan": true,
+    "all_required_private_pattern_classes_available": true,
+    "no_private_payload_or_credential_hits": true,
+    "no_raw_control_fields_in_json": true,
+    "configured_target_alias_removed_from_mcp_error_text": true,
+    "mcp_projection_capture_pins_verified": true,
+    "mcp_projection_preserves_original_error_and_job_identity": true,
+    "only_configured_alias_changes_in_projected_response": true,
+    "replaced_original_mcp_captures_removed_from_publication": true,
+    "all_other_previously_reviewed_files_unchanged": true
+  },
+  "resolved_findings": [
+    {
+      "id": "PUBLICATION-01",
+      "field_names": [
+        "ssh_target",
+        "idempotency_key"
+      ],
+      "file": "originals/bound02-job-metadata.original.json",
+      "resolution": "Removed complete private original from publication; retained immutable private descriptor and explicitly named PUBLIC projection with exact_original_bytes=false."
+    },
+    {
+      "id": "PUBLICATION-02",
+      "field_names": [
+        "idempotency_key",
+        "launch_nonce"
+      ],
+      "file": "NATIVE-OBSERVATION.json",
+      "resolution": "Published digest/projection metadata only; control field values omitted."
+    },
+    {
+      "id": "SOURCE-METADATA-01",
+      "file": "deadline/DERIVATION.json",
+      "resolution": "Explicit component SSH budget 660 and production budget 600; candidate executable bytes unchanged."
+    },
+    {
+      "id": "PUBLICATION-03",
+      "field_names": [
+        "response.content[].text configured ssh_target alias"
+      ],
+      "files": [
+        "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/observations/bound02-status.public-projection.json",
+        "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/observations/bound02-log-read.public-projection.json",
+        "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/observations/bound02-status-after-cancel.public-projection.json"
+      ],
+      "resolution": "Replaced three original MCP error captures with explicit PUBLIC projections; exact_original_bytes=false, original capture bytes/SHA retained, and only configured alias text redacted. Original error class and job identity preserved. Full private captures are retained outside publication."
+    }
+  ],
+  "privacy": {
+    "exact_private_pattern_classes_found": {
+      "pinned_config_body": true,
+      "original_owner_request_body": true,
+      "preserved_draft_body": true
+    },
+    "private_pattern_count": 7,
+    "exact_private_payload_hits": [],
+    "semantic_full_config_hits": [],
+    "credential_shape_hits": [],
+    "raw_control_field_hits": [],
+    "private_actual_values_in_report": false,
+    "additional_reports_checked": [
+      {
+        "file": "current-review.json",
+        "bytes": 9892,
+        "sha256": "b821d98434aa42eaa6c521a5eb7a71dead31e2ac5c7e4c175bb702225026ddb2"
+      }
+    ],
+    "exact_control_value_fields_scanned": [
+      "ssh_target",
+      "idempotency_key"
+    ],
+    "exact_control_value_hits": [],
+    "exact_control_value_scan_file_count": 112
+  },
+  "already_public_originals": [
+    {
+      "file": "originals/recovery02-fresh-HOST-VERIFICATION.original.json",
+      "sha256": "64464e62d363b367a1efecd17d39357481fa7cb1a1b97da777fca07e3803c3e6",
+      "bytes": 35431,
+      "matches_independently_verified_PR112_original": true,
+      "public_source_suffix": "verification-20261107/recovery/fresh-HOST-VERIFICATION.original.json"
+    },
+    {
+      "file": "originals/recovery02-HOST-VERIFICATION.original.json",
+      "sha256": "a8f867ca8c1c14e1eb093e4fcbaa0c7223837d70d9588462affe50c83a6e376e",
+      "bytes": 61852,
+      "matches_independently_verified_PR112_original": true,
+      "public_source_suffix": "verification-20261107/recovery/later-HOST-VERIFICATION.original.json"
+    }
+  ],
+  "source_review": {
+    "admission_tests_independent_passed": 23,
+    "deadline_tests_independent_passed": 15,
+    "complete_reverse_patch_restored_originals": 5,
+    "real_original_config_bytes_prefix_control": "Exact 2416B original bytes in a local fixture; same verified bytes object parsed, first route sentinel once, no socket/subprocess call; not a new remote file observation.",
+    "source_changes_do_not_grant_runtime_execution": true
+  },
+  "runtime_execution_eligible": false,
+  "current_fixed19_credit": 0,
+  "remaining_runtime_blockers": [
+    "Original bound02 ownership/terminal or accepted exact fenced disposition remains unresolved.",
+    "No universal accepted-disposition verifier or bypass is present.",
+    "Complete successor runtime refreeze, fresh admission, actual BUILD/install/READY/health and current fixed19 remain unqualified."
+  ],
+  "publication_blockers": [],
+  "report_contains_raw_private_values": false,
+  "review_revision": 2,
+  "required_final_assembly_steps": [
+    "Copy final review, delta review and reviewed snapshot into the publication review directory.",
+    "Refresh PUBLIC-PROJECTION-INDEX.json, PUBLISH-MANIFEST.json and closure/DELIVERY-MANIFEST.json to bind the new projection filenames and final report bytes."
+  ]
+}
