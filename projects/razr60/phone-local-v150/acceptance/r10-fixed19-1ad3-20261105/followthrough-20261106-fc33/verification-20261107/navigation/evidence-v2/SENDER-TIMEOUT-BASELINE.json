@@ -1,0 +1,36 @@
+{
+  "adb_daemon_connections": 0,
+  "baseline": {
+    "budget_seconds": 0.2,
+    "connection_count": 1,
+    "elapsed_seconds": 0.4047744039999088,
+    "error": null,
+    "fixture_thread_joined": true,
+    "mode": "drip",
+    "result": {
+      "command": "fixture-one-observation",
+      "rc": 0,
+      "route": [
+        5037,
+        "23"
+      ],
+      "stderr": "",
+      "stdout": "xxxx"
+    },
+    "service_requests": [
+      "host:transport-id:23",
+      "shell,v2,raw:fixture-one-observation"
+    ],
+    "shell_service_requests": 1,
+    "socket_closed": true
+  },
+  "baseline_exceeds_requested_total_timeout": true,
+  "bound01_exit137_root_cause": null,
+  "fixed19_credit": 0,
+  "frozen_R6_adopted": false,
+  "native_dispatches": 0,
+  "original_sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+  "phone_calls": 0,
+  "remote_process_cleanup_verified": false,
+  "schema": "hepta.sender-socket-deadline-source-review.v1"
+}

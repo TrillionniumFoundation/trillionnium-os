@@ -1,0 +1,275 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "combined_test_case_count": null,
+  "commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "commit_tree": "3b805316ffdb03fc1fb581896d56910bf96c77ab",
+  "environment": {
+    "bytes": 611,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/ENVIRONMENT.json",
+    "sha256": "f2f7c64943eb66c40a2cfd83969928a26764567a93b9b8e7b6486aa65d06b69f"
+  },
+  "fixed19_credit": 0,
+  "installed_tuple": null,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "native_modes_recorded_separately": true,
+  "new_production_defect_demonstrated": false,
+  "phone_calls": 0,
+  "pins_modified": false,
+  "private_actual_gate_passed": false,
+  "production_modified": false,
+  "production_patch_required": false,
+  "public_fixture_entrypoints_executed": 3,
+  "public_fixture_entrypoints_passed": 3,
+  "public_schema_used_as_private_substitute": false,
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "require_actual_inputs_available": false,
+  "required_private_originals": "private/NEG01-native-originals: 13 exact original members from pinned schema",
+  "required_private_schema": {
+    "bytes": 16924,
+    "relative_path": "private/NEG01-NATIVE-SCHEMA.json",
+    "sha256": "76ec7ca00770c6ec66db6fb9919bfb15145de670d690b5f61b30a3b047df695c"
+  },
+  "runs": [
+    {
+      "actual_original_checks": null,
+      "audit_denied_events": [],
+      "automatic_retry": false,
+      "case_count": 13,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_selected_neg10_neg14_v3.py",
+        "--package-root",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3",
+        "--out",
+        "/workspace/scratch/78e391d818f2/acceptance_review/runs/selected-guards-01/output"
+      ],
+      "consumer_chain_case_count": null,
+      "dispatch_binding_case_count": null,
+      "exit_code": 0,
+      "fatal_error": null,
+      "fd_thread_child_cpu_baseline_restored": true,
+      "label": "selected-guards-01",
+      "ledger_binding_passed": null,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "outer_elapsed_seconds": 0.16536402600104338,
+      "parser_case_count": null,
+      "phone_calls": 0,
+      "reported_state": "PASSED_SELECTED_HOST_SCOPE",
+      "result": {
+        "bytes": 10552,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/selected-guards-01/output/RESULT.json",
+        "sha256": "a47eea4ac4c38855eba19793d1cf00893dc1b295cfa5a11e826d83df8ddee318"
+      },
+      "run_record": {
+        "bytes": 1992,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/selected-guards-01/RUN.json",
+        "sha256": "22f088c9590dc58695e880c3f93d620c8ba73cc9327dc5a56dfbcc8611c3a9ec"
+      },
+      "scenario_count": null,
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/selected-guards-01/stderr.original.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 340,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/selected-guards-01/stdout.original.txt",
+        "sha256": "f36daa0ef6cb26c18fb98f847268f07e747a3f9719e7069ff5f4374e043863f1"
+      },
+      "test_elapsed_seconds": 0.003215837998141069,
+      "timed_out": false,
+      "trust_consumer_chain_case_count": null,
+      "trust_parser_case_count": null
+    },
+    {
+      "actual_original_checks": null,
+      "audit_denied_events": [],
+      "automatic_retry": false,
+      "case_count": null,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_shared_business_admission_v3.py",
+        "--package-root",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3",
+        "--out",
+        "/workspace/scratch/78e391d818f2/acceptance_review/runs/shared-business-01/output"
+      ],
+      "consumer_chain_case_count": null,
+      "dispatch_binding_case_count": null,
+      "exit_code": 0,
+      "fatal_error": null,
+      "fd_thread_child_cpu_baseline_restored": true,
+      "label": "shared-business-01",
+      "ledger_binding_passed": null,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "outer_elapsed_seconds": 0.3167685309999797,
+      "parser_case_count": null,
+      "phone_calls": 0,
+      "reported_state": "SELECTED_HOST_CHECKS_PASSED",
+      "result": {
+        "bytes": 78984,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/shared-business-01/output/RESULT.json",
+        "sha256": "66a79b271ef6d91fb3cde3e8d07b1b287929e22e7989e18218ea1c55de86e158"
+      },
+      "run_record": {
+        "bytes": 1997,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/shared-business-01/RUN.json",
+        "sha256": "184cdab6e8b3e48242b8a56ec7e523ad4bb5cb81eeb3d60070c0128d98602a39"
+      },
+      "scenario_count": 14,
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/shared-business-01/stderr.original.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 563,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/shared-business-01/stdout.original.txt",
+        "sha256": "315dd9e43b938ea7c6270857e5eea19496f76595ebe237de332a285ef0e8fd3f"
+      },
+      "test_elapsed_seconds": 0.15406756499942276,
+      "timed_out": false,
+      "trust_consumer_chain_case_count": null,
+      "trust_parser_case_count": null
+    },
+    {
+      "actual_original_checks": {},
+      "audit_denied_events": [],
+      "automatic_retry": false,
+      "case_count": null,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py",
+        "--package-root",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3",
+        "--out",
+        "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/output",
+        "--require-actual"
+      ],
+      "consumer_chain_case_count": 12,
+      "dispatch_binding_case_count": 9,
+      "exit_code": 1,
+      "fatal_error": {
+        "message": "--require-actual requested but private actual originals are missing",
+        "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py\", line 428, in main\n    actual=actual_checks(package,args.require_actual)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py\", line 358, in actual_checks\n    assert not required,\"--require-actual requested but private actual originals are missing\"\n           ^^^^^^^^^^^^\nAssertionError: --require-actual requested but private actual originals are missing\n",
+        "type": "AssertionError"
+      },
+      "fd_thread_child_cpu_baseline_restored": true,
+      "label": "native-require-actual-01",
+      "ledger_binding_passed": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "outer_elapsed_seconds": 0.466449592000572,
+      "parser_case_count": 73,
+      "phone_calls": 0,
+      "reported_state": "FAILED",
+      "result": {
+        "bytes": 60032,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/output/RESULT.json",
+        "sha256": "5092561cc96451c7fde77274c0b1b7cf8ebfc1c0f916bbca703ed3e78442c4bb"
+      },
+      "run_record": {
+        "bytes": 3042,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/RUN.json",
+        "sha256": "41856d10a3f301d48924c46190116bd313b271001e8b42aba463993d8b00fbf6"
+      },
+      "scenario_count": null,
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/stderr.original.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 1503,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/stdout.original.txt",
+        "sha256": "5075404b30d8e1f8eb1b68f69b4143f41c8faaff67b7aeef1ee685130872e21d"
+      },
+      "test_elapsed_seconds": 0.30702662499970756,
+      "timed_out": false,
+      "trust_consumer_chain_case_count": 11,
+      "trust_parser_case_count": 40
+    },
+    {
+      "actual_original_checks": {
+        "limits": "Archived private NEG01 originals are optional for public fixture reproduction.",
+        "status": "NOT_AVAILABLE_NOT_RUN"
+      },
+      "audit_denied_events": [],
+      "automatic_retry": false,
+      "case_count": null,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-I",
+        "-B",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py",
+        "--package-root",
+        "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3",
+        "--out",
+        "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-public-fixtures-01/output"
+      ],
+      "consumer_chain_case_count": 12,
+      "dispatch_binding_case_count": 9,
+      "exit_code": 0,
+      "fatal_error": null,
+      "fd_thread_child_cpu_baseline_restored": true,
+      "label": "native-public-fixtures-01",
+      "ledger_binding_passed": true,
+      "model_requests": 0,
+      "native_dispatches": 0,
+      "outer_elapsed_seconds": 0.5166521789979015,
+      "parser_case_count": 73,
+      "phone_calls": 0,
+      "reported_state": "PASSED_CURRENT_SCHEMA_SCOPE",
+      "result": {
+        "bytes": 59164,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-public-fixtures-01/output/RESULT.json",
+        "sha256": "0c0e1161cafe369b3d83e8a4dc7f1493d3100a865004a5d6c5b05c1f2f84aaf0"
+      },
+      "run_record": {
+        "bytes": 2156,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-public-fixtures-01/RUN.json",
+        "sha256": "edcb3a519acf2dbfc087dc3074af9ba98695266ef503bcdbf89988b5af9c521f"
+      },
+      "scenario_count": null,
+      "stderr": {
+        "bytes": 0,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-public-fixtures-01/stderr.original.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 534,
+        "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-public-fixtures-01/stdout.original.txt",
+        "sha256": "48940d2a95bbd67dad33b876044c70597748c86741a938f6e76cf7663db5c87a"
+      },
+      "test_elapsed_seconds": 0.3328006160008954,
+      "timed_out": false,
+      "trust_consumer_chain_case_count": 11,
+      "trust_parser_case_count": 40
+    }
+  ],
+  "schema": "razr60.cloud-regression-review.v1",
+  "source15_R6_comparison": {
+    "bytes": 22654,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/SOURCE15-R6-COMPARISON.json",
+    "sha256": "711bc70e38b32c3d12fa6460cd3afeb7775051e3d1b1dbdd7507f7b91a62007f"
+  },
+  "source_import": {
+    "bytes": 63501,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/SOURCE-IMPORT-MANIFEST.json",
+    "sha256": "a5951c79a9ff23e5bd1e0c7bf11802aa23b1584b155ea435fb6307bdd8c360c2"
+  },
+  "state": "PUBLIC_FIXTURE_REPRODUCTION_PASSED_ACTUAL_ORIGINAL_GATE_BLOCKED",
+  "supports_require_actual_cli": true,
+  "total_explicit_runs": 4,
+  "whole_fixed19_cases_closed": []
+}

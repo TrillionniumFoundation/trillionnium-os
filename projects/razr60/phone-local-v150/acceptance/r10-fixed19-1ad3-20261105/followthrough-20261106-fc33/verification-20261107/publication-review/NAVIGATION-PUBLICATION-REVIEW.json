@@ -1,0 +1,185 @@
+{
+  "schema": "hepta.sender-deadline.independent-publication-review.v1",
+  "reviewed_at_utc": "2026-11-07T01:00:29.115862+00:00",
+  "status": "ACCEPTABLE_AS_ISOLATED_SOURCE_CANDIDATE_AND_SCOPED_EVIDENCE",
+  "scope": "Read-only local source, reports, artifact integrity and exact patch comparison; did not execute or adopt candidate, call remote tools or change export files.",
+  "artifact_checks": [
+    {
+      "path": "NAVIGATION-SOURCE-CONTROLS.json",
+      "bytes": 4308,
+      "sha256": "128be27b23a4376abc0484cf6f7661f6d03a7bdaee04e9722ec983f618686bf7",
+      "expected_match": true
+    },
+    {
+      "path": "SENDER-DEPENDENCY-REVIEW.md",
+      "bytes": 8566,
+      "sha256": "991f8d8a9f8b10c5ab188dcc276781087b387eccc1a9f5007b465f6bb677650e",
+      "expected_match": true
+    },
+    {
+      "path": "candidate/DERIVATION.json",
+      "bytes": 453,
+      "sha256": "029340d1fc37cb036413d887e506577243780b77df579bd07b34da13e3b9dcf1",
+      "expected_match": true
+    },
+    {
+      "path": "candidate/SHELL-DEADLINE.patch",
+      "bytes": 5209,
+      "sha256": "86fd7b27269f51447226422c67fa5418d18050ef5241ccab5f84099bc8f7bdc0",
+      "expected_match": true
+    },
+    {
+      "path": "candidate/preserved_ui_package_phase_r7.py",
+      "bytes": 25791,
+      "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+      "expected_match": true
+    },
+    {
+      "path": "check_navigation_source.py",
+      "bytes": 5515,
+      "sha256": "61c4b1f64a12bd5b8fa79662c203c3c15847da5f550e26143a7c18d320eb516c",
+      "expected_match": true
+    },
+    {
+      "path": "check_navigation_source_v2.py",
+      "bytes": 9067,
+      "sha256": "726c968e0534b6fe7739b794171304816a2db989b09f38b0e630bf7fa9080346",
+      "expected_match": true
+    },
+    {
+      "path": "check_route_deadline.py",
+      "bytes": 5021,
+      "sha256": "c923b42feeac7e39129b0bc40293bc3ee24ed6bb2a32cbb6a58511ab71c0950f",
+      "expected_match": true
+    },
+    {
+      "path": "check_sender_dump_failure.py",
+      "bytes": 3481,
+      "sha256": "7c0d55e5f6db5b8107a963266e5bc8d44465b3317b4f4867948d7ba59d483d1f",
+      "expected_match": true
+    },
+    {
+      "path": "dependencies/R6.PUBLIC-SOURCE-SUBSET.README.original.md",
+      "bytes": 2106,
+      "sha256": "43c36cdd8d8b8c6de46bd1b0b356537978b4f137f89775011649c8f835ea8178",
+      "expected_match": true
+    },
+    {
+      "path": "dependencies/R6.PUBLIC-SOURCE-SUBSET.original.json",
+      "bytes": 12186,
+      "sha256": "d2274c70c293cc2a1955348ccd2a7f88320599b37f1b6b8820f934d510423c9d",
+      "expected_match": true
+    },
+    {
+      "path": "dependencies/control_send_once.py",
+      "bytes": 6301,
+      "sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70",
+      "expected_match": true
+    },
+    {
+      "path": "dependencies/control_send_once.read.original.json",
+      "bytes": 6811,
+      "sha256": "1c394bc93739a762f323547390bcdc970bb2fc41bd069a524ae761421a808177",
+      "expected_match": true
+    },
+    {
+      "path": "dependencies/physical-fault.SOURCE-MANIFEST.original.json",
+      "bytes": 8432,
+      "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654",
+      "expected_match": true
+    },
+    {
+      "path": "dependencies/preserved_ui_package_phase_r7.py",
+      "bytes": 24731,
+      "sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+      "expected_match": true
+    },
+    {
+      "path": "evidence-v2/DEPENDENCY-CLOSURE-REVIEW.json",
+      "bytes": 3325,
+      "sha256": "88849556bc219c1458ae150f74a2ec1362a2556f1ef38e7b3e4e75748329915a",
+      "expected_match": true
+    },
+    {
+      "path": "evidence-v2/NAVIGATION-ENTRY-INTEGRITY.json",
+      "bytes": 1280,
+      "sha256": "50bf4b2e024824f308f81af35c180d8e3e05be5c7940a0a4e6fefab95b2662bd",
+      "expected_match": true
+    },
+    {
+      "path": "evidence-v2/NAVIGATION-SOURCE-CONTROLS.json",
+      "bytes": 4647,
+      "sha256": "e81e736216869066de9b43123228a13ccab6da1f710c84650d56ea50da0d6c1d",
+      "expected_match": true
+    },
+    {
+      "path": "evidence-v2/SENDER-DUMP137-CONTROL.json",
+      "bytes": 1281,
+      "sha256": "0a987d0962e263a4674602416ea9455a6a12c7d5542b5e000a4df302175da93c",
+      "expected_match": true
+    },
+    {
+      "path": "evidence-v2/SENDER-ROUTE-CANDIDATE.json",
+      "bytes": 2795,
+      "sha256": "e54c77c1686acec36ac2acd683068422140f09005d5234047702e0315d90ef2f",
+      "expected_match": true
+    },
+    {
+      "path": "evidence-v2/SENDER-TIMEOUT-BASELINE.json",
+      "bytes": 954,
+      "sha256": "d0ba3673e0fa7794fbf9589fcf98575db33248236aaf528e136ccd49eff74c38",
+      "expected_match": true
+    },
+    {
+      "path": "evidence-v2/SENDER-TIMEOUT-CANDIDATE.json",
+      "bytes": 3360,
+      "sha256": "9a80eb2c819cee20f157f7ea3b74d33924996c8e4d4fea29107eac38d3b59f80",
+      "expected_match": true
+    },
+    {
+      "path": "reproduce_sender_timeout.py",
+      "bytes": 7533,
+      "sha256": "606ee163b2bdc957521ecd16fdb646ddcc3a44a22f7e801e0ee8a3030e9fa06d",
+      "expected_match": true
+    }
+  ],
+  "artifact_count": 23,
+  "exact_patch_reproduces_candidate_from_preserved_original": true,
+  "candidate_sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+  "original_sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+  "implementation_review": {
+    "deadline_begins_before_route": true,
+    "remaining_budget_propagated_to_listener_checks": true,
+    "remaining_budget_propagated_to_connect_send_handshake_header_payload_reads": true,
+    "final_success_after_deadline_rejected": true,
+    "legacy_standalone_helpers_have_optional_deadline_backward_compatibility": true,
+    "retry_count_and_wire_commands_unchanged": true,
+    "frozen_source_pin_or_runtime_not_adopted": true,
+    "known_limit": "This is a local bounded-observation improvement, not a remote process-lifetime bound or strict real-time scheduling proof; legacy route calls outside shell and whole-actor deadlines are outside scope."
+  },
+  "evidence_review": {
+    "baseline_elapsed_seconds": 0.4047744039999088,
+    "requested_budget_seconds": 0.2,
+    "candidate_drip_elapsed_seconds": 0.2005705530027626,
+    "candidate_silence_elapsed_seconds": 0.2005561710029724,
+    "socket_controls": 5,
+    "route_controls": 2,
+    "synthetic_dump137_controls": 1,
+    "bound01_137_cause_still_unknown": true,
+    "remote_process_cleanup_not_claimed": true,
+    "no_new_fixed19_credit": true,
+    "local_fixture_cleanup_not_remote_cleanup": true,
+    "tests_reexecuted_by_this_review": false
+  },
+  "control_send_read_public_scope": {
+    "sha256": "1c394bc93739a762f323547390bcdc970bb2fc41bd069a524ae761421a808177",
+    "raw_read_matches_exact_source_body": true,
+    "contains_only_fixed_source_and_file_descriptor": true,
+    "contains_historical_fixed_control_test_prompt_and_device_serial": true,
+    "dynamic_runtime_configuration_read": false,
+    "actual_xml_or_user_draft_body_present": false,
+    "credential_or_private_idempotency_key_or_configured_ssh_target_present": false,
+    "redaction_required_for_this_read_record": false
+  },
+  "findings": []
+}

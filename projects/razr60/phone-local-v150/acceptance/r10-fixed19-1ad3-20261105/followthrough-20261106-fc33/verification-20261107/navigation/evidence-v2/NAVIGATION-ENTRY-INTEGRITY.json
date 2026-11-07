@@ -1,0 +1,35 @@
+{
+  "controls": [
+    {
+      "error": {
+        "error": "source_pin_mismatch_before_import: projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/provider_openai_compatible.py",
+        "error_type": "RuntimeError",
+        "fixed19_credit": 0,
+        "physical_qualification": false
+      },
+      "exit_code": 2,
+      "name": "changed source rejected before source import/output",
+      "passed": true
+    },
+    {
+      "error": {
+        "error": "output_already_exists; choose a new evidence path",
+        "error_type": "RuntimeError",
+        "fixed19_credit": 0,
+        "physical_qualification": false
+      },
+      "exit_code": 2,
+      "name": "existing evidence not overwritten",
+      "passed": true
+    }
+  ],
+  "fixed19_credit": 0,
+  "original_v1_result_sha256": "128be27b23a4376abc0484cf6f7661f6d03a7bdaee04e9722ec983f618686bf7",
+  "original_v1_script_sha256": "61c4b1f64a12bd5b8fa79662c203c3c15847da5f550e26143a7c18d320eb516c",
+  "original_v1_unchanged": true,
+  "passed": 2,
+  "phone_calls": 0,
+  "schema": "hepta.navigation-control-entry-integrity.v1",
+  "total": 2,
+  "v2_script_sha256": "726c968e0534b6fe7739b794171304816a2db989b09f38b0e630bf7fa9080346"
+}

@@ -1,0 +1,1974 @@
+{
+  "PhoneLocalAdapter_constructed": false,
+  "audit_denied_events": [],
+  "candidate_adopted": false,
+  "consumer_chain_case_count": 12,
+  "consumer_chains": [
+    {
+      "actual_shared_terminal": "turn.complete",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": true,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [],
+      "model_requests": 0,
+      "name": "valid_current_schema",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": null,
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "all_wrong_target",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "event_wrong_target",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "event_target_object",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "event_target_missing",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "started_pid_bool",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone started event lacks a qualified process ID",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "started_pid_float",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone started event lacks a qualified process ID",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "started_pid_missing",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result event fields differ",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "event_elapsed_float",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "terminal_elapsed_float",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "exited_zero_with_signal",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "legacy_minimal_terminal",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    }
+  ],
+  "dispatch_binding_cases": [
+    {
+      "complete_mapped_call_equals_dispatch_and_frame": true,
+      "duplicate_rejected": {
+        "message": "call identity already dispatched; no redispatch",
+        "type": "ProviderError"
+      },
+      "expected": "accept",
+      "name": "mapped_base",
+      "passed": true,
+      "synthetic": true
+    },
+    {
+      "complete_mapped_call_equals_dispatch_and_frame": true,
+      "duplicate_rejected": {
+        "message": "call identity already dispatched; no redispatch",
+        "type": "ProviderError"
+      },
+      "expected": "accept",
+      "name": "mapped_full",
+      "passed": true,
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_request_claim",
+      "passed": true,
+      "rejection": {
+        "message": "native dispatch differs from its complete trusted mapping",
+        "type": "ProviderError"
+      },
+      "synthetic": true,
+      "zero_local_tool_call_frames": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_binding_claim",
+      "passed": true,
+      "rejection": {
+        "message": "native dispatch differs from its complete trusted mapping",
+        "type": "ProviderError"
+      },
+      "synthetic": true,
+      "zero_local_tool_call_frames": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_config_generation",
+      "passed": true,
+      "rejection": {
+        "message": "native dispatch differs from its complete trusted mapping",
+        "type": "ProviderError"
+      },
+      "synthetic": true,
+      "zero_local_tool_call_frames": true
+    },
+    {
+      "expected": "reject",
+      "name": "partial_claims",
+      "passed": true,
+      "rejection": {
+        "message": "native dispatch differs from its complete trusted mapping",
+        "type": "ProviderError"
+      },
+      "synthetic": true,
+      "zero_local_tool_call_frames": true
+    },
+    {
+      "expected": "reject",
+      "name": "changed_argv",
+      "passed": true,
+      "rejection": {
+        "message": "native dispatch differs from its complete trusted mapping",
+        "type": "ProviderError"
+      },
+      "synthetic": true,
+      "zero_local_tool_call_frames": true
+    },
+    {
+      "expected": "reject",
+      "name": "unknown_field",
+      "passed": true,
+      "rejection": {
+        "message": "native dispatch differs from its complete trusted mapping",
+        "type": "ProviderError"
+      },
+      "synthetic": true,
+      "zero_local_tool_call_frames": true
+    },
+    {
+      "expected": "reject",
+      "name": "changed_target",
+      "passed": true,
+      "rejection": {
+        "message": "native dispatch differs from its complete trusted mapping",
+        "type": "ProviderError"
+      },
+      "synthetic": true,
+      "zero_local_tool_call_frames": true
+    }
+  ],
+  "elapsed_seconds": 0.3328006160008954,
+  "fatal_error": null,
+  "helper_sha256": "dbbfece5877955b68a98770af41a9010365990b3fdbe29a8c9c37e648ec6756a",
+  "ledger_binding": {
+    "PhoneLocalTools_or_PhoneLocalAdapter_constructed": false,
+    "duplicate_reservation_rejected": {
+      "message": "[action_no_replay] an original action is unresolved; inspect its sidecar receipt before a new mutation: 455b8c5feedcc69f22529923cdeabc2c",
+      "type": "ProviderError"
+    },
+    "native_dispatches": 0,
+    "passed": true,
+    "real_ActionLedger_and_LedgerPrefix": true,
+    "stored_semantic_file_full_record_equal": true,
+    "stored_wire_call_hash_covers_all_three_dispatch_claims": true,
+    "synthetic_record": true,
+    "validate_executor_bypassed": false
+  },
+  "limits": [
+    "All newly generated requests and receipts are synthetic; local tool.call frames end in an owned regular file with no executor attached.",
+    "Real CodexAdapter turn/tool.result receive and emit, PhoneTools.map/prepare and business gate run without production monkeypatches.",
+    "PhoneLocalAdapter fixed executor gate is not bypassed; no full instance or installed daemon is exercised.",
+    "Actual NEG01 positives use pinned archived bytes only; new target mutation is a host copy and no current UI observation is claimed.",
+    "Request digest and configuration fingerprint are recomputed from the accepted scope and mapped call. The complete observed bytes and full terminal receipt are checked against the current producer digest.",
+    "Generation is type/range/receipt/digest checked; no independent generation anchor or MAC exists in the current post-result-only protocol.",
+    "This validates the observed current schema. Historical v1 and v2 are preserved; no installed adoption or complete NEG11 qualification is claimed."
+  ],
+  "local_only_tool_call_frame_count": 25,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "original_14_shared_scenarios_not_added_to_these_counts": true,
+  "original_actual_checks": {
+    "limits": "Archived private NEG01 originals are optional for public fixture reproduction.",
+    "status": "NOT_AVAILABLE_NOT_RUN"
+  },
+  "parser_case_count": 73,
+  "parser_cases": [
+    {
+      "expected": "accept",
+      "name": "full_current_empty",
+      "passed": true,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "full_current_unicode_newline",
+      "passed": true,
+      "stdout_bytes": 16,
+      "stdout_sha256": "18e540e14f16a797122b385edfc1dba668f10d2a87446f0adbca63951578a94c",
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "full_current_multichunk",
+      "passed": true,
+      "stdout_bytes": 16,
+      "stdout_sha256": "18e540e14f16a797122b385edfc1dba668f10d2a87446f0adbca63951578a94c",
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "explicit_target_id",
+      "passed": true,
+      "stdout_bytes": 6,
+      "stdout_sha256": "34a04005bcaf206eec990bd9637d9fdb6725e0a0c0d4aebf003f17f4c956eb5c",
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "target_alias",
+      "passed": true,
+      "stdout_bytes": 6,
+      "stdout_sha256": "34a04005bcaf206eec990bd9637d9fdb6725e0a0c0d4aebf003f17f4c956eb5c",
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "matching_aliases",
+      "passed": true,
+      "stdout_bytes": 6,
+      "stdout_sha256": "34a04005bcaf206eec990bd9637d9fdb6725e0a0c0d4aebf003f17f4c956eb5c",
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "null_canonical_alias",
+      "passed": true,
+      "stdout_bytes": 6,
+      "stdout_sha256": "34a04005bcaf206eec990bd9637d9fdb6725e0a0c0d4aebf003f17f4c956eb5c",
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "integer_upper_bounds",
+      "passed": true,
+      "stdout_bytes": 6,
+      "stdout_sha256": "6ba9234898ef38b8d53f1e76040290e0b81415879a366495adfdc8f3653dd8f8",
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "all_wrong_target",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_wrong_target",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_target_object",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_target_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_wrong_target",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_target_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_wrong_call",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_wrong_tool",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "started_pid_bool",
+      "passed": true,
+      "rejection": {
+        "message": "phone started event lacks a qualified process ID",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "started_pid_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone started event lacks a qualified process ID",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "started_pid_zero",
+      "passed": true,
+      "rejection": {
+        "message": "phone started event lacks a qualified process ID",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "started_pid_negative",
+      "passed": true,
+      "rejection": {
+        "message": "phone started event lacks a qualified process ID",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "started_pid_overflow",
+      "passed": true,
+      "rejection": {
+        "message": "phone started event lacks a qualified process ID",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "started_pid_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event fields differ",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_elapsed_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_elapsed_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_elapsed_bool",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_elapsed_bool",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_elapsed_negative",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_elapsed_negative",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_elapsed_overflow",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_elapsed_overflow",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_elapsed_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_elapsed_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "exited_zero_with_signal",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "signal_false",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "signal_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "legacy_minimal_terminal",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_unknown_field",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_nonzero_exit",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_truncated",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_error",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_exit_bool",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_terminal_exit_bool",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal event differs in value or field type",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_exit_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone semantic tool is not confirmed successful in the qualified terminal schema",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_terminal_exit_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal event differs in value or field type",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_terminal_stdout_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal event differs in value or field type",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_terminal_stderr_false",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal event differs in value or field type",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_terminal_truncated_zero",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal event differs in value or field type",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_terminal_elapsed_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal event differs in value or field type",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "unknown_event_kind_progress",
+      "passed": true,
+      "rejection": {
+        "message": "phone result contains an unqualified event kind",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "unknown_event_kind_queued",
+      "passed": true,
+      "rejection": {
+        "message": "phone result contains an unqualified event kind",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "unknown_event_kind_list",
+      "passed": true,
+      "rejection": {
+        "message": "phone result contains an unqualified event kind",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "unknown_event_kind_object",
+      "passed": true,
+      "rejection": {
+        "message": "phone result contains an unqualified event kind",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "unknown_event_kind_none",
+      "passed": true,
+      "rejection": {
+        "message": "phone result contains an unqualified event kind",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "event_record_unknown_field",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "accepted_unknown_field",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event fields differ",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "output_stream_list",
+      "passed": true,
+      "rejection": {
+        "message": "phone output stream differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "output_wrong_encoding",
+      "passed": true,
+      "rejection": {
+        "message": "phone output stream differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "output_invalid_base64",
+      "passed": true,
+      "rejection": {
+        "message": "phone output base64 is invalid",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "output_wrong_count",
+      "passed": true,
+      "rejection": {
+        "message": "phone output encoding or byte count differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "output_float_count",
+      "passed": true,
+      "rejection": {
+        "message": "phone output encoding or byte count differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_call",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_event_call",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_event_tool",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_event_sequence",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "boolean_event_sequence",
+      "passed": true,
+      "rejection": {
+        "message": "phone result event schema, scope, target, sequence or elapsed time differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "mapped_call_identity_mismatch",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks its trusted mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "mapped_target_alias_conflict",
+      "passed": true,
+      "rejection": {
+        "message": "phone mapped target aliases or types differ",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "mapped_target_wrong_type",
+      "passed": true,
+      "rejection": {
+        "message": "phone mapped target aliases or types differ",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "output_before_started",
+      "passed": true,
+      "rejection": {
+        "message": "phone result does not contain its original accepted/start/terminal events",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "duplicate_started",
+      "passed": true,
+      "rejection": {
+        "message": "phone result does not contain its original accepted/start/terminal events",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "missing_started",
+      "passed": true,
+      "rejection": {
+        "message": "phone result does not contain its original accepted/start/terminal events",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "noncanonical_base64_pad_bits",
+      "passed": true,
+      "rejection": {
+        "message": "phone output encoding or byte count differs",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    }
+  ],
+  "phone_calls": 0,
+  "pins_sha256": "168cbbb9c49e86613622dfe6ce682516847cc856086b3369909e923ae8007d68",
+  "resources": {
+    "after": {
+      "child_system_seconds": 0.0,
+      "child_user_seconds": 0.0,
+      "fds": {
+        "0": [
+          31,
+          9,
+          8630
+        ],
+        "1": [
+          27,
+          3814392,
+          33152
+        ],
+        "2": [
+          27,
+          3814393,
+          33152
+        ]
+      },
+      "maxrss_lifetime": 24164,
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          139653070321472,
+          true
+        ]
+      ]
+    },
+    "before": {
+      "child_system_seconds": 0.0,
+      "child_user_seconds": 0.0,
+      "fds": {
+        "0": [
+          31,
+          9,
+          8630
+        ],
+        "1": [
+          27,
+          3814392,
+          33152
+        ],
+        "2": [
+          27,
+          3814393,
+          33152
+        ]
+      },
+      "maxrss_lifetime": 23780,
+      "rss_return_to_baseline_claimed": false,
+      "threads": [
+        [
+          "MainThread",
+          139653070321472,
+          true
+        ]
+      ]
+    },
+    "fd_thread_child_cpu_baseline_restored": true
+  },
+  "schema": "razr60-native-streams-v3-host-consumer-regression/v1",
+  "script_sha256": "4ff6d92df7c545f61435e1f8d5142609859a29054c736dc63008089cd7dbed1e",
+  "state": "PASSED_CURRENT_SCHEMA_SCOPE",
+  "trust_boundaries": {
+    "event_record_elapsed_ms_is_type_checked_but_excluded_by_actual_producer_ObservationDigest": true,
+    "no_independent_admission_counter_or_MAC_claimed": true,
+    "terminal_elapsed_ms_is_in_the_digest_and_mutation_rejected": true,
+    "unsigned_generation_rewrite_with_recomputed_full_receipt_and_digest_is_indistinguishable": true
+  },
+  "trust_consumer_chains": [
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_wrong_request_sha256",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_missing_request_sha256",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_wrong_binding_fingerprint",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_missing_binding_fingerprint",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_wrong_observation_sha256",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_missing_observation_sha256",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_generation_changed_without_rehash",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_generation_bool",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_generation_float",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_registry_terminal_receipt_changed",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone terminal registry receipt differs from the native generation or observation",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    },
+    {
+      "actual_shared_terminal": "turn.fail",
+      "all_inputs_synthetic": true,
+      "fixture_business_verified": false,
+      "late_terminal_rejected": {
+        "message": "provider already persisted a terminal",
+        "type": "ProviderError"
+      },
+      "local_only_tool_call_frames": 1,
+      "missing_postconditions": [
+        "public"
+      ],
+      "model_requests": 0,
+      "name": "trust_same_length_output_bytes_changed",
+      "native_dispatches": 0,
+      "outer_CodexAdapter_receive_executed": true,
+      "passed": true,
+      "phone_calls": 0,
+      "same_call_remap_rejected": {
+        "message": "phone semantic call is already mapped; no redispatch",
+        "type": "ProviderError"
+      },
+      "semantic_parser_rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "trusted_mapping_and_persisted_dispatch_call_equal": true
+    }
+  ],
+  "trust_parser_case_count": 40,
+  "trust_parser_cases": [
+    {
+      "expected": "reject",
+      "name": "wrong_request_sha256",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "missing_request_sha256",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_binding_fingerprint",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "missing_binding_fingerprint",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "wrong_observation_sha256",
+      "passed": true,
+      "rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "missing_observation_sha256",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_changed_without_rehash",
+      "passed": true,
+      "rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_bool",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_zero",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_negative",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_allocator_exhausted",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_overflow",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "generation_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_terminal_receipt_changed",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal registry receipt differs from the native generation or observation",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_terminal_receipt_missing",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_terminal_receipt_wrong_generation",
+      "passed": true,
+      "rejection": {
+        "message": "phone terminal registry receipt differs from the native generation or observation",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "started_pid_changed_without_rehash",
+      "passed": true,
+      "rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "terminal_elapsed_changed_without_rehash",
+      "passed": true,
+      "rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "same_length_output_bytes_changed",
+      "passed": true,
+      "rejection": {
+        "message": "phone observation digest differs from the complete native bytes",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "old_turn_request_digest",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_cancel_flag_integer",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_connection_flag_integer",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_history_bool",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_history_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_history_negative",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_history_reversed",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_history_overflow",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "registry_unknown_field",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry identity differs from the mapped wire call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "outer_unknown_field",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "outer_protocol_changed",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "outer_kind_changed",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "outer_sequence_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone result lacks matching terminal identity",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "allocator_minimum",
+      "passed": true,
+      "synthetic": true
+    },
+    {
+      "expected": "accept",
+      "name": "allocator_maximum_allocatable",
+      "passed": true,
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "trusted_scope_changed_original_digest_rejected",
+      "passed": true,
+      "rejection": {
+        "message": "phone registry request, configuration or history differs from the trusted call",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "missing_scope",
+      "passed": true,
+      "rejection": {
+        "message": "phone native binding lacks the accepted turn scope",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "scope_extra",
+      "passed": true,
+      "rejection": {
+        "message": "phone native binding lacks the accepted turn scope",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "scope_missing_stream",
+      "passed": true,
+      "rejection": {
+        "message": "phone native binding lacks the accepted turn scope",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    },
+    {
+      "expected": "reject",
+      "name": "scope_float",
+      "passed": true,
+      "rejection": {
+        "message": "phone native binding lacks the accepted turn scope",
+        "type": "ProviderError"
+      },
+      "synthetic": true
+    }
+  ],
+  "validate_executor_bypassed_or_modified": false,
+  "whole_NEG11_qualified": false,
+  "whole_NEG12_qualified": false,
+  "whole_NEG13_qualified": false
+}

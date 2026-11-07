@@ -1,0 +1,33 @@
+{
+  "execution_mode": "operator",
+  "system_jobctl": false,
+  "id": "1a1b3456b55-fc05-81a2",
+  "host": "pocket4",
+  "ssh_target": "[REDACTED_CONFIGURED_SSH_TARGET]",
+  "unit": "hepta-runtime-job-1a1b3456b55-fc05-81a2",
+  "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b3456b55-fc05-81a2",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-",
+    "--result",
+    "/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-r6-bound01-owned-recovery02/result.json",
+    "--bytes",
+    "59535",
+    "--sha256",
+    "5c30d5fe6f8d351ea380eecc8bd36423aaf870fa08fee3c8cfdcf0294e984404",
+    "--version",
+    "66306:59127344:59535:1794008837136763299:1794008837136763299",
+    "--out",
+    "/home/alex/razr60-local-model-v150/fc33-neg01-r6-bound01-owned-recovery02-import01"
+  ],
+  "cwd": null,
+  "env_keys": [],
+  "created_unix_ms": 1794009033557,
+  "idempotency_key": "[REDACTED_PRIVATE_IDEMPOTENCY_KEY]",
+  "request_fingerprint": 10424274524051418442,
+  "request_digest": "90aa76730f3d2d4a6a8e2f30e9f5d6f32c3c8dc93afc362e2469cfb11e81be70",
+  "launch_state": "launched",
+  "launch_error": null
+}

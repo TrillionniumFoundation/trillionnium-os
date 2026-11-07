@@ -1,0 +1,214 @@
+{
+  "schema": "hepta.r6.public-source-subset.v1",
+  "state": "EXACT_PUBLIC_SOURCE_BYTES_PARTIAL_ARCHIVE_NO_RUNTIME_ADOPTION",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "source_parent": "6fd42bf80571391771e82c50db6968b65e17a20f",
+  "integration_parent": "5ce201eeab3f043f31d2e6f77ed5692dd677ba3b",
+  "inspected_original_archive_file_count": 228,
+  "inspected_original_archive_bytes": 19391779,
+  "published_source_file_count": 26,
+  "published_source_bytes": 516145,
+  "private_originals_published": false,
+  "private_runtime_bindings_published": false,
+  "raw_mcp_results_published": false,
+  "fresh_requests_or_drafts_published": false,
+  "source_execution": false,
+  "phone_calls": 0,
+  "native_dispatches": 0,
+  "install_or_policy_actions": 0,
+  "case_credit": 0,
+  "full_fixed19_qualification": false,
+  "complete_shared17_or_runtime_graph": false,
+  "exact_original_source_bytes": true,
+  "files": [
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/collector-package/collector/business_fact_recheck.py",
+      "bytes": 10207,
+      "sha256": "15ff4d7bf0815bdd53fa7234c95e20f50f460052770c5069f9a59d0ecc24559d",
+      "git_blob_sha": "50f63a1aa3cad24bda3b7e0c3bf0be8ae32aef77",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/collector-package/collector/collect_business_evidence.py",
+      "bytes": 56572,
+      "sha256": "b2774a4669a60d576fe3f19ea00fdec7119b5e5d36a6b591853bc686dbb5de3f",
+      "git_blob_sha": "10994718d45cf69535e57bf461a5b68dd60c2807",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/collector-package/collector/health_context_audit.py",
+      "bytes": 4318,
+      "sha256": "25b483fb2af25b3578f58c9d14b6f093325445879ae2fa8e2fdfc52690209765",
+      "git_blob_sha": "548867749a78b512766f54de511b15d581b4d36c",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/collector-package/collector/history_context_audit.py",
+      "bytes": 15483,
+      "sha256": "2a43e62ad5409c978f1caccb7df512adfdf5200d224e9d092532b7613e9844ef",
+      "git_blob_sha": "f5a83a19574971ec0c648597b5eaef6e344995c2",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/collector-package/collector/ledger_prefix_audit.py",
+      "bytes": 29100,
+      "sha256": "022b9321d19563d2405051f796dfebe517045333627babe34aeeb810754647f4",
+      "git_blob_sha": "a514012ca8e12b280f3a6008a184c7579569df01",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/collector-package/collector/native_journal_audit.py",
+      "bytes": 6701,
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+      "git_blob_sha": "f88151091cf3022c520ad7315638a2e163dfec18",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/operator-chain/read_archive_chunk_r10.py",
+      "bytes": 2549,
+      "sha256": "afb19e6792dcced3dc443d25bb5cd9534e56030e3792a85bf7a0c6b7ba574f32",
+      "git_blob_sha": "c3b374fcd291d32c54b88d3224ce67651e38f5c6",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/operator-chain/registration_phone_r10.py",
+      "bytes": 10669,
+      "sha256": "0922878919264a7af3c10db6db960392955654c1e7dbb09716f8a980754546f5",
+      "git_blob_sha": "0dab9a0a2ed6e6ba5cbf41ef21782d3a1c6cc835",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/reference/owned_capture.source.original.py",
+      "bytes": 37720,
+      "sha256": "9d273d66adc09c670ae09aa06fae699d2d1de9e1981afd3980bec7e4eda6cb29",
+      "git_blob_sha": "38d00815102d8ada37ae090076edfccc839a548b",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/action_ledger.py",
+      "bytes": 15587,
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+      "git_blob_sha": "9779079985636df58686330571222ce582f69944",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/daily_phone_local.py",
+      "bytes": 22059,
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8",
+      "git_blob_sha": "59e2c8594b88a58793d7ba3c6761bd5d277df725",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/health_contracts.py",
+      "bytes": 11439,
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+      "git_blob_sha": "556bbf50b9849e0fbe1ea507ad35cc98b6f58945",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/ledger_round_evidence.py",
+      "bytes": 15135,
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+      "git_blob_sha": "b98fa2e0e04dca525ad5442cccbc7acb5ec91efc",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_health.py",
+      "bytes": 8251,
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+      "git_blob_sha": "fbe2e8832dcc2a3958e9dc790a1ecf394023eb37",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_slot_cleanup.py",
+      "bytes": 37375,
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+      "git_blob_sha": "339f98ec195a62d4dfd4538c1cb8ff634596a0d0",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_http_worker.py",
+      "bytes": 10453,
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+      "git_blob_sha": "34b67ebbc6338e66f0c43ae19059ab0ffda7aba2",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_tools.py",
+      "bytes": 13927,
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930",
+      "git_blob_sha": "03800a9aab65d102477cbb6f6c7d8867fe0a16ef",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_task_guards.py",
+      "bytes": 22825,
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+      "git_blob_sha": "9cdba9872fd2637c144dc889ba38643300bef568",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_codex_host.py",
+      "bytes": 41618,
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa",
+      "git_blob_sha": "6c430b9f14f1cb17e5e6585229ee9fa212f550e5",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_openai_compatible.py",
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+      "git_blob_sha": "d5755ca4129da5c5ed1da9b8771a116be3b3efa5",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_phone_local.py",
+      "bytes": 70303,
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee",
+      "git_blob_sha": "78be7653d6af6784b30871c1e1054e398e29e4ab",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/task_postconditions.py",
+      "bytes": 23211,
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3",
+      "git_blob_sha": "1da225de785769d3dd5329ab48b4ad207f3c77c8",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/verify_and_preserve.py",
+      "bytes": 9645,
+      "sha256": "4814d833e9c0647a7a9c21032a043a1acf5184ae98e3ddf6492a945c0275ef54",
+      "git_blob_sha": "6664c5dee1b8c2a1165d35afd36edb608eda14ab",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-case-controller-source-fix01/actual-readback/verify_and_preserve.py",
+      "bytes": 9652,
+      "sha256": "f9e8d9825c27c091d9124ddebbcc5afe16f53eeddc82cac9ae43f75b27fe44de",
+      "git_blob_sha": "d4db847aa0b1d39882b7f5d09710eeb2051a3144",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-source-archives-checkpoint11/build_catalog.py",
+      "bytes": 4804,
+      "sha256": "0704ea7e2795879f71b66e9ec385d369cabcbb2daf5b59d90d46c4c541002536",
+      "git_blob_sha": "95f84efbbbc88500e32d2253f2452ec206ffd40c",
+      "mode": "100644"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-source-rebind/actual-readback/actual/check_source_interfaces.py",
+      "bytes": 8812,
+      "sha256": "5437f8bba1cb74823127d954d35dc5f656f27b75a1f7c5d7119521ea83d29b24",
+      "git_blob_sha": "ef29f1b4d7c5c9a925311602f94711994368e906",
+      "mode": "100644"
+    }
+  ],
+  "omitted_scope": "All raw request/result, private-bound runtime/controller/retirement inputs, instance bindings and unreviewed files are withheld. Originals remain at their retained owner location. Omission is not a deletion or failure reinterpretation. This subset cannot execute a complete runtime combination.",
+  "publication_scope": "This source-subset commit only; previous upload receipts and Git object accessibility are separate.",
+  "metadata_files": [
+    "PUBLIC-SOURCE-SUBSET.json",
+    "README.md"
+  ],
+  "metadata_self_binding": "The enclosing Git commit/tree binds these metadata files; no self-hash is asserted."
+}

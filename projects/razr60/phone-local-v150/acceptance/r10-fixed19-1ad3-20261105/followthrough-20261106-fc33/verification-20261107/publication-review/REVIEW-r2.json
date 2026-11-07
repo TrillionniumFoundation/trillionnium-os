@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.fixed19.independent-publication-review-followup.v1",
+  "reviewed_at_utc": "2026-11-07T01:02:03.602992+00:00",
+  "status": "NO_OPEN_FINDINGS_IN_REVIEWED_SCOPE_SECTION4_DEFERRED",
+  "prior_finding_PUB01": "CLOSED_IN_REVIEWED_EXPORT",
+  "redaction_followup": "REDACTION-FOLLOWUP-CHECKS.json",
+  "parent_history_byte_preservation_verified": true,
+  "parent_history_evidence": "PARENT-README-HISTORY-CHECK.json",
+  "navigation_status": "ACCEPTABLE_AS_ISOLATED_SOURCE_CANDIDATE_AND_SCOPED_EVIDENCE",
+  "navigation_evidence": "NAVIGATION-PUBLICATION-REVIEW.json",
+  "section4_final_content_reviewed": false,
+  "final_whole_export_approval": false,
+  "reason": "Section4 still awaits actual-original summary per owner; reviewed claims and navigation candidate are acceptable within stated source/host scope. No remote tools or candidate execution were used.",
+  "open_findings": []
+}
