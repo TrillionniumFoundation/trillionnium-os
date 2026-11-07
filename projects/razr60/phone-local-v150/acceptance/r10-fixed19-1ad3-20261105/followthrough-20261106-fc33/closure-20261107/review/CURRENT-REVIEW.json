@@ -1,0 +1,248 @@
+{
+  "candidate_files_modified": false,
+  "checker_execution": {
+    "command": [
+      "python",
+      "-I",
+      "-B",
+      "projects/razr60/phone-local-v150/operators/r6-followthrough-20261107/admission/current_check.py",
+      "--current",
+      "projects/razr60/phone-local-v150/CURRENT.json"
+    ],
+    "cwd": "/workspace/scratch/00f8328876d8/publication-stage",
+    "evidence_kind": "Summary of the completed actual publication-stage CLI tool call; not a fabricated raw-output file.",
+    "observed_current_document_valid": true,
+    "observed_errors": [],
+    "observed_execution_eligible": false,
+    "observed_exit_code": 2,
+    "observed_state": "CONSISTENT_BLOCKED_CURRENT",
+    "scope_limit": "Admission subtree and top-level execution_eligible only; not BUILD/READY/business/CI qualification."
+  },
+  "final_assembly_checks": {
+    "bounded_probe_not_original_terminal_or_fence": true,
+    "cancellation_still_unproven": true,
+    "current_admission_equals_frozen_fragment": true,
+    "current_execution_ineligible": true,
+    "draft_obligation_not_zeroed": true,
+    "metadata_inline_sensitive_fields_removed": true,
+    "metadata_private_original_descriptor_retained": true,
+    "metadata_projection_explicit_not_original": true,
+    "metadata_projection_sensitive_values_removed": true,
+    "metadata_unredacted_public_file_removed": true,
+    "preparation_not_execution_terminal": true,
+    "probe_plain_idempotency_key_removed": true,
+    "reconciliation_effect_counts_match_guard_and_remain_null": true,
+    "reconciliation_identity_matches_guard": true,
+    "reconciliation_no_accepted_disposition": true,
+    "recoveries_not_merged_or_bound02_disposition": true
+  },
+  "findings": [
+    {
+      "fix_rechecked": true,
+      "id": "PUB-01",
+      "observed": "Initial ORIGINAL-RECONCILIATION published idempotency_key and ssh_target inline and exposed an exact-original job-metadata public file.",
+      "resolution": "Those inline values and the exact-original public file were removed. A clearly marked redacted projection has exact_original_bytes=false; the 1255-byte private original descriptor/hash/version remain.",
+      "status": "RESOLVED"
+    },
+    {
+      "fix_rechecked": true,
+      "id": "PUB-02",
+      "observed": "The observation-job projection initially included an idempotency_key.",
+      "resolution": "The plain key was removed; publication uses digest/published controls instead.",
+      "status": "RESOLVED"
+    }
+  ],
+  "frozen_admission_package": {
+    "all_exact": true,
+    "extras": [],
+    "files": [
+      {
+        "bytes": 707,
+        "exact": true,
+        "path": "CI-WRAPPER.example.py",
+        "sha256": "77f59c403bf0860ec2ee161f8a79cae4816a7564223d5b224b15ff91c798321f"
+      },
+      {
+        "bytes": 3693,
+        "exact": true,
+        "path": "CURRENT.fragment.json",
+        "sha256": "1e3dfb43bcecd04392233ec38c094c32f40b7a65a5328767a785261c33a96533"
+      },
+      {
+        "bytes": 2943,
+        "exact": true,
+        "path": "ORIGINAL-ATTEMPTS.json",
+        "sha256": "331e135d43cbe8dc8fa4136ff2b1af40a2fb2fab1e83ed71533e2d29df3dde70"
+      },
+      {
+        "bytes": 9508,
+        "exact": true,
+        "path": "README.md",
+        "sha256": "1a0a9ccd63841a89dfe79f4431fe0be866bf70b0edfca50300f3d92d8a410bf9"
+      },
+      {
+        "bytes": 3017,
+        "exact": true,
+        "path": "SOURCE-DERIVATION.json",
+        "sha256": "9127a441191828bf544ce0fd88cac5fea2112e5790f490abe676d0ed36fe0ef5"
+      },
+      {
+        "bytes": 2409,
+        "exact": true,
+        "path": "changes/prepare_native_bound_components_r6_fc33_successor02.py.patch",
+        "sha256": "350ff927e36c59e49f8fa4aeacc273b83b4c2e00ec9aaab93bfe8a999a27e6b2"
+      },
+      {
+        "bytes": 2591,
+        "exact": true,
+        "path": "changes/run_component_root_once.py.patch",
+        "sha256": "64d6b15989268ca8d455750effe0836bd0a6022ef0f373347c4d1db0246ffb24"
+      },
+      {
+        "bytes": 3887,
+        "exact": true,
+        "path": "current_check.py",
+        "sha256": "b0015fb4455bf87c97e99a206c65235456cc9e7a8e9986fa9fbe2719d8bb1a59"
+      },
+      {
+        "bytes": 12903,
+        "exact": true,
+        "path": "derive_guarded_sources.py",
+        "sha256": "88d6f991055ebd9939ac840f626f88038a616654e7a945414097215f6938103a"
+      },
+      {
+        "bytes": 10422,
+        "exact": true,
+        "path": "original_attempt_admission.py",
+        "sha256": "e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b"
+      },
+      {
+        "bytes": 21567,
+        "exact": true,
+        "path": "prepare_native_bound_components_r6_fc33_successor02.py",
+        "sha256": "df4d2a40d2df631cc598b6b79b6b6a095a3350287ad3925b62a6b9072d75751f"
+      },
+      {
+        "bytes": 20902,
+        "exact": true,
+        "path": "reference/prepare_native_bound_components_r6_fc33_successor02.py",
+        "sha256": "ff7f83db52bd067ffd6c41ebfd734a5414245c6e48224266da35fd2c37b9f77c"
+      },
+      {
+        "bytes": 78567,
+        "exact": true,
+        "path": "reference/run_component_root_once.py",
+        "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257"
+      },
+      {
+        "bytes": 79408,
+        "exact": true,
+        "path": "run_component_root_once.py",
+        "sha256": "66324bd333190b2dbfc62a4ef6badc1f4e6829ff3bba6f551e39eacaeb53c3be"
+      },
+      {
+        "bytes": 23192,
+        "exact": true,
+        "path": "tests/test_original_attempt_admission.py",
+        "sha256": "77379b40979f6810d7c99b8c812ae0c2c0e439a9cb7e67b411b3614a276f04e5"
+      },
+      {
+        "bytes": 4397,
+        "exact": true,
+        "path": "verification/CURRENT-CHECK.author01.json",
+        "sha256": "3a83b1b7586cfa69a6370df275591599d9a8ea3eccfeda9941d728fb9613da8c"
+      },
+      {
+        "bytes": 482,
+        "exact": true,
+        "path": "verification/HOST-TESTS.author01.json",
+        "sha256": "ab32df1d7963e6ea786a9c840986739f20e99ef5c689826052d6f6299a7ecc95"
+      }
+    ],
+    "files_including_manifest": 18,
+    "manifest_bytes": 4739,
+    "manifest_sha256": "b40c68bf64998da3533f0b6249b365a061f8db1a2e4f3244e940e15d26eaad30",
+    "missing": []
+  },
+  "limitations": [
+    "No original bound02 terminal, producer fence or accepted disposition was established.",
+    "No remote job or phone operation was started by this review; no candidate bytes were modified.",
+    "The 38-test assembled suite was reported by Root; this reviewer did not rerun it or relabel it as an independent run.",
+    "Root adjusted ci_reference explanatory metadata after the actual checker call; final admission equality was rechecked without treating that metadata as new CI evidence."
+  ],
+  "remaining_findings": [],
+  "review_completed_at_utc": "2026-11-07T06:11:54.461418+00:00",
+  "reviewer": "settlement_design",
+  "schema": "razr60.publication-current-review.v1",
+  "scope": "PUBLICATION_ASSEMBLY_REVIEW_NOT_DEVICE_QUALIFICATION",
+  "semantic_review": {
+    "cancel_observation": "TIMEOUT_NO_CANCELLATION_RECEIPT",
+    "cancel_request_attempts": 1,
+    "cancel_signals": null,
+    "current_md_live_guard_not_deployed": true,
+    "current_md_read_in_full": true,
+    "fixed19_current_whole_pass_count": 0,
+    "global_execution_completion_claims_found": false,
+    "incorrect_eligibility_claims_found": false,
+    "new_execution_eligible": false,
+    "original_bound02_outcome": "UNKNOWN_UNCHANGED",
+    "original_effect_counts_all_null": true,
+    "original_terminal": null,
+    "producer_fencing_proven": false,
+    "recoveries": [
+      {
+        "bound02_disposition": false,
+        "fixed19_credit": 0,
+        "historical_deletion_operations": 76,
+        "operation_job_id": "1a1b33a7191-fc05-813f",
+        "original_nonce": "5f94c6a88805eefb0e2320cae5265d46",
+        "phone_rc": 0,
+        "reader_exit_code": 0,
+        "reader_job_id": "1a1b33b9725-fc05-814c",
+        "reader_state": "EXACT_UNSTARTED_RECOVERY_INDEPENDENTLY_VERIFIED_NO_CASE_CREDIT",
+        "recovery_id": "recovery02-fresh"
+      },
+      {
+        "bound02_disposition": false,
+        "fixed19_credit": 0,
+        "historical_deletion_operations": 0,
+        "operation_job_id": "1a1b3426151-fc05-8186",
+        "original_nonce": "5f94c6a88805eefb0e2320cae5265d46",
+        "phone_rc": 1,
+        "reader_exit_code": 1,
+        "reader_job_id": "1a1b3456b55-fc05-81a2",
+        "reader_state": "ORIGINALS_PRESERVED_RECOVERY_INCOMPLETE_OR_UNKNOWN",
+        "recovery_id": "recovery02"
+      }
+    ],
+    "recovery_reader_original_hashes_and_states_verified": true
+  },
+  "snapshot": {
+    "CURRENT.json": {
+      "bytes": 8772,
+      "sha256": "c5c6109cd1b17d21d33a54f6145557565f3c22da9bc0a5e7fcafbc006c8369e6"
+    },
+    "CURRENT.md": {
+      "bytes": 8439,
+      "sha256": "8c9ed7e822bdde0dfa64fae01b15c04426d49c67b586f87a347c646704426d79"
+    },
+    "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/NATIVE-OBSERVATION.json": {
+      "bytes": 4326,
+      "sha256": "e976417ccff3d588a016695393d02aa288b84165146db708b080df7d61aa40c7"
+    },
+    "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/ORIGINAL-RECONCILIATION.json": {
+      "bytes": 8646,
+      "sha256": "06724f447cc4f7e2a3380818becda6cd781e302d88c01647c5edb62e22c01cfd"
+    },
+    "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/RECOVERY-RESULTS.json": {
+      "bytes": 3510,
+      "sha256": "d01825b0e342963f08f2614dfcb196f2a7c12ef12d728f2ef641bc3aaa627210"
+    },
+    "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/closure-20261107/originals/bound02-job-metadata.public-projection.json": {
+      "bytes": 1715,
+      "sha256": "99b583558cf995291fda8e7736eb60dfe4021492952b4d8580855dc99c3fc44c"
+    }
+  },
+  "source_author_also_reviews_separate_root_assembly": true,
+  "state": "PASS_WITH_RESOLVED_PUBLICATION_FINDINGS"
+}

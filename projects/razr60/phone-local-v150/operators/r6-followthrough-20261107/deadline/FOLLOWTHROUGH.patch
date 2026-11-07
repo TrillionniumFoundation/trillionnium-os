@@ -1,0 +1,196 @@
+--- reference/verification-20261107/navigation/dependencies/preserved_ui_package_phase_r7.py
++++ candidate/preserved_ui_package_phase_r7.py
+@@ -20,6 +20,7 @@
+ import struct
+ import stat
+ import subprocess
++import time
+ 
+ SERIAL = 'ZY22LS7WZT'
+ RELEASE_READY = True  # Actual Root-provided host artifact pins; guest remains unobserved.
+@@ -60,44 +61,60 @@
+     return h.hexdigest()
+ 
+ 
+-def receive(s, count):
++def remaining_timeout(deadline, maximum=None):
++    """Use one monotonic budget; timeout never means the remote effect stopped."""
++    if deadline is None:
++        return maximum
++    remaining = deadline - time.monotonic()
++    if remaining <= 0:
++        raise TimeoutError('Whole shell observation deadline; outcome unknown, observe before any retry')
++    return remaining if maximum is None else min(maximum, remaining)
++
++
++def receive(s, count, deadline=None):
+     data = b''
+     while len(data) < count:
++        if deadline is not None:
++            s.settimeout(remaining_timeout(deadline, s.gettimeout()))
+         b = s.recv(count - len(data))
++        if deadline is not None:
++            remaining_timeout(deadline)
+         need(b, 'Existing ADB socket closed; observe before any retry')
+         data += b
+     return data
+ 
+ 
+-def request(s, command):
++def request(s, command, deadline=None):
+     data = command.encode()
+     need(len(data) < 65536, 'ADB request bound')
++    if deadline is not None:
++        s.settimeout(remaining_timeout(deadline, s.gettimeout()))
+     s.sendall(('%04x' % len(data)).encode() + data)
+-    result = receive(s, 4)
++    result = receive(s, 4, deadline)
+     if result == b'FAIL':
+-        raise RuntimeError(receive(s, int(receive(s, 4), 16)).decode())
++        raise RuntimeError(receive(s, int(receive(s, 4, deadline), 16), deadline).decode())
+     need(result == b'OKAY', 'ADB service response')
+ 
+ 
+-def host(port, command):
+-    with socket.create_connection(('127.0.0.1', port), timeout=5) as s:
+-        request(s, command)
+-        return receive(s, int(receive(s, 4), 16)).decode()
+-
+-
+-def route(c):
++def host(port, command, deadline=None):
++    with socket.create_connection(('127.0.0.1', port), timeout=remaining_timeout(deadline, 5)) as s:
++        request(s, command, deadline)
++        return receive(s, int(receive(s, 4, deadline), 16), deadline).decode()
++
++
++def route(c, deadline=None):
+     """Read both existing servers; never migrate or manage either server."""
+     need(os.uname().nodename == c['execution_host'] and os.getuid() == 1000,
+          'Pinned ordinary Pocket4 host required')
+     targets = []
+     for port in (5037, 5061):
+         result = subprocess.run(['ss', '-ltnp', 'sport = :' + str(port)],
+-                                capture_output=True, timeout=5)
++                                capture_output=True, timeout=remaining_timeout(deadline, 5))
+         need(result.returncode == 0, 'Listener read failed')
+         need(set(re.findall(rb'pid=(\d+)', result.stdout)) ==
+              {str(c['server_pids'][str(port)]).encode()}, 'Existing listener PID changed')
+-        need(host(port, 'host:version') == '0029', 'Existing server protocol changed')
+-        hits = [line.split() for line in host(port, 'host:devices-l').splitlines()
++        need(host(port, 'host:version', deadline) == '0029', 'Existing server protocol changed')
++        hits = [line.split() for line in host(port, 'host:devices-l', deadline).splitlines()
+                 if line.split() and line.split()[0] == SERIAL]
+         need(len(hits) <= 1, 'Duplicate target serial in one server')
+         if hits:
+@@ -112,15 +129,16 @@
+ 
+ 
+ def shell(command, c, transport, timeout=120):
+-    need(route(c) == transport, 'Target route changed before wire; observe before retry')
+-    with socket.create_connection(('127.0.0.1', transport[0]), timeout=timeout) as sock:
+-        request(sock, 'host:transport-id:' + transport[1])
+-        request(sock, 'shell,v2,raw:' + command)
++    deadline = time.monotonic() + timeout
++    need(route(c, deadline) == transport, 'Target route changed before wire; observe before retry')
++    with socket.create_connection(('127.0.0.1', transport[0]), timeout=remaining_timeout(deadline, timeout)) as sock:
++        request(sock, 'host:transport-id:' + transport[1], deadline)
++        request(sock, 'shell,v2,raw:' + command, deadline)
+         stdout, stderr, code = b'', b'', None
+         while code is None:
+-            stream, length = struct.unpack('<BI', receive(sock, 5))
++            stream, length = struct.unpack('<BI', receive(sock, 5, deadline))
+             need(length <= 8388608, 'Shell frame bound')
+-            payload = receive(sock, length)
++            payload = receive(sock, length, deadline)
+             if stream == 1:
+                 stdout += payload
+             elif stream == 2:
+@@ -128,6 +146,7 @@
+             elif stream == 3:
+                 code = int.from_bytes(payload, 'little')
+             need(len(stdout) + len(stderr) <= 8388608, 'Shell output bound')
++        remaining_timeout(deadline)
+         return {'command': command, 'rc': code, 'route': list(transport),
+                 'stdout': stdout.decode('utf-8', 'replace'),
+                 'stderr': stderr.decode('utf-8', 'replace')}
+--- reference/verification-20261107/navigation/dependencies/control_send_once.py
++++ candidate/control_send_once.py
+@@ -1,7 +1,43 @@
+ from pathlib import Path
+-import hashlib,json,os,re,shlex,time,types,xml.etree.ElementTree as ET
+-m=Path('/home/alex/codex-preserved-ui-root12-materials-20261101-01');p=m/'preserved_ui_package_phase_r7.py';b=p.read_bytes();assert hashlib.sha256(b).hexdigest()=='6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b'
+-f=types.ModuleType('actual_app_fixed_turn');f.__file__=str(p);exec(compile(b,str(p),'exec'),f.__dict__);c=json.loads((m/'preserved-ui-package-config.json').read_text());t=f.route(c)
++import hashlib,json,os,re,shlex,stat,time,types,xml.etree.ElementTree as ET
++def _transport_config_identity(info):
++    return (info.st_dev, info.st_ino, info.st_mode, info.st_uid, info.st_gid,
++            info.st_nlink, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
++
++def _read_pinned_transport_config(path, expected_size, expected_sha256):
++    # One descriptor, bounded bytes, same verified bytes consumed by json.loads.
++    # A failed read admits no route, helper execution or device effect.
++    flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK | getattr(os, 'O_CLOEXEC', 0)
++    descriptor = os.open(path, flags)
++    try:
++        before = os.fstat(descriptor)
++        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
++                or before.st_uid != os.getuid() or before.st_size != expected_size):
++            raise RuntimeError('transport_config_file_identity_or_size_mismatch_before_route')
++        chunks = []
++        received = 0
++        while received < expected_size + 1:
++            chunk = os.read(descriptor, expected_size + 1 - received)
++            if not chunk:
++                break
++            chunks.append(chunk)
++            received += len(chunk)
++        raw = b''.join(chunks)
++        after = os.fstat(descriptor)
++        named = os.stat(path, follow_symlinks=False)
++        if (_transport_config_identity(before) != _transport_config_identity(after)
++                or _transport_config_identity(after) != _transport_config_identity(named)):
++            raise RuntimeError('transport_config_changed_during_read_before_route')
++        if len(raw) != expected_size or hashlib.sha256(raw).hexdigest() != expected_sha256:
++            raise RuntimeError('transport_config_byte_pin_mismatch_before_route')
++        return raw
++    finally:
++        os.close(descriptor)
++
++m=Path('/home/alex/codex-razr60-r6-followthrough-20261107/deadline/candidate');p=m/'preserved_ui_package_phase_r7.py';b=p.read_bytes();assert hashlib.sha256(b).hexdigest()=='06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0'
++_transport_config_raw=_read_pinned_transport_config(Path('/home/alex/codex-preserved-ui-root12-materials-20261101-01/preserved-ui-package-config.json'),2416,'310dd82101f2ab309cd790d03f0c01e40cbdfef7064510ea4120327aaac72fef')
++c=json.loads(_transport_config_raw)
++f=types.ModuleType('actual_app_fixed_turn');f.__file__=str(p);exec(compile(b,str(p),'exec'),f.__dict__);t=f.route(c)
+ assert f.read('cat /proc/sys/kernel/random/boot_id',c,t)=='f8019f83-20a7-4f18-bea1-51c980621e4d'
+ assert f.read('getprop sys.usb.config',c,t)=='adb'
+ assert f.read('getenforce',c,t)=='Enforcing'
+--- reference/checkpoint10/R6-root-final01/runtime/source/send_new_native_guard_task_r10_r4.py
++++ candidate/send_new_native_guard_task_r10_r4.py
+@@ -26,6 +26,8 @@
+ p.add_argument('--component-package-sha256',required=True)
+ p.add_argument('--execute-once',action='store_true',help='Root only; default only builds a private actor preview')
+ args = p.parse_args()
++if args.execute_once:
++    p.error('SOURCE_ONLY_SUCCESSOR_EXECUTION_LOCKED: original bound02 settlement and complete new-combination admission are required')
+ import base64, re
+ assert re.fullmatch(r'[a-z0-9-]{1,70}',args.label)
+ prompt = args.request_file.read_bytes().decode('utf-8')
+@@ -62,8 +64,8 @@
+ else:
+     assert args.component_contract is None,'Production mode must not use a component rendezvous'
+ label = args.label
+-old = (BASE.parent / 'stock16-hepta-control-check-Root-v146-r1/control_send_once.py').read_text()
+-assert hashlib.sha256(old.encode()).hexdigest()=='ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70'
++old = (BASE.parent / 'stock16-hepta-control-deadline-Root-20261107-r1/control_send_once.py').read_text()
++assert hashlib.sha256(old.encode()).hexdigest()=='a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace'
+ source = old[:old.index('expected=')]
+ source += 'label=' + repr(label) + '\nreset_probe=' + repr(args.reset_probe) + '\n'
+ source += 'preserved_draft=' + repr(preserved_draft) + '\n'
+@@ -309,7 +311,7 @@
+ '''
+ compile(source, label + '.actor.py', 'exec')
+ if not args.execute_once:
+-    path=BASE/(label+'.preview.actor.py')
++    path=Path(__file__).resolve().parent/(label+'.preview.actor.py')
+     with path.open('x') as out:out.write(source);out.flush();os.fsync(out.fileno())
+     os.chmod(path,0o600)
+     print(json.dumps({'state':'BUILT_ONLY_NO_PHONE','actor_path':str(path),

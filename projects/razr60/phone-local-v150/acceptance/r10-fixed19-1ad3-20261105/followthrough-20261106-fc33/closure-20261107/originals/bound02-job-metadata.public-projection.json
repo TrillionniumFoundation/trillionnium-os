@@ -1,0 +1,40 @@
+{
+  "exact_original_bytes": false,
+  "observed_fields": {
+    "args": [
+      "-I",
+      "-B",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/root-chain/source/run_component_root_once.py",
+      "--plan",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-r6-bound02/ROOT-PLAN.json",
+      "--plan-sha256",
+      "0fbfd5aa0ed86e0bad846f2e541c3117ee1c7a46c98af7000c96f2e7d25a4bfa",
+      "--execute-root-chain-once"
+    ],
+    "created_unix_ms": 1794008811910,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b3420986-fc05-8183",
+    "launch_error": "Remote launch outcome unavailable",
+    "launch_state": "launch_unknown",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b3420986-fc05-8183",
+    "request_digest": "bd0a05f5d0e196efe71a3e18012d241a11214cca994c6fc240b9a70206485629",
+    "request_fingerprint": 13621706576265058031,
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b3420986-fc05-8183"
+  },
+  "original_descriptor": {
+    "bytes": 1255,
+    "path": "/Users/qianqi/.local/state/hepta-runtime-mac/jobs/1a1b3420986-fc05-8183.json",
+    "sha256": "c3d979f61989a384d859144d0aba7d5f00b07f944ff0c4dd699febabf42399b9",
+    "version": "16777233:593615008:1255:1794008823220332399:1794008823224885736"
+  },
+  "redacted_field_names": [
+    "idempotency_key",
+    "ssh_target"
+  ],
+  "schema": "razr60.original-job-metadata.public-projection.v1"
+}

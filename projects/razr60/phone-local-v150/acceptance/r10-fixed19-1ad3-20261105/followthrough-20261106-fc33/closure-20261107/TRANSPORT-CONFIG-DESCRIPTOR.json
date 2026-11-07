@@ -1,0 +1,23 @@
+{
+  "full_original_read": true,
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "mode": 436,
+    "uid": 1000,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "original": {
+    "bytes": 2416,
+    "path": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/preserved-ui-package-config.json",
+    "sha256": "310dd82101f2ab309cd790d03f0c01e40cbdfef7064510ea4120327aaac72fef",
+    "version": "66306:37113588:2416:1793522995998023296:1793522995998023296"
+  },
+  "prospective_use": "Exact same-FD bytes are checked before json.loads and before route calls in the selected source candidate. This is source-only and not live deployment.",
+  "raw_body_published": false,
+  "schema": "razr60.transport-config-private-original-descriptor.v1",
+  "stable_read_version": true
+}

@@ -1,3 +1,5 @@
+> 当前接手入口（2026-11-07）：[CURRENT.md](CURRENT.md)。原 R6 bound02 仍为 UNKNOWN，当前组合 fixed19 为 0/19；本次源码后继尚未冻结采用或安装。下文保留历史范围与原记录，不能作为当前资格。
+
 # RAZR60 phone-local model — r7-r3 measured checkpoint
 
 **The model runs locally on the phone. The new health request passed. Both new business tasks failed after a successful first application open and a rejected repeated-open proposal. The formal nineteen-case result is 7 PASS / 2 FAIL / 10 BLOCKED; daily-use qualification remains unestablished.**

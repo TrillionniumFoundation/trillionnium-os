@@ -1,0 +1,33 @@
+{
+  "schema": "razr60.deadline-successor-run-original.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-I",
+    "-B",
+    "/workspace/scratch/00f8328876d8/ci-candidate-audit/deadline-successor-r1/check_deadline_candidate.py",
+    "--repo-root",
+    "/workspace/scratch/00f8328876d8/ci-candidate-audit/source-fixture-root",
+    "--private-config-mcp",
+    "/workspace/scratch/00f8328876d8/private-evidence/transport-config.json",
+    "--out",
+    "/workspace/scratch/00f8328876d8/ci-candidate-audit/deadline-controls-freeze.json"
+  ],
+  "started_utc": "2026-11-07T05:56:53.487755+00:00",
+  "elapsed_seconds": 1.5320450639992487,
+  "exit_code": 0,
+  "source_manifest_sha256": "a5d50c6079f1d0dd2a224193971b63b05293fa089a9a33568a7fd01c297e4821",
+  "component_identity_sha256": "a343e6cea77dce682db343e1587dda6d4a1e60c7ca94663ba004b489a65e281c",
+  "phone_calls": 0,
+  "native_dispatches": 0,
+  "controls_scope": "local source/config fixture only",
+  "stdout": {
+    "file": "deadline-controls-freeze.stdout.original.txt",
+    "bytes": 963,
+    "sha256": "d19b069a7665c6a27666ed7ac76e2625d2d77a09c5e426e6955be91f0a6de19c"
+  },
+  "stderr": {
+    "file": "deadline-controls-freeze.stderr.original.txt",
+    "bytes": 2340,
+    "sha256": "55bf3720375abb108f3dcd1c299c160958012383a773100d61cc422ab3acc6f4"
+  }
+}

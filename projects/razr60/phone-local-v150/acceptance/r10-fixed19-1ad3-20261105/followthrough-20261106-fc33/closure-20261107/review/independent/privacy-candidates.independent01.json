@@ -1,0 +1,15 @@
+{
+  "schema": "razr60.independent-candidate-privacy-review.v1",
+  "scope": "CANDIDATE_DIRECTORIES_AND_PROTOCOL_DOCS_BEFORE_FINAL_PUBLIC_STAGING",
+  "private_pattern_classes_found": {
+    "pinned_config_body": true,
+    "original_owner_request_body": true,
+    "preserved_draft_body": true
+  },
+  "private_pattern_count": 6,
+  "scanned_file_count": 30,
+  "exact_private_payload_hits": [],
+  "credential_shape_hits": [],
+  "raw_private_values_in_this_report": false,
+  "public_staging_tree_review_pending": true
+}

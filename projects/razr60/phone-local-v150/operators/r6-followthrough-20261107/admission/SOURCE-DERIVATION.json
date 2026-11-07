@@ -1,0 +1,90 @@
+{
+  "actual_mac_preparer_used": true,
+  "automatic_disposition_or_override_supported": false,
+  "checks": {
+    "coordinator": {
+      "existing_program_ast_unchanged_after_removing_guard": true,
+      "new_entry_guards": [
+        "coordinator.validate_plan",
+        "coordinator.output_reservation",
+        "coordinator.dispatch",
+        "coordinator.main"
+      ],
+      "new_guard_definitions": 1
+    },
+    "preparer": {
+      "existing_program_ast_unchanged_after_removing_guard": true,
+      "new_entry_guards": [
+        "preparer.selected_context",
+        "preparer.before_nonce_and_reservation",
+        "preparer.main"
+      ],
+      "new_guard_definitions": 1
+    },
+    "validate_current_prior": {
+      "byte_identical": true,
+      "bytes": 6303,
+      "sha256": "e61d28c825c20cc92da82f2be29fbd64aafbd94221a90e28cb27076b30e973f3"
+    }
+  },
+  "component_qualified": false,
+  "derivation_source": {
+    "bytes": 12903,
+    "sha256": "88d6f991055ebd9939ac840f626f88038a616654e7a945414097215f6938103a"
+  },
+  "full19_qualified": false,
+  "inputs": {
+    "ORIGINAL-ATTEMPTS.json": {
+      "bytes": 2943,
+      "sha256": "331e135d43cbe8dc8fa4136ff2b1af40a2fb2fab1e83ed71533e2d29df3dde70"
+    },
+    "current_check.py": {
+      "bytes": 3887,
+      "sha256": "b0015fb4455bf87c97e99a206c65235456cc9e7a8e9986fa9fbe2719d8bb1a59"
+    },
+    "original_attempt_admission.py": {
+      "bytes": 10422,
+      "sha256": "e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b"
+    },
+    "prepare_native_bound_components_r6_fc33_successor02.py": {
+      "bytes": 20902,
+      "sha256": "ff7f83db52bd067ffd6c41ebfd734a5414245c6e48224266da35fd2c37b9f77c"
+    },
+    "run_component_root_once.py": {
+      "bytes": 78567,
+      "sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257"
+    }
+  },
+  "live_guard_enforcement_proven": false,
+  "native_nonce_generations": 0,
+  "new_runtime_combination": null,
+  "old_frozen_files_modified": false,
+  "original_outcome_rewritten": false,
+  "outputs": {
+    "ORIGINAL-ATTEMPTS.json": {
+      "bytes": 2943,
+      "sha256": "331e135d43cbe8dc8fa4136ff2b1af40a2fb2fab1e83ed71533e2d29df3dde70"
+    },
+    "current_check.py": {
+      "bytes": 3887,
+      "sha256": "b0015fb4455bf87c97e99a206c65235456cc9e7a8e9986fa9fbe2719d8bb1a59"
+    },
+    "original_attempt_admission.py": {
+      "bytes": 10422,
+      "sha256": "e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b"
+    },
+    "prepare_native_bound_components_r6_fc33_successor02.py": {
+      "bytes": 21567,
+      "sha256": "df4d2a40d2df631cc598b6b79b6b6a095a3350287ad3925b62a6b9072d75751f"
+    },
+    "run_component_root_once.py": {
+      "bytes": 79408,
+      "sha256": "66324bd333190b2dbfc62a4ef6badc1f4e6829ff3bba6f551e39eacaeb53c3be"
+    }
+  },
+  "phone_calls": 0,
+  "runtime_dispatches": 0,
+  "schema": "hepta.r6.original-attempt-guard-source-derivation.v1",
+  "source_package_refreeze_still_required": true,
+  "state": "SOURCE_ONLY_BLOCKED_ORIGINAL_BOUND02_NO_DEPLOYMENT"
+}

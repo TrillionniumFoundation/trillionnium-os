@@ -1,0 +1,94 @@
+{
+  "execution_eligible": false,
+  "original_attempt_admission": {
+    "accepted_disposition_verifier": null,
+    "blockers": [
+      "ORIGINAL_BOUND02_OUTCOME_UNRESOLVED",
+      "ORIGINAL_BOUND02_PRODUCER_FENCING_UNPROVEN",
+      "BOUND01_DRAFT_RECONCILIATION_UNCONFIRMED",
+      "NO_BOUND02_DISPOSITION_VERIFIER_IN_THIS_SOURCE"
+    ],
+    "evidence_errors": [],
+    "evidence_valid": true,
+    "independent_pending_drafts": [
+      {
+        "accepted_draft_disposition": null,
+        "current_draft_verified": false,
+        "draft_restore": {
+          "original_draft_submitted": false,
+          "restore_attempts": 0,
+          "state": "RESTORE_NOT_AUTOMATED_INPUT_OUTCOME_UNCONFIRMED"
+        },
+        "label": "root-r10-neg01-fc33-r6-bound01",
+        "nonce": "5f94c6a88805eefb0e2320cae5265d46",
+        "observed_state": "PRE_SEND_OR_ACTOR_FAILURE",
+        "send_attempt_count": 0,
+        "sender_result_original": {
+          "bytes": 704,
+          "sha256": "09eb6d6a460c893f7da5ad6a0fbb383cbffb5d29f78a5ba7b373520fd92ed00b"
+        },
+        "ui_effect_count": null
+      }
+    ],
+    "known_original": {
+      "identity": {
+        "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+        "case_id": "NEG-01",
+        "combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+        "host": "mac",
+        "job_id": "1a1b3420986-fc05-8183",
+        "label": "root-r10-neg01-fc33-r6-bound02",
+        "nonce": "731dc46ccaad6e5717306d0c5f029a82",
+        "owner_request_bytes": 317,
+        "owner_request_sha256": "b25d5c139aebdec8a222ca4298e91cd57500b0836c0c9f1629cb4ce769ad6d3f",
+        "package_sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5",
+        "plan_bytes": 4842,
+        "plan_sha256": "0fbfd5aa0ed86e0bad846f2e541c3117ee1c7a46c98af7000c96f2e7d25a4bfa",
+        "profile_id": "owner-open",
+        "request_digest": "bd0a05f5d0e196efe71a3e18012d241a11214cca994c6fc240b9a70206485629",
+        "root_source_bytes": 78567,
+        "root_source_sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257",
+        "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef"
+      },
+      "observation": {
+        "cancellation_observation": {
+          "cancellation_proven": false,
+          "observed_result": "TIMEOUT_NO_CANCELLATION_RECEIPT",
+          "request_attempts": 1,
+          "response_original": {
+            "bytes": 182,
+            "sha256": "5f0646f9deefaa026258095a3fe49ef5defc1475ef87bec6119962d1dd4fc639"
+          },
+          "signals_sent": null,
+          "termination_proven": false
+        },
+        "complete_original_output": null,
+        "draft_outcome": "UNRESOLVED",
+        "effect_counts": {
+          "model_requests": null,
+          "native_send_attempts": null,
+          "phone_calls": null,
+          "resource_mutation_attempts": null,
+          "root_fixture_attempts": null,
+          "ui_mutation_attempts": null
+        },
+        "original_launch_state": "launch_unknown",
+        "original_task_outcome": "UNKNOWN_UNCHANGED",
+        "original_terminal": null,
+        "producer_fencing_proven": false,
+        "remote_owner": "UNRESOLVED"
+      }
+    },
+    "missing_paths_establish_no_execution": false,
+    "recovery_results_are_substitutable_between_originals": false,
+    "required_register": {
+      "bytes": 2943,
+      "sha256": "331e135d43cbe8dc8fa4136ff2b1af40a2fb2fab1e83ed71533e2d29df3dde70"
+    },
+    "schema": "hepta.r6.original-attempt-admission.v1",
+    "source_only": true,
+    "state": "BLOCKED_ORIGINAL_ATTEMPT_UNRESOLVED",
+    "successor_execution_eligible": false,
+    "unknown_counts_are_zero": false
+  }
+}

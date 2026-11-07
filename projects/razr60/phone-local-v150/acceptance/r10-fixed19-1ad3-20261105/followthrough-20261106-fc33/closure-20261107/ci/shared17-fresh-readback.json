@@ -1,0 +1,148 @@
+{
+  "schema": "razr60.shared17.independent-current-head-readback.v1",
+  "current_head": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "retained_binding_commit": "1ff53c92238f8c60619f86fba359d41d2b222fc4",
+  "rows": [
+    {
+      "material": "production-config.json",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/local-config-r10-r1.json",
+      "bytes": 1493,
+      "sha256": "5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48",
+      "git_blob_sha": "2d9871a199a1a759f38badf6467e376525f49838",
+      "matches_expected": true
+    },
+    {
+      "material": "production-service.json",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/PHONE-SERVICE-INPUTS-v150-r10-r1.json",
+      "bytes": 10654,
+      "sha256": "273db17098e5de6c67ded208e120e3910531ab1c7a778faa76824d453ddddd58",
+      "git_blob_sha": "89405ceb319ac26c2c052065885913107a36723f",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/action_ledger.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/action_ledger.py",
+      "bytes": 15587,
+      "sha256": "50620b2e27334b7cf311bd6b1c743d71c19c32887e5ed31a07fdf54dac0e7907",
+      "git_blob_sha": "9779079985636df58686330571222ce582f69944",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/daily_phone_local.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/daily_phone_local.py",
+      "bytes": 22059,
+      "sha256": "a16be75d5a47a86a7c0d222dc95e8b2373017b3291ce644864e2dd3b763447b8",
+      "git_blob_sha": "59e2c8594b88a58793d7ba3c6761bd5d277df725",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/health_contracts.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/health_contracts.py",
+      "bytes": 11439,
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+      "git_blob_sha": "556bbf50b9849e0fbe1ea507ad35cc98b6f58945",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/ledger_round_evidence.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/ledger_round_evidence.py",
+      "bytes": 15135,
+      "sha256": "87d2b8731883dd06806a45851867332c568fe02deb2b9b8952094b86822e678d",
+      "git_blob_sha": "b98fa2e0e04dca525ad5442cccbc7acb5ec91efc",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/model_health.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_health.py",
+      "bytes": 8251,
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+      "git_blob_sha": "fbe2e8832dcc2a3958e9dc790a1ecf394023eb37",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/model_slot_cleanup.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/model_slot_cleanup.py",
+      "bytes": 37375,
+      "sha256": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+      "git_blob_sha": "339f98ec195a62d4dfd4538c1cb8ff634596a0d0",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/phone_local_http_worker.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_http_worker.py",
+      "bytes": 10453,
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+      "git_blob_sha": "34b67ebbc6338e66f0c43ae19059ab0ffda7aba2",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/phone_local_tools.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_local_tools.py",
+      "bytes": 13927,
+      "sha256": "2d0c9cc8f1ff0c643aab3daeef07c12e84541f1c2f0bfd13c8043c5c8fa58930",
+      "git_blob_sha": "03800a9aab65d102477cbb6f6c7d8867fe0a16ef",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/phone_observation_tools.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/phone_observation_tools.py",
+      "bytes": 55981,
+      "sha256": "4f95178996a2d7a604ae56eecd0f7725657222783f5cab5a7ff868f85a8cd086",
+      "git_blob_sha": "598544ec9460977b374744d053c5a83d490c8f99",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/phone_task_guards.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/phone_task_guards.py",
+      "bytes": 22825,
+      "sha256": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+      "git_blob_sha": "9cdba9872fd2637c144dc889ba38643300bef568",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/provider_codex_host.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_codex_host.py",
+      "bytes": 41618,
+      "sha256": "0ea72f9e38307055ead790aa5828143c4ba431ae33c8e44e19c5893073ade5fa",
+      "git_blob_sha": "6c430b9f14f1cb17e5e6585229ee9fa212f550e5",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/provider_openai_compatible.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_openai_compatible.py",
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+      "git_blob_sha": "d5755ca4129da5c5ed1da9b8771a116be3b3efa5",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/provider_phone_local.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/provider_phone_local.py",
+      "bytes": 70303,
+      "sha256": "0c04bbd0f2d8f88a0795776a23a6cb34bf5f9a88aabc09e8aa3c3ff34c534bee",
+      "git_blob_sha": "78be7653d6af6784b30871c1e1054e398e29e4ab",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/retirement_recovery.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/actual-e2e-bound-source/actual/shared/provider/source/retirement_recovery.py",
+      "bytes": 9802,
+      "sha256": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+      "git_blob_sha": "938ad60ef2b1b33103384c6ef50d764d9da8e5e3",
+      "matches_expected": true
+    },
+    {
+      "material": "provider/source/task_postconditions.py",
+      "source_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/R6-actual-source-graph01/actual/e2e_sources/shared/provider/source/task_postconditions.py",
+      "bytes": 23211,
+      "sha256": "d4984cce3e25609d0bc3ef97475edfe74d4795244722e654eb654df3b6e6ceb3",
+      "git_blob_sha": "1da225de785769d3dd5329ab48b4ad207f3c77c8",
+      "matches_expected": true
+    }
+  ],
+  "total_bytes": 387843,
+  "passed": true,
+  "phone_calls": 0,
+  "installation_verified": false,
+  "fixed19_credit": 0
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "razr60.deadline-successor-execution-lock.v1",
+  "state": "SOURCE_ONLY_LOCKED",
+  "runtime_sender_sha256": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69",
+  "phone_execution_allowed": false,
+  "original_bound02": "REQUIRES_AUTHORITATIVE_SETTLEMENT_NOT_REPLAY",
+  "whole_runtime_bound": false,
+  "source_only_cli_enforced": true,
+  "enforced_entrypoint": "candidate/send_new_native_guard_task_r10_r4.py --execute-once",
+  "arbitrary_helper_entrypoints_globally_intercepted": false,
+  "new_nonce_does_not_clear_prior_unknown": true,
+  "lock_removal_changes_source_hash_and_requires_fresh_review": true,
+  "fixed19_credit": 0
+}

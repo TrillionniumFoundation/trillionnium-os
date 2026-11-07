@@ -1,0 +1,15 @@
+{
+  "elapsed_seconds": 0.511467,
+  "errors": [],
+  "failures": [],
+  "live_guard_enforcement_proven": false,
+  "original_bound02_outcome": "UNKNOWN_UNCHANGED",
+  "phone_calls": 0,
+  "qualification": "HOST_SOURCE_ENTRY_REGRESSION_ONLY",
+  "remote_runtime_jobs_created": 0,
+  "schema": "hepta.r6.original-attempt-guard-host-tests.v1",
+  "skipped": [],
+  "state": "PASS",
+  "test_count": 23,
+  "test_source_sha256": "77379b40979f6810d7c99b8c812ae0c2c0e439a9cb7e67b411b3614a276f04e5"
+}

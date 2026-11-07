@@ -1,0 +1,20 @@
+test_actual_sender_ssh_budgets_preserve_both_component_and_production (__main__.DeadlineSuccessorTests.test_actual_sender_ssh_budgets_preserve_both_component_and_production) ... ok
+test_complete_source_derivation_and_unmodified_actor_logic (__main__.DeadlineSuccessorTests.test_complete_source_derivation_and_unmodified_actor_logic) ... ok
+test_descriptor_metadata_change_rejected (__main__.DeadlineSuccessorTests.test_descriptor_metadata_change_rejected) ... ok
+test_direct_pin_cascade_and_config_pin_before_first_route (__main__.DeadlineSuccessorTests.test_direct_pin_cascade_and_config_pin_before_first_route) ... ok
+test_exact_socket_and_full_route_controls (__main__.DeadlineSuccessorTests.test_exact_socket_and_full_route_controls) ... ok
+test_execute_flag_refused_before_runtime_input_read (__main__.DeadlineSuccessorTests.test_execute_flag_refused_before_runtime_input_read) ... ok
+test_hardlinked_config_rejected_before_route (__main__.DeadlineSuccessorTests.test_hardlinked_config_rejected_before_route) ... ok
+test_late_path_content_change_does_not_change_parsed_verified_bytes (__main__.DeadlineSuccessorTests.test_late_path_content_change_does_not_change_parsed_verified_bytes) ... ok
+test_mismatched_file_owner_rejected_without_content_read (__main__.DeadlineSuccessorTests.test_mismatched_file_owner_rejected_without_content_read) ... ok
+test_mismatched_original_config_pin_rejects_before_module_or_route (__main__.DeadlineSuccessorTests.test_mismatched_original_config_pin_rejects_before_module_or_route) ... ok
+test_named_file_replacement_rejected_before_route (__main__.DeadlineSuccessorTests.test_named_file_replacement_rejected_before_route) ... ok
+test_non_regular_config_rejected_without_content_read (__main__.DeadlineSuccessorTests.test_non_regular_config_rejected_without_content_read) ... ok
+test_positive_synthetic_config_reaches_only_first_route (__main__.DeadlineSuccessorTests.test_positive_synthetic_config_reaches_only_first_route) ... ok
+test_symlink_config_rejected_before_route (__main__.DeadlineSuccessorTests.test_symlink_config_rejected_before_route) ... ok
+test_wrong_config_size_rejects_before_read_or_route (__main__.DeadlineSuccessorTests.test_wrong_config_size_rejects_before_read_or_route) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 1.392s
+
+OK

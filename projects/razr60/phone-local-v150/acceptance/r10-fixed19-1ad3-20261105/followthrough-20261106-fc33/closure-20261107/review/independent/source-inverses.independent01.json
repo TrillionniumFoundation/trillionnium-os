@@ -1,0 +1,44 @@
+{
+  "schema": "razr60.independent-full-source-inverse-review.v1",
+  "scope": "SOURCE_BYTES_ONLY_NO_RUNTIME_EXECUTION",
+  "checks": [
+    {
+      "package": "admission",
+      "file": "prepare_native_bound_components_r6_fc33_successor02.py",
+      "candidate_sha256": "df4d2a40d2df631cc598b6b79b6b6a095a3350287ad3925b62a6b9072d75751f",
+      "original_sha256": "ff7f83db52bd067ffd6c41ebfd734a5414245c6e48224266da35fd2c37b9f77c",
+      "full_reverse_patch_restores_original_bytes": true
+    },
+    {
+      "package": "admission",
+      "file": "run_component_root_once.py",
+      "candidate_sha256": "66324bd333190b2dbfc62a4ef6badc1f4e6829ff3bba6f551e39eacaeb53c3be",
+      "original_sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257",
+      "full_reverse_patch_restores_original_bytes": true
+    },
+    {
+      "package": "deadline",
+      "file": "candidate/preserved_ui_package_phase_r7.py",
+      "candidate_sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0",
+      "original_sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+      "full_reverse_patch_restores_original_bytes": true
+    },
+    {
+      "package": "deadline",
+      "file": "candidate/control_send_once.py",
+      "candidate_sha256": "a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace",
+      "original_sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70",
+      "full_reverse_patch_restores_original_bytes": true
+    },
+    {
+      "package": "deadline",
+      "file": "candidate/send_new_native_guard_task_r10_r4.py",
+      "candidate_sha256": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69",
+      "original_sha256": "de6c90187ad15995cbd85c662fb7d0a0ee40809bc54d9c1a51c46e164d75b354",
+      "full_reverse_patch_restores_original_bytes": true
+    }
+  ],
+  "count": 5,
+  "phone_calls": 0,
+  "current_fixed19_credit": 0
+}

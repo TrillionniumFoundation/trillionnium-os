@@ -1,0 +1,53 @@
+--- reference/run_component_root_once.py
++++ run_component_root_once.py
+@@ -329,6 +329,18 @@
+         if saved is None:sys.modules.pop('component_common',None)
+         else:sys.modules['component_common']=saved
+         sys.path[:]=old_path;sys.dont_write_bytecode=old_dwb
++
++
++def require_original_attempt_admission(stage):
++    # New source-only hold; this does not grant an old original a terminal.
++    path=HERE/'original_attempt_admission.py'
++    raw=read(path,65536)
++    need(len(raw)==10422 and sha(raw)=='e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b',
++         'exact reviewed original-attempt guard source required')
++    guard=types.ModuleType('reviewed_original_attempt_admission')
++    guard.__file__=str(path)
++    exec(compile(raw,str(path),'exec'),guard.__dict__)
++    guard.require_successor_admission(stage=stage)
+ 
+ 
+ def validate_current_prior(p,previous,runtime,manifest):
+@@ -424,6 +436,7 @@
+ 
+ 
+ def validate_plan(raw):
++    require_original_attempt_admission('coordinator.validate_plan')
+     need(isinstance(PKG,str) and re.fullmatch('[0-9a-f]{64}',PKG)
+          and isinstance(COMBINATION,str) and re.fullmatch('[0-9a-f]{64}',COMBINATION)
+          and all(isinstance(value,str) and re.fullmatch('[0-9a-f]{64}',value)
+@@ -482,6 +495,7 @@
+ 
+ class Chain:
+     def __init__(self,plan,raw):
++        require_original_attempt_admission('coordinator.output_reservation')
+         self.p=plan;self.out=Path(plan['out']);newdir(self.out)
+         put(self.out/'ROOT-PLAN.original.json',raw)
+         self.steps=[];self.sender=None;self.sender_files=None
+@@ -899,6 +913,7 @@
+         need(left>minimum,'same lease exhausted; no extension/restart');return left
+ 
+     def run(self):
++        require_original_attempt_admission('coordinator.dispatch')
+         p=self.p;runtime=Path(p['package']['path']).parent;shared=Path(p['shared_root'])
+         expiry=time.time_ns()//1000000+900000
+         put(self.out/'CHAIN-INTENT.json',enc({'schema':'hepta.native-guard.root-chain-intent.v1','nonce':p['nonce'],
+@@ -1071,6 +1086,7 @@
+ def main():
+     a=argparse.ArgumentParser(description=__doc__);a.add_argument('--plan',type=Path,required=True);a.add_argument('--plan-sha256',required=True)
+     a.add_argument('--execute-root-chain-once',action='store_true');v=a.parse_args()
++    require_original_attempt_admission('coordinator.main')
+     raw=read(v.plan,262144);need(sha(raw)==v.plan_sha256,'Root plan pin')
+     if not v.execute_root_chain_once:
+         print(json.dumps({'state':'HOST_PREVIEW_NO_PHONE_NO_NONCE_NO_LEASE','plan_sha256':sha(raw),

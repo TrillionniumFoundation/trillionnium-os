@@ -1,0 +1,10 @@
+{
+  "command": "cat /proc/sys/kernel/random/boot_id; getprop ro.build.fingerprint; getprop sys.usb.config; getenforce; pidof adbd",
+  "rc": 0,
+  "route": [
+    5037,
+    "23"
+  ],
+  "stdout": "f8019f83-20a7-4f18-bea1-51c980621e4d\nmotorola/leap_cn/leap:16/W1VL36H.59-53-11/643c83-3ed541:user/release-keys\nadb\nEnforcing\n3021\n",
+  "stderr": ""
+}

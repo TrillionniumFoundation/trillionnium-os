@@ -1,0 +1,31 @@
+{
+  "deadline_candidate_causal_repair_claim": false,
+  "known": [
+    "The compound uiautomator dump observation returned rc 137 and stderr Killed.",
+    "The bound01 sender reported PRE_SEND_OR_ACTOR_FAILURE with send_attempt_count 0.",
+    "The old socket observation can exceed the requested total timeout; the PR112 candidate passes isolated deadline and full-route controls."
+  ],
+  "observed_error_type": "AssertionError",
+  "original": {
+    "bytes": 424,
+    "exact_original_bytes": true,
+    "path": "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound01-root-v150/ACTOR-FAILURE.json",
+    "retained_public_path": "originals/bound01-ACTOR-FAILURE.original.json",
+    "sha256": "f613e78e05b8ff8cadfb0cd8aabca905aabc5338f130ffbc17205a7f0d4717eb",
+    "version": "66306:38968467:424:1793998420801172189:1793998420801172189"
+  },
+  "original_error": "{'command': 'test ! -e /data/local/tmp/hepta-natural-root-r10-neg01-fc33-r6-bound01-v150-1.xml && uiautomator dump /data/local/tmp/hepta-natural-root-r10-neg01-fc33-r6-bound01-v150-1.xml && cat /data/local/tmp/hepta-natural-root-r10-neg01-fc33-r6-bound01-v150-1.xml', 'rc': 137, 'route': [5037, '23'], 'stdout': '', 'stderr': 'Killed \\n'}",
+  "remote_process_cleanup_verified_by_deadline_controls": false,
+  "schema": "razr60.bound01-exit137-evidence-analysis.v1",
+  "test_evidence": [
+    "ci/fresh-timeout-result.json",
+    "ci/fresh-route-result.json",
+    "ci/deadline-controls-final.json"
+  ],
+  "unknown": [
+    "Which process in the compound command was killed.",
+    "The origin of any kill signal or resource pressure.",
+    "Whether the deadline defect caused this 137 result.",
+    "Complete post-failure UI state and restored user draft."
+  ]
+}

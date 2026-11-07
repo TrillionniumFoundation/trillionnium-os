@@ -1,0 +1,112 @@
+{
+  "schema": "razr60.deadline-successor-source-derivation.v1",
+  "state": "SOURCE_ONLY_SUCCESSOR_NOT_INSTALLED_NOT_ADOPTED",
+  "source_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "originals": [
+    {
+      "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/dependencies/preserved_ui_package_phase_r7.py",
+      "bytes": 24731,
+      "sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+      "candidate_path": "candidate/preserved_ui_package_phase_r7.py",
+      "git_blob_sha": "9b9f019ff279ec5a2cf482c389d8b8c9d3cf4dcb"
+    },
+    {
+      "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/dependencies/control_send_once.py",
+      "bytes": 6301,
+      "sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70",
+      "candidate_path": "candidate/control_send_once.py",
+      "git_blob_sha": "5bb0ab40b1a55ca7b7e018bb1414cb7ff7760f5a"
+    },
+    {
+      "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/checkpoint10/R6-root-final01/runtime/source/send_new_native_guard_task_r10_r4.py",
+      "bytes": 41745,
+      "sha256": "de6c90187ad15995cbd85c662fb7d0a0ee40809bc54d9c1a51c46e164d75b354",
+      "candidate_path": "candidate/send_new_native_guard_task_r10_r4.py",
+      "git_blob_sha": "f1d8cdf929270a3e5b5765078a85f3b986b7c660"
+    }
+  ],
+  "candidate_sources": [
+    {
+      "path": "candidate/preserved_ui_package_phase_r7.py",
+      "bytes": 25791,
+      "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0"
+    },
+    {
+      "path": "candidate/control_send_once.py",
+      "bytes": 8240,
+      "sha256": "a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace"
+    },
+    {
+      "path": "candidate/send_new_native_guard_task_r10_r4.py",
+      "bytes": 41936,
+      "sha256": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69"
+    }
+  ],
+  "change_contract": [
+    "Use the exact already-reviewed PR112 socket helper with its monotonic shell-observation deadline.",
+    "Read the frozen transport configuration through one no-follow descriptor; verify regular/single-link/owner/size and stable full identity; verify length and SHA256; parse those exact bytes before any route or helper execution.",
+    "Rebind the direct UI helper pin and path in the actual de6c9018 runtime sender; the f90c6ffb business sender is not substituted as the actual entry.",
+    "Explicitly refuse --execute-once before opening request or other runtime inputs; source-only previews are confined to the new sender directory.",
+    "Keep all existing selection, retirement, draft, rendezvous, native evidence, model, output, transport and effect commands, deadlines and one-attempt behavior unchanged."
+  ],
+  "runtime_config": {
+    "host": "pocket4",
+    "path": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/preserved-ui-package-config.json",
+    "bytes": 2416,
+    "sha256": "310dd82101f2ab309cd790d03f0c01e40cbdfef7064510ea4120327aaac72fef",
+    "observed_version": "66306:37113588:2416:1793522995998023296:1793522995998023296",
+    "observed_uid": 1000,
+    "observed_gid": 1000,
+    "observed_mode_octal": "0664",
+    "observed_nlink": 1,
+    "raw_content_included": false
+  },
+  "prospective_staging_only": {
+    "pocket4_helper": "/home/alex/codex-razr60-r6-followthrough-20261107/deadline/candidate/preserved_ui_package_phase_r7.py",
+    "mac_ui_helper_relative_to_existing_BASE_parent": "stock16-hepta-control-deadline-Root-20261107-r1/control_send_once.py",
+    "staged": false
+  },
+  "unchanged_external_pins": {
+    "sender_retirement_guard_r4.py": "5aaf4a9d1edf7e241106dffd46a1fb905373456585bf0c55d148dac654ca7c79",
+    "sender_native_guard_ready_r10_r4.py": "97b28afd910280bbdb7a1061218f4d72fc4b9024669b1aba10b0bfdb6caf13b2",
+    "decode_client_state.py": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+  },
+  "budgets_unchanged": {
+    "socket_default_seconds": 120,
+    "route_probe_seconds": 5,
+    "ui_shell_seconds": 25,
+    "wire_read_seconds": 6,
+    "read_observer_alarm_seconds": 8,
+    "remote_read_kill_grace_seconds": 1,
+    "sender_ssh_component_seconds": 660,
+    "sender_ssh_production_seconds": 600,
+    "component_pre_send_seconds": 240,
+    "production_pre_send_seconds": 150,
+    "native_monitor_seconds": 335,
+    "shell_output_limit_bytes": 8388608,
+    "automatic_send_retries": 0
+  },
+  "whole_runtime_cascade_complete": false,
+  "remaining": [
+    "new full runtime source/manifest dependency closure",
+    "authoritative original bound02 settlement",
+    "fresh single-owner admission",
+    "source-only lock removal requires a separately reviewed source revision",
+    "actual BUILD, installation and four-role READY readback"
+  ],
+  "exit137_cause": "UNKNOWN",
+  "remote_process_cleanup_verified": false,
+  "phone_calls": 0,
+  "native_dispatches": 0,
+  "fixed19_credit": 0,
+  "original_frozen_R6_modified": false,
+  "budgets_scope": "Selected sender/observation source only; this is not a whole-runtime budget closure.",
+  "budgets_sha256": "ddcef37dc7dace2168bdca12e538aa40410d032a169b22497a62a5424be941f4",
+  "private_inputs_excluded": [
+    "transport_config_body",
+    "request",
+    "preserved_draft",
+    "retirement_certificate",
+    "private_controller_payloads"
+  ]
+}

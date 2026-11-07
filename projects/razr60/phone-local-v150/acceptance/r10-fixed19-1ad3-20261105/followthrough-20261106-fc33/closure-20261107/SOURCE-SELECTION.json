@@ -1,0 +1,104 @@
+{
+  "budgets_unchanged": {
+    "automatic_send_retries": 0,
+    "component_pre_send_seconds": 240,
+    "native_monitor_seconds": 335,
+    "production_pre_send_seconds": 150,
+    "read_observer_alarm_seconds": 8,
+    "remote_read_kill_grace_seconds": 1,
+    "route_probe_seconds": 5,
+    "sender_ssh_component_seconds": 660,
+    "sender_ssh_production_seconds": 600,
+    "shell_output_limit_bytes": 8388608,
+    "socket_default_seconds": 120,
+    "ui_shell_seconds": 25,
+    "wire_read_seconds": 6
+  },
+  "canonicalization": "SHA256 of selection_identity serialized as UTF-8 JSON, ensure_ascii=True, sort_keys=True, separators=(comma,colon), no newline",
+  "exact_next_executable_plan": null,
+  "execution_eligible": false,
+  "fixed19_credit": 0,
+  "original_frozen_runtime_modified": false,
+  "schema": "razr60.unique-followthrough-source-selection.v1",
+  "selection_identity": {
+    "frozen_original_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+    "original_budget_objects_sha256": "0f29441ff543d5aa69c17c39d2ed9f9de76fb57d2ecff8670209c285ea27e506",
+    "original_root_source_manifest": {
+      "bytes": 51678,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "9da8d53ebfba3e11f2406c0a59964923ff4709052fad2d5df3d2eaff8b7ec8a4",
+      "version": "16777233:593555549:51678:1793997412973490506:1793997412973490506"
+    },
+    "original_runtime_manifest": {
+      "bytes": 59400,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/runtime/MANIFEST.json",
+      "sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5",
+      "version": "16777233:593555553:59400:1793997412977436166:1793997412977436166"
+    },
+    "reference_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+    "selected_observation_budget_sha256": "ddcef37dc7dace2168bdca12e538aa40410d032a169b22497a62a5424be941f4",
+    "selected_source_files": [
+      {
+        "bytes": 2943,
+        "path": "operators/r6-followthrough-20261107/admission/ORIGINAL-ATTEMPTS.json",
+        "sha256": "331e135d43cbe8dc8fa4136ff2b1af40a2fb2fab1e83ed71533e2d29df3dde70"
+      },
+      {
+        "bytes": 3887,
+        "path": "operators/r6-followthrough-20261107/admission/current_check.py",
+        "sha256": "b0015fb4455bf87c97e99a206c65235456cc9e7a8e9986fa9fbe2719d8bb1a59"
+      },
+      {
+        "bytes": 10422,
+        "path": "operators/r6-followthrough-20261107/admission/original_attempt_admission.py",
+        "sha256": "e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b"
+      },
+      {
+        "bytes": 21567,
+        "path": "operators/r6-followthrough-20261107/admission/prepare_native_bound_components_r6_fc33_successor02.py",
+        "sha256": "df4d2a40d2df631cc598b6b79b6b6a095a3350287ad3925b62a6b9072d75751f"
+      },
+      {
+        "bytes": 79408,
+        "path": "operators/r6-followthrough-20261107/admission/run_component_root_once.py",
+        "sha256": "66324bd333190b2dbfc62a4ef6badc1f4e6829ff3bba6f551e39eacaeb53c3be"
+      },
+      {
+        "bytes": 8240,
+        "path": "operators/r6-followthrough-20261107/deadline/candidate/control_send_once.py",
+        "sha256": "a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace"
+      },
+      {
+        "bytes": 25791,
+        "path": "operators/r6-followthrough-20261107/deadline/candidate/preserved_ui_package_phase_r7.py",
+        "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0"
+      },
+      {
+        "bytes": 41936,
+        "path": "operators/r6-followthrough-20261107/deadline/candidate/send_new_native_guard_task_r10_r4.py",
+        "sha256": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69"
+      }
+    ],
+    "transport_configuration": {
+      "bytes": 2416,
+      "path": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/preserved-ui-package-config.json",
+      "sha256": "310dd82101f2ab309cd790d03f0c01e40cbdfef7064510ea4120327aaac72fef"
+    }
+  },
+  "source_decisions": {
+    "PR112_deadline_candidate": "SELECTED_UNCHANGED_AS_SOURCE_INPUT",
+    "actual_de6_runtime_sender_cascade": "SELECTED_SOURCE_SUCCESSOR",
+    "live_runtime_adoption": false,
+    "original_attempt_hold": "SELECTED_SOURCE_SUCCESSOR",
+    "whole_runtime_manifest": "NOT_REFROZEN"
+  },
+  "source_selection_hash_is_runtime_combination": false,
+  "source_selection_sha256": "a07463bc811c5b98c45cbe635b26a3cdd23d2e00e4ba7e6fb3661c9cef6e8ae8",
+  "state": "ONE_SOURCE_SUCCESSOR_SELECTED_NOT_A_RUNNABLE_COMBINATION",
+  "unrebound_edges": [
+    "Full package/source manifest and complete dependency closure",
+    "Accepted exact original bound02 disposition and consumer",
+    "Fresh eligible PLAN / REQUEST / nonce / owner",
+    "Actual BUILD / installation / four-role READY and new model health"
+  ]
+}

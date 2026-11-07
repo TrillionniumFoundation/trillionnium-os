@@ -1,0 +1,293 @@
+{
+  "schema": "razr60.deadline-publication-safety-and-freeze.v1",
+  "captured_at": "2026-11-07T05:58:14.639203+00:00",
+  "reference_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "source_manifest_sha256": "a5d50c6079f1d0dd2a224193971b63b05293fa089a9a33568a7fd01c297e4821",
+  "component_identity_sha256": "a343e6cea77dce682db343e1587dda6d4a1e60c7ca94663ba004b489a65e281c",
+  "budget_sha256": "ddcef37dc7dace2168bdca12e538aa40410d032a169b22497a62a5424be941f4",
+  "package_frozen": true,
+  "package_member_count_including_manifest": 9,
+  "source_files": 3,
+  "transport_config_body_included": false,
+  "private_request_included": false,
+  "private_draft_included": false,
+  "private_retirement_certificate_included": false,
+  "publication_check": {
+    "files_scanned": 44,
+    "exact_private_config_body_hits": 0,
+    "private_leaf_values_at_least_8_bytes_not_in_verified_public_originals": 0,
+    "private_leaf_value_file_pairs_already_in_verified_public_originals": 23,
+    "short_or_transformed_value_detection_claimed": false,
+    "source_derivation_review": "Only the exact published socket candidate, config read/hash/identity guard with permitted metadata, direct UI pin/path cascade, source-only sender lock, and preview output isolation are added. Existing actor strings and public static example are retained."
+  },
+  "private_metadata_scope": [
+    "config host/path/size/SHA256",
+    "observed stable version/uid/gid/mode/nlink",
+    "local fixture and original-byte control booleans/counts/hashes"
+  ],
+  "public_originals": [
+    {
+      "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/dependencies/preserved_ui_package_phase_r7.py",
+      "bytes": 24731,
+      "sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b",
+      "candidate_path": "candidate/preserved_ui_package_phase_r7.py",
+      "git_blob_sha": "9b9f019ff279ec5a2cf482c389d8b8c9d3cf4dcb",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/dependencies/preserved_ui_package_phase_r7.py"
+    },
+    {
+      "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/dependencies/control_send_once.py",
+      "bytes": 6301,
+      "sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70",
+      "candidate_path": "candidate/control_send_once.py",
+      "git_blob_sha": "5bb0ab40b1a55ca7b7e018bb1414cb7ff7760f5a",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/dependencies/control_send_once.py"
+    },
+    {
+      "repository_path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/checkpoint10/R6-root-final01/runtime/source/send_new_native_guard_task_r10_r4.py",
+      "bytes": 41745,
+      "sha256": "de6c90187ad15995cbd85c662fb7d0a0ee40809bc54d9c1a51c46e164d75b354",
+      "candidate_path": "candidate/send_new_native_guard_task_r10_r4.py",
+      "git_blob_sha": "f1d8cdf929270a3e5b5765078a85f3b986b7c660",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/checkpoint10/R6-root-final01/runtime/source/send_new_native_guard_task_r10_r4.py"
+    }
+  ],
+  "allowlist": [
+    {
+      "path": "deadline-successor-r1/DERIVATION.json",
+      "bytes": 5516,
+      "sha256": "ec6e00e05e95f29622471b103b5d190312b74f89c6e56663158aea6e7109aa0b"
+    },
+    {
+      "path": "deadline-successor-r1/EXECUTION-LOCK.json",
+      "bytes": 659,
+      "sha256": "6b2cc8a04a5e6c959e97dd8b662cfeb653fb4bc6ca0f22af7186738c79111f6e"
+    },
+    {
+      "path": "deadline-successor-r1/FOLLOWTHROUGH.patch",
+      "bytes": 10373,
+      "sha256": "9d37858ebd377a90e088c2503a2cde062e59fa484b76dc0f11ebe6760cd754fb"
+    },
+    {
+      "path": "deadline-successor-r1/README.md",
+      "bytes": 6906,
+      "sha256": "588a6f1477367fb5f3436737ce5c1b7ccb9fdc1343e453953fcd6d3b9b800f86"
+    },
+    {
+      "path": "deadline-successor-r1/SOURCE-MANIFEST.json",
+      "bytes": 2036,
+      "sha256": "a5d50c6079f1d0dd2a224193971b63b05293fa089a9a33568a7fd01c297e4821"
+    },
+    {
+      "path": "deadline-successor-r1/candidate/control_send_once.py",
+      "bytes": 8240,
+      "sha256": "a015d8ae2117038fd26d716a0efbd9d565b9bd2ea7a3cad6d2d966937c342ace"
+    },
+    {
+      "path": "deadline-successor-r1/candidate/preserved_ui_package_phase_r7.py",
+      "bytes": 25791,
+      "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0"
+    },
+    {
+      "path": "deadline-successor-r1/candidate/send_new_native_guard_task_r10_r4.py",
+      "bytes": 41936,
+      "sha256": "dcb3535875b689f8003762cccea7b2970b3dc36b5bf38d4b1a62a425895a2b69"
+    },
+    {
+      "path": "deadline-successor-r1/check_deadline_candidate.py",
+      "bytes": 24531,
+      "sha256": "1019dbdf1fb1e05de52089824ac58f99e094b7a948d7d4e68efd69fd03dd7a08"
+    },
+    {
+      "path": "CANDIDATE-ADOPTION.json",
+      "bytes": 12806,
+      "sha256": "4b873df13e6367467544e7c43e4193ce7699a7821132e48d8d6ed5d0d2e04f39"
+    },
+    {
+      "path": "CANDIDATE-ADOPTION.md",
+      "bytes": 7723,
+      "sha256": "6899848ee2788f7239aea5827b498c6c6ac16b9aa6f6e1496e65433e1be1c94f"
+    },
+    {
+      "path": "CI-CHECKS.json",
+      "bytes": 119705,
+      "sha256": "3feeba61e5b08bde275dbdc38162c001939c722100f67d6adcc26dcfb8d67b78"
+    },
+    {
+      "path": "PROVENANCE-COMPARISON.json",
+      "bytes": 353161,
+      "sha256": "b13e70f11739862233e01722a8546ba27374da93e0a194ee5d39e4217a0bfa74"
+    },
+    {
+      "path": "TREE-INPUTS.json",
+      "bytes": 3132748,
+      "sha256": "d7a9e8407550388a58cd9ea77e0ec5c95f3c5e1b11d92bbb05624513fa71a5be"
+    },
+    {
+      "path": "shared17-fresh-readback.json",
+      "bytes": 8527,
+      "sha256": "49bab1200a6b79dc7ce8b66e8c25d4a48ee60b10c19e285ce1505d5e95541a43"
+    },
+    {
+      "path": "fresh-timeout-result.json",
+      "bytes": 3360,
+      "sha256": "fbba9b1376865c6212576c1a3f201c475ea3087fa41ece489f91f32fd05d43a1"
+    },
+    {
+      "path": "fresh-route-result.json",
+      "bytes": 2799,
+      "sha256": "bc9db942d98eca33f177c6efec853abc16e8050243f6b44fd5b16190df3b49ca"
+    },
+    {
+      "path": "deadline-controls-freeze.json",
+      "bytes": 1089,
+      "sha256": "bd9694223e85317ed63495f3421ea07a9f0cd3eb06048d6f098795af00a3d26a"
+    },
+    {
+      "path": "deadline-controls-freeze.stdout.original.txt",
+      "bytes": 963,
+      "sha256": "d19b069a7665c6a27666ed7ac76e2625d2d77a09c5e426e6955be91f0a6de19c"
+    },
+    {
+      "path": "deadline-controls-freeze.stderr.original.txt",
+      "bytes": 2340,
+      "sha256": "55bf3720375abb108f3dcd1c299c160958012383a773100d61cc422ab3acc6f4"
+    },
+    {
+      "path": "deadline-controls-freeze.run.json",
+      "bytes": 1357,
+      "sha256": "7f3c2c88e29f6f6e92f302740c85e5df3232696874c5cd3a06a47e724cb7983e"
+    },
+    {
+      "path": "logs/125990309979.txt",
+      "bytes": 67511,
+      "sha256": "42435f26942e7314a31ba4e6b0c8f15e40cdbc2bd40672f76a809baee56c6ffc"
+    },
+    {
+      "path": "logs/126439028168.txt",
+      "bytes": 67781,
+      "sha256": "fdc6eb9bc5e2c1e976ba24e9ce76666962f2065accb9ee924af0fb14d7a3d960"
+    },
+    {
+      "path": "logs/127124927811.txt",
+      "bytes": 3006,
+      "sha256": "34cb8e4363ac4d96ac40e93f1d514ffa9f86edaa25ffe9897dddbb5f736ce8bb"
+    },
+    {
+      "path": "logs/127134131298.txt",
+      "bytes": 3774,
+      "sha256": "e5363569e439ffd4bcc684347a209757ec19bcec8ec35a74b0781b074ec7ea29"
+    },
+    {
+      "path": "logs/127158512281.txt",
+      "bytes": 3731,
+      "sha256": "3a02d065877ce3825de28b1cdca51aeaac546fa39202caa774507106cd03e6d2"
+    },
+    {
+      "path": "logs/127347484852.txt",
+      "bytes": 68215,
+      "sha256": "0ac324aaacc9cccd0a71ea31a006d8e03d110bbc1ebf117e332d2bbf3843b50a"
+    },
+    {
+      "path": "logs/127472604703.txt",
+      "bytes": 3772,
+      "sha256": "aaa2bed56af13da69e4204c7e393dc9119695ea50f7d6c0240c6ca5dddaf34b0"
+    },
+    {
+      "path": "logs/127658043854.txt",
+      "bytes": 61225,
+      "sha256": "365d43f23c81b5ad0f963ca02b973cf7b3e03be8911e8aebba9cabd3f8d786c4"
+    },
+    {
+      "path": "logs/127658064410.txt",
+      "bytes": 61226,
+      "sha256": "be2d2b6158a8042fcd5bfea7c713d42c1b8dd23b58bf34ce175fe8db8b5010ed"
+    },
+    {
+      "path": "logs/127664267754.txt",
+      "bytes": 85415,
+      "sha256": "2e9ab31c91a290f9abce3fe0a43ff4c4e08c34a56efe91eb13f21ca676a1464b"
+    },
+    {
+      "path": "logs/127664402383.txt",
+      "bytes": 102853,
+      "sha256": "99c6436adc229e3b18751ace427caeaa37224b4de5641bb552c60900c4299752"
+    },
+    {
+      "path": "logs/127664402674.txt",
+      "bytes": 60194,
+      "sha256": "909f67de608bbb9b27b3ff8205d50869f1fede6ce2a21b9c7137277a7ac2dfc6"
+    },
+    {
+      "path": "logs/127664760277.txt",
+      "bytes": 103712,
+      "sha256": "5159bf32aa162d9d02503a894437647485cbfddc9dbb92ce5c96d2926b71dc47"
+    },
+    {
+      "path": "logs/127664760842.txt",
+      "bytes": 60323,
+      "sha256": "fa08b2c2839bcac17256496b04aff95349c9603a6a6112acfb969dc8ced04235"
+    },
+    {
+      "path": "logs/127667817019.txt",
+      "bytes": 68526,
+      "sha256": "73dac0a72db1c569625827ba45f8408a7ae6206bfaf9278069f6a1310854b343"
+    },
+    {
+      "path": "logs/127668339531.txt",
+      "bytes": 68523,
+      "sha256": "3378b57788034ac00d0d1182acfa013b4033451b6a3165c2be7214a240d936ed"
+    },
+    {
+      "path": "logs/127684445080.txt",
+      "bytes": 3008,
+      "sha256": "48893bff572d0f203200ca2622d535fee486a123205c629375d7d9ef814d4a94"
+    },
+    {
+      "path": "logs/127687330788.txt",
+      "bytes": 3727,
+      "sha256": "9f6ab7f885212220471a8763de162f5cd4ba7b778e74f86d61bd4891d2a7d18b"
+    },
+    {
+      "path": "logs/127688114312.txt",
+      "bytes": 3769,
+      "sha256": "fe14f97e094845d80f908a73d608b470e65014e5e2d67bca7fac3b2d7bb06b54"
+    },
+    {
+      "path": "logs/127915588693.txt",
+      "bytes": 68674,
+      "sha256": "cc56e9576ab8bb685f5b014d0e282d9085e0bc495a9d0da6a505f5d290b2e93a"
+    },
+    {
+      "path": "logs/128230151060.txt",
+      "bytes": 68816,
+      "sha256": "e66b4874f14f8b294780b9d333226c4a6db0a19d831de2a46dc9f55198d5d17f"
+    },
+    {
+      "path": "logs/128249969877.txt",
+      "bytes": 3736,
+      "sha256": "facad6a7660804918dff0b5ef8081e9297e9c17e3906cd1ad8a9c80100bc05fb"
+    },
+    {
+      "path": "logs/128256247799.txt",
+      "bytes": 68986,
+      "sha256": "9c82f7fcdd6a2bf736586836e26b2324bf9d1584710031c4a055f5e9cefe33df"
+    }
+  ],
+  "excluded_scratch": [
+    "private-evidence/**",
+    "source-fixture-root/**",
+    "build_deadline_successor.py",
+    "original/**",
+    "shared17/**",
+    "live_evidence.json",
+    "deadline-controls-initial.json",
+    "deadline-controls-final*",
+    "test_razr60_deadline_followthrough.py"
+  ],
+  "execution_allowed": false,
+  "whole_runtime_cascade_complete": false,
+  "source_only_lock_scope": "Selected runtime sender --execute-once; arbitrary helper entrypoints are not globally intercepted",
+  "phone_calls": 0,
+  "native_dispatches": 0,
+  "fixed19_credit": 0
+}

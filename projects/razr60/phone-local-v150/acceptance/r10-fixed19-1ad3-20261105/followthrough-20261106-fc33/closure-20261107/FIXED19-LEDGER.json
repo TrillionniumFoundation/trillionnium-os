@@ -1,0 +1,973 @@
+{
+  "schema": "razr60.fixed19-evidence-ledger.v1",
+  "document_role": "EVIDENCE_INDEX_NOT_EXECUTION_OR_QUALIFICATION_RECEIPT",
+  "as_of_date_utc": "2026-11-07",
+  "protocol_map": "PROTOCOL-MAP.json",
+  "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+  "runtime_manifest_sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5",
+  "summary": {
+    "fixed_case_count": 19,
+    "current_whole_case_pass_count": 0,
+    "current_whole_case_pass_ids": [],
+    "current_whole_case_blocked_or_unclosed_count": 19,
+    "current_unknown_original_case_ids": [
+      "NEG-01"
+    ],
+    "required_physical_case_ids": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09"
+    ],
+    "model_business_case_ids": [
+      "E2E-01",
+      "E2E-02",
+      "E2E-03",
+      "E2E-04"
+    ],
+    "build_slot": "UNBOUND",
+    "ready_slot": "UNBOUND"
+  },
+  "counting_rules": [
+    "当前case只有其所有规定层、全部条件和原件被既有独立读者接受后才计whole PASS。",
+    "旧组合、当前同源host检查、历史原件parser复核、实际当前whole case分别计账；测试数量不等于fixed19数量。",
+    "目录缺失和没有接受的原件均不证明未执行；原bound02保留UNKNOWN，effect_count保持null。",
+    "两条bound01 recovery分别保留，均不能结算bound02。",
+    "此文件的空originals表示未收录可供整项验收的原件，不断言远端从未产生文件或作用。",
+    "新源码/依赖/配置/预算组合须更新hash并重新判定，不移植本组合或历史组合的通过。"
+  ],
+  "global_original_requirements": [
+    "Freeze actual provider/source/helper/APK/native hashes and device fingerprint before admission.",
+    "Record the current inner display/rotation/focus and the actual stay-on baseline; current observed baseline is 2.",
+    "One Root operator owns phone actions; never run two cases on the phone concurrently.",
+    "Register an exact request-bound task contract where supported, with a new nonce and current session/profile.",
+    "Capture original phone-local HTTP responses and slot receipts, native frames and business-outcome sidecar; model prose or exit0 alone cannot pass.",
+    "Any unknown effect, transport loss or late result stays consumed; no same-identity replay, hidden retry or fallback model."
+  ],
+  "metrics_per_case": [
+    "latency",
+    "usage",
+    "cost",
+    "resources",
+    "evidence",
+    "restoration"
+  ],
+  "required_original_profiles": {
+    "settled_original_and_single_owner": [
+      "原job/request/plan/nonce统一对账",
+      "被既有流程接受的原终态或独立正式处置",
+      "原claim继续consumed、旧生产者不能再作用的证据",
+      "明确唯一Root实际操作者和下一合法身份"
+    ],
+    "component_chain": [
+      "精确当前runtime/source/policy/boot",
+      "原request/guard/作用计数/native终态",
+      "独立CLOSURE及完整INVENTORY",
+      "原late boundary和ACTUAL-PREVIOUS-INPUT连续前驱链"
+    ],
+    "current_NEG01_passed": [
+      "当前NEG-01实际通过closure",
+      "对应late boundary及完整前驱原件"
+    ],
+    "actual_installation": [
+      "当前NEG-01/NEG-02原件被consumer接受",
+      "实际BUILD/SEALED_ACTUAL_RETIREMENT_BOUND及archive",
+      "stage→start→ready三个原actor终态及完整输出",
+      "安装字节/delta读回、策略/运行身份、四角色八条完整stdout/stderr",
+      "final_install_reader及verify_actual_installation_for_cases重新接受当前组合"
+    ],
+    "model_health": [
+      "新请求下模型image/cancel健康原件",
+      "实际binding/slot/原HTTP worker与terminal",
+      "既有health reader的独立结论；transport READY不能代替"
+    ],
+    "new_business": [
+      "新exact request/nonce/session/profile和one-use contract",
+      "真实模型HTTP与usage/slot、native完整帧和action ledger",
+      "公开business sidecar/回执、被请求时的实际return",
+      "原capture/export/collector/closure及late-state收尾"
+    ],
+    "exact_isolated_fixture": [
+      "精确source/config/dependency pins",
+      "新隔离fixture identity和synthetic标记",
+      "原argv/stdout/stderr/exit/完整输入输出",
+      "所有规定边界及独立判定",
+      "实测FD/thread/child/CPU前后baseline与claim保留"
+    ],
+    "fresh_physical": [
+      "同当前实际安装、boot与runtime identity的fresh admission",
+      "一次新有界disposable任务，原model与fixture-provider分别标注",
+      "原dispatch/断连或取消时序与独立effect counter",
+      "原native终态或UNKNOWN、所有权/进程/transport清理及late boundary"
+    ],
+    "qualified_geometry": [
+      "display0、1224x2992、rotation0及实际focus/viewport",
+      "外屏未资格；物理改变时保留原baseline与恢复"
+    ]
+  },
+  "prior_source_scope_results": [
+    {
+      "id": "prior_selected_guards",
+      "source_ref": "pr112_host_runs",
+      "label": "selected-guards-01",
+      "scope": "host source checks",
+      "reported_state": "PASSED_SELECTED_HOST_SCOPE",
+      "case_count": 13,
+      "exit_code": 0,
+      "result_sha256": "a47eea4ac4c38855eba19793d1cf00893dc1b295cfa5a11e826d83df8ddee318",
+      "current_whole_case_credit": 0
+    },
+    {
+      "id": "prior_shared_business",
+      "source_ref": "pr112_host_runs",
+      "label": "shared-business-01",
+      "scope": "host source scenarios",
+      "reported_state": "SELECTED_HOST_CHECKS_PASSED",
+      "scenario_count": 14,
+      "exit_code": 0,
+      "result_sha256": "66a79b271ef6d91fb3cde3e8d07b1b287929e22e7989e18218ea1c55de86e158",
+      "current_whole_case_credit": 0
+    },
+    {
+      "id": "prior_native_public_fixtures",
+      "source_ref": "pr112_host_runs",
+      "label": "native-public-fixtures-01",
+      "scope": "synthetic parser/consumer fixtures",
+      "reported_state": "PASSED_CURRENT_SCHEMA_SCOPE",
+      "exit_code": 0,
+      "counts": {
+        "parser": 73,
+        "consumer_chain": 12,
+        "trust_parser": 40,
+        "trust_consumer_chain": 11,
+        "dispatch_binding": 9
+      },
+      "result_sha256": "0c0e1161cafe369b3d83e8a4dc7f1493d3100a865004a5d6c5b05c1f2f84aaf0",
+      "current_whole_case_credit": 0
+    },
+    {
+      "id": "prior_native_require_actual_failure",
+      "source_ref": "pr112_host_runs",
+      "label": "native-require-actual-01",
+      "scope": "separate original public-only attempt",
+      "reported_state": "FAILED",
+      "exit_code": 1,
+      "reason": "该次隔离副本缺少所需私有原件；原失败保留，后续成功不覆盖。",
+      "result_sha256": "5092561cc96451c7fde77274c0b1b7cf8ebfc1c0f916bbca703ed3e78442c4bb",
+      "current_whole_case_credit": 0
+    },
+    {
+      "id": "prior_archived_original_recheck",
+      "source_ref": "pr112_archived_originals",
+      "label": "native-require-actual-retained-01",
+      "scope": "当前R6同源对历史13份原件的parser/consumer复核；没有当前phone观察或业务重放",
+      "reported_state": "READ_ONLY_ACTUAL_ORIGINALS_VERIFIED",
+      "exit_code": 0,
+      "original_member_count": 13,
+      "counts": {
+        "parser": 73,
+        "consumer_chain": 12,
+        "trust_parser": 40,
+        "trust_consumer_chain": 11,
+        "dispatch_binding": 9
+      },
+      "result_sha256": "4d96fb7665d3e5933112db0a41eaed4654e5686454b0c7578eba02691bdba3ea",
+      "original_guard_exit_code": 70,
+      "original_guard_still_rejected": true,
+      "current_whole_case_credit": 0
+    }
+  ],
+  "sources": {
+    "fixed19_definition": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r7-r3/fixed-acceptance-set-r7.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r7-r3/fixed-acceptance-set-r7.json",
+      "git_blob": "b8fdee07cc39bf5929d80e28b88e8c21248208f0",
+      "scope": "仅继承19项名称、规定层及通过条件；不继承旧组合结果。"
+    },
+    "pr112_reconciliation": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "git_blob": "2cf0e348f9682e632b60c1c011de9ffee6723c2d",
+      "scope": "原R6 bound02身份和UNKNOWN；目录缺失不能证明未执行。"
+    },
+    "pr112_recoveries": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/SUMMARY.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/SUMMARY.json",
+      "git_blob": "d5e90fa7a32632808f1f74fe5a3425f6b78e9ee5",
+      "scope": "两条bound01 recovery分别保留；不结算bound02。"
+    },
+    "pr112_host_runs": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud/RUN-SUMMARY.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud/RUN-SUMMARY.json",
+      "git_blob": "d031e6719a6c5564701e72192d8f1d86b238c9bd",
+      "scope": "13项selected guards、14场景shared business及native fixture；整项fixed19 credit=0。"
+    },
+    "pr112_archived_originals": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/actual-originals/ACTUAL-ORIGINALS-RECHECK.PUBLIC.json",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/actual-originals/ACTUAL-ORIGINALS-RECHECK.PUBLIC.json",
+      "git_blob": "256e01aadd21d357615204436336845be4bed487",
+      "scope": "当前R6同源读取历史13份原件；parser/consumer范围，整项credit=0。"
+    },
+    "pr112_navigation": {
+      "kind": "repository_file",
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "22e6105c2effe102c0f120a906752003aedfb37d",
+      "path": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/SENDER-DEPENDENCY-REVIEW.md",
+      "url": "https://github.com/TrillionniumFoundation/trillionnium-os/blob/22e6105c2effe102c0f120a906752003aedfb37d/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/SENDER-DEPENDENCY-REVIEW.md",
+      "git_blob": "6788167d9a429bbf42ffa9f6538f1af14f178346",
+      "scope": "137证据边界、deadline候选和外部依赖；不表示候选已采用。"
+    },
+    "e2e_request_constructor": {
+      "kind": "exact_host_file_read",
+      "host": "mac",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-e2e-execution-controller-r6-01/source/derive_e2e_requests_UNBOUND.py",
+      "bytes": 29377,
+      "sha256": "7b35b9a0f57ddd9e56948bbcab012b662fd84628d9502e9350d012a2de126acf",
+      "scope": "四个既有E2E入口；COMP-01复用原E2E return独立判定，不发第五个Send。"
+    }
+  },
+  "cases": [
+    {
+      "id": "E2E-01",
+      "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA",
+      "required_qualification_layers": [
+        "model_e2e"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "model_e2e": "NO_ACCEPTED_CURRENT_BUSINESS_CLOSURE"
+      },
+      "required_original_profiles": [
+        "actual_installation",
+        "model_health",
+        "new_business"
+      ],
+      "case_specific_originals": [
+        "实际模型请求携带的新JPEG及hash",
+        "同snapshot的挑战码和HEPTA_VISUAL_OK回执",
+        "一次选择计数、实际HEPTA焦点",
+        "native completed及business_verified entire_request"
+      ],
+      "pass_postconditions": [
+        "Actual local HTTP model request includes the newly captured verified JPEG and its hash matches the bound native result.",
+        "Exactly one choice was dispatched; no recapture-to-guess or second challenge attempt is hidden.",
+        "Public challenge is literal 挑战码： plus exactly eight uppercase hex characters.",
+        "Public receipt is HEPTA_VISUAL_OK plus one space and the same code from the same UI snapshot.",
+        "Final actual focus/resumed activity is the fixed HEPTA activity on qualified display 0.",
+        "Native terminal is complete and business_verified=true for coverage=entire_request."
+      ],
+      "blockers": [
+        "缺少读者接受的当前实际BUILD/安装/四角色READY及新模型健康原件。",
+        "缺少本组合新视觉任务的一次截图→实际模型请求→单次选择→公开回执→返回完整原件与独立closure。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "E2E-02",
+      "title": "全新中文/emoji/换行输入、确认、公开回执与返回",
+      "required_qualification_layers": [
+        "model_e2e"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "model_e2e": "NO_ACCEPTED_CURRENT_BUSINESS_CLOSURE"
+      },
+      "required_original_profiles": [
+        "actual_installation",
+        "model_health",
+        "new_business"
+      ],
+      "case_specific_originals": [
+        "精确UTF8原输入及helper old/requested/after hashes",
+        "unicode_readback与四行source-defined回执",
+        "真实newline保持、原submit及return回执"
+      ],
+      "pass_postconditions": [
+        "Helper operation/package/view/old-text/requested/after hashes and exact UTF8 readback all match.",
+        "Public unicode_readback equals the fresh literal input byte for byte.",
+        "Public receipt exactly equals the source-defined four-line format in unicode_receipt_formula.",
+        "Literal newline remains a newline; XML normalization to a space is a failure, not an allowed rewrite.",
+        "Actual HEPTA focus is verified after return.",
+        "Input-only success without confirmation, public receipt or return must end as turn.fail/business_verified=false."
+      ],
+      "blockers": [
+        "当前安装和新健康前置原件未闭合。",
+        "缺少新UTF8输入、提交、逐字公开回执、返回和完整业务独立判定。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "E2E-03",
+      "title": "计算器完成全新随机简单表达式并核验结果",
+      "required_qualification_layers": [
+        "model_e2e"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "model_e2e": "NO_ACCEPTED_CURRENT_BUSINESS_CLOSURE"
+      },
+      "required_original_profiles": [
+        "actual_installation",
+        "model_health",
+        "new_business"
+      ],
+      "case_specific_originals": [
+        "真实calculator package/view和runtime-route资格",
+        "新表达式、独立算值与实际可见结果",
+        "一次evaluation计数和原返回"
+      ],
+      "pass_postconditions": [
+        "Expression and expected result use the fresh parameters, not values from prior examples.",
+        "A public visible result proves the arithmetic; a model mental calculation is insufficient.",
+        "No repeated evaluation after an uncertain effect.",
+        "The exact result contract and requested return both pass."
+      ],
+      "blockers": [
+        "当前安装和新健康前置原件未闭合。",
+        "当前计算器唯一public result view与显示格式需实机资格；缺少新表达式结果及返回原件。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "E2E-04",
+      "title": "只读查看设置中的公开系统版本字段",
+      "required_qualification_layers": [
+        "model_e2e"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "model_e2e": "NO_ACCEPTED_CURRENT_BUSINESS_CLOSURE"
+      },
+      "required_original_profiles": [
+        "actual_installation",
+        "model_health",
+        "new_business"
+      ],
+      "case_specific_originals": [
+        "真实Settings package/focus/唯一detail view",
+        "原UI字段与独立只读系统观察",
+        "无设置修改；未请求return时不强制返回"
+      ],
+      "pass_postconditions": [
+        "The app field, package, focus and unique view are independently verified.",
+        "No settings value, permission, network configuration or account state is changed.",
+        "The result is based on actual UI text rather than a prefilled model answer.",
+        "No return is forced by generic completion; the contract covers exactly the read-only request."
+      ],
+      "blockers": [
+        "当前安装和新健康前置原件未闭合。",
+        "缺少当前Settings唯一公开字段资格、实际UI读值与独立系统读值原件。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "COMP-01",
+      "title": "显式返回：launch状态和实际焦点双核验",
+      "required_qualification_layers": [
+        "component_direct"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "component_direct": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT"
+      },
+      "required_original_profiles": [
+        "actual_installation",
+        "new_business"
+      ],
+      "case_specific_originals": [
+        "同一原return立即捕获的launch rc",
+        "唯一Status:ok与exact activity",
+        "display0 focus/app/top-resumed及keyguardfalse"
+      ],
+      "pass_postconditions": [
+        "Launch rc is captured immediately and is zero.",
+        "One Status: ok and the exact known activity occur in launch output.",
+        "Inner display focus/app/top-resumed all name HEPTA and keyguard is false.",
+        "Mark only direct component acceptance, not model or native-task acceptance."
+      ],
+      "blockers": [
+        "没有可供第二次独立判定的当前E2E-01/02/03原始return回执。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "current_execution_mapping": "按当前R6 E2E构造器，复用原E2E return独立判定；component_direct不升级成model资格，不额外发Send。",
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "NEG-01",
+      "title": "截图后焦点切换：必须在input之前拒绝",
+      "required_qualification_layers": [
+        "component_direct"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "UNKNOWN_ORIGINAL_RUN_NO_ACCEPTED_CLOSURE",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "component_direct": "ORIGINAL_BOUND02_UNKNOWN"
+      },
+      "required_original_profiles": [
+        "settled_original_and_single_owner",
+        "component_chain"
+      ],
+      "case_specific_originals": [
+        "原ROOT-PLAN/request/nonce与controller身份",
+        "原capture/focus切换/guard70或明确已知更早拒绝",
+        "旧新页面独立零input计数",
+        "原native终态、CLOSURE、INVENTORY、late boundary"
+      ],
+      "pass_postconditions": [
+        "Guard exits 70 or fails earlier with an explicitly recorded known precondition.",
+        "No input effect is observed on either old or new page.",
+        "The image is consumed and the effect is not retried."
+      ],
+      "blockers": [
+        "原R6 bound02 job 1a1b3420986-fc05-8183 为launch_unknown，缺少可核验终态及被读者接受的处置。",
+        "当前原guard/独立作用计数/native终态/closure/inventory/late boundary未形成被接受的完整链。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [
+        "prior_archived_original_recheck"
+      ],
+      "unclosed_original_identity": {
+        "job_id": "1a1b3420986-fc05-8183",
+        "label": "root-r10-neg01-fc33-r6-bound02",
+        "nonce": "731dc46ccaad6e5717306d0c5f029a82",
+        "state": "launch_unknown",
+        "effect_count": null
+      },
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "NEG-02",
+      "title": "同viewport内容变化：精确像素guard必须拒绝",
+      "required_qualification_layers": [
+        "component_direct"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "component_direct": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT"
+      },
+      "required_original_profiles": [
+        "current_NEG01_passed",
+        "component_chain"
+      ],
+      "case_specific_originals": [
+        "当前NEG-01原通过closure和late boundary",
+        "same viewport/focus及不同PNG SHA原件",
+        "guard71及零selection/submission/effect独立计数",
+        "原native终态、CLOSURE、INVENTORY、late boundary"
+      ],
+      "pass_postconditions": [
+        "Viewport and focus remain the same, but PNG SHA differs.",
+        "Guard exits 71 before input.",
+        "No selection/submission/other app effect and no automatic retry occur."
+      ],
+      "blockers": [
+        "当前NEG-01未按协议通过并发布late boundary；不能跳过该前驱。",
+        "缺少当前same-viewport/focus像素变化、guard71、独立零作用计数及完整闭合链。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "NEG-03",
+      "title": "外屏或旋转：拒绝未资格显示配置",
+      "required_qualification_layers": [
+        "component_direct"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "component_direct": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture",
+        "qualified_geometry"
+      ],
+      "case_specific_originals": [
+        "非display0 portrait输入及原mapper/parser拒绝",
+        "零其他display input",
+        "若做物理试验，原baseline及恢复证据独立保存"
+      ],
+      "pass_postconditions": [
+        "Screenshot/tap/public-return qualification rejects anything outside the qualified display 0 portrait geometry.",
+        "No input is injected on another display.",
+        "Fixture and physical-device outcomes remain separately labelled."
+      ],
+      "blockers": [
+        "缺少当前冻结source/配置下该项逐条件原件与完整独立判定。",
+        "未资格display/rotation的fixture拒绝与任何实机fold/rotation观察必须分别标注，不能相互替代。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "先取得本项前置原件并由既有读者接收；不复用旧nonce、不机械重跑。"
+    },
+    {
+      "id": "NEG-04",
+      "title": "断连发生于dispatch之前",
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT",
+        "physical_native_task": "NO_ACCEPTED_CURRENT_PHYSICAL_CLOSURE"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture",
+        "actual_installation",
+        "fresh_physical"
+      ],
+      "case_specific_originals": [
+        "durable admission和断连时序",
+        "零dispatch独立证据、consumed claim、无replay",
+        "原进程组/transport终态或明确UNKNOWN"
+      ],
+      "pass_postconditions": [
+        "No tool is dispatched and the accepted semantic identity remains consumed.",
+        "No automatic request/stream replay occurs.",
+        "No business success is emitted; unknown transport outcome remains unknown where no terminal is observed."
+      ],
+      "blockers": [
+        "未提供本项当前host完整原件及独立whole-case判定。",
+        "规定physical_native_task层缺少新一次admission后dispatch前断连的原native/计数/终态与收尾。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-05",
+      "title": "作用已开始后断连：保持未知且不重放",
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT",
+        "physical_native_task": "NO_ACCEPTED_CURRENT_PHYSICAL_CLOSURE"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture",
+        "actual_installation",
+        "fresh_physical"
+      ],
+      "case_specific_originals": [
+        "原dispatch/effect-start与结果丢失时序",
+        "独立effect count<=1",
+        "UNKNOWN保留及原semantic identity不可重用"
+      ],
+      "pass_postconditions": [
+        "Effect count is at most one.",
+        "Unknown result is not inferred as success and not retried.",
+        "A reconnect/new stream cannot reuse the semantic identity."
+      ],
+      "blockers": [
+        "未提供本项当前host完整原件及独立whole-case判定。",
+        "规定physical_native_task层缺少首次作用后断连、独立counter与重连不重放原件。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-06",
+      "title": "模型超时：有界结束且清理原进程组",
+      "required_qualification_layers": [
+        "host_isolated"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture"
+      ],
+      "case_specific_originals": [
+        "隔离短deadline配置与deterministic HTTP hold",
+        "原fail frame model_timeout/businessfalse",
+        "零dispatch、原进程组退出、consumed claim、无fallback/relaunch"
+      ],
+      "pass_postconditions": [
+        "Existing fail frame contains model_timeout; business_verified=false.",
+        "No tool dispatch, child process group leak, account/model fallback or relaunch occurs.",
+        "The claim remains consumed."
+      ],
+      "blockers": [
+        "缺少本项当前完整timeout fixture原件、原HTTP worker/进程组joined和实测资源baseline闭合。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-07",
+      "title": "执行器结果超时：不能用迟到结果认定成功或再执行",
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT",
+        "physical_native_task": "NO_ACCEPTED_CURRENT_PHYSICAL_CLOSURE"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture",
+        "actual_installation",
+        "fresh_physical"
+      ],
+      "case_specific_originals": [
+        "原dispatch identity与deadline",
+        "late/unmatched receipt不改终态",
+        "独立零第二effect与明确取消/cleanup"
+      ],
+      "pass_postconditions": [
+        "No second effect is executed.",
+        "Late or unmatched results do not rewrite the accepted terminal/unknown outcome.",
+        "Business remains false and cancellation/cleanup state is explicit."
+      ],
+      "blockers": [
+        "未提供本项当前host完整原件及独立whole-case判定。",
+        "规定physical_native_task层缺少原result deadline、迟到结果隔离和零二次作用完整原件。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-08",
+      "title": "dispatch前取消",
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT",
+        "physical_native_task": "NO_ACCEPTED_CURRENT_PHYSICAL_CLOSURE"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture",
+        "actual_installation",
+        "fresh_physical"
+      ],
+      "case_specific_originals": [
+        "admission-before-first-dispatch取消时序",
+        "原turn.cancelled或lost-ack UNKNOWN",
+        "独立零effects/零强制navigation和原HTTP组清理"
+      ],
+      "pass_postconditions": [
+        "Existing turn.cancelled (or explicitly unknown transport outcome if the cancel acknowledgement is lost) is retained.",
+        "Zero phone effects; no automatic navigation on cancellation; business_verified=false.",
+        "No original HTTP-client process group remains after confirmed cleanup."
+      ],
+      "blockers": [
+        "未提供本项当前host完整原件及独立whole-case判定。",
+        "规定physical_native_task层缺少原predispatch cancel、零作用及原HTTP进程组cleanup原件。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-09",
+      "title": "首次作用后取消",
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT",
+        "physical_native_task": "NO_ACCEPTED_CURRENT_PHYSICAL_CLOSURE"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture",
+        "actual_installation",
+        "fresh_physical"
+      ],
+      "case_specific_originals": [
+        "第一次confirmed effect及取消时序",
+        "独立counter和原所有receipt",
+        "无follow-up input/forced return/identity release"
+      ],
+      "pass_postconditions": [
+        "Exactly the already-observed effect remains; no follow-up input or forced return occurs.",
+        "Cancellation is not labelled complete business success.",
+        "No automatic replay or identity release occurs."
+      ],
+      "blockers": [
+        "未提供本项当前host完整原件及独立whole-case判定。",
+        "规定physical_native_task层缺少首次确认作用后取消、无后续输入/返回/重放的原件。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-10",
+      "title": "图片字节预算/过期图像/旧round绑定",
+      "required_qualification_layers": [
+        "host_isolated"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "PRIOR_REFERENCE_SCOPE_ONLY_NO_WHOLE_CREDIT"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture"
+      ],
+      "case_specific_originals": [
+        "remaining<65536、age>120、foreign callID、non-current round分别用新fixture身份",
+        "single196608/turn393216边界原值",
+        "各分支predispatch拒绝、无预算扩展/fallback"
+      ],
+      "pass_postconditions": [
+        "Each invalid condition fails before dispatch.",
+        "No budget extension, stale-image fallback or guessed generic tap occurs.",
+        "Maximum single image remains 196608 bytes and turn image budget 393216 bytes."
+      ],
+      "blockers": [
+        "PR112 13项selected-host检查只保留其source scope；当前本项全部预算/年龄/callID/round条件及独立收尾未被整项验收。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [
+        "prior_selected_guards"
+      ],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-11",
+      "title": "native输出损坏/截断/错误身份",
+      "required_qualification_layers": [
+        "host_isolated"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "PRIOR_REFERENCE_SCOPE_ONLY_NO_WHOLE_CREDIT"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture"
+      ],
+      "case_specific_originals": [
+        "call_id/seq/bytecount/terminal/truncation/Base64/hash各坏包原件",
+        "原parser拒绝且零事实/业务采信",
+        "synthetic fixture与真实原件分开保存"
+      ],
+      "pass_postconditions": [
+        "Each malformed envelope is rejected as insufficient evidence.",
+        "No image/text/return fact is admitted and no business success is synthesized.",
+        "Original test fixtures remain clearly labelled synthetic."
+      ],
+      "blockers": [
+        "PR112 parser及历史13份原件复核不等于当前手机/native whole case；需当前指定层所有malformed条件的原件和独立判定。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [
+        "prior_native_public_fixtures",
+        "prior_native_require_actual_failure",
+        "prior_archived_original_recheck"
+      ],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-12",
+      "title": "部分任务被模型说成完成：必须失败终态",
+      "required_qualification_layers": [
+        "host_isolated"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "PRIOR_REFERENCE_SCOPE_ONLY_NO_WHOLE_CREDIT"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture"
+      ],
+      "case_specific_originals": [
+        "input-only、receipt但无return、declared_postconditions_only三个原fixture",
+        "turn.fail/business_not_verified",
+        "sidecar列missing conditions及businessfalse"
+      ],
+      "pass_postconditions": [
+        "Existing wire kind is turn.fail with business_not_verified.",
+        "business-outcome.json lists missing conditions and business_verified=false.",
+        "Native complete or model summary cannot hide a missing app receipt/return/full-request coverage."
+      ],
+      "blockers": [
+        "PR112 14场景shared-business记录是source scope；当前本项三种不完整任务的原contract/sidecar/fail-frame全条件未形成整项验收。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [
+        "prior_shared_business"
+      ],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-13",
+      "title": "一次性模板并发/旧nonce重用",
+      "required_qualification_layers": [
+        "host_isolated"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "NO_ACCEPTED_CURRENT_COMPLETE_LAYER_RESULT"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture"
+      ],
+      "case_specific_originals": [
+        "两个distinct turns竞争同一exact request/nonce的原记录",
+        "恰好一个O_EXCL成功；错session/profile不consume",
+        "原claim/binding保留及新stream重用拒绝"
+      ],
+      "pass_postconditions": [
+        "Exactly one O_EXCL binding succeeds; wrong scope does not consume the template.",
+        "Consumed template cannot qualify or dispatch another task.",
+        "All claims/bindings remain; no deletion/reset to obtain a pass."
+      ],
+      "blockers": [
+        "缺少当前该项完整并发/错scope/consumed重用原件和独立整项判定；不能把汇总source测试数量当成case通过。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    },
+    {
+      "id": "NEG-14",
+      "title": "容量/原子rename竞态与资源收尾",
+      "required_qualification_layers": [
+        "host_isolated"
+      ],
+      "current_combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+      "current_whole_case_status": "BLOCKED_NO_ACCEPTED_CURRENT_WHOLE_RESULT",
+      "current_whole_case_pass": false,
+      "current_whole_case_originals": [],
+      "current_layer_status": {
+        "host_isolated": "PRIOR_REFERENCE_SCOPE_ONLY_NO_WHOLE_CREDIT"
+      },
+      "required_original_profiles": [
+        "exact_isolated_fixture"
+      ],
+      "case_specific_originals": [
+        "enumerate→atomic rename→lstat已知临时名race",
+        "未知canonical missing/不可读/orphan/capacity各分支原件",
+        "accepted claim不删除；worker/child/FD实测baseline"
+      ],
+      "pass_postconditions": [
+        "Only the exact recognized rename race is tolerated.",
+        "Unknown files/I/O failures fail closed; no accepted claim is deleted for capacity.",
+        "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline."
+      ],
+      "blockers": [
+        "PR112 selected-host检查只保留source scope；当前recognized rename、未知missing/I/O、orphan和capacity全分支及资源收尾未形成整项验收。"
+      ],
+      "source_definition_ref": "fixed19_definition",
+      "related_prior_scope_refs": [
+        "prior_selected_guards"
+      ],
+      "next_safe_work": "可独立核对/准备隔离host fixture与原件覆盖；手机层仍须先通过原任务处置、当前安装与fresh admission门。"
+    }
+  ],
+  "unicode_receipt_formula": {
+    "escape_meaning": "\\n in recipe denotes one literal LF in the expected value; never normalize to space",
+    "public_readback_view": "org.trillionnium.hepta.controlprobe:id/unicode_readback",
+    "public_receipt_view": "org.trillionnium.hepta.controlprobe:id/unicode_receipt",
+    "recipe": "HEPTA_UNICODE_READBACK\\nsha256={sha256_utf8_lowerhex}\\ncodepoints={unicode_scalar_count}\\nutf8_bytes={utf8_byte_count}",
+    "source": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/TextEntryActivity.java:onClick"
+  },
+  "limits": {
+    "default_model_round_deadline_seconds": 120,
+    "do_not_silently_raise_limits_to_pass": true,
+    "live_configuration_must_be_verified_before_use": true,
+    "maximum_sequential_tool_calls_before_final_summary": 7,
+    "model_rounds": 8,
+    "turn_deadline_seconds": 300
+  },
+  "qualified_geometry": {
+    "display_id": 0,
+    "external_display_qualification": false,
+    "height": 2992,
+    "rotation": 0,
+    "width": 1224
+  }
+}
+

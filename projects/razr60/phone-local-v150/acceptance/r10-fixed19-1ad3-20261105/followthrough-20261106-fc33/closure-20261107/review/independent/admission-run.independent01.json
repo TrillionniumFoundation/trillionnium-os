@@ -1,0 +1,40 @@
+{
+  "scope": "INDEPENDENT_HOST_SOURCE_REGRESSION_ONLY",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-I",
+    "-B",
+    "/workspace/scratch/00f8328876d8/admission-candidate/tests/test_original_attempt_admission.py",
+    "--report",
+    "/workspace/scratch/00f8328876d8/independent-review/admission-tests.independent01.json"
+  ],
+  "returncode": 0,
+  "report": {
+    "path": "/workspace/scratch/00f8328876d8/independent-review/admission-tests.independent01.json",
+    "bytes": 482,
+    "sha256": "879e0f0029f2837345b55ec4400d6b5b128432a66e781babd7c064ca2482c6e7"
+  },
+  "candidate_input_hashes": {
+    "SOURCE-DERIVATION.json": "9127a441191828bf544ce0fd88cac5fea2112e5790f490abe676d0ed36fe0ef5",
+    "ORIGINAL-ATTEMPTS.json": "331e135d43cbe8dc8fa4136ff2b1af40a2fb2fab1e83ed71533e2d29df3dde70",
+    "current_check.py": "b0015fb4455bf87c97e99a206c65235456cc9e7a8e9986fa9fbe2719d8bb1a59",
+    "CI-WRAPPER.example.py": "77f59c403bf0860ec2ee161f8a79cae4816a7564223d5b224b15ff91c798321f",
+    "derive_guarded_sources.py": "88d6f991055ebd9939ac840f626f88038a616654e7a945414097215f6938103a",
+    "CURRENT.fragment.json": "1e3dfb43bcecd04392233ec38c094c32f40b7a65a5328767a785261c33a96533",
+    "original_attempt_admission.py": "e268d050959228423003717a63e57106d608cd763d5d977b3f376982e8e9da0b",
+    "run_component_root_once.py": "66324bd333190b2dbfc62a4ef6badc1f4e6829ff3bba6f551e39eacaeb53c3be",
+    "prepare_native_bound_components_r6_fc33_successor02.py": "df4d2a40d2df631cc598b6b79b6b6a095a3350287ad3925b62a6b9072d75751f",
+    "README.md": "1a0a9ccd63841a89dfe79f4431fe0be866bf70b0edfca50300f3d92d8a410bf9",
+    "changes/prepare_native_bound_components_r6_fc33_successor02.py.patch": "350ff927e36c59e49f8fa4aeacc273b83b4c2e00ec9aaab93bfe8a999a27e6b2",
+    "changes/run_component_root_once.py.patch": "64d6b15989268ca8d455750effe0836bd0a6022ef0f373347c4d1db0246ffb24",
+    "reference/run_component_root_once.py": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257",
+    "reference/prepare_native_bound_components_r6_fc33_successor02.py": "ff7f83db52bd067ffd6c41ebfd734a5414245c6e48224266da35fd2c37b9f77c",
+    "tests/test_original_attempt_admission.py": "77379b40979f6810d7c99b8c812ae0c2c0e439a9cb7e67b411b3614a276f04e5",
+    "verification/HOST-TESTS.author01.json": "ab32df1d7963e6ea786a9c840986739f20e99ef5c689826052d6f6299a7ecc95",
+    "verification/CURRENT-CHECK.author01.json": "3a83b1b7586cfa69a6370df275591599d9a8ea3eccfeda9941d728fb9613da8c"
+  },
+  "candidate_bytes_unchanged_before_after": true,
+  "phone_calls": 0,
+  "runtime_tasks": 0,
+  "current_fixed19_credit": 0
+}

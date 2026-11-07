@@ -1,0 +1,170 @@
+{
+  "accepted_disposition_verifier": null,
+  "cancellation": {
+    "cancellation_proven": false,
+    "observed_result": "TIMEOUT_NO_CANCELLATION_RECEIPT",
+    "request_attempts": 1,
+    "response_original": {
+      "bytes": 182,
+      "sha256": "5f0646f9deefaa026258095a3fe49ef5defc1475ef87bec6119962d1dd4fc639"
+    },
+    "signals_sent": null,
+    "termination_proven": false
+  },
+  "cancellation_followup": "Status remained FileNotFoundError; no new cancel retry was issued.",
+  "captured_at_utc": "2026-11-07T05:57:49.838269+00:00",
+  "existing_reader_accepts_current_disposition": false,
+  "identity": {
+    "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+    "case_id": "NEG-01",
+    "combination_sha256": "7969a11bebda7f5eb788fd581bd9372d43c86d2251d0180cc3d5421c90956411",
+    "host": "mac",
+    "job_id": "1a1b3420986-fc05-8183",
+    "label": "root-r10-neg01-fc33-r6-bound02",
+    "nonce": "731dc46ccaad6e5717306d0c5f029a82",
+    "owner_request_bytes": 317,
+    "owner_request_sha256": "b25d5c139aebdec8a222ca4298e91cd57500b0836c0c9f1629cb4ce769ad6d3f",
+    "package_sha256": "270357b7649af61414d31580b3c1eaddc47174bd1bac3c8adfc02934a92c8cf5",
+    "plan_bytes": 4842,
+    "plan_sha256": "0fbfd5aa0ed86e0bad846f2e541c3117ee1c7a46c98af7000c96f2e7d25a4bfa",
+    "profile_id": "owner-open",
+    "request_digest": "bd0a05f5d0e196efe71a3e18012d241a11214cca994c6fc240b9a70206485629",
+    "root_source_bytes": 78567,
+    "root_source_sha256": "53c2e7c26c960d76ac5d3201420d33f13fb06c241d30d40fc7b2b7577e690257",
+    "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef"
+  },
+  "missing_paths_are_nonexecution_proof": false,
+  "new_execution_eligible": false,
+  "next_legal_action": "Recover original producer ownership and a verifiable terminal, or implement and validate an exact bound02 retirement/disposition with producer fence, full effect/draft accounting, inventory and late-boundary consumer. Retain UNKNOWN; do not relabel it as unstarted.",
+  "not_authorizations": [
+    "A new nonce or label is not settlement.",
+    "Both bound01 recovery outcomes are different identities and cannot settle bound02.",
+    "No provider start in a bounded read is not producer fencing.",
+    "A cancellation tool timeout is not a cancellation receipt."
+  ],
+  "observed_missing_paths": [
+    "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b3420986-fc05-8183",
+    "/home/alex/codex-native-guard-chain-r10-r1/731dc46ccaad6e5717306d0c5f029a82",
+    "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound02-root-v150"
+  ],
+  "original_effect_counts": {
+    "model_requests": null,
+    "native_send_attempts": null,
+    "phone_calls": null,
+    "resource_mutation_attempts": null,
+    "root_fixture_attempts": null,
+    "ui_mutation_attempts": null
+  },
+  "original_job_metadata": {
+    "bytes": 1255,
+    "exact_original_bytes_in_publication": false,
+    "path": "/Users/qianqi/.local/state/hepta-runtime-mac/jobs/1a1b3420986-fc05-8183.json",
+    "private_original_retained": true,
+    "public_projection": "originals/bound02-job-metadata.public-projection.json",
+    "sha256": "c3d979f61989a384d859144d0aba7d5f00b07f944ff0c4dd699febabf42399b9",
+    "version": "16777233:593615008:1255:1794008823220332399:1794008823224885736"
+  },
+  "original_launch_metadata": {
+    "args": [
+      "-I",
+      "-B",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r6/root-chain/source/run_component_root_once.py",
+      "--plan",
+      "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-r6-bound02/ROOT-PLAN.json",
+      "--plan-sha256",
+      "0fbfd5aa0ed86e0bad846f2e541c3117ee1c7a46c98af7000c96f2e7d25a4bfa",
+      "--execute-root-chain-once"
+    ],
+    "created_unix_ms": 1794008811910,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1b3420986-fc05-8183",
+    "launch_error": "Remote launch outcome unavailable",
+    "launch_state": "launch_unknown",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b3420986-fc05-8183",
+    "request_digest": "bd0a05f5d0e196efe71a3e18012d241a11214cca994c6fc240b9a70206485629",
+    "request_fingerprint": 13621706576265058031,
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b3420986-fc05-8183"
+  },
+  "original_outcome": "UNKNOWN",
+  "original_outputs": {
+    "accepted_ROOT_RESULT": null,
+    "accepted_closure": null,
+    "accepted_inventory": null,
+    "accepted_late_boundary": null,
+    "accepted_native_terminal": null,
+    "controller_stderr": null,
+    "controller_stdout": null,
+    "reason": "Original worker directory is absent and status/read do not yield original logs or a terminal; absence does not establish nonexecution."
+  },
+  "original_plan": {
+    "bytes": 4842,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-r6-bound02/ROOT-PLAN.json",
+    "sha256": "0fbfd5aa0ed86e0bad846f2e541c3117ee1c7a46c98af7000c96f2e7d25a4bfa",
+    "version": "16777233:593610963:4842:1794008497749161812:1794008497749161812"
+  },
+  "original_request": {
+    "bytes": 317,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-r6-bound02/REQUEST.txt",
+    "sha256": "b25d5c139aebdec8a222ca4298e91cd57500b0836c0c9f1629cb4ce769ad6d3f",
+    "version": "16777233:593610916:317:1794008493186297682:1794008493186297682"
+  },
+  "preparation_result": {
+    "bytes": 2882,
+    "execution_terminal": false,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-root-inputs-r10-r1/root-r10-neg01-fc33-r6-bound02/RESULT.json",
+    "sha256": "5b76705cea3150d5a1983af49f74140ae54fa45e7603d3f38903ade6f225a46a",
+    "state": "ONE_NEW_COMPONENT_PLAN_PREPARED_NO_PHONE_EXECUTION",
+    "version": "16777233:593610966:2882:1794008497966075980:1794008497966075980"
+  },
+  "prior_bound01": {
+    "actor_failure_original": {
+      "bytes": 424,
+      "exact_original_bytes": true,
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound01-root-v150/ACTOR-FAILURE.json",
+      "retained_public_path": "originals/bound01-ACTOR-FAILURE.original.json",
+      "sha256": "f613e78e05b8ff8cadfb0cd8aabca905aabc5338f130ffbc17205a7f0d4717eb",
+      "version": "66306:38968467:424:1793998420801172189:1793998420801172189"
+    },
+    "current_draft_restored_verified": false,
+    "draft_body_published": false,
+    "draft_pending_original": {
+      "bytes": 139,
+      "exact_original_bytes": true,
+      "path": "/home/alex/codex-hepta-natural-root-r10-neg01-fc33-r6-bound01-root-v150/DRAFT-RESTORE-PENDING.json",
+      "retained_public_path": "originals/bound01-DRAFT-RESTORE-PENDING.original.json",
+      "sha256": "d854e634c9d73b01a23cc660b2341d0f1684a82a40f3964696cd89c3af47c45f",
+      "version": "66306:38968468:139:1793998420801887615:1793998420801887615"
+    },
+    "independent_recoveries": "RECOVERY-RESULTS.json",
+    "private_preserved_draft": {
+      "bytes": 282,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/private/USER-DRAFT-PRESERVATION.json",
+      "sha256": "9d801d675a461de996206b1bdc911309aeb40df599c49860ddc9699779d4e741",
+      "version": "16777233:586553462:282:1793712171754515981:1793712171754515981"
+    },
+    "send_attempt_count": 0,
+    "sender_result": {
+      "bytes": 704,
+      "path": "originals/bound01-send-result.original.json",
+      "sha256": "09eb6d6a460c893f7da5ad6a0fbb383cbffb5d29f78a5ba7b373520fd92ed00b"
+    },
+    "state": "PRE_SEND_OR_ACTOR_FAILURE",
+    "ui_effect_count": null
+  },
+  "read_only_native_observation": "NATIVE-OBSERVATION.json",
+  "remote_ownership": {
+    "controller_job": "1a1b3420986-fc05-8183",
+    "current_owner_identity_verified": false,
+    "late_launch_reason": "The frozen Root creates a fresh 900-second lease when run() begins. Elapsed wall time since PLAN creation cannot fence a delayed original launch.",
+    "late_launch_ruled_out": false,
+    "producer_fencing_proven": false,
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b3420986-fc05-8183"
+  },
+  "schema": "razr60.original-r6-bound02-reconciliation.v1",
+  "state": "UNKNOWN_RETAINED_DISPOSITION_NOT_ACCEPTED"
+}
