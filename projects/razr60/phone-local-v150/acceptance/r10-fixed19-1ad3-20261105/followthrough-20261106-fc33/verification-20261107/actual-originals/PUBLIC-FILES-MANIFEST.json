@@ -1,0 +1,17 @@
+{
+  "contains_private_original_bytes": false,
+  "files": [
+    {
+      "bytes": 6585,
+      "name": "ACTUAL-ORIGINALS-RECHECK.PUBLIC.json",
+      "sha256": "35ee947760156b439df99a4440c968b807609801d8424c01747092bdb5fb81df"
+    },
+    {
+      "bytes": 2431,
+      "name": "README.md",
+      "sha256": "a294ba33173a7b5425472db16b9b6516d0c53a0e846dfca8446000bd779951ce"
+    }
+  ],
+  "schema": "razr60.actual-archive-public-file-allowlist.v1",
+  "this_manifest_lists_only_the_two_reviewed_public_deliverables": true
+}

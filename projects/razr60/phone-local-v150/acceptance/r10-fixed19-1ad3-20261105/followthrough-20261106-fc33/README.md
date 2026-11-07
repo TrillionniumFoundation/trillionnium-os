@@ -1,4 +1,19 @@
-# Fixed19 follow-through — checkpoint09
+# Fixed19 follow-through — public evidence index
+
+## 最新公开证据入口（2026-11-07）
+
+- [本轮原请求对账与隔离回归](verification-20261107/README.md)：R6 bound01 两次恢复的分别结算、bound02 原 Mac job 的 UNKNOWN 绑定，以及固定源码的本轮可复现回归；不增加整项手机资格。
+- [R6 checkpoint10 原状态](checkpoint10/checkpoint10/STATE.json)：保留当时的组合、原始失败和实际派生身份，后续观察单列记录。
+- [Host negative results](reviewed-host-source-results-20261107/HOST-NEGATIVE-RESULTS.md)：NEG04/05/06/07/08/09 既有 host runs 的审阅结果与物理层边界。
+- [Host negative public summary](reviewed-host-source-results-20261107/HOST-NEGATIVE-PUBLIC-SUMMARY.json)：上述原始 run 身份、结果及完整性映射。
+- [NEG10–14 public summary](reviewed-host-source-results-20261107/NEG10-14-PUBLIC-SUMMARY.json)：现有回归与当前 R6 的 15 份源码逐字对应；实际 BUILD、安装及 READY 绑定仍待原件。
+- [Source17 remote binding](reviewed-host-source-results-20261107/SOURCE17-REMOTE-BINDING.PUBLIC.json)：17 份材料、387843 字节与精确远端 commit 的完整字节一致性。
+
+这些公开审阅保留原始 run 和历史结果的身份。源码一致性、host 回归与实际部署或手机业务资格分别记账；上述材料没有新增 fixed19 整项关闭。
+
+## checkpoint09 历史记录
+
+以下保留 checkpoint09 当时的记录；其中的“当前状态”指该历史检查点。较新的公开核对见上面的入口。
 
 工作继续，当前最终组合尚无新整项关闭，未宣称19/19通过。
 

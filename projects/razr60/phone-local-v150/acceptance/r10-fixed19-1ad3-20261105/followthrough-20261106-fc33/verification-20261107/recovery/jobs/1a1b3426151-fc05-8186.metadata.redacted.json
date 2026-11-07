@@ -1,0 +1,24 @@
+{
+  "execution_mode": "operator",
+  "system_jobctl": false,
+  "id": "1a1b3426151-fc05-8186",
+  "host": "pocket4",
+  "ssh_target": "[REDACTED_CONFIGURED_SSH_TARGET]",
+  "unit": "hepta-runtime-job-1a1b3426151-fc05-8186",
+  "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b3426151-fc05-8186",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-B",
+    "-",
+    "--execute-once"
+  ],
+  "cwd": null,
+  "env_keys": [],
+  "created_unix_ms": 1794008834385,
+  "idempotency_key": "[REDACTED_PRIVATE_IDEMPOTENCY_KEY]",
+  "request_fingerprint": 14771873117246566382,
+  "request_digest": "cd003c55dc9fafeecd5bd624195a7e3cc43f1eabeab06b5f38317f2d9010e864",
+  "launch_state": "launched",
+  "launch_error": null
+}

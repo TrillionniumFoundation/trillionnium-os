@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-I",
+    "-B",
+    "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py",
+    "--package-root",
+    "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3",
+    "--out",
+    "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-public-fixtures-01/output"
+  ],
+  "automatic_retry": false,
+  "candidate_pins": {
+    "bytes": 8768,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/CANDIDATE-PINS.json",
+    "sha256": "168cbbb9c49e86613622dfe6ce682516847cc856086b3369909e923ae8007d68"
+  },
+  "commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "cwd": "/workspace/scratch/78e391d818f2/acceptance_review",
+  "label": "native-public-fixtures-01",
+  "physical_task_credit": 0,
+  "schema": "razr60.cloud-isolated-regression-intent.v1",
+  "scope": "public pinned host fixtures; actual archived originals are required only when explicitly flagged",
+  "script": {
+    "bytes": 37609,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py",
+    "sha256": "4ff6d92df7c545f61435e1f8d5142609859a29054c736dc63008089cd7dbed1e"
+  },
+  "started_at_utc": "2026-11-07T00:39:55.739994+00:00",
+  "timeout_seconds": 70
+}

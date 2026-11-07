@@ -1,0 +1,49 @@
+{
+  "actual_original_checks": {},
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-I",
+    "-B",
+    "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py",
+    "--package-root",
+    "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3",
+    "--out",
+    "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/output",
+    "--require-actual"
+  ],
+  "automatic_retry": false,
+  "cwd": "/workspace/scratch/78e391d818f2/acceptance_review",
+  "elapsed_seconds": 0.466449592000572,
+  "exit_code": 1,
+  "fatal_error": {
+    "message": "--require-actual requested but private actual originals are missing",
+    "traceback": "Traceback (most recent call last):\n  File \"/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py\", line 428, in main\n    actual=actual_checks(package,args.require_actual)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/neg10-14-final-source-summary/references/native-v3/test_native_streams_v3.py\", line 358, in actual_checks\n    assert not required,\"--require-actual requested but private actual originals are missing\"\n           ^^^^^^^^^^^^\nAssertionError: --require-actual requested but private actual originals are missing\n",
+    "type": "AssertionError"
+  },
+  "finished_at_utc": "2026-11-07T00:39:46.104902+00:00",
+  "label": "native-require-actual-01",
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "original_child_waited": true,
+  "phone_calls": 0,
+  "physical_task_credit": 0,
+  "reported_state": "FAILED",
+  "result": {
+    "bytes": 60032,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/output/RESULT.json",
+    "sha256": "5092561cc96451c7fde77274c0b1b7cf8ebfc1c0f916bbca703ed3e78442c4bb"
+  },
+  "schema": "razr60.cloud-isolated-regression-run.v1",
+  "started_at_utc": "2026-11-07T00:39:45.636854+00:00",
+  "stderr": {
+    "bytes": 0,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/stderr.original.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 1503,
+    "path": "/workspace/scratch/78e391d818f2/acceptance_review/runs/native-require-actual-01/stdout.original.txt",
+    "sha256": "5075404b30d8e1f8eb1b68f69b4143f41c8faaff67b7aeef1ee685130872e21d"
+  },
+  "timed_out": false
+}
