@@ -1,0 +1,715 @@
+{
+  "actual_derived_execution_source": {
+    "bytes": 153792,
+    "sha256": "be12800aa1f8bec53a3c56545b5d8db17da864855e3c1d3e7d268451f544547d"
+  },
+  "all_callback_reads_equal": true,
+  "all_historical_results_equal": true,
+  "authoritative_process": {
+    "at_unix_ms": 1794100900868,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "host": "mac",
+    "job_id": "1a1b8be2d97-12894-10d4",
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "stderr_bytes": 0,
+    "stderr_eof": true,
+    "stdout_bytes": 63930,
+    "stdout_eof": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "bound_loader_source": {
+    "bytes": 1023,
+    "sha256": "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca"
+  },
+  "complete_production_IO_metering_verified": false,
+  "constructor_rejections": [
+    {
+      "case": "implementation-declaration-mismatch",
+      "exception_type": "ValueError",
+      "message": "declared constructor source must equal actual bound compiled bytes"
+    },
+    {
+      "case": "noncallable-original-provider",
+      "exception_type": "ValueError",
+      "message": "explicit retained-original reader required"
+    }
+  ],
+  "constructor_source": {
+    "bytes": 19589,
+    "sha256": "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42"
+  },
+  "current_native_case_credit": 0,
+  "fixture_source_manifest": {
+    "bytes": 13991,
+    "sha256": "2e13dac8ddc31fb77c527b7f8ab44120ea233626b72de08f37c06e04750b03e4"
+  },
+  "frozen_factory_source": {
+    "bytes": 259866,
+    "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+  },
+  "frozen_outer_source_parent_binding": {
+    "altered_current_full9_rejected": true,
+    "derived_candidate_does_not_replace_outer_binding": true,
+    "exception_type": "ValueError",
+    "frozen_call_site": "_source_parent_original",
+    "message": "source-parent bytes require their exact path and all nine metadata integers"
+  },
+  "full_current_original_inventory": {
+    "bytes": {
+      "bytes": 1345535,
+      "sha256": "4bd70b72d2a92a6c963912159d9e978fc681a35ddb30c03a2c741700bf47cde4"
+    },
+    "entries": 3823,
+    "roots": 44
+  },
+  "full_current_verify_retired_executed": false,
+  "historical_boundary_count": 10,
+  "historical_data_projection_is_original_execution_attestation": false,
+  "historical_final04_component_qualified": true,
+  "input_source_boundary": "29 preloaded immutable retained Mac originals, individually pinned and full9-read before/after; this is not a fresh phone observation",
+  "inventory_function": {
+    "bytes": 3827,
+    "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+  },
+  "live_observation_cache": false,
+  "medians": {
+    "boundary_from_original": {
+      "derived": {
+        "callback_reads": 0,
+        "cpu_seconds": 0.24363,
+        "wall_seconds": 0.243721792
+      },
+      "original": {
+        "callback_reads": 0,
+        "cpu_seconds": 0.267013,
+        "wall_seconds": 0.267111833
+      }
+    },
+    "closed_boundary_originals": {
+      "derived": {
+        "callback_reads": 2,
+        "cpu_seconds": 1.632621,
+        "wall_seconds": 1.633234834
+      },
+      "original": {
+        "callback_reads": 2,
+        "cpu_seconds": 1.910366,
+        "wall_seconds": 1.911227875
+      }
+    },
+    "require_failed_ancestor_tail": {
+      "derived": {
+        "callback_reads": 0,
+        "cpu_seconds": 1.981404,
+        "wall_seconds": 1.982367084
+      },
+      "original": {
+        "callback_reads": 0,
+        "cpu_seconds": 2.059502,
+        "wall_seconds": 2.060368959
+      }
+    }
+  },
+  "native_requests": 0,
+  "negative_cases": [
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-truncated",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "exception_type": "ValueError",
+      "message": "boundary bytes differ from their actual original descriptor"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-wrong-type",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "exception_type": "ValueError",
+      "message": "bounded original boundary bytes required"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "wrong-original-path",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "exception_type": "ValueError",
+      "message": "ordinary boundary filename does not bind its nonce"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "wrong-combination",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "exception_type": "ValueError",
+      "message": "current package/combination cannot reinterpret a historical component"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "wrong-package",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "exception_type": "ValueError",
+      "message": "closed boundary source/combination binding differs"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "inventory-truncated",
+      "complete_return_or_exception_equal": true,
+      "entry": "closed_boundary_originals",
+      "exception_type": "ValueError",
+      "message": "closed boundary inventory/closure original bytes differ"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "closure-truncated",
+      "complete_return_or_exception_equal": true,
+      "entry": "closed_boundary_originals",
+      "exception_type": "ValueError",
+      "message": "closed boundary inventory/closure original bytes differ"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-before-bad-inventory",
+      "complete_return_or_exception_equal": true,
+      "entry": "closed_boundary_originals",
+      "exception_type": "ValueError",
+      "message": "boundary bytes differ from their actual original descriptor"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-too-short",
+      "complete_return_or_exception_equal": true,
+      "entry": "require_failed_ancestor_tail",
+      "exception_type": "ValueError",
+      "message": "the complete chain must retain actual v3 diagnostic then exact failed820 then6077 then902 then08 then07 then06 then04 then03"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-too-long",
+      "complete_return_or_exception_equal": true,
+      "entry": "require_failed_ancestor_tail",
+      "exception_type": "ValueError",
+      "message": "the complete chain must retain actual v3 diagnostic then exact failed820 then6077 then902 then08 then07 then06 then04 then03"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-reordered",
+      "complete_return_or_exception_equal": true,
+      "entry": "require_failed_ancestor_tail",
+      "exception_type": "ValueError",
+      "message": "fixed property-parent tail was omitted, reordered, altered or duplicated"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-duplicate",
+      "complete_return_or_exception_equal": true,
+      "entry": "require_failed_ancestor_tail",
+      "exception_type": "ValueError",
+      "message": "fixed property-parent tail was omitted, reordered, altered or duplicated"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "wrong-fixed-ancestor-full9",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "exception_type": "ValueError",
+      "message": "fixed retained boundary full original identity differs"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-changed-historical-count",
+      "complete_return_or_exception_equal": true,
+      "entry": "require_failed_ancestor_tail",
+      "exception_type": "ValueError",
+      "message": "fixed property-parent tail was omitted, reordered, altered or duplicated"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "prefix-full-identity-changed",
+      "complete_return_or_exception_equal": true,
+      "entry": "require_failed_ancestor_tail",
+      "exception_type": "ValueError",
+      "message": "current prefix must point at exact actual v3 diagnostic identity"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 1,
+      "callback_sequence": {
+        "bytes": 461,
+        "sha256": "6ce2649721a07eb4e1cbe2958daa1f0a36fda347d1fa396e0c9d01d64cd445cc"
+      },
+      "case": "retained-read-before-invalid",
+      "complete_return_or_exception_equal": true,
+      "entry": "closed_boundary_originals",
+      "exception_type": "ValueError",
+      "message": "original old39 readback before reconstruction"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 2,
+      "callback_sequence": {
+        "bytes": 920,
+        "sha256": "ec0b71e7707b1f8db63ab06dc012538b83012ea26acf3349521f17ee76f7977f"
+      },
+      "case": "retained-bookend-changed",
+      "complete_return_or_exception_equal": true,
+      "entry": "closed_boundary_originals",
+      "exception_type": "ValueError",
+      "message": "old39 original source bookends"
+    }
+  ],
+  "original_receipts_or_source_bytes_rewritten": false,
+  "original_unknown_retained": "UNKNOWN_UNCHANGED",
+  "performance_ratios": {
+    "boundary_from_original": 1.095970249,
+    "closed_boundary_originals": 1.170210086,
+    "require_failed_ancestor_tail": 1.039347846
+  },
+  "phone_calls": 0,
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "positive_cases": [
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-00",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 29342,
+        "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-01",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 21325,
+        "sha256": "fd7766538b0ff88bea73ce66e0de4728caf3771f88c8441bb4d2844fb13b6c66"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-02",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 21002,
+        "sha256": "2433dd817e470e9536ec314b6a8e9d395a47053f7c1aba1cd7adee35635843fc"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-03",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 9998,
+        "sha256": "621f82a3c071c755f4460f591ac1faa92ec6940b2a19c7a4d76948668abf669e"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-04",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 9686,
+        "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-05",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 9373,
+        "sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-06",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 9078,
+        "sha256": "46b03cd66426395198b4a3093117659d5cfb128cc981815934fc1ea695c97be0"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-07",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 8774,
+        "sha256": "eca628a18327146b7710a478fc2c2f716f79d55907b2821666828a0795e2060f"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-08",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 4748,
+        "sha256": "3216ab18adcafa0dda95e8a93ad35a2070e7aec286d7a518794918068ce31d12"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "boundary-09",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 5003,
+        "sha256": "ee008c3b2adec701be4c0bdfd38ca7ac0d650da9b7783f51d3fe4638bfdc5b58"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 2,
+      "callback_sequence": {
+        "bytes": 920,
+        "sha256": "5bddbae35b77e92195d94821356e80f119ae518e47a9935c0ce022e4c53add41"
+      },
+      "case": "complete-final04-closure",
+      "complete_return_or_exception_equal": true,
+      "entry": "closed_boundary_originals",
+      "historical_result_bytes": {
+        "bytes": 1510750,
+        "sha256": "3a70bbdfb2941dcc90aea523f468783fb4b0ad165f2ea4e2c88477dfca7940d4"
+      }
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-ten-boundary-tail",
+      "complete_return_or_exception_equal": true,
+      "entry": "require_failed_ancestor_tail",
+      "historical_result_bytes": {
+        "bytes": 5,
+        "sha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed"
+      }
+    }
+  ],
+  "production_adopted": false,
+  "profile_only_IO_observation": {
+    "counts": {
+      "stdlib:readlink": 16
+    },
+    "historical_C_file_reader_calls": 0,
+    "scope": "one derived closure plus complete-tail pass; constructor/preload outside profile",
+    "syscall_level_or_production_IO_metering": false
+  },
+  "python": "3.9.6 (default, Oct 19 2026, 19:18:13) \n[Clang 21.0.0 (clang-2100.4.1.1)]",
+  "raw_stdout_original": {
+    "bytes": 63930,
+    "location": "private-evidence/mac-full.stdout.original.json (not imported)",
+    "sha256": "7d39c5ad031a637175250d1cf5cdfe89c331acb0d042b922fb276536b6d260af"
+  },
+  "rounds": 3,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.source-parent-full-safe-summary.v3",
+  "source_and_original_bytes_and_full9_unchanged": true,
+  "source_original_file_count": 29,
+  "stage_transport_90s_verified": false,
+  "state": "COMPLETE_OFFLINE_DIFFERENTIAL_PASS_NOT_ADOPTED",
+  "timing_boundary": "complete entry plus derived envelope, immutable original preload and top construction excluded",
+  "timings": {
+    "boundary_from_original": {
+      "derived": [
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 0.24363,
+          "wall_seconds": 0.243721792
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 0.240443,
+          "wall_seconds": 0.24053625
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 0.24727,
+          "wall_seconds": 0.247365792
+        }
+      ],
+      "original": [
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 0.265379,
+          "wall_seconds": 0.265543542
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 0.267013,
+          "wall_seconds": 0.267111833
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 0.274794,
+          "wall_seconds": 0.274899084
+        }
+      ]
+    },
+    "closed_boundary_originals": {
+      "derived": [
+        {
+          "callback_reads": 2,
+          "cpu_seconds": 1.638923,
+          "wall_seconds": 1.639691291
+        },
+        {
+          "callback_reads": 2,
+          "cpu_seconds": 1.632621,
+          "wall_seconds": 1.633234834
+        },
+        {
+          "callback_reads": 2,
+          "cpu_seconds": 1.614899,
+          "wall_seconds": 1.615704333
+        }
+      ],
+      "original": [
+        {
+          "callback_reads": 2,
+          "cpu_seconds": 1.910366,
+          "wall_seconds": 1.911227875
+        },
+        {
+          "callback_reads": 2,
+          "cpu_seconds": 1.913133,
+          "wall_seconds": 1.913914667
+        },
+        {
+          "callback_reads": 2,
+          "cpu_seconds": 1.893967,
+          "wall_seconds": 1.894786125
+        }
+      ]
+    },
+    "require_failed_ancestor_tail": {
+      "derived": [
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 1.982204,
+          "wall_seconds": 1.983022167
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 1.981404,
+          "wall_seconds": 1.982367084
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 1.970439,
+          "wall_seconds": 1.971444916
+        }
+      ],
+      "original": [
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 2.059502,
+          "wall_seconds": 2.060368959
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 2.080363,
+          "wall_seconds": 2.081391333
+        },
+        {
+          "callback_reads": 0,
+          "cpu_seconds": 2.040573,
+          "wall_seconds": 2.041529625
+        }
+      ]
+    }
+  },
+  "unchanged_inner_interface_compatibility_cases": [
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "original-inner-current-descriptor-shape-only",
+      "complete_return_or_exception_equal": true,
+      "entry": "boundary_from_original",
+      "historical_result_bytes": {
+        "bytes": 29342,
+        "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+      }
+    }
+  ],
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

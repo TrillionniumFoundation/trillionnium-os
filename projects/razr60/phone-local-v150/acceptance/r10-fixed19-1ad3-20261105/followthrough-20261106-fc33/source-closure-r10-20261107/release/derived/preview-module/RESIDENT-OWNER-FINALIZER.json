@@ -1,0 +1,63 @@
+{
+  "additional_resident_roles": 0,
+  "child_wait_owner": "ORIGINAL_SERVICE_SHELL_MEMORY",
+  "cleanup_audit2_outside_component_inventory_required": true,
+  "exact_eight_stream_caller_required": true,
+  "fixed19_credit": 0,
+  "formal_build_qualification_from_this_record": false,
+  "helper_phase_total_seconds": 2,
+  "helper_source": {
+    "bytes": 32701,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fivefault-source-reconstruction-a1055-r2/source/resident_owner_terminal_candidate05.py",
+    "sha256": "958d796590cbd4f1d8440f76fdd95a1b273237c3c78aa1db8696728a697ad55a"
+  },
+  "installer_initial_stream_identity_proven": false,
+  "new_stop_observation_window_seconds": 36,
+  "new_window_limits_only_observation_and_wait_qualification": true,
+  "observer_deployed_as_module_member": false,
+  "original_terminate_role_bytes_preserved": true,
+  "original_three_role_stop_calls_always_attempted": true,
+  "parent_builder": {
+    "bytes": 45121,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/production-release-reader-reconstruction-a1055-r4/source/build_release_r10.py",
+    "sha256": "26bbd6dafa353badc6ef6be5e4e43a25ae1fecc48def321e883caafe7b48ddb0"
+  },
+  "parent_formal_inputs_sha256": "8443393552d1b322b0bf3f86d9e91474ece860e1efd708c80ad15ba8c539df9f",
+  "parent_module_service": {
+    "bytes": 11975,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/root-r10-preparation-01/module-base-02/module-root/service.sh",
+    "sha256": "2dde5460ad8ea2e33075634f62ff67c7cae34e39d5e07a2329c20365803c7114"
+  },
+  "parent_stream_origin": "ACTUAL_OPEN_PARENT_FD_AT_CHILD_BIND_ONLY",
+  "phone_execution": false,
+  "prewire_service": {
+    "bytes": 17999,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fivefault-source-reconstruction-a1055-r2/source/service_owner_finalizer_candidate04.sh",
+    "sha256": "f7104166cf935940832cca67e98c218a4cee2cece4a35148b3a6a8aaa07b0a24"
+  },
+  "regular_file_pipe_eof_claimed": false,
+  "regular_output_observer_candidate": {
+    "bytes": 28570,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/fivefault-source-reconstruction-a1055-r2/source/observe_resident_regular_outputs_UNBOUND08.py",
+    "sha256": "e48a4e1cd905643a7de060b49536d508aa31ba4535ea0a71708e6ccb71abd9bf"
+  },
+  "resident_roles": [
+    "supervisor",
+    "model",
+    "sidecar",
+    "provider"
+  ],
+  "schema": "hepta.module-r10-r1.resident-owner-finalizer.v1",
+  "service_lifetime_foreground_helper_invocations_maximum": 10,
+  "service_transform_count": 19,
+  "service_transforms_sha256": "e41a1392d2003c0c8e8879dcd4a6393adade6c5bdcdada0b57be0d9a0754fa47",
+  "status_127": "AMBIGUOUS_UNQUALIFIED",
+  "supervisor_original_parent_wait": "NOT_RETAINED",
+  "supervisor_terminal_type": "SELF_TERMINAL_PLUS_REQUIRED_INDEPENDENT_ABSENCE",
+  "task_endpoint_lock_latest_family_closure_separate": true,
+  "wired_configuration_sha256": "5ff00467e8432d7119ba72a700ce07cb20f16555d3dc0c90de7cbfc388103f48",
+  "wired_service": {
+    "bytes": 21310,
+    "sha256": "72bc91083db2827fafa8aef11ed1e09c764f87b02ef8623a8106c7399bd49620"
+  }
+}

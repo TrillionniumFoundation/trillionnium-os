@@ -1,0 +1,111 @@
+{
+  "ci_commands": [
+    "HEPTA_TOPOLOGY_SYNTHETIC_ONLY=1 python3 -B source-parent-v3/tests/test_source_parent_candidate.py --base .",
+    "python3 -B source-parent-v3/tools/build_manifest.py --base ."
+  ],
+  "ci_expected": {
+    "constructor_dependency_rejections": 3,
+    "envelope_unit_cases": 2,
+    "inventory_outcomes": 788,
+    "private_complete_reader_test_claimed_by_CI": false,
+    "private_fixture_skips": 2,
+    "source_binding_rejections": 10,
+    "tests": 14,
+    "topology_comparisons": 1754
+  },
+  "complete_private_reader_test": {
+    "complete_constructor_rejections": 2,
+    "exit_code": 0,
+    "job_id": "1a1b8be2d97-12894-10d4",
+    "negative_cases": 17,
+    "original_file_count": 29,
+    "positive_cases": 12,
+    "rounds": 3,
+    "state": "succeeded",
+    "stderr_bytes": 0,
+    "stdout_bytes": 63930,
+    "stdout_sha256": "7d39c5ad031a637175250d1cf5cdfe89c331acb0d042b922fb276536b6d260af"
+  },
+  "complete_production_IO_metering_verified": false,
+  "destination_relative_to_v1_v2_root": "source-parent-v3",
+  "do_not_import": [
+    "private-evidence/**",
+    "private-sources/**",
+    "tools/collect_mac_fixture.py",
+    "private-*-request*.json",
+    "portable-attempt*.json"
+  ],
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 10565,
+      "path": "README.md",
+      "sha256": "17bc14b74ea574209e549ca03199d014711dd45ccef1e35f83c3367a9a6330c7"
+    },
+    {
+      "bytes": 19589,
+      "path": "candidate/source_parent_reader.py",
+      "sha256": "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42"
+    },
+    {
+      "bytes": 1023,
+      "path": "candidate/bound_loader.py",
+      "sha256": "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca"
+    },
+    {
+      "bytes": 10711,
+      "path": "tests/test_source_parent_candidate.py",
+      "sha256": "74d80ed1e3eeca0a39f1b631600102ff6d84786991ad1cb32864e1072b8430b1"
+    },
+    {
+      "bytes": 22696,
+      "path": "tests/replay_source_parent_fixture.py",
+      "sha256": "ef189c5e5fbbd0425cb39e440267e50eb2da24f8f0d595aac25354ec2e50ebe6"
+    },
+    {
+      "bytes": 3698,
+      "path": "tools/build_manifest.py",
+      "sha256": "15d299cf9355e570f19e99b6fa86f5d42f5b11593de7fe0c7661ef55e73feb6e"
+    },
+    {
+      "bytes": 32500,
+      "path": "SOURCE-PARENT-CANDIDATE-MANIFEST-v3.json",
+      "sha256": "8d14561c54f9487a3a46801c8ac48634400c152077264f42d8807dd9aca69dc0"
+    },
+    {
+      "bytes": 3387,
+      "path": "reports/PORTABLE-SYNTHETIC-v3.json",
+      "sha256": "8cabd34422f512e9eda960c798b930cc7d04141b44ea7f85a085509f336f452d"
+    },
+    {
+      "bytes": 23344,
+      "path": "reports/FULL-REPLAY-SAFE-v3.json",
+      "sha256": "84822e0d10e4738efde939f7ec92c7020f7bf6ab6e0d1e981d268e72b0b8c959"
+    }
+  ],
+  "import_action": "add_only_exact_listed_files_plus_this_manifest",
+  "native_case_credit": 0,
+  "original_receipts_rewritten": false,
+  "previous_manifests": [
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 6719,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v1.json",
+      "sha256": "7f196c5b0205bfde7d01c2005c928188e685e741bf83f5bab3439d431b6e4c0c"
+    },
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 4793,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v2.json",
+      "sha256": "97c8d77d1793b5a221f63186a73bbf379929b8512110d4299b77bb140195efda"
+    }
+  ],
+  "production_selector_adopted": false,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.source-parent-portable-delivery.v3",
+  "source_parent_full_boundary_reader_composed_offline": true,
+  "state": "FULL_OFFLINE_CANDIDATE_COMPLETE_NOT_ADOPTED",
+  "total_bytes": 127513,
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

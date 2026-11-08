@@ -1,0 +1,20 @@
+--- a/retained-r8-scope.py
++++ b/retained-r8-scope.py
+@@ -250,12 +250,16 @@
+     need(value['prior_roots']==old['roots']and after['roots']==old['roots']+[HOME,JOURNAL]
+          and value['actual_scope_roots']==[HOME,JOURNAL]and value['actual_root_count']==49
+          and len(after['entries'])==3991 and after['file_bytes_hashed']==53016728,
+          'actual49 roots and complete3991-entry inventory')
+     need(all(after['entries'].get(path)==row for path,row in old['entries'].items()),'all3918 old47 original entries remain exact')
++    _topology_old_root_parts=frozenset(Path(root).parts for root in old['roots'])
++    _topology_old_root_depths=frozenset(len(parts) for parts in _topology_old_root_parts)
+     for path in after['entries']:
+-        if any(Path(path)==Path(root)or Path(root)in Path(path).parents for root in old['roots']):
++        _topology_entry_parts=Path(path).parts
++        if any(_topology_entry_parts[:depth] in _topology_old_root_parts
++               for depth in _topology_old_root_depths if depth<=len(_topology_entry_parts)):
+             need(path in old['entries'],'no new child added below any old retained root')
+     fixtures=[root for root in after['roots']if re.fullmatch(r'/proc/1/root/data/local/tmp/hepta-native-guard-[0-9a-f]{32}',root)]
+     need(len(fixtures)==value['actual_fixture_root_count']==13 and FIXTURE not in fixtures,'actual fixture root count remains13')
+     need(all(value[k]is True for k in ('complete_old47_preserved','full_inventory_entries_equal',
+         'all_scope_raw_files_match_both_complete_inventories')),'actual full-read bookends all completed')

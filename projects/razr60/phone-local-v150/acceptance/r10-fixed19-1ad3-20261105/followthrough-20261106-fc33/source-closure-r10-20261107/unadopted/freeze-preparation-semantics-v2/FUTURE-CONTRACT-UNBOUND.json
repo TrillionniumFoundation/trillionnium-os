@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.UNADOPTED.source-freeze-originals-contract.v1",
+  "state": "UNBOUND",
+  "frozen_root": null,
+  "freeze": null,
+  "controller": null,
+  "freezer": null,
+  "membership_plan": null,
+  "controller_request": null
+}

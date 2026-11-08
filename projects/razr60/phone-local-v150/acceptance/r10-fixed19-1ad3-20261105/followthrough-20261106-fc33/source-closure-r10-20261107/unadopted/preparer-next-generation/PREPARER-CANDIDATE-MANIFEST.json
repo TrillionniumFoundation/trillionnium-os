@@ -1,0 +1,96 @@
+{
+  "all_retained_function_class_bodies_unchanged": true,
+  "binding_cannot_enable_execution": true,
+  "builder_source": {
+    "bytes": 2156,
+    "sha256": "7168050ef10b114402ef87e07acf790cd71979363f6d6cf1b3835610b6999b3e"
+  },
+  "derived": {
+    "bytes": 24838,
+    "sha256": "4b14289af161c4fd1bccbb6c34b49fd58d7c03ae176fe6d47e2b241e29b1953b"
+  },
+  "deriver_source": {
+    "bytes": 13191,
+    "sha256": "66f602f5828ae1246e6658d509364e9df3e2ad886eb421d90dd2d538095ecb69"
+  },
+  "future_binding_schema": "hepta.UNADOPTED.future-preparer-binding.v1",
+  "new_nonce_generations": 0,
+  "original": {
+    "bytes": 27261,
+    "sha256": "8e4bb7e8034dd09fde1cb93867f38f59f1487a6e06e4504eb8c201ee1df27b10"
+  },
+  "pending_executable_semantics": [
+    "new complete freeze/controller verifier with actual source and terminal bindings",
+    "new admission-policy implementation validating the retained R10 failure without promotion",
+    "new full admission dependency closure including that R10 disposition implementation",
+    "new live namespace/boot/profile/CAS/freshness and sole-reservation checks",
+    "new predecessor, consumed-nonce and generation-specific constants bound to actual originals",
+    "reviewed integration of new source-parent result envelopes into the actual runtime"
+  ],
+  "phone_calls": 0,
+  "production_adopted": false,
+  "retained_function_class_bodies": 15,
+  "runtime_admission": false,
+  "runtime_execution_performed": false,
+  "schema": "hepta.UNADOPTED.preparer-derivation.v1",
+  "state": "INERT_UNBOUND_SOURCE_ONLY",
+  "unbound_slots": [
+    {
+      "name": "FROZEN",
+      "new": {
+        "bytes": 77,
+        "sha256": "857f13340374b4c51bfa8bea2029740cda8a5fe5c0d3b3f226463983fbe9a93f"
+      },
+      "old": {
+        "bytes": 166,
+        "sha256": "38f6a8c5a1742be8ea00094b845e4c9e5b689be801f04d4c39ebbc11a4c8b867"
+      }
+    },
+    {
+      "name": "LABELS",
+      "new": {
+        "bytes": 77,
+        "sha256": "0458069160b44362e1fa0de8b1cf206744b2a70c4401730b434e1d8da4453533"
+      },
+      "old": {
+        "bytes": 98,
+        "sha256": "9024a610dff27638daff2673b3226da17319df959494028ae7f0532a6c834d8f"
+      }
+    },
+    {
+      "name": "BOOT",
+      "new": {
+        "bytes": 75,
+        "sha256": "7466da267cdba7d2a936190269e50f736cef0441d8d88acc7d83873bc6f7f741"
+      },
+      "old": {
+        "bytes": 44,
+        "sha256": "72df8fb865b0c8d5897dd98ea34ba31ffa47ad626f76b4fe7f853b28003839c0"
+      }
+    },
+    {
+      "name": "FROZEN_INPUTS",
+      "new": {
+        "bytes": 84,
+        "sha256": "0deca0377957fc0eb6bced540e569f825b16f3c2b0181625401b443f9ba3b2be"
+      },
+      "old": {
+        "bytes": 906,
+        "sha256": "5f259bd4d42619dd045635ede19e8f6a1736c8bb2c52272af507d61a52a48c23"
+      }
+    },
+    {
+      "name": "ADMISSION_SOURCE_PINS",
+      "new": {
+        "bytes": 92,
+        "sha256": "e1dcd212dd8cdef76ea637afb0265fea2c37a513d29409ad8d4d7e95f6005753"
+      },
+      "old": {
+        "bytes": 2014,
+        "sha256": "6cd358941e9abf65f2b1b6f0ff873131dcd2613fbfc705e1424d0385ae3d921d"
+      }
+    }
+  ],
+  "unconditional_guard_before_import": true,
+  "whole_byte_inverse_verified": true
+}

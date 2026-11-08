@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.fixed19.r6-recovery-comparison.v1",
+  "scope": "root-r10-neg01-fc33-r6-bound01",
+  "nonce": "5f94c6a88805eefb0e2320cae5265d46",
+  "fresh": {
+    "job_id": "1a1b33a7191-fc05-813f",
+    "host": "pocket4",
+    "created_utc": "2026-11-06T23:38:34.257Z",
+    "terminal_utc": "2026-11-06T23:38:46.811Z",
+    "host_exit_code": 0,
+    "phone_rc": 0,
+    "reader_job_id": "1a1b33b9725-fc05-814c",
+    "reader_exit_code": 0,
+    "reader_terminal_utc": "2026-11-06T23:39:51.369Z",
+    "owned_recovery_closed": true,
+    "files_removed": 67,
+    "directories_removed": 9,
+    "ordered_removal_events": 76,
+    "closed_lock_descriptors": 14,
+    "closed_file_descriptors": 67,
+    "closed_directory_descriptors": 13,
+    "fd_before": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "fd_after": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "original_inventory_roots": 44,
+    "original_inventory_entries": 3823,
+    "original_inventory_bytes_hashed": 44353573,
+    "complete_after_projection_sha256": "f072bf74423e9b449b3b23d01b9b5910a10f1c51950fbf949431dd91811dfe9a",
+    "fresh_component_admission_required": true,
+    "business_or_component_credit": false
+  },
+  "later": {
+    "job_id": "1a1b3426151-fc05-8186",
+    "host": "pocket4",
+    "created_utc": "2026-11-06T23:47:14.385Z",
+    "terminal_utc": "2026-11-06T23:47:17.176Z",
+    "host_exit_code": 0,
+    "phone_rc": 1,
+    "reader_job_id": "1a1b3456b55-fc05-81a2",
+    "reader_exit_code": 1,
+    "reader_terminal_utc": "2026-11-06T23:50:35.588Z",
+    "owned_recovery_closed": false,
+    "state": "PRE_MUTATION_REJECTED",
+    "terminal_error": {
+      "type": "ValueError",
+      "detail": "exact staged home in actual private shared parent"
+    },
+    "files_removed": 0,
+    "directories_removed": 0,
+    "effect_attempt_count": 0,
+    "closed_lock_descriptors": 14,
+    "fd_before": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "fd_after": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "ui_calls": 0,
+    "model_requests": 0,
+    "native_dispatches": 0
+  },
+  "conclusion": "Earlier exact owned unstarted-stage cleanup was independently verified; later separate recovery failed before mutation. Preserve both outcomes. This closes only the earlier bounded cleanup, grants no fixed19 qualification, and settles no historical UNKNOWN.",
+  "this_review": {
+    "device_calls": 0,
+    "adb_calls": 0,
+    "new_execution_requests": 0,
+    "signals": 0,
+    "remote_file_writes": 0,
+    "current_proc_liveness_measured": false,
+    "complete_fresh_result_replay": false,
+    "fresh_result_full_digest_verified": true,
+    "later_reader_source_reviewed": false
+  }
+}

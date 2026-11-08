@@ -1,0 +1,113 @@
+{
+  "build_install_ready_health_qualified_by_this_checkpoint": false,
+  "fixed19_credits_added": 0,
+  "github_review": "REQUIRED_NOT_SUPPLIED_BY_LOCAL_REVIEW_RECORDS",
+  "neg02_authorized_by_this_checkpoint": false,
+  "next_generation_preparer": {
+    "actual_future_bindings_supplied": false,
+    "execution_enabled": false,
+    "manifest_sha256": "c043fab3ede304072e67e686ffa687f549caf277a92a25f05bd18b6c97f65117",
+    "negative_cases": 79,
+    "production_semantics_complete": false,
+    "state": "INERT_UNBOUND_SOURCE_ONLY",
+    "tests": 11
+  },
+  "offline_current_consumer_v4": {
+    "current_inventory_selected": true,
+    "manifest_sha256": "8d9e443375f3a3f9fd30a29ce0966a1c14e52dde479d9e26f0650eb583e78148",
+    "runtime_admission": false,
+    "state": "ACTUAL_CURRENT_SOURCE_PARENT_CONSUMER_COMPLETE_OFFLINE_NOT_ADOPTED",
+    "three_source_parent_consumers_selected": true,
+    "whole_stage_budget_verified": false
+  },
+  "offline_retained_current_consumer_v5": {
+    "actual_current_source_sha256": "d012b0c4d7d1312190b820d3874bb697c80ae1ca8dce75ccbeb9e4872615db42",
+    "actual_mac_envelope_rejections": 12,
+    "actual_mac_inherited_rejections": 14,
+    "actual_mac_original_files": 38,
+    "actual_mac_positive_cases": 6,
+    "inventory_entries": 3991,
+    "inventory_roots": 49,
+    "manifest_sha256": "b335ab2367198a3d1757f60fff5f027b44917bad046f50469cf28ed97dc74abe",
+    "runtime_admission": false,
+    "state": "COMPLETE_ACTUAL_CURRENT_RETAINED_CONSUMER_OFFLINE_NOT_ADOPTED",
+    "whole_stage_budget_verified": false
+  },
+  "offline_source_parent_v3": {
+    "constructor_rejections": 2,
+    "full_current_verify_retired_executed": false,
+    "manifest_sha256": "5fdc8416e54c315fb03ca7fadbabf8dad1be0b290b0de356ccb02bd13c9fc490",
+    "negative_cases": 17,
+    "positive_cases": 12,
+    "production_outer_exact_original_binding_replaced": false,
+    "rounds": 3,
+    "runtime_admission": false,
+    "source_original_file_count": 29,
+    "state": "COMPLETE_OFFLINE_DIFFERENTIAL_PASS_NOT_ADOPTED",
+    "whole_stage_budget_verified": false
+  },
+  "original_r10_freeze_result": {
+    "bytes": 1613295,
+    "sha256": "651b4dd0f4f1c32b1928d58480e1adc3f2fcf104884db44b4eac52a0c625ba6d"
+  },
+  "prestage_read_only_baseline": {
+    "cpu_seconds": 79.211763,
+    "deadline_seconds": 80,
+    "does_not_establish_original_90_second_stage_outcome": true,
+    "instrumented": false,
+    "observed_elapsed_seconds": 80.04689,
+    "original_result_sha256": "f31d7449cb206e332dbd60ee90709441a8bb8a6b359ea725e09b69450e210e64",
+    "result": "TIMEOUT_BEFORE_CURRENT_INVENTORY_OR_STAGE_WRITES"
+  },
+  "private_reconciliation_index": {
+    "body_published": false,
+    "name": "followthrough-root-r10-reconcile-20261107-01/EVIDENCE-INDEX.json",
+    "sha256": "4a4281937500d1cb9e2ccc37dff1db1e56a90d19b1961a573ca96e60f003d57d"
+  },
+  "protected_integration_branch": "integration/razr60-r9-20261107",
+  "r10_frozen_runtime_manifest_sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02",
+  "remaining_technical_work": [
+    "new actual independently reviewed source/membership plan and freeze/controller/admission originals",
+    "complete current phone preservation and R10 producer/namespace disposition, retaining older R6/R7/R8/R9 chain",
+    "production runtime source/import/deployment binding and new current-prefix qualification",
+    "executable fresh preparation, original predecessor/consumed identity, input/preview/CAS and one reservation",
+    "actual production I/O and original phone-stage/remaining-lease budget validation",
+    "fixed19/formal BUILD/install/health/business/daily/rollback gates"
+  ],
+  "retained_R10_host_failure_reader": {
+    "actual_host_exit_code": 1,
+    "actual_original_roles": 13,
+    "actual_retained_files": 125,
+    "current_native_case_credit": 0,
+    "fresh_execution_eligible": false,
+    "global_unknown_effect_count": null,
+    "manifest_sha256": "bbfe24d5abb4fd79c1f3d850b5a3eb6b4770843db5e882558aab171d2a07e750",
+    "original_phone_stage_writes": null,
+    "original_phone_terminal": null,
+    "retirement_accepted": false,
+    "state": "STRICT_HOST_FAILURE_ORIGINALS_VERIFIED_NOT_RETIRED_OR_ADMITTED"
+  },
+  "schema": "hepta.razr60.r10.source-checkpoint-status.v1",
+  "source_ancestor_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
+  "source_ancestor_pr": 112,
+  "source_freeze_controller_semantics": {
+    "actual_historical_bytes_read": 656407629,
+    "actual_historical_file_opens": 4183,
+    "actual_historical_original_paths": 2091,
+    "actual_historical_reference_job": "1a1b8fc9f67-12894-116c",
+    "actual_new_generation_freeze_created": false,
+    "actual_reference_report_sha256": "153704c7cf2087a593868953020935c35758dda15bb8b4f8b2a734202374fb7f",
+    "fresh_execution_eligible": false,
+    "historical_membership_adapter_is_new_generation_review_plan": false,
+    "implementation_sha256": "7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d",
+    "manifest_sha256": "e57db4cde4feac40d7de54a7ddb83f203fecc8cdf60081a64b0aabf404d35338",
+    "new_generation_entry_old_tuple_provider_calls": 0,
+    "portable_negative_cases": 105,
+    "portable_tests": 12,
+    "production_preparer_implemented": false,
+    "runtime_admission": false,
+    "state": "COMPLETE_PURE_FREEZE_CONTROLLER_AND_RETAINED_R10_CONTEXT_NOT_ADMITTED"
+  },
+  "state": "SOURCE_CHECKPOINT_R10_ATTEMPT_FAILED_AND_UNQUALIFIED",
+  "whole_stage_90_second_gate_passed": false
+}

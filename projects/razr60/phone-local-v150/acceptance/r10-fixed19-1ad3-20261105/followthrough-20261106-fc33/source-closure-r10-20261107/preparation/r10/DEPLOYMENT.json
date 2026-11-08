@@ -1,0 +1,128 @@
+{
+  "actual_adapter_publication_attested": false,
+  "actual_deployment_accepted": false,
+  "actual_host_freeze_executed": false,
+  "actual_output_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10",
+  "actual_phone_publication_attested": false,
+  "actual_preparer_freeze_slot": null,
+  "budgets": {
+    "bundle_payload_bytes": 1048576,
+    "delta_compressed_bytes": 1048576,
+    "delta_expanded_bytes": 8388608,
+    "freeze_host_seconds": 300,
+    "source_materialization_host_seconds": 90,
+    "whole_actual_freeze_directory_bytes": 33554432
+  },
+  "create_only": true,
+  "dispatch_gate": "Root must accept complete actual R9 three-file phone proof and independent R10 adapter publication before the single actual freeze; source packaging is not execution admission.",
+  "execution_eligible": false,
+  "existing_external_dependencies": [
+    "actual R9 bound preparer, original successful controller, full frozen output tree and all original inputs",
+    "accepted original R6 disposition and unchanged live fences",
+    "accepted R7 and R8 proof families and old failed Root anchors",
+    "actual accepted R9 Mac reader/manifest/archive and original Root anchor",
+    "actual new P4 actor/config profile and Mac UI/business source publications"
+  ],
+  "file_count": 15,
+  "files": [
+    {
+      "bytes": 19230,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/ACTUAL-MAC-RETAINED-R9-RESULT.original.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/ACTUAL-MAC-RETAINED-R9-RESULT.original.json",
+      "sha256": "5010f552feaf041b52ac69d57bb7232d56272109b2a30d9eabc8c901e86bdec9"
+    },
+    {
+      "bytes": 1858,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/ACTUAL-MAC-RETAINED-R9-VERIFICATION.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/ACTUAL-MAC-RETAINED-R9-VERIFICATION.json",
+      "sha256": "186f721aec5cabb8ae9c5581bbb6c0f2c1054f5a00fba543945a916671afd0ba"
+    },
+    {
+      "bytes": 466,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/FREEZE.REQUEST.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/FREEZE.REQUEST.json",
+      "sha256": "a03caa1206ae7f0295d392f1d3ba98e9fb6171ddf277c50c7d9073639c268b45"
+    },
+    {
+      "bytes": 19291,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/FREEZER-INPUT-BINDING.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/FREEZER-INPUT-BINDING.json",
+      "sha256": "5fef45955b4f917a908d2d857406a77fabba235a414efc03336532edd73b6db1"
+    },
+    {
+      "bytes": 54217,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/FREEZER-SOURCE-INVERSE.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/FREEZER-SOURCE-INVERSE.json",
+      "sha256": "2b1e405e50b7840a80cf9fe0b1956333d9df112481f1b6d8c01ac7253404ce4c"
+    },
+    {
+      "bytes": 7242,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/HOST-CONTROL-SOURCE.py",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/HOST-CONTROL-SOURCE.py",
+      "sha256": "94e975a0535cea3e5bfd65225515b790ec5cb6c1c1e076296bb38334c6c2944f"
+    },
+    {
+      "bytes": 5467,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/HOST-CONTROLS.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/HOST-CONTROLS.json",
+      "sha256": "73219144cc00f8fd71bea50de0cea2072a4e07e6cc330076dc4e26cbeacb8ff0"
+    },
+    {
+      "bytes": 5202,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/INDEPENDENT-ADMISSION-SOURCE-REVIEW.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/INDEPENDENT-ADMISSION-SOURCE-REVIEW.json",
+      "sha256": "281da4f900ae31833851ae23da40f3dc248b4f333c95cb48b081548d2e540b66"
+    },
+    {
+      "bytes": 5626,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/INDEPENDENT-CORE-SOURCE-REVIEW.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/INDEPENDENT-CORE-SOURCE-REVIEW.json",
+      "sha256": "331a53840e69401e92ba4241b3c9482a0ec0d9aeb7b37a31ba64fa72620764e2"
+    },
+    {
+      "bytes": 26570,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/INDEPENDENT-WHOLE-SOURCE-REVIEW.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/INDEPENDENT-WHOLE-SOURCE-REVIEW.json",
+      "sha256": "3d6b5fc85bc2e9567ee7751ab0d9ef10fb64397553b8d8ffc3d330e78d925f97"
+    },
+    {
+      "bytes": 21622,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/R10-SOURCE-PLAN.json",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/R10-SOURCE-PLAN.json",
+      "sha256": "5fa51851cf2d5d5de48c516944a01b2f25f316c642414fcc9eea3c8c83336d1c"
+    },
+    {
+      "bytes": 536920,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/RUNTIME-DELTA.json.gz",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/RUNTIME-DELTA.json.gz",
+      "sha256": "576b3e70a60c6b9cba427937e12042bbc9cd0c7bc0dfb8813e3e463611b94d4f"
+    },
+    {
+      "bytes": 32010,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/freeze_native_bound_runtime_r10_fc33.py",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/freeze_native_bound_runtime_r10_fc33.py",
+      "sha256": "7db072079c16ca6485d3ea6083eec5adf1054ebe0e6850d6eabf352745603b36"
+    },
+    {
+      "bytes": 11080,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/prepare_fresh_admission_input.py",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/prepare_fresh_admission_input.py",
+      "sha256": "e7d89b2f47ada6d5eda47ae7e9e0a4c243202dc8aa5b6618b68973b6e13addbb"
+    },
+    {
+      "bytes": 26376,
+      "local_source": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-final-deployment01/prepare_native_bound_components_r10_fc33_UNBOUND.py",
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/prepare_native_bound_components_r10_fc33_UNBOUND.py",
+      "sha256": "63560e2245b3b1d18a6f1cc9c2e3c8e21108707603b999bf5ab2173f1ee153a7"
+    }
+  ],
+  "independent_P1_CPU_cancel_source_selection": "CI prepares the separate cancellation/UI/CPU family with exact new transport pins; it is neither imported by native38 nor a current completed physical/native case.",
+  "payload_bytes": 773177,
+  "remote_directory": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01",
+  "schema": "hepta.r10.final-source-deployment.v1",
+  "source_inputs_have_local_bookends": true,
+  "whole_source_review": {
+    "bytes": 26570,
+    "sha256": "3d6b5fc85bc2e9567ee7751ab0d9ef10fb64397553b8d8ffc3d330e78d925f97"
+  }
+}

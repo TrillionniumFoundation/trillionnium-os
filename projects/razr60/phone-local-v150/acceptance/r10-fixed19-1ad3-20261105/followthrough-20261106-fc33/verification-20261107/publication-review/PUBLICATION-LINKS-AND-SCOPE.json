@@ -1,0 +1,157 @@
+{
+  "source_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
+  "pinned_project_tree_complete": true,
+  "published_file_scope_valid": true,
+  "fixed19_rows": [
+    "E2E-01",
+    "E2E-02",
+    "E2E-03",
+    "E2E-04",
+    "COMP-01",
+    "NEG-01",
+    "NEG-02",
+    "NEG-03",
+    "NEG-04",
+    "NEG-05",
+    "NEG-06",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09",
+    "NEG-10",
+    "NEG-11",
+    "NEG-12",
+    "NEG-13",
+    "NEG-14"
+  ],
+  "markdown_links_checked": 21,
+  "missing_links": [],
+  "links": [
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+      "target": "verification-20261107/README.md",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+      "target": "checkpoint10/checkpoint10/STATE.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/checkpoint10/checkpoint10/STATE.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+      "target": "reviewed-host-source-results-20261107/HOST-NEGATIVE-RESULTS.md",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/reviewed-host-source-results-20261107/HOST-NEGATIVE-RESULTS.md",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+      "target": "reviewed-host-source-results-20261107/HOST-NEGATIVE-PUBLIC-SUMMARY.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/reviewed-host-source-results-20261107/HOST-NEGATIVE-PUBLIC-SUMMARY.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+      "target": "reviewed-host-source-results-20261107/NEG10-14-PUBLIC-SUMMARY.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/reviewed-host-source-results-20261107/NEG10-14-PUBLIC-SUMMARY.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+      "target": "reviewed-host-source-results-20261107/SOURCE17-REMOTE-BINDING.PUBLIC.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/reviewed-host-source-results-20261107/SOURCE17-REMOTE-BINDING.PUBLIC.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "recovery/README.md",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/README.md",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "recovery/SUMMARY.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/SUMMARY.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "recovery/ARTIFACT-INTEGRITY.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/recovery/ARTIFACT-INTEGRITY.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "BOUND02-PATH-OBSERVATION.PUBLIC.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/BOUND02-PATH-OBSERVATION.PUBLIC.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION.PUBLIC.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "CONTROLLER-RECONCILIATION-REVIEW.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CONTROLLER-RECONCILIATION-REVIEW.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "cloud/RUN-SUMMARY.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud/RUN-SUMMARY.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "cloud/SOURCE15-R6-COMPARISON.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud/SOURCE15-R6-COMPARISON.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "cloud-host-regressions.tar.gz",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/cloud-host-regressions.tar.gz",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "CLOUD-ARCHIVE-MANIFEST.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/CLOUD-ARCHIVE-MANIFEST.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "actual-originals/ACTUAL-ORIGINALS-RECHECK.PUBLIC.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/actual-originals/ACTUAL-ORIGINALS-RECHECK.PUBLIC.json",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "navigation/SENDER-DEPENDENCY-REVIEW.md",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/SENDER-DEPENDENCY-REVIEW.md",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "navigation/candidate/SHELL-DEADLINE.patch",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/candidate/SHELL-DEADLINE.patch",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "navigation/check_navigation_source_v2.py",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/check_navigation_source_v2.py",
+      "exists_in_pinned_tree_or_export": true
+    },
+    {
+      "file": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/README.md",
+      "target": "navigation/ARTIFACTS-v2.json",
+      "resolved": "projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/verification-20261107/navigation/ARTIFACTS-v2.json",
+      "exists_in_pinned_tree_or_export": true
+    }
+  ],
+  "main_readme_sha256": "a5781557e987771acde64af8075ff70b155e1ea3215bc967c626fb7f27249d24"
+}

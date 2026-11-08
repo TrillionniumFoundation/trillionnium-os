@@ -1,0 +1,147 @@
+{
+  "github_approval": false,
+  "independent_checks": [
+    "All 13 local original-role files exactly match the expectation manifest bytes and SHA-256.",
+    "All 126 tar members are unique regular files. All 125 original files match declared size/hash and the embedded index exactly equals the separately supplied original index. No archive extraction or historical Python execution occurred.",
+    "The seven phase stdout/stderr pins, source-intent hashes, child/capture identities and original full9 stream metadata relations match the actual retained files.",
+    "Original worker exit is failed exit1 with complete/durable stream sizes; its exact raw SHA is bound by exit.witness. Controller and worker request digests match.",
+    "All 38 runtime material members match the exact manifest set and actual member bytes; the material manifest copy is identical. The original root-driver bytes match the source-manifest entry.",
+    "Both material copy full9 tuples use dev/ino/mode/uid/gid/nlink/size/mtime_ns/ctime_ns, matching the verifier convention.",
+    "The bound loader size/hash pins match the final actual source bytes and compile uses those same supplied bytes. No source path is substituted for the declared implementation.",
+    "Strict JSON rejects duplicate keys, non-finite constants/floats and malformed UTF-8. Typed counts and full9 reject booleans at the reviewed numeric contract boundaries.",
+    "The core is limited to in-memory caller bytes. The optional provider wrapper explicitly does not attest provider implementation or live metadata and its callbacks are not counted as independent runtime qualification."
+  ],
+  "originals": {
+    "archive_members": 126,
+    "exact_roles": 13,
+    "file_bytes": 13283382,
+    "files": 125,
+    "raw_original_contents_embedded_in_review": false,
+    "retained_archive": {
+      "bytes": 4211774,
+      "sha256": "7f89d7ff2b1ffc631dd630936a29cdc4e55203d497708e751aa0078bebd50292"
+    },
+    "retained_index": {
+      "bytes": 148613,
+      "sha256": "4e21b8c6c13843b2a0be85208d6b6d0cfa14b83b02bcdefb3c86f9c1e997740f"
+    }
+  },
+  "outcome_boundaries_verified": {
+    "all_external_runtime_dependencies_reverified": false,
+    "business_qualified": false,
+    "complete_current_phone_scope_verified": false,
+    "component_qualified": false,
+    "fresh_execution_eligible": false,
+    "global_unknown_effect_count": null,
+    "historical_phone_failure_callsite_claimed": false,
+    "host_complete_capture_does_not_prove_remote_terminal_or_cleanup": true,
+    "native_case_credit": 0,
+    "nonce_creation_authorized": false,
+    "original_lease_refreshed": false,
+    "original_material_push_copy_facts_are_not_zero_phone_file_writes": true,
+    "original_phone_stage_producer_terminal": null,
+    "original_phone_stage_writes": null,
+    "original_phone_terminal": null,
+    "original_replay_allowed": false,
+    "retirement_accepted": false,
+    "separate_pocket4_operator_result_original_bytes_claimed": false
+  },
+  "owner_execution_approval": false,
+  "parent_reported_test_summary": "14 tests / 120 distinct negative cases PASS with actual private fixture; portable 6 tests / 49 distinct negative cases PASS and one private-fixture class skipped; full actual archive replay PASS with identical results across both byte/provider entrypoints and 26 fixture callbacks.",
+  "parent_test_reports_read_and_bound_to_final_source": {
+    "REAL-REPLAY-final-r2.json": {
+      "artifact": {
+        "bytes": 8801,
+        "path": "reports/REAL-REPLAY-final-r2.json",
+        "sha256": "1e81b872ca49daafcdc6f01ee1bae3fc6b094d41c11c8298e24e2721ceff303d"
+      },
+      "independently_reexecuted_by_reviewer": false,
+      "negative_cases": null,
+      "skipped": null,
+      "state": "PASS",
+      "tests_run": null
+    },
+    "TESTS-PORTABLE-final-r2.json": {
+      "artifact": {
+        "bytes": 1699,
+        "path": "reports/TESTS-PORTABLE-final-r2.json",
+        "sha256": "ea74c2dc9922ff02f53ac44df9c1ecd5217cfe73946fc83323c6c28921229fd0"
+      },
+      "independently_reexecuted_by_reviewer": false,
+      "negative_cases": 49,
+      "skipped": [
+        [
+          "setUpClass (__main__.RealOriginalTests)",
+          "private exact R10 original archive/controller fixture not supplied"
+        ]
+      ],
+      "state": "PASS",
+      "tests_run": 6
+    },
+    "TESTS-REAL-final-r2.json": {
+      "artifact": {
+        "bytes": 4239,
+        "path": "reports/TESTS-REAL-final-r2.json",
+        "sha256": "fa74a913a9c679af2496e3ab82b13eda83658b9a7245831d7956f843fe3e75d9"
+      },
+      "independently_reexecuted_by_reviewer": false,
+      "negative_cases": 120,
+      "skipped": [],
+      "state": "PASS",
+      "tests_run": 14
+    }
+  },
+  "production_adopted": false,
+  "remaining_requirements": [
+    "A production reader must independently bind actual reader source, actual filesystem metadata and caller scope; a preloaded fixture provider is not a fresh live read.",
+    "Current full phone preservation, exact producer and namespace fences, original phone outcome disposition, predecessor/source adoption and new execution admission remain separate.",
+    "Required GitHub checks and human review must apply to the exact eventual repository head; this report does not grant a required review approval."
+  ],
+  "resolved_findings": [
+    {
+      "id": "R10-REVIEW-01",
+      "issue": "The second provider read originally used equality without requiring immutable bytes, permitting a bytes-compatible/custom equality return to satisfy the bookend check.",
+      "resolution": "Second read now passes pin(after), which requires exact bytes and computes SHA-256, and then matches the original pin and exact bytes.",
+      "status": "RESOLVED"
+    },
+    {
+      "id": "R10-REVIEW-02",
+      "issue": "Several semantic integer comparisons originally accepted bool because Python bool equals 0 or 1, including worker stream seen/stored counts.",
+      "resolution": "Final source explicitly checks integer types for the reviewed protocol, stream counts, maximum starts, signal counts, capture metadata and export sizes. Exact original-role SHA pins additionally prohibit input variants.",
+      "status": "RESOLVED"
+    }
+  ],
+  "review_kind": "Internal source review plus independent local original-byte/archive/cross-reference checks. This is not GitHub approval, owner admission, live phone observation or production adoption.",
+  "reviewed_files": [
+    {
+      "bytes": 35444,
+      "path": "candidate/retained_r10_failure.py",
+      "sha256": "bb9809c6767d4822d1ceab7eb82e2d2386eab0af87592cedb971edc07e092901"
+    },
+    {
+      "bytes": 793,
+      "path": "candidate/bound_loader.py",
+      "sha256": "646368153a161538903e5bf23f1109d72c3d9a60f84dc79df163427e615429a6"
+    },
+    {
+      "bytes": 3722,
+      "path": "EXPECTED-ORIGINALS.json",
+      "sha256": "ab8eef23aefa5c57f9fd9b14ec35bf01bc7160ef77e639c2a72e001649cdc42f"
+    }
+  ],
+  "reviewed_utc": "2026-11-08T01:57:42.695290+00:00",
+  "reviewer": "/root/ledger_audit",
+  "reviewer_effects": {
+    "candidate_source_modified": 0,
+    "local_review_report_written": true,
+    "native_submissions": 0,
+    "originals_modified": 0,
+    "phone_calls": 0,
+    "stage_calls": 0,
+    "subprocesses_on_mac_or_pocket4": 0
+  },
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.retained-r10-failure.internal-review.v1",
+  "state": "NO_BLOCKING_FINDINGS_FOR_EXACT_RETAINED_HOST_FACT_SCOPE",
+  "test_coverage_limit": "The reviewer did not rerun the candidate test suite or execute the candidate implementation. Reported test outcomes are independently read and hash-bound parent artifacts; the independent checks above were local read-only stdlib comparisons of actual retained originals."
+}

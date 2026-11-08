@@ -1,0 +1,120 @@
+{
+  "actual_Late_descriptors": null,
+  "actual_R9_proof": null,
+  "actual_bound_adapter": null,
+  "adapter": {
+    "bytes": 13228,
+    "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/dependencies/runtime/retained_transport_r9_adapter.py",
+    "sha256": "f4a1ca8f685fecd792c961b76cbf135bd9d1ee2182e530e87948161680523779"
+  },
+  "adapter_parent_full_append_inverse": true,
+  "bounds": {
+    "adapter_bound_limit": 32768,
+    "adapter_unbound_bytes": 13228,
+    "inventory_bytes": 536870912,
+    "inventory_entries": 30000,
+    "inventory_gate_seconds": 30,
+    "late_source_current_bytes": 259261,
+    "late_source_limit": 262144,
+    "native_predecessor_roots": 44,
+    "remaining_for_two_descriptors_and_digest": 2883,
+    "runtime_members": 38,
+    "snapshot_alarm_seconds": 75,
+    "snapshot_deadline_seconds": 55
+  },
+  "budget_scope": "The typed complete-inventory function starts its original 30s timer before R7/R8/R9 proof consumption and both new absence observations and requires the full result under30. Other existing admission/manifest/closure positions also read originals; this review does not label total admission or all publication elapsed as30.",
+  "candidate_executions": 0,
+  "case_credit": 0,
+  "new_nonces": 0,
+  "orchestration": [
+    {
+      "bytes": 82673,
+      "edits": 1,
+      "full_forward_and_inverse": true,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-orchestration-source01/root-chain/source/run_component_root_once.py",
+      "sha256": "7b0f12a9bdf3a8910da53c894837024c4ef8437f890ad9a9010371c037a4ec35"
+    },
+    {
+      "bytes": 46058,
+      "edits": 3,
+      "full_forward_and_inverse": true,
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-orchestration-source01/runtime/source/send_new_native_guard_task_r10_r4.py",
+      "sha256": "2d019f99ace6faa9061c6e886b2ed544c145b3b763fc13d423165d20d41a7b99"
+    }
+  ],
+  "orchestration_inverse": {
+    "bytes": 4681,
+    "sha256": "89ba72d12af3bf517a2151568090f83c96806521b93e6207c2ceafef56216a49"
+  },
+  "phone_calls": 0,
+  "requires_final_binding_review": [
+    "real reader and manifest/archive pins",
+    "actual accepted complete R9 binding",
+    "final bound adapter<=32768 and Late<=262144",
+    "whole source/freezer input closure"
+  ],
+  "schema": "hepta.r10.runtime-core-and-orchestration-independent-source-review.v1",
+  "semantic_review": {
+    "Mac_R9_manifest_full_read_before_phone_canonical_representation": true,
+    "NEG02_requires_this_R10_successful_NEG01_full52": true,
+    "R9_added_roles_and_roots_only_zero_after_actual_proof": true,
+    "Root_and_preparer_three_retained_nonces_consumed_and_sender_six_sources": true,
+    "Root_installs_R7_then_R8_then_R9_host_hooks": true,
+    "all_old49_topology_metadata_hash_entries_preserved": true,
+    "close_installs_source_hook_then_proof_table_then_three_proof_hook": true,
+    "current_NEG01_initial_selected_inventory_uses_actual_R9_pin": true,
+    "manifest_exact_three_keys_consumed_before_archive_entry": true,
+    "old_four_delegate_unchanged_R8_reader_and_exact_R7_host_mapper": true,
+    "original_Common_and_numeric_absence_predicate_not_changed": true,
+    "original_unknown_receipt_gap_and_no_case_credit_preserved": true,
+    "reader_callback_exact_new_three_and_old_four_only": true,
+    "snapshot_and_closure_capture_exact_three_plus_one_full9": true,
+    "three_R9_proof_files_remain_separate_from_one_R10_runtime_adapter": true
+  },
+  "source_inverse": {
+    "bytes": 160552,
+    "sha256": "6135a0ece789e0b97f4541ba02a8c13856f893d9ec4b60b90669c345e7a31195"
+  },
+  "sources": [
+    {
+      "bytes": 259261,
+      "edits": 12,
+      "full_forward_and_inverse": true,
+      "parent": {
+        "bytes": 252382,
+        "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-generation-preparation01/runtime/source/late_boundary.py",
+        "sha256": "2e98f742e41e753405a6d74a40c6df1669a5adb769c9502f7805ac166f494ee1"
+      },
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/runtime/source/late_boundary.py",
+      "sha256": "b41562fffbdca9e4f6d82d3cde74f83cf701c8a75a36457cf8a48f970a554006",
+      "unchanged_functions": 111
+    },
+    {
+      "bytes": 33108,
+      "edits": 2,
+      "full_forward_and_inverse": true,
+      "parent": {
+        "bytes": 30957,
+        "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/source/component_snapshot.py",
+        "sha256": "6e944c4783fa64abe1a2c741a76cc98165122b6e3b709f2147698fdbe0416263"
+      },
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/runtime/source/component_snapshot.py",
+      "sha256": "2b7b682c9af1e02c4e11a0adcea478f6d71cd1373cde59b699e6a01f851a040a",
+      "unchanged_functions": 14
+    },
+    {
+      "bytes": 118621,
+      "edits": 4,
+      "full_forward_and_inverse": true,
+      "parent": {
+        "bytes": 114413,
+        "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/source/close_component.py",
+        "sha256": "534a857c9aeabef3a0fb1e714a64f8242ec407fe4f3c6ce699827fff487aeb27"
+      },
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/runtime/source/close_component.py",
+      "sha256": "c675f3be675d6e0ffad23c73f80a761d61053404e54b264bdd6d9aba94a0ffb0",
+      "unchanged_functions": 33
+    }
+  ],
+  "state": "UNBOUND_SOURCE_ONLY_CANDIDATES_REVIEWED_ACTUAL_R9_PROOF_PENDING"
+}

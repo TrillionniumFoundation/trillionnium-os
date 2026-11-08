@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.fixed19.recovery-readonly-evidence-index.v1",
+  "host": "pocket4",
+  "scope_label": "root-r10-neg01-fc33-r6-bound01",
+  "nonce": "5f94c6a88805eefb0e2320cae5265d46",
+  "no_new_phone_calls": true,
+  "no_replay": true,
+  "metadata_redactions": [
+    "idempotency_key",
+    "ssh_target"
+  ],
+  "source_metadata": [
+    {
+      "job_id": "1a1b33a7191-fc05-813f",
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac/jobs/1a1b33a7191-fc05-813f.json",
+      "source_bytes": 726,
+      "source_sha256": "8258760504457b62666d5a6373002e8229c82a124eb590bb854ea059b1fbb2d0",
+      "source_version": "16777233:593609609:726:1794008330470249376:1794008330474986956",
+      "saved_as": "jobs/1a1b33a7191-fc05-813f.metadata.redacted.json",
+      "exact_original_bytes_saved": false
+    },
+    {
+      "job_id": "1a1b33b9725-fc05-814c",
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac/jobs/1a1b33b9725-fc05-814c.json",
+      "source_bytes": 1158,
+      "source_sha256": "3677b6a2586c07f742c0889587fd3d0a5942263da058ed693d80359c7bcbda04",
+      "source_version": "16777233:593610079:1158:1794008390005233741:1794008390010313351",
+      "saved_as": "jobs/1a1b33b9725-fc05-814c.metadata.redacted.json",
+      "exact_original_bytes_saved": false
+    },
+    {
+      "job_id": "1a1b3426151-fc05-8186",
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac/jobs/1a1b3426151-fc05-8186.json",
+      "source_bytes": 723,
+      "source_sha256": "5af75042baba4d26910f1e180f1ab0eefb004f85fe9cde7b2e6d42ed5c890acb",
+      "source_version": "16777233:593615126:723:1794008834984938723:1794008834990602479",
+      "saved_as": "jobs/1a1b3426151-fc05-8186.metadata.redacted.json",
+      "exact_original_bytes_saved": false
+    },
+    {
+      "job_id": "1a1b3456b55-fc05-81a2",
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac/jobs/1a1b3456b55-fc05-81a2.json",
+      "source_bytes": 1142,
+      "source_sha256": "d1d586b3f2d3c6aacfccb186f9bb989eb06c112516ff34504e59e6743c168be3",
+      "source_version": "16777233:593617344:1142:1794009034144070169:1794009034149160946",
+      "saved_as": "jobs/1a1b3456b55-fc05-81a2.metadata.redacted.json",
+      "exact_original_bytes_saved": false
+    }
+  ],
+  "source_reports": [
+    {
+      "path": "/home/alex/razr60-local-model-v150/fc33-neg01-r6-bound01-owned-recovery02-fresh-import01/HOST-VERIFICATION.PUBLIC.json",
+      "source_bytes": 35431,
+      "source_sha256": "64464e62d363b367a1efecd17d39357481fa7cb1a1b97da777fca07e3803c3e6",
+      "source_version": "66306:39847979:35431:1794008391329932212:1794008391329932212",
+      "saved_as": "fresh-HOST-VERIFICATION.original.json",
+      "exact_original_bytes_saved": true
+    },
+    {
+      "path": "/home/alex/razr60-local-model-v150/fc33-neg01-r6-bound01-owned-recovery02-import01/HOST-VERIFICATION.PUBLIC.json",
+      "source_bytes": 61852,
+      "source_sha256": "a8f867ca8c1c14e1eb093e4fcbaa0c7223837d70d9588462affe50c83a6e376e",
+      "source_version": "66306:39848021:61852:1794009035553130095:1794009035553130095",
+      "saved_as": "later-HOST-VERIFICATION.original.json",
+      "exact_original_bytes_saved": true
+    },
+    {
+      "path": "/home/alex/razr60-local-model-v150/fc33-neg01-r6-bound01-owned-recovery02-import01/recovery-packet.original.json",
+      "source_bytes": 14735,
+      "source_sha256": "1933869c0bc08da44ca3007423b83727640821bd2de884f369c9ca8315651a3d",
+      "source_version": "66306:39848019:14735:1794009035550929340:1794009035550929340",
+      "saved_as": "later-recovery-packet.original.json",
+      "exact_original_bytes_saved": true
+    },
+    {
+      "path": "/home/alex/razr60-local-model-v150/fc33-neg01-r6-bound01-owned-recovery02-import01/preflight.original.json",
+      "source_bytes": 21691,
+      "source_sha256": "e91a7aa0e909f129b04c23825a9bece8a78745dee932ef0e368f91163d330613",
+      "source_version": "66306:39848020:21691:1794009035552198661:1794009035552198661",
+      "saved_as": "later-preflight.original.json",
+      "exact_original_bytes_saved": true
+    }
+  ],
+  "read_limits": [
+    "The later reader stdout/report/terminal were read completely, but its stdin source was not retrieved: combined bounded read failed and a later binary read timed out. No claim of source review for the later reader.",
+    "No current process liveness, owner, current continuous lock holding, four-role READY, case qualification, or historical UNKNOWN settlement is inferred from either recovery."
+  ],
+  "fresh_reader": {
+    "host": "pocket4",
+    "path": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b33b9725-fc05-814c/stdin.bin",
+    "bytes": 56726,
+    "sha256": "e09c8f38b0494f443baf60eabcf12509a608f1a96578c9b7b762e057f4df15e3",
+    "version": "66306:59127046:56726:1794008390748088543:1794008390748088543",
+    "eof": true,
+    "exact_source_saved": true,
+    "executed_this_review": false
+  },
+  "fresh_result": {
+    "path": "/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-r6-bound01-owned-recovery02-fresh/result.json",
+    "bytes": 933670,
+    "sha256": "c64595d9d96fbff437d757864a7613f7cf6d8dda6eac445bf99a2120486ab843",
+    "version": "66306:59127001:933670:1794008326794129603:1794008326794129603",
+    "whole_file_hash_recomputed_by_file_info": true,
+    "complete_payload_transferred_this_review": false,
+    "retained_partial_ranges": [
+      [
+        0,
+        262144
+      ],
+      [
+        868134,
+        933670
+      ]
+    ],
+    "raw_payload_not_saved_due_to_private_embedded_source_material": true,
+    "independent_historical_reader_success_reconciled": true
+  }
+}

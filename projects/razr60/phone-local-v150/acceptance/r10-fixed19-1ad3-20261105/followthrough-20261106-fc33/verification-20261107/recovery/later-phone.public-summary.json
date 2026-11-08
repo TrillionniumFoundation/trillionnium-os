@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.fc33.r6-bound01.exact-unstarted-recovery.v1",
+  "state": "PRE_MUTATION_REJECTED",
+  "scope_label": "root-r10-neg01-fc33-r6-bound01",
+  "nonce": "5f94c6a88805eefb0e2320cae5265d46",
+  "operation_label": "ng-fc33-neg01-r6-bound01-owned-recovery02",
+  "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+  "phase": "complete_original_preflight",
+  "preflight_complete": false,
+  "effect_attempt_count": 0,
+  "files_removed_verified": 0,
+  "directories_removed_verified": 0,
+  "operations": [],
+  "resources": {
+    "close_errors": [],
+    "closed_directory_descriptors": 0,
+    "closed_file_descriptors": 0,
+    "closed_lock_descriptors": 14,
+    "final_fd_names": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ],
+    "initial_fd_names": [
+      "0",
+      "1",
+      "2",
+      "3"
+    ]
+  },
+  "terminal_error": {
+    "detail": "exact staged home in actual private shared parent",
+    "type": "ValueError"
+  },
+  "scope_closure": false,
+  "component_qualified": false,
+  "business_qualified": false,
+  "ui_calls": 0,
+  "model_requests": 0,
+  "native_dispatches": 0,
+  "signals_to_other_processes": 0,
+  "automatic_retry": false,
+  "optional_XML_delete_authority": false,
+  "host_private_originals_untouched": true
+}

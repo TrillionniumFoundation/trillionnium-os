@@ -1,0 +1,22 @@
+{
+  "counters": {
+    "negative_cases": 79,
+    "unbound_entry_effects": {
+      "imports": 0,
+      "nonces": 0,
+      "phone": 0,
+      "source_reads": 0,
+      "writes": 0
+    }
+  },
+  "effect_counter_scope": "disabled preparer entry only; static builder/test reads are not counted as runtime effects",
+  "failures": [],
+  "freeze_executed": false,
+  "original_preparer_executed": false,
+  "production_adopted": false,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.unbound-preparer-tests.v1",
+  "state": "PASS",
+  "synthetic_binding_inputs_not_actual_evidence": true,
+  "tests_run": 11
+}

@@ -1,0 +1,131 @@
+{
+  "constructed_modules": [
+    {
+      "derived_source": {
+        "bytes": 37442,
+        "sha256": "9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52"
+      },
+      "fresh_module_globals": true,
+      "kind": "r7-reader",
+      "module_file": "<UNADOPTED_derived_r7_reader:sha256=9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52>",
+      "module_name": "UNADOPTED_derived_r7_reader",
+      "original_module_mutated": false,
+      "original_source": {
+        "bytes": 37404,
+        "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+      },
+      "reference_source_bytes_changed": false,
+      "transformation_sites": [
+        "inventory-selection"
+      ],
+      "whole_byte_inverse_verified": true
+    },
+    {
+      "derived_source": {
+        "bytes": 96044,
+        "sha256": "df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727"
+      },
+      "fresh_module_globals": true,
+      "kind": "r8-reader",
+      "module_file": "<UNADOPTED_derived_r8_reader:sha256=df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727>",
+      "module_name": "UNADOPTED_derived_r8_reader",
+      "original_module_mutated": false,
+      "original_source": {
+        "bytes": 96088,
+        "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+      },
+      "reference_source_bytes_changed": false,
+      "transformation_sites": [
+        "scope-selection-after-original-pin",
+        "r7-reader-selection-after-original-pin",
+        "inventory-selection-after-original-source-check"
+      ],
+      "whole_byte_inverse_verified": true
+    },
+    {
+      "derived_source": {
+        "bytes": 22151,
+        "sha256": "520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed"
+      },
+      "fresh_module_globals": true,
+      "kind": "r8-scope",
+      "module_file": "<UNADOPTED_derived_r8_scope:sha256=520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed>",
+      "module_name": "UNADOPTED_derived_r8_scope",
+      "original_module_mutated": false,
+      "original_source": {
+        "bytes": 21865,
+        "sha256": "937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38"
+      },
+      "reference_source_bytes_changed": false,
+      "transformation_sites": [
+        "old-root-child-membership"
+      ],
+      "whole_byte_inverse_verified": true
+    },
+    {
+      "derived_source": {
+        "bytes": 34737,
+        "sha256": "8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7"
+      },
+      "fresh_module_globals": true,
+      "kind": "r9-reader",
+      "module_file": "<UNADOPTED_derived_r9_reader:sha256=8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7>",
+      "module_name": "UNADOPTED_derived_r9_reader",
+      "original_module_mutated": false,
+      "original_source": {
+        "bytes": 34650,
+        "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+      },
+      "reference_source_bytes_changed": false,
+      "transformation_sites": [
+        "scope-selection-after-archive-member-pins",
+        "r8-selection-after-read-exact"
+      ],
+      "whole_byte_inverse_verified": true
+    },
+    {
+      "derived_source": {
+        "bytes": 37770,
+        "sha256": "5c6ae675180c119b1cca647dc486638abe6f3a9b6ace3cd67bf17099ed06e9cf"
+      },
+      "fresh_module_globals": true,
+      "kind": "r9-scope",
+      "module_file": "<UNADOPTED_derived_r9_scope:sha256=5c6ae675180c119b1cca647dc486638abe6f3a9b6ace3cd67bf17099ed06e9cf>",
+      "module_name": "UNADOPTED_derived_r9_scope",
+      "original_module_mutated": false,
+      "original_source": {
+        "bytes": 37788,
+        "sha256": "f59bae34d9acc80d2c28cd5636b53e13b68d911d2121735883dc7b001e57779f"
+      },
+      "reference_source_bytes_changed": false,
+      "transformation_sites": [
+        "explicit-validator-provenance-comment",
+        "inventory-selection-after-original-source-pins"
+      ],
+      "whole_byte_inverse_verified": true
+    }
+  ],
+  "elapsed_seconds": 0.5688755570008652,
+  "error_count": 0,
+  "failure_count": 0,
+  "inventory_comparisons": 30,
+  "native_case_credit": 0,
+  "phone_calls": 0,
+  "production_selector_adopted": false,
+  "rejected_source_or_binding_cases": 36,
+  "retained_inventory_comparisons": 0,
+  "runtime_admission": false,
+  "schema": "hepta.offline.reader-selector-portable-tests.v1",
+  "skips": [
+    {
+      "reason": "explicit synthetic-only run: private original inventories not loaded",
+      "test": "test_actual_retained_3991_entry_inventory_binding_if_private_fixtures_enabled (__main__.SelectorTests.test_actual_retained_3991_entry_inventory_binding_if_private_fixtures_enabled)"
+    }
+  ],
+  "source_only": true,
+  "state": "PASS",
+  "synthetic_only": true,
+  "tests_run": 11,
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

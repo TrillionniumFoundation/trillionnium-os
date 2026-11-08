@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/alex/razr60-local-model-v150/operations/ng-fc33-neg01-r6-bound01-owned-recovery02-fresh/result.json\",\"sha256\":\"c64595d9d96fbff437d757864a7613f7cf6d8dda6eac445bf99a2120486ab843\",\"size\":933670,\"version\":\"66306:59127001:933670:1794008326794129603:1794008326794129603\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

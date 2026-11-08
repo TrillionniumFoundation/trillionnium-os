@@ -1,0 +1,116 @@
+--- reference/preserved_ui_package_phase_r7.py
++++ candidate/preserved_ui_package_phase_r7.py
+@@ -20,6 +20,7 @@
+ import struct
+ import stat
+ import subprocess
++import time
+ 
+ SERIAL = 'ZY22LS7WZT'
+ RELEASE_READY = True  # Actual Root-provided host artifact pins; guest remains unobserved.
+@@ -60,44 +61,60 @@
+     return h.hexdigest()
+ 
+ 
+-def receive(s, count):
++def remaining_timeout(deadline, maximum=None):
++    """Use one monotonic budget; timeout never means the remote effect stopped."""
++    if deadline is None:
++        return maximum
++    remaining = deadline - time.monotonic()
++    if remaining <= 0:
++        raise TimeoutError('Whole shell observation deadline; outcome unknown, observe before any retry')
++    return remaining if maximum is None else min(maximum, remaining)
++
++
++def receive(s, count, deadline=None):
+     data = b''
+     while len(data) < count:
++        if deadline is not None:
++            s.settimeout(remaining_timeout(deadline, s.gettimeout()))
+         b = s.recv(count - len(data))
++        if deadline is not None:
++            remaining_timeout(deadline)
+         need(b, 'Existing ADB socket closed; observe before any retry')
+         data += b
+     return data
+ 
+ 
+-def request(s, command):
++def request(s, command, deadline=None):
+     data = command.encode()
+     need(len(data) < 65536, 'ADB request bound')
++    if deadline is not None:
++        s.settimeout(remaining_timeout(deadline, s.gettimeout()))
+     s.sendall(('%04x' % len(data)).encode() + data)
+-    result = receive(s, 4)
++    result = receive(s, 4, deadline)
+     if result == b'FAIL':
+-        raise RuntimeError(receive(s, int(receive(s, 4), 16)).decode())
++        raise RuntimeError(receive(s, int(receive(s, 4, deadline), 16), deadline).decode())
+     need(result == b'OKAY', 'ADB service response')
+ 
+ 
+-def host(port, command):
+-    with socket.create_connection(('127.0.0.1', port), timeout=5) as s:
+-        request(s, command)
+-        return receive(s, int(receive(s, 4), 16)).decode()
+-
+-
+-def route(c):
++def host(port, command, deadline=None):
++    with socket.create_connection(('127.0.0.1', port), timeout=remaining_timeout(deadline, 5)) as s:
++        request(s, command, deadline)
++        return receive(s, int(receive(s, 4, deadline), 16), deadline).decode()
++
++
++def route(c, deadline=None):
+     """Read both existing servers; never migrate or manage either server."""
+     need(os.uname().nodename == c['execution_host'] and os.getuid() == 1000,
+          'Pinned ordinary Pocket4 host required')
+     targets = []
+     for port in (5037, 5061):
+         result = subprocess.run(['ss', '-ltnp', 'sport = :' + str(port)],
+-                                capture_output=True, timeout=5)
++                                capture_output=True, timeout=remaining_timeout(deadline, 5))
+         need(result.returncode == 0, 'Listener read failed')
+         need(set(re.findall(rb'pid=(\d+)', result.stdout)) ==
+              {str(c['server_pids'][str(port)]).encode()}, 'Existing listener PID changed')
+-        need(host(port, 'host:version') == '0029', 'Existing server protocol changed')
+-        hits = [line.split() for line in host(port, 'host:devices-l').splitlines()
++        need(host(port, 'host:version', deadline) == '0029', 'Existing server protocol changed')
++        hits = [line.split() for line in host(port, 'host:devices-l', deadline).splitlines()
+                 if line.split() and line.split()[0] == SERIAL]
+         need(len(hits) <= 1, 'Duplicate target serial in one server')
+         if hits:
+@@ -112,15 +129,16 @@
+ 
+ 
+ def shell(command, c, transport, timeout=120):
+-    need(route(c) == transport, 'Target route changed before wire; observe before retry')
+-    with socket.create_connection(('127.0.0.1', transport[0]), timeout=timeout) as sock:
+-        request(sock, 'host:transport-id:' + transport[1])
+-        request(sock, 'shell,v2,raw:' + command)
++    deadline = time.monotonic() + timeout
++    need(route(c, deadline) == transport, 'Target route changed before wire; observe before retry')
++    with socket.create_connection(('127.0.0.1', transport[0]), timeout=remaining_timeout(deadline, timeout)) as sock:
++        request(sock, 'host:transport-id:' + transport[1], deadline)
++        request(sock, 'shell,v2,raw:' + command, deadline)
+         stdout, stderr, code = b'', b'', None
+         while code is None:
+-            stream, length = struct.unpack('<BI', receive(sock, 5))
++            stream, length = struct.unpack('<BI', receive(sock, 5, deadline))
+             need(length <= 8388608, 'Shell frame bound')
+-            payload = receive(sock, length)
++            payload = receive(sock, length, deadline)
+             if stream == 1:
+                 stdout += payload
+             elif stream == 2:
+@@ -128,6 +146,7 @@
+             elif stream == 3:
+                 code = int.from_bytes(payload, 'little')
+             need(len(stdout) + len(stderr) <= 8388608, 'Shell output bound')
++        remaining_timeout(deadline)
+         return {'command': command, 'rc': code, 'route': list(transport),
+                 'stdout': stdout.decode('utf-8', 'replace'),
+                 'stderr': stderr.decode('utf-8', 'replace')}

@@ -1,5 +1,8 @@
 # RAZR60 phone-local model — r7-r3 measured checkpoint
 
+> Current source work (2026-11-07): the [R10 source checkpoint](acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/README.md) retains the exact frozen sources and an unadopted topology candidate. R10 remains failed/unqualified. The measured r7-r3 results below retain their original installed-combination scope.
+
+
 **The model runs locally on the phone. The new health request passed. Both new business tasks failed after a successful first application open and a rejected repeated-open proposal. The formal nineteen-case result is 7 PASS / 2 FAIL / 10 BLOCKED; daily-use qualification remains unestablished.**
 
 This checkpoint records the installed `v150-r7-r3` combination. Its three narrowly scoped Binder/file-descriptor permissions were applied with SELinux enforcing and independently audited. Both real business requests then completed their first authorized application open with exit code 0 and a verified target foreground/display. On the second model round, each request proposed opening the same application again. The original no-replay gate rejected that proposal before a second native dispatch. The complete tasks remain failed.

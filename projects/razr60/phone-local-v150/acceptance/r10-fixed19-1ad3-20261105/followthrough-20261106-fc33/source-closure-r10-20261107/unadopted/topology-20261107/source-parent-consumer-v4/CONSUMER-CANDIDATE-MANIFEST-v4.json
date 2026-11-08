@@ -1,0 +1,1111 @@
+{
+  "actual_derived_current_source": {
+    "bytes": 258924,
+    "sha256": "5b7ca9884a448518e572f1e8c5f9438389f01ea315aa41ae89f5729ccc58a3e9"
+  },
+  "bound_loader_source": {
+    "bytes": 1024,
+    "sha256": "5ad647e31d520cb9f473faaa4ef81cd45f1b8d4635569eb19cbb5a9ef62ffffe"
+  },
+  "complete_production_IO_metering_verified": false,
+  "constructor_source": {
+    "bytes": 23887,
+    "sha256": "ce3661cb3726b159da2e85dea6c4a4fc1aaeb8f04ebddcb9ff36061e0b39ec5e"
+  },
+  "current_native_case_credit": 0,
+  "frozen_current_source": {
+    "bytes": 259866,
+    "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+  },
+  "frozen_source_bytes_changed": false,
+  "inventory_function": {
+    "bytes": 3827,
+    "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+  },
+  "methods": [
+    "source_parent_boundary_from_original",
+    "source_parent_closed_boundary_originals",
+    "require_failed_ancestor_tail",
+    "boundary_from_original",
+    "closed_boundary_originals",
+    "inventory_value"
+  ],
+  "old_execution_receipts_reused": false,
+  "production_adopted": false,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.current-consumer-construction.v4",
+  "transformation": {
+    "derived_call_graph": {
+      "dynamic_edges": [
+        "fresh bound v3 constructor and reader methods",
+        "unchanged non-source-parent historical dispatch readers",
+        "explicit retained-stage original callback"
+      ],
+      "edges": {
+        "CurrentPropertyParentReader": [],
+        "_current_property_parent_reader": [
+          "CurrentPropertyParentReader",
+          "consumer_execution_source_sha256",
+          "inventory_value",
+          "original"
+        ],
+        "_retained_property_parent_original": [
+          "property_parent_records"
+        ],
+        "_source_parent_original": [
+          "reviewed_source_parent_records"
+        ],
+        "boundary_from_original": [
+          "_retained_property_parent_original",
+          "_source_parent_original",
+          "boundary_value",
+          "codec_diagnostic_parent_from_original",
+          "current_context",
+          "diagnostic_parent_from_original",
+          "exact_descriptor",
+          "is_property_parent_ancestor",
+          "non_native_sidebranch",
+          "property_parent_reader",
+          "property_parent_records",
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_diagnostic_parent_ancestor",
+          "reviewed_source_parent_records",
+          "reviewed_stack_diagnostic_parent_ancestor",
+          "reviewed_v3_runtime_diagnostic_ancestor",
+          "source_parent_boundary_from_original",
+          "stack_diagnostic_parent_from_original",
+          "v3_runtime_diagnostic_from_original"
+        ],
+        "boundary_value": [
+          "consumer_frozen_data_source_sha256",
+          "current_context",
+          "current_retained_failed_staged_binding",
+          "current_retained_failed_transport_binding",
+          "current_retained_preaccept_binding",
+          "current_retained_stage_binding",
+          "current_sidebranch_bindings",
+          "exact_descriptor",
+          "non_native_sidebranch"
+        ],
+        "closed_boundary_originals": [
+          "_retained_property_parent_original",
+          "_source_parent_original",
+          "boundary_from_original",
+          "closure_matches",
+          "current_closure_sidebranches",
+          "inventory_value",
+          "is_codec_diagnostic_parent_ancestor",
+          "is_diagnostic_parent_ancestor",
+          "is_stack_diagnostic_parent_ancestor",
+          "is_v3_runtime_diagnostic_ancestor",
+          "property_parent_reader",
+          "source_parent_closed_boundary_originals"
+        ],
+        "closure_matches": [
+          "non_native_sidebranch",
+          "preserve_non_native_private"
+        ],
+        "codec_diagnostic_parent_boundary_value": [
+          "codec_diagnostic_parent_context",
+          "exact_descriptor",
+          "non_native_sidebranch"
+        ],
+        "codec_diagnostic_parent_context": [],
+        "codec_diagnostic_parent_from_original": [
+          "codec_diagnostic_parent_boundary_value",
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_diagnostic_parent_ancestor"
+        ],
+        "compose_current_sidebranch_inventory": [
+          "consumer_execution_source_sha256",
+          "original"
+        ],
+        "consume_source_parent_envelope": [],
+        "consumer_execution_source_sha256": [],
+        "consumer_frozen_data_source_sha256": [],
+        "current_closure_sidebranches": [
+          "current_retained_failed_staged_binding",
+          "current_retained_failed_transport_binding",
+          "current_retained_preaccept_binding",
+          "current_retained_stage_binding",
+          "current_sidebranch_bindings",
+          "preserve_non_native_sidebranches",
+          "preserve_retained_failed_staged",
+          "preserve_retained_failed_transport",
+          "preserve_retained_preaccept",
+          "preserve_retained_unstarted_stage",
+          "retained_unstarted_stage",
+          "validate_retained_fixture_observations",
+          "validate_retained_stage_parent_profiles"
+        ],
+        "current_context": [
+          "require_current_revision",
+          "reviewed_diag02_non_native_record"
+        ],
+        "current_retained_failed_staged_binding": [
+          "retained_failed_staged"
+        ],
+        "current_retained_failed_transport_binding": [
+          "retained_failed_transport_adapter"
+        ],
+        "current_retained_preaccept_binding": [
+          "retained_preaccept"
+        ],
+        "current_retained_stage_binding": [],
+        "current_sidebranch_bindings": [
+          "non_native_sidebranches"
+        ],
+        "diag02_non_native_sidebranch": [
+          "compose_current_sidebranch_inventory",
+          "inventory_value",
+          "original",
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_diag02_non_native_record"
+        ],
+        "diagnostic_parent_boundary_value": [
+          "diagnostic_parent_context",
+          "exact_descriptor",
+          "non_native_sidebranch"
+        ],
+        "diagnostic_parent_context": [],
+        "diagnostic_parent_from_original": [
+          "diagnostic_parent_boundary_value",
+          "reviewed_diagnostic_parent_ancestor",
+          "reviewed_property_parent_ancestors"
+        ],
+        "exact_descriptor": [],
+        "inventory_value": [],
+        "is_codec_diagnostic_parent_ancestor": [
+          "reviewed_codec_diagnostic_parent_ancestor"
+        ],
+        "is_diagnostic_parent_ancestor": [
+          "reviewed_diagnostic_parent_ancestor"
+        ],
+        "is_property_parent_ancestor": [
+          "reviewed_property_parent_ancestors"
+        ],
+        "is_stack_diagnostic_parent_ancestor": [
+          "reviewed_stack_diagnostic_parent_ancestor"
+        ],
+        "is_v3_runtime_diagnostic_ancestor": [
+          "reviewed_v3_runtime_diagnostic_ancestor"
+        ],
+        "non_native_sidebranch": [
+          "compose_current_sidebranch_inventory",
+          "exact_descriptor",
+          "inventory_value",
+          "original",
+          "reviewed_pre_policy_ancestor"
+        ],
+        "non_native_sidebranches": [
+          "diag02_non_native_sidebranch",
+          "non_native_sidebranch",
+          "preserve_non_native_private"
+        ],
+        "original": [
+          "exact_descriptor"
+        ],
+        "preserve_non_native_private": [
+          "inventory_value"
+        ],
+        "preserve_non_native_sidebranches": [
+          "preserve_non_native_private"
+        ],
+        "preserve_retained_failed_staged": [
+          "inventory_value",
+          "retained_failed_staged",
+          "retained_failed_staged_reader"
+        ],
+        "preserve_retained_failed_transport": [
+          "retained_failed_transport_adapter"
+        ],
+        "preserve_retained_preaccept": [
+          "inventory_value",
+          "retained_preaccept",
+          "retained_preaccept_reader"
+        ],
+        "preserve_retained_unstarted_stage": [
+          "inventory_value",
+          "retained_stage_verifier",
+          "retained_unstarted_stage"
+        ],
+        "property_parent_reader": [
+          "_current_property_parent_reader",
+          "reviewed_environment_parent_ancestor",
+          "reviewed_failed_ancestor",
+          "reviewed_pre_policy_ancestor"
+        ],
+        "property_parent_records": [
+          "reviewed_environment_parent_ancestor",
+          "reviewed_failed_ancestor",
+          "reviewed_pre_policy_ancestor",
+          "reviewed_property_parent_ancestors"
+        ],
+        "require_current_revision": [
+          "reviewed_property_parent_ancestors"
+        ],
+        "require_failed_ancestor_tail": [
+          "boundary_value",
+          "consume_source_parent_envelope",
+          "reviewed_source_parent_records",
+          "source_parent_reader"
+        ],
+        "require_retained_failed_transport_sources": [],
+        "retained_failed_staged": [
+          "inventory_value",
+          "retained_failed_staged_read_pinned",
+          "retained_failed_staged_reader"
+        ],
+        "retained_failed_staged_read_pinned": [
+          "retained_preaccept_read_pinned"
+        ],
+        "retained_failed_staged_reader": [
+          "retained_failed_staged_read_pinned"
+        ],
+        "retained_failed_transport_adapter": [
+          "inventory_value",
+          "require_retained_failed_transport_sources",
+          "retained_failed_staged_read_pinned"
+        ],
+        "retained_preaccept": [
+          "inventory_value",
+          "retained_preaccept_read_pinned",
+          "retained_preaccept_reader"
+        ],
+        "retained_preaccept_read_pinned": [
+          "retained_preaccept_reader"
+        ],
+        "retained_preaccept_reader": [],
+        "retained_stage_verifier": [],
+        "retained_unstarted_stage": [
+          "inventory_value",
+          "original",
+          "retained_stage_verifier"
+        ],
+        "reviewed_codec_diagnostic_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_diag02_non_native_record": [
+          "exact_descriptor"
+        ],
+        "reviewed_diagnostic_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_environment_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_failed_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_pre_policy_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_property_parent_ancestors": [
+          "exact_descriptor"
+        ],
+        "reviewed_source_parent_records": [
+          "exact_descriptor",
+          "reviewed_v3_runtime_diagnostic_ancestor"
+        ],
+        "reviewed_stack_diagnostic_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_v3_runtime_diagnostic_ancestor": [
+          "exact_descriptor"
+        ],
+        "source_parent_boundary_from_original": [
+          "_source_parent_original",
+          "consume_source_parent_envelope",
+          "reviewed_source_parent_records",
+          "source_parent_reader"
+        ],
+        "source_parent_closed_boundary_originals": [
+          "consume_source_parent_envelope",
+          "source_parent_boundary_from_original",
+          "source_parent_reader"
+        ],
+        "source_parent_homes": [
+          "reviewed_source_parent_records"
+        ],
+        "source_parent_reader": [],
+        "stack_diagnostic_parent_boundary_value": [
+          "current_sidebranch_bindings",
+          "exact_descriptor",
+          "non_native_sidebranch",
+          "stack_diagnostic_parent_context"
+        ],
+        "stack_diagnostic_parent_context": [],
+        "stack_diagnostic_parent_from_original": [
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_stack_diagnostic_parent_ancestor",
+          "stack_diagnostic_parent_boundary_value"
+        ],
+        "v3_runtime_diagnostic_boundary_value": [
+          "current_sidebranch_bindings",
+          "exact_descriptor",
+          "non_native_sidebranch",
+          "v3_runtime_diagnostic_context"
+        ],
+        "v3_runtime_diagnostic_context": [],
+        "v3_runtime_diagnostic_from_original": [
+          "reviewed_stack_diagnostic_parent_ancestor",
+          "reviewed_v3_runtime_diagnostic_ancestor",
+          "v3_runtime_diagnostic_boundary_value"
+        ],
+        "validate_retained_fixture_observations": [],
+        "validate_retained_stage_parent_profiles": [
+          "inventory_value",
+          "preserve_retained_failed_staged",
+          "preserve_retained_preaccept",
+          "retained_failed_staged",
+          "retained_preaccept",
+          "source_parent_homes"
+        ]
+      },
+      "entry_points": [
+        "source_parent_boundary_from_original",
+        "source_parent_closed_boundary_originals",
+        "require_failed_ancestor_tail",
+        "boundary_from_original",
+        "closed_boundary_originals",
+        "inventory_value"
+      ],
+      "not_full_production_IO_metering": true,
+      "reachable_class_count": 1,
+      "reachable_function_count": 77,
+      "reachable_names": [
+        "CurrentPropertyParentReader",
+        "_current_property_parent_reader",
+        "_retained_property_parent_original",
+        "_source_parent_original",
+        "boundary_from_original",
+        "boundary_value",
+        "closed_boundary_originals",
+        "closure_matches",
+        "codec_diagnostic_parent_boundary_value",
+        "codec_diagnostic_parent_context",
+        "codec_diagnostic_parent_from_original",
+        "compose_current_sidebranch_inventory",
+        "consume_source_parent_envelope",
+        "consumer_execution_source_sha256",
+        "consumer_frozen_data_source_sha256",
+        "current_closure_sidebranches",
+        "current_context",
+        "current_retained_failed_staged_binding",
+        "current_retained_failed_transport_binding",
+        "current_retained_preaccept_binding",
+        "current_retained_stage_binding",
+        "current_sidebranch_bindings",
+        "diag02_non_native_sidebranch",
+        "diagnostic_parent_boundary_value",
+        "diagnostic_parent_context",
+        "diagnostic_parent_from_original",
+        "exact_descriptor",
+        "inventory_value",
+        "is_codec_diagnostic_parent_ancestor",
+        "is_diagnostic_parent_ancestor",
+        "is_property_parent_ancestor",
+        "is_stack_diagnostic_parent_ancestor",
+        "is_v3_runtime_diagnostic_ancestor",
+        "non_native_sidebranch",
+        "non_native_sidebranches",
+        "original",
+        "preserve_non_native_private",
+        "preserve_non_native_sidebranches",
+        "preserve_retained_failed_staged",
+        "preserve_retained_failed_transport",
+        "preserve_retained_preaccept",
+        "preserve_retained_unstarted_stage",
+        "property_parent_reader",
+        "property_parent_records",
+        "require_current_revision",
+        "require_failed_ancestor_tail",
+        "require_retained_failed_transport_sources",
+        "retained_failed_staged",
+        "retained_failed_staged_read_pinned",
+        "retained_failed_staged_reader",
+        "retained_failed_transport_adapter",
+        "retained_preaccept",
+        "retained_preaccept_read_pinned",
+        "retained_preaccept_reader",
+        "retained_stage_verifier",
+        "retained_unstarted_stage",
+        "reviewed_codec_diagnostic_parent_ancestor",
+        "reviewed_diag02_non_native_record",
+        "reviewed_diagnostic_parent_ancestor",
+        "reviewed_environment_parent_ancestor",
+        "reviewed_failed_ancestor",
+        "reviewed_pre_policy_ancestor",
+        "reviewed_property_parent_ancestors",
+        "reviewed_source_parent_records",
+        "reviewed_stack_diagnostic_parent_ancestor",
+        "reviewed_v3_runtime_diagnostic_ancestor",
+        "source_parent_boundary_from_original",
+        "source_parent_closed_boundary_originals",
+        "source_parent_homes",
+        "source_parent_reader",
+        "stack_diagnostic_parent_boundary_value",
+        "stack_diagnostic_parent_context",
+        "stack_diagnostic_parent_from_original",
+        "v3_runtime_diagnostic_boundary_value",
+        "v3_runtime_diagnostic_context",
+        "v3_runtime_diagnostic_from_original",
+        "validate_retained_fixture_observations",
+        "validate_retained_stage_parent_profiles"
+      ],
+      "static_name_reference_overapproximation": true
+    },
+    "derived_current_inventory_function": {
+      "bytes": 3827,
+      "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+    },
+    "derived_source": {
+      "bytes": 258924,
+      "sha256": "5b7ca9884a448518e572f1e8c5f9438389f01ea315aa41ae89f5729ccc58a3e9"
+    },
+    "frozen_publisher_call_count": 10,
+    "frozen_source": {
+      "bytes": 259866,
+      "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+    },
+    "guard_function_pins": {
+      "_source_parent_original": {
+        "bytes": 492,
+        "sha256": "7611f3e78fedfb2c24cd5cb6c5fa6ee6402ad8353cab25e3bf6bedf19e7404c9"
+      },
+      "boundary_from_original": {
+        "bytes": 3812,
+        "sha256": "dd87525ab18fb370ea4569ab35ec7f6d63d2a8319555a689bcacc75ede07c9e2"
+      },
+      "closed_boundary_originals": {
+        "bytes": 6000,
+        "sha256": "074c57441a9cd8ce96e0258935007dd8f9140552a5554779e9bfbc3e92d33bbd"
+      },
+      "current_context": {
+        "bytes": 892,
+        "sha256": "65d76586be879d212d92ec13702ef7e450700fd22422f83fbbfea475610073c0"
+      },
+      "exact_descriptor": {
+        "bytes": 892,
+        "sha256": "40380227cc5e24cb42410fab76c9f47dac696bfb5aabe87c3ab6caeaebfebe2a"
+      },
+      "require_failed_ancestor_tail": {
+        "derived": {
+          "bytes": 2954,
+          "sha256": "eabbc679c606c3472a3b6fbe79e12b94240e5035d916a7eb416e0ec20b67d974"
+        },
+        "only_explicit_result_consumption_changed": true,
+        "original": {
+          "bytes": 2819,
+          "sha256": "cde3afc48b79e69c73309046ffd3b09a9199f4675013dc3a80d8c141e8e413d4"
+        }
+      },
+      "reviewed_source_parent_records": {
+        "bytes": 4465,
+        "sha256": "b3578fdfb2b65caa8f0c9d5743c6fba8a1a142453f3c8c8b758a10a6a1287558"
+      },
+      "source_parent_boundary_from_original": {
+        "derived": {
+          "bytes": 1333,
+          "sha256": "10a073dc701b71d838312e366c3e7b786041d6d91e41aae4613808d4b31e71d1"
+        },
+        "only_explicit_result_consumption_changed": true,
+        "original": {
+          "bytes": 1266,
+          "sha256": "7f7663d1aebdbde1c5ba21b8df82712d0ee70aab677fb071178ddf75a458d81c"
+        }
+      },
+      "source_parent_closed_boundary_originals": {
+        "derived": {
+          "bytes": 845,
+          "sha256": "31c90b112c59c3852b44236a141effd4d72533cfabd47429b3b1bcbbf2dde86e"
+        },
+        "only_explicit_result_consumption_changed": true,
+        "original": {
+          "bytes": 776,
+          "sha256": "a141aa2230fdedcadf1a49f5f19efbddda884061b419b9920d23b6e026016c60"
+        }
+      }
+    },
+    "original_call_graph": {
+      "dynamic_edges": [
+        "fresh bound v3 constructor and reader methods",
+        "unchanged non-source-parent historical dispatch readers",
+        "explicit retained-stage original callback"
+      ],
+      "edges": {
+        "CurrentPropertyParentReader": [],
+        "SourceParentReader": [],
+        "_current_property_parent_reader": [
+          "CurrentPropertyParentReader",
+          "inventory_value",
+          "original",
+          "reviewed_source_sha256"
+        ],
+        "_retained_property_parent_original": [
+          "property_parent_records"
+        ],
+        "_source_parent_original": [
+          "reviewed_source_parent_records"
+        ],
+        "boundary_from_original": [
+          "_retained_property_parent_original",
+          "_source_parent_original",
+          "boundary_value",
+          "codec_diagnostic_parent_from_original",
+          "current_context",
+          "diagnostic_parent_from_original",
+          "exact_descriptor",
+          "is_property_parent_ancestor",
+          "non_native_sidebranch",
+          "property_parent_reader",
+          "property_parent_records",
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_diagnostic_parent_ancestor",
+          "reviewed_source_parent_records",
+          "reviewed_stack_diagnostic_parent_ancestor",
+          "reviewed_v3_runtime_diagnostic_ancestor",
+          "source_parent_boundary_from_original",
+          "stack_diagnostic_parent_from_original",
+          "v3_runtime_diagnostic_from_original"
+        ],
+        "boundary_value": [
+          "current_context",
+          "current_retained_failed_staged_binding",
+          "current_retained_failed_transport_binding",
+          "current_retained_preaccept_binding",
+          "current_retained_stage_binding",
+          "current_sidebranch_bindings",
+          "exact_descriptor",
+          "non_native_sidebranch",
+          "reviewed_source_sha256"
+        ],
+        "closed_boundary_originals": [
+          "_retained_property_parent_original",
+          "_source_parent_original",
+          "boundary_from_original",
+          "closure_matches",
+          "current_closure_sidebranches",
+          "inventory_value",
+          "is_codec_diagnostic_parent_ancestor",
+          "is_diagnostic_parent_ancestor",
+          "is_stack_diagnostic_parent_ancestor",
+          "is_v3_runtime_diagnostic_ancestor",
+          "property_parent_reader",
+          "source_parent_closed_boundary_originals"
+        ],
+        "closure_matches": [
+          "non_native_sidebranch",
+          "preserve_non_native_private"
+        ],
+        "codec_diagnostic_parent_boundary_value": [
+          "codec_diagnostic_parent_context",
+          "exact_descriptor",
+          "non_native_sidebranch"
+        ],
+        "codec_diagnostic_parent_context": [],
+        "codec_diagnostic_parent_from_original": [
+          "codec_diagnostic_parent_boundary_value",
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_diagnostic_parent_ancestor"
+        ],
+        "compose_current_sidebranch_inventory": [
+          "original",
+          "reviewed_source_sha256"
+        ],
+        "current_closure_sidebranches": [
+          "current_retained_failed_staged_binding",
+          "current_retained_failed_transport_binding",
+          "current_retained_preaccept_binding",
+          "current_retained_stage_binding",
+          "current_sidebranch_bindings",
+          "preserve_non_native_sidebranches",
+          "preserve_retained_failed_staged",
+          "preserve_retained_failed_transport",
+          "preserve_retained_preaccept",
+          "preserve_retained_unstarted_stage",
+          "retained_unstarted_stage",
+          "validate_retained_fixture_observations",
+          "validate_retained_stage_parent_profiles"
+        ],
+        "current_context": [
+          "require_current_revision",
+          "reviewed_diag02_non_native_record"
+        ],
+        "current_retained_failed_staged_binding": [
+          "retained_failed_staged"
+        ],
+        "current_retained_failed_transport_binding": [
+          "retained_failed_transport_adapter"
+        ],
+        "current_retained_preaccept_binding": [
+          "retained_preaccept"
+        ],
+        "current_retained_stage_binding": [],
+        "current_sidebranch_bindings": [
+          "non_native_sidebranches"
+        ],
+        "diag02_non_native_sidebranch": [
+          "compose_current_sidebranch_inventory",
+          "inventory_value",
+          "original",
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_diag02_non_native_record"
+        ],
+        "diagnostic_parent_boundary_value": [
+          "diagnostic_parent_context",
+          "exact_descriptor",
+          "non_native_sidebranch"
+        ],
+        "diagnostic_parent_context": [],
+        "diagnostic_parent_from_original": [
+          "diagnostic_parent_boundary_value",
+          "reviewed_diagnostic_parent_ancestor",
+          "reviewed_property_parent_ancestors"
+        ],
+        "exact_descriptor": [],
+        "inventory_value": [],
+        "is_codec_diagnostic_parent_ancestor": [
+          "reviewed_codec_diagnostic_parent_ancestor"
+        ],
+        "is_diagnostic_parent_ancestor": [
+          "reviewed_diagnostic_parent_ancestor"
+        ],
+        "is_property_parent_ancestor": [
+          "reviewed_property_parent_ancestors"
+        ],
+        "is_stack_diagnostic_parent_ancestor": [
+          "reviewed_stack_diagnostic_parent_ancestor"
+        ],
+        "is_v3_runtime_diagnostic_ancestor": [
+          "reviewed_v3_runtime_diagnostic_ancestor"
+        ],
+        "non_native_sidebranch": [
+          "compose_current_sidebranch_inventory",
+          "exact_descriptor",
+          "inventory_value",
+          "original",
+          "reviewed_pre_policy_ancestor"
+        ],
+        "non_native_sidebranches": [
+          "diag02_non_native_sidebranch",
+          "non_native_sidebranch",
+          "preserve_non_native_private"
+        ],
+        "original": [
+          "exact_descriptor"
+        ],
+        "preserve_non_native_private": [
+          "inventory_value"
+        ],
+        "preserve_non_native_sidebranches": [
+          "preserve_non_native_private"
+        ],
+        "preserve_retained_failed_staged": [
+          "inventory_value",
+          "retained_failed_staged",
+          "retained_failed_staged_reader"
+        ],
+        "preserve_retained_failed_transport": [
+          "retained_failed_transport_adapter"
+        ],
+        "preserve_retained_preaccept": [
+          "inventory_value",
+          "retained_preaccept",
+          "retained_preaccept_reader"
+        ],
+        "preserve_retained_unstarted_stage": [
+          "inventory_value",
+          "retained_stage_verifier",
+          "retained_unstarted_stage"
+        ],
+        "property_parent_reader": [
+          "_current_property_parent_reader",
+          "reviewed_environment_parent_ancestor",
+          "reviewed_failed_ancestor",
+          "reviewed_pre_policy_ancestor"
+        ],
+        "property_parent_records": [
+          "reviewed_environment_parent_ancestor",
+          "reviewed_failed_ancestor",
+          "reviewed_pre_policy_ancestor",
+          "reviewed_property_parent_ancestors"
+        ],
+        "require_current_revision": [
+          "reviewed_property_parent_ancestors"
+        ],
+        "require_failed_ancestor_tail": [
+          "boundary_value",
+          "reviewed_source_parent_records",
+          "source_parent_reader"
+        ],
+        "require_retained_failed_transport_sources": [],
+        "retained_failed_staged": [
+          "inventory_value",
+          "retained_failed_staged_read_pinned",
+          "retained_failed_staged_reader"
+        ],
+        "retained_failed_staged_read_pinned": [
+          "retained_preaccept_read_pinned"
+        ],
+        "retained_failed_staged_reader": [
+          "retained_failed_staged_read_pinned"
+        ],
+        "retained_failed_transport_adapter": [
+          "inventory_value",
+          "require_retained_failed_transport_sources",
+          "retained_failed_staged_read_pinned"
+        ],
+        "retained_preaccept": [
+          "inventory_value",
+          "retained_preaccept_read_pinned",
+          "retained_preaccept_reader"
+        ],
+        "retained_preaccept_read_pinned": [
+          "retained_preaccept_reader"
+        ],
+        "retained_preaccept_reader": [],
+        "retained_stage_verifier": [],
+        "retained_unstarted_stage": [
+          "inventory_value",
+          "original",
+          "retained_stage_verifier"
+        ],
+        "reviewed_codec_diagnostic_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_diag02_non_native_record": [
+          "exact_descriptor"
+        ],
+        "reviewed_diagnostic_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_environment_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_failed_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_pre_policy_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_property_parent_ancestors": [
+          "exact_descriptor"
+        ],
+        "reviewed_source_parent_records": [
+          "exact_descriptor",
+          "reviewed_v3_runtime_diagnostic_ancestor"
+        ],
+        "reviewed_source_sha256": [],
+        "reviewed_stack_diagnostic_parent_ancestor": [
+          "exact_descriptor"
+        ],
+        "reviewed_v3_runtime_diagnostic_ancestor": [
+          "exact_descriptor"
+        ],
+        "source_parent_boundary_from_original": [
+          "_source_parent_original",
+          "reviewed_source_parent_records",
+          "source_parent_reader"
+        ],
+        "source_parent_closed_boundary_originals": [
+          "source_parent_boundary_from_original",
+          "source_parent_reader"
+        ],
+        "source_parent_homes": [
+          "reviewed_source_parent_records"
+        ],
+        "source_parent_reader": [
+          "SourceParentReader"
+        ],
+        "stack_diagnostic_parent_boundary_value": [
+          "current_sidebranch_bindings",
+          "exact_descriptor",
+          "non_native_sidebranch",
+          "stack_diagnostic_parent_context"
+        ],
+        "stack_diagnostic_parent_context": [],
+        "stack_diagnostic_parent_from_original": [
+          "reviewed_codec_diagnostic_parent_ancestor",
+          "reviewed_stack_diagnostic_parent_ancestor",
+          "stack_diagnostic_parent_boundary_value"
+        ],
+        "v3_runtime_diagnostic_boundary_value": [
+          "current_sidebranch_bindings",
+          "exact_descriptor",
+          "non_native_sidebranch",
+          "v3_runtime_diagnostic_context"
+        ],
+        "v3_runtime_diagnostic_context": [],
+        "v3_runtime_diagnostic_from_original": [
+          "reviewed_stack_diagnostic_parent_ancestor",
+          "reviewed_v3_runtime_diagnostic_ancestor",
+          "v3_runtime_diagnostic_boundary_value"
+        ],
+        "validate_retained_fixture_observations": [],
+        "validate_retained_stage_parent_profiles": [
+          "inventory_value",
+          "preserve_retained_failed_staged",
+          "preserve_retained_preaccept",
+          "retained_failed_staged",
+          "retained_preaccept",
+          "source_parent_homes"
+        ]
+      },
+      "entry_points": [
+        "source_parent_boundary_from_original",
+        "source_parent_closed_boundary_originals",
+        "require_failed_ancestor_tail",
+        "boundary_from_original",
+        "closed_boundary_originals",
+        "inventory_value"
+      ],
+      "not_full_production_IO_metering": true,
+      "reachable_class_count": 2,
+      "reachable_function_count": 75,
+      "reachable_names": [
+        "CurrentPropertyParentReader",
+        "SourceParentReader",
+        "_current_property_parent_reader",
+        "_retained_property_parent_original",
+        "_source_parent_original",
+        "boundary_from_original",
+        "boundary_value",
+        "closed_boundary_originals",
+        "closure_matches",
+        "codec_diagnostic_parent_boundary_value",
+        "codec_diagnostic_parent_context",
+        "codec_diagnostic_parent_from_original",
+        "compose_current_sidebranch_inventory",
+        "current_closure_sidebranches",
+        "current_context",
+        "current_retained_failed_staged_binding",
+        "current_retained_failed_transport_binding",
+        "current_retained_preaccept_binding",
+        "current_retained_stage_binding",
+        "current_sidebranch_bindings",
+        "diag02_non_native_sidebranch",
+        "diagnostic_parent_boundary_value",
+        "diagnostic_parent_context",
+        "diagnostic_parent_from_original",
+        "exact_descriptor",
+        "inventory_value",
+        "is_codec_diagnostic_parent_ancestor",
+        "is_diagnostic_parent_ancestor",
+        "is_property_parent_ancestor",
+        "is_stack_diagnostic_parent_ancestor",
+        "is_v3_runtime_diagnostic_ancestor",
+        "non_native_sidebranch",
+        "non_native_sidebranches",
+        "original",
+        "preserve_non_native_private",
+        "preserve_non_native_sidebranches",
+        "preserve_retained_failed_staged",
+        "preserve_retained_failed_transport",
+        "preserve_retained_preaccept",
+        "preserve_retained_unstarted_stage",
+        "property_parent_reader",
+        "property_parent_records",
+        "require_current_revision",
+        "require_failed_ancestor_tail",
+        "require_retained_failed_transport_sources",
+        "retained_failed_staged",
+        "retained_failed_staged_read_pinned",
+        "retained_failed_staged_reader",
+        "retained_failed_transport_adapter",
+        "retained_preaccept",
+        "retained_preaccept_read_pinned",
+        "retained_preaccept_reader",
+        "retained_stage_verifier",
+        "retained_unstarted_stage",
+        "reviewed_codec_diagnostic_parent_ancestor",
+        "reviewed_diag02_non_native_record",
+        "reviewed_diagnostic_parent_ancestor",
+        "reviewed_environment_parent_ancestor",
+        "reviewed_failed_ancestor",
+        "reviewed_pre_policy_ancestor",
+        "reviewed_property_parent_ancestors",
+        "reviewed_source_parent_records",
+        "reviewed_source_sha256",
+        "reviewed_stack_diagnostic_parent_ancestor",
+        "reviewed_v3_runtime_diagnostic_ancestor",
+        "source_parent_boundary_from_original",
+        "source_parent_closed_boundary_originals",
+        "source_parent_homes",
+        "source_parent_reader",
+        "stack_diagnostic_parent_boundary_value",
+        "stack_diagnostic_parent_context",
+        "stack_diagnostic_parent_from_original",
+        "v3_runtime_diagnostic_boundary_value",
+        "v3_runtime_diagnostic_context",
+        "v3_runtime_diagnostic_from_original",
+        "validate_retained_fixture_observations",
+        "validate_retained_stage_parent_profiles"
+      ],
+      "static_name_reference_overapproximation": true
+    },
+    "original_current_inventory_function": {
+      "bytes": 3788,
+      "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+    },
+    "replacements": [
+      {
+        "derived": {
+          "bytes": 2752,
+          "sha256": "e88869f1f9c400f3c86fbb3bf33374f9a80d3151778b354551a12669abf06951"
+        },
+        "original": {
+          "bytes": 4476,
+          "sha256": "cf47f2b333de689fa0af1841037fa33291a0fc05b475810d6ab022ba3f273efa"
+        },
+        "site": "new-explicit-reader-selector-and-envelope-consumer"
+      },
+      {
+        "derived": {
+          "bytes": 863,
+          "sha256": "8c0465382274d0078d2232401bc2efb54fa1fbaa646c32504bc2103373a5fd76"
+        },
+        "original": {
+          "bytes": 504,
+          "sha256": "d9a3095e5f9dd5e4882b4f9539b64464d0d8c194a90f98ac175d213c3d7370b5"
+        },
+        "site": "separate-frozen-data-and-new-execution-identities"
+      },
+      {
+        "derived": {
+          "bytes": 258621,
+          "sha256": "91bea37158496f67bbe3c27130a3c4c37a1dfe20d687fa75ef6c1ae3bc7babbf"
+        },
+        "original": {
+          "bytes": 258501,
+          "sha256": "9e15d3be5ff2ab13e0a98b16a5668506edfe54f9a8b13167873f7cc507e2abef"
+        },
+        "site": "ten-frozen-publisher-data-anchor-calls"
+      },
+      {
+        "derived": {
+          "bytes": 3827,
+          "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+        },
+        "original": {
+          "bytes": 3788,
+          "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+        },
+        "site": "current-inventory-root-prefix-predicate"
+      },
+      {
+        "derived": {
+          "bytes": 127,
+          "sha256": "b95676d6f29fa235a6e077f423979bca3d9fbac0deaae31804e93fbacb457841"
+        },
+        "original": {
+          "bytes": 127,
+          "sha256": "b6cf57dca6b7728c4e2fbbd6884b5ebaefc8725985086f81ef6dd43f0c699715"
+        },
+        "site": "current-property-helper-new-pin"
+      },
+      {
+        "derived": {
+          "bytes": 56,
+          "sha256": "4e3887353eeec1b5a7ced870246b49f1c500f34c49da5b5b9156c7e46297466b"
+        },
+        "original": {
+          "bytes": 58,
+          "sha256": "132a6c9fe21df6c8686c7552c1d0c81b577f00a52a584400e4637f86fd3224c2"
+        },
+        "site": "property-composition-execution-identity"
+      },
+      {
+        "derived": {
+          "bytes": 79,
+          "sha256": "2155a5cf2df9ecf054ee201dea84ff651a4524c48a86278f1fc2f1a92e3459b4"
+        },
+        "original": {
+          "bytes": 81,
+          "sha256": "12a89ffc3fad50d448a5ba6032c18e1a642b5bfa349f0011ab09cf2192171659"
+        },
+        "site": "sidebranch-composition-execution-identity"
+      },
+      {
+        "derived": {
+          "bytes": 62,
+          "sha256": "f80a9102f69ac94c044cbd458a3c44e0a59d5205468893f21d8738944093d0ec"
+        },
+        "original": {
+          "bytes": 64,
+          "sha256": "c3ffd9b7d2a4c9ecb393782b53395f9b21ef5c0bcf135dba704f79ddb3de1404"
+        },
+        "site": "property-composition-new-schema"
+      },
+      {
+        "derived": {
+          "bytes": 62,
+          "sha256": "8b7358e2c1efd92f90948a8b603dc1692b75c4ae8cf2da628fa2fdb395e44c12"
+        },
+        "original": {
+          "bytes": 63,
+          "sha256": "f7a452c955468565c9477e0fb1d8d7e171bf106fc32a460e62421805a4ec933b"
+        },
+        "site": "sidebranch-composition-new-schema"
+      },
+      {
+        "derived": {
+          "bytes": 277,
+          "sha256": "96e73d2ade3aa53c354f8c99702dbf25ff1ef8742bdcaccec08d63a31632ec07"
+        },
+        "original": {
+          "bytes": 210,
+          "sha256": "cb1d143f2a420fe73f1670cfcbc156d38743440625e7148110d5d157f49e331a"
+        },
+        "site": "outer-boundary-consumes-new-envelope"
+      },
+      {
+        "derived": {
+          "bytes": 341,
+          "sha256": "e438e7864e660024ac21b830ae4e73c7177e404c21a8a393f9c9fcef3203a3de"
+        },
+        "original": {
+          "bytes": 272,
+          "sha256": "ec9761db56d29c6f59d821e8454808f053a4b2bfaedbf710de9828a2246a7681"
+        },
+        "site": "outer-closure-consumes-new-envelope"
+      },
+      {
+        "derived": {
+          "bytes": 271,
+          "sha256": "ab79a17cf00d4c4c92978e21da57188e5f215d07ddd8c5b25850f2e461b0d063"
+        },
+        "original": {
+          "bytes": 200,
+          "sha256": "38ef40dcc76fe224b3956d494fdf1377b1916192a91bedc291becc1423b949eb"
+        },
+        "site": "tail-prefix-consumes-new-envelope"
+      },
+      {
+        "derived": {
+          "bytes": 110,
+          "sha256": "a3115fedd3caf7399e7cbbcd5fd61f1821576c483a1afec027b16c2d64176285"
+        },
+        "original": {
+          "bytes": 46,
+          "sha256": "cc3fd6fee80a26c30d5ae5342e5898585d4b558afc355f6bb813c857edd0648a"
+        },
+        "site": "tail-check-consumes-new-envelope"
+      }
+    ],
+    "whole_byte_inverse_verified": true
+  },
+  "v1_current_inventory_selected": true,
+  "v2_retained_r9_adapter_selected": false,
+  "v3_bound_loader_source": {
+    "bytes": 1023,
+    "sha256": "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca"
+  },
+  "v3_complete_reader_selected_by_real_current_consumers": true,
+  "v3_constructor_source": {
+    "bytes": 19589,
+    "sha256": "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42"
+  },
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

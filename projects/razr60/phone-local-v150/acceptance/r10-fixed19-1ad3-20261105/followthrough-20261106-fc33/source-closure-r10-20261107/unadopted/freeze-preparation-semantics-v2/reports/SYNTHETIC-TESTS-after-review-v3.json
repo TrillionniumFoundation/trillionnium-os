@@ -1,0 +1,1 @@
+{"actual_future_freeze_or_controller_attested":false,"implementation":{"bytes":30816,"sha256":"7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d"},"negative_cases":105,"new_nonces":0,"new_phone_calls":0,"result":"PASS","runtime_admission":false,"schema":"hepta.UNADOPTED.source-freeze-synthetic-tests.v1","synthetic_originals_only":true,"tests":12}

@@ -1,0 +1,56 @@
+{
+  "schema": "razr.preserved-ui-five-packages.bootstrap.v4",
+  "slot": "r57-ui18-source-d8d7e73f9c6c-20261101-root12",
+  "SystemUI_sha256": "2d92780fb72f7ee7167c7c7ac56fbd0b12d687f49ea0cfedfd4017294568f16f",
+  "execution_host": "alex-G1628-04",
+  "server_pids": {
+    "5037": 281997,
+    "5061": 39400
+  },
+  "guest_fingerprint": "motorola/trillionnium_leap/leap:17/CSV1.260518.010/eng.qq:userdebug/test-keys",
+  "vbmeta_digest": "f875b479bc3a3d955e7bb2dfeb7c4ba16f874b5d020c331ec458b7d96155d165",
+  "packages": [
+    {
+      "package": "com.android.launcher3",
+      "name": "home-c627",
+      "kind": "HOME",
+      "sha256": "c627fe7cc456d03e1df4842a17ba89560c0f7921736848ae55b9047f5fb15f6e",
+      "baseline_sha256": "1b079cefcf24e1cfe8449124094d5fb6a5fe260666d7fd8b8b39a27f5d096250",
+      "source": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/home-c627.apk"
+    },
+    {
+      "package": "org.trillionnium.owneropen",
+      "name": "hepta49",
+      "kind": "HEPTA",
+      "sha256": "56c4e302cbe7448dffc9a0d8cfa8db2c2cb019fcb055fab36b815105dd55592f",
+      "baseline_sha256": "185bbbdfa0c4ab5b8f4a666f82b44c50e8f11d356f39af6572924e5cc7c4b12d",
+      "source": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/hepta49.apk"
+    },
+    {
+      "package": "org.trillionnium.ui.moto.systemui.qs.v1",
+      "name": "qs",
+      "kind": "RRO",
+      "sha256": "141198f39aad6c3a08effe8094dcf3438413b0fff0eef9b073f77c48fc5d04de",
+      "baseline_sha256": null,
+      "source": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/qs.apk"
+    },
+    {
+      "package": "org.trillionnium.ui.moto.systemui.volumepower.v1",
+      "name": "volumepower",
+      "kind": "RRO",
+      "sha256": "9a1b6d1014a9b0e212b36e8a16efa6af35ee5146d04e2e88fe0249c85b7f3b54",
+      "baseline_sha256": null,
+      "source": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/volumepower.apk"
+    },
+    {
+      "package": "org.trillionnium.ui.moto.systemui.keyguard.v1",
+      "name": "keyguard",
+      "kind": "RRO",
+      "sha256": "68a174e07d8ce0fcede333ea1f609bd1f2aed5832b150a62499da8fab5f56fa0",
+      "baseline_sha256": null,
+      "source": "/home/alex/codex-preserved-ui-root12-materials-20261101-01/keyguard.apk"
+    }
+  ],
+  "bundle_sha256": "d8d7e73f9c6cf9f185618ef8a633838567ac408913f663b4191787cb3548ba8c",
+  "status": "FROZEN_SOURCE_READY_FOR_ROOT_CURRENT_GUEST_CAPTURE_NOT_EXECUTED"
+}

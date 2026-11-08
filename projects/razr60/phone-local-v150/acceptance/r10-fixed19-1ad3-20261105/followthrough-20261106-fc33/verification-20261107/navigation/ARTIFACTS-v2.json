@@ -1,0 +1,102 @@
+{
+  "candidate_adopted": false,
+  "files": {
+    "NAVIGATION-SOURCE-CONTROLS.json": {
+      "bytes": 4308,
+      "sha256": "128be27b23a4376abc0484cf6f7661f6d03a7bdaee04e9722ec983f618686bf7"
+    },
+    "SENDER-DEPENDENCY-REVIEW.md": {
+      "bytes": 8566,
+      "sha256": "991f8d8a9f8b10c5ab188dcc276781087b387eccc1a9f5007b465f6bb677650e"
+    },
+    "candidate/DERIVATION.json": {
+      "bytes": 453,
+      "sha256": "029340d1fc37cb036413d887e506577243780b77df579bd07b34da13e3b9dcf1"
+    },
+    "candidate/SHELL-DEADLINE.patch": {
+      "bytes": 5209,
+      "sha256": "86fd7b27269f51447226422c67fa5418d18050ef5241ccab5f84099bc8f7bdc0"
+    },
+    "candidate/preserved_ui_package_phase_r7.py": {
+      "bytes": 25791,
+      "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0"
+    },
+    "check_navigation_source.py": {
+      "bytes": 5515,
+      "sha256": "61c4b1f64a12bd5b8fa79662c203c3c15847da5f550e26143a7c18d320eb516c"
+    },
+    "check_navigation_source_v2.py": {
+      "bytes": 9067,
+      "sha256": "726c968e0534b6fe7739b794171304816a2db989b09f38b0e630bf7fa9080346"
+    },
+    "check_route_deadline.py": {
+      "bytes": 5021,
+      "sha256": "c923b42feeac7e39129b0bc40293bc3ee24ed6bb2a32cbb6a58511ab71c0950f"
+    },
+    "check_sender_dump_failure.py": {
+      "bytes": 3481,
+      "sha256": "7c0d55e5f6db5b8107a963266e5bc8d44465b3317b4f4867948d7ba59d483d1f"
+    },
+    "dependencies/R6.PUBLIC-SOURCE-SUBSET.README.original.md": {
+      "bytes": 2106,
+      "sha256": "43c36cdd8d8b8c6de46bd1b0b356537978b4f137f89775011649c8f835ea8178"
+    },
+    "dependencies/R6.PUBLIC-SOURCE-SUBSET.original.json": {
+      "bytes": 12186,
+      "sha256": "d2274c70c293cc2a1955348ccd2a7f88320599b37f1b6b8820f934d510423c9d"
+    },
+    "dependencies/control_send_once.py": {
+      "bytes": 6301,
+      "sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70"
+    },
+    "dependencies/control_send_once.read.original.json": {
+      "bytes": 6811,
+      "sha256": "1c394bc93739a762f323547390bcdc970bb2fc41bd069a524ae761421a808177"
+    },
+    "dependencies/physical-fault.SOURCE-MANIFEST.original.json": {
+      "bytes": 8432,
+      "sha256": "e9a4489cd0c01c7f36c9cf597d71f4fd5d6dfe034c802140e9e41edeea7e0654"
+    },
+    "dependencies/preserved_ui_package_phase_r7.py": {
+      "bytes": 24731,
+      "sha256": "6d7597e55af1ba8330029352076b2c6715172056e6ea28dea97b57c7775fd35b"
+    },
+    "evidence-v2/DEPENDENCY-CLOSURE-REVIEW.json": {
+      "bytes": 3325,
+      "sha256": "88849556bc219c1458ae150f74a2ec1362a2556f1ef38e7b3e4e75748329915a"
+    },
+    "evidence-v2/NAVIGATION-ENTRY-INTEGRITY.json": {
+      "bytes": 1280,
+      "sha256": "50bf4b2e024824f308f81af35c180d8e3e05be5c7940a0a4e6fefab95b2662bd"
+    },
+    "evidence-v2/NAVIGATION-SOURCE-CONTROLS.json": {
+      "bytes": 4647,
+      "sha256": "e81e736216869066de9b43123228a13ccab6da1f710c84650d56ea50da0d6c1d"
+    },
+    "evidence-v2/SENDER-DUMP137-CONTROL.json": {
+      "bytes": 1281,
+      "sha256": "0a987d0962e263a4674602416ea9455a6a12c7d5542b5e000a4df302175da93c"
+    },
+    "evidence-v2/SENDER-ROUTE-CANDIDATE.json": {
+      "bytes": 2795,
+      "sha256": "e54c77c1686acec36ac2acd683068422140f09005d5234047702e0315d90ef2f"
+    },
+    "evidence-v2/SENDER-TIMEOUT-BASELINE.json": {
+      "bytes": 954,
+      "sha256": "d0ba3673e0fa7794fbf9589fcf98575db33248236aaf528e136ccd49eff74c38"
+    },
+    "evidence-v2/SENDER-TIMEOUT-CANDIDATE.json": {
+      "bytes": 3360,
+      "sha256": "9a80eb2c819cee20f157f7ea3b74d33924996c8e4d4fea29107eac38d3b59f80"
+    },
+    "reproduce_sender_timeout.py": {
+      "bytes": 7533,
+      "sha256": "606ee163b2bdc957521ecd16fdb646ddcc3a44a22f7e801e0ee8a3030e9fa06d"
+    }
+  },
+  "fixed19_credit": 0,
+  "frozen_R6_changed": false,
+  "phone_calls": 0,
+  "schema": "hepta.sender-dependency-review-artifacts.v1",
+  "source_reference_commit": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d"
+}

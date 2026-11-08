@@ -1,0 +1,750 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_execution": false,
+  "adapter_source": {
+    "bytes": 23623,
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-runtime-dependencies-r10-r1/fc33-r10-01/retained_transport_r9_adapter.py",
+    "sha256": "eaf52438100706edb6734efea64299f6ff1b414485c2c353c9172f7c6f670857"
+  },
+  "adapter_source_limit": 32768,
+  "assembly": {
+    "bytes": 28750,
+    "sha256": "ac4e0fd4c83e206afbb5cd55a35f4691e6a79f741432993423607649157d5469"
+  },
+  "case_credit": 0,
+  "complete_directory_limit": 33554432,
+  "delta": {
+    "bytes": 536920,
+    "sha256": "576b3e70a60c6b9cba427937e12042bbc9cd0c7bc0dfb8813e3e463611b94d4f"
+  },
+  "dependencies": {
+    "bytes": 35360,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/DEPENDENCIES.json",
+    "sha256": "e15ea67c76bcc17a80627abe9a5ff19c79c87a10c977c2643416571f88f26fb7"
+  },
+  "expanded_delta_bytes": 1732184,
+  "future_freeze_terminals_and_current_validation_originals_not_precomputed": true,
+  "late_source": {
+    "bytes": 259866,
+    "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+  },
+  "late_source_limit": 262144,
+  "local_metadata_is_not_remote_original_full9": true,
+  "nonce_draws": 0,
+  "payload_lower_bound": 22561812,
+  "phone_calls": 0,
+  "proof_deployment_original": {
+    "bytes": 1888,
+    "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/r9-retained-transport-package01/DEPLOYMENT.json",
+    "sha256": "f5473230bb37c30cdd697c2e5a5ef35ac45d55679143bb77a68a4e1c123d50a7"
+  },
+  "proof_reader": {
+    "bytes": 34650,
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-nonnative-boundaries-r10-r1/299483481a678cbd589aeba54ed8b68f/READER.py",
+    "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+  },
+  "read_only_local_inputs": [
+    {
+      "bytes": 1460733,
+      "local_metadata": [
+        26,
+        764,
+        33188,
+        0,
+        0,
+        1,
+        1460733,
+        1794068423304655653,
+        1794068423304655653
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r9-actual/FREEZE-RESULT.original.json",
+      "sha256": "a931bdbce572b4a4a61d3ee89686fd453d99e28f9ded407bf76ceeec2beeba1d"
+    },
+    {
+      "bytes": 73225,
+      "local_metadata": [
+        26,
+        699,
+        33152,
+        0,
+        0,
+        1,
+        73225,
+        1794067873941738645,
+        1794067873941738645
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/MANIFEST.json",
+      "sha256": "bcabd6171f84738300b1a1e1bbac5263356339f9d9c5e9ee3079db16ca820734"
+    },
+    {
+      "bytes": 62265,
+      "local_metadata": [
+        26,
+        694,
+        33152,
+        0,
+        0,
+        1,
+        62265,
+        1794067873940843272,
+        1794067873940843272
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/root-chain/SOURCE-MANIFEST.json",
+      "sha256": "7d99108d4160c4ea2775759950f63e4a50ae3c17266ef474c2e182adada82917"
+    },
+    {
+      "bytes": 18092,
+      "local_metadata": [
+        26,
+        683,
+        33152,
+        0,
+        0,
+        1,
+        18092,
+        1794067873938487393,
+        1794067873938487393
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/dependencies/DEPENDENCIES.json",
+      "sha256": "a4fff6b425523d51d5e9df3542a436eed0f057528abb7b43b3c0b69f51bc21bb"
+    },
+    {
+      "bytes": 3707,
+      "local_metadata": [
+        26,
+        682,
+        33152,
+        0,
+        0,
+        1,
+        3707,
+        1794067873938330986,
+        1794067873938330986
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/dependencies/BUDGET.json",
+      "sha256": "a56bbe0ba95a55b4a7102f574435872da1829cdb8445abb4617e4a247ec6c633"
+    },
+    {
+      "bytes": 48643,
+      "local_metadata": [
+        26,
+        702,
+        33152,
+        0,
+        0,
+        1,
+        48643,
+        1794067873942759788,
+        1794067873942759788
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/source/component_lifecycle.py",
+      "sha256": "eb43d1f5df1b0e4295770c82328fd17e09b9eaa766861f3803928a0b1f9f4e18"
+    },
+    {
+      "bytes": 251644,
+      "local_metadata": [
+        26,
+        704,
+        33152,
+        0,
+        0,
+        1,
+        251644,
+        1794067873944239504,
+        1794067873944239504
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/source/late_boundary.py",
+      "sha256": "df022013e154af46bd7c033cba7711d16974bf191fde096b4cce4f397fbbb543"
+    },
+    {
+      "bytes": 30957,
+      "local_metadata": [
+        26,
+        703,
+        33152,
+        0,
+        0,
+        1,
+        30957,
+        1794067873943120243,
+        1794067873943120243
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/source/component_snapshot.py",
+      "sha256": "6e944c4783fa64abe1a2c741a76cc98165122b6e3b709f2147698fdbe0416263"
+    },
+    {
+      "bytes": 114413,
+      "local_metadata": [
+        26,
+        701,
+        33152,
+        0,
+        0,
+        1,
+        114413,
+        1794067873942278841,
+        1794067873942278841
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/source/close_component.py",
+      "sha256": "534a857c9aeabef3a0fb1e714a64f8242ec407fe4f3c6ce699827fff487aeb27"
+    },
+    {
+      "bytes": 47324,
+      "local_metadata": [
+        26,
+        705,
+        33152,
+        0,
+        0,
+        1,
+        47324,
+        1794067873945493969,
+        1794067873945493969
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/runtime/source/send_new_native_guard_task_r10_r4.py",
+      "sha256": "c295a69e3b9fb4f7cd882f7b4eaaddce3147390eb7f160aff8e113c2842cba4f"
+    },
+    {
+      "bytes": 83705,
+      "local_metadata": [
+        26,
+        697,
+        33152,
+        0,
+        0,
+        1,
+        83705,
+        1794067873941321735,
+        1794067873941321735
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/root-chain/source/run_component_root_once.py",
+      "sha256": "68fbb8c6f94f30a6c09946e5965355c9c3c61ea2644ed1109b3a34c6fd0947f0"
+    },
+    {
+      "bytes": 8101,
+      "local_metadata": [
+        26,
+        696,
+        33152,
+        0,
+        0,
+        1,
+        8101,
+        1794067873940991386,
+        1794067873940991386
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/root-chain/source/phone_chain_bridge.py",
+      "sha256": "0d560652a28341c1bed206fc1331c16f7c475adbbb906776bb18288b6efae7ee"
+    },
+    {
+      "bytes": 1888,
+      "local_metadata": [
+        26,
+        2308,
+        33152,
+        0,
+        0,
+        1,
+        1888,
+        1794076393487886384,
+        1794076393487886384
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/r9-retained-transport-package01/DEPLOYMENT.json",
+      "sha256": "f5473230bb37c30cdd697c2e5a5ef35ac45d55679143bb77a68a4e1c123d50a7"
+    },
+    {
+      "bytes": 34650,
+      "local_metadata": [
+        26,
+        2305,
+        33152,
+        0,
+        0,
+        1,
+        34650,
+        1794076393487808286,
+        1794076393487808286
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/r9-retained-transport-package01/verify_retained_transport_r9.py",
+      "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+    },
+    {
+      "bytes": 2174339,
+      "local_metadata": [
+        26,
+        2304,
+        33152,
+        0,
+        0,
+        1,
+        2174339,
+        1794076393486288822,
+        1794076393486288822
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/r9-retained-transport-package01/ORIGINALS.zlib",
+      "sha256": "18da9626e5ae687adb4087b5a5484d9d2a8dc8885fdaabfd57b829ec02d20fd3"
+    },
+    {
+      "bytes": 431,
+      "local_metadata": [
+        26,
+        2306,
+        33152,
+        0,
+        0,
+        1,
+        431,
+        1794076393487849328,
+        1794076393487849328
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/r9-retained-transport-package01/MAC-RETENTION-INPUTS.json",
+      "sha256": "a49f04c7e6be09e9d46b00176b9a0baf4489b12d764abbfe4482f5c839fee01d"
+    },
+    {
+      "bytes": 421,
+      "local_metadata": [
+        26,
+        2307,
+        33152,
+        0,
+        0,
+        1,
+        421,
+        1794076393487868828,
+        1794076393487868828
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/r9-retained-transport-package01/PHONE-RETENTION-INPUTS.json",
+      "sha256": "fb0c324e3bc994b56732fc6c6385ed686b73e138fd47e1e538e32c1a535b945b"
+    },
+    {
+      "bytes": 3000200,
+      "local_metadata": [
+        27,
+        1337188,
+        33152,
+        0,
+        0,
+        1,
+        3000200,
+        1794067292981184478,
+        1794067292981184478
+      ],
+      "path": "/workspace/scratch/d39712953a2d/r8-integration/development01/dependencies/retained-preaccept/ORIGINALS.zlib",
+      "sha256": "4010779b9a3810dc7d0d51072dc76dd52be2327301b857df2b04ddb004a5edca"
+    },
+    {
+      "bytes": 409,
+      "local_metadata": [
+        26,
+        403,
+        33152,
+        0,
+        0,
+        1,
+        409,
+        1794067290361906891,
+        1794067290361906891
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r8-failed-retention-package02/PHONE-RETENTION-INPUTS.json",
+      "sha256": "247ebf979d69cfd5b9b55b5cdbe55b2d1a57c481d3ceb67ef5e4ece91f7d78f6"
+    },
+    {
+      "bytes": 2066079,
+      "local_metadata": [
+        26,
+        402,
+        33152,
+        0,
+        0,
+        1,
+        2066079,
+        1794067290360946030,
+        1794067290360946030
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r8-failed-retention-package02/ORIGINALS.zlib",
+      "sha256": "d66d286bfb7890e0b32358326b669ac4a47d5f4ba43c524bc3f129f5bf631e93"
+    },
+    {
+      "bytes": 96088,
+      "local_metadata": [
+        26,
+        404,
+        33152,
+        0,
+        0,
+        1,
+        96088,
+        1794067290362427416,
+        1794067290362427416
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r8-failed-retention-package02/verify_retained_staged_r8.py",
+      "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+    },
+    {
+      "bytes": 33108,
+      "local_metadata": [
+        26,
+        2198,
+        33152,
+        0,
+        0,
+        1,
+        33108,
+        1794075438318540821,
+        1794075438318540821
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/runtime/source/component_snapshot.py",
+      "sha256": "2b7b682c9af1e02c4e11a0adcea478f6d71cd1373cde59b699e6a01f851a040a"
+    },
+    {
+      "bytes": 118621,
+      "local_metadata": [
+        26,
+        2199,
+        33152,
+        0,
+        0,
+        1,
+        118621,
+        1794075438318586380,
+        1794075438318586380
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/runtime/source/close_component.py",
+      "sha256": "c675f3be675d6e0ffad23c73f80a761d61053404e54b264bdd6d9aba94a0ffb0"
+    },
+    {
+      "bytes": 259261,
+      "local_metadata": [
+        26,
+        2197,
+        33152,
+        0,
+        0,
+        1,
+        259261,
+        1794075438314344033,
+        1794075438314344033
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/runtime/source/late_boundary.py",
+      "sha256": "b41562fffbdca9e4f6d82d3cde74f83cf701c8a75a36457cf8a48f970a554006"
+    },
+    {
+      "bytes": 46058,
+      "local_metadata": [
+        26,
+        2219,
+        33152,
+        0,
+        0,
+        1,
+        46058,
+        1794075598262486247,
+        1794075598262486247
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-orchestration-source01/runtime/source/send_new_native_guard_task_r10_r4.py",
+      "sha256": "2d019f99ace6faa9061c6e886b2ed544c145b3b763fc13d423165d20d41a7b99"
+    },
+    {
+      "bytes": 82673,
+      "local_metadata": [
+        26,
+        2222,
+        33152,
+        0,
+        0,
+        1,
+        82673,
+        1794075598266486354,
+        1794075598266486354
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-orchestration-source01/root-chain/source/run_component_root_once.py",
+      "sha256": "7b0f12a9bdf3a8910da53c894837024c4ef8437f890ad9a9010371c037a4ec35"
+    },
+    {
+      "bytes": 8039,
+      "local_metadata": [
+        26,
+        1860,
+        33152,
+        0,
+        0,
+        1,
+        8039,
+        1794073591809635577,
+        1794073591809635577
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-generation-preparation01/root-chain/source/phone_chain_bridge.py",
+      "sha256": "778de1056af3a6781d1e722a9a7511191ad98f0ff1487b35d4c24a4e6f08de3c"
+    },
+    {
+      "bytes": 24391,
+      "local_metadata": [
+        26,
+        1861,
+        33152,
+        0,
+        0,
+        1,
+        24391,
+        1794073591809635577,
+        1794073591809635577
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-generation-preparation01/prepare_native_bound_components_r10_fc33_UNBOUND.py",
+      "sha256": "752319c82b1d6155c9ced9f15790040cd18f2bdf9febefc169a71e4f74111c8a"
+    },
+    {
+      "bytes": 13228,
+      "local_metadata": [
+        26,
+        2202,
+        33152,
+        0,
+        0,
+        1,
+        13228,
+        1794075438318586380,
+        1794075438318586380
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-runtime-core-development01/dependencies/runtime/retained_transport_r9_adapter.py",
+      "sha256": "f4a1ca8f685fecd792c961b76cbf135bd9d1ee2182e530e87948161680523779"
+    },
+    {
+      "bytes": 19138,
+      "local_metadata": [
+        26,
+        1805,
+        33024,
+        0,
+        0,
+        1,
+        19138,
+        1794073463041818008,
+        1794073463041818008
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/p1-r9-preparation/r9-failure-host-export01/actual/pocket4-originals/originals/chain/material/tree/package/source/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 8645,
+      "local_metadata": [
+        26,
+        687,
+        33152,
+        0,
+        0,
+        1,
+        8645,
+        1794067873939150925,
+        1794067873939150925
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/dependencies/admission/build_fence_plan.py",
+      "sha256": "7089b91b3c1cb93fbca6c3cee28f339819ed9e438d76c8f21004adae31c33313"
+    },
+    {
+      "bytes": 37404,
+      "local_metadata": [
+        26,
+        689,
+        33152,
+        0,
+        0,
+        1,
+        37404,
+        1794067873939477919,
+        1794067873939477919
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/dependencies/admission/verify_retained_preaccept.py",
+      "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+    },
+    {
+      "bytes": 96088,
+      "local_metadata": [
+        26,
+        690,
+        33152,
+        0,
+        0,
+        1,
+        96088,
+        1794067873939913267,
+        1794067873939913267
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r9-whole-development01/dependencies/admission/verify_retained_staged_r8.py",
+      "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+    },
+    {
+      "bytes": 101113,
+      "local_metadata": [
+        26,
+        2173,
+        33188,
+        0,
+        0,
+        1,
+        101113,
+        1794075280027954020,
+        1794075280027954020
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/ci-r8-review/r10-admission-development01/source/bound02_disposition.py",
+      "sha256": "6a40b4982a638c0e8eb4f0e4547f3115d9935d4416a3f0b08f9b0d4b40e56ec5"
+    },
+    {
+      "bytes": 9647,
+      "local_metadata": [
+        26,
+        2174,
+        33188,
+        0,
+        0,
+        1,
+        9647,
+        1794075280028040692,
+        1794075280028040692
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/ci-r8-review/r10-admission-development01/source/admission_entry.py",
+      "sha256": "90dc397ce9d18a1b35f20821a5a35665d55a73d2f254c0069178d695e8c2c4ac"
+    },
+    {
+      "bytes": 10825,
+      "local_metadata": [
+        26,
+        2175,
+        33188,
+        0,
+        0,
+        1,
+        10825,
+        1794075280028067173,
+        1794075280028067173
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/ci-r8-review/r10-admission-development01/source/prepare_fresh_admission_input.py",
+      "sha256": "07e5c8346e6676098a248aab41ac8a4f5fe3e45b90eddef06e833cbc8e43886a"
+    },
+    {
+      "bytes": 6665,
+      "local_metadata": [
+        26,
+        2181,
+        33152,
+        0,
+        0,
+        1,
+        6665,
+        1794075310542135937,
+        1794075310542135937
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/mac-listener-source-publication01/actual01/ACTUAL-PUBLICATION-VERIFICATION.json",
+      "sha256": "1bab4f3f2a105139227380404986e0ebd493f2698c147ad43b7d8aaf74fee619"
+    },
+    {
+      "bytes": 2437,
+      "local_metadata": [
+        26,
+        1733,
+        33188,
+        0,
+        0,
+        1,
+        2437,
+        1794073395438386448,
+        1794073395438386448
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/listener-observation-profile02/MATERIALIZATION.original.json",
+      "sha256": "06bfc3945281e5b935b1f61c8300277d9a0aad9862a566f3ecd535f389c0642f"
+    },
+    {
+      "bytes": 4884,
+      "local_metadata": [
+        26,
+        1737,
+        33188,
+        0,
+        0,
+        1,
+        4884,
+        1794073395438801763,
+        1794073395438801763
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/listener-observation-profile02/ACTUAL-PROFILE-VERIFICATION.json",
+      "sha256": "096f91c5e65004efeebb265a03a4e24c4776bc9956c41e50e3cbbf3f45613497"
+    },
+    {
+      "bytes": 8237,
+      "local_metadata": [
+        26,
+        2161,
+        33152,
+        0,
+        0,
+        1,
+        8237,
+        1794075252317291358,
+        1794075252317291358
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/mac-listener-source-publication01/actual01/UI.original.py",
+      "sha256": "5f69bbac3de71603fbfcea58102af022933146d1b63c20a51fe4645edbdb1ed2"
+    },
+    {
+      "bytes": 41368,
+      "local_metadata": [
+        26,
+        2162,
+        33152,
+        0,
+        0,
+        1,
+        41368,
+        1794075252317309415,
+        1794075252317309415
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/mac-listener-source-publication01/actual01/business.original.py",
+      "sha256": "d57255e520745e59dfad04576862d93091a02658c42bc0fc23e8392db63999c4"
+    },
+    {
+      "bytes": 7578,
+      "local_metadata": [
+        26,
+        1735,
+        33188,
+        0,
+        0,
+        1,
+        7578,
+        1794073395438468422,
+        1794073395438468422
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/listener-observation-profile02/ACTOR.original.py",
+      "sha256": "c74aec49cd4fa84238194242653d5d3798b7f5cdc4659f90bcb50ec0c424902f"
+    },
+    {
+      "bytes": 2416,
+      "local_metadata": [
+        26,
+        1734,
+        33188,
+        0,
+        0,
+        1,
+        2416,
+        1794073395438432918,
+        1794073395438432918
+      ],
+      "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/listener-observation-profile02/CONFIG.original.json",
+      "sha256": "18600d15ae02724db5e630a39a310b2449c5d7fb162a73239bd7f8045164e1a6"
+    }
+  ],
+  "root_manifest": {
+    "bytes": 74044,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/root-chain/SOURCE-MANIFEST.json",
+    "sha256": "43bbc6ac86758d31ed03d55a5cac0e24db5a021b161d2161a4f52a58980d8da2"
+  },
+  "runtime_manifest": {
+    "bytes": 87655,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/runtime/MANIFEST.json",
+    "sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02"
+  },
+  "schema": "hepta.fc33.r10.whole-source-selection.v1",
+  "source_review_required": true,
+  "state": "SOURCE_BOUND_TO_COMPLETE_ACTUAL_R9_PROOF_NOT_FROZEN"
+}

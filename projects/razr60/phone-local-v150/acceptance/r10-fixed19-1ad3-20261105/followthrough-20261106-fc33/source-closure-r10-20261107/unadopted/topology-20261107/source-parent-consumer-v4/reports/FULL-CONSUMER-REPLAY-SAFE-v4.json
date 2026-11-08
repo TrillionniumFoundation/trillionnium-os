@@ -1,0 +1,870 @@
+{
+  "actual_R10_current_dispatch_package": {
+    "bytes": 87655,
+    "sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02"
+  },
+  "actual_R10_plan_data_anchor": {
+    "bytes": 5194,
+    "sha256": "523aa7ce5eb64732ca40fcfba7d78fc30c93689b6acc0c25620ed2972b4d5366"
+  },
+  "all_current_consumer_results_and_rejections_equal": true,
+  "all_original_and_source_bookends_unchanged": true,
+  "all_original_callbacks_equal": true,
+  "bound_loader_source": {
+    "bytes": 1024,
+    "sha256": "5ad647e31d520cb9f473faaa4ef81cd45f1b8d4635569eb19cbb5a9ef62ffffe"
+  },
+  "complete_differential_elapsed_seconds": 80.0007042119978,
+  "complete_production_IO_metering_verified": false,
+  "constructor_rejections": [
+    {
+      "case": "wrong-actual-constructor-declaration",
+      "exception_type": "ValueError",
+      "message": "declared consumer constructor source must equal actual bound compiled bytes"
+    },
+    {
+      "case": "wrong-frozen-current-source",
+      "exception_type": "ValueError",
+      "message": "exact frozen current consumer source"
+    },
+    {
+      "case": "wrong-v3-constructor-source",
+      "exception_type": "ValueError",
+      "message": "exact separately bound v3 constructor and loader sources"
+    },
+    {
+      "case": "wrong-v3-loader-source",
+      "exception_type": "ValueError",
+      "message": "exact separately bound v3 constructor and loader sources"
+    },
+    {
+      "case": "noncallable-original-reader",
+      "exception_type": "ValueError",
+      "message": "explicit dependency bytes and original reader required"
+    }
+  ],
+  "constructor_source": {
+    "bytes": 23887,
+    "sha256": "ce3661cb3726b159da2e85dea6c4a4fc1aaeb8f04ebddcb9ff36061e0b39ec5e"
+  },
+  "consumer_envelope_rejections": [
+    {
+      "case": "schema='hepta.native-guard.exact-source-parent-reader.v1'",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result method or schema differs"
+    },
+    {
+      "case": "method='closed_boundary_originals'",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result method or schema differs"
+    },
+    {
+      "case": "historical_result_is_old_execution_attestation=True",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result cannot promote history, adoption, budget or current credit"
+    },
+    {
+      "case": "production_adopted=True",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result cannot promote history, adoption, budget or current credit"
+    },
+    {
+      "case": "runtime_admission=True",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result cannot promote history, adoption, budget or current credit"
+    },
+    {
+      "case": "current_native_case_credit=False",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result cannot promote history, adoption, budget or current credit"
+    },
+    {
+      "case": "current_native_case_credit=1",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result cannot promote history, adoption, budget or current credit"
+    },
+    {
+      "case": "whole_stage_budget_verified=True",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result cannot promote history, adoption, budget or current credit"
+    },
+    {
+      "case": "historical_result=[]",
+      "exception_type": "ValueError",
+      "message": "derived boundary data projection must be an object"
+    },
+    {
+      "case": "unexpected-field",
+      "exception_type": "ValueError",
+      "message": "exact derived source-parent result envelope required"
+    },
+    {
+      "case": "missing-provenance",
+      "exception_type": "ValueError",
+      "message": "exact derived source-parent result envelope required"
+    },
+    {
+      "case": "wrong-actual-producer-code",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result execution provenance differs"
+    },
+    {
+      "case": "wrong-historical-data-anchor",
+      "exception_type": "ValueError",
+      "message": "derived source-parent result execution provenance differs"
+    }
+  ],
+  "counts": {
+    "constructor_rejections": 5,
+    "consumer_envelope_rejections": 13,
+    "negative_cases": 31,
+    "positive_cases": 16
+  },
+  "current_execution_source": {
+    "bytes": 258924,
+    "sha256": "5b7ca9884a448518e572f1e8c5f9438389f01ea315aa41ae89f5729ccc58a3e9"
+  },
+  "current_native_case_credit": 0,
+  "frozen_current_source": {
+    "bytes": 259866,
+    "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+  },
+  "historical_final04_actual_native_calls": 2,
+  "historical_final04_component_qualified": true,
+  "immutable_fixture_preload_outside_validations": true,
+  "inventory_entries": 3823,
+  "inventory_function": {
+    "bytes": 3827,
+    "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+  },
+  "inventory_original": {
+    "bytes": 1345535,
+    "sha256": "4bd70b72d2a92a6c963912159d9e978fc681a35ddb30c03a2c741700bf47cde4"
+  },
+  "inventory_roots": 44,
+  "live_observation_cache": false,
+  "native_requests": 0,
+  "negative_cases": [
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-boundary-truncated",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "only an exact explicitly reviewed source-parent original is admitted",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-boundary-wrong-type",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent classification requires original bytes",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-unselected-ancestor",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "only an exact explicitly reviewed source-parent original is admitted",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-closure-inventory-truncated",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "closed boundary inventory/closure original bytes differ",
+      "method": "source_parent_closed_boundary_originals"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-closure-truncated",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "closed boundary inventory/closure original bytes differ",
+      "method": "source_parent_closed_boundary_originals"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-boundary-priority-over-bad-closure",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "only an exact explicitly reviewed source-parent original is admitted",
+      "method": "source_parent_closed_boundary_originals"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "generic-context-priority",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "current package/combination cannot reinterpret a historical component",
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "generic-historical-package-reinterpretation",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "current package/combination cannot reinterpret a historical component",
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "generic-raw-descriptor-priority",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "boundary bytes differ from their actual original descriptor",
+      "method": "closed_boundary_originals"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-too-short",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "all exact source-parent originals and the original nine failures are required",
+      "method": "require_failed_ancestor_tail"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-too-long",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "all exact source-parent originals and the original nine failures are required",
+      "method": "require_failed_ancestor_tail"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-reordered",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "fixed property-parent tail was omitted, reordered, altered or duplicated",
+      "method": "require_failed_ancestor_tail"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-duplicate",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "fixed property-parent tail was omitted, reordered, altered or duplicated",
+      "method": "require_failed_ancestor_tail"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-0",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-1",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-2",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-3",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-4",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-5",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-6",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-7",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-field-8",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-exact-path",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "outer-full9-before-bad-inventory",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "source_parent_closed_boundary_originals"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "generic-full9-before-bad-inventory",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "closed_boundary_originals"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-full-prior-identity",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent prefix was omitted, reordered, altered or duplicated",
+      "method": "require_failed_ancestor_tail"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "tail-historical-call-accounting",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "fixed property-parent tail was omitted, reordered, altered or duplicated",
+      "method": "require_failed_ancestor_tail"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "current-inventory-duplicate-root",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "bounded complete inventory required",
+      "method": "inventory_value"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "current-inventory-byte-accounting",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "inventory byte accounting differs",
+      "method": "inventory_value"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 1,
+      "callback_sequence": {
+        "bytes": 461,
+        "sha256": "6ce2649721a07eb4e1cbe2958daa1f0a36fda347d1fa396e0c9d01d64cd445cc"
+      },
+      "case": "consumer-original-read-corruption-0",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "original old39 readback before reconstruction",
+      "method": "source_parent_closed_boundary_originals"
+    },
+    {
+      "accepted": false,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 2,
+      "callback_sequence": {
+        "bytes": 920,
+        "sha256": "ec0b71e7707b1f8db63ab06dc012538b83012ea26acf3349521f17ee76f7977f"
+      },
+      "case": "consumer-original-read-corruption-1",
+      "complete_result_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "old39 original source bookends",
+      "method": "source_parent_closed_boundary_originals"
+    }
+  ],
+  "new_current_prefix_positive_fixture_available": false,
+  "original_raw_report": {
+    "bytes": 81955,
+    "sha256": "41ad8498832cac91b036cf8fe4916bff1120df9413bf7f121b21b39feb21ff10",
+    "storage": "private; not published"
+  },
+  "original_unknown_retained": "UNKNOWN_UNCHANGED",
+  "package_is_dispatch_context_not_new_adoption": true,
+  "phone_calls": 0,
+  "positive_cases": [
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-outer-boundary",
+      "complete_result": {
+        "bytes": 29342,
+        "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "source_parent_boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 2,
+      "callback_sequence": {
+        "bytes": 920,
+        "sha256": "5bddbae35b77e92195d94821356e80f119ae518e47a9935c0ce022e4c53add41"
+      },
+      "case": "complete-outer-closure",
+      "complete_result": {
+        "bytes": 1510750,
+        "sha256": "3a70bbdfb2941dcc90aea523f468783fb4b0ad165f2ea4e2c88477dfca7940d4"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "source_parent_closed_boundary_originals"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-outer-ten-boundary-tail",
+      "complete_result": {
+        "bytes": 5,
+        "sha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "require_failed_ancestor_tail"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 2,
+      "callback_sequence": {
+        "bytes": 920,
+        "sha256": "5bddbae35b77e92195d94821356e80f119ae518e47a9935c0ce022e4c53add41"
+      },
+      "case": "complete-generic-closure-dispatch",
+      "complete_result": {
+        "bytes": 1510750,
+        "sha256": "3a70bbdfb2941dcc90aea523f468783fb4b0ad165f2ea4e2c88477dfca7940d4"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "closed_boundary_originals"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-current-inventory",
+      "complete_result": {
+        "bytes": 1345498,
+        "sha256": "3dc31c5f6f31b4de9c126f1d0bb82c4c6b81a2d2a225a105b33ed23687155809"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "inventory_value"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-00",
+      "complete_result": {
+        "bytes": 29342,
+        "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-01",
+      "complete_result": {
+        "bytes": 21325,
+        "sha256": "fd7766538b0ff88bea73ce66e0de4728caf3771f88c8441bb4d2844fb13b6c66"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-02",
+      "complete_result": {
+        "bytes": 21002,
+        "sha256": "2433dd817e470e9536ec314b6a8e9d395a47053f7c1aba1cd7adee35635843fc"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-03",
+      "complete_result": {
+        "bytes": 9998,
+        "sha256": "621f82a3c071c755f4460f591ac1faa92ec6940b2a19c7a4d76948668abf669e"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-04",
+      "complete_result": {
+        "bytes": 9686,
+        "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-05",
+      "complete_result": {
+        "bytes": 9373,
+        "sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-06",
+      "complete_result": {
+        "bytes": 9078,
+        "sha256": "46b03cd66426395198b4a3093117659d5cfb128cc981815934fc1ea695c97be0"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-07",
+      "complete_result": {
+        "bytes": 8774,
+        "sha256": "eca628a18327146b7710a478fc2c2f716f79d55907b2821666828a0795e2060f"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-08",
+      "complete_result": {
+        "bytes": 4748,
+        "sha256": "3216ab18adcafa0dda95e8a93ad35a2070e7aec286d7a518794918068ce31d12"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 0,
+      "callback_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "case": "complete-generic-boundary-09",
+      "complete_result": {
+        "bytes": 5003,
+        "sha256": "ee008c3b2adec701be4c0bdfd38ca7ac0d650da9b7783f51d3fe4638bfdc5b58"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "boundary_from_original"
+    },
+    {
+      "accepted": true,
+      "callback_order_and_bytes_equal": true,
+      "callback_reads": 2,
+      "callback_sequence": {
+        "bytes": 920,
+        "sha256": "5bddbae35b77e92195d94821356e80f119ae518e47a9935c0ce022e4c53add41"
+      },
+      "case": "repeated-complete-outer-closure",
+      "complete_result": {
+        "bytes": 1510750,
+        "sha256": "3a70bbdfb2941dcc90aea523f468783fb4b0ad165f2ea4e2c88477dfca7940d4"
+      },
+      "complete_result_or_exception_equal": true,
+      "method": "source_parent_closed_boundary_originals"
+    }
+  ],
+  "production_adopted": false,
+  "real_original_chain_length": 10,
+  "repeated_full_closure_revalidated": true,
+  "report_schema": "hepta.UNADOPTED.complete-current-consumer-safe-summary.v4",
+  "retained_r9_adapter_selected": false,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.complete-current-consumer-differential.v1",
+  "state": "PASS",
+  "total_differential_elapsed_is_not_a_stage_budget_measurement": true,
+  "v3_constructor_source": {
+    "bytes": 19589,
+    "sha256": "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42"
+  },
+  "v3_loader_source": {
+    "bytes": 1023,
+    "sha256": "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca"
+  },
+  "validation_environment": "local Linux; preserved immutable real Mac originals and explicit legacy supplement from v3; no new Mac or phone observation",
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

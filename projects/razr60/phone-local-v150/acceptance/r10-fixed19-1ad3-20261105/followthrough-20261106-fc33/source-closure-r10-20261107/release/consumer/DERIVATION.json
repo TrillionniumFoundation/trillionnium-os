@@ -1,0 +1,59 @@
+{
+  "actual_BUILD": null,
+  "actual_READY": null,
+  "actual_freeze_authority": {
+    "controller": {
+      "bytes": 8823,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/R10-FREEZE-CONTROLLER-ORIGINALS.json",
+      "sha256": "d7a4f0aaa6bfd2852ba5395db3296a0b50abfb16fb6fba7c8661d05d422ad881"
+    },
+    "freeze": {
+      "bytes": 1613295,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/FREEZE-RESULT.json",
+      "sha256": "651b4dd0f4f1c32b1928d58480e1adc3f2fcf104884db44b4eac52a0c625ba6d"
+    },
+    "source": {
+      "bytes": 32010,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/freeze_native_bound_runtime_r10_fc33.py",
+      "sha256": "7db072079c16ca6485d3ea6083eec5adf1054ebe0e6850d6eabf352745603b36"
+    }
+  },
+  "actual_install": null,
+  "files": [
+    {
+      "bytes": 4099,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-consumer-r10-bound01/BINDING-PROOF.json",
+      "sha256": "e6c7e282bc0d8f7552ed6f514276e39881b3a9cd68153891d591f92af1af54f7"
+    },
+    {
+      "bytes": 3517,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-consumer-r10-bound01/SOURCE-CHAIN-INPUTS.json",
+      "sha256": "2ea1fd8c8c07f9c91618a822291a3f958a3533e1acea24cc6ec8795833a71bd1"
+    },
+    {
+      "bytes": 45022,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-consumer-r10-bound01/reference/derive_reviewed_release_sources_UNBOUND.py",
+      "sha256": "58e75a532184ecc58cdb438e64610f8e574844bc9fe3f22a8b3d9886623e017e"
+    },
+    {
+      "bytes": 258644,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-consumer-r10-bound01/reference/release_boundaries.UNBOUND.py",
+      "sha256": "85f404f7375fb2bed51a211a5e357f2483eea7aae1b8bc5c7c2b2fe830bf5ac4"
+    },
+    {
+      "bytes": 45298,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-consumer-r10-bound01/source/derive_reviewed_release_sources_BOUND.py",
+      "sha256": "43ee4a755d447f28bf2812a3a0fe463c58efaab06325d7ddfb57153c77a1807a"
+    },
+    {
+      "bytes": 258706,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-release-consumer-r10-bound01/source/release_boundaries.py",
+      "sha256": "41cc001cd5a4c74aea3e9f8b7604c74c49561ba20c29eb9cf7d5b3a78689cce0"
+    }
+  ],
+  "full_source_inverse": true,
+  "new_current_case_originals": null,
+  "phone_calls": 0,
+  "schema": "hepta.fc33.reviewed-source-binding-publication.v1",
+  "state": "SOURCE_BINDING_ONLY_NO_NEW_CASE_QUALIFICATION"
+}

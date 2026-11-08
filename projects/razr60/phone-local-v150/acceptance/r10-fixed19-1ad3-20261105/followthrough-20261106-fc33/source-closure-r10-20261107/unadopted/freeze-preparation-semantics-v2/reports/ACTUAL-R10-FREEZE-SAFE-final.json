@@ -1,0 +1,121 @@
+{
+  "actual_full9_and_complete_tree_bookends": true,
+  "actual_new_generation_freeze_created": false,
+  "all_originals_read_twice": true,
+  "controller_job": {
+    "both_streams_eof": true,
+    "exit_code": 0,
+    "job_id": "1a1b8fc9f67-12894-116c",
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "stderr_bytes": 0,
+    "stdout_bytes": 478,
+    "terminal_publication_confirmed": true
+  },
+  "distinct_original_paths": 2091,
+  "elapsed_seconds": 0.7592445,
+  "existing_freezer_or_preparer_executed": false,
+  "first_version_reference": {
+    "full_report_original": {
+      "bytes": 16317,
+      "sha256": "2c48ada28a9f899c03496732cf9468efcf3707872e457d4ae1274e2ba5d7aad1"
+    },
+    "implementation": {
+      "bytes": 29324,
+      "sha256": "4687627556c69b6586379acdf280f237dc06a57f9d45f03494224f5bee53d08e"
+    },
+    "is_current_implementation_evidence": false,
+    "job_id": "1a1b8ee5a10-12894-1146",
+    "state": "PASS"
+  },
+  "fixture_kind": "actual existing R10 host files, newly read; historical source facts only",
+  "frozen_payload_files": 170,
+  "full_report_original": {
+    "bytes": 16612,
+    "sha256": "153704c7cf2087a593868953020935c35758dda15bb8b4f8b2a734202374fb7f"
+  },
+  "historical_contract": {
+    "bytes": 1950,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/source-integration-audit-20261107-child/freeze-preparation-semantics-v2-review02/actual-r10-reference-final/HISTORICAL-REFERENCE-CONTRACT.json",
+    "sha256": "73f0c6f93b4fdbf49182099040ea41ce678bc8094212b0ed294e524431905f9e"
+  },
+  "historical_membership": {
+    "bytes": 1245380,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/source-integration-audit-20261107-child/freeze-preparation-semantics-v2-review02/actual-r10-reference-final/HISTORICAL-REFERENCE-MEMBERSHIP.json",
+    "sha256": "971b52613e6b60a07f957efb35a6a9b6b4a8aa4afa145a68bef08243549fc188"
+  },
+  "historical_membership_adapter_is_new_generation_review_plan": false,
+  "implementation": {
+    "bytes": 30816,
+    "sha256": "7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d"
+  },
+  "loader": {
+    "bytes": 903,
+    "sha256": "c1d9746e631b445c82af307d0f53b48834ad980e040e4c533749f0c68a0affd0"
+  },
+  "native_submissions": 0,
+  "new_generation_entry_refused_before_provider": true,
+  "new_generation_provider_calls": 0,
+  "new_nonces": 0,
+  "new_phone_calls": 0,
+  "original_bytes_read": 656407629,
+  "original_effect_counts_changed": false,
+  "original_file_opens": 4183,
+  "original_input_files": 1917,
+  "private_original_bodies_or_readset_included": false,
+  "readset_sha256": "8779b29b113f2f484302c693cd0ded332467bd58d49759baf00db3f49c6bec8d",
+  "result_sha256": "7a04bd4b25bbb7caaa006948e1a4ba4135bdce4e90cfeb1c3f2da0cc661c0aa2",
+  "retained_controller": {
+    "bytes": 8823,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/R10-FREEZE-CONTROLLER-ORIGINALS.json",
+    "sha256": "d7a4f0aaa6bfd2852ba5395db3296a0b50abfb16fb6fba7c8661d05d422ad881"
+  },
+  "retained_freeze": {
+    "bytes": 1613295,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/FREEZE-RESULT.json",
+    "sha256": "651b4dd0f4f1c32b1928d58480e1adc3f2fcf104884db44b4eac52a0c625ba6d"
+  },
+  "retained_freezer": {
+    "bytes": 32010,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/followthrough-fc33-runtime-r10-review01/freeze_native_bound_runtime_r10_fc33.py",
+    "sha256": "7db072079c16ca6485d3ea6083eec5adf1054ebe0e6850d6eabf352745603b36"
+  },
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.actual-retained-R10-source-freeze-replay.v1",
+  "state": "PASS",
+  "verified_result_scope": {
+    "current_native_case_credit": 0,
+    "external_input_count": 1917,
+    "formal_BUILD_release_sealed": false,
+    "fresh_execution_eligible": false,
+    "frozen_member_count_including_terminal_copies": 172,
+    "implementation": {
+      "bytes": 30816,
+      "sha256": "7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d"
+    },
+    "manifest_member_counts": [
+      38,
+      3,
+      17
+    ],
+    "membership_plan_review_authority_verified": false,
+    "nonce_creation_authorized": false,
+    "observations": {
+      "directories": 30,
+      "files": 2091,
+      "observation_provider_implementation_attested": false,
+      "observations_proven_live": false,
+      "supplied_full9_and_census_consistency_checked": true
+    },
+    "phone_calls_authorized": false,
+    "production_adopted": false,
+    "reservation_authorized": false,
+    "runtime_admission": false,
+    "runtime_import_dependency_semantics_reverified": false,
+    "source_build_reproducibility_verified": false,
+    "source_freezer_executed_by_this_verifier": false,
+    "state": "SOURCE_FREEZE_AND_CONTROLLER_SEMANTICS_CHECKED_NO_EXECUTION_GRANT",
+    "whole_stage_budget_verified": false
+  }
+}

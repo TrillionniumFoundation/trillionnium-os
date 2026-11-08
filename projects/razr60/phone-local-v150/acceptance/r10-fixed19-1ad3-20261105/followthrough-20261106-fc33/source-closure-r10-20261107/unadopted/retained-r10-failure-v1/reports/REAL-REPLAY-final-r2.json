@@ -1,0 +1,250 @@
+{
+  "bound_loader": {
+    "bytes": 793,
+    "sha256": "646368153a161538903e5bf23f1109d72c3d9a60f84dc79df163427e615429a6"
+  },
+  "complete_result_equal_across_entrypoints": true,
+  "elapsed_seconds": 0.19728743500309065,
+  "expectation_source": {
+    "bytes": 3722,
+    "sha256": "ab8eef23aefa5c57f9fd9b14ec35bf01bc7160ef77e639c2a72e001649cdc42f"
+  },
+  "fixture_originals": {
+    "collector_source": {
+      "bytes": 20639,
+      "sha256": "0951ef2dde5230c92eadc26b150f65e2e0c920fa3a8e68afde7a565e0499696f"
+    },
+    "controller_metadata": {
+      "bytes": 1218,
+      "sha256": "4a795f710c28749eb244b5d871c2516feeaf6fada26421bcb7eff0b112c33a54"
+    },
+    "export_result": {
+      "bytes": 2432,
+      "sha256": "72ba98e0da0b6f296e9f95079901d3baf3ea53bc641559c596fad103fac5f9c4"
+    },
+    "retained_archive": {
+      "bytes": 4211774,
+      "sha256": "7f89d7ff2b1ffc631dd630936a29cdc4e55203d497708e751aa0078bebd50292"
+    },
+    "retained_index": {
+      "bytes": 148613,
+      "sha256": "4e21b8c6c13843b2a0be85208d6b6d0cfa14b83b02bcdefb3c86f9c1e997740f"
+    },
+    "retained_inputs": {
+      "bytes": 17770,
+      "sha256": "699c548bfdd9d640c1642e92a10f54a487691a3ac121b0c5b97954ebe1e727f9"
+    },
+    "worker_exit": {
+      "bytes": 500,
+      "sha256": "8032887b9c23355240e177c6e2a9e0e3a9e2b45b652581261272d0580d1d386c"
+    },
+    "worker_exit_witness": {
+      "bytes": 207,
+      "sha256": "00d9b265b955fb012b99469407896185976cd9f3c82ff51fabe436ea6cc655e1"
+    },
+    "worker_launch": {
+      "bytes": 166,
+      "sha256": "98e79c70f95c9a4311897f04a600a7e90ecd946b83ad0d98a24ca2b397b2bd7a"
+    },
+    "worker_request": {
+      "bytes": 1265,
+      "sha256": "969b93f030c58f161887434c2a35c2c3dafb6d2774d039167f83670bc22da327"
+    },
+    "worker_started": {
+      "bytes": 270,
+      "sha256": "ede6e8c950064d72c7afee207c62e4a8d8eb360c3b157c490c43a327c2d6bb97"
+    },
+    "worker_stderr": {
+      "bytes": 1874,
+      "sha256": "c096148066c6794f9a0a8c7fb70acbd58b74a43387b5c4bc7fa3dca47be64201"
+    },
+    "worker_stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "fixture_preloaded_immutable_bytes": true,
+  "implementation": {
+    "bytes": 35444,
+    "sha256": "bb9809c6767d4822d1ceab7eb82e2d2386eab0af87592cedb971edc07e092901"
+  },
+  "native_submissions": 0,
+  "phone_calls": 0,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "private_originals_in_public_report": false,
+  "production_adopted": false,
+  "provider_is_preloaded_fixture_not_live_observation": true,
+  "python": "3.12.14",
+  "repeated_provider_calls": 26,
+  "result": {
+    "all_external_runtime_dependencies_reverified": false,
+    "all_retained_member_bytes_and_original_metadata_relations_verified": true,
+    "archive_members_verified": 126,
+    "boot_id": "f8019f83-20a7-4f18-bea1-51c980621e4d",
+    "business_qualified": false,
+    "case_id": "NEG-01",
+    "complete_current_phone_scope_verified": false,
+    "component_qualified": false,
+    "expectation_source": {
+      "bytes": 3722,
+      "sha256": "ab8eef23aefa5c57f9fd9b14ec35bf01bc7160ef77e639c2a72e001649cdc42f"
+    },
+    "fresh_execution_eligible": false,
+    "global_unknown_effect_count": null,
+    "historical_failure_callsite": null,
+    "historical_phone_operator_phases": 5,
+    "implementation": {
+      "bytes": 35444,
+      "sha256": "bb9809c6767d4822d1ceab7eb82e2d2386eab0af87592cedb971edc07e092901"
+    },
+    "label": "root-r10-neg01-fc33-r10-bound01",
+    "live_original_metadata_observed_by_this_function": false,
+    "material_copy_zero_effects_field_is_not_a_zero_file_writes_claim": true,
+    "native_case_credit": 0,
+    "nonce": "4e5480a8952443bd18fa603b81f8efe9",
+    "nonce_creation_authorized": false,
+    "original_actor_elapsed_seconds": 90.29949793312699,
+    "original_actor_error": "TimeoutError",
+    "original_actor_rc": 1,
+    "original_actor_status": "failed_or_unknown_no_retry",
+    "original_host_controller": {
+      "created_unix_ms": 1794087283258,
+      "exit_code": 1,
+      "job_id": "1a1b7ef6a3a-12894-cbf",
+      "original_terminal": {
+        "bytes": 500,
+        "sha256": "8032887b9c23355240e177c6e2a9e0e3a9e2b45b652581261272d0580d1d386c"
+      },
+      "original_terminal_witness": {
+        "bytes": 207,
+        "sha256": "00d9b265b955fb012b99469407896185976cd9f3c82ff51fabe436ea6cc655e1"
+      },
+      "outer_timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "request_digest": "b6c1451b85783736a6fafb19b0400a14b3f3c2b3a46cd15c6f2c892fad07b357",
+      "terminal_at_unix_ms": 1794087438643
+    },
+    "original_host_phase_count": 7,
+    "original_lease": {
+      "bytes": 2508,
+      "sha256": "979ad88b23a579bcdfb1ec928b04b52f6f50d5a71ff69a6e86026186f74974ed"
+    },
+    "original_lease_expires_unix_ms": 1794088243023,
+    "original_lease_refreshed": false,
+    "original_material_runtime_files_verified": 38,
+    "original_material_transfers": [
+      {
+        "bytes": 851713,
+        "original_target": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-staging-r10-r1/root-r10-neg01-fc33-r10-bound01.tar.gz",
+        "original_target_metadata": [
+          65086,
+          171560,
+          33152,
+          0,
+          0,
+          1,
+          851713,
+          1794087346699836122,
+          1794087346699836122
+        ],
+        "role": "material",
+        "sha256": "e3e6a071a4374fc379b51018fc36826511193f60d46cfad2cbe15240ae9d4c57"
+      },
+      {
+        "bytes": 19085,
+        "original_target": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-staging-r10-r1/root-r10-neg01-fc33-r10-bound01.stage.py",
+        "original_target_metadata": [
+          65086,
+          169923,
+          33152,
+          0,
+          0,
+          1,
+          19085,
+          1794087348727836121,
+          1794087348727836121
+        ],
+        "role": "stage-source",
+        "sha256": "74ff4865d2021e42ae5022d606cfe5732d924e8038d00c3a99b89ebcd4c77d72"
+      }
+    ],
+    "original_nonce_consumed": true,
+    "original_package": {
+      "bytes": 87655,
+      "sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02"
+    },
+    "original_phone_stage_budget_seconds": 90,
+    "original_phone_stage_producer_terminal": null,
+    "original_phone_stage_writes": null,
+    "original_phone_terminal": null,
+    "original_plan": {
+      "bytes": 5194,
+      "sha256": "523aa7ce5eb64732ca40fcfba7d78fc30c93689b6acc0c25620ed2972b4d5366"
+    },
+    "original_replay_allowed": false,
+    "original_request": {
+      "bytes": 317,
+      "sha256": "0801bcc799572e5a0eae481bbebf40246566a5ae0eb705d12f7906573bd3878f"
+    },
+    "original_roles_verified": [
+      "collector_source",
+      "controller_metadata",
+      "export_result",
+      "retained_archive",
+      "retained_index",
+      "retained_inputs",
+      "worker_exit",
+      "worker_exit_witness",
+      "worker_launch",
+      "worker_request",
+      "worker_started",
+      "worker_stderr",
+      "worker_stdout"
+    ],
+    "original_root_driver_source_pin_verified": true,
+    "original_source_package": {
+      "bytes": 74044,
+      "sha256": "43bbc6ac86758d31ed03d55a5cac0e24db5a021b161d2161a4f52a58980d8da2"
+    },
+    "original_stage": {
+      "bytes": 19085,
+      "sha256": "74ff4865d2021e42ae5022d606cfe5732d924e8038d00c3a99b89ebcd4c77d72"
+    },
+    "production_adopted": false,
+    "profile_id": "owner-open",
+    "reader_effects": {
+      "file_reads": 0,
+      "file_writes": 0,
+      "native_submissions": 0,
+      "new_nonces": 0,
+      "phone_calls": 0,
+      "signals": 0,
+      "subprocesses": 0
+    },
+    "remote_terminal_or_cleanup_proven": false,
+    "retained_archive": {
+      "bytes": 4211774,
+      "sha256": "7f89d7ff2b1ffc631dd630936a29cdc4e55203d497708e751aa0078bebd50292"
+    },
+    "retained_entry_count": 141,
+    "retained_file_bytes": 13283382,
+    "retained_file_count": 125,
+    "retained_index": {
+      "bytes": 148613,
+      "sha256": "4e21b8c6c13843b2a0be85208d6b6d0cfa14b83b02bcdefb3c86f9c1e997740f"
+    },
+    "retained_root_count": 5,
+    "retirement_accepted": false,
+    "schema": "hepta.UNADOPTED.r10-retained-host-failure-verification.v1",
+    "scope_limit": "Complete exact retained host archive and controller terminal only. A new admitted full phone preservation, producer/namespace fences, predecessor and source adoption remain separate.",
+    "separate_operator_wrapper_original_bytes_verified": false,
+    "session_id": "session-ee897738-8fc2-4d3e-a916-5fe368b340ef",
+    "standalone_execution_authorized": false,
+    "state": "EXACT_R10_HOST_FAILURE_VERIFIED_PHONE_OUTCOME_UNKNOWN"
+  },
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.retained-r10-private-replay.v1",
+  "state": "PASS",
+  "supplied_originals_unchanged": true
+}

@@ -1,0 +1,87 @@
+{
+  "bound_loader": {
+    "bytes": 1023,
+    "sha256": "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca"
+  },
+  "derived_source": {
+    "bytes": 153792,
+    "sha256": "be12800aa1f8bec53a3c56545b5d8db17da864855e3c1d3e7d268451f544547d"
+  },
+  "failures": [],
+  "inventory_differential": {
+    "accepted": 521,
+    "failures": [],
+    "families": {
+      "anchor-inventory": 2,
+      "byte-bound": 3,
+      "deep": 1,
+      "duplicate": 1,
+      "elapsed": 3,
+      "entry-bound": 1,
+      "fixture": 3,
+      "generated": 700,
+      "invariant": 32,
+      "literal-posix": 4,
+      "noncanonical": 15,
+      "priority": 8,
+      "root-bound": 6,
+      "root-type": 8,
+      "synthetic": 1
+    },
+    "inventory_comparisons": 788,
+    "mismatches": [],
+    "mutation_detection": true,
+    "rejected": 267,
+    "rejections": {
+      "AttributeError: 'NoneType' object has no attribute 'get'": 1,
+      "TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'NoneType'": 1,
+      "TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'bool'": 1,
+      "TypeError: argument should be a str or an os.PathLike object where __fspath__ returns a str, not 'int'": 2,
+      "TypeError: unhashable type: 'list'": 1,
+      "ValueError: bounded complete inventory required": 31,
+      "ValueError: complete original inventory schema differs": 5,
+      "ValueError: inventory byte accounting differs": 3,
+      "ValueError: inventory directory differs": 9,
+      "ValueError: inventory entry has no retained parent": 1,
+      "ValueError: inventory entry left its unique complete root": 2,
+      "ValueError: inventory omitted or fabricated a directory child": 3,
+      "ValueError: inventory original file differs": 11,
+      "ValueError: inventory original metadata differs": 3,
+      "ValueError: inventory root is absent or not a directory": 1,
+      "ValueError: inventory root path differs": 16,
+      "ValueError: inventory roots overlap": 174,
+      "ValueError: only an explicit fixture-root ENOENT may be retained": 2
+    },
+    "schema": "hepta.offline.topology-differential-test.v1",
+    "topology_comparisons": 1754
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "private_complete_reader_test_performed": false,
+  "production_adopted": false,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.source-parent-portable-tests.v1",
+  "skips": [
+    {
+      "reason": "explicit synthetic-only run: private retained fixtures are not loaded",
+      "test": "test_real_inventory_adversarial_mutations (__main__.WholeModuleInventoryTests.test_real_inventory_adversarial_mutations)"
+    },
+    {
+      "reason": "explicit synthetic-only run: private retained fixtures are not loaded",
+      "test": "test_real_retained_inventory_and_output (__main__.WholeModuleInventoryTests.test_real_retained_inventory_and_output)"
+    }
+  ],
+  "source_constructor": {
+    "bytes": 19589,
+    "sha256": "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42"
+  },
+  "source_contract_cases": {
+    "guarded_constructor_rejections": 3,
+    "new_envelope_cases": 2,
+    "source_binding_rejections": 10
+  },
+  "state": "PASS",
+  "synthetic_only": true,
+  "tests_run": 14,
+  "whole_stage_budget_verified": false
+}

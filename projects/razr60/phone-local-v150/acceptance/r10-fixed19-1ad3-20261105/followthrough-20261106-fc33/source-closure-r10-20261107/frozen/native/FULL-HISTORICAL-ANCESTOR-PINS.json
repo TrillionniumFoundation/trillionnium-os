@@ -1,0 +1,456 @@
+[
+  {
+    "boundary": {
+      "bytes": 21325,
+      "metadata": [
+        65086,
+        158182,
+        33152,
+        0,
+        0,
+        1,
+        21325,
+        1793928633271896666,
+        1793928633271896666
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/a493b853566d68099f7dbc0a124aff50.json",
+      "sha256": "fd7766538b0ff88bea73ce66e0de4728caf3771f88c8441bb4d2844fb13b6c66"
+    },
+    "closure": {
+      "bytes": 70349,
+      "metadata": [
+        65086,
+        156987,
+        33152,
+        0,
+        0,
+        1,
+        70349,
+        1793928630371896667,
+        1793928630371896667
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/a493b853566d68099f7dbc0a124aff50/CLOSURE.original.json",
+      "sha256": "ed3163d67036a437bc3855bad22543bc5bb9d8ecf71e1952b704f1dfa3eac7f2"
+    },
+    "inventory": {
+      "bytes": 1182289,
+      "metadata": [
+        65086,
+        158128,
+        33152,
+        0,
+        0,
+        1,
+        1182289,
+        1793928630371896667,
+        1793928630371896667
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/a493b853566d68099f7dbc0a124aff50/AFTER-INVENTORY.original.json",
+      "sha256": "bd880b6dbfe1a870eab9d0dc6e3916e8bc539d115975c5b983c65742fbab6242"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 21002,
+      "metadata": [
+        65086,
+        159031,
+        33152,
+        0,
+        0,
+        1,
+        21002,
+        1793920477083899777,
+        1793920477083899777
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/82012c7447c5f35d97c832d1d9481860.json",
+      "sha256": "2433dd817e470e9536ec314b6a8e9d395a47053f7c1aba1cd7adee35635843fc"
+    },
+    "closure": {
+      "bytes": 66879,
+      "metadata": [
+        65086,
+        158937,
+        33152,
+        0,
+        0,
+        1,
+        66879,
+        1793920473643899779,
+        1793920473643899779
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/82012c7447c5f35d97c832d1d9481860/CLOSURE.original.json",
+      "sha256": "d2671a0f936f3c1c7e4846117050880bb3140e13fe4fb7723be7786d83d66ccf"
+    },
+    "inventory": {
+      "bytes": 1107000,
+      "metadata": [
+        65086,
+        158938,
+        33152,
+        0,
+        0,
+        1,
+        1107000,
+        1793920473643899779,
+        1793920473643899779
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/82012c7447c5f35d97c832d1d9481860/AFTER-INVENTORY.original.json",
+      "sha256": "115893679cea5f3606f4adef61c4b01ecdc65870b6aa0c8c862df4e0313f90aa"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 9998,
+      "metadata": [
+        65086,
+        149888,
+        33152,
+        0,
+        0,
+        1,
+        9998,
+        1793894221355909793,
+        1793894221355909793
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/6077fc8f045572edc4acfb13ed7e09a8.json",
+      "sha256": "621f82a3c071c755f4460f591ac1faa92ec6940b2a19c7a4d76948668abf669e"
+    },
+    "closure": {
+      "bytes": 55184,
+      "metadata": [
+        65086,
+        156366,
+        33152,
+        0,
+        0,
+        1,
+        55184,
+        1793894219963909794,
+        1793894219963909794
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/6077fc8f045572edc4acfb13ed7e09a8/CLOSURE.original.json",
+      "sha256": "35af6a58a84413770bb14ede44eca83ac2774cd4591c7df1501b501cb1643335"
+    },
+    "inventory": {
+      "bytes": 996847,
+      "metadata": [
+        65086,
+        157104,
+        33152,
+        0,
+        0,
+        1,
+        996847,
+        1793894219967909794,
+        1793894219967909794
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/6077fc8f045572edc4acfb13ed7e09a8/AFTER-INVENTORY.original.json",
+      "sha256": "4d64153c7cecf0782bb804791cf272e01ca83ae0b36d9927096762cc3fafc228"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 9686,
+      "metadata": [
+        65086,
+        156280,
+        33152,
+        0,
+        0,
+        1,
+        9686,
+        1793882486435914270,
+        1793882486435914270
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774.json",
+      "sha256": "6e1d4a343fface7ebf36392e129a0f08ad91c8fc0d9216816502f90074b98831"
+    },
+    "closure": {
+      "bytes": 55124,
+      "metadata": [
+        65086,
+        156890,
+        33152,
+        0,
+        0,
+        1,
+        55124,
+        1793882485259914270,
+        1793882485259914270
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/CLOSURE.original.json",
+      "sha256": "ffe4cc50c4a89d20cc7ccc284fa781604a31be2a8107a5fabdc3c50f87305719"
+    },
+    "inventory": {
+      "bytes": 923078,
+      "metadata": [
+        65086,
+        156601,
+        33152,
+        0,
+        0,
+        1,
+        923078,
+        1793882485267914270,
+        1793882485267914270
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/902e851c3ca1f90deab3d880ab993774/AFTER-INVENTORY.original.json",
+      "sha256": "b9da7fdf1e8e110f9cb5cb253627c7a9bdad98a7660fddca16653bab1b93e94d"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 9373,
+      "metadata": [
+        65086,
+        153711,
+        33152,
+        0,
+        0,
+        1,
+        9373,
+        1793853757339925229,
+        1793853757339925229
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/2b0b103ee6de7a422064b9571266bf5d.json",
+      "sha256": "eca941303197228ebe03561e612bfe41eb0518c590ff21253444db25a11adc10"
+    },
+    "closure": {
+      "bytes": 54785,
+      "metadata": [
+        65086,
+        157036,
+        33152,
+        0,
+        0,
+        1,
+        54785,
+        1793853752099925231,
+        1793853752099925231
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/2b0b103ee6de7a422064b9571266bf5d/CLOSURE.original.json",
+      "sha256": "7e42ed77926bdf3bc728e4aef5009ffb23d50adfe1f6ce6b9e236fc621aa17cb"
+    },
+    "inventory": {
+      "bytes": 849854,
+      "metadata": [
+        65086,
+        156653,
+        33152,
+        0,
+        0,
+        1,
+        849854,
+        1793853752103925231,
+        1793853752103925231
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/2b0b103ee6de7a422064b9571266bf5d/AFTER-INVENTORY.original.json",
+      "sha256": "80b8a56ee78055c19caf3b342af5bc5e479180843b0f3bc223751649188b7fc4"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 9078,
+      "metadata": [
+        65086,
+        155387,
+        33152,
+        0,
+        0,
+        1,
+        9078,
+        1793851076499926252,
+        1793851076499926252
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/16805e43f9787c44c262d5b6c6d8ed95.json",
+      "sha256": "46b03cd66426395198b4a3093117659d5cfb128cc981815934fc1ea695c97be0"
+    },
+    "closure": {
+      "bytes": 25716,
+      "metadata": [
+        65086,
+        155749,
+        33152,
+        0,
+        0,
+        1,
+        25716,
+        1793851073491926253,
+        1793851073491926253
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/16805e43f9787c44c262d5b6c6d8ed95/CLOSURE.original.json",
+      "sha256": "d5a6433d473ced291328536664497d9fa9861b42f126ecf9ad189df497520a57"
+    },
+    "inventory": {
+      "bytes": 776988,
+      "metadata": [
+        65086,
+        155685,
+        33152,
+        0,
+        0,
+        1,
+        776988,
+        1793851073491926253,
+        1793851073491926253
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/16805e43f9787c44c262d5b6c6d8ed95/AFTER-INVENTORY.original.json",
+      "sha256": "32726cebc8d85dc7086073ba9d6494248a3ec625826a5ed635cffa6715811432"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 8774,
+      "metadata": [
+        65086,
+        156811,
+        33152,
+        0,
+        0,
+        1,
+        8774,
+        1793845849603928245,
+        1793845849603928245
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/154588e3a15591a21ec18950d18e3ecd.json",
+      "sha256": "eca628a18327146b7710a478fc2c2f716f79d55907b2821666828a0795e2060f"
+    },
+    "closure": {
+      "bytes": 54878,
+      "metadata": [
+        65086,
+        156683,
+        33152,
+        0,
+        0,
+        1,
+        54878,
+        1793845847051928246,
+        1793845847051928246
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/154588e3a15591a21ec18950d18e3ecd/CLOSURE.original.json",
+      "sha256": "8fc9d05e877d91f6706558968276848e252784414983ea026b5c9ef00a8deb2a"
+    },
+    "inventory": {
+      "bytes": 737114,
+      "metadata": [
+        65086,
+        156758,
+        33152,
+        0,
+        0,
+        1,
+        737114,
+        1793845847051928246,
+        1793845847051928246
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/154588e3a15591a21ec18950d18e3ecd/AFTER-INVENTORY.original.json",
+      "sha256": "fcd752b17eed7d36718f81e61a0f81d22554aa1a478180371619de1c10d98759"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 4748,
+      "metadata": [
+        65086,
+        149437,
+        33152,
+        0,
+        0,
+        1,
+        4748,
+        1793828404835934900,
+        1793828404835934900
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/c705647dd4ebb5d421be1041a9c41ca6.json",
+      "sha256": "3216ab18adcafa0dda95e8a93ad35a2070e7aec286d7a518794918068ce31d12"
+    },
+    "closure": {
+      "bytes": 49087,
+      "metadata": [
+        65086,
+        152153,
+        33152,
+        0,
+        0,
+        1,
+        49087,
+        1793828403499934901,
+        1793828403499934901
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/c705647dd4ebb5d421be1041a9c41ca6/CLOSURE.original.json",
+      "sha256": "559f2440fdd1c9f43c64399351f3fda0be95890d21cbde4aea211751e5f9aa81"
+    },
+    "inventory": {
+      "bytes": 633600,
+      "metadata": [
+        65086,
+        153196,
+        33152,
+        0,
+        0,
+        1,
+        633600,
+        1793828403499934901,
+        1793828403499934901
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/c705647dd4ebb5d421be1041a9c41ca6/AFTER-INVENTORY.original.json",
+      "sha256": "e48c39003bd26f65dde74958f0081a89c23027da19a11afd4fc2a81414c5c349"
+    }
+  },
+  {
+    "boundary": {
+      "bytes": 5003,
+      "metadata": [
+        65086,
+        151071,
+        33152,
+        0,
+        0,
+        1,
+        5003,
+        1793826667027935563,
+        1793826667027935563
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/88d68d88130d3c74e6c950a6346357c1.json",
+      "sha256": "ee008c3b2adec701be4c0bdfd38ca7ac0d650da9b7783f51d3fe4638bfdc5b58"
+    },
+    "closure": {
+      "bytes": 119753,
+      "metadata": [
+        65086,
+        152047,
+        33152,
+        0,
+        0,
+        1,
+        119753,
+        1793826665711935563,
+        1793826665711935563
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/88d68d88130d3c74e6c950a6346357c1/CLOSURE.original.json",
+      "sha256": "b8a27617eaff8dda0f1c61b5aa14a89d7014a157e0b33280b14162c7591bcaa3"
+    },
+    "external_capture_verifier_source_sha256": "3ce59c2f9bf1719af6715e41a92cc53482892c98517322ab669b76e09fca2d98",
+    "external_closure_source_sha256": "112a1676a09b9990f13ef3d0fef1f396e9018c47d2ee89b23063be9d36b097f8",
+    "external_reconciliation_sha256": "fee3b04713d83a2d371b17eb523f67eafcf66a04d416895cc00cd3bc0dc77f93",
+    "inventory": {
+      "bytes": 563365,
+      "metadata": [
+        65086,
+        150632,
+        33152,
+        0,
+        0,
+        1,
+        563365,
+        1793826665711935563,
+        1793826665711935563
+      ],
+      "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-boundaries-r10-r1/88d68d88130d3c74e6c950a6346357c1/AFTER-INVENTORY.original.json",
+      "sha256": "145d5937cd328ed568b1af9c73f7d331211d1c44cfad8ecf960b47d91f308eee"
+    },
+    "publisher_source_sha256": "234e248d4db6aff6125071a62f92e48360df1bab839250b26699c8af63067b07"
+  }
+]

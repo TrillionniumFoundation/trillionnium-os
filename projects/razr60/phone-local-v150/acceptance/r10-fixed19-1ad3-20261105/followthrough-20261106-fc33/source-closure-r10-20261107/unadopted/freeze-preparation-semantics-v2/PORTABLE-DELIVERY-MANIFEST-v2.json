@@ -1,0 +1,159 @@
+{
+  "actual_new_generation_freeze_created": false,
+  "actual_retained_reference": {
+    "actual_full9_and_complete_tree_bookends": true,
+    "all_originals_read_twice": true,
+    "distinct_original_paths": 2091,
+    "full_report_original": {
+      "bytes": 16612,
+      "sha256": "153704c7cf2087a593868953020935c35758dda15bb8b4f8b2a734202374fb7f"
+    },
+    "historical_membership_adapter_is_new_generation_review_plan": false,
+    "historical_original_inputs": 1917,
+    "historical_payload_files": 170,
+    "historical_terminal_copies": 2,
+    "implementation_sha256": "7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d",
+    "job_id": "1a1b8fc9f67-12894-116c",
+    "new_generation_provider_calls": 0,
+    "old_tuple_refused_before_provider": true,
+    "original_bytes_read": 656407629,
+    "original_file_opens": 4183,
+    "state": "PASS"
+  },
+  "bound_loader": {
+    "bytes": 903,
+    "path": "candidate/bound_loader.py",
+    "sha256": "c1d9746e631b445c82af307d0f53b48834ad980e040e4c533749f0c68a0affd0"
+  },
+  "ci_commands": [
+    "python3 -B tools/verify_candidate.py",
+    "python3 -B tests/test_freeze_semantics.py --retained-base ../retained-r10-failure-v1"
+  ],
+  "ci_expected": {
+    "actual_new_generation_originals_replayed": false,
+    "negative_cases": 105,
+    "synthetic_originals_only": true,
+    "tests": 12
+  },
+  "current_native_case_credit": 0,
+  "destination_relative_to_checkpoint": "unadopted/freeze-preparation-semantics-v2",
+  "do_not_import": [
+    "private-evidence/**",
+    "reports/*attempt*.json",
+    "reports/RETAINED-R10-CONTEXT-REAL-v1.json",
+    "reports/SYNTHETIC-TESTS-v2.json"
+  ],
+  "file_count": 12,
+  "files": [
+    {
+      "bytes": 9089,
+      "path": "README.md",
+      "sha256": "8adb027da8ff4441927a3f780f5d0a8d86846eb15991d6578508e230f95286a2"
+    },
+    {
+      "bytes": 231,
+      "path": "FUTURE-CONTRACT-UNBOUND.json",
+      "sha256": "dd0d826215321831f8869f58e701b057a136bf0c7e69078e4a2db0110de4aa78"
+    },
+    {
+      "bytes": 30816,
+      "path": "candidate/freeze_semantics.py",
+      "sha256": "7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d"
+    },
+    {
+      "bytes": 903,
+      "path": "candidate/bound_loader.py",
+      "sha256": "c1d9746e631b445c82af307d0f53b48834ad980e040e4c533749f0c68a0affd0"
+    },
+    {
+      "bytes": 22713,
+      "path": "tests/test_freeze_semantics.py",
+      "sha256": "f793a3eb8eb76721d770f03aab80bf90da0d4eca46b8cc2797850269e41f88cf"
+    },
+    {
+      "bytes": 2644,
+      "path": "tools/verify_candidate.py",
+      "sha256": "198a5c6297de9387a036912fb7048fac32bf4f7497ad9c84e5d3af6ff2edece5"
+    },
+    {
+      "bytes": 9488,
+      "path": "tools/replay_actual_r10_freeze.py",
+      "sha256": "9ec1584817f7ad4ac3f4315ad07102c5daea22be72524a372903fe5573368583"
+    },
+    {
+      "bytes": 3652,
+      "path": "tools/replay_retained_r10_context.py",
+      "sha256": "537da9348d640e466a2d982cb1dc5536315cba6222bc1a14562e34d99acd4c9d"
+    },
+    {
+      "bytes": 364,
+      "path": "reports/SYNTHETIC-TESTS-after-review-v3.json",
+      "sha256": "1e19b744f6c624294c14fb2516bbcd4072647ed7fb8a4ff19d27bdf98cdc3fc3"
+    },
+    {
+      "bytes": 5182,
+      "path": "reports/ACTUAL-R10-FREEZE-SAFE-final.json",
+      "sha256": "de606c2013418f9d7d860243cf37abdf521baff68a3e0f8b44b815365270b37e"
+    },
+    {
+      "bytes": 2541,
+      "path": "reports/RETAINED-R10-CONTEXT-REAL-final.json",
+      "sha256": "0a86351884184b35a3a4818c2b976c53bbee9f094a8b9e3e22d1e30ca83fc83c"
+    },
+    {
+      "bytes": 7347,
+      "path": "reports/INTERNAL-REVIEW.json",
+      "sha256": "fc18d98fa7c2fefdef0dda6f725bdd4477d5f8dbc5e3e0ca35e264e6991665da"
+    }
+  ],
+  "fixed_family_contract": {
+    "inherited_admission_sources": 6,
+    "maximum_complete_directory_bytes": 33554432,
+    "root_chain": 3,
+    "runtime": 38,
+    "shared": 17
+  },
+  "fresh_execution_eligible": false,
+  "github_independent_approval": false,
+  "implementation": {
+    "bytes": 30816,
+    "path": "candidate/freeze_semantics.py",
+    "sha256": "7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d"
+  },
+  "import_action": "add_only_exact_listed_files_plus_this_manifest",
+  "new_generation_source_plan_authority_verified": false,
+  "nonce_creation_authorized": false,
+  "production_adopted": false,
+  "production_preparer_implemented": false,
+  "remaining_actual_work": [
+    "new independently reviewed complete source/membership plan and actual freezer/controller originals",
+    "new source and policy adoption plus full actual import/deployment closure",
+    "complete current phone preservation and R10 producer/namespace disposition retaining older R6/R7/R8/R9 chain",
+    "executable fresh preparation and actual predecessor/consumed identities/input/preview/CAS/one reservation",
+    "actual production I/O and original stage/remaining lease budget validation",
+    "fixed19/formal BUILD/install/health/business/daily/rollback evidence"
+  ],
+  "reservation_authorized": false,
+  "retained_R10_context": {
+    "archive_members": 126,
+    "full_nested_result_equal_to_actual_bound_reader": true,
+    "global_unknown_effect_count": null,
+    "original_nonce_consumed": true,
+    "original_phone_stage_writes": null,
+    "original_phone_terminal": null,
+    "original_roles": 13,
+    "retained_files": 125,
+    "retirement_accepted": false
+  },
+  "retained_R10_reader_dependency": {
+    "implementation_sha256": "bb9809c6767d4822d1ceab7eb82e2d2386eab0af87592cedb971edc07e092901",
+    "loader_sha256": "646368153a161538903e5bf23f1109d72c3d9a60f84dc79df163427e615429a6",
+    "public_delivery_sha256": "bbfe24d5abb4fd79c1f3d850b5a3eb6b4770843db5e882558aab171d2a07e750"
+  },
+  "runtime_admission": false,
+  "runtime_import_dependency_semantics_reverified": false,
+  "schema": "hepta.UNADOPTED.source-freeze-semantics-public-delivery.v2",
+  "state": "COMPLETE_PURE_FREEZE_CONTROLLER_AND_RETAINED_R10_CONTEXT_NOT_ADMITTED",
+  "total_bytes": 94970,
+  "whole_stage_budget_verified": false
+}

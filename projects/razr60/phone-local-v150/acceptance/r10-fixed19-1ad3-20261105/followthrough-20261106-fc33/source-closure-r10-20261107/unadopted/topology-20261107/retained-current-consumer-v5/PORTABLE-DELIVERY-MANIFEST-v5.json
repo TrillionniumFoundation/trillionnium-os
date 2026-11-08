@@ -1,0 +1,139 @@
+{
+  "ci_commands": [
+    "python3 -B retained-current-consumer-v5/tests/test_retained_current_consumer.py --base .",
+    "python3 -B retained-current-consumer-v5/tools/build_manifest.py --base . --check"
+  ],
+  "ci_expected": {
+    "actual_selected_reader_rejections_before_provider": 3,
+    "constructor_rejections": 12,
+    "new_envelope_acceptances": 3,
+    "new_envelope_rejections": 17,
+    "private_complete_original_replay_claimed_by_CI": false,
+    "source_binding_rejections": 10,
+    "tests": 12,
+    "uncached_outer_calls": 2,
+    "wrong_in_process_producer_rejections": 4
+  },
+  "complete_actual_mac_replay": {
+    "actual_original_files": 38,
+    "all_original_byte_full9_bookends_unchanged": true,
+    "all_returns_errors_and_original_callbacks_equal": true,
+    "both_streams_eof": true,
+    "exit_code": 0,
+    "inventory_entries": 3991,
+    "inventory_roots": 49,
+    "job_id": "1a1b8ea394d-12894-1134",
+    "new_envelope_negative_cases": 12,
+    "original_negative_cases": 14,
+    "output_complete": true,
+    "output_durable": true,
+    "positive_cases": 6,
+    "result_line": {
+      "bytes": 120050,
+      "sha256": "8ec4aad907745c94f9cca2351f3a36b7b9206b6599d1cd332faab24c0f39acaf"
+    },
+    "state": "succeeded",
+    "stderr_bytes": 0,
+    "stdout": {
+      "bytes": 122389,
+      "sha256": "9bc64521776acb1d893c4a3d217f5a33659a20e585cbb9fb5cb2d2c2bfdad04c"
+    },
+    "terminal_publication_confirmed": true
+  },
+  "complete_production_IO_metering_verified": false,
+  "current_inventory_and_source_parent_and_retained_r7_r8_r9_composed": true,
+  "current_native_case_credit": 0,
+  "destination_relative_to_v1_v2_root": "retained-current-consumer-v5",
+  "do_not_import": [
+    "private-evidence/**",
+    "HANDOFF-TO-ROOT-v5.json"
+  ],
+  "file_count": 10,
+  "files": [
+    {
+      "bytes": 15202,
+      "path": "README.md",
+      "sha256": "5dd4b9a5390d0ecb74efdb772567417abe6c5248659fa272bd5ed39742fdf7b7"
+    },
+    {
+      "bytes": 31905,
+      "path": "candidate/retained_current_consumer.py",
+      "sha256": "88eec8400731b2131f4361ded2c5e480fa7abfca526a7f9be4463a3e48b25bde"
+    },
+    {
+      "bytes": 996,
+      "path": "candidate/bound_loader.py",
+      "sha256": "d3f85017792e2c6b9d1b943b8813dd85525f40e4262314ef959ceaceeef23bad"
+    },
+    {
+      "bytes": 23623,
+      "path": "originals/retained_transport_r9_adapter.original.py",
+      "sha256": "eaf52438100706edb6734efea64299f6ff1b414485c2c353c9172f7c6f670857"
+    },
+    {
+      "bytes": 15197,
+      "path": "tests/test_retained_current_consumer.py",
+      "sha256": "d46e7bd8504e26ea5e38b56537d32144133088b51426b6cb26dfcbe51b12061e"
+    },
+    {
+      "bytes": 22677,
+      "path": "tests/replay_retained_current.py",
+      "sha256": "3aafca252d7c1db1f079f72e3939b95c37013d2468ee728465b7c7e83cf33c65"
+    },
+    {
+      "bytes": 6466,
+      "path": "tools/build_manifest.py",
+      "sha256": "12d5b137e72c8c63d60154684790a1617a47f14a4c59f9649aa1ef7b65c5c612"
+    },
+    {
+      "bytes": 66150,
+      "path": "RETAINED-CURRENT-CANDIDATE-MANIFEST-v5.json",
+      "sha256": "673ffd0ac1d65580b2153a97557347988958770cc2f44118b158d3282a9e0764"
+    },
+    {
+      "bytes": 1053,
+      "path": "reports/PORTABLE-SYNTHETIC-v5.json",
+      "sha256": "9ea0a6bfa243de8e4656fbd3f31d523ef8461306a925a4605bd60a0828be99d4"
+    },
+    {
+      "bytes": 42626,
+      "path": "reports/FULL-CURRENT-REPLAY-SAFE-v5.json",
+      "sha256": "9b7c1ea941bd26afff134ec5180be12396cbd3f0b51ec570ee9570e45c4271c8"
+    }
+  ],
+  "import_action": "add_only_exact_listed_files_plus_this_manifest",
+  "original_sources_or_receipts_modified": false,
+  "previous_manifests": [
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 6719,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v1.json",
+      "sha256": "7f196c5b0205bfde7d01c2005c928188e685e741bf83f5bab3439d431b6e4c0c"
+    },
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 4793,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v2.json",
+      "sha256": "97c8d77d1793b5a221f63186a73bbf379929b8512110d4299b77bb140195efda"
+    },
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 3681,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v3.json",
+      "sha256": "5fdc8416e54c315fb03ca7fadbabf8dad1be0b290b0de356ccb02bd13c9fc490"
+    },
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 4193,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v4.json",
+      "sha256": "8d9e443375f3a3f9fd30a29ce0966a1c14e52dde479d9e26f0650eb583e78148"
+    }
+  ],
+  "production_adopted": false,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.retained-current-portable-delivery.v5",
+  "state": "COMPLETE_ACTUAL_CURRENT_RETAINED_CONSUMER_OFFLINE_NOT_ADOPTED",
+  "total_bytes": 225895,
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

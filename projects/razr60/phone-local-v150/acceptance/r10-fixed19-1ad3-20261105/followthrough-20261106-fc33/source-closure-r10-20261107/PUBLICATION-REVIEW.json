@@ -1,0 +1,133 @@
+{
+  "binary_runtime_artifacts_included": false,
+  "claim": "Source custody review only; neither GitHub independent approval nor a new runtime qualification.",
+  "credential_pattern_matches": 0,
+  "followup_review_20261108": {
+    "explicit_delivery_manifests": [
+      "unadopted/topology-20261107/source-parent-consumer-v4/PORTABLE-DELIVERY-MANIFEST-v4.json",
+      "unadopted/topology-20261107/retained-current-consumer-v5/PORTABLE-DELIVERY-MANIFEST-v5.json",
+      "unadopted/retained-r10-failure-v1/PORTABLE-DELIVERY-MANIFEST-v1.json",
+      "unadopted/freeze-preparation-semantics-v2/PORTABLE-DELIVERY-MANIFEST-v2.json"
+    ],
+    "github_independent_approval": false,
+    "historical_R10_source_and_failure_preserved": true,
+    "new_generation_freeze_created": false,
+    "new_member_credential_pattern_matches": 0,
+    "private_original_bodies_uploaded": false,
+    "public_members_added": 46,
+    "raw_execution_requests_or_readsets_uploaded": false,
+    "runtime_adopted": false
+  },
+  "raw_phone_drafts_included": false,
+  "raw_private_archive_files_included": false,
+  "reference_json_kind": "Frozen runtime reference commitments and topology metadata; no captured payload text or credential bytes.",
+  "schema": "hepta.razr60.r10.source-publication-review.v1",
+  "source_base64_literals_reviewed": [
+    {
+      "decoded_bytes": 11585,
+      "decoded_sha256": "5d6b2468adbffdbe9e09d6eeae9b5aea74068d5ccbfc9c8e14da136bb2e5b85c",
+      "kind": "python_source",
+      "literal_sha256": "76481ddcf7512e8b99ecf10534de594bf1e04517c51574697d47bbad3229053f",
+      "source": "frozen/native/dependencies/admission/verify_retained_staged_r8.py"
+    },
+    {
+      "decoded_bytes": 14891,
+      "decoded_sha256": "8ef9f341b196f523a0eaa8e313b8a463d57d700ab72ca2fdb24ef2ef41236bd1",
+      "kind": "python_source",
+      "literal_sha256": "d3fb1a0b77f3204a0b82fcaeb22120a4fef1821edc598c7600f6d475da9090b6",
+      "source": "frozen/native/dependencies/admission/verify_retained_staged_r8.py"
+    },
+    {
+      "decoded_bytes": 14027,
+      "decoded_sha256": "9ec8f4289f07ea63b3d6d2c4060d6b55d7cf96ee5e83caeea450fab453573f0b",
+      "kind": "python_source",
+      "literal_sha256": "efd500497f061bb25915774f39995ad3ee0f152220685b69f3592c144361fb8f",
+      "source": "frozen/native/dependencies/admission/verify_retained_staged_r8.py"
+    },
+    {
+      "decoded_bytes": 21865,
+      "decoded_sha256": "937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38",
+      "kind": "python_source",
+      "literal_sha256": "f789e6acb4efe9555734d5e5aa74c737b3dda239d08d095b556c85340ecc88d8",
+      "source": "frozen/native/dependencies/admission/verify_retained_staged_r8.py"
+    },
+    {
+      "decoded_bytes": 13789,
+      "decoded_sha256": "23f0756748b643d1461e6e371860e5393c107d495ba70b955504380cf9868a81",
+      "kind": "python_source",
+      "literal_sha256": "bbfdb710f0a8975e23ac0b8be3e09105d2cd07fe113201d1647ea1e4883c4b14",
+      "source": "frozen/native/dependencies/admission/verify_retained_staged_r8.py"
+    },
+    {
+      "decoded_bytes": 6657,
+      "decoded_sha256": "4830a668492a69b43b1bad3cb716377eae00e4c208bc3ac4df048c317e28a2d0",
+      "kind": "python_source",
+      "literal_sha256": "664cdedd3ced2019d1b989428a00edcd1892d6a20b546a917dc23ea9f984b528",
+      "source": "frozen/native/dependencies/admission/verify_retained_staged_r8.py"
+    },
+    {
+      "decoded_bytes": 134371,
+      "decoded_sha256": "98d1684df03dca8d0c008859bb7f8870e67974199b9cc6ba6525969e3a681136",
+      "keys": [
+        "closure_projection_raw",
+        "extension_raw",
+        "lease_raw",
+        "observation_projection_raw",
+        "original_map_projection_raw",
+        "request_raw",
+        "schema",
+        "stage_raw",
+        "staged_members"
+      ],
+      "kind": "json",
+      "literal_sha256": "4581d53a2ee3cb57a64f8d0e44b22a0b9222d6c19a7afa7f6d0b4978530425b4",
+      "source": "frozen/native/runtime/reference/retained_unstarted_stage_final02.py",
+      "unsafe_string_fields": []
+    },
+    {
+      "decoded_bytes": 37404,
+      "decoded_sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21",
+      "kind": "python_source",
+      "literal_sha256": "6ff4e25d13368f767526d039a6f5fff615509a1c1072392aa42c1e3f9373c6fb",
+      "source": "frozen/native/runtime/source/late_boundary.py"
+    },
+    {
+      "decoded_bytes": 33345,
+      "decoded_sha256": "a2cf1a794d39501fc174645e29356032ef37b1dbe91dddd5e84f380a33c903b6",
+      "keys": [
+        "plan_b64",
+        "source_b64"
+      ],
+      "kind": "json",
+      "literal_sha256": "50306cf8a4d9c45b0319be79c48e9f7e3b1a17ffca46f37acaeb16e4c0c5b97b",
+      "source": "external-source/1c5ae70e030ba1de72eded24ea6ace765eee44cf0d4d6c819fc795b134604927/PHONE-CAPTURE-BOOTSTRAP.py",
+      "unsafe_string_fields": []
+    },
+    {
+      "decoded_bytes": 54069,
+      "decoded_sha256": "2b342682a03a938b2b001a47650f22f8ea8f66afe7315759699056c1665bfa0d",
+      "keys": [
+        "plan_b64",
+        "source_b64"
+      ],
+      "kind": "json",
+      "literal_sha256": "2ee492d51001f93ef562a4f0fe8fa75ac83d5805d9b6823c1209c7f7cb491b3c",
+      "source": "external-source/72d2db9b53ba31a757072da5a6ad0cb836bf99418c5850efac11ba052d17e584/PHONE-CAPTURE-BOOTSTRAP.py",
+      "unsafe_string_fields": []
+    },
+    {
+      "decoded_bytes": 37404,
+      "decoded_sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21",
+      "kind": "python_source",
+      "literal_sha256": "6ff4e25d13368f767526d039a6f5fff615509a1c1072392aa42c1e3f9373c6fb",
+      "source": "external-source/9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54/late_boundary.py"
+    },
+    {
+      "decoded_bytes": 37404,
+      "decoded_sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21",
+      "kind": "python_source",
+      "literal_sha256": "6ff4e25d13368f767526d039a6f5fff615509a1c1072392aa42c1e3f9373c6fb",
+      "source": "external-source/df022013e154af46bd7c033cba7711d16974bf191fde096b4cce4f397fbbb543/late_boundary.py"
+    }
+  ]
+}

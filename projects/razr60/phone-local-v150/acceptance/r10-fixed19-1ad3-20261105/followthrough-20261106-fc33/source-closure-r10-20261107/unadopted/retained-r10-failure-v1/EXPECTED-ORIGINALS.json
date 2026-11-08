@@ -1,0 +1,71 @@
+{
+  "roles": {
+    "collector_source": {
+      "bytes": 20639,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-r10-failed01-export-mac-01/COLLECTOR.original.py",
+      "sha256": "0951ef2dde5230c92eadc26b150f65e2e0c920fa3a8e68afde7a565e0499696f"
+    },
+    "controller_metadata": {
+      "bytes": 1218,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac/jobs/1a1b7ef6a3a-12894-cbf.json",
+      "sha256": "4a795f710c28749eb244b5d871c2516feeaf6fada26421bcb7eff0b112c33a54"
+    },
+    "export_result": {
+      "bytes": 2432,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-r10-failed01-export-mac-01/RESULT.json",
+      "sha256": "72ba98e0da0b6f296e9f95079901d3baf3ea53bc641559c596fad103fac5f9c4"
+    },
+    "retained_archive": {
+      "bytes": 4211774,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-r10-failed01-export-mac-01/ORIGINALS.tar.gz",
+      "sha256": "7f89d7ff2b1ffc631dd630936a29cdc4e55203d497708e751aa0078bebd50292"
+    },
+    "retained_index": {
+      "bytes": 148613,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-r10-failed01-export-mac-01/EVIDENCE-INDEX.json",
+      "sha256": "4e21b8c6c13843b2a0be85208d6b6d0cfa14b83b02bcdefb3c86f9c1e997740f"
+    },
+    "retained_inputs": {
+      "bytes": 17770,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-r10-failed01-export-mac-01/INPUTS.original.json",
+      "sha256": "699c548bfdd9d640c1642e92a10f54a487691a3ac121b0c5b97954ebe1e727f9"
+    },
+    "worker_exit": {
+      "bytes": 500,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b7ef6a3a-12894-cbf/exit.json",
+      "sha256": "8032887b9c23355240e177c6e2a9e0e3a9e2b45b652581261272d0580d1d386c"
+    },
+    "worker_exit_witness": {
+      "bytes": 207,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b7ef6a3a-12894-cbf/exit.witness.json",
+      "sha256": "00d9b265b955fb012b99469407896185976cd9f3c82ff51fabe436ea6cc655e1"
+    },
+    "worker_launch": {
+      "bytes": 166,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b7ef6a3a-12894-cbf/launch.json",
+      "sha256": "98e79c70f95c9a4311897f04a600a7e90ecd946b83ad0d98a24ca2b397b2bd7a"
+    },
+    "worker_request": {
+      "bytes": 1265,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b7ef6a3a-12894-cbf/request.json",
+      "sha256": "969b93f030c58f161887434c2a35c2c3dafb6d2774d039167f83670bc22da327"
+    },
+    "worker_started": {
+      "bytes": 270,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b7ef6a3a-12894-cbf/started.json",
+      "sha256": "ede6e8c950064d72c7afee207c62e4a8d8eb360c3b157c490c43a327c2d6bb97"
+    },
+    "worker_stderr": {
+      "bytes": 1874,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b7ef6a3a-12894-cbf/stderr.log",
+      "sha256": "c096148066c6794f9a0a8c7fb70acbd58b74a43387b5c4bc7fa3dca47be64201"
+    },
+    "worker_stdout": {
+      "bytes": 0,
+      "path": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1b7ef6a3a-12894-cbf/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "schema": "hepta.UNADOPTED.r10-failure-exact-originals.v1",
+  "scope": "The actual R10 failed host archive plus exact original controller/worker records; no complete current phone scope or retirement claimed."
+}

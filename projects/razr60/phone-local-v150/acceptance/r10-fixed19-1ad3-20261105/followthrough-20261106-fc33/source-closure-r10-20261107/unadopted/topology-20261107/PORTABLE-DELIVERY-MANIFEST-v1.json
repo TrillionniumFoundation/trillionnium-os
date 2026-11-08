@@ -1,0 +1,194 @@
+{
+  "files": [
+    {
+      "bytes": 1429,
+      "path": "CANDIDATE-MANIFEST.json",
+      "sha256": "3b6379ed534d0a72d2f55398d3cabbc096cc5df7d6ae2a1f9e8c455805052835"
+    },
+    {
+      "bytes": 3186,
+      "path": "DERIVED-CANDIDATE-MANIFEST.json",
+      "sha256": "abd3efcc43fc488a88a401a30dea0c1678a4db9c8144344ebcb3446ce6af27ea"
+    },
+    {
+      "bytes": 1624,
+      "path": "candidate/derived/retained-r8-scope.patch",
+      "sha256": "d7ca68dc9a7e31d6d63ebd7a7fedc904c3ce9f494b35d9453822e788393f61ac"
+    },
+    {
+      "bytes": 8570,
+      "path": "candidate/derived/retained_r8_verify_complete_scope.py",
+      "sha256": "5c4850c66658d52a058e11397c3c4553b750f7942a382f404fd5f870f63ff76e"
+    },
+    {
+      "bytes": 1241,
+      "path": "candidate/derived/source-parent-inventory.patch",
+      "sha256": "ae911fc6327cd5af7acdd423a9cff6728bc2ffefeccf448c241b407a8298840c"
+    },
+    {
+      "bytes": 4028,
+      "path": "candidate/derived/source_parent_inventory_value.py",
+      "sha256": "6428e3834749b21a92eb896b51d74cd4aa2dccca9b647dd9dc5df5e7c81c8b8b"
+    },
+    {
+      "bytes": 4040,
+      "path": "candidate/inventory_value.py",
+      "sha256": "36062323fcaac20c2a7e9e50d2d1134f79faea3dc8b00b3fbc01caa588d27f52"
+    },
+    {
+      "bytes": 1253,
+      "path": "candidate/late_boundary.inventory_value.patch",
+      "sha256": "4de7a34eb8cc0493797426d085af4b9b7633da0196996beca993ba070b99bb56"
+    },
+    {
+      "bytes": 832,
+      "path": "candidate/root_topology.py",
+      "sha256": "b35be63db339fe0dc82879b1e2a4ce71a44fd414af54989dc251dd7c8ea02483"
+    },
+    {
+      "bytes": 2495,
+      "path": "fixtures/MANIFEST.json",
+      "sha256": "9d7ae167e41f0c3190f7ae1ac678921519f0d92c0ce9b5b41f41eaa3960c8963"
+    },
+    {
+      "bytes": 25512,
+      "path": "originals/FIXED19-TABLE.v4.original.json",
+      "sha256": "4699ad5f62ae6ec7b74f19422d455c56c258b1a06be75fc273a38f063eebd804"
+    },
+    {
+      "bytes": 2639,
+      "path": "originals/FIXED19.v4.original.md",
+      "sha256": "bff4216eae385a13d2af8e868adc7cb2956140917069c8b2207da2ed1e036963"
+    },
+    {
+      "bytes": 37318,
+      "path": "originals/ORIGINAL-PROTOCOL.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    {
+      "bytes": 19138,
+      "path": "originals/component_common.r10.original.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+    },
+    {
+      "bytes": 3788,
+      "path": "originals/inventory_value.r8.fragment.py",
+      "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+    },
+    {
+      "bytes": 259866,
+      "path": "originals/late_boundary.r10.original.py",
+      "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+    },
+    {
+      "bytes": 21865,
+      "path": "originals/retained_r8_scope.original.py",
+      "sha256": "937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38"
+    },
+    {
+      "bytes": 153138,
+      "path": "originals/source_parent_late_boundary_r4.original.py",
+      "sha256": "27350db238c5ca31796af91c77b5c2fdb9d02b838d35140f759df907903d4fa4"
+    },
+    {
+      "bytes": 37404,
+      "path": "originals/verify_retained_preaccept_r7.original.py",
+      "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+    },
+    {
+      "bytes": 96088,
+      "path": "originals/verify_retained_staged_r8.original.py",
+      "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+    },
+    {
+      "bytes": 34650,
+      "path": "originals/verify_retained_transport_r9.original.py",
+      "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+    },
+    {
+      "bytes": 16077,
+      "path": "reports/benchmark-results.json",
+      "sha256": "6d15974532e6b2be047ea7b59dad9aee04805e814ea6589bf8db22b9472b4cb9"
+    },
+    {
+      "bytes": 2747,
+      "path": "reports/derived-differential-results.json",
+      "sha256": "2ccdc4aa9bcb65a6548383eb0a5de2cffa1ca9d021b3fcf7c21eb605295605f5"
+    },
+    {
+      "bytes": 3470,
+      "path": "reports/derived-differential-synthetic-results.json",
+      "sha256": "dc1667ad1bfbadfa79df288c5480c6e9f8f9a6d17f4c8e78b8d86916c5aa8dd7"
+    },
+    {
+      "bytes": 2318,
+      "path": "reports/differential-results.json",
+      "sha256": "9567498d7ef7b68d66c68d7dde2b3c9587c558d223e6c72f23c234d286fbbb26"
+    },
+    {
+      "bytes": 2789,
+      "path": "reports/differential-synthetic-results.json",
+      "sha256": "59bd34ee941f28a52bd13270c9d1ee8fe313026ed8d43361561fabddceaa1229"
+    },
+    {
+      "bytes": 27878,
+      "path": "reports/scope-full-mac-execution.json",
+      "sha256": "c26bfb7068ba9868c6c6edcc7fb1ff21837c6e4d37d2094126a06c3efa0f4daf"
+    },
+    {
+      "bytes": 7790,
+      "path": "reports/scope-full-mac-results.json",
+      "sha256": "a2e88c6090c8706a818865eafab5ae88cd1ea1cbca821d12b4b26379c65d6990"
+    },
+    {
+      "bytes": 5011,
+      "path": "tests/benchmark_topology.py",
+      "sha256": "4af1c24e3bf55f7aea7fc55fdf761a05019789d60e3fde60b2c9ed3cc75433e6"
+    },
+    {
+      "bytes": 5354,
+      "path": "tests/harness.py",
+      "sha256": "37d3d2e7eac1bac89045015ddb205a6393dbc2649c807544904c42b4bc4a2a96"
+    },
+    {
+      "bytes": 14290,
+      "path": "tests/scope_full_replay_readonly.py",
+      "sha256": "c11951766978bbb0345dbbf853bb8b73a145f7f0f6cfdb65d18dbc3e48a91c78"
+    },
+    {
+      "bytes": 10941,
+      "path": "tests/test_derived_topology.py",
+      "sha256": "e38e53e5750798a552d378fec1d65833b17e08708cf676a74fa62a2c2665c3e1"
+    },
+    {
+      "bytes": 17388,
+      "path": "tests/test_inventory_topology.py",
+      "sha256": "c61ffa912f81ef7df1d84af79996750afac38725f6499d6c1f4b6af89bf92903"
+    },
+    {
+      "bytes": 5122,
+      "path": "tools/build_candidate.py",
+      "sha256": "4e683e02b5f17f7287b1dce8b33a67d90fffafa2115134c44cde83a2bc2b535e"
+    },
+    {
+      "bytes": 5466,
+      "path": "tools/build_derived_fragments.py",
+      "sha256": "f7e11a81d18cebf232ab65d98e6e10ad8a4f8cd9ab77e11bb7bfb125df9a3c2d"
+    }
+  ],
+  "native_case_credit": 0,
+  "portable_commands": [
+    "python3 tools/build_candidate.py",
+    "python3 tools/build_derived_fragments.py",
+    "HEPTA_TOPOLOGY_SYNTHETIC_ONLY=1 python3 tests/test_inventory_topology.py",
+    "HEPTA_TOPOLOGY_SYNTHETIC_ONLY=1 python3 tests/test_derived_topology.py"
+  ],
+  "private_fixture_archives_excluded": true,
+  "private_fixture_pin_catalog": "fixtures/MANIFEST.json",
+  "production_selector_implemented": false,
+  "runtime_admission": false,
+  "schema": "hepta.unadopted-topology.portable-delivery.v1",
+  "state": "UNADOPTED_OFFLINE_CANDIDATE",
+  "test_output_isolated_by_mode": true,
+  "whole_stage_budget_verified": false
+}

@@ -1,0 +1,700 @@
+{
+  "actual_parent_freeze": {
+    "bytes": 1460733,
+    "sha256": "a931bdbce572b4a4a61d3ee89686fd453d99e28f9ded407bf76ceeec2beeba1d"
+  },
+  "actual_preparer_freeze_slot": null,
+  "actual_runtime_originals_not_recaptured_by_this_review": true,
+  "actual_source_readset_count": 43,
+  "adapter": {
+    "bytes": 23623,
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-runtime-dependencies-r10-r1/fc33-r10-01/retained_transport_r9_adapter.py",
+    "sha256": "eaf52438100706edb6734efea64299f6ff1b414485c2c353c9172f7c6f670857"
+  },
+  "adapter_source_uncompressed": true,
+  "admission_sources": {
+    "admission_entry": {
+      "bytes": 9902,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/admission/admission_entry.py",
+      "sha256": "8a5e4d8104165151bee6f219811f0f4172115f97cf22bf807468017c7a5220b2"
+    },
+    "bound02_disposition": {
+      "bytes": 109545,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/admission/bound02_disposition.py",
+      "sha256": "41348b4df22a31e28158c303e04e9950b677cdf89e105a8a2d25e69dc431a5ec"
+    },
+    "build_fence_plan": {
+      "bytes": 8645,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/admission/build_fence_plan.py",
+      "sha256": "7089b91b3c1cb93fbca6c3cee28f339819ed9e438d76c8f21004adae31c33313"
+    },
+    "verify_retained_preaccept": {
+      "bytes": 37404,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/admission/verify_retained_preaccept.py",
+      "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+    },
+    "verify_retained_staged_r8": {
+      "bytes": 96088,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/admission/verify_retained_staged_r8.py",
+      "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+    },
+    "verify_retained_transport_r9": {
+      "bytes": 34650,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/admission/verify_retained_transport_r9.py",
+      "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+    }
+  },
+  "all_source_local_metadata_are_only_local_bookends": true,
+  "assembler": {
+    "bytes": 45795,
+    "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-whole-assembly-source01/assemble_runtime_r10.py",
+    "sha256": "3617b222fd3e2ce46de68eeaa7c9f2af067cf09d3ba3c0b5660eabdc75f5060c"
+  },
+  "assembly": {
+    "bytes": 28750,
+    "sha256": "ac4e0fd4c83e206afbb5cd55a35f4691e6a79f741432993423607649157d5469"
+  },
+  "author_targeted_controls": {
+    "bytes": 5467,
+    "path": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-whole-host-controls01/HOST-CONTROLS.json",
+    "sha256": "73219144cc00f8fd71bea50de0cea2072a4e07e6cc330076dc4e26cbeacb8ff0"
+  },
+  "candidate_file_count": 29,
+  "candidate_root": "/dev/shm/razr60-d39712953a2d-continuation-01/r8-integration/r10-whole-development01",
+  "complete_runtime_and_root_members": [
+    {
+      "bytes": 1438,
+      "member": "runtime/reference/REVIEWED-PRODUCTION-PINS.json",
+      "sha256": "5fcfe9e0eb3c1dfaed39532bb727e3ea3829b39adbca4565f1b19300d4f7e07f",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 664638,
+      "member": "runtime/reference/attempt05-AFTER-INVENTORY.original.json",
+      "sha256": "87103089914885fff5632781f18fbe36895ed181f01997eac6c3b49449b5579e",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 164095,
+      "member": "runtime/reference/attempt05-CLOSURE.original.json",
+      "sha256": "d464bac786ef208d8fa0390587bd3bb7616a13985fb064716a209aa2394458f6",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 4650,
+      "member": "runtime/reference/attempt05-SIDE-PROOF.original.json",
+      "sha256": "1bf6bca5ae5aaa5d5803b708070680e92d3f072f9541f38b09783787cfae7b9c",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 18133,
+      "member": "runtime/reference/component_common_r5.py",
+      "sha256": "8ad9a3b17e7475555af7dd9a113025740447fcebdf0400d984d8a9e84accfb02",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 13238,
+      "member": "runtime/reference/component_core.py",
+      "sha256": "705b982a46de0fd4427cd6a233687381c592ef74459f9818f3da15e20c03916f",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 30647,
+      "member": "runtime/reference/component_once_r9.py",
+      "sha256": "1c27b548e42c91391e12db125c23608a2d5fb9e28ae2713df17c271bddc58fa2",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 4116,
+      "member": "runtime/reference/decode_client_state.py",
+      "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 1031582,
+      "member": "runtime/reference/diag02-AFTER-INVENTORY.original.json",
+      "sha256": "10fe1e2d389cf8aa4928593abb207406ae63e84519339da25c722b03bee9c67d",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 253127,
+      "member": "runtime/reference/diag02-CLOSURE.original.json",
+      "sha256": "e25d415963eabab1fdc08704623dec88cc3ad88b9a9c228072e1138d41f8b035",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 8439,
+      "member": "runtime/reference/diag02-SIDE-PROOF.original.json",
+      "sha256": "a76283b76f1f12e08378662131b0375ffec95f1333d190deb3f1f90280dcc2bd",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 53502,
+      "member": "runtime/reference/environment_parent_late_boundary_r6.py",
+      "sha256": "1fd24e0a6799ed3fb02014567764cce4c0de884e78ccd5b663e63fe69230041c",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 28109,
+      "member": "runtime/reference/native_guard_session.py",
+      "sha256": "77dacc52468de95b68f30baafbb1cbf7dd7452c3d9ce652980dbb4af0ca62d8b",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 6701,
+      "member": "runtime/reference/native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 19740,
+      "member": "runtime/reference/non_native_attempt05.py",
+      "sha256": "a4ec44ac1f09fc7919dce17acf46e6db83ca468f58f53ad7622b520b557d04e4",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 29504,
+      "member": "runtime/reference/non_native_diag02.py",
+      "sha256": "296f5e22485712fff6641082ab0ffdee78d2d2951bcb8f53a1da5f0c374c2de6",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 35730,
+      "member": "runtime/reference/policy_parent_late_boundary_r4.py",
+      "sha256": "bcbe7d03567684ca23bd0985c14df49b021e1ac2e53e76dfda94262d7ad3516b",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 62434,
+      "member": "runtime/reference/property_parent_late_boundary_r7.py",
+      "sha256": "3c710779e79870e4fefdedb8a24163118b2de814d7fcd3e97bb8971eec6113fd",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 62662,
+      "member": "runtime/reference/retained_unstarted_stage_final02.py",
+      "sha256": "bc6faf1c7ae2b7e3d44be3d4fe19e4272073073f8df283397ef37c177ca25850",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 40788,
+      "member": "runtime/reference/send_new_native_task_r5.py",
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 153138,
+      "member": "runtime/reference/source_parent_late_boundary_r4.py",
+      "sha256": "27350db238c5ca31796af91c77b5c2fdb9d02b838d35140f759df907903d4fa4",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 17390,
+      "member": "runtime/reference/tool_client_r6.py",
+      "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 118621,
+      "member": "runtime/source/close_component.py",
+      "sha256": "c675f3be675d6e0ffad23c73f80a761d61053404e54b264bdd6d9aba94a0ffb0",
+      "source": "selected delta"
+    },
+    {
+      "bytes": 19138,
+      "member": "runtime/source/component_common.py",
+      "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 48643,
+      "member": "runtime/source/component_lifecycle.py",
+      "sha256": "eb43d1f5df1b0e4295770c82328fd17e09b9eaa766861f3803928a0b1f9f4e18",
+      "source": "selected delta"
+    },
+    {
+      "bytes": 39012,
+      "member": "runtime/source/component_listener.py",
+      "sha256": "d35078cfa23fa9f48c1136b10707c73273de01ef43a28118b762c241badf322e",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 33108,
+      "member": "runtime/source/component_snapshot.py",
+      "sha256": "2b7b682c9af1e02c4e11a0adcea478f6d71cd1373cde59b699e6a01f851a040a",
+      "source": "selected delta"
+    },
+    {
+      "bytes": 259866,
+      "member": "runtime/source/late_boundary.py",
+      "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7",
+      "source": "selected delta"
+    },
+    {
+      "bytes": 29110,
+      "member": "runtime/source/native_guard_session_r2.py",
+      "sha256": "f55cd1c25962d0cc1ccc76fc921f6bac116a670fbdf5779305efd6d3d00ef718",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 4633,
+      "member": "runtime/source/native_proc_profile.py",
+      "sha256": "12719e58d2e3e1a1e86b8a6a9dc9587e37bfcb36c4c3b26b023138752bb3e67b",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 14256,
+      "member": "runtime/source/prepare_component.py",
+      "sha256": "1528a3124de8c2977e493100a61e594143d56b4af9df2d1532d79c46770710f2",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 20779,
+      "member": "runtime/source/root_fixture_once.py",
+      "sha256": "699dfc0ca9d04627eaf806b45513f028773a41ece572b7945dd44f436e83158d",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 39144,
+      "member": "runtime/source/root_fixture_originals.py",
+      "sha256": "e55b93e4d1adfa14819f626f9ba44a5ae6fcd0a9721b2db1c581617c9b1f7418",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 10498,
+      "member": "runtime/source/run_root_fixture_phase.py",
+      "sha256": "bf65791c252d0b4d9416717ffca44fe43c9021211c2f2189be5553ab8967a6b2",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 48043,
+      "member": "runtime/source/send_new_native_guard_task_r10_r4.py",
+      "sha256": "6d2c6dc91d98e39d82d613c4b71b5a1a679e4f4c366d42a00a72241826e9faf2",
+      "source": "selected delta"
+    },
+    {
+      "bytes": 25040,
+      "member": "runtime/source/sender_native_guard_ready_r10_r4.py",
+      "sha256": "97b28afd910280bbdb7a1061218f4d72fc4b9024669b1aba10b0bfdb6caf13b2",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 19085,
+      "member": "runtime/source/stage_component.py",
+      "sha256": "74ff4865d2021e42ae5022d606cfe5732d924e8038d00c3a99b89ebcd4c77d72",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 18143,
+      "member": "runtime/source/witness_bundle.py",
+      "sha256": "9f431b6fde0252d1a178ffa2b6f4047e580faace50251a6801b9a339908093a8",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 65591,
+      "member": "root-chain/reference/actual_policy_adoption.py",
+      "sha256": "6a3a9f8278ccf4b29724d9d034b4a349127a77d0adfd4daa8066ef6aa8d6c35b",
+      "source": "actual R9 freeze original descriptor"
+    },
+    {
+      "bytes": 8101,
+      "member": "root-chain/source/phone_chain_bridge.py",
+      "sha256": "fefc75b85e1720bc6cbfac646250386825eec4ccc1e83ce9f3e27e285350c248",
+      "source": "selected delta"
+    },
+    {
+      "bytes": 84720,
+      "member": "root-chain/source/run_component_root_once.py",
+      "sha256": "47bcdcb57490368508ec77bd8d17960a2a2de05ad19039689f34217a3fb8bda2",
+      "source": "selected delta"
+    }
+  ],
+  "complete_typed_result_all_fields_match_independently_replayed_package": true,
+  "current_case_credit": 0,
+  "delta": {
+    "bytes": 536920,
+    "sha256": "576b3e70a60c6b9cba427937e12042bbc9cd0c7bc0dfb8813e3e463611b94d4f"
+  },
+  "delta_members": 24,
+  "dependencies": {
+    "bytes": 35360,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/DEPENDENCIES.json",
+    "sha256": "e15ea67c76bcc17a80627abe9a5ff19c79c87a10c977c2643416571f88f26fb7"
+  },
+  "expanded_delta_bytes": 1732184,
+  "fourteen_exact_RHS_bindings": [
+    {
+      "assignment": "RETAINED_FAILED_TRANSPORT_ADAPTER",
+      "candidate": {
+        "bytes": 259498,
+        "sha256": "44917c43eebec752c9075ba02df20537436a7ccd9333b4f358f75cebe7a48d0f"
+      },
+      "key": "RETAINED_FAILED_TRANSPORT_ADAPTER",
+      "parent": {
+        "bytes": 259261,
+        "sha256": "b41562fffbdca9e4f6d82d3cde74f83cf701c8a75a36457cf8a48f970a554006"
+      }
+    },
+    {
+      "assignment": "RETAINED_FAILED_TRANSPORT_HOST_ADAPTER",
+      "candidate": {
+        "bytes": 259804,
+        "sha256": "4c62554cb26456b9227bebbca6c7c137f00dfe730de7124dfc551ade2989c765"
+      },
+      "key": "RETAINED_FAILED_TRANSPORT_HOST_ADAPTER",
+      "parent": {
+        "bytes": 259498,
+        "sha256": "44917c43eebec752c9075ba02df20537436a7ccd9333b4f358f75cebe7a48d0f"
+      }
+    },
+    {
+      "assignment": "RETAINED_FAILED_TRANSPORT_INPUTS_SHA256",
+      "candidate": {
+        "bytes": 259866,
+        "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+      },
+      "key": "RETAINED_FAILED_TRANSPORT_INPUTS_SHA256",
+      "parent": {
+        "bytes": 259804,
+        "sha256": "4c62554cb26456b9227bebbca6c7c137f00dfe730de7124dfc551ade2989c765"
+      }
+    },
+    {
+      "assignment": "SENDER",
+      "candidate": {
+        "bytes": 84720,
+        "sha256": "47bcdcb57490368508ec77bd8d17960a2a2de05ad19039689f34217a3fb8bda2"
+      },
+      "key": "Root:SENDER",
+      "parent": {
+        "bytes": 84720,
+        "sha256": "dcf07e1f0b88633028ae4a31160453b239c1041b0b25844302f261da811ea52a"
+      }
+    },
+    {
+      "assignment": "FROZEN_PROOF_INPUTS",
+      "candidate": {
+        "bytes": 23623,
+        "sha256": "eaf52438100706edb6734efea64299f6ff1b414485c2c353c9172f7c6f670857"
+      },
+      "key": "adapter_inputs",
+      "parent": {
+        "bytes": 13228,
+        "sha256": "f4a1ca8f685fecd792c961b76cbf135bd9d1ee2182e530e87948161680523779"
+      }
+    },
+    {
+      "assignment": "RETAINED_FAILED_TRANSPORT",
+      "candidate": {
+        "bytes": 9902,
+        "sha256": "8a5e4d8104165151bee6f219811f0f4172115f97cf22bf807468017c7a5220b2"
+      },
+      "key": "admission_entry:RETAINED_FAILED_TRANSPORT",
+      "parent": {
+        "bytes": 9647,
+        "sha256": "90dc397ce9d18a1b35f20821a5a35665d55a73d2f254c0069178d695e8c2c4ac"
+      }
+    },
+    {
+      "assignment": "RETAINED_FAILED_TRANSPORT_BINDING",
+      "candidate": {
+        "bytes": 109545,
+        "sha256": "41348b4df22a31e28158c303e04e9950b677cdf89e105a8a2d25e69dc431a5ec"
+      },
+      "key": "bound02_disposition:RETAINED_FAILED_TRANSPORT_BINDING",
+      "parent": {
+        "bytes": 101368,
+        "sha256": "34a0a45e2845a6bc14e510aaf9b59ecf72381bef60193ca7ae5275ddfb06c36b"
+      }
+    },
+    {
+      "assignment": "RETAINED_FAILED_TRANSPORT_MANIFEST",
+      "candidate": {
+        "bytes": 101368,
+        "sha256": "34a0a45e2845a6bc14e510aaf9b59ecf72381bef60193ca7ae5275ddfb06c36b"
+      },
+      "key": "bound02_disposition:RETAINED_FAILED_TRANSPORT_MANIFEST",
+      "parent": {
+        "bytes": 101113,
+        "sha256": "6a40b4982a638c0e8eb4f0e4547f3115d9935d4416a3f0b08f9b0d4b40e56ec5"
+      }
+    },
+    {
+      "assignment": "RETAINED_FAILED_TRANSPORT",
+      "candidate": {
+        "bytes": 11080,
+        "sha256": "e7d89b2f47ada6d5eda47ae7e9e0a4c243202dc8aa5b6618b68973b6e13addbb"
+      },
+      "key": "prepare_fresh_admission_input:RETAINED_FAILED_TRANSPORT",
+      "parent": {
+        "bytes": 10825,
+        "sha256": "07e5c8346e6676098a248aab41ac8a4f5fe3e45b90eddef06e833cbc8e43886a"
+      }
+    },
+    {
+      "assignment": "ADMISSION_SOURCE_PINS",
+      "candidate": {
+        "bytes": 26376,
+        "sha256": "63560e2245b3b1d18a6f1cc9c2e3c8e21108707603b999bf5ab2173f1ee153a7"
+      },
+      "key": "preparer:admission",
+      "parent": {
+        "bytes": 24391,
+        "sha256": "752319c82b1d6155c9ced9f15790040cd18f2bdf9febefc169a71e4f74111c8a"
+      }
+    },
+    {
+      "assignment": "PKG",
+      "candidate": {
+        "bytes": 8101,
+        "sha256": "fefc75b85e1720bc6cbfac646250386825eec4ccc1e83ce9f3e27e285350c248"
+      },
+      "key": "root-chain/source/phone_chain_bridge.py:PKG",
+      "parent": {
+        "bytes": 8039,
+        "sha256": "778de1056af3a6781d1e722a9a7511191ad98f0ff1487b35d4c24a4e6f08de3c"
+      }
+    },
+    {
+      "assignment": "PKG",
+      "candidate": {
+        "bytes": 84720,
+        "sha256": "dcf07e1f0b88633028ae4a31160453b239c1041b0b25844302f261da811ea52a"
+      },
+      "key": "root-chain/source/run_component_root_once.py:PKG",
+      "parent": {
+        "bytes": 84658,
+        "sha256": "ac34e9c4ca19144a44feee9b6b07d30bf5164d92446668a853fc2717968f9659"
+      }
+    },
+    {
+      "assignment": "ADMISSION_SOURCE_PINS",
+      "candidate": {
+        "bytes": 84658,
+        "sha256": "ac34e9c4ca19144a44feee9b6b07d30bf5164d92446668a853fc2717968f9659"
+      },
+      "key": "root-chain/source/run_component_root_once.py:admission",
+      "parent": {
+        "bytes": 82673,
+        "sha256": "7b0f12a9bdf3a8910da53c894837024c4ef8437f890ad9a9010371c037a4ec35"
+      }
+    },
+    {
+      "assignment": "ADMISSION_SOURCE_PINS",
+      "candidate": {
+        "bytes": 48043,
+        "sha256": "6d2c6dc91d98e39d82d613c4b71b5a1a679e4f4c366d42a00a72241826e9faf2"
+      },
+      "key": "runtime/source/send_new_native_guard_task_r10_r4.py:admission",
+      "parent": {
+        "bytes": 46058,
+        "sha256": "2d019f99ace6faa9061c6e886b2ed544c145b3b763fc13d423165d20d41a7b99"
+      }
+    }
+  ],
+  "known_earlier_unknowns_preserved": [
+    "first nonreused API launch reply gap",
+    "failed historical listener identity and callsite",
+    "baseline device-shell wire",
+    "global effects",
+    "native terminal",
+    "remote cleanup"
+  ],
+  "late": {
+    "bytes": 259866,
+    "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+  },
+  "nonce_draws": 0,
+  "old_socket_helper_unchanged": {
+    "bytes": 25791,
+    "host": "p4",
+    "path": "/home/alex/codex-razr60-r6-followthrough-20261107/deadline/candidate/preserved_ui_package_phase_r7.py",
+    "retained_member": "dependencies/p4/preserved_ui_package_phase_r7.py",
+    "sha256": "06cab5903387dd10c29ea6fbddb6e4f4e6ceb6e2e3e835de1148619d89e139e0"
+  },
+  "original_budget": {
+    "bytes": 3707,
+    "sha256": "a56bbe0ba95a55b4a7102f574435872da1829cdb8445abb4617e4a247ec6c633"
+  },
+  "pending_gates": [
+    "Actual Mac R9 typed consumer success with complete originals",
+    "Actual phone R9 typed publication preserving full old49 and current absence",
+    "Separate exact R10 adapter source-only phone publication",
+    "Complete actual R10 freeze and original successful controller",
+    "Actual fresh admission and preparer preview before one new nonce",
+    "Actual current NEG01 followed by accepted NEG02"
+  ],
+  "phone_calls": 0,
+  "preparer": {
+    "bytes": 26376,
+    "sha256": "63560e2245b3b1d18a6f1cc9c2e3c8e21108707603b999bf5ab2173f1ee153a7"
+  },
+  "prior_R9_seven_host_cases_transferred": false,
+  "proof_directory_stays_exact_three_files": true,
+  "proof_manifest": {
+    "bytes": 421,
+    "path": "/var/lib/trillionnium/owner-open/phone-local-v150/native-guard-nonnative-boundaries-r10-r1/299483481a678cbd589aeba54ed8b68f/RETENTION-INPUTS.json",
+    "sha256": "fb0c324e3bc994b56732fc6c6385ed686b73e138fd47e1e538e32c1a535b945b"
+  },
+  "read_original_count": 76,
+  "review_method": "Independent complete inverse and exact original-byte/cascade verification; source-only AST inspection. No repeated semantic fixture matrix or live absence invocation.",
+  "reviewer": "ci_candidate",
+  "root_manifest": {
+    "bytes": 74044,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/root-chain/SOURCE-MANIFEST.json",
+    "sha256": "43bbc6ac86758d31ed03d55a5cac0e24db5a021b161d2161a4f52a58980d8da2"
+  },
+  "root_member_count": 3,
+  "runtime_adapter_separate_from_proof_directory": true,
+  "runtime_execution": false,
+  "runtime_manifest": {
+    "bytes": 87655,
+    "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/runtime/MANIFEST.json",
+    "sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02"
+  },
+  "runtime_member_count": 38,
+  "schema": "hepta.fc33.r10.whole-source-independent-review.v1",
+  "seven_complete_actual_R9_source_inverses": [
+    {
+      "actual_parent": {
+        "bytes": 8101,
+        "sha256": "0d560652a28341c1bed206fc1331c16f7c475adbbb906776bb18288b6efae7ee"
+      },
+      "candidate": {
+        "bytes": 8101,
+        "sha256": "fefc75b85e1720bc6cbfac646250386825eec4ccc1e83ce9f3e27e285350c248"
+      },
+      "changes": 1,
+      "file": "root-chain/source/phone_chain_bridge.py"
+    },
+    {
+      "actual_parent": {
+        "bytes": 83705,
+        "sha256": "68fbb8c6f94f30a6c09946e5965355c9c3c61ea2644ed1109b3a34c6fd0947f0"
+      },
+      "candidate": {
+        "bytes": 84720,
+        "sha256": "47bcdcb57490368508ec77bd8d17960a2a2de05ad19039689f34217a3fb8bda2"
+      },
+      "changes": 13,
+      "file": "root-chain/source/run_component_root_once.py"
+    },
+    {
+      "actual_parent": {
+        "bytes": 114413,
+        "sha256": "534a857c9aeabef3a0fb1e714a64f8242ec407fe4f3c6ce699827fff487aeb27"
+      },
+      "candidate": {
+        "bytes": 118621,
+        "sha256": "c675f3be675d6e0ffad23c73f80a761d61053404e54b264bdd6d9aba94a0ffb0"
+      },
+      "changes": 7,
+      "file": "runtime/source/close_component.py"
+    },
+    {
+      "actual_parent": {
+        "bytes": 48643,
+        "sha256": "eb43d1f5df1b0e4295770c82328fd17e09b9eaa766861f3803928a0b1f9f4e18"
+      },
+      "candidate": {
+        "bytes": 48643,
+        "sha256": "eb43d1f5df1b0e4295770c82328fd17e09b9eaa766861f3803928a0b1f9f4e18"
+      },
+      "changes": 0,
+      "file": "runtime/source/component_lifecycle.py"
+    },
+    {
+      "actual_parent": {
+        "bytes": 30957,
+        "sha256": "6e944c4783fa64abe1a2c741a76cc98165122b6e3b709f2147698fdbe0416263"
+      },
+      "candidate": {
+        "bytes": 33108,
+        "sha256": "2b7b682c9af1e02c4e11a0adcea478f6d71cd1373cde59b699e6a01f851a040a"
+      },
+      "changes": 3,
+      "file": "runtime/source/component_snapshot.py"
+    },
+    {
+      "actual_parent": {
+        "bytes": 251644,
+        "sha256": "df022013e154af46bd7c033cba7711d16974bf191fde096b4cce4f397fbbb543"
+      },
+      "candidate": {
+        "bytes": 259866,
+        "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+      },
+      "changes": 59,
+      "file": "runtime/source/late_boundary.py"
+    },
+    {
+      "actual_parent": {
+        "bytes": 47324,
+        "sha256": "c295a69e3b9fb4f7cd882f7b4eaaddce3147390eb7f160aff8e113c2842cba4f"
+      },
+      "candidate": {
+        "bytes": 48043,
+        "sha256": "6d2c6dc91d98e39d82d613c4b71b5a1a679e4f4c366d42a00a72241826e9faf2"
+      },
+      "changes": 4,
+      "file": "runtime/source/send_new_native_guard_task_r10_r4.py"
+    }
+  ],
+  "source_limits": {
+    "adapter": 32768,
+    "complete_freeze_directory": 33554432,
+    "delta_compressed": 1048576,
+    "delta_expanded": 8388608,
+    "late": 262144
+  },
+  "source_parent_inventory": {
+    "current_NEG01": 52,
+    "current_NEG02": 55,
+    "generic_native_cap": 50,
+    "historical_component_role_cap": 42,
+    "native": 44,
+    "old_fixture_cap": 14,
+    "retained_initial": 49
+  },
+  "source_plan": {
+    "bytes": 21622,
+    "sha256": "5fa51851cf2d5d5de48c516944a01b2f25f316c642414fcc9eea3c8c83336d1c"
+  },
+  "state": "PASS_EXACT_SOURCE_BINDINGS_PENDING_ACTUAL_ACCEPTANCE_AND_FREEZE",
+  "transport_originals": {
+    "dependencies/mac/control_send_once.py": {
+      "bytes": 8237,
+      "sha256": "5f69bbac3de71603fbfcea58102af022933146d1b63c20a51fe4645edbdb1ed2"
+    },
+    "dependencies/mac/send_new_native_task_r5_fc33_listener01.py": {
+      "bytes": 41368,
+      "sha256": "d57255e520745e59dfad04576862d93091a02658c42bc0fc23e8392db63999c4"
+    },
+    "dependencies/p4/phone_once.py": {
+      "bytes": 7578,
+      "sha256": "c74aec49cd4fa84238194242653d5d3798b7f5cdc4659f90bcb50ec0c424902f"
+    },
+    "dependencies/p4/preserved-ui-package-config.json": {
+      "bytes": 2416,
+      "sha256": "18600d15ae02724db5e630a39a310b2449c5d7fb162a73239bd7f8045164e1a6"
+    }
+  },
+  "unchanged_preparer_function_names": [
+    "need",
+    "pin",
+    "meta",
+    "exact3",
+    "initial",
+    "module",
+    "controller_value",
+    "verify_controller",
+    "verify_tree",
+    "verify_freeze",
+    "load_original_admission",
+    "require_original_attempt_admission",
+    "selected_context",
+    "create",
+    "main"
+  ],
+  "unchanged_shared_member_count": 17
+}

@@ -1,0 +1,23 @@
+--- a/runtime/source/late_boundary.py
++++ b/runtime/source/late_boundary.py
+@@ -227,16 +227,17 @@
+         and len(roots) == len(set(roots)) and isinstance(entries, dict)
+         and 1 <= len(entries) <= 30000, 'bounded complete inventory required')
+     paths = [Path(p) for p in roots]
+     C.need(all(p.is_absolute() and str(p) == s and '..' not in p.parts
+                for p, s in zip(paths, roots)), 'inventory root path differs')
+-    C.need(all(a == b or not (a in b.parents or b in a.parents) for a in paths for b in paths),
++    root_parts = frozenset(p.parts for p in paths)
++    root_depths = frozenset(len(parts) for parts in root_parts)
++    C.need(all(parts[:depth] not in root_parts
++               for parts in root_parts for depth in root_depths if depth < len(parts)),
+            'inventory roots overlap')
+     C.need(all(p in entries and entries[p].get('kind') in ('directory', 'absent') for p in roots),
+            'inventory root is absent or not a directory')
+-    root_parts = frozenset(p.parts for p in paths)
+-    root_depths = frozenset(len(parts) for parts in root_parts)
+     children = {}
+     for name in entries:
+         p = Path(name)
+         children.setdefault(str(p.parent), []).append(p.name)
+     total = 0

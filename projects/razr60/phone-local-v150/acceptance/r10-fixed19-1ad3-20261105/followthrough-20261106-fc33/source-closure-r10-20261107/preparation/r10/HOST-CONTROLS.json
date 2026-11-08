@@ -1,0 +1,124 @@
+{
+  "actual_Mac_consumer_attested": false,
+  "actual_R10_freeze": null,
+  "actual_phone_publication_attested": false,
+  "actual_positive_replay_elapsed_seconds": 24.864634965000732,
+  "actual_proof_callback_descriptors": [
+    {
+      "bytes": 423,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-preaccept-r7-failed01/RETENTION-INPUTS.json",
+      "sha256": "0878279ffce3ecf3e541063ab8ce845950b904e0d46b9a81f6c2bf451bec4b29"
+    },
+    {
+      "bytes": 3000200,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-preaccept-r7-failed01/ORIGINALS.zlib",
+      "sha256": "4010779b9a3810dc7d0d51072dc76dd52be2327301b857df2b04ddb004a5edca"
+    },
+    {
+      "bytes": 422,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-staged-r8-failed01-ast02/RETENTION-INPUTS.json",
+      "sha256": "b005ba692ea1f31e93858628eb9ae64c936c83193c632002eafa1dfb84f7f7f0"
+    },
+    {
+      "bytes": 96088,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-staged-r8-failed01-ast02/verify_retained_staged_r8.py",
+      "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+    },
+    {
+      "bytes": 2066079,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-staged-r8-failed01-ast02/ORIGINALS.zlib",
+      "sha256": "d66d286bfb7890e0b32358326b669ac4a47d5f4ba43c524bc3f129f5bf631e93"
+    },
+    {
+      "bytes": 23623,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/native-guard-r10-r1-operator-fc33-native-v3-r10/dependencies/runtime/retained_transport_r9_adapter.py",
+      "sha256": "eaf52438100706edb6734efea64299f6ff1b414485c2c353c9172f7c6f670857"
+    },
+    {
+      "bytes": 431,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-transport-r9-failed01/RETENTION-INPUTS.json",
+      "sha256": "a49f04c7e6be09e9d46b00176b9a0baf4489b12d764abbfe4482f5c839fee01d"
+    },
+    {
+      "bytes": 34650,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-transport-r9-failed01/verify_retained_transport_r9.py",
+      "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+    },
+    {
+      "bytes": 2174339,
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/stock16-hepta-local-model-Root-v150-r1/retained-transport-r9-failed01/ORIGINALS.zlib",
+      "sha256": "18da9626e5ae687adb4087b5a5484d9d2a8dc8885fdaabfd57b829ec02d20fd3"
+    }
+  ],
+  "complete_selected_runtime_members": 38,
+  "controls": [
+    {
+      "elapsed_seconds": 24.864634965000732,
+      "name": "actual_six_sources_three_host_mappers_and_native44_to_retained49",
+      "result": "PASS",
+      "returned_root_count": 49
+    },
+    {
+      "error": "R10 NEG01 requires actual native44 original and independently retained49",
+      "error_type": "ValueError",
+      "name": "old_R8_inventory_pin_cannot_replace_actual_R9_observation",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "error": "exact retained R9 proof and separate runtime source manifest fields",
+      "error_type": "ValueError",
+      "name": "runtime_manifest_requires_exact_separate_adapter",
+      "result": "PASS_REJECTED"
+    },
+    {
+      "error": "actual input descriptor differs",
+      "error_type": "ValueError",
+      "name": "changed_host_adapter_bytes_rejected_before_module_load",
+      "result": "PASS_REJECTED"
+    }
+  ],
+  "count": 4,
+  "elapsed_is_local_pure_replay_not_phone_current_inventory_measurement": true,
+  "native_case_credit": 0,
+  "new_nonce_draws": 0,
+  "original_native_boundary": {
+    "bytes": 29342,
+    "sha256": "39b3702f8472148ae209a9a1043e1dd0623dd92d1210e8310d84b72f89390047"
+  },
+  "original_native_inventory": {
+    "bytes": 1345535,
+    "sha256": "4bd70b72d2a92a6c963912159d9e978fc681a35ddb30c03a2c741700bf47cde4"
+  },
+  "phone_LIFE_inventory_and_current_absence_not_executed": true,
+  "phone_calls": 0,
+  "remote_actions": 0,
+  "retained_R8_inventory": {
+    "bytes": 1403291,
+    "sha256": "2008db913728ff0c3836cb6edb361e37f427d7663f2832163fe93b2adb18f432"
+  },
+  "retained_R9_inventory": {
+    "bytes": 1403290,
+    "sha256": "bb8cfb6dd2f108046e8296956e514f7b3eec0ea5aaac5794ad86c70174478609"
+  },
+  "runtime_30_second_inventory_budget_not_changed": true,
+  "schema": "hepta.r10.actual-proof-and-source-host-controls.v1",
+  "sources": {
+    "dependencies/runtime/retained_transport_r9_adapter.py": {
+      "bytes": 23623,
+      "sha256": "eaf52438100706edb6734efea64299f6ff1b414485c2c353c9172f7c6f670857"
+    },
+    "runtime/MANIFEST.json": {
+      "bytes": 87655,
+      "sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02"
+    },
+    "runtime/source/late_boundary.py": {
+      "bytes": 259866,
+      "sha256": "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"
+    }
+  },
+  "state": "FOUR_PURE_HOST_WIRING_CONTROLS_PASSED_NO_EXECUTION_QUALIFICATION",
+  "unchanged_Common": {
+    "bytes": 19138,
+    "sha256": "1e2d8f90b683312891bdd9ddf46a5b73a589469cc5e4b036acd038374a908cab"
+  }
+}

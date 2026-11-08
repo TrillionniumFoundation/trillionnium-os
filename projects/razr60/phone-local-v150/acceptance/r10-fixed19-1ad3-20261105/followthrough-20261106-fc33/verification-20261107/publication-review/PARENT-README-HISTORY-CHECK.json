@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.parent-readme.historical-body-review.v1",
+  "baseline_path": "/workspace/scratch/78e391d818f2/acceptance_review/source/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+  "baseline_bytes": 1639,
+  "baseline_sha256": "2e5e502dff4eb74a31738037640dbdac999f73add5bfb8a655d0355475ca5c97",
+  "export_path": "/workspace/scratch/78e391d818f2/delivery_repo/projects/razr60/phone-local-v150/acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/README.md",
+  "export_bytes": 3169,
+  "export_sha256": "ef5fcbddbd1fb5ea32963acbd424968937a7065a0395db25a4a9850a43d1314f",
+  "title_changed_to_public_evidence_index": true,
+  "complete_original_body_exact_suffix": true,
+  "complete_original_body_occurrences": 1,
+  "checkpoint09_historical_scope_explicitly_preserved": true,
+  "original_historical_body_changed": false
+}
