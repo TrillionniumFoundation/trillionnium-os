@@ -222,7 +222,7 @@ _EXPECTED_EVIDENCE_TEMP = re.compile(
     r'(?:codex-[0-9]{2}\.(?:spawn-intent|spawned|joined|images|model-failure)\.json\.new'
     r'|local-[0-9]{2}\.(?:spawn-intent|spawned|joined|images|model-failure|slot-before|slot-after|request|decision|coordinate-map|worker-result)\.json\.new'
     r'|recovery-(?:inspection|unresolved)-[0-9a-f]{32}\.json\.new'
-    r'|dispatch-[0-9]{3}\.json\.new|terminal\.json\.new|business-outcome\.json\.new|task-contract\.json\.new|health-contract\.json\.new|health-outcome\.json\.new'
+    r'|dispatch-[0-9]{3}\.json\.new|terminal\.json\.new|business-outcome\.json\.new|task-contract\.json\.new|health-contract\.json\.new|health-outcome\.json\.new|operation-profile\.json\.new'
     r'|(?:result|semantic)-[0-9a-f]{64}\.json\.new'
     r'|capture-[0-9a-f]{32}\.json\.new'
     r'|(?:connection-ended|cleanup-failure)\.json\.[0-9a-f]{32}\.new)\Z')
