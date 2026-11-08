@@ -1,0 +1,25 @@
+test_3585_rejected_before_generation (__main__.TokenCountTests.test_3585_rejected_before_generation) ... ok
+test_artifact_pin_mismatch_rejected (__main__.TokenCountTests.test_artifact_pin_mismatch_rejected) ... ok
+test_cli_rejects_unknown_duplicate_and_unapproved_limit (__main__.TokenCountTests.test_cli_rejects_unknown_duplicate_and_unapproved_limit) ... ok
+test_concurrent_result_publication_is_create_only (__main__.TokenCountTests.test_concurrent_result_publication_is_create_only) ... ok
+test_exact_3584_bound_is_admitted (__main__.TokenCountTests.test_exact_3584_bound_is_admitted) ... ok
+test_existing_result_never_overwritten (__main__.TokenCountTests.test_existing_result_never_overwritten) ... ok
+test_full_64k_text_preserved_and_one_extra_byte_rejected (__main__.TokenCountTests.test_full_64k_text_preserved_and_one_extra_byte_rejected) ... ok
+test_image_bound_includes_both_boundaries_and_bos (__main__.TokenCountTests.test_image_bound_includes_both_boundaries_and_bos) ... ok
+test_image_counts_exact_marker_segments_and_fixed_vision_block (__main__.TokenCountTests.test_image_counts_exact_marker_segments_and_fixed_vision_block) ... ok
+test_input_change_during_count_rejected (__main__.TokenCountTests.test_input_change_during_count_rejected) ... ok
+test_invalid_image_rejected (__main__.TokenCountTests.test_invalid_image_rejected) ... ok
+test_invalid_or_missing_ffi_result_rejected (__main__.TokenCountTests.test_invalid_or_missing_ffi_result_rejected) ... ok
+test_malformed_utf8_nul_and_empty_text_rejected (__main__.TokenCountTests.test_malformed_utf8_nul_and_empty_text_rejected) ... ok
+test_no_image_uses_one_complete_formatter_segment_and_preserves_raw_unicode (__main__.TokenCountTests.test_no_image_uses_one_complete_formatter_segment_and_preserves_raw_unicode) ... ok
+test_real_sigabrt_has_no_success_result (__main__.TokenCountTests.test_real_sigabrt_has_no_success_result) ... ok
+test_real_vocabulary_words_cannot_enable_host_fixture_faults (__main__.TokenCountTests.test_real_vocabulary_words_cannot_enable_host_fixture_faults) ... ok
+test_reserved_image_marker_in_either_input_rejected (__main__.TokenCountTests.test_reserved_image_marker_in_either_input_rejected) ... ok
+test_result_directory_must_be_private (__main__.TokenCountTests.test_result_directory_must_be_private) ... ok
+test_symlink_hardlink_permissions_and_noncanonical_input_rejected (__main__.TokenCountTests.test_symlink_hardlink_permissions_and_noncanonical_input_rejected) ... ok
+test_three_second_alarm_has_no_success_result (__main__.TokenCountTests.test_three_second_alarm_has_no_success_result) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 4.458s
+
+OK

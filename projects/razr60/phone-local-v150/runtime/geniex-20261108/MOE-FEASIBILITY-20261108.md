@@ -21,12 +21,14 @@
 | 候选 | 模型/文件事实 | 对本机的意义 | 目前证据边界 |
 | --- | --- | --- | --- |
 | LFM2.5-8B-A1B | 8.3B 总参数、1.5B 激活；官方 Q4_0 为 4,844,678,368 B，Q4_K_M 为 5,155,564,768 B | 较有希望完整驻留内存的文本 MoE，需要额外屏幕理解路径 | 固定源码有相关短卷积/专家 kernel；未在本机验证 [14][15] |
+| LFM2.5-24B-A2B | 24.0B 总参数、2.45B 激活；官方 Q4_0/QAD Q4_0 约 13.6 GB，Q4_K_M 约 14.5 GB | 中文工具规划的较大文本候选；本机当前余量不足以直接常驻这些官方 Q4 文件 | 纯文本、带 reasoning；未建立本机流式/NPU组合 [17][18] |
 | Granite 4.0 H Tiny | 7B 总参数、约 1B 激活；官方 Q4_K_M 为 4,230,976,352 B；文本模型 | 相邻尺寸备选，Mamba2 的算子覆盖需要特别核对 | 当前固定 Hexagon 源码未见 SSM_SCAN 支持，不能声称全 NPU [16] |
 | Qwen3.6-35B-A3B | 35B 总参数、约 3B 激活；原生视觉；ggml-org 发布的 Q4_K_M 约 20.4 GB，Q8_0 视觉组件约 614 MB | 需要专家缓存/闪存流式；是大模型视觉路线的优先研究候选 | BigMoeOnEdge 作者有 Android 运行结果；本机未运行 [1][2][3] |
 | Qwen3-VL-30B-A3B-Instruct | 30B 总参数、约 3B 激活；模型作者明确列出 GUI agent 能力 | 较早的视觉 MoE 备选，仍需解决完整权重容量 | 不以公开 GUI 指标代替这台手机的端到端测试 [4] |
 | Gemma 4 26B A4B | 原生多模态 MoE；官方 Q4_0 加载内存估计约 14.4 GB，另需 KV/运行内存 | 当前手机余量不足以直接采用该加载方式 | 只能作为进一步流式/量化研究候选 [5] |
 | Phi-tiny-MoE | 约 3.8B 总参数、1.1B 激活；文本模型 | 提供 v79 MoE 运行链路的参考，但不满足“更大视觉模型”的目标 | RunAnywhere 作者报告 SM8750 上约 5–7 token/s；不是本机实测 [6][7] |
 | Bonsai-27B 1-bit | 约 3.9 GB 语言权重；可另配约 0.63 GB 视觉组件 | 是扩大参数量的另一条低位压缩路线，**不是 MoE** | 作者的 4K 语言推理峰值约 5.2 GB；未确认本机 v79 完整兼容 [8] |
+| Edge0-35B-A3B-preview | Qwen3.6 派生、量化加 Recover-LoRA/prerouter、K=4；Android 专家分页 | 作者有同代 8 Elite / 16 GB 设备结果，值得研究专家加载实现 | 当前 Android 为 CPU/NEON；作者明确提示工具调用和多步代理能力仍弱 [19][20] |
 
 不同量化发布者的 Q4_K_M 文件可能分别约 20.4 GB 和 22.3 GB，不能把它们当作同一文件，也不能直接混用其性能数据。Bonsai 使用专门的 Q1_0_g128 格式和作者维护的运行时；名称相似的通用 Q1 支持不构成端到端兼容证明。
 
@@ -52,6 +54,18 @@
 LFM 的短卷积路径使用 `SSM_CONV`，当前固定 Hexagon 版本存在受 dtype、kernel 大小和布局约束的对应检查/执行路径。Granite Mamba2 还需要 `SSM_SCAN`；该固定版本的 Hexagon 检查表没有该操作。这个区别使 LFM 更适合作为优先源码适配实验，但两者的全图、量化数值和性能仍需实机验证。
 
 本机现有 2B GGUF 试验确认了真实 v79 FastRPC 会话、HVX/HMX/VTCM 信息及层卸载，但它是稠密模型；不能把约 35 token/s 的该项结果移植为 35B MoE 的性能预测。
+
+## 补充检索：同代芯片上的 Edge0 与新文本 MoE
+
+Edge0 在 2026-09-30 发布 Android 引擎。作者 Android 文档记录 Lenovo TB322FC（Snapdragon 8 Elite、16 GB）上 35B 的应用内解码约 6–9 token/s，采用 CPU/NEON 和受预算约束的专家分页。冷专家池与复用前缀的暖回合延迟差异很大；这些不是 razr 本机成绩，也不是 NPU 成绩。[19]
+
+这条证据增强了“同代芯片可运行 35B”的可行性判断，但不改变目前 Hepta 的模型选择：Edge0 发布的是带专用适配器和 K=4 路由的派生流水线，不能当作原始 Qwen top-8 的等价运行；模型卡明确承认预览版工具使用与多步代理能力仍弱。也未在本轮建立其 Android 截图输入链路。[20]
+
+补充检查的 LFM2.5-24B-A2B 是 24.0B/2.45B 文本 reasoning MoE，官方已有 QAD Q4_0；量化感知蒸馏试图恢复低位量化损失。这种质量恢复训练值得研究，但其官方 Q4 文件仍约 13.6–14.5 GB，不能据“A2B”宣称适合当前可用内存直接常驻。[17][18]
+
+Meta 的 MobileMoE-L-QAT 则是 5.3B 总参数、922M 激活、预计 INT4 权重 2.75 GB 的手机研究方向；官方卡只列英语文本，采用 FAIR 非商业研究许可。本轮没有建立中文视觉工具任务适用性或可直接用的本机 HTP 包，故不替代当前候选。[21]
+
+以上追加检索的来源和证据边界保存于 `MOE-LATEST-ADDENDUM-20261108.json`。没有因此下载或运行新的 MoE 权重。
 
 ## 2026 年最新技术应如何解读
 
@@ -85,3 +99,8 @@ BigMoMo（2026-09）研究以多 token 投机窗口组织专家读取，并与 N
 14. Liquid AI 模型卡：https://huggingface.co/LiquidAI/LFM2.5-8B-A1B
 15. Liquid AI 官方 GGUF 清单：https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-GGUF/tree/49c14831707011e64d70b2ebd8462ba08d608434
 16. IBM 模型卡：https://huggingface.co/ibm-granite/granite-4.0-h-tiny ；官方 GGUF：https://huggingface.co/ibm-granite/granite-4.0-h-tiny-GGUF/tree/08d5a8a9741dd5c1a95d2d39e25253226aa1464e
+17. Liquid AI 24B 模型卡：https://huggingface.co/LiquidAI/LFM2.5-24B-A2B
+18. Liquid AI 24B 官方量化：https://huggingface.co/LiquidAI/LFM2.5-24B-A2B-GGUF/tree/main
+19. Edge0 原作者 Android 文档：https://github.com/Edge0-AI/Edge0/blob/main/android/README.md （读取的 blob：`673b3144a5a41bbdca387d6bb057bd646fe4ceac`）
+20. Edge0 原作者模型卡：https://huggingface.co/Edge0/Edge0-35B-A3B-preview
+21. Meta 模型卡：https://huggingface.co/facebook/MobileMoE-L-QAT

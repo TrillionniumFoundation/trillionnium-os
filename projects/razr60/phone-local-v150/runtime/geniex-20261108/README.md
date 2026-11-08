@@ -213,7 +213,7 @@ The result always states:
 }
 ```
 
-## Cancellation and future r9 integration
+## Cancellation and supervised r9 integration
 
 SIGTERM, SIGINT, and SIGHUP handlers only set `sig_atomic_t` state. The worker
 checks it at API boundaries, in the token callback, after generate, after SDK
@@ -256,7 +256,12 @@ during loading/prefill/decode, last-token cancellation race, driver/SDK errors,
 hard-kill escalation, no orphan child/slot, no output admitted after accepted
 cancellation, and a fresh isolated request succeeding after cleanup. Also repeat
 correctness under the actual no-network namespace and target context. Host stub
-tests are not these gates. This directory implements the worker, not that broker.
+tests are not these gates. The worker remains separate from the new explicit
+provider backend under [`broker/`](broker/README.md). That candidate now uses the
+existing r6 native supervisor, a new backend-specific receipt, the original r9
+typed parser and the same fixed worker. Its host tests and the real model tests
+have separate evidence; production-domain and real App qualification remain
+pending.
 
 ## Context and vision limits
 
@@ -269,12 +274,17 @@ utilization measurement.
 For the selected QAIRT SM8750/v79 Qwen3-VL bundle, the compiled logical
 context limit is 4096. Its C API must still receive `n_ctx=0` and
 `n_gpu_layers=0`, because the bundle owns these settings. Do not carry the GGUF
-8192 ordinary profile into QAIRT. A prospective explicit
-`daily-qairt-4096-v1` profile can reserve 256 generation tokens and 256 safety
-tokens, leaving at most 3584 **tokenizer-counted** prompt/media tokens. This needs
-the bundle's actual tokenizer and image expansion verified before admission; a
-UTF-8 byte limit or a profile-name change is insufficient. Keep only the current
-screenshot and necessary tool results; the 53-app schema also consumes context.
+8192 ordinary profile into QAIRT. The explicit candidate
+`daily-qairt-4096-process60-v1` profile reserves 256 generation tokens and 256
+safety tokens, leaving at most 3584 **tokenizer-counted** prompt/media tokens.
+The companion Android counter now uses the exact official tokenizer C ABI and
+fixed formatter/image expansion, before model creation. Two phone image-prompt
+counts have matched their actual SDK counts; see `VALIDATION.md` for the limited
+scope and preserved original comparison-harness failure. A UTF-8 byte limit or
+a profile-name change is insufficient. The candidate preserves the complete
+semantic history and exact owner instruction, represents repeated schema
+descriptions compactly, and rejects over-budget prompts rather than silently
+truncating user instructions or history. The 53-app menu also consumes context.
 
 Use `--mode vlm` even for a no-image text smoke on this visual QAIRT bundle,
 and explicitly pass its `tokenizer.json`. Its fixed vision graph is 512x512

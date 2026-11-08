@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.geniex-required-field-contract-validation.v1",
+  "scope": "host_contract_only_not_NPU_or_Android",
+  "exit_code": 0,
+  "elapsed_seconds": 0.249,
+  "tests": 8,
+  "log_sha256": "84fd2c96b6d6201a74bf7d0a3bb7ffc2597f1c43c93d6ec4f2876374d613d16b",
+  "tested_sources": [
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/prompt_budget.py",
+      "bytes": 13475,
+      "sha256": "8521bd21e8e2c6848491baa52c2bb6d4dc56ab0e0ea2ecb2be8a934b3bd877d4"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_backend.py",
+      "bytes": 27872,
+      "sha256": "65417f9f82322410c3e9514e2c6bd2b6337474f8ae94405c4a6d3b0116cf6b4f"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/native_backend.py",
+      "bytes": 43666,
+      "sha256": "69a2054827e8bcd479f0f38f190c2a0f390cdcff39a1f22692433fc96594dad7"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/provider_bridge.py",
+      "bytes": 11479,
+      "sha256": "f42341041a11c97d1fd3570f756c3e53d7e943e3c1ee8a3a00e7dc418f29e7a5"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/apply_provider_overlay.py",
+      "bytes": 11534,
+      "sha256": "4eaad3ae516f6825f7fc2b12d16d311bfcdd80b73d5caa35e095e76bd05a293c"
+    }
+  ],
+  "previous_full_native_suite": "../host-r2/HOST-VALIDATION.json",
+  "production_receipt_or_action_gate_changes": false,
+  "reason": "Real full-catalogue R2 output omitted required arguments.text. R3 explicitly states every original required field and rejects nonclosed or optional-schema projections. This checks faithful presentation only; it does not claim the model follows it. Actual R3 model output still failed its unchanged schema and remains unqualified."
+}

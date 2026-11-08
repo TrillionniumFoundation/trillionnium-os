@@ -1,0 +1,393 @@
+{
+  "schema": "hepta.geniex-backend-public-host-validation.v1",
+  "scope": "real_r6_host_supervisor_with_explicit_host_sdk_and_tokenizer_fixtures_not_Android_or_NPU",
+  "phone_actions_executed": false,
+  "original_results_sha256": "794cc083cb967523e7d66dbcc8fe87b79843708e356d13b3b7648ab08fe2c6bd",
+  "source_delta_sha256": "2e31dc28ac76839edf55fd634d50b9a6e161eba0852038c79d078bd3ce9a0998",
+  "source_base_archive_sha256": "62e38d7fb8dc1d48eddb21de08e83b39f6af4b39b59e6ed431bcd6fd12270131",
+  "results": [
+    {
+      "name": "backend-native-suite",
+      "exit_code": 0,
+      "seconds": 10.846,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "79dcdfae76b43417bd68a909993f5202a76409af45a1dd0276e141b417354bc4",
+      "public_log": "backend-native-suite.log",
+      "public_log_sha256": "79dcdfae76b43417bd68a909993f5202a76409af45a1dd0276e141b417354bc4",
+      "log_projection": "test_names_and_summary_only_no_private_bindings",
+      "tests": 20,
+      "unittest_seconds": 10.744
+    },
+    {
+      "name": "token-counter-host-suite",
+      "exit_code": 0,
+      "seconds": 4.509,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "77933f694c9b26a3bc1f5cc8854145fc0b0b6069cf37be6c87968d3efc90d856",
+      "public_log": "token-counter-host-suite.log",
+      "public_log_sha256": "77933f694c9b26a3bc1f5cc8854145fc0b0b6069cf37be6c87968d3efc90d856",
+      "log_projection": "test_names_and_summary_only_no_private_bindings",
+      "tests": 20,
+      "unittest_seconds": 4.458
+    },
+    {
+      "name": "private-r9-pinned-import",
+      "exit_code": 0,
+      "seconds": 0.111,
+      "stdout_sha256": "7cdb8a89ac503eb7d260527d9dc70da7b433b35bdf7a2805427f9c16ac9b315c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_log": "private-r9-pinned-import.log",
+      "public_log_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "log_projection": "test_names_and_summary_only_no_private_bindings",
+      "tests": null,
+      "unittest_seconds": null
+    },
+    {
+      "name": "private-r9-original-38-regressions",
+      "exit_code": 0,
+      "seconds": 7.825,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e5554071c85963b7c7d165eb0b3b92cbb3e2ebc8474601f14dff9c43fb4ef8a7",
+      "public_log": "private-r9-original-38-regressions.log",
+      "public_log_sha256": "e5554071c85963b7c7d165eb0b3b92cbb3e2ebc8474601f14dff9c43fb4ef8a7",
+      "log_projection": "test_names_and_summary_only_no_private_bindings",
+      "tests": 38,
+      "unittest_seconds": 7.68
+    }
+  ],
+  "tested_public_source": [
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/phone_security.h",
+      "bytes": 2273,
+      "sha256": "d92dd95b1561d5019209ba0768c1444d2288cb6de4d771c67558e453174c7bfb"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/phone_tool_sidecar.cpp",
+      "bytes": 27335,
+      "sha256": "baafc644a3a7da62c68b4ccc369e17d162bd11d411e7d151db1a4c611ea02475"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/phone_tool_worker.cpp",
+      "bytes": 2885,
+      "sha256": "8c5a4cb4479c384776776448fa2907044667f99b310a05adaf88866bf6892d7d"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/vendor/hash/hash.cpp",
+      "bytes": 581,
+      "sha256": "083a5a64f04667a78a03d09ce3e8499defa88f7b0aedace049749c97366d8b47"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/vendor/hash/hash.h",
+      "bytes": 216,
+      "sha256": "63f7f0f5c1e8f1d98187af2dc37ad938863730fad59bca1f0d0573ad7272b549"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/vendor/hash/rotate-bits/rotate-bits.h",
+      "bytes": 1017,
+      "sha256": "4a100f5e9b6bdc3e780bec38caeaec7f0edc87cf06b69b5bc1f87c2c867bdf23"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/vendor/hash/sha256/sha256.c",
+      "bytes": 5282,
+      "sha256": "ba7a8ea69ad125385db28ef17e77be4a09dfdc30bb9532c30b259baaf670129c"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/vendor/hash/sha256/sha256.h",
+      "bytes": 549,
+      "sha256": "6086b0330eafe9ddef74072738290bc268b2dcccae16bc6d6cde84dc7585ca07"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/executor/r6/vendor/json.hpp",
+      "bytes": 987455,
+      "sha256": "08f19bbcc66ff3082f5caf58867b1232987dba98d82e2b29d870722fce42776b"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/action_ledger.py",
+      "bytes": 20555,
+      "sha256": "f02159cacff4b010276b9a62397e449ccf89040d2fde9a07a122715da342393e"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/daily_phone_local.py",
+      "bytes": 20433,
+      "sha256": "cef7f7db5a88739c152a99cb5272c9363a893c0289c1a77a368f0e164aa41dab"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/health_contracts.py",
+      "bytes": 11439,
+      "sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/model_health.py",
+      "bytes": 8251,
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/phone_local_http_worker.py",
+      "bytes": 10453,
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/phone_local_tools.py",
+      "bytes": 14881,
+      "sha256": "e21f49b6e46066200b4e2849d671f04c12930ace1bd5543c63df0e18b8bd5aea"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/phone_observation_tools.py",
+      "bytes": 39441,
+      "sha256": "24ee4f67f2f2fc12f74512090915177b8ca035db80f0a5537120d69944aa78ca"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/phone_task_guards.py",
+      "bytes": 11368,
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/provider_codex_host.py",
+      "bytes": 41510,
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/provider_openai_compatible.py",
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/provider_phone_local.py",
+      "bytes": 67393,
+      "sha256": "d11dfd1b1c477e83fac6fe05af3c4498ba7ded07c32432c942d24ad757695524"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/retirement_recovery.py",
+      "bytes": 9539,
+      "sha256": "0e5e5c965e3e111e92c5b45eacbbf141996cfa0de4122bf98ad3c8d5f65af774"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/source/task_postconditions.py",
+      "bytes": 15048,
+      "sha256": "25305e7f44f396edd2cd04b095701c6b91be9c66d9beae20bfe75b403f5df964"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/provider/r7/tests/test_offline_phone_actions.py",
+      "bytes": 47915,
+      "sha256": "0ee4eb6956ff2f9ab53d8a055924401096fc17ca5fe1ddd2c3005bff0f505a3f"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/README.md",
+      "bytes": 9271,
+      "sha256": "3560fddd7b2d26c3d2b6e452f096b79957761fa900c0ce6f8ae4439f95cd602b"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/TOKEN-COUNT-ANDROID-BUILD.json",
+      "bytes": 3740,
+      "sha256": "e3a5ab3bdb0b5e91deb7b6ca080b8615ace1f32a589a8c91785bd4073dbf981b"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/TOKENIZER-ABI-PINS.json",
+      "bytes": 7206,
+      "sha256": "f1c3a9635de2ad73441cf6bdf287ae89da73ad1402f2cb1bcae86acfdf5b9c4a"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/apply_provider_overlay.py",
+      "bytes": 11534,
+      "sha256": "4eaad3ae516f6825f7fc2b12d16d311bfcdd80b73d5caa35e095e76bd05a293c"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/build_token_counter_android.py",
+      "bytes": 3926,
+      "sha256": "7e6305761f575647006c5e8895b2ac3f8a298947d174d8f724d6b5c8dbcd198d"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/evidence/token-counter-r1/phone-count-r1/PHONE-COUNT-COMPARISON.json",
+      "bytes": 4527,
+      "sha256": "cc092f531ef08e230bead63d528e167266224f1aa1f66b6af164623e6767ce66"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/evidence/token-counter-r1/phone-count-r1/nested1.result.json",
+      "bytes": 1520,
+      "sha256": "5b5043191c8b620d36cfa4a389a3a8eb725918a08245a30f577f8e254c6a6e4e"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/evidence/token-counter-r1/phone-count-r2/PHONE-COUNT-COMPARISON.json",
+      "bytes": 5105,
+      "sha256": "028c9b0ae03ce702f3a62506cf9724e71e2230db3e0629653d363022792536f5"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/evidence/token-counter-r1/phone-count-r2/nested2.result.json",
+      "bytes": 1520,
+      "sha256": "ef018120a701c1e6684c4e7862fa0a61ebf512c08cc06d3b3d10fe69ec09d609"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/grammars/discriminator_b.gbnf",
+      "bytes": 13,
+      "sha256": "02fbe017514182201f1392001c86aafa7f9ba4289b25fadcb78279db6fbd63b1"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/grammars/mobile_click.gbnf",
+      "bytes": 525,
+      "sha256": "dedddd1069b3917805e7299f9f8e182c084c1644162ecd72ab40242124840c2c"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/native_backend.py",
+      "bytes": 43666,
+      "sha256": "69a2054827e8bcd479f0f38f190c2a0f390cdcff39a1f22692433fc96594dad7"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/prompt_budget.py",
+      "bytes": 12378,
+      "sha256": "ce20f82e5ea27b37c04ca9a76f035acf9e1cbab241d252df6a37ce09853a113e"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/provider_bridge.py",
+      "bytes": 11479,
+      "sha256": "f42341041a11c97d1fd3570f756c3e53d7e943e3c1ee8a3a00e7dc418f29e7a5"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/broker_stub.c",
+      "bytes": 2761,
+      "sha256": "4689936e0996116ac30d631c28b39c206c0ed7fc4aebc7e02b574857a25c16b8"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/build_catalogue_prompt_fixture.py",
+      "bytes": 15256,
+      "sha256": "ec4f1edad0bf2e238293b7c53091b7e9f9cb5ac42ebf36436c218b9bab880120"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/native_fixture.py",
+      "bytes": 12118,
+      "sha256": "85aee2f4ed0800c8a6125e0adc6e2e5e456ea629ee7624bc7773a99e58535e10"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/provider_flow_probe.py",
+      "bytes": 13622,
+      "sha256": "032294d5d6baf6ce7a9f675d9ec7c19ad2b84e25df8461f0c6c3a46f455588d6"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_backend.py",
+      "bytes": 26222,
+      "sha256": "03dde9de032c5f7122a3dbfd8c90e6de916f9b6be865076f85307b36383c273e"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_token_count.py",
+      "bytes": 14654,
+      "sha256": "79659f67b7d3732fd0ea741bd2c5b5cc4a644d4042bef8e3808fada680765633"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/tokenizer_stub.c",
+      "bytes": 2469,
+      "sha256": "d481abac115f46d3b2a64009a508ac8ca2b7d8c96e2390152a658d18061d19cb"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/token_count.c",
+      "bytes": 18541,
+      "sha256": "59fc52b4cc23db15093c072b3514ccf5b11e2d8ccbfaf920d2db5e3f24c7f132"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/vendor/TOKENIZERS-CPP-LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/vendor/tokenizers_c.h",
+      "bytes": 1870,
+      "sha256": "2575b68c8efc882d5713491dce71a0290ce9c33f8389c183555b105a7432967b"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/tests/stub_geniex.c",
+      "bytes": 8012,
+      "sha256": "70f178beb322f639c97184f33a08e9e93a32355ad241a691ade43507185d9ced"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/tests/test_worker.py",
+      "bytes": 16490,
+      "sha256": "b579d5bea1ea327fcc28d466638518b0802796f9d77d060532b93277f01742bf"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "relative_path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/worker.c",
+      "bytes": 30066,
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    }
+  ],
+  "private_overlay_manifest_sha256": "ce89d9fffa06350ebb95ee56bbddfcc8c5ce2826450c59ac3135b6c70f97231c",
+  "private_source_sha256": {
+    "action_ledger.py": "9fdf249d60b539f8630ff82c611f76caa5dba188eb846b66fc9d493be03b48b7",
+    "daily_phone_local.py": "89355cf62ede3b40fccc1add9c3b2b9888bd71328811a37aa0b9d202aa49139e",
+    "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "ledger_round_evidence.py": "68d715d01916b0fe6c18ee5e5ccf458e8b5100710c50e2517dccb221d9eb500c",
+    "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+    "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+    "native_backend.py": "69a2054827e8bcd479f0f38f190c2a0f390cdcff39a1f22692433fc96594dad7",
+    "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "phone_local_tools.py": "b653796658ff7cef0b286ccf25f560f8fd67cbe24017876d041f9412b24eacbe",
+    "phone_observation_tools.py": "ed855866475efb7334f5a5a20d7622541f532cfcc778b8813908eb860cda198c",
+    "phone_task_guards.py": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86",
+    "prompt_budget.py": "ce20f82e5ea27b37c04ca9a76f035acf9e1cbab241d252df6a37ce09853a113e",
+    "provider_bridge.py": "f42341041a11c97d1fd3570f756c3e53d7e943e3c1ee8a3a00e7dc418f29e7a5",
+    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+    "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+    "provider_phone_local.py": "9ffe3dbe7029986c907343981d080a7f77ad925c55151a63e5cf9330b1a5fcf3",
+    "retirement_recovery.py": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+    "task_postconditions.py": "b08e1c4174effb891defd2b055291c2c3a2e17435c9705d331fbe440fe5f0d45"
+  },
+  "private_bindings_published": false,
+  "preceding_r1": {
+    "results_sha256": "ca6f4e0f8a100752371310d481ee048fd9e765a5fb9e3467c575b1e98cebcbd2",
+    "retained_unmodified": true,
+    "results": [
+      {
+        "name": "backend-native-suite",
+        "exit_code": 1,
+        "seconds": 9.093,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "ccc200b7c71e1a60ae6979a53509a0ea6aa456072ce5090092db419654b46f1d"
+      },
+      {
+        "name": "token-counter-host-suite",
+        "exit_code": 1,
+        "seconds": 4.462,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "4eac79eff170d478412e1244ef15be2de5c5434eff61559e2f87b702fc361d32"
+      },
+      {
+        "name": "public-overlay-build",
+        "exit_code": 0,
+        "seconds": 0.127,
+        "stdout_sha256": "5d1561f10fad81c7b758c772f8d9e399c338a1423cc10ab7bc2ec456561e13d5",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "provider-regressions-overlay",
+        "exit_code": 0,
+        "seconds": 6.227,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "fb1dd0c4461758b5e4b88392a57bd6faff07fafadc5547914499464a8a32ff55"
+      },
+      {
+        "name": "private-r9-overlay-build",
+        "exit_code": 0,
+        "seconds": 0.125,
+        "stdout_sha256": "cceaef014e740c4f112c3323060e607c1d7989669e6748a7a1871b05eef3132e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "private-r9-pinned-import",
+        "exit_code": 0,
+        "seconds": 0.1,
+        "stdout_sha256": "c2cd3b2df5b4ed947730cc200e81c9cbf3a2f012127973cbeefaf34fc897ebfc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "provider-regressions-private-r9-overlay",
+        "exit_code": 1,
+        "seconds": 6.176,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "cb58cf0e5c21d9d9447b8e0f5a601bf2e50f0423a4537a44ef0b3a566534c209"
+      }
+    ],
+    "interpretation": "R1 selector fixture pin scope, umask-dependent test directory, and public-r7 fixture used on private-r9 produced failed host checks. R2 corrected the test seams and used the original private-r9 38-case harness; no failed original record was replaced."
+  }
+}

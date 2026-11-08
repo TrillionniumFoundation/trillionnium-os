@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.moe-research-addendum.v1",
+  "as_of": "2026-11-08",
+  "phone_moe_weights_downloaded": false,
+  "phone_moe_inference_performed": false,
+  "findings": [
+    {
+      "model": "LFM2.5-24B-A2B",
+      "source": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
+      "total_parameters_billion": 24.0,
+      "active_parameters_billion": 2.45,
+      "input": "text-only",
+      "official_quantization_source": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B-GGUF/tree/main",
+      "displayed_q4_0_gb_approx": 13.6,
+      "displayed_q4_k_m_gb_approx": 14.5,
+      "qad_q4_0_available": true,
+      "assessment": "Larger multilingual text planner candidate, but these official Q4 files exceed the measured current free memory. No matched v79 streaming deployment was established."
+    },
+    {
+      "model": "Edge0-35B-A3B-preview",
+      "source": "https://huggingface.co/Edge0/Edge0-35B-A3B-preview",
+      "android_source": "https://github.com/Edge0-AI/Edge0/blob/main/android/README.md",
+      "android_readme_git_blob_sha": "673b3144a5a41bbdca387d6bb057bd646fe4ceac",
+      "android_backend": "CPU / ARM NEON / demand-paged expert pool",
+      "publisher_reference_device": "Lenovo TB322FC, Snapdragon 8 Elite, 16 GB",
+      "publisher_in_app_decode_tokens_per_second_range": [
+        6,
+        9
+      ],
+      "measured_on_target_razr": false,
+      "npu_result": false,
+      "modified_pipeline": "Quantized Qwen3.6-derived checkpoint plus trained Recover-LoRA and prerouter adapters; released profile K=4. Not original top-8 equivalence.",
+      "agent_quality_limit": "Publisher says preview tool use, multi-step planning and long-horizon autonomy remain weak.",
+      "vision_integration_verified_here": false,
+      "assessment": "Relevant same-generation capacity evidence and a concrete Android streaming implementation; not a production Hepta model selection."
+    },
+    {
+      "model": "MobileMoE-L-QAT",
+      "source": "https://huggingface.co/facebook/MobileMoE-L-QAT",
+      "total_parameters_billion": 5.3,
+      "active_parameters_million": 922,
+      "projected_int4_weight_memory_gb": 2.75,
+      "language": "English",
+      "input": "text",
+      "license_label": "FAIR NC research",
+      "assessment": "Mobile-focused MoE/QAT research baseline; no established Chinese visual tool-task or target HTP qualification here."
+    }
+  ],
+  "accelerator_guidance": {
+    "source": "https://docs.qualcomm.com/bundle/publicresource/topics/80-63442-10/htp_backend.html",
+    "retrieval_scope": "Official search-index excerpt; full documentation page required JavaScript and had no readable lines.",
+    "prefill": "Parallel input phase uses HMX/HVX compute.",
+    "decode": "Autoregressive batch-one decode is commonly DDR weight/KV bandwidth limited.",
+    "no_new_frequency_or_power_measurement": true
+  }
+}

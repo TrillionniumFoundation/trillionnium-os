@@ -45,6 +45,39 @@ The QAIRT sampler has a grammar implementation in fixed source, but the actual d
 
 The requested QAIRT power mode is sustained performance (enum 6). Fixed source shows that it overrides the bundle's burst default. Successful QAIRT power votes are not logged by the compiled INFO/WARN macros, so source/config and absence of power errors do not establish actual frequency, utilization or watts.
 
+### SDK tokenizer and context admission
+
+The frozen Android token-count helper uses the same official `libgeniex-proc.so` tokenizer C ABI as the model runtime. It preserves the model tokenizer's NFC normalization and ByteLevel handling; it does not replace real tokenization with UTF-8 byte counts. The helper loads only the tokenizer library and data, without creating a model or opening the NPU. Its Android binary is 19,416 bytes, SHA256 `09c2c8fb4b0c0095ffe612be82bc1b2124d47f9351c53fd0a77384c74395589c`.
+
+Two distinct real-phone counts were compared to the already-recorded SDK runs of the revised image prompts. Both counted 148 text tokens across the exact two QAIRT formatter segments, plus 256 image pads, two image boundary tokens and a one-token BOS upper allowance, yielding **407**. Both original SDK runs also reported **407** prompt tokens. Counter process times were approximately 1.260 and 1.074 seconds. Source input, tokenizer/library, segment and formatted-prompt hashes were checked. The accepted general contract is SDK prompt tokens in `[counter_upper - 1, counter_upper]`; these two cases had delta zero. This is a conservative bound with at most one optional BOS token, not a claim that every unseen prompt has been measured.
+
+The first comparison harness incorrectly required delta one. Its original failure record remains byte-identical; the supplemental assessment applies the actual zero-or-one contract to the original evidence without rerunning that first case. The second counter run and supplemental assessment are in `broker/evidence/token-counter-r1/phone-count-r2/PHONE-COUNT-COMPARISON.json`, SHA256 `028c9b0ae03ce702f3a62506cf9724e71e2230db3e0629653d363022792536f5`. These are root, network-isolated tokenizer checks, not production-domain or real App actions.
+
+The candidate admission budget is 3584 prompt tokens, 256 output tokens and 256 reserved tokens within the compiled 4096 context. Its broker runs the counter before the worker in the same supervised process group, and then requires both matching formatted-prompt identity and a matching actual SDK token range before accepting output. Full real-catalogue prompt and production-domain qualification remain separate gates.
+
+### Grammar failure source analysis
+
+`QAIRT-GRAMMAR-FAILURE.json` records a source-level explanation for the actual discriminator abort: the fixed QAIRT model prepares a grammar-aware sampler and initializes it with input prompt tokens; the processor's acceptance path feeds those tokens into the attached output grammar. This is consistent with the observed EOG constraint exception. No patched SDK or per-token exception trace was tested. The runtime remains unpatched and grammar remains disabled in the candidate.
+
+### Actual 53-App catalogue and retained-history prompts
+
+The separate provider fixture uses the actual 53-entry registry and actual private r9 `compose_local_messages`, then the candidate's prompt presentation. It preserves the exact synthetic instruction and, for the second case, the complete synthetic open/observe/screenshot history. The registry and original action schema remain authoritative. Private catalogue/body data are not published; public summaries bind their hashes and disclose only outcomes. No phone action is executed.
+
+| Presentation | Native token admission | First-round model decision | Outcome |
+| --- | --- | --- | --- |
+| Initial compact action menu, catalogue test r1 | First/second prompts 735 / 1943 tokens; both admitted | 79-byte complete JSON with `action=open` and `summary`, but no required `text`; 11.07 s, SDK actual 735 prompt / 18 generated | Original strict schema rejects; second model case not run |
+| Required-field explanation, catalogue test r3 | 795 / 2004 tokens; both admitted | 149-byte complete JSON with `action=open`, invalid `screenshot_id` and `coordinate`, and still no `text`; 12.52 s, SDK actual 795 prompt / 38 generated | Original strict schema rejects before the typed mapper; second model case not run |
+
+Both executed models returned zero SDK statuses and EOS, but that does not make their decisions valid. No omitted alias was filled, no invalid field removed, and no coordinate executed. The initial presentation listed allowed field names without expressing all required fields; adding the explicit requirement did not resolve the model's field mixing. The universal click example is a plausible presentation influence, not an established sole cause. These failures block promotion of those presentations despite the smaller image-only click cases passing.
+
+The two preserved public reports are `evidence/qairt-catalogue-acceptance-r1/PUBLIC-SUMMARY.json` (SHA256 `6448c778a48e36dd0ffb7fb42281e0f8c608b8cc298d9c161083d33b412afc1d`) and `evidence/qairt-catalogue-acceptance-r3/PUBLIC-SUMMARY.json` (SHA256 `8cd3ac1c1bdce7350e0ad04e20688203678b7bb52362119b6fc025a4fc618215`). Each ran in the root-only isolated network test context, with 256 output tokens, 55-second worker and 60-second phone limits. Production-domain testing remains pending.
+
+### Backend host regressions
+
+`broker/evidence/host-r2/HOST-VALIDATION.json` (SHA256 `b183add7ed527a576cd958699fa2de97d63c09736d239e9dd0116e531286e815`) pins the exact tested source and preserves preceding fixture failures. The real r6 host native-supervisor suite passed 20/20 (10.744 s), the tokenizer fixture suite passed 20/20 (4.458 s), and the original private r9 regression harness passed 38/38 (7.680 s). Private source-pin import also passed. These suites use explicit host fixtures, not a phone model or production Android domain.
+
+The selector test reaches the original parser through generated actual r9 `daily.main(--geniex-config)`, without CPU `READY`, `model.identity` or slot-cleanup binding; any old HTTP transport call fails that test. CPU mode without its original binding still rejects. Native cancellation at task expiry, process cleanup and unknown-state handling remain tested. The later required-field presentation change received eight relevant contract checks; those checks did not predict or override the actual model failure above.
+
 ## Fixed-length text performance
 
 The evidence file `evidence/npu-throughput-pp128-tg64-r3.json` is byte-identical to the corresponding phone-test manifest. Conditions: GUI-Owl-1.5-2B-Instruct Q4_K_M, context 2048, four threads, HTP0, sustained performance, profiling/verbose disabled, one model load, no preliminary warmup, three consecutive repetitions. The benchmark generates random token IDs; this measures throughput, not semantic task accuracy.
@@ -100,9 +133,11 @@ The installed Hepta native supervisor uses a different UID/SELinux execution con
 
 1. Completed: fixed-version Qwen3-VL-4B archive verification. The 3,029,730,149-byte archive has locally computed SHA256 `9053855d9b45d2dc1c41b8cc5d7d792887dd1549b8ebf3a7f3dfb0ef5b762599`. All 26 ZIP entries match the earlier fixed-version central-directory inventory and pass CRC checks; 24 regular files were safely extracted, totaling 4,356,290,162 bytes. This is a locally computed digest, not a claimed publisher-supplied SHA. The final 606,561,670 bytes were fetched on AI MAX and reverified after transfer; all 41 source pieces were rehashed during new-directory assembly. No partially downloaded archive was used for phone inference.
 2. Completed for the stated synthetic cases: actual QAIRT loading, text and image correctness, plus revised complete-JSON decisions. The original malformed-JSON failure and subsequent grammar abort remain unchanged. QAIRT grammar is disabled in the candidate integration; realistic held-out screens remain pending.
-3. Measured context admission for the compiled 4096-token model; do not infer it from the source checkpoint's larger maximum context.
+3. Completed for two recorded image prompts: actual phone tokenizer/SDK context comparison. Full real-catalogue provider prompts and unseen multi-round admission remain separately tested; do not infer a larger context from the source checkpoint.
 4. Real native-supervisor permissions, bounded cancellation and process termination evidence for the new backend.
 5. Fresh natural-language requests from the Hepta APK through the local model to real reversible app actions on an unlocked phone, with postcondition checks.
 6. The project's complete acceptance suite. Existing frozen qualification counters and unresolved historical claims remain unchanged by these new unit and inference tests.
 
-Fresh read-only device checks confirm that the screen is off and keyguard reports `showing=true` / `mIsShowing=true`; the owner emergency-stop remains present with SHA256 `ff6401f96ef8d2206e61e9fdf6d75d1dd11fe25f5696d7f6996b6647023fdb07`. The GNU root has no matching active mount. No unlock, stop removal or production bootstrap was performed by these inference tests.
+Earlier read-only device checks confirmed that the screen was off and keyguard reported `showing=true` / `mIsShowing=true`; the owner emergency-stop remains present with SHA256 `ff6401f96ef8d2206e61e9fdf6d75d1dd11fe25f5696d7f6996b6647023fdb07`. The GNU root has no matching active mount. No unlock, stop removal or production bootstrap was performed by these inference tests.
+
+**Later device-state update, approximately 11:41 UTC:** an additional read-only check found `showing=false`, `mIsShowing=false`, `inputRestricted=false`, `secure=false`, `SCREEN_STATE_ON` and `AWAKE`. No test runner performed a wake, unlock or UI action. The earlier locked-screen snapshot is historical and must not be presented as the current blocker. The owner-stop digest remains unchanged, bootstrap is stopped, and no model-worker process remained after the catalogue test. Production runtime/domain and App acceptance remain separate from the changed screen state.

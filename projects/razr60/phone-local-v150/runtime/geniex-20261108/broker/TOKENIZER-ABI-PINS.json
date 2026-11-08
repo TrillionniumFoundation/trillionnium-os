@@ -1,0 +1,155 @@
+{
+  "schema": "hepta.geniex-token-counter-abi-pins.v1",
+  "purpose": "One-shot preflight using the exact tokenizers-cpp C FFI exported by the existing pinned Android runtime; no model or NPU initialization.",
+  "sdk": {
+    "repository": "qualcomm/GenieX",
+    "commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "release": "v0.10.0"
+  },
+  "processor": {
+    "repository": "qualcomm/geniex-proc",
+    "commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+    "formatter_path": "src/processors/qwen2vl.cpp",
+    "formatter_git_blob_sha1": "41eee100525d06dc9c040b24f44a71cfd0d2d31f",
+    "tokenizer_path": "src/tokenizer/tokenizer.cpp",
+    "tokenizer_git_blob_sha1": "fb9d095d2cb278742a3ce306781c44b491a01c3a",
+    "formatter_url": "https://github.com/qualcomm/geniex-proc/blob/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079/src/processors/qwen2vl.cpp"
+  },
+  "ffi": {
+    "repository": "mlc-ai/tokenizers-cpp",
+    "commit": "c586c52f93f7b060753bd2388eb96a105cb7374d",
+    "header_path": "include/tokenizers_c.h",
+    "header_git_blob_sha1": "4276ee860dd6af0a684238fad1019689fc57f1c2",
+    "header_sha256": "2575b68c8efc882d5713491dce71a0290ce9c33f8389c183555b105a7432967b",
+    "cpp_encode_path": "src/huggingface_tokenizer.cc",
+    "cpp_encode_git_blob_sha1": "6cbe0d8972e4449b499cfb66e9e750922c7d6d6e",
+    "rust_path": "rust/src/lib.rs",
+    "rust_git_blob_sha1": "2697ca147515e736f56c9042f573795debbe6d3d",
+    "symbols": [
+      "tokenizers_new_from_str",
+      "tokenizers_encode",
+      "tokenizers_free_encode_results",
+      "tokenizers_free"
+    ],
+    "add_special_token": 0,
+    "header_url": "https://github.com/mlc-ai/tokenizers-cpp/blob/c586c52f93f7b060753bd2388eb96a105cb7374d/include/tokenizers_c.h",
+    "license": "Apache-2.0",
+    "license_file": "vendor/TOKENIZERS-CPP-LICENSE",
+    "license_git_blob_sha1": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+    "rust_dependency_note": "Cargo.toml specifies tokenizers 0.21.2 via semver; no committed Cargo.lock was present in the inspected tree. The actual Android library SHA pins the implementation. No unverified Unicode crate version is claimed."
+  },
+  "runtime": {
+    "relative_path": "lib/qairt/libgeniex-proc.so",
+    "bytes": 19225824,
+    "sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+    "elf_needed": [
+      "liblog.so",
+      "libm.so",
+      "libdl.so",
+      "libc.so"
+    ],
+    "elf_symbol_inspection": {
+      "host": "pocket4",
+      "job_id": "1a1baca4ac5-12894-1d4a",
+      "stdout_sha256": "1afa7ea2638120cda6afabaf0729bc66ad05ad0a6e33816aa3709e213ca8b94d",
+      "phone_touched": false
+    }
+  },
+  "tokenizer": {
+    "model_bundle": "qwen3_vl_4b_instruct-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy",
+    "release": "v0.66.0",
+    "file": "tokenizer.json",
+    "bytes": 11422650,
+    "sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+    "observed_normalizer": {
+      "type": "NFC"
+    },
+    "observed_post_processor": {
+      "type": "ByteLevel",
+      "add_prefix_space": false,
+      "trim_offsets": false,
+      "use_regex": false
+    },
+    "observed_padding": null,
+    "observed_truncation": null,
+    "complete_byte_alphabet": true,
+    "normalization_handling": "Performed by the pinned library on original UTF-8 bytes; the helper does not normalize, truncate, or approximate it with Python."
+  },
+  "counter": {
+    "file": "token_count.c",
+    "bytes": 18541,
+    "sha256": "59fc52b4cc23db15093c072b3514ccf5b11e2d8ccbfaf920d2db5e3f24c7f132",
+    "result_schema": "hepta.geniex-token-count.v1",
+    "method": "exact_sdk_formatted_text_segments_plus_bos_upper_bound",
+    "is_exact_entire_prompt_token_count": false,
+    "max_prompt_tokens": 3584,
+    "context_tokens": 4096,
+    "max_generation_tokens": 256,
+    "reserved_tokens": 256,
+    "wall_alarm_seconds": 3,
+    "input_text_file_max_bytes": 65536,
+    "image_file_max_bytes": 8388608,
+    "output_create_only": true,
+    "model_loaded": false,
+    "native_receipt": false
+  },
+  "formatter": {
+    "roles": [
+      "system",
+      "user"
+    ],
+    "system_nonempty_required": true,
+    "tools": false,
+    "enable_thinking": false,
+    "history": false,
+    "max_images": 1,
+    "reserved_input_marker": "<__image__>",
+    "input_marker_policy": "Reject literal reserved image marker in either input, matching the actual processor.",
+    "fixed_text_overhead_utf8_bytes": 80,
+    "no_image": "Encode the complete ChatML text as one segment with flag 0.",
+    "one_image": "Encode exactly the substring before the actual image marker and the substring after it as two separate segments with flag 0, matching the processor's splice algorithm.",
+    "image_pad_tokens": 256,
+    "vision_boundary_tokens": 2,
+    "bos_token_upper_bound": 1,
+    "bos_source": {
+      "repository": "qualcomm/geniex-qairt-plugin",
+      "commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+      "path": "core/src/pipeline/vlm_pipeline.cpp",
+      "git_blob_sha1": "2c9a2fa61d2eb274f4489351446863ca498d0ac5"
+    },
+    "bound_formula": "sum(segment_token_counts) + (image_present ? 256 + 2 : 0) + 1",
+    "geometry": {
+      "height": 512,
+      "width": 512,
+      "patch": 16,
+      "merge": 2
+    },
+    "jinja_note": "The QAIRT Qwen3-VL processor uses the fixed manual formatter, not tokenizer_config.json's Jinja template."
+  },
+  "supervision": {
+    "required": "Parent pins helper/library/tokenizer; uses reviewed native executor and counter && exec worker in one process group; validates request/input/formatter/artifact hashes and native terminal evidence. Counter JSON is not a process receipt.",
+    "signals": "Default TERM/INT/HUP cancellation and a 3-second SIGALRM may end with no published result. No such outcome is success.",
+    "rust_panic": "A malformed runtime/tokenizer or panic may abort; caller must reject nonzero exit or absence of complete count result.",
+    "mutation": "Original input/ELF FDs and names are checked for unchanged device/inode/mode/owner/link/size/times before publishing; library is loaded using its open SHA-checked FD.",
+    "unvalidated": "Android linker/SELinux load, 3-second real-device timing, actual tokenizer counts against recorded SDK profiles, and production integration remain separate gates."
+  },
+  "host_validation": {
+    "scope": "Real host C process and filesystem tests with explicitly synthetic tokenizers-cpp ABI library. These are not fixed19 acceptance cases, real tokenizer measurements, or phone/NPU tests.",
+    "command": "python3 tests/test_token_count.py",
+    "tests": 20,
+    "passed": 20,
+    "elapsed_seconds": 3.483,
+    "compiler_flags": [
+      "-std=c11",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Werror"
+    ],
+    "stub": "tests/tokenizer_stub.c",
+    "stub_sha256": "d481abac115f46d3b2a64009a508ac8ca2b7d8c96e2390152a658d18061d19cb",
+    "tests_file_sha256": "79659f67b7d3732fd0ea741bd2c5b5cc4a644d4042bef8e3808fada680765633",
+    "fixture_note": "Only a <=1024-byte tokenizer fixture beginning with {\"hepta_tokenizer_host_fixture_v1\": enables controlled faults. Real vocabulary words never activate faults. Default host stub counts bytes, not model tokens."
+  }
+}

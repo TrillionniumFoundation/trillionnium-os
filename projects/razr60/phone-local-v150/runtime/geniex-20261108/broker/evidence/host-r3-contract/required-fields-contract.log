@@ -1,0 +1,13 @@
+test_already_open_owner_app_does_not_break_next_round_or_other_app_navigation (__main__.ContractTests.test_already_open_owner_app_does_not_break_next_round_or_other_app_navigation) ... ok
+test_cancellation_wins_serialized_acceptance_and_records_original_order (__main__.ContractTests.test_cancellation_wins_serialized_acceptance_and_records_original_order) ... ok
+test_compact_body_preserves_owner_and_full_semantic_transcript (__main__.ContractTests.test_compact_body_preserves_owner_and_full_semantic_transcript) ... ok
+test_context_admission_rejects_8192_and_unbound_or_overflow_budget (__main__.ContractTests.test_context_admission_rejects_8192_and_unbound_or_overflow_budget) ... ok
+test_native_terminal_validator_rejects_every_missing_essential_proof (__main__.ContractTests.test_native_terminal_validator_rejects_every_missing_essential_proof) ... ok
+test_overlay_keeps_old_completion_ast_and_adds_explicit_selector (__main__.ContractTests.test_overlay_keeps_old_completion_ast_and_adds_explicit_selector) ... ok
+test_owner_bytes_and_claim_must_match (__main__.ContractTests.test_owner_bytes_and_claim_must_match) ... ok
+test_required_field_projection_does_not_present_optional_or_open_schema_as_required (__main__.ContractTests.test_required_field_projection_does_not_present_optional_or_open_schema_as_required) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.150s
+
+OK

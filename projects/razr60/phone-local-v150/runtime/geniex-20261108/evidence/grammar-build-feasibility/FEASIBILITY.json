@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.geniex-grammar-build-feasibility.v1",
+  "date_utc": "2026-11-08",
+  "status": "read_only_feasibility_not_a_patch_or_build",
+  "phone_accessed": false,
+  "code_patched": false,
+  "compiler_invoked": false,
+  "new_sdk_or_dependency_downloaded": false,
+  "scope": "Pinned public CMake/source reads plus bounded reads of existing workstation tools, known work directories and Cargo caches. No private environment values retained.",
+  "observed_defect": {
+    "chain": [
+      "QAIRT LLMModel::prepareSampler creates/attaches output grammar via makeSampler",
+      "Sampler::init accepts each prompt token through geniex_sampler_context_accept",
+      "context_accept feeds every token, including prompt EOG markers, into output grammar before penalty history"
+    ],
+    "on_phone_evidence": "The original single-token grammar discriminator aborted with Grammar constraint violated: EOG token not allowed; its raw stderr is preserved in evidence/qairt-grammar-r3.",
+    "qualification": "This source chain explains the observed initialization abort. No candidate numerical or runtime fix has been built or validated."
+  },
+  "candidate_build_boundaries": [
+    {
+      "boundary": "geniex-proc sampler implementation",
+      "minimum_output_library": "libgeniex-proc.so",
+      "affected_functions": [
+        "geniex::Sampler::init",
+        "internal prompt-versus-generated token acceptance / grammar reset"
+      ],
+      "intended_semantics": "Seed prompt tokens into repetition/DRY history without advancing output grammar. Start a fresh grammar for each response while preserving intended history. Generated token accept() continues to update grammar.",
+      "build_requirements": [
+        "Pinned geniex-proc sources, vendored xtensor headers and exact minja/tokenizers-cpp submodules",
+        "Android arm64 C++20 toolchain",
+        "Rust aarch64-linux-android target and tokenizers-cpp Rust static library libtokenizers_c.a",
+        "tokenizers Rust dependency 0.21.2 with onig, plus its locked transitive dependencies"
+      ],
+      "notes": [
+        "Vision processors are a separate geniex-proc-vision library; the pinned implementation uses stb.",
+        "Stock core CMake always builds/links tokenizers_cpp. Existing runtime .so files do not establish that a reusable Rust .a is available.",
+        "No model weight, HTP firmware or compiled QNN model regeneration is implied by this sampler-only change."
+      ]
+    },
+    {
+      "boundary": "QAIRT per-turn sampler setup alternative",
+      "minimum_output_library": "libgeniex_core.so",
+      "affected_functions": [
+        "geniex::LLMModel::prepareSampler",
+        "makeSampler / grammar attachment helper"
+      ],
+      "intended_semantics": "A separately reviewed patch could detach output grammar while adding prompt history, then attach a fresh validated grammar before sampling. Missing/invalid requested grammar must fail explicitly instead of silently continuing without grammar.",
+      "build_requirements": [
+        "Pinned QAIRT core/model/qnn-api source and headers",
+        "Pinned geniex-proc C++ public headers and the matching official libgeniex-proc.so",
+        "An isolated CMake adjustment importing the already-built proc target instead of its unconditional add_subdirectory"
+      ],
+      "notes": [
+        "This alternative may avoid rebuilding Rust, but is not an existing supported build switch or a verified binary-compatible patch.",
+        "QNN headers and Android HTP runtime are vendored at the fixed plugin revision; a separate complete external QAIRT SDK is not intrinsically required.",
+        "Any changed C++ library must be verified for SONAME, exports and dependencies, then tested only in a complete separately pinned candidate runtime."
+      ]
+    }
+  ],
+  "existing_environment": {
+    "mac": {
+      "android_ndk_r28b_clang19_confirmed": true,
+      "cmake_confirmed": true,
+      "homebrew_rustup_shims_on_path": true,
+      "android_rust_target_confirmed": false,
+      "tokenizers_0_21_2_seen_in_checked_cargo_registry_source_or_cache": false,
+      "full_fixed_proc_source_or_reusable_tokenizers_static_archive_confirmed": false
+    },
+    "pocket4": {
+      "cmake_and_ninja_on_path": true,
+      "cargo_rustc_rustup_on_path": true,
+      "installed_rust_targets_include": "aarch64-linux-android",
+      "android_ndk_not_found_in_two_initial_user_sdk_paths": true,
+      "android_ndk_globally_absent_claimed": false,
+      "tokenizers_0_21_2_seen_in_checked_cargo_registry_source_or_cache": false,
+      "full_fixed_proc_source_or_reusable_tokenizers_static_archive_confirmed": false
+    },
+    "interpretation": "An already complete offline rebuild was not established in this bounded check. Missing cached tokenizers does not imply that an authorized network-assisted build is impossible."
+  },
+  "full_sdk_caution": "Building the full GenieX SDK additionally builds its Rust model manager. The pinned SDK Android CMake hard-codes the linux-x86_64 NDK host directory and API31, so it is not an unmodified native-Mac full-SDK build recipe.",
+  "unperformed_checks": [
+    "Complete source/submodule materialization",
+    "Cargo locked/offline dependency resolution",
+    "C++ ABI/export comparison",
+    "Host regression tests for prompt EOG and per-turn grammar reset",
+    "Phone grammar discriminator and structured action tests"
+  ],
+  "tool_observations": {
+    "mac_inventory_job": "1a1baff9e1e-12894-1ef8",
+    "pocket4_inventory_job": "1a1bb006593-12894-1efe",
+    "both_inventory_jobs_terminal_exit": 0,
+    "later_followup_reads": "A batch of h start/status/read calls returned -32603 Internal error; no repeated build/download or phone operation was attempted."
+  },
+  "sources": [
+    {
+      "name": "proc-cmake",
+      "repository": "qualcomm/geniex-proc",
+      "commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+      "url": "https://github.com/qualcomm/geniex-proc/blob/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079/CMakeLists.txt",
+      "git_blob_sha": "185bbc4da8078b484c0b99d7a6c13ce8e205c966",
+      "utf8_bytes": 10500,
+      "retrieved_utf8_sha256": "8406a78ace9956f099c4daefd38b0e221dd55e380ff22d94099f5610f9c64e2c"
+    },
+    {
+      "name": "qairt-cmake",
+      "repository": "qualcomm/geniex-qairt-plugin",
+      "commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/CMakeLists.txt",
+      "git_blob_sha": "89e4e256887eac74540b43cce0bfccc63f9a8127",
+      "utf8_bytes": 18110,
+      "retrieved_utf8_sha256": "b33192d8d430913e2c4ae4ef36b37301c3d589da3648224d8cbf976157c5c13a"
+    },
+    {
+      "name": "tokenizers-cmake",
+      "repository": "mlc-ai/tokenizers-cpp",
+      "commit": "c586c52f93f7b060753bd2388eb96a105cb7374d",
+      "url": "https://github.com/mlc-ai/tokenizers-cpp/blob/c586c52f93f7b060753bd2388eb96a105cb7374d/CMakeLists.txt",
+      "git_blob_sha": "d39999b16bdd8f6f2145907b86cf66fae5fcea29",
+      "utf8_bytes": 7621,
+      "retrieved_utf8_sha256": "54be87694c1124699d3fb3a0d9acfb4ddde9ec7e07df5b6970f82098cb890103"
+    },
+    {
+      "name": "sdk-cmake",
+      "repository": "qualcomm/GenieX",
+      "commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/CMakeLists.txt",
+      "git_blob_sha": "faf5ecffb8b729aa3f71b50761b5ae2975af0d22",
+      "utf8_bytes": 11005,
+      "retrieved_utf8_sha256": "16b625b0c95240dc8dfbc238f31e1dc75f951c3442a2e37a65c4034c2ba985bc"
+    },
+    {
+      "name": "sdk-qairt-cmake",
+      "repository": "qualcomm/GenieX",
+      "commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/qairt/CMakeLists.txt",
+      "git_blob_sha": "837cc0ff56bb8bf8be8a74482351a17054a30f5e",
+      "utf8_bytes": 1246,
+      "retrieved_utf8_sha256": "368b569c5d6b6000fe874a7096ac2350fa3412af9d04bb776d34d98b596efbb8"
+    },
+    {
+      "name": "sampler-implementation",
+      "repository": "qualcomm/geniex-proc",
+      "commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+      "url": "https://github.com/qualcomm/geniex-proc/blob/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079/src/sampler/sampler.cpp",
+      "git_blob_sha": "07799c4eea5b84db08257b790ea11ab1687d42b2"
+    },
+    {
+      "name": "internal-sampling",
+      "repository": "qualcomm/geniex-proc",
+      "commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+      "url": "https://github.com/qualcomm/geniex-proc/blob/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079/src/geniex-sampling/geniex-sampling.cpp",
+      "git_blob_sha": "4bdb157075e8d6a84712e675b7764e39f345267e"
+    },
+    {
+      "name": "qairt-llm-model",
+      "repository": "qualcomm/geniex-qairt-plugin",
+      "commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/core/src/llm/llm_model.cpp",
+      "git_blob_sha": "0cf276786431f9190b90c599bd57a893caebfae0"
+    },
+    {
+      "name": "qairt-sampler-utils",
+      "repository": "qualcomm/geniex-qairt-plugin",
+      "commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/core/include/llm/sampler_utils.h",
+      "git_blob_sha": "f9fdd4d345590e438cecef7fe941ba4db5f07161"
+    }
+  ]
+}

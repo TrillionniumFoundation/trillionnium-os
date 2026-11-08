@@ -77,7 +77,11 @@
         "input_tokens_including_image_and_template": 3584,
         "max_output_tokens": 256,
         "margin_tokens": 256,
-        "actual_tokenizer_validation": false
+        "actual_tokenizer_validation": true,
+        "validation_scope": "Two distinct root/network-isolated phone image prompts matched earlier SDK counts at 407 tokens each; production-domain and full-catalogue prompts are separate gates.",
+        "sdk_prompt_token_contract": "counter_upper_bound - 1 <= SDK actual prompt tokens <= counter_upper_bound",
+        "token_counter_binary_sha256": "09c2c8fb4b0c0095ffe612be82bc1b2124d47f9351c53fd0a77384c74395589c",
+        "comparison_report_sha256": "028c9b0ae03ce702f3a62506cf9724e71e2230db3e0629653d363022792536f5"
       },
       "vision": {
         "input_size": [
@@ -103,7 +107,7 @@
         "type": "float32"
       },
       "qualified_for_phone_control": false,
-      "blocker": "Synthetic text/vision/revised action JSON passed. Production native-context access, full provider integration, real-screen and app-control acceptance remain pending; phone locked and owner stop present.",
+      "blocker": "Basic synthetic text/vision/revised click JSON passed, but two full-catalogue first-round open outputs failed the unchanged action schema. Production-domain and real App control remain pending. Latest screen state is unlocked/ON; owner stop remains.",
       "phone_inference_tested": true,
       "synthetic_acceptance": {
         "text42": "pass",
@@ -114,7 +118,9 @@
         "production_qualified": false,
         "revised_protocol_report_sha256": "d377fcc3e7bdff78caae85e2be45e6be4a72a708d98489b8b7834b6aadac8211",
         "grammar_discriminator": "SIGABRT exit134; failed; grammar image cases not run",
-        "post_abort_recovery": "text42 pass; no residual worker process"
+        "post_abort_recovery": "text42 pass; no residual worker process",
+        "full_catalogue_r1": "Counter 735/1943 passed; first model output omitted required open.text and failed strict schema; second model case not run.",
+        "full_catalogue_r3": "Counter 795/2004 passed; first model output omitted open.text and added invalid click fields; failed strict schema; second model case not run."
       },
       "qairt_grammar_enabled_for_provider": false
     },

@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.qairt-grammar-failure-analysis.v1",
+  "observed_date": "2026-11-08",
+  "runtime": "GenieX v0.10.0 / Qwen3-VL-4B QAIRT",
+  "test": {
+    "report": "evidence/qairt-grammar-r3/PROTOCOL-CHECK.json",
+    "report_sha256": "18368bade247c7f85b3eac5815c0af61a4ec08ef2e533339402027153c6c3be5",
+    "grammar": "root ::= \"B\"",
+    "prompt_requests": "A",
+    "process_exit": 134,
+    "error": "Grammar constraint violated: EOG token not allowed",
+    "worker_result_present": false,
+    "raw_output_present": false
+  },
+  "source_evidence": [
+    {
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/core/src/llm/llm_model.cpp",
+      "git_blob_sha": "0cf276786431f9190b90c599bd57a893caebfae0"
+    },
+    {
+      "url": "https://github.com/qualcomm/geniex-proc/blob/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079/src/sampler/sampler.cpp",
+      "git_blob_sha": "07799c4eea5b84db08257b790ea11ab1687d42b2"
+    },
+    {
+      "url": "https://github.com/qualcomm/geniex-proc/blob/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079/src/geniex-sampling/geniex-sampling.cpp",
+      "git_blob_sha": "4bdb157075e8d6a84712e675b7764e39f345267e"
+    }
+  ],
+  "source_analysis": [
+    "LLMModel::prepareSampler creates or reuses makeSampler(gen_cfg), then seeds it with sampler_->init(prompt_tokens).",
+    "Sampler::init iterates over every prompt token and calls geniex_sampler_context_accept.",
+    "geniex_sampler_context_accept first accepts the token into an attached grammar, then into the sampler chain and history.",
+    "This feeds input-prompt tokens into a grammar intended to constrain only newly generated output. The resulting path is consistent with the observed EOG-not-allowed exception."
+  ],
+  "confidence_limit": "Source-level causal explanation corroborated by the actual exception; no patched-runtime retest or per-token exception trace was performed.",
+  "candidate_action": "QAIRT grammar disabled. Preserve original failure. Validate complete output JSON, action schema and observation bindings after generation; never repair malformed output into an accepted action.",
+  "post_abort_recovery": {
+    "report": "evidence/qairt-recovery-r4/RECOVERY.json",
+    "report_sha256": "f6d4ef5b595bcf7a64279e6b104d650eff3ea8c30fad1743d85098bd5a6cc4ab",
+    "pass": true,
+    "output": "42",
+    "residual_worker_processes": 0
+  },
+  "sdk_patched": false,
+  "production_phone_actions_executed": 0
+}

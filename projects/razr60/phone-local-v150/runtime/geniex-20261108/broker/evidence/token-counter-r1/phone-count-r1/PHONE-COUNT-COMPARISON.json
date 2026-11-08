@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.token-counter-phone-comparison.v1",
+  "candidate_only": true,
+  "model_loaded": false,
+  "production_domain_tested": false,
+  "ui_actions_executed": false,
+  "binary_sha256": "09c2c8fb4b0c0095ffe612be82bc1b2124d47f9351c53fd0a77384c74395589c",
+  "library_sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+  "tokenizer_sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+  "cases": [
+    {
+      "case": "nested1",
+      "argv": [
+        "/system/bin/timeout",
+        "-k",
+        "1",
+        "8",
+        "/data/local/tmp/hepta-token-counter-r1-20261108/hepta-token-count",
+        "--request-id",
+        "e6d35a1d9c9d4f538ebefaf3af442196",
+        "--library",
+        "/data/local/tmp/hepta-token-counter-r1-20261108/assets/libgeniex-proc.so",
+        "--library-sha256",
+        "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+        "--tokenizer",
+        "/data/local/tmp/hepta-token-counter-r1-20261108/assets/tokenizer.json",
+        "--tokenizer-sha256",
+        "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+        "--prompt-file",
+        "/data/local/tmp/hepta-token-counter-r1-20261108/nested1/prompt.txt",
+        "--system-file",
+        "/data/local/tmp/hepta-token-counter-r1-20261108/nested1/system.txt",
+        "--image",
+        "/data/local/tmp/hepta-token-counter-r1-20261108/nested1/image.png",
+        "--result-file",
+        "/data/local/tmp/hepta-token-counter-r1-20261108/nested1/result.json",
+        "--max-prompt",
+        "3584"
+      ],
+      "process_exit": 0,
+      "elapsed_seconds": 1.2598519751336426,
+      "counter_result": {
+        "schema": "hepta.geniex-token-count.v1",
+        "request_id": "e6d35a1d9c9d4f538ebefaf3af442196",
+        "method": "exact_sdk_formatted_text_segments_plus_bos_upper_bound",
+        "is_exact_token_count": false,
+        "status": "success",
+        "success": true,
+        "error": null,
+        "pid": 21023,
+        "pgid": 21023,
+        "sid": 21001,
+        "input_unchanged": true,
+        "raw_input_preserved": true,
+        "input_sha256": {
+          "prompt": "a1ed8542ff0f3c6ad403f8f55bfb495c60be1cc18ea5bc151c87d183cae17ce2",
+          "system": "1615deb49fc5b60b3268012fe724c5adc24db392324784d4d2f10102a49e91a2",
+          "image": "3884af3cf4b76e45a6cd8a38084423241863079b48fa2b1fc437069b89591459"
+        },
+        "input_bytes": {
+          "prompt": 111,
+          "system": 487,
+          "image": 9875
+        },
+        "tokenizer_sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+        "library_sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+        "segment_token_counts": [
+          118,
+          30
+        ],
+        "segment_utf8_bytes": [
+          534,
+          144
+        ],
+        "segment_sha256": [
+          "83d66cd1c029c79b65b64a793882dd29947cd16f0ef7e68e1cfa9a710d0a7bed",
+          "a60664c97965e389c7d163838ef9dcbab92164b164d3e416229b72deb8f6b9fd"
+        ],
+        "formatted_text_tokens": 148,
+        "formatter_overhead_utf8_bytes": 80,
+        "image_pad_tokens": 256,
+        "vision_boundary_tokens": 2,
+        "bos_token_upper_bound": 1,
+        "prompt_tokens_upper_bound": 407,
+        "context_tokens": 4096,
+        "max_prompt_tokens": 3584,
+        "generation_tokens": 256,
+        "reserved_tokens": 256,
+        "ffi_add_special_tokens": false,
+        "sdk_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+        "processor_commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+        "processor_blob": "41eee100525d06dc9c040b24f44a71cfd0d2d31f",
+        "model_loaded": false,
+        "native_receipt": false
+      },
+      "sdk_profile_prompt_tokens": 407,
+      "sdk_formatted_prompt_sha256": "ae0c88b8e7a89fd6cdbbc609f42472e69f9b530d776a8a30a4f0a2887ab4ce39",
+      "source_case_request_id": "de1b0c97cb4e4e8e9c22db747f4fc10a",
+      "source_case_sha256": "f83e2e1bbc50e805a5fba4b9e29613e024d36dfaad38c79777b95baa13bfb2c3",
+      "expected_segment_sha256": [
+        "83d66cd1c029c79b65b64a793882dd29947cd16f0ef7e68e1cfa9a710d0a7bed",
+        "a60664c97965e389c7d163838ef9dcbab92164b164d3e416229b72deb8f6b9fd"
+      ],
+      "source_input_sha_match": true,
+      "segmentation_sha_match": true,
+      "exact_text_plus_image_matches_sdk": false,
+      "upper_bound_delta": 0,
+      "network_empty": true,
+      "pass": false
+    }
+  ],
+  "all_pass": false,
+  "finished_unix": 1794136274.0941467
+}
