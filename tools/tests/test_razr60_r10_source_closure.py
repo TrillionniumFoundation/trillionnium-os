@@ -22,6 +22,7 @@ from tools.verify_razr60_r10_source_closure import (
     CHECKPOINT, NEGATIVE_CLAIMS, materialize_checkpoint, member_path, strict_json,
     stable_stat_identity, verify_checkpoint, verify_members, verify_unbound_preparer,
     verify_source_parent_candidate,
+    verify_followup_candidates, FOLLOWUP_PUBLIC_DELIVERIES,
 )
 
 
@@ -237,6 +238,30 @@ class R10SourceCheckpointTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "full source-parent public membership differs"):
             verify_source_parent_candidate(changed)
 
+    def test_sealed_followup_sources_cannot_promote_claims_or_hide_a_missing_member(self):
+        rows = json.loads((PACKAGE / "MANIFEST.json").read_text())["files"]
+        contents = {row["path"]: (PACKAGE / row["path"]).read_bytes() for row in rows}
+        verify_followup_candidates(contents)
+        for package in FOLLOWUP_PUBLIC_DELIVERIES:
+            with self.subTest(package=package["prefix"]):
+                key = package["prefix"] + package["manifest"]
+                changed = dict(contents); value = json.loads(changed[key])
+                value["runtime_admission"] = True; changed[key] = json.dumps(value).encode()
+                with self.assertRaisesRegex(ValueError, "followup delivery claim ceiling differs"):
+                    verify_followup_candidates(changed)
+                changed = dict(contents); value = json.loads(changed[key]); row = value["files"].pop()
+                del changed[package["prefix"] + row["path"]]
+                value["file_count"] -= 1; value["total_bytes"] -= row["bytes"]
+                changed[key] = json.dumps(value).encode()
+                with self.assertRaisesRegex(ValueError, "sealed followup delivery identity was reassigned"):
+                    verify_followup_candidates(changed)
+        changed = dict(contents)
+        key = "unadopted/retained-r10-failure-v1/PORTABLE-DELIVERY-MANIFEST-v1.json"
+        value = json.loads(changed[key]); value["global_unknown_effect_count"] = 0
+        changed[key] = json.dumps(value).encode()
+        with self.assertRaisesRegex(ValueError, "retained failure unknown boundary differs"):
+            verify_followup_candidates(changed)
+
 
 class UnadoptedTopologyGuardTest(unittest.TestCase):
     @classmethod
@@ -406,6 +431,69 @@ class UnadoptedTopologyGuardTest(unittest.TestCase):
             self.assertEqual(report["inventory_differential"]["inventory_comparisons"], 788)
             self.assertEqual(report["inventory_differential"]["topology_comparisons"], 1754)
             self.assertFalse(report["private_complete_reader_test_performed"])
+
+    def test_actual_current_source_parent_consumer_rebuilds_and_checks_envelopes(self):
+        environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", HEPTA_TOPOLOGY_SYNTHETIC_ONLY="1")
+        for script, args in (
+            ("source-parent-consumer-v4/tools/build_manifest.py", ["--base", ".", "--check"]),
+            ("source-parent-consumer-v4/tests/test_source_parent_consumer.py", ["--base", "."]),
+        ):
+            result = subprocess.run([sys.executable, "-B", script, *args], cwd=CANDIDATE,
+                                    env=environment, text=True, capture_output=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["state"], "PASS")
+        self.assertEqual((report["tests"], report["skipped"]), (16, 2))
+        self.assertEqual(report["counters"]["consumer_envelope_rejections"], 16)
+        self.assertEqual(report["inventory_suite_counters"]["inventory_comparisons"], 788)
+        self.assertFalse(report["runtime_admission"])
+        self.assertFalse(report["whole_stage_budget_verified"])
+
+    def test_actual_retained_current_consumer_rebuilds_and_binds_in_process_producers(self):
+        environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        for script, args in (
+            ("retained-current-consumer-v5/tools/build_manifest.py", ["--base", ".", "--check"]),
+            ("retained-current-consumer-v5/tests/test_retained_current_consumer.py", ["--base", "."]),
+        ):
+            result = subprocess.run([sys.executable, "-B", script, *args], cwd=CANDIDATE,
+                                    env=environment, text=True, capture_output=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual((report["state"], report["tests"]), ("PASS", 12))
+        self.assertEqual(report["counters"]["source_binding_rejections"], 10)
+        self.assertEqual(report["counters"]["constructor_rejections"], 12)
+        self.assertEqual(report["counters"]["new_envelope_rejections"], 17)
+        self.assertEqual(report["counters"]["wrong_in_process_producer_rejections"], 4)
+        self.assertEqual(report["counters"]["actual_selected_reader_rejections_before_provider"], 3)
+        self.assertFalse(report["runtime_admission"])
+        self.assertFalse(report["whole_stage_budget_verified"])
+
+    def test_retained_r10_host_failure_reader_checks_portable_negatives_without_promoting_unknowns(self):
+        root = PACKAGE / "unadopted/retained-r10-failure-v1"
+        environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        for script in ("tools/verify_candidate.py", "tests/test_retained_r10_failure.py"):
+            result = subprocess.run([sys.executable, "-B", script], cwd=root, env=environment,
+                                    text=True, capture_output=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual((report["state"], report["tests_run"], report["negative_cases"]), ("PASS", 6, 49))
+        self.assertEqual(len(report["skipped"]), 1)
+        self.assertFalse(report["private_originals_supplied"])
+        self.assertFalse(report["runtime_admission"])
+
+    def test_freeze_controller_semantics_are_type_exact_complete_and_do_not_enable_preparer(self):
+        root = PACKAGE / "unadopted/freeze-preparation-semantics-v2"
+        environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+        for args in (["tools/verify_candidate.py"],
+                     ["tests/test_freeze_semantics.py", "--retained-base", "../retained-r10-failure-v1"]):
+            result = subprocess.run([sys.executable, "-B", *args], cwd=root, env=environment,
+                                    text=True, capture_output=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual((report["result"], report["tests"], report["negative_cases"]), ("PASS", 12, 105))
+        self.assertTrue(report["synthetic_originals_only"])
+        self.assertFalse(report["actual_future_freeze_or_controller_attested"])
+        self.assertFalse(report["runtime_admission"])
 
 
 if __name__ == "__main__":

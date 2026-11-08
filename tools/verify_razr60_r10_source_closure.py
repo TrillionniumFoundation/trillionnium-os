@@ -344,6 +344,7 @@ def verify_checkpoint(root: Path) -> dict:
     verify_selector_candidate(contents)
     verify_source_parent_candidate(contents)
     verify_unbound_preparer(contents)
+    verify_followup_candidates(contents)
     return {
         "schema": "hepta.razr60.r10.source-closure-check.v1",
         "result": "PASS_SOURCE_BYTES_AND_STRUCTURE_ONLY",
@@ -357,6 +358,7 @@ def verify_checkpoint(root: Path) -> dict:
         "whole_stage_budget_verified": False,
         "next_generation_preparer_execution_enabled": False,
         "full_source_parent_composed_offline_only": True,
+        "followup_public_deliveries": len(FOLLOWUP_PUBLIC_DELIVERIES),
     }
 
 
@@ -548,6 +550,82 @@ def verify_unbound_preparer(contents: dict[str, bytes]) -> None:
                    if not (isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant)
                            and isinstance(node.value.value, str))]
     need(isinstance(effect_nodes[0], ast.Raise), "unbound preparer must reject before imports")
+
+
+FOLLOWUP_PUBLIC_DELIVERIES = [
+    {
+        "prefix": "unadopted/freeze-preparation-semantics-v2/",
+        "manifest": "PORTABLE-DELIVERY-MANIFEST-v2.json",
+        "sha256": "e57db4cde4feac40d7de54a7ddb83f203fecc8cdf60081a64b0aabf404d35338",
+        "file_count": 12,
+        "false_fields": ["production_adopted", "runtime_admission", "fresh_execution_eligible", "nonce_creation_authorized",
+                         "reservation_authorized", "actual_new_generation_freeze_created", "new_generation_source_plan_authority_verified",
+                         "whole_stage_budget_verified", "production_preparer_implemented", "runtime_import_dependency_semantics_reverified",
+                         "github_independent_approval"],
+        "credit_field": "current_native_case_credit", "unknown_fields": [],
+    },
+    {
+        "prefix": "unadopted/topology-20261107/retained-current-consumer-v5/",
+        "manifest": "PORTABLE-DELIVERY-MANIFEST-v5.json",
+        "sha256": "b335ab2367198a3d1757f60fff5f027b44917bad046f50469cf28ed97dc74abe",
+        "file_count": 10,
+        "false_fields": ["production_adopted", "runtime_admission", "whole_stage_budget_verified",
+                         "complete_production_IO_metering_verified", "original_sources_or_receipts_modified", "validation_result_cache"],
+        "credit_field": "current_native_case_credit", "unknown_fields": [],
+    },
+    {
+        "prefix": "unadopted/topology-20261107/source-parent-consumer-v4/",
+        "manifest": "PORTABLE-DELIVERY-MANIFEST-v4.json",
+        "sha256": "8d9e443375f3a3f9fd30a29ce0966a1c14e52dde479d9e26f0650eb583e78148",
+        "file_count": 9,
+        "false_fields": ["production_adopted", "runtime_admission", "whole_stage_budget_verified",
+                         "complete_production_IO_metering_verified", "original_receipts_rewritten", "validation_result_cache"],
+        "credit_field": "native_case_credit", "unknown_fields": [],
+    },
+    {
+        "prefix": "unadopted/retained-r10-failure-v1/",
+        "manifest": "PORTABLE-DELIVERY-MANIFEST-v1.json",
+        "sha256": "bbfe24d5abb4fd79c1f3d850b5a3eb6b4770843db5e882558aab171d2a07e750",
+        "file_count": 11,
+        "false_fields": ["production_adopted", "runtime_admission", "fresh_execution_eligible",
+                         "retirement_accepted", "github_independent_approval", "all_external_runtime_dependencies_reverified"],
+        "credit_field": "native_case_credit",
+        "unknown_fields": ["original_phone_terminal", "original_phone_stage_writes", "global_unknown_effect_count"],
+    },
+]
+
+
+def verify_followup_candidates(contents: dict[str, bytes]) -> None:
+    """Bind every sealed increment independently of its mutable outer manifest."""
+    for package in FOLLOWUP_PUBLIC_DELIVERIES:
+        prefix, name = package["prefix"], package["manifest"]
+        need(prefix + name in contents, "followup delivery manifest is missing")
+        raw = contents[prefix + name]
+        delivery = strict_json(raw)
+        need(all(delivery.get(key) is False for key in package["false_fields"])
+             and type(delivery.get(package["credit_field"])) is int
+             and delivery[package["credit_field"]] == 0,
+             "followup delivery claim ceiling differs")
+        need(all(key in delivery and delivery[key] is None for key in package["unknown_fields"]),
+             "retained failure unknown boundary differs")
+        need(hashlib.sha256(raw).hexdigest() == package["sha256"],
+             "sealed followup delivery identity was reassigned")
+        rows = delivery["files"]
+        expected = {row["path"] for row in rows}
+        actual = {key[len(prefix):] for key in contents if key.startswith(prefix)}
+        need(type(delivery["file_count"]) is int
+             and len(rows) == len(expected) == delivery["file_count"] == package["file_count"]
+             and actual == expected | {name}, "followup public membership differs")
+        need(type(delivery["total_bytes"]) is int and delivery["total_bytes"] == sum(row["bytes"] for row in rows),
+             "followup public byte accounting differs")
+        for row in rows:
+            path = PurePosixPath(row["path"])
+            need(not path.is_absolute() and str(path) == row["path"] and ".." not in path.parts
+                 and "\x00" not in row["path"], "followup public member path differs")
+            member = contents[prefix + row["path"]]
+            need(type(row["bytes"]) is int and len(member) == row["bytes"]
+                 and hashlib.sha256(member).hexdigest() == row["sha256"],
+                 "followup public source differs")
 
 
 def materialize_checkpoint(root: Path, output: Path) -> dict:

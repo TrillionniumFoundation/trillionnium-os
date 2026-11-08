@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.internal-review.freeze-preparation-semantics.v1",
+  "reviewed_utc": "2026-11-08T02:33:51.815626+00:00",
+  "reviewer": "ledger_audit internal code/evidence reviewer; not owner authority or GitHub review",
+  "state": "NO_BLOCKING_FINDINGS_FOR_EXACT_OFFLINE_SOURCE_AND_RETAINED_R10_CONTEXT_SCOPE",
+  "implementation": {
+    "path": "/workspace/scratch/586d47adad09/freeze-preparation-semantics-v2/candidate/freeze_semantics.py",
+    "bytes": 30816,
+    "sha256": "7673496d3f29b5f21b312c0b1208a4497426b4f21f4f51bddba3910422b9566d"
+  },
+  "loader": {
+    "path": "/workspace/scratch/586d47adad09/freeze-preparation-semantics-v2/candidate/bound_loader.py",
+    "bytes": 903,
+    "sha256": "c1d9746e631b445c82af307d0f53b48834ad980e040e4c533749f0c68a0affd0"
+  },
+  "review_scope": [
+    "Read final source and bound loader; compared final bytes with the independent reviewer copies.",
+    "Checked original R10 reference versus new-generation entry separation, the four controller originals, complete frozen membership, full9 and before/after observations, and the source-bound nested retained R10 reader.",
+    "Performed exactly two focused synthetic counterexamples for concrete semantic defects; preserved their original acceptance evidence and rechecked the same cases after correction.",
+    "Read exact final-source real R10 host-file replay and nested retained-reader replay reports; checked their byte/hash identity and claim ceilings. The independent reviewer did not execute another Mac/Pocket4/phone replay."
+  ],
+  "resolved_findings": [
+    {
+      "id": "FREEZE-TYPE-PRESERVING-BINDING",
+      "severity": "semantic correctness",
+      "prior_source_sha256": "d04a19b7fa5b47d26fa813e684bff1836bf9e8a36b4f467f776cf390f936bd96",
+      "prior_observation": "Changing a copied freeze input metadata nlink from integer 1 to boolean true was accepted while the independently supplied plan/observations retained integer 1. Ordinary Python equality erased the type distinction.",
+      "correction": "Structural bindings use canonical encoded JSON byte equality, including freeze files and actual_input_files, policy/adoption/source, checks, source-parent records, controller descriptors and manifest-related structures.",
+      "final_counterexample_state": "REJECTED"
+    },
+    {
+      "id": "MANAGED-SUBTREE-EXACT-MEMBERSHIP",
+      "severity": "semantic correctness",
+      "prior_source_sha256": "d04a19b7fa5b47d26fa813e684bff1836bf9e8a36b4f467f776cf390f936bd96",
+      "prior_observation": "An extra runtime source file could be placed in the complete plan/tree while omitted from the runtime manifest and still be accepted.",
+      "correction": "Each declared managed subtree runtime, root-chain and shared must contain exactly its listed members plus its own manifest. Other declared dependencies remain outside these three subtree checks; no exemption was added.",
+      "final_counterexample_state": "REJECTED"
+    }
+  ],
+  "counterexample_evidence": {
+    "prior": {
+      "path": "/workspace/scratch/586d47adad09/ledger-audit-20261107/freeze-semantics-review01/FOCUSED-COUNTEREXAMPLES.original.json",
+      "bytes": 1539,
+      "sha256": "11e8baee27b90c137ecf5b1566125e918ff057865677c40625917582973abb44"
+    },
+    "corrected": {
+      "path": "/workspace/scratch/586d47adad09/ledger-audit-20261107/freeze-semantics-review01/FOCUSED-COUNTEREXAMPLES-CORRECTED.json",
+      "bytes": 900,
+      "sha256": "f5c8d0cb6e35693bcd27f4bc1d3544dd2520bcbc2de1041eb3f8515e205a5f32"
+    },
+    "original_acceptance_evidence_preserved": true
+  },
+  "source_contract_checks": {
+    "strict_json_rejects_duplicate_members_and_nonfinite_numbers": true,
+    "metadata_and_counts_reject_bool_as_integer": true,
+    "new_generation_guard_rejects_original_R10_before_provider": true,
+    "provider_material_two_read_and_full9_checks_do_not_claim_provider_attestation": true,
+    "complete_tree_path_membership_and_directory_name_consistency_checked": true,
+    "four_controller_originals_bind_start_request_status_and_complete_stdout_stderr": true,
+    "source_bound_retained_reader_actual_bytes_verified_before_loading": true,
+    "retained_R10_original_phone_terminal_and_effect_unknowns_preserved": true,
+    "existing_freezer_or_preparer_not_executed_by_verifier": true,
+    "no_execution_grant_or_fresh_CAS_reservation_inferred": true
+  },
+  "author_validation_read": {
+    "synthetic": {
+      "path": "/workspace/scratch/586d47adad09/freeze-preparation-semantics-v2/reports/SYNTHETIC-TESTS-after-review-v3.json",
+      "bytes": 364,
+      "sha256": "1e19b744f6c624294c14fb2516bbcd4072647ed7fb8a4ff19d27bdf98cdc3fc3",
+      "tests": 12,
+      "negative_cases": 105,
+      "result": "PASS",
+      "reviewer_reran_full_suite": false
+    },
+    "actual_reference": {
+      "path": "/workspace/scratch/586d47adad09/freeze-preparation-semantics-v2/private-evidence/ACTUAL-R10-REFERENCE-final.json",
+      "bytes": 16612,
+      "sha256": "153704c7cf2087a593868953020935c35758dda15bb8b4f8b2a734202374fb7f",
+      "controller_job_id": "1a1b8fc9f67-12894-116c",
+      "original_file_opens": 4183,
+      "original_bytes_read": 656407629,
+      "distinct_original_paths": 2091,
+      "frozen_payload_files": 170,
+      "original_input_files": 1917,
+      "all_originals_read_twice": true,
+      "actual_full9_and_complete_tree_bookends": true
+    },
+    "actual_reference_public_summary": {
+      "path": "/workspace/scratch/586d47adad09/freeze-preparation-semantics-v2/reports/ACTUAL-R10-FREEZE-SAFE-final.json",
+      "bytes": 5182,
+      "sha256": "de606c2013418f9d7d860243cf37abdf521baff68a3e0f8b44b815365270b37e"
+    },
+    "nested_retained_context": {
+      "path": "/workspace/scratch/586d47adad09/freeze-preparation-semantics-v2/reports/RETAINED-R10-CONTEXT-REAL-final.json",
+      "bytes": 2541,
+      "sha256": "0a86351884184b35a3a4818c2b976c53bbee9f094a8b9e3e22d1e30ca83fc83c",
+      "original_roles_verified": 13,
+      "retained_file_count": 125,
+      "retained_archive_members": 126,
+      "full_nested_result_equal_to_actual_bound_reader": true
+    }
+  },
+  "limitations": [
+    "The actual positive replay is the existing R10 historical reference; its newly written membership adapter is not a reviewed new-generation membership plan.",
+    "No real new-generation positive fixture, production adoption, formal BUILD seal, actual fresh dependency observation, current phone route, whole-stage timing, CAS, nonce, reservation, or new admission was demonstrated by this review.",
+    "Observation consistency from supplied bytes is distinct from attesting the provider implementation or independently proving live observations.",
+    "The nested retained reader preserves original phone-stage terminal/effect UNKNOWN, the consumed nonce and zero current case credit; it does not make the old request replayable.",
+    "The earlier accepted counterexamples and earlier-source PASS reports remain historical evidence and are not relabeled as final-source passes."
+  ],
+  "github_approval": false,
+  "owner_authority_verified": false,
+  "new_generation_freshness_attested": false,
+  "runtime_admission": false,
+  "fresh_execution_eligible": false,
+  "cas_or_reservation_authorized": false,
+  "new_nonces": 0,
+  "new_phone_calls": 0,
+  "native_submissions": 0,
+  "current_native_case_credit": 0,
+  "production_adopted": false
+}

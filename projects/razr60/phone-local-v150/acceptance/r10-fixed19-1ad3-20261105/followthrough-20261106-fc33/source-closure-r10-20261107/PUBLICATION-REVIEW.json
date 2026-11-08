@@ -2,6 +2,22 @@
   "binary_runtime_artifacts_included": false,
   "claim": "Source custody review only; neither GitHub independent approval nor a new runtime qualification.",
   "credential_pattern_matches": 0,
+  "followup_review_20261108": {
+    "explicit_delivery_manifests": [
+      "unadopted/topology-20261107/source-parent-consumer-v4/PORTABLE-DELIVERY-MANIFEST-v4.json",
+      "unadopted/topology-20261107/retained-current-consumer-v5/PORTABLE-DELIVERY-MANIFEST-v5.json",
+      "unadopted/retained-r10-failure-v1/PORTABLE-DELIVERY-MANIFEST-v1.json",
+      "unadopted/freeze-preparation-semantics-v2/PORTABLE-DELIVERY-MANIFEST-v2.json"
+    ],
+    "github_independent_approval": false,
+    "historical_R10_source_and_failure_preserved": true,
+    "new_generation_freeze_created": false,
+    "new_member_credential_pattern_matches": 0,
+    "private_original_bodies_uploaded": false,
+    "public_members_added": 46,
+    "raw_execution_requests_or_readsets_uploaded": false,
+    "runtime_adopted": false
+  },
   "raw_phone_drafts_included": false,
   "raw_private_archive_files_included": false,
   "reference_json_kind": "Frozen runtime reference commitments and topology metadata; no captured payload text or credential bytes.",

@@ -1,0 +1,1160 @@
+{
+  "actual_adapter_execution_source": {
+    "bytes": 23772,
+    "sha256": "758fd854862d7d43098aa3772ec98120c984e9040685731af05e69f7aa2a17e2"
+  },
+  "actual_current_execution_source": {
+    "bytes": 260205,
+    "sha256": "d012b0c4d7d1312190b820d3874bb697c80ae1ca8dce75ccbeb9e4872615db42"
+  },
+  "actual_nested_r9_reader_execution": {
+    "actual_derived_reader_source": {
+      "bytes": 34737,
+      "sha256": "8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7"
+    },
+    "construction_receipt": {
+      "constructions": [
+        {
+          "derived_source": {
+            "bytes": 34737,
+            "sha256": "8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7"
+          },
+          "fresh_module_globals": true,
+          "kind": "r9-reader",
+          "module_file": "<UNADOPTED_derived_r9_reader:sha256=8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7>",
+          "module_name": "UNADOPTED_derived_r9_reader",
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 34650,
+            "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+          },
+          "reference_source_bytes_changed": false,
+          "transformation_sites": [
+            "scope-selection-after-archive-member-pins",
+            "r8-selection-after-read-exact"
+          ],
+          "whole_byte_inverse_verified": true
+        },
+        {
+          "derived_source": {
+            "bytes": 37770,
+            "sha256": "5c6ae675180c119b1cca647dc486638abe6f3a9b6ace3cd67bf17099ed06e9cf"
+          },
+          "fresh_module_globals": true,
+          "kind": "r9-scope",
+          "module_file": "<UNADOPTED_derived_r9_scope:sha256=5c6ae675180c119b1cca647dc486638abe6f3a9b6ace3cd67bf17099ed06e9cf>",
+          "module_name": "UNADOPTED_derived_r9_scope",
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 37788,
+            "sha256": "f59bae34d9acc80d2c28cd5636b53e13b68d911d2121735883dc7b001e57779f"
+          },
+          "reference_source_bytes_changed": false,
+          "transformation_sites": [
+            "explicit-validator-provenance-comment",
+            "inventory-selection-after-original-source-pins"
+          ],
+          "whole_byte_inverse_verified": true
+        },
+        {
+          "derived_source": {
+            "bytes": 96044,
+            "sha256": "df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727"
+          },
+          "fresh_module_globals": true,
+          "kind": "r8-reader",
+          "module_file": "<UNADOPTED_derived_r8_reader:sha256=df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727>",
+          "module_name": "UNADOPTED_derived_r8_reader",
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 96088,
+            "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+          },
+          "reference_source_bytes_changed": false,
+          "transformation_sites": [
+            "scope-selection-after-original-pin",
+            "r7-reader-selection-after-original-pin",
+            "inventory-selection-after-original-source-check"
+          ],
+          "whole_byte_inverse_verified": true
+        },
+        {
+          "derived_source": {
+            "bytes": 22151,
+            "sha256": "520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed"
+          },
+          "fresh_module_globals": true,
+          "kind": "r8-scope",
+          "module_file": "<UNADOPTED_derived_r8_scope:sha256=520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed>",
+          "module_name": "UNADOPTED_derived_r8_scope",
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 21865,
+            "sha256": "937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38"
+          },
+          "reference_source_bytes_changed": false,
+          "transformation_sites": [
+            "old-root-child-membership"
+          ],
+          "whole_byte_inverse_verified": true
+        },
+        {
+          "derived_source": {
+            "bytes": 37442,
+            "sha256": "9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52"
+          },
+          "fresh_module_globals": true,
+          "kind": "r7-reader",
+          "module_file": "<UNADOPTED_derived_r7_reader:sha256=9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52>",
+          "module_name": "UNADOPTED_derived_r7_reader",
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 37404,
+            "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+          },
+          "reference_source_bytes_changed": false,
+          "transformation_sites": [
+            "inventory-selection"
+          ],
+          "whole_byte_inverse_verified": true
+        },
+        {
+          "context": "r7-readers",
+          "derived_function": {
+            "bytes": 3827,
+            "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+          },
+          "fresh_function_globals": true,
+          "kind": "inventory-function",
+          "namespace_bindings": [
+            "C",
+            "Path",
+            "re",
+            "stat"
+          ],
+          "original_function": {
+            "bytes": 3788,
+            "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+          },
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 181669,
+            "sha256": "0a9f52cf8fb71177d0816f561cce279811a7182e986c12912d9431bde5997cda"
+          },
+          "validation_result_cache": false
+        },
+        {
+          "context": "r8-payload",
+          "derived_function": {
+            "bytes": 3827,
+            "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+          },
+          "fresh_function_globals": true,
+          "kind": "inventory-function",
+          "namespace_bindings": [
+            "C",
+            "Path",
+            "re",
+            "stat"
+          ],
+          "original_function": {
+            "bytes": 3788,
+            "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+          },
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 218894,
+            "sha256": "9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54"
+          },
+          "validation_result_cache": false
+        },
+        {
+          "context": "r9-scope",
+          "derived_function": {
+            "bytes": 3827,
+            "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+          },
+          "fresh_function_globals": true,
+          "kind": "inventory-function",
+          "namespace_bindings": [
+            "C",
+            "Path",
+            "re",
+            "stat"
+          ],
+          "original_function": {
+            "bytes": 3788,
+            "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+          },
+          "original_module_mutated": false,
+          "original_source": {
+            "bytes": 218894,
+            "sha256": "9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54"
+          },
+          "validation_result_cache": false
+        }
+      ],
+      "live_observation_cache": false,
+      "native_case_credit": 0,
+      "new_validator_implementation_identity": true,
+      "original_module_globals_reassigned": false,
+      "original_source_bytes_changed": false,
+      "production_policy_status": "HOLD",
+      "production_selector_adopted": false,
+      "runtime_admission": false,
+      "schema": "hepta.UNADOPTED.derived-reader-construction.v1",
+      "selector_source": {
+        "bytes": 11956,
+        "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+      },
+      "source_construction_only": true,
+      "source_parent_boundary_reader_status": "HOLD_REQUIRES_NEW_PROVENANCE_POLICY",
+      "validation_result_cache": false,
+      "whole_stage_budget_verified": false
+    },
+    "constructor_source": {
+      "bytes": 31905,
+      "sha256": "88eec8400731b2131f4361ded2c5e480fa7abfca526a7f9be4463a3e48b25bde"
+    },
+    "current_native_case_credit": 0,
+    "fresh_derived_module_globals": true,
+    "historical_reader_data_source": {
+      "bytes": 34650,
+      "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+    },
+    "historical_result_is_old_execution_attestation": false,
+    "historical_source_bytes_changed": false,
+    "kind": "r9-reader",
+    "live_observation_cache": false,
+    "module_file": "<UNADOPTED_derived_r9_reader:sha256=8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7>",
+    "module_name": "UNADOPTED_derived_r9_reader",
+    "production_adopted": false,
+    "runtime_admission": false,
+    "schema": "hepta.UNADOPTED.retained-reader-execution.v1",
+    "selector_loader_source": {
+      "bytes": 1407,
+      "sha256": "4aa4fb101dca5f4532c70ec071231b036df6e63940d08d6613305be6cb699b82"
+    },
+    "selector_source": {
+      "bytes": 11956,
+      "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+    },
+    "validation_result_cache": false,
+    "whole_stage_budget_verified": false
+  },
+  "actual_standalone_retained_execution": {
+    "r7-reader": {
+      "actual_derived_reader_source": {
+        "bytes": 37442,
+        "sha256": "9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52"
+      },
+      "construction_receipt": {
+        "constructions": [
+          {
+            "derived_source": {
+              "bytes": 37442,
+              "sha256": "9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52"
+            },
+            "fresh_module_globals": true,
+            "kind": "r7-reader",
+            "module_file": "<UNADOPTED_derived_r7_reader:sha256=9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52>",
+            "module_name": "UNADOPTED_derived_r7_reader",
+            "original_module_mutated": false,
+            "original_source": {
+              "bytes": 37404,
+              "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+            },
+            "reference_source_bytes_changed": false,
+            "transformation_sites": [
+              "inventory-selection"
+            ],
+            "whole_byte_inverse_verified": true
+          },
+          {
+            "context": "r7-readers",
+            "derived_function": {
+              "bytes": 3827,
+              "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+            },
+            "fresh_function_globals": true,
+            "kind": "inventory-function",
+            "namespace_bindings": [
+              "C",
+              "Path",
+              "re",
+              "stat"
+            ],
+            "original_function": {
+              "bytes": 3788,
+              "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+            },
+            "original_module_mutated": false,
+            "original_source": {
+              "bytes": 181669,
+              "sha256": "0a9f52cf8fb71177d0816f561cce279811a7182e986c12912d9431bde5997cda"
+            },
+            "validation_result_cache": false
+          }
+        ],
+        "live_observation_cache": false,
+        "native_case_credit": 0,
+        "new_validator_implementation_identity": true,
+        "original_module_globals_reassigned": false,
+        "original_source_bytes_changed": false,
+        "production_policy_status": "HOLD",
+        "production_selector_adopted": false,
+        "runtime_admission": false,
+        "schema": "hepta.UNADOPTED.derived-reader-construction.v1",
+        "selector_source": {
+          "bytes": 11956,
+          "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+        },
+        "source_construction_only": true,
+        "source_parent_boundary_reader_status": "HOLD_REQUIRES_NEW_PROVENANCE_POLICY",
+        "validation_result_cache": false,
+        "whole_stage_budget_verified": false
+      },
+      "constructor_source": {
+        "bytes": 31905,
+        "sha256": "88eec8400731b2131f4361ded2c5e480fa7abfca526a7f9be4463a3e48b25bde"
+      },
+      "current_native_case_credit": 0,
+      "fresh_derived_module_globals": true,
+      "historical_reader_data_source": {
+        "bytes": 37404,
+        "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+      },
+      "historical_result_is_old_execution_attestation": false,
+      "historical_source_bytes_changed": false,
+      "kind": "r7-reader",
+      "live_observation_cache": false,
+      "module_file": "<UNADOPTED_derived_r7_reader:sha256=9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52>",
+      "module_name": "UNADOPTED_derived_r7_reader",
+      "production_adopted": false,
+      "runtime_admission": false,
+      "schema": "hepta.UNADOPTED.retained-reader-execution.v1",
+      "selector_loader_source": {
+        "bytes": 1407,
+        "sha256": "4aa4fb101dca5f4532c70ec071231b036df6e63940d08d6613305be6cb699b82"
+      },
+      "selector_source": {
+        "bytes": 11956,
+        "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+      },
+      "validation_result_cache": false,
+      "whole_stage_budget_verified": false
+    },
+    "r8-reader": {
+      "actual_derived_reader_source": {
+        "bytes": 96044,
+        "sha256": "df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727"
+      },
+      "construction_receipt": {
+        "constructions": [
+          {
+            "derived_source": {
+              "bytes": 96044,
+              "sha256": "df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727"
+            },
+            "fresh_module_globals": true,
+            "kind": "r8-reader",
+            "module_file": "<UNADOPTED_derived_r8_reader:sha256=df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727>",
+            "module_name": "UNADOPTED_derived_r8_reader",
+            "original_module_mutated": false,
+            "original_source": {
+              "bytes": 96088,
+              "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+            },
+            "reference_source_bytes_changed": false,
+            "transformation_sites": [
+              "scope-selection-after-original-pin",
+              "r7-reader-selection-after-original-pin",
+              "inventory-selection-after-original-source-check"
+            ],
+            "whole_byte_inverse_verified": true
+          },
+          {
+            "derived_source": {
+              "bytes": 22151,
+              "sha256": "520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed"
+            },
+            "fresh_module_globals": true,
+            "kind": "r8-scope",
+            "module_file": "<UNADOPTED_derived_r8_scope:sha256=520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed>",
+            "module_name": "UNADOPTED_derived_r8_scope",
+            "original_module_mutated": false,
+            "original_source": {
+              "bytes": 21865,
+              "sha256": "937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38"
+            },
+            "reference_source_bytes_changed": false,
+            "transformation_sites": [
+              "old-root-child-membership"
+            ],
+            "whole_byte_inverse_verified": true
+          },
+          {
+            "derived_source": {
+              "bytes": 37442,
+              "sha256": "9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52"
+            },
+            "fresh_module_globals": true,
+            "kind": "r7-reader",
+            "module_file": "<UNADOPTED_derived_r7_reader:sha256=9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52>",
+            "module_name": "UNADOPTED_derived_r7_reader",
+            "original_module_mutated": false,
+            "original_source": {
+              "bytes": 37404,
+              "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+            },
+            "reference_source_bytes_changed": false,
+            "transformation_sites": [
+              "inventory-selection"
+            ],
+            "whole_byte_inverse_verified": true
+          },
+          {
+            "context": "r7-readers",
+            "derived_function": {
+              "bytes": 3827,
+              "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+            },
+            "fresh_function_globals": true,
+            "kind": "inventory-function",
+            "namespace_bindings": [
+              "C",
+              "Path",
+              "re",
+              "stat"
+            ],
+            "original_function": {
+              "bytes": 3788,
+              "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+            },
+            "original_module_mutated": false,
+            "original_source": {
+              "bytes": 181669,
+              "sha256": "0a9f52cf8fb71177d0816f561cce279811a7182e986c12912d9431bde5997cda"
+            },
+            "validation_result_cache": false
+          },
+          {
+            "context": "r8-payload",
+            "derived_function": {
+              "bytes": 3827,
+              "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+            },
+            "fresh_function_globals": true,
+            "kind": "inventory-function",
+            "namespace_bindings": [
+              "C",
+              "Path",
+              "re",
+              "stat"
+            ],
+            "original_function": {
+              "bytes": 3788,
+              "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+            },
+            "original_module_mutated": false,
+            "original_source": {
+              "bytes": 218894,
+              "sha256": "9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54"
+            },
+            "validation_result_cache": false
+          }
+        ],
+        "live_observation_cache": false,
+        "native_case_credit": 0,
+        "new_validator_implementation_identity": true,
+        "original_module_globals_reassigned": false,
+        "original_source_bytes_changed": false,
+        "production_policy_status": "HOLD",
+        "production_selector_adopted": false,
+        "runtime_admission": false,
+        "schema": "hepta.UNADOPTED.derived-reader-construction.v1",
+        "selector_source": {
+          "bytes": 11956,
+          "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+        },
+        "source_construction_only": true,
+        "source_parent_boundary_reader_status": "HOLD_REQUIRES_NEW_PROVENANCE_POLICY",
+        "validation_result_cache": false,
+        "whole_stage_budget_verified": false
+      },
+      "constructor_source": {
+        "bytes": 31905,
+        "sha256": "88eec8400731b2131f4361ded2c5e480fa7abfca526a7f9be4463a3e48b25bde"
+      },
+      "current_native_case_credit": 0,
+      "fresh_derived_module_globals": true,
+      "historical_reader_data_source": {
+        "bytes": 96088,
+        "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+      },
+      "historical_result_is_old_execution_attestation": false,
+      "historical_source_bytes_changed": false,
+      "kind": "r8-reader",
+      "live_observation_cache": false,
+      "module_file": "<UNADOPTED_derived_r8_reader:sha256=df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727>",
+      "module_name": "UNADOPTED_derived_r8_reader",
+      "production_adopted": false,
+      "runtime_admission": false,
+      "schema": "hepta.UNADOPTED.retained-reader-execution.v1",
+      "selector_loader_source": {
+        "bytes": 1407,
+        "sha256": "4aa4fb101dca5f4532c70ec071231b036df6e63940d08d6613305be6cb699b82"
+      },
+      "selector_source": {
+        "bytes": 11956,
+        "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+      },
+      "validation_result_cache": false,
+      "whole_stage_budget_verified": false
+    }
+  },
+  "all_original_byte_full9_bookends_unchanged": true,
+  "authoritative_execution": {
+    "automatic_retry": false,
+    "both_streams_eof": true,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b8ea394d-12894-1134",
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "stderr_bytes": 0,
+    "stdout_bytes": 122389,
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "bound_loader_source": {
+    "bytes": 996,
+    "sha256": "d3f85017792e2c6b9d1b943b8813dd85525f40e4262314ef959ceaceeef23bad"
+  },
+  "complete_production_IO_metering_verified": false,
+  "constructor_source": {
+    "bytes": 31905,
+    "sha256": "88eec8400731b2131f4361ded2c5e480fa7abfca526a7f9be4463a3e48b25bde"
+  },
+  "counts": {
+    "negative_cases": 14,
+    "new_envelope_rejections": 12,
+    "positive_cases": 6
+  },
+  "current_effective_inventory": {
+    "classification": "exact_source_parent44_plus_retained_failed_r7_r8_r9_49",
+    "descriptor": {
+      "bytes": 1403290,
+      "sha256": "bb8cfb6dd2f108046e8296956e514f7b3eec0ea5aaac5794ad86c70174478609"
+    },
+    "entries": 3991,
+    "roots": 49
+  },
+  "current_native_case_credit": 0,
+  "exact_full_returns_errors_and_original_callbacks_equal": true,
+  "existing_v3_readset_pin": {
+    "bytes": 13991,
+    "sha256": "2e13dac8ddc31fb77c527b7f8ab44120ea233626b72de08f37c06e04750b03e4"
+  },
+  "host_to_frozen_phone_manifest_projections": [
+    {
+      "actual_host_manifest": {
+        "bytes": 423,
+        "sha256": "0878279ffce3ecf3e541063ab8ce845950b904e0d46b9a81f6c2bf451bec4b29"
+      },
+      "changed_field": "archive.path",
+      "frozen_phone_representation": {
+        "bytes": 413,
+        "sha256": "4a3cb5afc08092f6a30ccf92e443b664ac511c7f764d9ef8aab86955e1aaa4ab"
+      },
+      "is_fresh_phone_observation": false
+    },
+    {
+      "actual_host_manifest": {
+        "bytes": 422,
+        "sha256": "b005ba692ea1f31e93858628eb9ae64c936c83193c632002eafa1dfb84f7f7f0"
+      },
+      "changed_field": "archive.path",
+      "frozen_phone_representation": {
+        "bytes": 409,
+        "sha256": "247ebf979d69cfd5b9b55b5cdbe55b2d1a57c481d3ceb67ef5e4ece91f7d78f6"
+      },
+      "is_fresh_phone_observation": false
+    },
+    {
+      "actual_host_manifest": {
+        "bytes": 431,
+        "sha256": "a49f04c7e6be09e9d46b00176b9a0baf4489b12d764abbfe4482f5c839fee01d"
+      },
+      "changed_field": "archive.path",
+      "frozen_phone_representation": {
+        "bytes": 421,
+        "sha256": "fb0c324e3bc994b56732fc6c6385ed686b73e138fd47e1e538e32c1a535b945b"
+      },
+      "is_fresh_phone_observation": false
+    }
+  ],
+  "immutable_preload_outside_validations": true,
+  "live_observation_cache": false,
+  "native_requests": 0,
+  "negative_cases": [
+    {
+      "accepted": false,
+      "case": "r7-archive-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "same retained proof byte pins on host and phone",
+      "method": "retained_preaccept",
+      "original_read_count": 2,
+      "original_read_sequence": {
+        "bytes": 769,
+        "sha256": "1c950e78cedfa70ea64942cfbeb67dceaedb41f6abdb88dda53ffceabaceea6d"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.011941000000000201,
+        "wall_seconds": 0.011947708000001
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.00992199999999599,
+        "wall_seconds": 0.00993058299999916
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r7-manifest-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "same retained proof byte pins on host and phone",
+      "method": "retained_preaccept",
+      "original_read_count": 1,
+      "original_read_sequence": {
+        "bytes": 385,
+        "sha256": "bc52887f95c8e1b1cd1b5634dc59d605ea110537102c54b592dd200dcfad18c1"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.006029000000005169,
+        "wall_seconds": 0.006027957999997113
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.004814000000003205,
+        "wall_seconds": 0.004813874999996415
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r8-reader-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete same retained R8 proof byte pin",
+      "method": "retained_failed_staged",
+      "original_read_count": 1,
+      "original_read_sequence": {
+        "bytes": 396,
+        "sha256": "c0cf99c6b2f68d7469680d39a46584560f238281494660e78c017f40dd251cc0"
+      },
+      "single_case_new": {
+        "cpu_seconds": 9.599999999920783e-05,
+        "wall_seconds": 9.591599999936307e-05
+      },
+      "single_case_old": {
+        "cpu_seconds": 9.800000000126374e-05,
+        "wall_seconds": 9.800000000126374e-05
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r8-manifest-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete same retained R8 proof byte pin",
+      "method": "retained_failed_staged",
+      "original_read_count": 2,
+      "original_read_sequence": {
+        "bytes": 779,
+        "sha256": "6ec0b716582e5dffad5eb4adc017da9a15475043ef17fb0fb91e1932f636c189"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.003520000000001744,
+        "wall_seconds": 0.0035266250000063337
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.0027389999999982706,
+        "wall_seconds": 0.0027380000000007954
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r8-archive-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete same retained R8 proof byte pin",
+      "method": "retained_failed_staged",
+      "original_read_count": 3,
+      "original_read_sequence": {
+        "bytes": 1163,
+        "sha256": "07c83f9b65627a8904062c28dab11a9e8d2903c5e82bee1c5e07139c819a9569"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.005230000000004509,
+        "wall_seconds": 0.005236500000002309
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.0043250000000014666,
+        "wall_seconds": 0.004324917000005257
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r9-adapter-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete fixed uncompressed adapter source pin",
+      "method": "retained_failed_transport",
+      "original_read_count": 1,
+      "original_read_sequence": {
+        "bytes": 379,
+        "sha256": "20e2641444ee8ae31852334977ce671f9928c2a8d24cbb0fbe1df59977548155"
+      },
+      "single_case_new": {
+        "cpu_seconds": 3.799999999642978e-05,
+        "wall_seconds": 3.791700000022047e-05
+      },
+      "single_case_old": {
+        "cpu_seconds": 4.399999999549209e-05,
+        "wall_seconds": 4.3083000001331584e-05
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r9-reader-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete fixed original/source bytes differ",
+      "method": "retained_failed_transport",
+      "original_read_count": 2,
+      "original_read_sequence": {
+        "bytes": 754,
+        "sha256": "9e52be08892eed5e110b97b6f2b71a89fda83c2eada8d2f3c3e152f9329525de"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.0038229999999970232,
+        "wall_seconds": 0.0038224170000020763
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.0012309999999970955,
+        "wall_seconds": 0.0012312080000000947
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r9-manifest-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete fixed original/source bytes differ",
+      "method": "retained_failed_transport",
+      "original_read_count": 3,
+      "original_read_sequence": {
+        "bytes": 1137,
+        "sha256": "c2f2b820122f1fff643a40b9f0e697ec81a963374494ed1fc32ded1eca3c77f9"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.006181000000005099,
+        "wall_seconds": 0.0061894999999978495
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.0028849999999991383,
+        "wall_seconds": 0.0028854170000016666
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r9-archive-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete fixed original/source bytes differ",
+      "method": "retained_failed_transport",
+      "original_read_count": 4,
+      "original_read_sequence": {
+        "bytes": 1521,
+        "sha256": "7284808b4c450322c4af4f5f575834cad6ae5e09c9081e59f397f54e8ffdd863"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.00802299999999434,
+        "wall_seconds": 0.008022582999998917
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.005043000000000575,
+        "wall_seconds": 0.005042625000001522
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r9-prior-r8-archive-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete same retained R8 proof byte pin",
+      "method": "retained_failed_transport",
+      "original_read_count": 7,
+      "original_read_sequence": {
+        "bytes": 2682,
+        "sha256": "b41b42bb16857db1ae86b110a61472f01db9cab9db919f04418ba48136e3597e"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.11690699999999765,
+        "wall_seconds": 0.11697533399999571
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.11232000000000397,
+        "wall_seconds": 0.11239058299999982
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r9-prior-r7-archive-byte-corruption",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "same retained proof byte pins on host and phone",
+      "method": "retained_failed_transport",
+      "original_read_count": 8,
+      "original_read_sequence": {
+        "bytes": 3066,
+        "sha256": "3721e8a371b8b3e2166734424801fe0d42c7eb3a659791ce4cee81cfaffefd3d"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.14543400000000162,
+        "wall_seconds": 0.14552291699999387
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.13072400000000073,
+        "wall_seconds": 0.1307904159999964
+      }
+    },
+    {
+      "accepted": false,
+      "case": "r9-archive-before-r8-reader",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "complete fixed original/source bytes differ",
+      "method": "retained_failed_transport",
+      "original_read_count": 4,
+      "original_read_sequence": {
+        "bytes": 1521,
+        "sha256": "7284808b4c450322c4af4f5f575834cad6ae5e09c9081e59f397f54e8ffdd863"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.00808699999999618,
+        "wall_seconds": 0.008087290999995389
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.005036000000004037,
+        "wall_seconds": 0.005037375000000566
+      }
+    },
+    {
+      "accepted": false,
+      "case": "full9-before-inventory-before-retained-proof",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "source-parent bytes require their exact path and all nine metadata integers",
+      "method": "reviewed_historical_source_parent_inventory",
+      "original_read_count": 0,
+      "original_read_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.00013500000000021828,
+        "wall_seconds": 0.0001341669999987971
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.0001509999999953493,
+        "wall_seconds": 0.00015125000000182354
+      }
+    },
+    {
+      "accepted": false,
+      "case": "current-inventory-accounting-before-retained-family",
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "exception_type": "ValueError",
+      "message": "inventory byte accounting differs",
+      "method": "effective_current_prior_inventory",
+      "original_read_count": 0,
+      "original_read_sequence": {
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.2221309999999974,
+        "wall_seconds": 0.2222430840000058
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.27930200000000127,
+        "wall_seconds": 0.2794436659999988
+      }
+    }
+  ],
+  "new_envelope_rejections": [
+    {
+      "case": "schema='old'",
+      "exception_type": "ValueError",
+      "message": "retained result producer kind, method or schema differs"
+    },
+    {
+      "case": "producer_kind='r7-reader'",
+      "exception_type": "ValueError",
+      "message": "retained result producer kind, method or schema differs"
+    },
+    {
+      "case": "method='source_parent_inventory'",
+      "exception_type": "ValueError",
+      "message": "retained result producer kind, method or schema differs"
+    },
+    {
+      "case": "historical_result_is_old_execution_attestation=True",
+      "exception_type": "ValueError",
+      "message": "retained result cannot promote history, adoption, admission, budget or current credit"
+    },
+    {
+      "case": "production_adopted=True",
+      "exception_type": "ValueError",
+      "message": "retained result cannot promote history, adoption, admission, budget or current credit"
+    },
+    {
+      "case": "runtime_admission=True",
+      "exception_type": "ValueError",
+      "message": "retained result cannot promote history, adoption, admission, budget or current credit"
+    },
+    {
+      "case": "current_native_case_credit=False",
+      "exception_type": "ValueError",
+      "message": "retained result cannot promote history, adoption, admission, budget or current credit"
+    },
+    {
+      "case": "current_native_case_credit=1",
+      "exception_type": "ValueError",
+      "message": "retained result cannot promote history, adoption, admission, budget or current credit"
+    },
+    {
+      "case": "whole_stage_budget_verified=True",
+      "exception_type": "ValueError",
+      "message": "retained result cannot promote history, adoption, admission, budget or current credit"
+    },
+    {
+      "case": "historical_result=[]",
+      "exception_type": "ValueError",
+      "message": "retained verification data projection must remain an object"
+    },
+    {
+      "case": "wrong-actual-adapter-code",
+      "exception_type": "ValueError",
+      "message": "retained result must bind the actual same in-process producer execution provenance"
+    },
+    {
+      "case": "wrong-historical-adapter-data-anchor",
+      "exception_type": "ValueError",
+      "message": "retained result must bind the actual same in-process producer execution provenance"
+    }
+  ],
+  "not_claimed": [
+    "phone_original_reads",
+    "new_current_prefix_qualification",
+    "whole_verify_current_or_verify_retired_execution",
+    "complete_IO_metering",
+    "90_second_stage_budget",
+    "production_adoption_or_runtime_admission"
+  ],
+  "original_failure_semantics": {
+    "first_launch_receipt_gap": true,
+    "global_unknown_effect_count": null,
+    "native_case_credit": 0,
+    "native_terminal": null,
+    "new_nonce_authorized": false,
+    "remote_cleanup_proven": false,
+    "retirement_accepted": false
+  },
+  "original_file_count": 38,
+  "phone_calls": 0,
+  "positive_cases": [
+    {
+      "accepted": true,
+      "case": "complete-retained_preaccept",
+      "complete_historical_result": {
+        "bytes": 1392704,
+        "sha256": "612f2810fb8c0f4aefd99e796618cf685dd2ca2123734f2c081ba41b720a2369"
+      },
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "method": "retained_preaccept",
+      "original_read_count": 2,
+      "original_read_sequence": {
+        "bytes": 769,
+        "sha256": "248be15223dad563168cc49a72a5e561fcbf0e4039c5fbac4cf8b17ae2d58997"
+      },
+      "single_case_new": {
+        "cpu_seconds": 0.27442199999999994,
+        "wall_seconds": 0.2745232500000001
+      },
+      "single_case_old": {
+        "cpu_seconds": 0.36651199999999995,
+        "wall_seconds": 0.3692755419999999
+      }
+    },
+    {
+      "accepted": true,
+      "case": "complete-retained_failed_staged",
+      "complete_historical_result": {
+        "bytes": 1434359,
+        "sha256": "e3ff13b744183e02e9d8e99db9d312917618d31f2df7891975a3bb0cf0ba2c27"
+      },
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "method": "retained_failed_staged",
+      "original_read_count": 4,
+      "original_read_sequence": {
+        "bytes": 1547,
+        "sha256": "6caa465c523d77b1e304e1f7fbe8806ebcf5bbc74dcd86af32bb1162037b791d"
+      },
+      "single_case_new": {
+        "cpu_seconds": 1.035316,
+        "wall_seconds": 1.0358855829999998
+      },
+      "single_case_old": {
+        "cpu_seconds": 1.943652,
+        "wall_seconds": 1.944374792
+      }
+    },
+    {
+      "accepted": true,
+      "case": "complete-retained_failed_transport",
+      "complete_historical_result": {
+        "bytes": 1514745,
+        "sha256": "bfbe12ae9d23456b1e5a6c2211243c79d0cdf0206f3ad27bddc1cd1ae4bb8265"
+      },
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "method": "retained_failed_transport",
+      "original_read_count": 8,
+      "original_read_sequence": {
+        "bytes": 3066,
+        "sha256": "6315c6958badb2524ffc1210bf84bc7aabf1c02d966917dd7c2489937cddb2ed"
+      },
+      "single_case_new": {
+        "cpu_seconds": 1.5952849999999996,
+        "wall_seconds": 1.5960828749999996
+      },
+      "single_case_old": {
+        "cpu_seconds": 2.585362,
+        "wall_seconds": 2.5865311250000005
+      }
+    },
+    {
+      "accepted": true,
+      "case": "actual-current-effective-source-parent44-to-retained49",
+      "complete_historical_result": {
+        "bytes": 1403443,
+        "sha256": "7b64e5d0abb6016e581b883e35a38dba7d46df4873ec087a87e6bbe6837d3a3b"
+      },
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "method": "effective_current_prior_inventory",
+      "original_read_count": 18,
+      "original_read_sequence": {
+        "bytes": 7091,
+        "sha256": "89b10a784cdf74b67df4bff59d9b4bbba88c1e663c1af43d11bd1d9deabf3c62"
+      },
+      "single_case_new": {
+        "cpu_seconds": 4.806424,
+        "wall_seconds": 4.808734583999998
+      },
+      "single_case_old": {
+        "cpu_seconds": 7.035314,
+        "wall_seconds": 7.040058125
+      }
+    },
+    {
+      "accepted": true,
+      "case": "complete-closure-through-current-retained49",
+      "complete_historical_result": {
+        "bytes": 1403443,
+        "sha256": "7b64e5d0abb6016e581b883e35a38dba7d46df4873ec087a87e6bbe6837d3a3b"
+      },
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "method": "reviewed_historical_source_parent_inventory",
+      "original_read_count": 20,
+      "original_read_sequence": {
+        "bytes": 8035,
+        "sha256": "5864d133013751d5d5fed6279d7c9868b2264911d362a5ce06810665dd2b97f2"
+      },
+      "single_case_new": {
+        "cpu_seconds": 6.938971000000002,
+        "wall_seconds": 6.942495208
+      },
+      "single_case_old": {
+        "cpu_seconds": 9.262723000000001,
+        "wall_seconds": 9.267136792000002
+      }
+    },
+    {
+      "accepted": true,
+      "case": "repeat-complete-closure-through-current-retained49",
+      "complete_historical_result": {
+        "bytes": 1403443,
+        "sha256": "7b64e5d0abb6016e581b883e35a38dba7d46df4873ec087a87e6bbe6837d3a3b"
+      },
+      "complete_original_read_sequence_equal": true,
+      "complete_return_or_exception_equal": true,
+      "method": "reviewed_historical_source_parent_inventory",
+      "original_read_count": 20,
+      "original_read_sequence": {
+        "bytes": 8035,
+        "sha256": "5864d133013751d5d5fed6279d7c9868b2264911d362a5ce06810665dd2b97f2"
+      },
+      "single_case_new": {
+        "cpu_seconds": 7.072789999999998,
+        "wall_seconds": 7.076104874999999
+      },
+      "single_case_old": {
+        "cpu_seconds": 9.490217000000001,
+        "wall_seconds": 9.495822583000006
+      }
+    }
+  ],
+  "production_adopted": false,
+  "python": "3.9.6 (default, Oct 19 2026, 19:18:13) \n[Clang 21.0.0 (clang-2100.4.1.1)]",
+  "raw_report": {
+    "bytes": 120050,
+    "sha256": "8ec4aad907745c94f9cca2351f3a36b7b9206b6599d1cd332faab24c0f39acaf"
+  },
+  "raw_stdout": {
+    "bytes": 122389,
+    "sha256": "9bc64521776acb1d893c4a3d217f5a33659a20e585cbb9fb5cb2d2c2bfdad04c"
+  },
+  "repeated_full_combined_validation": true,
+  "report_schema": "hepta.UNADOPTED.complete-current-retained-safe-summary.v5",
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.current-retained-replay.v5",
+  "single_case_timings_are_not_90_second_phone_stage_evidence": true,
+  "source_payload_pin": {
+    "bytes": 189053,
+    "sha256": "82049d26e3ed34522d17a6dafdabec33d940011e6b703f50cedcd7394ab5dfca"
+  },
+  "state": "PASS",
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

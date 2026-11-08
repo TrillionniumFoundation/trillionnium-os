@@ -1,0 +1,117 @@
+{
+  "all_external_runtime_dependencies_reverified": false,
+  "ci_commands": [
+    "python3 -B tests/test_retained_r10_failure.py",
+    "python3 -B tools/verify_candidate.py"
+  ],
+  "ci_expected": {
+    "negative_cases": 49,
+    "private_class_skips": 1,
+    "real_originals_replayed_by_CI": false,
+    "tests": 6
+  },
+  "destination_relative_to_checkpoint": "unadopted/retained-r10-failure-v1",
+  "do_not_import": [
+    "private-evidence/**",
+    "private-sources/**",
+    "reports/*attempt*.json",
+    "reports/*final.json"
+  ],
+  "effects": {
+    "native_submissions": 0,
+    "new_nonces": 0,
+    "new_phone_calls": 0,
+    "retained_source_executed": false
+  },
+  "file_count": 11,
+  "files": [
+    {
+      "bytes": 8705,
+      "path": "README.md",
+      "sha256": "e729cec17dfb1ad0012be5d0ac13f78c06740dd588ad62447a98be2bbef32384"
+    },
+    {
+      "bytes": 3722,
+      "path": "EXPECTED-ORIGINALS.json",
+      "sha256": "ab8eef23aefa5c57f9fd9b14ec35bf01bc7160ef77e639c2a72e001649cdc42f"
+    },
+    {
+      "bytes": 35444,
+      "path": "candidate/retained_r10_failure.py",
+      "sha256": "bb9809c6767d4822d1ceab7eb82e2d2386eab0af87592cedb971edc07e092901"
+    },
+    {
+      "bytes": 793,
+      "path": "candidate/bound_loader.py",
+      "sha256": "646368153a161538903e5bf23f1109d72c3d9a60f84dc79df163427e615429a6"
+    },
+    {
+      "bytes": 16241,
+      "path": "tests/test_retained_r10_failure.py",
+      "sha256": "c946db2631e92459c5832b63bc014b94fce1a9efc22692b2a2ea0d9aaeb9fe72"
+    },
+    {
+      "bytes": 3598,
+      "path": "tools/replay_retained_fixture.py",
+      "sha256": "bc82d7796c8cc3d20b30ff49f5e59b6fcdf9ec34384a5f0e1962d9c6fa98f08e"
+    },
+    {
+      "bytes": 1795,
+      "path": "tools/verify_candidate.py",
+      "sha256": "ce0792cdf789a27d7b657233c9b7ba6c59d7a90b1630f1801ea84281b6fcecf2"
+    },
+    {
+      "bytes": 4239,
+      "path": "reports/TESTS-REAL-final-r2.json",
+      "sha256": "fa74a913a9c679af2496e3ab82b13eda83658b9a7245831d7956f843fe3e75d9"
+    },
+    {
+      "bytes": 1699,
+      "path": "reports/TESTS-PORTABLE-final-r2.json",
+      "sha256": "ea74c2dc9922ff02f53ac44df9c1ecd5217cfe73946fc83323c6c28921229fd0"
+    },
+    {
+      "bytes": 8801,
+      "path": "reports/REAL-REPLAY-final-r2.json",
+      "sha256": "1e81b872ca49daafcdc6f01ee1bae3fc6b094d41c11c8298e24e2721ceff303d"
+    },
+    {
+      "bytes": 7722,
+      "path": "candidate/reports/INTERNAL-REVIEW.json",
+      "sha256": "59d1d8112beac0f32dc83c736981a80d38c0e4069178d52e31f3e448dac986e9"
+    }
+  ],
+  "fresh_execution_eligible": false,
+  "github_independent_approval": false,
+  "global_unknown_effect_count": null,
+  "implementation": {
+    "bytes": 35444,
+    "path": "candidate/retained_r10_failure.py",
+    "sha256": "bb9809c6767d4822d1ceab7eb82e2d2386eab0af87592cedb971edc07e092901"
+  },
+  "import_action": "add_only_listed_files_plus_this_manifest",
+  "native_case_credit": 0,
+  "original_phone_stage_writes": null,
+  "original_phone_terminal": null,
+  "private_real_validation": {
+    "both_entrypoints_full_result_equal": true,
+    "material_runtime_files": 38,
+    "negative_cases": 120,
+    "private_fixture_skips": 0,
+    "retained_files": 125,
+    "retained_original_roles": 13,
+    "tar_members": 126,
+    "tests": 14
+  },
+  "production_adopted": false,
+  "remaining_actual_data": [
+    "new complete current phone scope/preservation and producer/namespace disposition",
+    "new source/policy adoption and same-combination execution bindings",
+    "new freeze/controller and fresh input/preview/CAS/one reservation"
+  ],
+  "retirement_accepted": false,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.retained-r10-host-failure-public-delivery.v1",
+  "state": "EXACT_HOST_FAILURE_READER_COMPLETE_CURRENT_PHONE_DISPOSITION_NOT_SUPPLIED",
+  "total_bytes": 92759
+}

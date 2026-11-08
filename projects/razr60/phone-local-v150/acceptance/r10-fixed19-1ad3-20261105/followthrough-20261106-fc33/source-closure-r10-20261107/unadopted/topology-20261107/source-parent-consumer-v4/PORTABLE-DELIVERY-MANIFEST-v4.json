@@ -1,0 +1,121 @@
+{
+  "ci_commands": [
+    "HEPTA_TOPOLOGY_SYNTHETIC_ONLY=1 python3 -B source-parent-consumer-v4/tests/test_source_parent_consumer.py --base .",
+    "python3 -B source-parent-consumer-v4/tools/build_manifest.py --base . --check"
+  ],
+  "ci_expected": {
+    "constructor_rejections": 7,
+    "consumer_envelope_acceptances": 3,
+    "consumer_envelope_rejections": 16,
+    "inventory_outcomes": 788,
+    "outer_envelope_calls": 2,
+    "private_complete_consumer_claimed_by_CI": false,
+    "private_fixture_skips": 2,
+    "source_binding_rejections": 10,
+    "tests": 16,
+    "topology_comparisons": 1754
+  },
+  "complete_private_consumer_test": {
+    "actual_original_chain_length": 10,
+    "all_bookends_unchanged": true,
+    "all_original_callbacks_and_outcomes_equal": true,
+    "complete_inventory_entries": 3823,
+    "complete_inventory_roots": 44,
+    "constructor_negative_cases": 5,
+    "consumer_envelope_negative_cases": 13,
+    "execution": "local Linux, exact preserved real Mac fixture plus independent supplement",
+    "original_guard_negative_cases": 31,
+    "positive_cases": 16,
+    "raw_report": {
+      "bytes": 81955,
+      "sha256": "41ad8498832cac91b036cf8fe4916bff1120df9413bf7f121b21b39feb21ff10"
+    },
+    "state": "PASS"
+  },
+  "complete_production_IO_metering_verified": false,
+  "current_inventory_selected": true,
+  "destination_relative_to_v1_v2_root": "source-parent-consumer-v4",
+  "do_not_import": [
+    "private-evidence/**"
+  ],
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 12425,
+      "path": "README.md",
+      "sha256": "f272375620c86164d43bd3837b8c422974acd9262b3781513c1a88e30539902b"
+    },
+    {
+      "bytes": 23887,
+      "path": "candidate/source_parent_consumer.py",
+      "sha256": "ce3661cb3726b159da2e85dea6c4a4fc1aaeb8f04ebddcb9ff36061e0b39ec5e"
+    },
+    {
+      "bytes": 1024,
+      "path": "candidate/bound_loader.py",
+      "sha256": "5ad647e31d520cb9f473faaa4ef81cd45f1b8d4635569eb19cbb5a9ef62ffffe"
+    },
+    {
+      "bytes": 13410,
+      "path": "tests/test_source_parent_consumer.py",
+      "sha256": "dae49fbcd9762742dcabde7ba5410eaca65dd4ca28ec21f5c7da8f5286ea6cca"
+    },
+    {
+      "bytes": 22053,
+      "path": "tests/replay_consumer_fixture.py",
+      "sha256": "0ef6a81fefce92ba86a2a5dc22b29d7267e8b547b42de1b3fa7cc7d32a6e6b28"
+    },
+    {
+      "bytes": 3570,
+      "path": "tools/build_manifest.py",
+      "sha256": "e19c5744e20c7799054f449ff04f28e61f327f4a99843b0301f9f5210a51d0da"
+    },
+    {
+      "bytes": 39614,
+      "path": "CONSUMER-CANDIDATE-MANIFEST-v4.json",
+      "sha256": "b13d92aecbce8b863744d72290d448a225adb6c29f98a07d3cd256207bcbc523"
+    },
+    {
+      "bytes": 1083,
+      "path": "reports/PORTABLE-SYNTHETIC-v4.json",
+      "sha256": "5d6dfca34ff3960bd0eff4dedc34115b732772b3b5151da50fef883361eaf6f1"
+    },
+    {
+      "bytes": 31337,
+      "path": "reports/FULL-CONSUMER-REPLAY-SAFE-v4.json",
+      "sha256": "8c5170a6647102a0fa6585bb8684fdc941d1188b432172f08542ddfb2f0f4c55"
+    }
+  ],
+  "import_action": "add_only_exact_listed_files_plus_this_manifest",
+  "native_case_credit": 0,
+  "original_receipts_rewritten": false,
+  "previous_manifests": [
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 6719,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v1.json",
+      "sha256": "7f196c5b0205bfde7d01c2005c928188e685e741bf83f5bab3439d431b6e4c0c"
+    },
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 4793,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v2.json",
+      "sha256": "97c8d77d1793b5a221f63186a73bbf379929b8512110d4299b77bb140195efda"
+    },
+    {
+      "all_listed_files_unchanged": true,
+      "bytes": 3681,
+      "path": "PORTABLE-DELIVERY-MANIFEST-v3.json",
+      "sha256": "5fdc8416e54c315fb03ca7fadbabf8dad1be0b290b0de356ccb02bd13c9fc490"
+    }
+  ],
+  "production_adopted": false,
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.consumer-portable-delivery.v4",
+  "state": "ACTUAL_CURRENT_CONSUMER_OFFLINE_COMPLETE_NOT_ADOPTED",
+  "total_bytes": 148403,
+  "v2_retained_r9_adapter_selected": false,
+  "v3_source_parent_reader_selected_by_actual_current_consumers": true,
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}
