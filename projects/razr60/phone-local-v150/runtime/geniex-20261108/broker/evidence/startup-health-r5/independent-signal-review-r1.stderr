@@ -1,0 +1,8 @@
+test_post_model_sigterm_sticky_latch_prevents_handoff (test_startup_health.StartupContractTests.test_post_model_sigterm_sticky_latch_prevents_handoff) ... ok
+test_sigterm_after_restoration_or_result_return_terminates_before_handoff (test_startup_health.StartupContractTests.test_sigterm_after_restoration_or_result_return_terminates_before_handoff) ... ok
+test_ignored_or_custom_inherited_sigterm_rejected_before_model_boundary (test_startup_health.StartupContractTests.test_ignored_or_custom_inherited_sigterm_rejected_before_model_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.626s
+
+OK

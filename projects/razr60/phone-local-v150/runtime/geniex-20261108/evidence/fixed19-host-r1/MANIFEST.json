@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.fixed19.host-attempt-evidence-manifest.v1",
+  "runner": {
+    "path_from_phone_project": "tools/fixed19_host_acceptance.py",
+    "bytes": 37102,
+    "sha256": "60302575a2cb9142fa8b230a7a12cc1c16ec0c8f3ec1d82277e27b09d23d03a7"
+  },
+  "files": {
+    "CONNECTOR-RESPONSES.json": {
+      "bytes": 1280,
+      "sha256": "5659e715cf7eb6144344c334622d331b06bad1c144054d702e29ca8dd507cd62"
+    },
+    "README.md": {
+      "bytes": 3124,
+      "sha256": "c080a6d2923e71d15b29cac305f73cf3c8d7843ae22cd6af82cc4484a0f74039"
+    },
+    "STATUS.json": {
+      "bytes": 15775,
+      "sha256": "d44abd8b23b5f6f563e46e815d3105ae83f7bc26fc22a0165f347c77a470f738"
+    }
+  },
+  "test_pass_claim": false
+}

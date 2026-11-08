@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.independent-materialization-review.v1",
+  "recorded_utc": "2026-11-08T14:39:00.324355+00:00",
+  "reviewer": "mobile_models",
+  "status": "NO_NEW_SOURCE_LEVEL_BLOCKER_FOUND",
+  "reviewed_source_files": {
+    "final_config.py": {
+      "bytes": 6121,
+      "sha256": "6c70658570f1ecc963a599ebbd316c4ee6158363f02ab192f8a852ad3109cf84"
+    },
+    "prepare_final_artifacts.py": {
+      "bytes": 7569,
+      "sha256": "1d5f263cc482f882a6eba9713e558ad617f337a9d148f37d952e5c2c38a5909a"
+    },
+    "build_init_boot_candidate.py": {
+      "bytes": 10522,
+      "sha256": "b9880b600982a301daa0ec48d770ff852a51f8f8a5e65d73d487d22a344a8919"
+    }
+  },
+  "read_dependency_files": {
+    "build_startup_bundle.py": {
+      "bytes": 19263,
+      "sha256": "2b8367630eb32f907311c4069af132332a2e7b7765accbe0da187a312c418ca2"
+    },
+    "staging.py": {
+      "bytes": 13660,
+      "sha256": "e09bf70e573c6a7700ee7af79a59d9c1610e2ef4281cc486a46832c5b351908f"
+    },
+    "inspect_init_boot.py": {
+      "bytes": 8352,
+      "sha256": "c642717be0537e6c52bf3d538bbd98f2a9aaf310e9b7f608a4cb0945808bccf8"
+    }
+  },
+  "review_source_hashes_before_and_after_matched": true,
+  "current_source_status_at_recording": {
+    "final_config.py": {
+      "still_reviewed_bytes": true,
+      "current_identity": {
+        "bytes": 6121,
+        "sha256": "6c70658570f1ecc963a599ebbd316c4ee6158363f02ab192f8a852ad3109cf84"
+      }
+    },
+    "prepare_final_artifacts.py": {
+      "still_reviewed_bytes": true,
+      "current_identity": {
+        "bytes": 7569,
+        "sha256": "1d5f263cc482f882a6eba9713e558ad617f337a9d148f37d952e5c2c38a5909a"
+      }
+    },
+    "build_init_boot_candidate.py": {
+      "still_reviewed_bytes": true,
+      "current_identity": {
+        "bytes": 10522,
+        "sha256": "b9880b600982a301daa0ec48d770ff852a51f8f8a5e65d73d487d22a344a8919"
+      }
+    }
+  },
+  "local_test_runs": [
+    {
+      "file": "tests/test_final_materialization.py",
+      "source_bytes": 9340,
+      "source_sha256": "8db78cf079bd7d4c36441338e5a96ee7676dcfd1734522f55a29d4da04830fb6",
+      "test_count": 7,
+      "log": "independent-materialization-final-tests-r1.log",
+      "command": [
+        "python3",
+        "-B",
+        "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/tests/test_final_materialization.py"
+      ],
+      "observed_returncode": 0,
+      "status": "PASS",
+      "log_identity": {
+        "bytes": 1233,
+        "sha256": "220fa6cc9495bb9655251cb18e15d61c10c58147667133c939142a6955609db6"
+      },
+      "log_capture": "Exact output returned by exec_command for the independent local run, retained without rerunning; combined tool output, not separately claimed stdout/stderr."
+    },
+    {
+      "file": "tests/test_startup_bundle.py",
+      "source_bytes": 9611,
+      "source_sha256": "a62da80feaa47b6f7abe67c6ea7a2fa15fd2d42067957aa9f4a89e3d526e0a8f",
+      "test_count": 12,
+      "log": "independent-materialization-startup-tests-r1.log",
+      "command": [
+        "python3",
+        "-B",
+        "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/tests/test_startup_bundle.py"
+      ],
+      "observed_returncode": 0,
+      "status": "PASS",
+      "log_identity": {
+        "bytes": 2027,
+        "sha256": "c99b7f5189bbceac4e11e4bd6d1a4974737c74ca3b69bc35513350854f074992"
+      },
+      "log_capture": "Exact output returned by exec_command for the independent local run, retained without rerunning; combined tool output, not separately claimed stdout/stderr."
+    }
+  ],
+  "observed_local_tests_passed": 19,
+  "original_fixed19_cases_claimed": 0,
+  "scope": {
+    "read_only_source_review": true,
+    "audit_source_or_existing_result_modified": false,
+    "H_connector_calls": 0,
+    "phone_operations": 0,
+    "model_inference_calls": 0,
+    "ui_actions": 0,
+    "provider_entry_py_reviewed": false,
+    "provider_entry_exclusion_reason": "The separate startup-health entry was being edited; it was deliberately excluded.",
+    "test_scope": "Host synthetic metadata, CPIO/config parser and script-rendering contracts only."
+  },
+  "checks": [
+    {
+      "name": "actual_runtime_layout",
+      "finding": "Pinned R3 runtime manifest cba2dba9d5b728cee9206af901493a987478babf0c072503972c4a1f2a2a6ca6 contains the same 52 names as original_files; prepare checks old official pins and selects R2 core plus R3 VLM. final_config produces core/VLM/proc under lib/qairt and the exact six loader paths required by the frozen layout-r4 backend."
+    },
+    {
+      "name": "copy_reuse_modes",
+      "finding": "Exactly 54 runtime/binary files copy into a fresh exclusive artifact root; all 24 prior model files are reused and size/hash/owner/mode checked. Generated directories are root-owned 0755, the two program files use their pinned executable modes and runtime/model data keep read-only modes. Fresh destinations are checked absent including symlinks; writes use noclobber."
+    },
+    {
+      "name": "source_closure",
+      "finding": "Startup bundle requires the supplied exact source-manifest SHA, candidate_sha256 equality to every copied Python file, original CPU/claim preservation flags and matching copied PARENTS entries. This content check does not assert that a differently versioned regression report qualifies new bytes."
+    },
+    {
+      "name": "measured_stage",
+      "finding": "Production bundle has no fallback/default inode; st_dev/st_ino come from the supplied stage observation. Provision parser requires exact stat rows, owners/modes and namespace; later bind and entry paths recheck identity. Unit fixture integers are explicitly synthetic and do not prove a real stage was provisioned."
+    },
+    {
+      "name": "cpio_preservation",
+      "finding": "Original image, 33-member CPIO and original rc pins are checked. append_rc inserts one new record immediately before the existing trailer, retaining the complete original prefix and trailer bytes. Reparse compares original entries including record SHA, offsets, metadata and payload. Repacked image must contain the exact modified CPIO and retain total image length; original image/active partition are only read for SHA verification."
+    },
+    {
+      "name": "operation_boundary",
+      "finding": "The reviewed image generator performs ordinary-file preparation and repacking only. It has no partition write, reboot, service activation or policy-load path and records NOT_FLASHED with boot_tested=false."
+    }
+  ],
+  "blocking_findings": [],
+  "unclosed_gates": [
+    {
+      "name": "new_source_regression_qualification",
+      "detail": "The prior 31-test broker pass belongs to its original source. Layout-r4 requires its new 34-test full native suite plus actual private regression after connector recovery. A subsequently authorized health-r5 source will require a fresh complete source/manifest and its own regressions; this review neither runs nor qualifies health-r5."
+    },
+    {
+      "name": "real_stage_domain_health_and_boot",
+      "detail": "Real stage provisioning/bind inode/namespace, init-owned execution and SELinux permissions, startup model-health gate and boot verification remain separate observed gates. Neither these 19 local tests nor their synthetic inode records close those gates."
+    }
+  ],
+  "new_native_suite_pass_claim": false,
+  "production_qualified": false,
+  "boot_qualified": false,
+  "superseding_health_r5_reviewed": false
+}

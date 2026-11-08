@@ -105,6 +105,7 @@ def main():
     ap.add_argument("--target-alias", required=True)
     ap.add_argument("--owner", required=True)
     ap.add_argument("--schema-grammar", action="store_true")
+    ap.add_argument("--grammar-profile", help="Explicit reviewed profile; --schema-grammar retains R2 semantics")
     args = ap.parse_args()
     source = args.source.resolve(strict=True)
     require(source.is_dir(), "provider source directory required")
@@ -126,9 +127,15 @@ def main():
     provider = importlib.import_module("provider_phone_local")
     prompt_budget = importlib.import_module("prompt_budget")
     backend = importlib.import_module("native_backend")
+    require(not (args.schema_grammar and args.grammar_profile is not None),
+            "select either --schema-grammar or --grammar-profile")
+    grammar_profile = backend.GRAMMAR_PROFILE if args.schema_grammar else args.grammar_profile
+    allowed_profiles = getattr(backend, "GRAMMAR_PROFILES", frozenset((backend.GRAMMAR_PROFILE,)))
+    require(grammar_profile is None or grammar_profile in allowed_profiles,
+            "unknown output grammar profile")
     grammar_module = None
     compiler_sha = None
-    if args.schema_grammar:
+    if grammar_profile is not None:
         grammar_module = importlib.import_module("schema_grammar")
         require(Path(grammar_module.__file__) == source / "schema_grammar.py", "compiler outside selected provider source")
         compiler_sha = sha(read(source / "schema_grammar.py", 65536))
@@ -163,7 +170,7 @@ def main():
                 "image_ground_truth_source": "tools/phone_qairt_acceptance.py public synthetic FIXTURES",
                 "image_ground_truth_excluded_from_prompt": True, "source_compose_max_prompt_bytes": 24576,
                 "operation_profile": profile, "cases": [], "all_inputs_generated": False}
-    manifest.update(grammar_profile=backend.GRAMMAR_PROFILE if grammar_module is not None else None,
+    manifest.update(grammar_profile=grammar_profile,
                     schema_compiler_sha256=compiler_sha,
                     grammar_model_enforcement_tested=False)
     save(args.out, "owner.txt", owner_raw)

@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.source-pack.v1",
+  "source_profile": "qairt-output-grammar-core-r2-vlm-r3-v1",
+  "files": {
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/native_backend.py": {
+      "bytes": 54826,
+      "sha256": "0f6ca4b9937ef5ad9f7b46ff48059c980424f0c7811ede5b9d72ff202d12e58b"
+    },
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/provider_bridge.py": {
+      "bytes": 14550,
+      "sha256": "9b8d82f225ccffebdabe4cc67514514cb93841cf7abde0c50e297a013b1706fd"
+    },
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/prompt_budget.py": {
+      "bytes": 16639,
+      "sha256": "f84ff82c221d9262b6e40032d91863a6752f4abbce05bc32530efcbebf67c4dc"
+    },
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_backend.py": {
+      "bytes": 49540,
+      "sha256": "66947090db7f898ce8aec630d4db70f01b06bae795be3a79a6bbcdc6e82f742d"
+    },
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/provider_flow_probe.py": {
+      "bytes": 18525,
+      "sha256": "c39c4a7a234433b3a962fa01d39f51424463eac11b5f7a40e76ac3247b6f14a1"
+    }
+  }
+}

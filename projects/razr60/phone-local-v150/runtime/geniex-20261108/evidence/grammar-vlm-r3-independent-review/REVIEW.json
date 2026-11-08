@@ -1,0 +1,36 @@
+{
+  "accepted_behaviors": [
+    "requested nonempty grammar: standard and unknown exceptions become existing error Result",
+    "earlier prompt-too-long and context-length classifications keep priority",
+    "without requested grammar: new handlers rethrow",
+    "partial streamed text remains diagnostic error, never EOS or completion",
+    "no retry and no grammar disabling",
+    "normal EOS, length and callback-stop behavior unchanged",
+    "unchanged R2 core and public headers/class layout"
+  ],
+  "android_binary_examined": false,
+  "blocking_source_or_host_findings": [],
+  "candidate_generate_extraction_exact": true,
+  "candidate_source_sha256": "cfee2c080b42b59e4edcf7e8313b5e52297539ed70c38aa405fd948042d74866",
+  "candidate_tests_failed": 0,
+  "candidate_tests_passed": 16,
+  "host_report_sha256": "29e39e4681e97cea890437262f5f7b110808773ee78659d6688b02b126f6477c",
+  "manifest_files_verified": 9,
+  "model_requests": 0,
+  "next_required_gates": [
+    "actual Android VLM-only ELF ABI and all consumer symbol resolution",
+    "new logging undefined symbols resolve within unchanged library closure",
+    "actual malformed-grammar normal nonzero SDK result and complete worker failure cleanup",
+    "no-grammar recovery and authorized positive model controls"
+  ],
+  "patch_sha256": "5d6e35d07c872124e7e160eee7831f4cbdb0fe0b832c25c0cc6b7ea5b6be9821",
+  "phone_accessed": false,
+  "production_runtime_qualified": false,
+  "schema": "hepta.grammar-vlm-r3-independent-source-host-review.v1",
+  "scope": "read_only_source_and_independent_host_fake_dependency_control",
+  "upstream_expected_grammar_failures": 4,
+  "upstream_expected_passes": 12,
+  "upstream_finalizer_extraction_exact": true,
+  "upstream_generate_extraction_exact": true,
+  "upstream_git_blob": "2c9a2fa61d2eb274f4489351446863ca498d0ac5"
+}

@@ -34,8 +34,8 @@
     "A second independent source defect exists in generated-token handling: the fixed proc Sampler::sample calls geniex_sampler_context_sample, which already calls geniex_sampler_context_accept internally.",
     "The fixed QAIRT LLMModel::sampleNextToken then calls sampler_->accept(tok) again. With an attached grammar this consumes each generated token twice. The setup-only R1 patch therefore does not repair the full path."
   ],
-  "confidence_limit": "The two source defects are supported by the pinned source and explicit host behavioral tests. The isolated R2 Android core now passes the A-versus-B discriminator, no-grammar recovery and two synthetic visual-click cases. Its malformed-grammar case still aborts, so the five-case suite is not all-pass. No production-domain or app action is proved.",
-  "candidate_action": "Preserve the original runtime and its grammar-disabled v1 provider. Investigate the R2 malformed-grammar exception path, then qualify a separate repair; the existing C ABI already has a std::exception catch, so absence of that catch is not an established cause.",
+  "confidence_limit": "The two R2 sampler defects and the malformed-grammar failure across the SDK C ABI were reproduced with pinned sources and controlled probes. The R3 VLM-local exception containment restores an explicit nonzero SDK error, and the five real phone model gates now pass. The exact low-level C++ RTTI/unwind cause is not established; production-domain and App qualification remain pending.",
+  "candidate_action": "Keep original and R2 runtime evidence. The separate R3 candidate uses the unchanged R2 core plus the newly built VLM error-return patch; require final production worker identity/permissions and original phone acceptance before activation.",
   "post_abort_recovery": {
     "report": "evidence/qairt-recovery-r4/RECOVERY.json",
     "report_sha256": "f6d4ef5b595bcf7a64279e6b104d650eff3ea8c30fad1743d85098bd5a6cc4ab",
@@ -75,5 +75,27 @@
     "no_residual_model_process": true,
     "status": "FAIL_NO_GRACEFUL_REJECTION",
     "normal_inference_recovery_passed": true
+  },
+  "malformed_grammar_r3_repair": {
+    "patch": "grammar-vlm-r3/vlm-grammar-error.patch",
+    "vlm_sha256": "773e23de3f892d2cd9c468e7b0af32e6c254af341d4ed0e7ef0eda95f6ee1d73",
+    "core_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+    "abi_headers_or_vtables_changed": false,
+    "source_scope": "Catch generation exceptions locally only for explicitly requested grammar and return the existing failed-result path; no-grammar unknown exceptions retain upstream propagation. No silent grammar disable or retry.",
+    "sdk_boundary_probe": "grammar-sdk-boundary-probe-r1/evidence/phone-probe-r1/RESULT.json",
+    "sdk_boundary_probe_sha256": "aa143c62be73b48a0e39fe702e8a5b5671d348cb55c30b02e3813b93f0ec6eb8",
+    "actual_phone_report": "evidence/qairt-vlm-r3-smoke/RESULT.json",
+    "actual_phone_report_sha256": "8af9108bdbbe67d81f4c2b2efcde8ebe0d40f80a1e7e5047ec732aa0b171cfad",
+    "all_five_pass": true,
+    "invalid_grammar_worker_exit": 70,
+    "invalid_grammar_generate_rc": -201201,
+    "invalid_grammar_raw_text_bytes": 0,
+    "normal_error_metadata_and_cleanup": true,
+    "fresh_no_grammar_recovery_pass": true,
+    "discriminator_and_two_images_pass": true,
+    "root_magisk_network_isolated_only": true,
+    "production_domain_tested": false,
+    "phone_ui_actions": 0,
+    "original_runtime_and_stop_and_claims_unchanged": true
   }
 }

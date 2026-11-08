@@ -32,6 +32,7 @@ def main():
     parser.add_argument("--tokenizer-library", type=Path, required=True)
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--schema-grammar", action="store_true")
+    parser.add_argument("--grammar-profile", help="Explicit grammar profile; --schema-grammar retains its original R2 meaning")
     options = parser.parse_args()
     sys.path.insert(0, str(options.source))
     import daily_phone_local as daily
@@ -42,6 +43,12 @@ def main():
     from provider_openai_compatible import PROTOCOL, ProviderError
     from retirement_recovery import EXECUTOR_BINDING
     from model_health import ModelHealth, ModelFailure
+
+    if options.schema_grammar and options.grammar_profile is not None:
+        parser.error("select either --schema-grammar or --grammar-profile")
+    grammar_profile = b.GRAMMAR_PROFILE if options.schema_grammar else options.grammar_profile
+    if grammar_profile is not None and grammar_profile not in b.GRAMMAR_PROFILES:
+        parser.error("unknown output grammar profile")
 
     root = options.root.resolve(); root.mkdir(mode=0o700)
     state = root / "provider-state"; state.mkdir(mode=0o700)
@@ -74,15 +81,17 @@ def main():
         str(options.counter), b.sha(options.counter.read_bytes()), str(options.tokenizer_library), b.sha(options.tokenizer_library.read_bytes()),
         max_worker_ms=55000, max_native_ms=60000)
     compiler_value = None
-    if options.schema_grammar:
+    if grammar_profile is not None:
         # Explicit host model ABI fixture: it does not enforce GBNF or load this
-        # dummy core. The actual pinned Python schema compiler is executed.
+        # dummy core/VLM. The actual pinned Python schema compiler is executed.
         runtime = root / "host-loader-fixture"; runtime.mkdir(mode=0o700)
         core = write(runtime / "libgeniex_core.so", b"HOST FIXTURE core hash only; not an Android SDK")
+        vlm = write(runtime / "libgeniex_vlm.so", ("HOST FIXTURE VLM hash only: " + grammar_profile).encode())
         compiler_path = (options.source / "schema_grammar.py").resolve(strict=True)
         compiler_value = {"kind": b.GRAMMAR_COMPILER_KIND, "sha256": b.sha(compiler_path.read_bytes()), "subset": b.GRAMMAR_SUBSET}
-        backend_config = dataclasses.replace(backend_config, grammar_profile=b.GRAMMAR_PROFILE,
+        backend_config = dataclasses.replace(backend_config, grammar_profile=grammar_profile,
             core_android=str(core), core_sha256=b.sha(core.read_bytes()), schema_compiler_sha256=compiler_value["sha256"],
+            vlm_android=str(vlm), vlm_sha256=b.sha(vlm.read_bytes()),
             plugin_path=str(runtime), ld_library_path=str(runtime) + ":/usr/lib:/lib")
     backend_value = dataclasses.asdict(backend_config)
     for field in ("evidence_root", "stage_root"):
@@ -211,7 +220,12 @@ def main():
             if compiler_value is not None:
                 admission = b.strict_json((run / "local-01.geniex-budget.json").read_bytes())
                 grammar_path = stage / adapter.last_request_id / "grammar.txt"
-                assert admission["grammar_profile"] == b.GRAMMAR_PROFILE
+                assert admission["grammar_profile"] == grammar_profile
+                intent = b.strict_json((request / "intent.json").read_bytes())
+                for binding in (receipt, intent):
+                    assert binding["grammar_profile"] == grammar_profile
+                    assert binding["vlm_android"] == backend_config.vlm_android
+                    assert binding["vlm_sha256"] == backend_config.vlm_sha256
                 assert admission["input_sha256"]["grammar"] == b.sha(grammar_path.read_bytes())
                 assert admission["schema_conversion"]["compiler_source_sha256"] == compiler_value["sha256"]
                 assert admission["schema_conversion"]["root_schema_kind"] == "mobile_use"
@@ -261,6 +275,7 @@ def main():
         "cpu_mode_without_binding_rejected": cpu_gate_checked,
         "schema_compiler_executed": compiler_value is not None,
         "grammar_profile": backend_config.grammar_profile,
+        "vlm_bound_in_intent_and_receipt": compiler_value is not None,
         "grammar_enforced_by_host_model_fixture": False,
         "http_transport_called": False,
         "proof_environment": "host_fixture", "cases": rows}))

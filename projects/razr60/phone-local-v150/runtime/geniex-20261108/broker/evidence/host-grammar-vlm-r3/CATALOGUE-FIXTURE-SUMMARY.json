@@ -1,0 +1,45 @@
+{
+  "schema": "hepta.catalogue-fixture-vlm-r3-generation.v1",
+  "builder_sha256": "1ba95c04b403b8c03e5641e682be4dada9683c72e2e9d68c4d734975699f67d4",
+  "manifest_path": "/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/private-provider-candidate/geniex-native-grammar-vlm-r3/catalogue-prompt-fixtures/MANIFEST.json",
+  "manifest_sha256": "9cb73dfc1008c4e27a2474464fa81a67b7a47bae389e7ea325b9e163119fce98",
+  "grammar_profile": "qairt-output-grammar-core-r2-vlm-r3-v1",
+  "owner_sha256": "48e6fddfff412e62abe3f8d30aa9ffe3826c4297d9e5d966115b6302a6ff853c",
+  "catalogue_sha256": "650ad3d346a78d9afeb34c45ef3513b60ca2a9dc59cf2dc18926eb40d865e1c1",
+  "registered_entries": 53,
+  "source_pins": {
+    "native_backend.py": "0f6ca4b9937ef5ad9f7b46ff48059c980424f0c7811ede5b9d72ff202d12e58b",
+    "phone_local_tools.py": "b653796658ff7cef0b286ccf25f560f8fd67cbe24017876d041f9412b24eacbe",
+    "phone_observation_tools.py": "ed855866475efb7334f5a5a20d7622541f532cfcc778b8813908eb860cda198c",
+    "prompt_budget.py": "f84ff82c221d9262b6e40032d91863a6752f4abbce05bc32530efcbebf67c4dc",
+    "provider_bridge.py": "9b8d82f225ccffebdabe4cc67514514cb93841cf7abde0c50e297a013b1706fd",
+    "provider_phone_local.py": "9ffe3dbe7029986c907343981d080a7f77ad925c55151a63e5cf9330b1a5fcf3",
+    "schema_grammar.py": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8"
+  },
+  "cases": [
+    {
+      "name": "01-first-open",
+      "status": "INPUTS_GENERATED_NOT_MODEL_TESTED",
+      "text_utf8_bytes": 3699,
+      "grammar_bytes": 7667,
+      "synthetic_prior_actions": 0,
+      "image_present": false,
+      "model_schema_sha256": "e38aa481c52512eef9545d055b6a877f0c69bb9b1e5278576e23f4fdf49522ae",
+      "grammar_sha256": "c56896ce0512cb1d09fcfdfc1c1fa1f1ff4b616c43f4ef6b55289ff19c73c9e2"
+    },
+    {
+      "name": "02-after-three-actions-click",
+      "status": "INPUTS_GENERATED_NOT_MODEL_TESTED",
+      "text_utf8_bytes": 6311,
+      "grammar_bytes": 9659,
+      "synthetic_prior_actions": 3,
+      "image_present": true,
+      "model_schema_sha256": "31edd9ef56e225534cfa6784c1baa1115a5a35db05992e422d031761b4754ec4",
+      "grammar_sha256": "6fa0c3b6fba7c0339087dd2d60c4735f0facbe9ac403ca7005b6abf757e0deec"
+    }
+  ],
+  "phone_actions_executed": 0,
+  "model_inference_executed": false,
+  "exit_code": 0,
+  "seconds": 0.16940112900920212
+}

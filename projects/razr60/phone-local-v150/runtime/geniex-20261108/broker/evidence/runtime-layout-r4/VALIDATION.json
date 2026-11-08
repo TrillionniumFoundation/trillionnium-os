@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.runtime-layout-validation.v1",
+  "recorded_utc": "2026-11-08T14:29:35.481011+00:00",
+  "source_files": {
+    "native_backend.py": {
+      "bytes": 56866,
+      "sha256": "2049294d6ff4087f2e6af4861ff0c4542fe26a33b0e5fee8c35b3ef86686c6d5"
+    },
+    "tests/test_backend.py": {
+      "bytes": 58388,
+      "sha256": "5cde876819ce63bf40b6a7b190c716db6658f54d723ba009a875e6865c1187c1"
+    }
+  },
+  "local_contracts": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "/workspace/scratch/a0f8f71bdfa9/hepta_offline_candidate/projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_backend.py",
+      "--unit-only"
+    ],
+    "returncode": 0,
+    "elapsed_seconds": 0.2967399389890488,
+    "test_count": 15,
+    "pass": true,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "bytes": 2691,
+      "sha256": "2395a9b7eadfd972129b669dc2d8f2c67602e17b5529a10997ee7c6e03ca2096"
+    }
+  },
+  "shell_shadow_subcases": {
+    "count": 8,
+    "directories_before_qairt": 2,
+    "names": [
+      "libgeniex_core.so",
+      "libgeniex_vlm.so"
+    ],
+    "entry_types": [
+      "regular",
+      "dangling_symlink"
+    ],
+    "observed_exit_code": 65,
+    "executed_complete_production_command_with_test_shell_trace": true,
+    "artifact_hash_program_reached": false,
+    "counter_program_reached": false,
+    "model_program_reached": false,
+    "android_receipt_claim": false
+  },
+  "native_integration": {
+    "case_count": 19,
+    "executed_for_this_revision": false,
+    "status": "PENDING_HOST_WITH_AF_UNIX",
+    "new_shadow_test_included": true,
+    "cloud_af_unix_known_unavailable": true,
+    "pocket4_connector_unavailable": true,
+    "pass_claim": false
+  },
+  "whole_suite": {
+    "case_count": 34,
+    "pass_claim": false
+  },
+  "unchanged_backend_methods_ast_verified": true,
+  "changed_backend_methods": [
+    "BackendConfig.validate",
+    "NativeBackend._command"
+  ],
+  "worker_counter_r6_native_r9_parser_timeout_cancel_unknown_budget_modified": false,
+  "phone_operations": 0,
+  "ui_actions": 0,
+  "model_inference_calls": 0,
+  "p4_candidate_modified": false,
+  "previous_31_suite_result_applies_to_old_source_only": true
+}

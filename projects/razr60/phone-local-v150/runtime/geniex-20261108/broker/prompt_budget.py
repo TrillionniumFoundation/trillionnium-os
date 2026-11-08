@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import copy
 
-from native_backend import (PROFILE, SDK_COMMIT, GRAMMAR_PROFILE, GRAMMAR_SUBSET, GRAMMAR_COMPILER_KIND,
+from native_backend import (PROFILE, SDK_COMMIT, GRAMMAR_PROFILE, GRAMMAR_PROFILES, GRAMMAR_SUBSET, GRAMMAR_COMPILER_KIND,
                             canonical_json, hex_string, require, sha, strict_json)
 
 
@@ -32,7 +32,7 @@ class NativeTokenizerBudget:
                  tokenizer_config_raw: bytes, expected_tokenizer_config_sha256: str,
                  template_contract: dict, grammar_profile=None, schema_compiler_sha256=None):
         require((grammar_profile is None and schema_compiler_sha256 is None)
-                or (grammar_profile == GRAMMAR_PROFILE and hex_string(schema_compiler_sha256, 64)),
+                or (grammar_profile in GRAMMAR_PROFILES and hex_string(schema_compiler_sha256, 64)),
                 "unknown or unpinned tokenizer output grammar selection")
         require(expected_tokenizer_sha256 == QWEN_TOKENIZER_SHA
                 and expected_tokenizer_config_sha256 == QWEN_TOKENIZER_CONFIG_SHA

@@ -1,0 +1,303 @@
+{
+  "schema": "hepta.vlm-r3-build.v1",
+  "candidate_only": true,
+  "phone_accessed": false,
+  "upstream_manifest_sha256": "45c6f4e58ed9d14e1c687ca05b687571ed00059530927f6125e9590b7ee34779",
+  "patch_sha256": "5d6e35d07c872124e7e160eee7831f4cbdb0fe0b832c25c0cc6b7ea5b6be9821",
+  "source_sha256": "cfee2c080b42b59e4edcf7e8313b5e52297539ed70c38aa405fd948042d74866",
+  "source_files": [
+    {
+      "path": "core/src/vlm/vlm_input_provider.cpp",
+      "bytes": 15617,
+      "sha256": "a447c5cfc1ef89f4b238e07df025714b6149649ef5bcb6334718e1ff0ca15f18"
+    },
+    {
+      "path": "core/src/vlm/vlm_model.cpp",
+      "bytes": 2830,
+      "sha256": "26d2da608b46a5ea29b7508f3b1f51beeccae107fcce054f54e0eaaa81185cfa"
+    },
+    {
+      "path": "core/src/vlm/vision_encoder.cpp",
+      "bytes": 353,
+      "sha256": "90a008c38f2d0086423c965717e9497471f5d5d9bbd76757bf29a95ed2130605"
+    },
+    {
+      "path": "core/src/vlm/vit_utils.cpp",
+      "bytes": 8863,
+      "sha256": "62d3789e57d4a50d6fe98885febf6fb3ba26325aac7be54d6184f74fac7cb188"
+    },
+    {
+      "path": "core/src/vlm/vlm_utils.cpp",
+      "bytes": 2983,
+      "sha256": "6e3b3362eefa3108ffefbab7284ac6d51527ec68b40fc89a502726c530587132"
+    },
+    {
+      "path": "core/src/pipeline/vlm_pipeline.cpp",
+      "bytes": 9962,
+      "sha256": "cfee2c080b42b59e4edcf7e8313b5e52297539ed70c38aa405fd948042d74866"
+    },
+    {
+      "path": "models/qwen2_5_vl/qwen2_5_vl.cpp",
+      "bytes": 9387,
+      "sha256": "42d34b31c94216a04feec41ce9e3cdc95c3a530bdf55cbb00cc1d0e2f2978251"
+    },
+    {
+      "path": "models/qwen3_vl/qwen3_vl.cpp",
+      "bytes": 12749,
+      "sha256": "b4c8fa6c0439f07176d4db6dcc9ac6f2c9ac5351be0d9d110e75c65475e86a70"
+    },
+    {
+      "path": "models/intern3_5_vl/intern3_5_vl.cpp",
+      "bytes": 5696,
+      "sha256": "7765473b95d32b20741f3d49f8f4d829d3674bc1f9589cbc508cf9729e7093fd"
+    },
+    {
+      "path": "models/gemma4/gemma4.cpp",
+      "bytes": 22811,
+      "sha256": "3040a8245879e5b7fea7e4e6bf137bd914a5bc32f389a5a5b2d0bf9f2b5a3de1"
+    }
+  ],
+  "imports": {
+    "original-libgeniex_vlm.so": "8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87",
+    "original-libgeniex_plugin.so": "384eaaeaa1254126f4a07ef2a8e28bb5df9ee20d0b0bc54bc0d4874e02d9eab3",
+    "libgeniex_core.so": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+    "libgeniex.so": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+    "libgeniex-proc-vision.so": "5517a4ca8e754e6df46859f914ce779dd30831e5a33bc457d40bec744d699be9",
+    "libgeniex-proc.so": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d"
+  },
+  "compiler": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: x86_64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "ndk_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "cmake_sha256": "6db3f4d61db52d13e1ff7e7c182dd71c5cf494b774e2492dee78776b269688b3",
+  "compile_commands_sha256": "54a3da426518a4985eb749888ae23282b9dc49998659f8365af8dde5f2490bc5",
+  "unstripped": {
+    "bytes": 481208,
+    "sha256": "50af3a353bc6d974726491028913a5c3cfde3dc1a65a6e2fd321e33b5c61d569"
+  },
+  "stripped": {
+    "bytes": 361152,
+    "sha256": "773e23de3f892d2cd9c468e7b0af32e6c254af341d4ed0e7ef0eda95f6ee1d73"
+  },
+  "steps": [
+    {
+      "stage": "copy-official-proc-vision",
+      "argv": [
+        "/usr/bin/scp",
+        "-p",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "hepta-pocket4:/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/geniex-npu-v0.10.0/package/geniex-bench-android-arm64-v0.10.0/lib/qairt/libgeniex-proc-vision.so",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex-proc-vision.so"
+      ],
+      "rc": 0,
+      "seconds": 0.226840167
+    },
+    {
+      "stage": "compiler-version",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++",
+        "--version"
+      ],
+      "rc": 0,
+      "seconds": 0.01662229100000001
+    },
+    {
+      "stage": "configure",
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "-S",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/build",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_MAKE_PROGRAM=/usr/bin/make",
+        "-DCMAKE_TOOLCHAIN_FILE=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/arm64-android-llvm.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-31",
+        "-DANDROID_STL=c++_static",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-rpath,$ORIGIN",
+        "-DCMAKE_CXX_STANDARD_LIBRARIES=-llog -ldl -latomic -lm"
+      ],
+      "rc": 0,
+      "seconds": 0.6905257919999999
+    },
+    {
+      "stage": "build",
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "--build",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/build",
+        "--target",
+        "geniex_vlm",
+        "-j",
+        "4"
+      ],
+      "rc": 0,
+      "seconds": 4.457064209
+    },
+    {
+      "stage": "strip",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "--strip-unneeded",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/artifacts/libgeniex_vlm.so"
+      ],
+      "rc": 0,
+      "seconds": 0.0072478749999991265
+    },
+    {
+      "stage": "original-vlm-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/original-libgeniex_vlm.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006184499999999815
+    },
+    {
+      "stage": "original-vlm-symbols",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/original-libgeniex_vlm.so"
+      ],
+      "rc": 0,
+      "seconds": 0.007613791999999897
+    },
+    {
+      "stage": "candidate-vlm-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/artifacts/libgeniex_vlm.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006148249999999855
+    },
+    {
+      "stage": "candidate-vlm-symbols",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/artifacts/libgeniex_vlm.so"
+      ],
+      "rc": 0,
+      "seconds": 0.007815499999999531
+    },
+    {
+      "stage": "libgeniex_core.so-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex_core.so"
+      ],
+      "rc": 0,
+      "seconds": 0.0060074999999999434
+    },
+    {
+      "stage": "libgeniex_core.so-symbols",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex_core.so"
+      ],
+      "rc": 0,
+      "seconds": 0.010191040999999679
+    },
+    {
+      "stage": "libgeniex-proc.so-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex-proc.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006312416000000098
+    },
+    {
+      "stage": "libgeniex-proc.so-symbols",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex-proc.so"
+      ],
+      "rc": 0,
+      "seconds": 0.029467916999999844
+    },
+    {
+      "stage": "libgeniex-proc-vision.so-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex-proc-vision.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006664416999999645
+    },
+    {
+      "stage": "libgeniex-proc-vision.so-symbols",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex-proc-vision.so"
+      ],
+      "rc": 0,
+      "seconds": 0.0069730409999992915
+    },
+    {
+      "stage": "libgeniex.so-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006335708000000828
+    },
+    {
+      "stage": "libgeniex.so-symbols",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/libgeniex.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006954791000000071
+    },
+    {
+      "stage": "original-libgeniex_plugin.so-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/original-libgeniex_plugin.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006667874999999768
+    },
+    {
+      "stage": "original-libgeniex_plugin.so-symbols",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-vlm-r3-build/reference/original-libgeniex_plugin.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006944208000000174
+    }
+  ],
+  "abi_comparison_sha256": "74b8c63d50175b15f2b3bdedb9f802f7adf969021a160d545b5c47a2befd8e4d"
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.broker-vlm-r3-source-candidate.v1",
+  "created_at_utc": "2026-11-08T13:58:57.704489+00:00",
+  "source_root": "/workspace/scratch/a0f8f71bdfa9/hepta_offline_candidate/projects/razr60/phone-local-v150/runtime/geniex-20261108/broker",
+  "changed_source_files": [
+    {
+      "path": "native_backend.py",
+      "before_bytes": 52062,
+      "before_sha256": "a9329d2dc22eea9953b9106510d4b46df1bafaf643d4614eca8443ac2d3bfc89",
+      "bytes": 54826,
+      "sha256": "0f6ca4b9937ef5ad9f7b46ff48059c980424f0c7811ede5b9d72ff202d12e58b"
+    },
+    {
+      "path": "provider_bridge.py",
+      "before_bytes": 14465,
+      "before_sha256": "75b9dd2a391e187231c6e2674d929637b338cbfd2ffde96dea07c5dbf8be41fb",
+      "bytes": 14550,
+      "sha256": "9b8d82f225ccffebdabe4cc67514514cb93841cf7abde0c50e297a013b1706fd"
+    },
+    {
+      "path": "prompt_budget.py",
+      "before_bytes": 16620,
+      "before_sha256": "bdb71b2c82b49866af3324c3cf1f7a99a1c9ebbe4b157413b7b728b56d95148b",
+      "bytes": 16639,
+      "sha256": "f84ff82c221d9262b6e40032d91863a6752f4abbce05bc32530efcbebf67c4dc"
+    },
+    {
+      "path": "tests/test_backend.py",
+      "before_bytes": 38502,
+      "before_sha256": "6cc7d5f7cf3d976a8b4b737c01003af5e854b1c24ad77296d0fe1df37b296273",
+      "bytes": 49540,
+      "sha256": "66947090db7f898ce8aec630d4db70f01b06bae795be3a79a6bbcdc6e82f742d"
+    },
+    {
+      "path": "tests/provider_flow_probe.py",
+      "before_bytes": 17400,
+      "before_sha256": "73ac0db1e5ae9742b437ee34a84623a4cd3b7fede76713341b10a5d7d82ca8f7",
+      "bytes": 18525,
+      "sha256": "c39c4a7a234433b3a962fa01d39f51424463eac11b5f7a40e76ac3247b6f14a1"
+    }
+  ],
+  "grammar_profile": "qairt-output-grammar-core-r2-vlm-r3-v1",
+  "core_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+  "vlm_sha256": "773e23de3f892d2cd9c468e7b0af32e6c254af341d4ed0e7ef0eda95f6ee1d73",
+  "status": "SOURCE_CANDIDATE_CONTRACT_TESTED_FULL_NATIVE_PENDING",
+  "activation_performed": false,
+  "phone_or_p4_accessed_by_this_task": false,
+  "budget_and_authority_ast_unchanged": {
+    "CancelGate": true,
+    "NativePolicy": true,
+    "R6Transport": true,
+    "validate_native": true,
+    "validate_worker": true,
+    "validate_worker_deadline": true,
+    "formatter_segments": true,
+    "owner_binding": true,
+    "PROFILE": true
+  },
+  "protected_sources": {
+    "worker.c": {
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+      "expected_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+      "unchanged": true
+    },
+    "broker/token_count.c": {
+      "sha256": "59fc52b4cc23db15093c072b3514ccf5b11e2d8ccbfaf920d2db5e3f24c7f132",
+      "expected_sha256": "59fc52b4cc23db15093c072b3514ccf5b11e2d8ccbfaf920d2db5e3f24c7f132",
+      "unchanged": true
+    }
+  },
+  "tests": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+      "tests/test_backend.py",
+      "--unit-only"
+    ],
+    "returncode": 0,
+    "contract_cases": 13,
+    "full_suite_cases": 31,
+    "full_suite_executed_here": false,
+    "required_remote_scope": [
+      "real native r6 cleanup and changed VLM before counter/worker",
+      "public original v1 / R2 / R3 selector, six cases each",
+      "actual private r9 original v1 / R2 / R3 selector, six cases each",
+      "unchanged actual private r9 original regressions"
+    ]
+  },
+  "compatibility": {
+    "old_v1_without_grammar_fields_tested": true,
+    "old_v1_with_grammar_none_without_vlm_fields_tested": true,
+    "old_r2_without_vlm_fields_tested": true,
+    "old_r2_vlm_selection": "same first loader directory, original VLM SHA8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87",
+    "r2_vlm_verification_is_new_source_tightening": true,
+    "legacy_r2_evidence_not_relabelled": true,
+    "new_source_config_digest_and_claims_must_not_reuse_old_ready": true,
+    "host_fixture_can_not_be_selected_in_json": true
+  },
+  "limits": [
+    "This source addition does not qualify or activate the new Android runtime.",
+    "Host SDK fixtures validate transport and lifecycle, not actual grammar enforcement or GUI correctness.",
+    "No counter/worker/native/parser/timeout/UNKNOWN or token-budget arithmetic was modified."
+  ]
+}

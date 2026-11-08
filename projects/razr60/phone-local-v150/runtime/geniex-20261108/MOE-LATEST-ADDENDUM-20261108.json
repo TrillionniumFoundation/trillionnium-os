@@ -5,6 +5,62 @@
   "phone_moe_inference_performed": false,
   "findings": [
     {
+      "model": "MiniCPM-V-4.7-35B-A3B / MobiInfer Android",
+      "source": "https://github.com/IPADS-SAI/Mobiinfer-Android",
+      "model_source": "https://huggingface.co/openbmb/MiniCPM-V-4.7-35B-A3B",
+      "reviewed_engine_commit": "ce3dae9b8445082a2658f99e57116a502d75554a",
+      "released_apk_tag": "v0.4.1-alpha",
+      "released_apk_commit": "687b425e3638b6925e9552a5b7282fd6c59633e2",
+      "source_bundle_size_bytes": 19315173512,
+      "bundle_size_is_source_metadata_not_download_verification": true,
+      "weight_manifest_retrieved": false,
+      "runtime": "Separate Hexagon GGUF engine, external tiled experts, bounded resident slot cache, optional lookahead scheduling and target-verified DSpark",
+      "publisher_reference_device": "OnePlus 13 / PJZ110 / Snapdragon 8 Elite / Hexagon v79",
+      "publisher_readme_text_only_128_output_tokens": [
+        {
+          "prompt_tokens": 41,
+          "prefill_tps": 22.02,
+          "decode_tps": 17.98
+        },
+        {
+          "prompt_tokens": 512,
+          "prefill_tps": 94.28,
+          "decode_tps": 13.65
+        }
+      ],
+      "publisher_detailed_app_benchmark": {
+        "source": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/docs/minicpm47-app-benchmark.md",
+        "date": "2026-10-15",
+        "cases": 6,
+        "per_case_repetitions": 1,
+        "process_restarted_between_cases": true,
+        "system_file_caches_cleared": false,
+        "synthetic_image_pixels": [
+          224,
+          224
+        ],
+        "htp_target_vision_dspark_image_ttft_seconds": 4.187,
+        "htp_target_vision_dspark_image_decode_tps": 12.64,
+        "image_description_correct": true,
+        "phone_ui_actions_tested": false
+      },
+      "routing_source_scope": "Default source keeps original model expert routing; documentation describes original eight experts. Lookahead predictions alter prefetch/scheduling, not required routed-expert computation. Exact downloaded metadata not inspected.",
+      "documented_limits": [
+        "Earlier third consecutive request had no completion record and DSP queue errors; six fresh-process samples do not establish continuous reliability.",
+        "Visual UPSCALE can fall back to local CPU.",
+        "Image outputs differ across backend/speculation modes; Android greedy equivalence and broad quality are not established.",
+        "Current main source defaults prefetch to zero and context to 4096; older deployment text gives different defaults.",
+        "Current fixed Qwen QAIRT bundle and C ABI are not a drop-in host for this engine."
+      ],
+      "target_razr_measured": false,
+      "phone_inference_performed": false,
+      "phone_ui_actions": 0,
+      "weights_downloaded_here": false,
+      "priority": "First larger-MoE native-v79 research candidate among the current inspected routes",
+      "assessment": "This provides concrete same-generation NPU feasibility evidence, stronger than CPU-only paging reports. It is not yet a production Hepta selection. Requires independently pinned full bundle, runtime correctness, sustained/multi-turn/visual action tests and a separately qualified integration.",
+      "evidence": "evidence/mobiinfer-v79-moe-research-r1.json"
+    },
+    {
       "model": "LFM2.5-24B-A2B",
       "source": "https://huggingface.co/LiquidAI/LFM2.5-24B-A2B",
       "total_parameters_billion": 24.0,
@@ -67,6 +123,39 @@
       "assessment": "The inspected official card lists complete pre-exported GENIEX_QAIRT bundles for X2 Elite, X Elite and Dragonwing targets, but no complete SM8750 bundle. Its SM8750 table entries are Vision-Encoder rows without full decoder measurements. The broad chipset list on the hub landing page is insufficient proof of a ready whole-model phone package.",
       "target_phone_tested": false,
       "custom_export_ruled_out": false
+    },
+    {
+      "name": "LFM3-VL-2B / LFM3-1.7B latest dense edge models",
+      "release_date": "2026-10-27",
+      "release_source": "https://www.liquid.ai/blog/lfm3",
+      "model_source": "https://huggingface.co/LiquidAI/LFM3-VL-2B",
+      "hub_source": "https://aihub.qualcomm.com/models/lfm3_vl_2b",
+      "quantization_source": "https://huggingface.co/LiquidAI/LFM3-VL-2B-GGUF/tree/main",
+      "model_is_moe": false,
+      "vl_total_parameters_billion": 1.92,
+      "vl_language_backbone_parameters_billion": 1.73,
+      "vl_architecture": "Dense tri-hybrid: gated short convolutions, sliding-window attention and global attention.",
+      "official_displayed_qad_q4_0_weights_gb_approx": 1.05,
+      "official_displayed_projector_q8_mb_approx": 203,
+      "official_displayed_projector_f16_mb_approx": 379,
+      "weight_sizes_are_not_total_runtime_memory": true,
+      "geniex_route": "Preview community GGUF / llama.cpp, not the hardware-compiled QAIRT Qwen bundle route.",
+      "hub_lists_snapdragon_8_elite_for_galaxy": true,
+      "hub_displayed_reference_device": "Snapdragon X2 Elite CRD",
+      "hub_reference_prefill_tps": 2818,
+      "hub_reference_decode_tps": 44.6,
+      "reference_numbers_are_not_razr_measurements": true,
+      "official_llama_minimum_build": "b11960",
+      "publisher_gui_benchmarks_not_hepta_acceptance": {
+        "ScreenSpot-Pro": 55.5,
+        "ScreenSpot-v2 Mobile": 92.2
+      },
+      "publisher_limit": "The VLM model card does not recommend multi-turn conversations or complex reasoning. Text LFM3-1.7B targets local agents but is not recommended for complex multi-step reasoning.",
+      "assessment": "A current smaller visual-expert candidate worth a separate comparison. No change to the validated Qwen3-VL-4B R3 path, and no claim that the current fixed SDK supports its full graph or meets the phone-control contracts.",
+      "complete_model_downloaded_here": false,
+      "phone_inference_performed": false,
+      "prior_partial_download_attempt": true,
+      "fixed_runtime_source_report": "evidence/lfm3-fixed-runtime-source-r1.json"
     }
   ],
   "accelerator_guidance": {

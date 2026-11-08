@@ -6,7 +6,7 @@ Evidence date: 2026-11-08. This is a candidate runtime validation record, not a 
 
 Actual disconnected Android execution has established Hexagon v79 inference on the target Snapdragon 8 Elite. The hardware-targeted **Qwen3-VL-4B W4A16 QAIRT candidate has passed a text smoke, two image-position cases, and two revised strict-JSON click-decision cases**. An earlier action-prompt case failed JSON syntax and remains recorded as failed. No generated decision was executed on the phone. The full Hepta APK-to-model-to-action path remains unqualified.
 
-The separate R2 QAIRT core repair subsequently passed the output-grammar discriminator, no-grammar recovery and two constrained synthetic image decisions on this phone. Its malformed-grammar negative case still aborted, so its five-case suite is **not wholly passed**. The latest backend integration passed 27/27 host tests and the unchanged private r9 regressions passed 38/38. The original fixed19 phone acceptance plan remains 0/19.
+The separate R2 QAIRT core repair passed four positive model cases and both full-53-entry catalogue decisions, but its malformed-grammar case aborted. The newer R3 VLM repair now passes all five isolated phone model gates, including graceful malformed-grammar rejection and recovery. The initial R3 provider source passed 31/31 backend host tests and 38/38 original private r9 regressions. Subsequent real-directory admission and startup-health changes have separate local contract results; they cannot inherit those earlier full-suite passes. Production worker permissions and actual App operations remain unqualified; the original fixed19 acceptance remains 0/19. The new R3 full-catalogue run is awaiting reconciliation after a connector-level launch-acknowledgement failure. Detailed original and follow-up evidence is retained below.
 
 The existing GUI-Owl 2B GGUF model/runtime combination has **not passed visual grounding**. `MODEL-CANDIDATES.json` records the selected QAIRT bundle's fixed source and download version, compiled context limits, actual test scope and remaining acceptance gates.
 
@@ -59,7 +59,7 @@ The candidate admission budget is 3584 prompt tokens, 256 output tokens and 256 
 
 ### Grammar failure source analysis
 
-`QAIRT-GRAMMAR-FAILURE.json` records a source-level explanation for the actual discriminator abort: the fixed QAIRT model prepares a grammar-aware sampler and initializes it with input prompt tokens; the processor's acceptance path feeds those tokens into the attached output grammar. This is consistent with the observed EOG constraint exception. No patched SDK or per-token exception trace was tested. The runtime remains unpatched and grammar remains disabled in the candidate.
+`QAIRT-GRAMMAR-FAILURE.json` records a source-level explanation for the actual discriminator abort: the fixed QAIRT model prepares a grammar-aware sampler and initializes it with input prompt tokens; the processor's acceptance path feeds those tokens into the attached output grammar. This is consistent with the observed EOG constraint exception. At this initial checkpoint, no patched SDK or per-token exception trace had been tested and grammar remained disabled. The subsequent R2 and R3 investigations and independent candidate results are recorded later in this document; the original runtime stays unchanged.
 
 ### Actual 53-App catalogue and retained-history prompts
 
@@ -265,3 +265,154 @@ Original report: `evidence/qairt-catalogue-grammar-r1/PUBLIC-SUMMARY.json`,
 SHA256 `9afc4efddaef47d97317ddecaedd1308f9dd72075f96bda467fd641eeb24ce91`.
 The terminal job, exact runner/source/runtime bindings and publication scope
 are recorded in the adjacent `RUN-BINDINGS.json` and evidence manifest.
+
+## R3 VLM failure handling and explicit profile
+
+The malformed-grammar failure was isolated across the actual SDK C ABI with a
+CPU-only backend probe. A local backend catch returned the existing SDK error
+normally; the original path let the exception reach the caller despite its
+outer catch. This establishes the containment boundary. It does not establish
+the exact low-level RTTI or unwind cause. The patch changes VLM generation
+error handling only for explicitly requested grammar, uses the existing error
+result, and does not change headers, vtables, worker, tokenizer or model.
+
+The built R3 `libgeniex_vlm.so` is 361,152 bytes, SHA-256
+`773e23de3f892d2cd9c468e7b0af32e6c254af341d4ed0e7ef0eda95f6ee1d73`.
+It uses the already reviewed R2 core. ABI inspection checked all 12 symbols
+required by the actual consuming plugin; additional standard C++ dependencies
+resolve from the retained original processor library. The independent host
+error-path test passed 16/16, while the original method failed the four added
+grammar-error cases as expected.
+
+The real phone five-case gate then passed in a new isolated runtime directory:
+
+| Case | Process exit | Full process time | Actual result |
+| --- | ---: | ---: | --- |
+| Malformed grammar | 70 | 8.926 s | SDK generate=-201201, other seven stages zero; complete failure metadata, zero text bytes, normal cleanup |
+| New no-grammar recovery request | 0 | 9.750 s | `42`, complete output |
+| A prompt constrained to B | 0 | 9.672 s | `B`, complete output |
+| Synthetic image 1 | 0 | 12.653 s | Complete click JSON, [500,250] inside the blue target |
+| Synthetic image 2 | 0 | 12.360 s | Complete click JSON, [499,728] inside the blue target |
+
+The failed generation's existing SDK profile still displays `eos`; its nonzero
+SDK code, `generation_complete=false`, worker error and exit 70 are decisive.
+No output from that request can be accepted. Recovery uses a new request ID;
+the failed request is never replayed. The two image cases each counted 407
+prompt and 38 generated tokens, at 16.311 and 16.228 decode tokens/s. These
+short samples are not a sustained or thermal benchmark.
+
+All 52 original, 52 R2 and 52 R3 runtime files and 24 model files were checked.
+The original owner stop and retained claims were unchanged, and no model
+process remained. Root/Magisk and a no-route network namespace were used, with
+55-second worker and 60+5-second outer limits. Zero UI actions ran. This is not
+the production r6/UID2000/phone_worker permission or App qualification.
+
+`evidence/qairt-vlm-r3-smoke/RESULT.json` retains the original 33,849-byte report,
+SHA-256 `8af9108bdbbe67d81f4c2b2efcde8ebe0d40f80a1e7e5047ec732aa0b171cfad`,
+with all 145 original evidence files. Earlier R2 failures remain untouched.
+
+The new provider profile `qairt-output-grammar-core-r2-vlm-r3-v1` explicitly
+binds the repaired VLM path and hash in configuration, intent and receipt. A
+changed VLM is rejected before counter/model creation. The full pocket4 host
+suite passed 31/31 backend tests, 38/38 original private regressions and pinned
+imports. Public/private v1, R2 and R3 each exercised the same six selector
+outcomes; those subcases are not added again to the 31-test total. The original
+fixed19 acceptance is separate. Host report SHA-256:
+`f8271799169d811c5310e9ad66c9a18bd2725c845efb55001e9cc0e9ed74b708`.
+
+The newer full-53-entry fixtures were generated from this exact source with
+fresh IDs and the explicit R3 profile, preserving the owner and all aliases.
+Their manifest SHA-256 is
+`9cb73dfc1008c4e27a2474464fa81a67b7a47bae389e7ea325b9e163119fce98`.
+Their phone recheck was submitted using one stable job key; a connector error
+prevented launch acknowledgement at this checkpoint. Its state is unconfirmed,
+not passed, failed or automatically retried under a new identity.
+
+
+## Actual Android library layout correction (r4)
+
+Deployment cross-review found a real configuration admission mismatch: the tested
+official runtime keeps core/VLM/proc in `lib/qairt`, whereas the initial R3
+validator required core/VLM at the plugin root. The flat host SDK fixture did not
+exercise this production layout. No runtime libraries were moved or copied to
+make a misleading flat configuration.
+
+The r4 candidate preserves the measured six-directory loader order and validates
+the QAIRT core/VLM/proc/HTP paths. It rejects earlier same-name core/VLM entries
+(including dangling symlinks) before artifact hashing, counting or model launch.
+Local contracts pass 15/15, including eight actual shell shadow cases, all exit
+65 before later programs. The full 34-test suite, 19 native integration cases
+and exact private-source regressions have not run for this revision because the
+device connector fails even on host inventory. The earlier 31/38 report applies
+only to its original source. See `broker/evidence/runtime-layout-r4/`.
+
+A further startup-health candidate is being prepared separately so that a single
+init-owned `serve` instance verifies a fixed model-only health operation through
+the production r6 path before opening the provider listener. Its startup identity
+must remain distinct from a user request. This work does not qualify the live
+UID2000/SELinux path or any App, and cannot inherit either earlier test result.
+
+
+## Larger native-v79 MoE research update
+
+The current-source investigation identifies MobiInfer Android with
+MiniCPM-V-4.7-35B-A3B as a concrete native Hexagon v79 route, not merely
+CPU-only expert paging. Its publisher reports OnePlus 13 measurements and
+limited image samples. The fixed source keeps original routed-expert
+selection by default, uses external tiled expert storage and target-verified
+DSpark. This is a different engine from the configured QAIRT bundle.
+
+The author's six-case App record restarts the process for each case and
+explicitly retains a prior third-consecutive-request failure/DSP queue issue.
+Visual UPSCALE can run on local CPU; greedy equivalence and broad GUI quality
+are not established. Source defaults have drifted from older deployment text.
+The declared 19,315,173,512-byte bundle and its independently requestable
+SHA256SUMS were identified in source, but the manifest was not retrieved and
+no MoE weights or APK were downloaded. No result from this project is counted
+as a razr test or Hepta action. See `evidence/mobiinfer-v79-moe-research-r1.json`.
+
+
+## Same-process startup model health gate (health-r5)
+
+The candidate now runs one fixed model-only health request in the same
+init-owned `serve` process, before the daily provider can listen. It binds the
+real kernel process identity and boot to the original entry intent, post-exec
+proof, launch plan and selected backend configuration. It creates no accepted
+owner turn or claim, and uses separate startup intent/receipt schemas. The
+health schema permits arbitrary bounded summary text; only the original full
+output that answers 6 times 7 with `42` passes the later semantic check.
+
+The ordinary request body and receipt were checked for complete AST recovery
+after removing only startup-specific branches and restoring owner binding.
+Both entry points use the same lock, prior-UNKNOWN scan, counter, worker, r6
+dispatch/inspect, waitpid, process-group, budget and SDK completeness checks.
+No automatic retry, output repair or App dispatch is introduced.
+
+Review found a post-model signal window in the first draft. The fixed version
+restores the original terminating signal handlers before its last sticky
+cancellation/deadline check. It rejects ignored/custom inherited handlers.
+Six actual child-process signal/handler scenarios, grouped into three tests,
+cover cancellation during result validation and termination after restoration
+or function return. The model boundary is explicitly stubbed in those signal
+tests; no Android inference is claimed. Successful evidence states
+`listener_ready=false` and only authorizes the next same-process handoff.
+
+The frozen source manifest is
+`broker/evidence/startup-health-r5/SOURCE-MANIFEST.json`, SHA-256
+`716e2e5a71955b31494258796de1f0f021cea2ede342446239f2254896283619`.
+The local scoped report is `broker/evidence/startup-health-r5/VALIDATION.json`,
+SHA-256 `4cd325399460779771792106fdbfae2d976e54d7167031fbc44dcc4817326beb`:
+12 health contracts, 15 existing backend contracts, 16 entry contracts and
+12 bundle contracts pass. These are separate local suites, not a global App
+acceptance score. Two new actual-r6 startup cases are defined but unexecuted.
+The exact private overlay closure, full native suites, private 38 regressions,
+live stage bindings, init/UID2000 NPU health and actual App acceptance remain
+pending. The original fixed19 qualified count stays zero.
+
+
+Final independent reviews for health-r5 are retained beside the source manifest.
+`INDEPENDENT-BACKEND-REVIEW.json` checks all eight changed source/test files and
+the ordinary-branch AST, fixed schema and receipt separation.
+`INDEPENDENT-ENTRY-REVIEW-r1.json` independently repeats only the three relevant
+signal tests (six child-process scenarios) and finds the original swallowed
+shutdown window closed. These repetitions are not new acceptance cases.

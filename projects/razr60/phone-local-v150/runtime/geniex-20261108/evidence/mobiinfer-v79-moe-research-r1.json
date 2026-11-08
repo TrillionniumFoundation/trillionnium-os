@@ -1,0 +1,541 @@
+{
+  "schema": "hepta.mobiinfer-v79-moe-research.v1",
+  "status": "RESEARCH_ONLY_NOT_PHONE_ACCEPTANCE",
+  "observed_date_utc": "2026-11-08",
+  "scope": "Read-only inspection of public upstream repository, release metadata, documentation and source. No model or application was downloaded or executed.",
+  "main_finding": {
+    "conclusion": "The public Android implementation has author-reported inference on Snapdragon 8 Elite / SM8750 / Hexagon v79, including small visual cases. It is a credible separate large-MoE research candidate, not evidence that Hepta phone control, production-domain NPU access or this handset has passed.",
+    "confidence_boundaries": [
+      "Source and release metadata were retrieved; no downloaded APK bytes were independently hashed.",
+      "The 19.315 GB bundle is referenced by source, but its remote SHA256SUMS and expert manifest were not retrieved.",
+      "No accuracy, speed, memory or reliability result here was measured on the user's razr."
+    ],
+    "hepta_default_changed": false,
+    "phone_pass": false,
+    "production_domain_qualified": false,
+    "app_operations_qualified": false
+  },
+  "source_pins": {
+    "repository": "IPADS-SAI/Mobiinfer-Android",
+    "repository_url": "https://github.com/IPADS-SAI/Mobiinfer-Android",
+    "main_commit": "ce3dae9b8445082a2658f99e57116a502d75554a",
+    "main_commit_date_utc": "2026-11-04T15:19:32Z",
+    "main_tree": "4989a9e6661aa1441d933e5ce06e4336b8652ae9",
+    "recursive_tree_truncated": false,
+    "recursive_tree_entries": 7294,
+    "main_ref_url": "https://api.github.com/repos/IPADS-SAI/Mobiinfer-Android/branches/main",
+    "release_tag": "v0.4.1-alpha",
+    "release_commit": "687b425e3638b6925e9552a5b7282fd6c59633e2",
+    "release_annotated_tag_sha": "a4f310a918501909269d1406f8b377f6162db2e3",
+    "release_tag_url": "https://api.github.com/repos/IPADS-SAI/Mobiinfer-Android/git/tags/a4f310a918501909269d1406f8b377f6162db2e3",
+    "release_published_at": "2026-11-03T08:17:29Z",
+    "release_url": "https://github.com/IPADS-SAI/Mobiinfer-Android/releases/tag/v0.4.1-alpha",
+    "release_metadata_url": "https://api.github.com/repos/IPADS-SAI/Mobiinfer-Android/releases/latest",
+    "release_assets": [
+      {
+        "name": "MobiInfer-Android-v0.4.1-debug.apk",
+        "bytes": 34807421,
+        "metadata_sha256": "298763feb9573f8135abf2c1cae288279dfdca41b6832192932af44f1de8da4c",
+        "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/releases/download/v0.4.1-alpha/MobiInfer-Android-v0.4.1-debug.apk",
+        "downloaded": false,
+        "independently_hashed": false
+      },
+      {
+        "name": "MobiInfer-Android-v0.4.1.apk",
+        "bytes": 31219069,
+        "metadata_sha256": "52ac9b9d860c9a31676b01a4d09cd8924fe11c156c76da276f7782f59c99d575",
+        "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/releases/download/v0.4.1-alpha/MobiInfer-Android-v0.4.1.apk",
+        "downloaded": false,
+        "independently_hashed": false
+      }
+    ],
+    "main_after_release": {
+      "merged_pr": 5,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/pull/5",
+      "api_url": "https://api.github.com/repos/IPADS-SAI/Mobiinfer-Android/pulls/5",
+      "base_commit": "687b425e3638b6925e9552a5b7282fd6c59633e2",
+      "head_commit": "6a704f4b65aeacbd3c9dc4203416c16855ac9676",
+      "merge_commit": "ce3dae9b8445082a2658f99e57116a502d75554a",
+      "changed_scope": "Qwen3-VL path in llama_jni.cpp: v75 tight mapping layout and image-prefill context reclamation.",
+      "authors_verified_platform": "SM8650 / v75, Xiaomi 24031PN0DC / Android 16",
+      "v79_statement": "PR states the existing SM8750/v79 behavior is unchanged.",
+      "limits": "The v75 path uses CPU vision, smaller context/batch and discards older conversation KV before image turns. This PR does not establish stable multi-turn MiniCPM MoE on v79."
+    }
+  },
+  "primary_source_files": [
+    {
+      "path": "README.md",
+      "git_blob_sha": "5316c92c647d8c2b0e9d9e61473f705da9c53bb2",
+      "bytes": 9179,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/README.md"
+    },
+    {
+      "path": "DEPLOY.md",
+      "git_blob_sha": "c02b7de9ab1068d90d6d3a352104abcca4adfc24",
+      "bytes": 13673,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/DEPLOY.md"
+    },
+    {
+      "path": "docs/les/lookahead-expert-scheduling.md",
+      "git_blob_sha": "af835b574d0ebe547f2cee59ec051ba857e82b14",
+      "bytes": 3186,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/docs/les/lookahead-expert-scheduling.md"
+    },
+    {
+      "path": "Android-App/docs/minicpm47-app-benchmark.md",
+      "git_blob_sha": "e12519e890427488f336c8166e87425abce233c4",
+      "bytes": 2562,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/docs/minicpm47-app-benchmark.md"
+    },
+    {
+      "path": "Android-App/docs/minicpm47-app-benchmark.json",
+      "git_blob_sha": "7ead89db536220dfcdc0dcffbc04ce19bb8d6fa8",
+      "bytes": 8353,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/docs/minicpm47-app-benchmark.json"
+    },
+    {
+      "path": "docs/benchmark-prefill512-decode128.md",
+      "git_blob_sha": "013ad475e1a55dd174d158bcc1f72ff67e4e7bab",
+      "bytes": 4383,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/docs/benchmark-prefill512-decode128.md"
+    },
+    {
+      "path": "docs/on-device-decode-reproduction.md",
+      "git_blob_sha": "c72625efab9f8bcd6f50549613af98fb3bdb00a9",
+      "bytes": 21437,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/docs/on-device-decode-reproduction.md"
+    },
+    {
+      "path": "Android-App/MobiInfer-Android/app/src/main/java/com/mobiinfer/demo/ModelInfo.kt",
+      "git_blob_sha": "2d0e578dfc94f80ceec7e98693ac77985365e144",
+      "bytes": 17029,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/MobiInfer-Android/app/src/main/java/com/mobiinfer/demo/ModelInfo.kt"
+    },
+    {
+      "path": "Android-App/MobiInfer-Android/app/src/main/java/com/mobiinfer/demo/LlamaEngine.kt",
+      "git_blob_sha": "04d400dabf4086450ac65161c72ffa4016074169",
+      "bytes": 138178,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/MobiInfer-Android/app/src/main/java/com/mobiinfer/demo/LlamaEngine.kt"
+    },
+    {
+      "path": "Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_memory.h",
+      "git_blob_sha": "504844f3aa66975e063eda629064759f74aa903e",
+      "bytes": 3683,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_memory.h"
+    },
+    {
+      "path": "Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.cpp",
+      "git_blob_sha": "2118ad9d8402487caa38f2fd26a43c4f8fc8af8b",
+      "bytes": 26900,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.cpp"
+    },
+    {
+      "path": "src/models/qwen35moe.cpp",
+      "git_blob_sha": "2244d589a855742047eb6b26503feb6d2e132d23",
+      "bytes": 47140,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/src/models/qwen35moe.cpp"
+    },
+    {
+      "path": "src/llama-graph.cpp",
+      "git_blob_sha": "31d4c410f69d7c7d98dd28bcb2df14b3ea7a8999",
+      "bytes": 115613,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/src/llama-graph.cpp"
+    },
+    {
+      "path": "src/llama-context.cpp",
+      "git_blob_sha": "04c311379e9dcc75602f235124ca165b60622cf5",
+      "bytes": 154438,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/src/llama-context.cpp"
+    },
+    {
+      "path": "common/common.h",
+      "git_blob_sha": "b6e6343ff7c1b5021675aaeffae2d3c3cd0a514e",
+      "bytes": 48167,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/common/common.h"
+    },
+    {
+      "path": "common/common.cpp",
+      "git_blob_sha": "88ed78150ea0e44958b3acc326977eab268fa417",
+      "bytes": 72173,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/common/common.cpp"
+    },
+    {
+      "path": "common/sampling.cpp",
+      "git_blob_sha": "d79755b6c7bc2a7b4a30b9887632304feb5b79d5",
+      "bytes": 31965,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/common/sampling.cpp"
+    },
+    {
+      "path": "tools/server/server-context.cpp",
+      "git_blob_sha": "96dadd4a2fd1795d945dfb0f1454828060f5e140",
+      "bytes": 216080,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/tools/server/server-context.cpp"
+    },
+    {
+      "path": "tools/moe/HEXAGON.md",
+      "git_blob_sha": "183e77ffbcb73b9ff117fa7314988c510d2ccb21",
+      "bytes": 3245,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/tools/moe/HEXAGON.md"
+    },
+    {
+      "path": "docs/backend/snapdragon/README.md",
+      "git_blob_sha": "b8347a224aec0ceb628f452ea4bdb86d92ad7c39",
+      "bytes": 19106,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/docs/backend/snapdragon/README.md"
+    },
+    {
+      "path": "Android-App/MobiInfer-Android/app/src/main/AndroidManifest.xml",
+      "git_blob_sha": "ece6ad37757c380fe363f0611f0421898743a7de",
+      "bytes": 4943,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/MobiInfer-Android/app/src/main/AndroidManifest.xml"
+    },
+    {
+      "path": "Android-App/MobiInfer-Android/app/src/main/cpp/CMakeLists.txt",
+      "git_blob_sha": "fd2fd3eaab7704a7ab9b49cb752609ea9a4d988e",
+      "bytes": 3670,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/Android-App/MobiInfer-Android/app/src/main/cpp/CMakeLists.txt"
+    },
+    {
+      "path": "docs/on-device-moe-offloading-papers.md",
+      "git_blob_sha": "f85dcec554789dfb91b9c013123e119640dce3ed",
+      "bytes": 14561,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/docs/on-device-moe-offloading-papers.md"
+    },
+    {
+      "path": "docs/on-device-npu-quantization.md",
+      "git_blob_sha": "d3a2249b8b4ce650da12e209bd58021e61a7e495",
+      "bytes": 11568,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/docs/on-device-npu-quantization.md"
+    },
+    {
+      "path": "docs/speculative.md",
+      "git_blob_sha": "041ff58038dea519caf20a5552ce605dda9325f6",
+      "bytes": 16348,
+      "url": "https://github.com/IPADS-SAI/Mobiinfer-Android/blob/ce3dae9b8445082a2658f99e57116a502d75554a/docs/speculative.md"
+    }
+  ],
+  "platform_and_execution": {
+    "sources": [
+      "DEPLOY.md",
+      "Android-App/docs/minicpm47-app-benchmark.md",
+      "Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.cpp",
+      "docs/backend/snapdragon/README.md"
+    ],
+    "authors_validated_platform": "OnePlus 13 / PJZ110, Snapdragon 8 Elite / SM8750, Hexagon v79",
+    "authors_other_platform": "The v0.4.1 release separately reports MOSS-Image generation on SM8750/v79 and SM8850/v81; those are image-generation tests, not GUI-agent tests.",
+    "documented_minimum_ram_gb": 12,
+    "documented_os": "Android API 26+ / arm64-v8a",
+    "current_runtime_target": "HTP0, and HTP1 when detected; layer split; n_gpu_layers=99; draft assigned to the same devices.",
+    "fully_on_device_interpretation": "Local target/draft inference and local weight I/O; it does not mean every operator executes on the NPU.",
+    "cpu_fallback": "DEPLOY explicitly identifies visual UPSCALE/position interpolation as expected CPU fallback. Host scheduling, sampling and flash I/O also remain host work.",
+    "app_integration": "CMake links an in-process server-context/queue core; app benchmark documentation says it launches neither an external llama-cli process nor an HTTP listener.",
+    "app_driver_declaration": "AndroidManifest.xml declares libcdsprpc.so as an optional native library; this is not proof that Hepta's custom UID/domain has equivalent FastRPC access.",
+    "npu_utilization_or_power_measured_by_this_review": false,
+    "full_offline_network_isolation_tested_by_this_review": false
+  },
+  "author_measurements": {
+    "attribution": "All following measurements are author reports from the cited fixed source, not results from the user's handset.",
+    "readme_text_table": {
+      "source": "README.md",
+      "platform": "OnePlus 13, Snapdragon 8 Elite, HTP0 + HTP1",
+      "output_tokens": 128,
+      "visual_input": false,
+      "rows": [
+        {
+          "model": "MiniCPM-V 4.7 35B-A3B",
+          "configuration": "Q3, LES + DSpark (author label)",
+          "prompt_tokens": 41,
+          "prefill_tps": 22.02,
+          "decode_tps": 17.98
+        },
+        {
+          "model": "MiniCPM-V 4.7 35B-A3B",
+          "configuration": "Q3, LES + DSpark (author label)",
+          "prompt_tokens": 512,
+          "prefill_tps": 94.28,
+          "decode_tps": 13.65
+        },
+        {
+          "model": "Qwen3-VL-4B-Instruct",
+          "configuration": "Q4_K_M",
+          "prompt_tokens": 512,
+          "prefill_tps": 1013.74,
+          "decode_tps": 18.13
+        }
+      ],
+      "limitation": "This text-only table is not image-to-action latency, cold-load latency or a like-for-like comparison to the existing QAIRT acceptance runs."
+    },
+    "app_six_cases": {
+      "sources": [
+        "Android-App/docs/minicpm47-app-benchmark.md",
+        "Android-App/docs/minicpm47-app-benchmark.json"
+      ],
+      "measured_date": "2026-10-15",
+      "platform": "OnePlus 13 / PJZ110 / Hexagon v79",
+      "conditions": {
+        "context_tokens": 2048,
+        "bank": 256,
+        "batch": 128,
+        "ubatch": 128,
+        "cpu_threads": 4,
+        "image_max_tokens": 64,
+        "greedy": true,
+        "seed": 42,
+        "output_cap": 128,
+        "draft_max_tokens": 3,
+        "new_app_process_per_case": true,
+        "os_file_cache_cleared": false,
+        "repeated_run_median": false
+      },
+      "image_fixture": "Same 224x224 image containing a red square on the left and a blue circle on the right.",
+      "task_scope": "Short English explanation and simple two-shape visual description; no phone screenshot, GUI coordinate, action schema or App control.",
+      "rows": [
+        {
+          "mode": "cpu",
+          "case": "text",
+          "vision_htp": false,
+          "dspark": false,
+          "images": 0,
+          "prompt_tokens": 30,
+          "output_tokens": 128,
+          "wall_ms": 12802,
+          "first_visible_token_ms": 2001,
+          "prefill_tps": 15.002070285699427,
+          "decode_tps": 11.850500017035094
+        },
+        {
+          "mode": "cpu",
+          "case": "image",
+          "vision_htp": false,
+          "dspark": false,
+          "images": 1,
+          "prompt_tokens": 108,
+          "output_tokens": 108,
+          "wall_ms": 18022,
+          "first_visible_token_ms": 8395,
+          "prefill_tps": 12.875728357897561,
+          "decode_tps": 11.218664866694215
+        },
+        {
+          "mode": "htp",
+          "case": "text",
+          "vision_htp": true,
+          "dspark": false,
+          "images": 0,
+          "prompt_tokens": 30,
+          "output_tokens": 128,
+          "wall_ms": 12748,
+          "first_visible_token_ms": 1889,
+          "prefill_tps": 15.887735145100038,
+          "decode_tps": 11.78813914277389
+        },
+        {
+          "mode": "htp",
+          "case": "image",
+          "vision_htp": true,
+          "dspark": false,
+          "images": 1,
+          "prompt_tokens": 108,
+          "output_tokens": 108,
+          "wall_ms": 13369,
+          "first_visible_token_ms": 3781,
+          "prefill_tps": 28.618838933704463,
+          "decode_tps": 11.264718058187901
+        },
+        {
+          "mode": "dspark",
+          "case": "text",
+          "vision_htp": true,
+          "dspark": true,
+          "images": 0,
+          "prompt_tokens": 30,
+          "output_tokens": 128,
+          "wall_ms": 11340,
+          "first_visible_token_ms": 2132,
+          "prefill_tps": 14.072693907649352,
+          "decode_tps": 13.902137855553963,
+          "draft_generated": 147,
+          "draft_accepted": 77
+        },
+        {
+          "mode": "dspark",
+          "case": "image",
+          "vision_htp": true,
+          "dspark": true,
+          "images": 1,
+          "prompt_tokens": 108,
+          "output_tokens": 128,
+          "wall_ms": 14314,
+          "first_visible_token_ms": 4187,
+          "prefill_tps": 25.84134514729447,
+          "decode_tps": 12.639599688078379,
+          "draft_generated": 150,
+          "draft_accepted": 77
+        }
+      ],
+      "authors_semantic_observation": "All three image responses identify the two shapes and their colors correctly.",
+      "limitations": [
+        "One observation per case, each after an app restart; system file caches were retained.",
+        "Image output lengths differ (108 versus 128), so total response time is not a fixed-work speed comparison.",
+        "Image response wording changes between configurations; the authors explicitly say this is not proof of exact greedy equivalence or broad quality.",
+        "An earlier continuous run completed two text requests; the third lacked an app completion record and coincided with DSP queue errors. Restarted-case successes do not resolve that reliability issue."
+      ]
+    },
+    "additional_reproduction_boundary": {
+      "sources": [
+        "docs/benchmark-prefill512-decode128.md",
+        "docs/on-device-decode-reproduction.md"
+      ],
+      "observations": [
+        "A 512-input/128-output prefetch sweep reports 12 successful runs with identical output SHA256 a987367b2f85ca33bb2469cf9966c0320b223b0a89f8d747d2a432d06d3671f0, but this compares prefetch settings, not an unquantized reference.",
+        "The documentation reports differing performance across earlier and later sweeps and does not isolate the cause.",
+        "Logical expert-read volume is explicitly not physical UFS traffic; a six-GB process ceiling was not established.",
+        "The fastest CLI reproduction combined app core libraries with older CLI glue and an added libc++ runtime, so it is not identical to the Java/JNI app process."
+      ]
+    }
+  },
+  "routing_and_speculative_correctness": {
+    "default_router": {
+      "sources": [
+        "common/common.h",
+        "src/llama-context.cpp",
+        "src/llama-graph.cpp",
+        "src/models/qwen35moe.cpp",
+        "Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.cpp",
+        "tools/moe/HEXAGON.md"
+      ],
+      "source_observations": [
+        "moe_k_prefill and moe_k_decode default to zero; the inspected MiniCPM runtime does not set an explicit reduced-expert override.",
+        "The context initially sets n_expert_used to zero; its effective getter returns the model's own hparams value in that case.",
+        "The graph retains hparams.n_expert_used unless a positive override is explicitly configured; the router selects its top-k using that effective value.",
+        "The packaging guide describes preserving original eight-expert routing metadata."
+      ],
+      "conclusion": "Default source behavior preserves the model's original routing rather than implicitly capping it to four experts; the guide describes eight routed experts.",
+      "limitation": "The actual remote GGUF/expert manifest was not fetched, so eight is not an independently verified field from the distributed bundle."
+    },
+    "les": {
+      "source": "docs/les/lookahead-expert-scheduling.md",
+      "mechanism": "Cross-layer prediction supplies prefetch/scheduling hints. Actual router-selected experts still determine computation; misses are loaded and evaluated.",
+      "upstream_measurement": "The technical note's 17.39 token/s and broad benchmark discussion are for iPad Pro 11-inch M4 (16 GB), not the Android v79 package.",
+      "no_quality_claim_transfer_to_v79": true
+    },
+    "target_verification": {
+      "sources": [
+        "tools/server/server-context.cpp",
+        "common/sampling.cpp"
+      ],
+      "observed_path": "server-context invokes common_sampler_sample_and_accept_n on target-model logits. That helper samples a target token at each speculative position, compares it to the draft token and stops at the first mismatch, with a target bonus token after complete acceptance. The server has checkpoint/rollback handling.",
+      "conclusion": "There is an actual target-verification path, rather than accepting draft tokens solely because a confidence head predicts acceptance.",
+      "not_proven": [
+        "End-to-end numerical equivalence of the quantized Android target/draft and state restoration.",
+        "Broad quality retention for the Hexagon tiled bundle.",
+        "Reliable repeated visual turns, schema-constrained Hepta actions or phone control."
+      ],
+      "defect_alleged": false
+    }
+  },
+  "defaults_and_documentation_drift": {
+    "sources": [
+      "Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_memory.h",
+      "Android-App/MobiInfer-Android/app/src/main/cpp/minicpm47_runtime.cpp",
+      "DEPLOY.md",
+      "README.md",
+      "Android-App/MobiInfer-Android/app/src/main/java/com/mobiinfer/demo/ModelInfo.kt"
+    ],
+    "current_source": {
+      "prefetch_slots": 0,
+      "lookahead_prefetch_enabled_by_default": false,
+      "retained_expert_streaming_and_cache": true,
+      "context_constructor_fallback": 4096,
+      "memory_budget_mb_range": [
+        5200,
+        13000
+      ],
+      "initial_runtime_budget_mb": 6000,
+      "bank": 256,
+      "batch_constant": 512,
+      "ubatch": 128,
+      "draft_tokens": 3,
+      "image_max_tokens_fallback": 64,
+      "budget_is_allocator_enforced": false
+    },
+    "source_calibration_caveat": "Memory header states its existing calibration used eager vision plus Q8 draft length one; the draft-three default has not been remeasured against that calibration.",
+    "documentation_differences": [
+      "DEPLOY describes context 2048 and batch/ubatch 128; these are historical documented/test conditions, not proof of the current constructor and memory defaults.",
+      "DEPLOY says roughly 17 GB, while README says roughly 19 GB and the fixed Kotlin catalogue declares 19,315,173,512 bytes.",
+      "Default prefetch zero disables lookahead prefetch specifically; it does not disable external expert storage, tiled layout or the residency/cache mechanism.",
+      "Runtime source can disable speculation when a draft is absent or reload without it after a failed speculative load. A configured/default flag alone is not proof that a request used DSpark."
+    ],
+    "ui_override_not_fully_traced": true
+  },
+  "bundle": {
+    "source_file": "Android-App/MobiInfer-Android/app/src/main/java/com/mobiinfer/demo/ModelInfo.kt",
+    "model_id": "minicpm-v-4_7",
+    "catalogue_bytes": 19315173512,
+    "catalogue_bytes_are_remote_inventory_verification": false,
+    "repo": "fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon",
+    "repo_url": "https://www.modelscope.cn/models/fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon",
+    "configured_ref": "master",
+    "immutable_revision_obtained": false,
+    "manifest_name": "SHA256SUMS",
+    "manifest_url": "https://www.modelscope.cn/models/fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon/resolve/master/SHA256SUMS",
+    "expert_manifest_url": "https://www.modelscope.cn/models/fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon/resolve/master/experts-htp-tiled/manifest.json",
+    "documented_components": [
+      "minicpm47-les-hexagon.gguf (resident tensors, routed expert payload stripped)",
+      "mmproj-MiniCPM-V-4_7-real-f16-pad4320.gguf",
+      "dspark-MiniCPM-V-4_7-q8_0.gguf",
+      "experts-htp-tiled/manifest.json",
+      "experts-htp-tiled/layer_000.bin through layer_039.bin"
+    ],
+    "component_sizes_or_sha256_obtained": false,
+    "full_manifest_member_count_verified": false,
+    "independent_metadata_fetch_possible_by_design": true,
+    "this_review_metadata_retrieval": "Web retrieval of the ModelScope page, SHA256SUMS and expert manifest reported inaccessible URLs. No full bundle or metadata success is claimed.",
+    "downloader_source": "LlamaEngine builds the ModelScope resolve/master base, reads the checksum manifest, then downloads and hashes each listed relative path.",
+    "packaging": "tools/moe/HEXAGON.md supports Q3_K, Q4_K and Q6_K expert tensors, including different types across layers. Tiled output needs a matching backend revision and matching stripped resident model. Raw extraction verification does not by itself verify the converted tiled bytes.",
+    "complete_weight_download_guaranteed": false,
+    "weights_downloaded": false
+  },
+  "literature_and_scope": {
+    "dedicated_mobiinfer_android_paper_found": false,
+    "negative_search_is_not_proof_of_absence": true,
+    "finding": "The repository provides implementation, engineering notes and related-paper surveys. No standalone MobiInfer Android paper was identified in the inspected primary materials and bounded searches.",
+    "upstream_model_card_url": "https://huggingface.co/openbmb/MiniCPM-V-4.7-35B-A3B",
+    "related_papers_listed_by_repository": [
+      {
+        "name": "BigMoMo",
+        "url": "https://arxiv.org/abs/2609.14643"
+      },
+      {
+        "name": "SpecPrefetch",
+        "url": "https://arxiv.org/abs/2607.24787"
+      },
+      {
+        "name": "NPUMoE",
+        "url": "https://arxiv.org/abs/2604.18788"
+      }
+    ],
+    "related_papers_not_independently_evaluated_in_this_review": true,
+    "hepta_integration": "The current Hepta QAIRT profile uses a specific compiled Qwen3-VL-4B model context. A separate llama.cpp-derived external-expert runtime and its complete ABI/asset/protocol qualification would be needed; this is not a model-file substitution.",
+    "next_decision": "Retain as a separately pinned v79 MoE research candidate. Obtain the small immutable bundle inventory before considering any weight transfer; keep the existing qualified model/runtime decisions distinct."
+  },
+  "web_refs": {
+    "repository_readme": "turn193view0",
+    "release": "turn193view1",
+    "deployment_guide": "turn196view2",
+    "upstream_model_card": "turn197view3",
+    "unavailable_model_manifest": "turn197view0",
+    "unavailable_expert_manifest": "turn197view1"
+  },
+  "operations_during_this_research": {
+    "H_calls": 0,
+    "phone_calls": 0,
+    "weight_downloads": 0,
+    "APK_downloads": 0,
+    "builds": 0,
+    "model_executions": 0,
+    "UI_actions": 0,
+    "other_files_modified": 0,
+    "evidence_file_only_created": true
+  }
+}

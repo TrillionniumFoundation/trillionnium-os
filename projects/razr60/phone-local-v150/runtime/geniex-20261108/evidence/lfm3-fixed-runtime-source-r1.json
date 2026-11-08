@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.lfm3.fixed-runtime-source-compatibility.v1",
+  "as_of": "2026-11-08",
+  "scope": "read_only_source_and_existing_manifest_inspection_no_download_no_build_no_phone",
+  "source_pins": {
+    "geniex": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "llama_cpp": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "geniex_proc": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079"
+  },
+  "findings": {
+    "llama_lfm3_model_source_present": true,
+    "mtmd_lfm3vl_source_and_build_present": true,
+    "sdk_llama_vlm_uses_generic_mtmd": true,
+    "qairt_proc_lfm3_processor_in_inspected_build_list": false,
+    "source_route": "GenieX llama_cpp plus official GGUF and matching mmproj",
+    "qairt_route": "Not established by this inspection; the working Qwen QAIRT configuration cannot be reused as an LFM3 model bundle."
+  },
+  "limits": [
+    "Source compatibility does not prove the exact prebuilt ELF contains or correctly executes every LFM3 path.",
+    "No LFM3 phone inference was run; no NPU/GPU numerical correctness, task quality or speed is claimed.",
+    "Vision initialization can fall back to CPU; inspect actual device/operator logs in any future trial.",
+    "The main Qwen3-VL-4B QAIRT R3 candidate is unchanged."
+  ],
+  "existing_weight_status": {
+    "known_prior_attempt": true,
+    "last_shared_record": "BLOCKED_NETWORK_READ_TIMEOUT_ALL_WRITERS_TERMINAL",
+    "completed_model_files": 0,
+    "original_prefix_bytes": 154140672,
+    "incomplete_range_files": 4,
+    "mmproj_body_download_started": false,
+    "hf_repository": "LiquidAI/LFM3-VL-2B-GGUF",
+    "hf_commit": "1add221a5ea6c047fcf1eaaf2d247939d7cf8849",
+    "expected_files": [
+      {"name": "LFM3-VL-2B-QAD-Q4_0.gguf", "bytes": 1049615648, "lfs_sha256": "621c455376cb96a20891697deb9975c6fb47dd5ea98ed3ad1f3b7e8f24f0b1e6"},
+      {"name": "mmproj-LFM3-VL-2B-F16.gguf", "bytes": 378996032, "lfs_sha256": "1d8e6e58eefc093e09d6332f081516e1ddbd5b35cfca7f35463fb270db230b1e"}
+    ],
+    "original_job_id": "1a1ba51f4d3-12894-19b5",
+    "original_terminal_exit": -15,
+    "range_job_id": "1a1ba5e2e71-12894-1a1e",
+    "range_terminal_exit": 1,
+    "last_inventory_log_sha256": "0ee2833e156afae3bd0f7618395eb5ba8caf741fe02e23d7b7e86e7d66c9bbc4",
+    "current_remote_files_rechecked": false,
+    "reason": "H connector is returning Internal error; no new download or mutation was attempted."
+  },
+  "sources": [
+    {
+      "name": "llm_model",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/src/models/lfm3.cpp",
+      "git_blob_sha": "77eabc467a3a54aeba89566df564ae900b1e6f62",
+      "finding": "LFM3 text architecture and hybrid recurrent/sliding/full attention graph are present."
+    },
+    {
+      "name": "vision_graph",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/tools/mtmd/models/lfm3vl.cpp",
+      "git_blob_sha": "e8e455b1170d11240a2301a14bc6d83e13c83acb",
+      "finding": "LFM3-VL vision encoder graph is present."
+    },
+    {
+      "name": "mtmd_build",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/tools/mtmd/CMakeLists.txt",
+      "git_blob_sha": "7c054c0c63ffdf84c7158235114b87f5becf2c32",
+      "finding": "The mtmd target explicitly compiles models/lfm3vl.cpp."
+    },
+    {
+      "name": "sdk_llama_plugin_build",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/llama_cpp/CMakeLists.txt",
+      "git_blob_sha": "9628f8e7fd4a40b96f2638065d6597be2fcd1c3a",
+      "finding": "SDK imports its pinned llama.cpp submodule and installs mtmd/llama/ggml backend libraries."
+    },
+    {
+      "name": "sdk_llama_vlm",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/llama_cpp/src/vlm.cpp",
+      "git_blob_sha": "32a1e4b1393e2364d8efe87abebc152fcabcc68f",
+      "finding": "LlamaVlm uses mtmd_init_from_file, mtmd_tokenize and image chunk evaluation; vision initialization retries same HTP then CPU."
+    },
+    {
+      "name": "sdk_llama_plugin_link",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/llama_cpp/src/CMakeLists.txt",
+      "git_blob_sha": "112a0361395e71373a7db29ac48d2e9ceddcfd87",
+      "finding": "Plugin links geniex and mtmd."
+    },
+    {
+      "name": "qairt_processor_build",
+      "url": "https://github.com/qualcomm/geniex-proc/blob/6b68dd0de5b9a84c316cc3babfe9f2477d9c6079/CMakeLists.txt",
+      "git_blob_sha": "185bbc4da8078b484c0b99d7a6c13ce8e205c966",
+      "finding": "Vision source list contains processor.cpp/qwen2vl.cpp/gemma4.cpp/internvl.cpp; no LFM3 processor in this fixed CMake list."
+    },
+    {
+      "name": "hexagon_support_dispatch",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/src/ggml-hexagon/ggml-hexagon.cpp",
+      "git_blob_sha": "cf2e37aa6eafe3b61252584e9e29f127c50d9535",
+      "finding": "Hexagon delegates substantive operator support to htp_kparams_check; model/layer load alone does not establish full NPU offload."
+    }
+  ],
+  "official_package_sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+  "matching_package_library_pins": [
+    {
+      "path": "geniex-bench-android-arm64-v0.10.0/lib/llama_cpp/libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+    },
+    {
+      "path": "geniex-bench-android-arm64-v0.10.0/lib/llama_cpp/libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+    },
+    {
+      "path": "geniex-bench-android-arm64-v0.10.0/lib/llama_cpp/libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d"
+    },
+    {
+      "path": "geniex-bench-android-arm64-v0.10.0/lib/qairt/libgeniex-proc-vision.so",
+      "bytes": 1853776,
+      "sha256": "5517a4ca8e754e6df46859f914ce779dd30831e5a33bc457d40bec744d699be9"
+    },
+    {
+      "path": "geniex-bench-android-arm64-v0.10.0/lib/qairt/libgeniex-proc.so",
+      "bytes": 19225824,
+      "sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d"
+    }
+  ]
+}

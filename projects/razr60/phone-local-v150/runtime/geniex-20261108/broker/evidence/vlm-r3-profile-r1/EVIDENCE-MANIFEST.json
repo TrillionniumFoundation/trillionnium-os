@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.broker-vlm-r3-evidence.v1",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3998,
+      "sha256": "a442d3147ed3419ab8db1f6acb17f549b07c2e95e9623cd673f75539ca95a500"
+    },
+    {
+      "path": "SOURCE-MANIFEST.json",
+      "bytes": 4291,
+      "sha256": "703dde24bf2b07df2ded50decb649917a0328b0504a325ba9e54c07927c7df84"
+    },
+    {
+      "path": "contract-tests.stderr",
+      "bytes": 2327,
+      "sha256": "6067842b6d1769dcc4838e8004de871c3ec8ba678bbc66c2d5e61958fa3c420a"
+    },
+    {
+      "path": "contract-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "profile-vlm-r3.patch",
+      "bytes": 33879,
+      "sha256": "bfd1d2c69078847f318993be55e1786eb0d118a50b217d94e925b1ee6636c292"
+    }
+  ],
+  "phone_actions": 0,
+  "activation_performed": false,
+  "full_native_suite_executed_here": false
+}

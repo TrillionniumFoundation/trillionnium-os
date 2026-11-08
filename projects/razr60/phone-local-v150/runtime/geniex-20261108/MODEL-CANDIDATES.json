@@ -7,7 +7,7 @@
     "htp_arch": "v79",
     "gpu": "Adreno 830"
   },
-  "selection_status": "No candidate is yet qualified for production Hepta app control. Hardware-targeted candidate selection is distinct from measured task success.",
+  "selection_status": "Qwen3-VL-4B remains the locally measured QAIRT integration candidate; no model is yet qualified for production Hepta App control. MobiInfer/MiniCPM-V-4.7-35B-A3B is the first-priority newly inspected larger-MoE native-v79 experiment, not an activated replacement.",
   "runtime": {
     "name": "Qualcomm GenieX",
     "version": "v0.10.0",
@@ -107,7 +107,7 @@
         "type": "float32"
       },
       "qualified_for_phone_control": false,
-      "blocker": "Two constrained actual-NPU model samples with the full 53-entry catalogue now pass the original parser and semantics, but malformed grammar still aborts. Production-domain and real App acceptance remain pending; zero UI actions and no production activation.",
+      "blocker": "R3 isolated phone five gates and older R2 full-catalogue decisions pass. The actual runtime layout admission and same-process startup health gate are now fixed in separately reviewed local source. New full native/private-source regression, init/UID2000 NPU and real App acceptance remain pending while the device connector is unavailable; no production activation.",
       "phone_inference_tested": true,
       "synthetic_acceptance": {
         "text42": "pass",
@@ -177,13 +177,39 @@
       "source": "https://huggingface.co/LiquidAI/LFM3-VL-2B",
       "runtime": "llama_cpp",
       "phone_tested_here": false,
-      "note": "Recent edge VLM. Author warns against multi-turn conversations and complex reasoning; not selected as the entire multi-step phone agent. Weight transfer did not complete."
+      "note": "Recent edge VLM. Author warns against multi-turn conversations and complex reasoning; not selected as the entire multi-step phone agent. Weight transfer did not complete.",
+      "role": "Recent 2026-10-27 compact visual expert; research candidate only",
+      "official_gguf_source": "https://huggingface.co/LiquidAI/LFM3-VL-2B-GGUF",
+      "hardware_catalogue_source": "https://aihub.qualcomm.com/models/lfm3_vl_2b",
+      "hardware_catalogue_status": "Preview / community GGUF; S25 and 8 Elite listed",
+      "parameters_billion": 1.92,
+      "is_moe": false,
+      "minimum_llama_build_per_model_card": "b11960",
+      "qualified_for_phone_control": false,
+      "assessment": "Published GUI grounding and small weights merit a separate comparison. Requires fixed-runtime compatibility, real visual/structured-output tests and phone-control acceptance. X2 Elite catalogue performance is not a v79 measurement."
     },
     {
       "id": "Gemma 4 E2B",
       "source": "https://ai.google.dev/gemma/docs/core/model_card_4",
       "phone_tested_here": false,
       "note": "Edge multimodal alternative; an inspected, complete SM8750 QAIRT package was not established in this session."
+    },
+    {
+      "id": "MiniCPM-V-4.7-35B-A3B",
+      "role": "Highest-priority newly inspected larger MoE candidate for an independent native v79 experiment",
+      "source": "https://huggingface.co/openbmb/MiniCPM-V-4.7-35B-A3B",
+      "engine_source": "https://github.com/IPADS-SAI/Mobiinfer-Android",
+      "engine_revision": "ce3dae9b8445082a2658f99e57116a502d75554a",
+      "runtime": "MobiInfer / GGUF Hexagon with external tiled experts; separate from selected QAIRT integration",
+      "weight_bundle_source": "https://www.modelscope.cn/models/fengerhu1/MiniCPM-V-4.7-35B-A3B-gguf-hexagon",
+      "declared_bundle_bytes": 19315173512,
+      "bundle_manifest_verified": false,
+      "phone_inference_tested": false,
+      "qualified_for_phone_control": false,
+      "full_download": false,
+      "author_v79_device_evidence": true,
+      "research_evidence": "evidence/mobiinfer-v79-moe-research-r1.json",
+      "blocker": "Author phone benchmarks establish feasibility, with documented continuous-request and numerical-equivalence limits. This razr has not downloaded or tested the engine/model; no strict GUI action, r6 receipt or production integration qualification exists."
     }
   ],
   "promotion_requirements": [

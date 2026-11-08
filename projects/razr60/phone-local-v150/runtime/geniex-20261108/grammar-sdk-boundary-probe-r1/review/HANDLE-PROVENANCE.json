@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.sdk-boundary-probe.source-justification.v1",
+  "sdk_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "files": [
+    {
+      "path": "sdk/src/vlm.cpp",
+      "git_blob": "aa8a2fad63e4186b6c322b87f90b3c327b8202ef",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/src/vlm.cpp"
+    },
+    {
+      "path": "sdk/include/plugin/IVlm.h",
+      "git_blob": "bbd6b19183149e061c4affbdf77901f0d60c636c",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/include/plugin/IVlm.h"
+    }
+  ],
+  "handle_layout": "The probe creates a real C++ object implementing the exact fixed IVlm interface, explicitly upcasts GrammarBackend* to IVlm*, then reinterprets only that base pointer as the SDK opaque geniex_VLM*. The official wrapper reinterprets it back to IVlm* before virtual dispatch. No assumed offset or fabricated vtable is used.",
+  "generate_preconditions": "The complete fixed geniex_vlm_generate source checks only the non-null backend pointer, then invokes the IVlm virtual generate. It does not look up the handle in a registry or require a create/init token. The diagnostic supplies real live object storage and non-null zero-initialized input/output structures. No SDK init/model create/plugin discovery is called.",
+  "limits": "The fake backend is a test double for exception propagation only. A successful diagnostic does not qualify model generation, QNN, production handles, or UI actions."
+}

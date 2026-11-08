@@ -90,6 +90,31 @@ def native_row():
     return {"version": 1, "protocol": b.PROTOCOL, "duplicate": False, "receipt": row, "stdout_b64": "", "stderr_b64": ""}
 
 
+def config_contract_fixture(root):
+    """Config/path tests only: no Android library or native process is loaded."""
+    evidence, stage = root / "requests", root / "stage"
+    evidence.mkdir(mode=0o700); stage.mkdir(mode=0o700)
+    runtime, bundle = root / "runtime", root / "bundle"
+    return b.BackendConfig(evidence, stage, str(stage), str(root / "worker"), "a" * 64,
+        str(bundle / "genie_config.json"), str(bundle / "tokenizer.json"), str(runtime), str(runtime / "htp-files"),
+        str(runtime) + ":/system/lib64:/vendor/lib64", "/vendor/dsp", "c" * 64, pb.QWEN_TOKENIZER_SHA,
+        str(root / "counter"), "b" * 64, str(runtime / "libgeniex-proc.so"), b.TOKENIZER_LIBRARY_SHA)
+
+
+def production_grammar_layout_fixture(original, profile=b.GRAMMAR_R3_PROFILE):
+    """Actual bundle layout and pins; no library/model is loaded by this helper."""
+    plugin = original.plugin_path
+    qairt = plugin + "/qairt"
+    return dataclasses.replace(original, grammar_profile=profile,
+        core_android=qairt + "/libgeniex_core.so", core_sha256=b.GRAMMAR_CORE_SHA,
+        schema_compiler_sha256="d" * 64, vlm_android=qairt + "/libgeniex_vlm.so",
+        vlm_sha256=b.GRAMMAR_R3_VLM_SHA if profile == b.GRAMMAR_R3_PROFILE else b.ORIGINAL_VLM_SHA,
+        qairt_lib_path=qairt + "/htp-files", tokenizer_library_android=qairt + "/libgeniex-proc.so",
+        tokenizer_library_sha256=b.TOKENIZER_LIBRARY_SHA,
+        ld_library_path=":".join((plugin, plugin + "/llama_cpp", qairt, qairt + "/htp-files",
+                                  "/system/lib64", "/vendor/lib64")))
+
+
 class ContractTests(unittest.TestCase):
     def test_native_terminal_validator_rejects_every_missing_essential_proof(self):
         valid = native_row()
@@ -152,6 +177,157 @@ class ContractTests(unittest.TestCase):
                 changed = copy.deepcopy(value); changed["schema_conversion"][field] = new
                 with self.assertRaises(b.BackendError):
                     b.validate_budget(changed, inputs, "a" * 64, **kwargs)
+
+    def test_r3_uses_its_actual_profile_without_changing_the_token_budget(self):
+        grammar = b'root ::= "B"\n'
+        value = budget(b"prompt", b"system", grammar=grammar, grammar_profile=b.GRAMMAR_R3_PROFILE,
+                       schema_conversion=conversion_fixture(grammar))
+        self.assertEqual(b.validate_budget(value, value["input_sha256"], "a" * 64,
+            grammar_profile=b.GRAMMAR_R3_PROFILE, schema_compiler_sha256="d" * 64), 3584)
+        with self.assertRaisesRegex(b.BackendError, "profile/budget"):
+            b.validate_budget(value, value["input_sha256"], "a" * 64,
+                grammar_profile=b.GRAMMAR_PROFILE, schema_compiler_sha256="d" * 64)
+        self.assertEqual({key: value[key] for key in ("context_tokens", "admission_limit_tokens", "generation_tokens", "reserved_tokens")},
+            {"context_tokens": 4096, "admission_limit_tokens": 3584, "generation_tokens": 256, "reserved_tokens": 256})
+
+    def test_production_r3_requires_exact_pins_and_actual_qairt_bundle_layout(self):
+        with tempfile.TemporaryDirectory() as temp:
+            original = config_contract_fixture(Path(temp))
+            # Only the private staging UID is adapted for this config-only
+            # test. Production artifact and loader checks remain enabled.
+            policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
+            good = production_grammar_layout_fixture(original)
+            good.validate(policy)
+            bad_values = [
+                {"vlm_android": None}, {"vlm_sha256": None}, {"vlm_sha256": "0" * 64},
+                {"vlm_sha256": b.ORIGINAL_VLM_SHA}, {"core_sha256": "0" * 64},
+                {"vlm_android": original.plugin_path + "/libgeniex_core.so"},
+                {"vlm_android": original.plugin_path + "/../libgeniex_vlm.so"},
+                {"vlm_android": "/other/libgeniex_vlm.so"},
+                {"core_android": original.plugin_path + "/libgeniex_core.so"},
+                {"vlm_android": original.plugin_path + "/libgeniex_vlm.so"},
+                {"core_android": original.plugin_path + "/qairt/other.so"},
+                {"qairt_lib_path": original.plugin_path + "/htp-files"},
+                {"qairt_lib_path": original.plugin_path + "/qairt"},
+                {"tokenizer_library_android": original.plugin_path + "/libgeniex-proc.so"},
+                {"tokenizer_library_android": original.plugin_path + "/qairt/other.so"},
+                {"tokenizer_library_sha256": "0" * 64},
+                {"ld_library_path": "/other:" + good.ld_library_path},
+                {"ld_library_path": good.ld_library_path.replace("/llama_cpp:", "/qairt:", 1)},
+                {"ld_library_path": good.ld_library_path.replace(original.plugin_path + "/llama_cpp:", "", 1)},
+                {"ld_library_path": good.ld_library_path.replace("/system/lib64:/vendor/lib64", "/vendor/lib64:/system/lib64")},
+                {"grammar_profile": b.GRAMMAR_PROFILE}, {"grammar_profile": None},
+            ]
+            transport = types.SimpleNamespace(policy=policy)
+            for changes in bad_values:
+                with self.subTest(changes=changes), self.assertRaises(b.BackendError):
+                    b.NativeBackend(dataclasses.replace(good, **changes), transport)
+            self.assertFalse(list(original.evidence_root.iterdir()))
+            self.assertFalse(list(original.stage_root.iterdir()))
+
+    def test_production_shadow_files_and_dangling_symlinks_stop_before_artifact_checks(self):
+        # Run the complete production command with shell tracing. Deliberately
+        # absent Android programs are never reached; trace and empty stage prove
+        # this is the shadow guard, not a later artifact failure returning 65.
+        with tempfile.TemporaryDirectory(prefix="hepta layout ") as temp:
+            root = Path(temp)
+            config = production_grammar_layout_fixture(config_contract_fixture(root))
+            Path(config.model_android).parent.mkdir(mode=0o700)
+            Path(config.plugin_path).mkdir(mode=0o700)
+            Path(config.plugin_path, "llama_cpp").mkdir(mode=0o700)
+            policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
+            runner = b.NativeBackend(config, types.SimpleNamespace(policy=policy))
+            for directory in (config.plugin_path, config.plugin_path + "/llama_cpp"):
+                for name in ("libgeniex_core.so", "libgeniex_vlm.so"):
+                    for kind in ("regular", "dangling_symlink"):
+                        with self.subTest(directory=directory, name=name, kind=kind):
+                            path = Path(directory, name)
+                            if kind == "regular":
+                                write(path, b"unexpected earlier loader entry")
+                            else:
+                                path.symlink_to(root / ("missing-" + uuid.uuid4().hex))
+                                self.assertFalse(path.exists())
+                                self.assertTrue(path.is_symlink())
+                            try:
+                                request_id = uuid.uuid4().hex
+                                stage = config.stage_root / request_id; stage.mkdir(mode=0o700)
+                                command = runner._command(request_id, str(stage), True, True, False)
+                                result = subprocess.run(["/bin/sh", "-c", "set -x; " + command],
+                                    capture_output=True, timeout=3)
+                                self.assertEqual(result.returncode, 65, result.stderr)
+                                trace = result.stderr.decode("utf-8", errors="strict")
+                                self.assertIn(str(path), trace)
+                                self.assertTrue(trace.rstrip().endswith("exit 65"), trace)
+                                self.assertNotIn("/system/bin/sha256sum", trace)
+                                self.assertNotIn("/system/bin/env", trace)
+                                self.assertEqual(result.stdout, b"")
+                                self.assertFalse(list(stage.iterdir()))
+                            finally:
+                                path.unlink()
+
+    def test_flat_grammar_layout_is_only_accepted_by_explicit_python_host_policy(self):
+        with tempfile.TemporaryDirectory() as temp:
+            original = config_contract_fixture(Path(temp))
+            flat = dataclasses.replace(original, grammar_profile=b.GRAMMAR_R3_PROFILE,
+                core_android=original.plugin_path + "/libgeniex_core.so", core_sha256="e" * 64,
+                schema_compiler_sha256="d" * 64, vlm_android=original.plugin_path + "/libgeniex_vlm.so",
+                vlm_sha256="f" * 64)
+            host = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid(), production=False)
+            flat.validate(host)
+            with self.assertRaisesRegex(b.BackendError, "selected QAIRT directory"):
+                flat.validate(dataclasses.replace(host, production=True))
+            self.assertNotIn("production", {field.name for field in dataclasses.fields(b.BackendConfig)})
+            self.assertNotIn("policy", {field.name for field in dataclasses.fields(b.BackendConfig)})
+
+    def test_old_v1_and_r2_json_without_new_vlm_fields_still_parse_and_pin_original_vlm(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            original = config_contract_fixture(root)
+            policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
+            old_r2 = dataclasses.replace(production_grammar_layout_fixture(original, b.GRAMMAR_PROFILE),
+                vlm_android=None, vlm_sha256=None)
+            captured = []
+            class ReachedArtifactBoundary(Exception):
+                pass
+            def inspect_before_any_artifact_or_process(config):
+                config.validate(policy)
+                captured.append(config)
+                raise ReachedArtifactBoundary()
+            provider = types.ModuleType("provider_phone_local")
+            for name, selected in (("v1", original), ("v1-original-fields", original), ("r2", old_r2)):
+                values = dataclasses.asdict(selected)
+                values.update(evidence_root=str(selected.evidence_root), stage_root=str(selected.stage_root))
+                for key in ("vlm_android", "vlm_sha256"):
+                    del values[key]
+                if name == "v1-original-fields":
+                    for key in ("grammar_profile", "core_android", "core_sha256", "schema_compiler_sha256"):
+                        del values[key]
+                info = selected.stage_root.stat()
+                raw = {"schema": "hepta.provider-geniex-native.v2" if name == "r2" else "hepta.provider-geniex-native.v1",
+                    "base_provider_config_sha256": "a" * 64, "model_id": "Qwen3-VL-4B-Instruct-QAIRT-w4a16-SM8750-v79",
+                    "backend": values, "tokenizer_gnu_path": "/not-read/tokenizer.json",
+                    "tokenizer_config_gnu_path": "/not-read/tokenizer_config.json", "template_contract": {},
+                    "deployment_binding": {"schema": "hepta.geniex-shared-mount.v1", "execution_uid": 2000,
+                        "execution_gid": 2000, "new_dedicated_mount": True, "old_state_permissions_changed": False,
+                        "instance": "1" * 32, "gnu_path": str(selected.stage_root), "android_path": selected.android_stage_root,
+                        "st_dev": info.st_dev, "st_ino": info.st_ino}}
+                if name == "r2":
+                    raw["schema_compiler"] = {"kind": b.GRAMMAR_COMPILER_KIND, "sha256": "d" * 64, "subset": b.GRAMMAR_SUBSET}
+                path = write(root / (name + ".json"), b.canonical_json(raw))
+                with self.subTest(config=name), mock.patch.dict(sys.modules, {"provider_phone_local": provider}), \
+                     mock.patch.object(b, "NativeBackend", side_effect=inspect_before_any_artifact_or_process), \
+                     mock.patch.object(bridge, "_read_artifact", side_effect=AssertionError("artifact stage not reached")), \
+                     self.assertRaises(ReachedArtifactBoundary):
+                    bridge.configure(types.SimpleNamespace(local_config_sha256="a" * 64), str(path))
+            self.assertEqual(len(captured), 3)
+            self.assertEqual(captured[0].selected_vlm(), (None, None))
+            self.assertEqual(captured[1].selected_vlm(), (None, None))
+            self.assertEqual(captured[2].selected_vlm(), (original.plugin_path + "/qairt/libgeniex_vlm.so", b.ORIGINAL_VLM_SHA))
+            command = b.NativeBackend(captured[2], types.SimpleNamespace(policy=policy))._command(
+                "a" * 32, str(original.stage_root / ("a" * 32)), True, True, False)
+            self.assertIn(b.ORIGINAL_VLM_SHA + "  " + original.plugin_path + "/qairt/libgeniex_vlm.so", command)
+            self.assertLess(command.index(b.ORIGINAL_VLM_SHA), command.index(" -i "))
+            self.assertNotIn(b.GRAMMAR_R3_VLM_SHA, command)
 
     def test_grammar_prompt_keeps_all_open_choices_without_unavailable_click_example(self):
         schema = self.closed_action_schema({"action": {"const": "open"},
@@ -293,8 +469,10 @@ class NativeIntegrationTests(unittest.TestCase):
         # This host SDK does not enforce grammar. It checks transport, pins,
         # inputs, counter separation and cleanup; Android enforcement is separate.
         core = write(self.model / "libgeniex_core.so", b"HOST FIXTURE loader hash only")
+        vlm = write(self.model / "libgeniex_vlm.so", b"HOST FIXTURE R2 VLM hash only")
         self.config = dataclasses.replace(self.config, grammar_profile=b.GRAMMAR_PROFILE,
             core_android=str(core), core_sha256=b.sha(core.read_bytes()), schema_compiler_sha256="d" * 64,
+            vlm_android=str(vlm), vlm_sha256=b.sha(vlm.read_bytes()),
             ld_library_path=str(self.model) + ":/usr/lib:/lib")
         self.runner = b.NativeBackend(self.config, self.transport)
         grammar = b'root ::= "B"\n'
@@ -307,6 +485,8 @@ class NativeIntegrationTests(unittest.TestCase):
         self.assertEqual(worker["input_sha256"]["grammar"], b.sha(grammar))
         self.assertNotIn("grammar", counter["input_sha256"])
         self.assertEqual(intent["core_sha256"], self.config.core_sha256)
+        self.assertEqual(intent["vlm_android"], str(vlm))
+        self.assertEqual(intent["vlm_sha256"], self.config.vlm_sha256)
         self.assertEqual(answer["receipt"]["grammar_profile"], b.GRAMMAR_PROFILE)
         write(core, b"CHANGED HOST FIXTURE")
         rejected = self.run_request(grammar=grammar)
@@ -314,6 +494,97 @@ class NativeIntegrationTests(unittest.TestCase):
         self.assertTrue(rejected["receipt"]["cleanup_confirmed"])
         self.assertFalse((self.stage / rejected["receipt"]["request_id"] / "counter-result.json").exists())
         self.assertFalse((self.stage / rejected["receipt"]["request_id"] / "worker-result.json").exists())
+
+    def test_r3_vlm_mutation_stops_before_counter_or_worker_and_preserves_native_cleanup(self):
+        # These are deliberately non-ELF host pin fixtures, accepted only by
+        # this test's Python-injected nonproduction NativePolicy.
+        core = write(self.model / "libgeniex_core.so", b"HOST FIXTURE R2 core hash only")
+        vlm_raw = b"HOST FIXTURE R3 VLM hash only"
+        vlm = write(self.model / "libgeniex_vlm.so", vlm_raw)
+        self.config = dataclasses.replace(self.config, grammar_profile=b.GRAMMAR_R3_PROFILE,
+            core_android=str(core), core_sha256=b.sha(core.read_bytes()), schema_compiler_sha256="d" * 64,
+            vlm_android=str(vlm), vlm_sha256=b.sha(vlm_raw), ld_library_path=str(self.model) + ":/usr/lib:/lib")
+        for changes in ({"vlm_sha256": None}, {"vlm_android": None},
+                        {"vlm_android": str(self.directory / "libgeniex_vlm.so")}):
+            with self.subTest(changes=changes), self.assertRaises(b.BackendError):
+                b.NativeBackend(dataclasses.replace(self.config, **changes), self.transport)
+        self.assertFalse(list(self.evidence.iterdir()) or list(self.stage.iterdir()))
+        self.runner = b.NativeBackend(self.config, self.transport)
+        grammar = b'root ::= "B"\n'
+        answer = self.run_request(grammar=grammar)
+        self.assertTrue(answer["receipt"]["model_result_usable"], answer)
+        directory = self.evidence / answer["receipt"]["request_id"]
+        intent = b.strict_json((directory / "intent.json").read_bytes())
+        for value in (intent, answer["receipt"]):
+            self.assertEqual(value["grammar_profile"], b.GRAMMAR_R3_PROFILE)
+            self.assertEqual(value["vlm_android"], str(vlm))
+            self.assertEqual(value["vlm_sha256"], self.config.vlm_sha256)
+        self.assertEqual(intent["token_budget"]["grammar_profile"], b.GRAMMAR_R3_PROFILE)
+        write(vlm, b"CHANGED HOST FIXTURE VLM")
+        rejected = self.run_request(grammar=grammar)
+        self.assertEqual(rejected["receipt"]["state"], "failed")
+        self.assertTrue(rejected["receipt"]["cleanup_confirmed"])
+        self.assertFalse(rejected["receipt"]["model_result_usable"])
+        failed_request = self.evidence / rejected["receipt"]["request_id"]
+        native = b.strict_json((failed_request / "native-result.json").read_bytes())["receipt"]
+        self.assertEqual(native["exit_code"], 65)
+        self.assertTrue(native["waitpid_joined"] and native["process_group_absent"])
+        failed_stage = self.stage / rejected["receipt"]["request_id"]
+        self.assertFalse((failed_stage / "counter-result.json").exists())
+        self.assertFalse((failed_stage / "worker-result.json").exists())
+        self.assertFalse((failed_stage / "generated.bin").exists())
+        write(vlm, vlm_raw)
+        # A distinct, explicitly requested call may proceed after proven cleanup;
+        # the failed request is not retried or rewritten.
+        recovered = self.run_request(grammar=grammar)
+        self.assertTrue(recovered["receipt"]["model_result_usable"], recovered)
+        self.assertNotEqual(recovered["receipt"]["request_id"], rejected["receipt"]["request_id"])
+
+    def test_actual_production_shadow_guard_exits_65_with_real_native_cleanup(self):
+        # Construct under production layout/pin validation, then run its complete
+        # command through the real HOST r6 supervisor. Only the temporary shadow
+        # files exist: the first guard must prevent every artifact/counter/model
+        # program from being reached. This is not an Android-domain receipt.
+        config = production_grammar_layout_fixture(self.config)
+        Path(config.plugin_path, "llama_cpp").mkdir(mode=0o700)
+        construction_policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
+        command_builder = b.NativeBackend(config, types.SimpleNamespace(policy=construction_policy))
+        server_instance = self.transport.health()["server_instance"]
+        for directory in (config.plugin_path, config.plugin_path + "/llama_cpp"):
+            for name in ("libgeniex_core.so", "libgeniex_vlm.so"):
+                for kind in ("regular", "dangling_symlink"):
+                    with self.subTest(directory=directory, name=name, kind=kind):
+                        shadow = Path(directory, name)
+                        if kind == "regular":
+                            write(shadow, b"unexpected earlier loader entry")
+                        else:
+                            shadow.symlink_to(self.directory / ("missing-" + uuid.uuid4().hex))
+                        try:
+                            request_id = uuid.uuid4().hex
+                            stage = self.stage / request_id; stage.mkdir(mode=0o700)
+                            command = "set -x; " + command_builder._command(request_id, str(stage), True, True, False)
+                            command_sha = b.sha(command.encode("utf-8"))
+                            envelope = self.fixture.request({"op": "execute", "action_id": request_id,
+                                "command_sha256": command_sha, "command": command, "timeout_ms": 2000})
+                            native = b.validate_native(envelope, request_id=request_id,
+                                command_sha256=command_sha, server_instance=server_instance, policy=self.policy)
+                            self.assertEqual(native["state"], "failed", envelope)
+                            self.assertEqual(native["exit_code"], 65, envelope)
+                            self.assertTrue(native["waitpid_joined"] and native["process_group_absent"])
+                            self.assertFalse(native["can_redispatch"])
+                            trace = base64.b64decode(envelope["stderr_b64"], validate=True).decode("utf-8", errors="strict")
+                            self.assertIn(str(shadow), trace)
+                            self.assertTrue(trace.rstrip().endswith("exit 65"), trace)
+                            self.assertNotIn("/system/bin/sha256sum", trace)
+                            self.assertNotIn("/system/bin/env", trace)
+                            self.assertEqual(base64.b64decode(envelope["stdout_b64"], validate=True), b"")
+                            self.assertFalse(list(stage.iterdir()))
+                            inspected = self.fixture.inspect(request_id, command_sha, include_output=True)
+                            b.validate_native(inspected, request_id=request_id, command_sha256=command_sha,
+                                server_instance=server_instance, policy=self.policy)
+                            self.assertEqual(inspected["receipt"], native)
+                        finally:
+                            shadow.unlink()
 
     def test_original_profile_and_wrong_loader_cannot_enable_output_grammar(self):
         with self.assertRaises(b.BackendError):
@@ -561,25 +832,26 @@ class NativeIntegrationTests(unittest.TestCase):
         if private_source:
             sources.append((private_source, Path(private_root) / "grammar-selector-flow"))
         for source, flow_root in sources:
-            with self.subTest(grammar_selector_source=source):
-                result = subprocess.run([sys.executable, str(ROOT / "tests/provider_flow_probe.py"),
-                    "--source", source, "--root", str(flow_root), "--endpoint", self.fixture.endpoint,
-                    "--worker", str(self.worker), "--bundle", bundle, "--counter", str(self.counter),
-                    "--tokenizer-library", str(self.tokenizer_library), "--schema-grammar"],
-                    capture_output=True, timeout=30)
-                self.assertEqual(result.returncode, 0, result.stderr.decode() + result.stdout.decode())
-                report = json.loads(result.stdout)
-                self.assertTrue(report["schema_compiler_executed"] and report["original_typed_parser_used"]
-                                and report["native_waitpid_proven"] and report["malformed_json_rejected"]
-                                and report["task_deadline_cancelled_with_native_cleanup"]
-                                and report["native_timeout_classified"] and report["worker_deadline_classified"]
-                                and report["owner_cancel_preserved"])
-                self.assertEqual(report["grammar_profile"], b.GRAMMAR_PROFILE)
-                self.assertFalse(report["phone_actions_dispatched"] or report["http_transport_called"]
-                                 or report["grammar_enforced_by_host_model_fixture"])
-            self.assertTrue(report["native_timeout_classified"] and report["worker_deadline_classified"]
-                            and report["owner_cancel_preserved"])
-            self.assertFalse(report["phone_actions_dispatched"] or report["http_transport_called"])
+            for profile in (b.GRAMMAR_PROFILE, b.GRAMMAR_R3_PROFILE):
+                current_root = flow_root if profile == b.GRAMMAR_PROFILE else flow_root.with_name(flow_root.name + "-r3")
+                profile_args = ["--schema-grammar"] if profile == b.GRAMMAR_PROFILE else ["--grammar-profile", profile]
+                with self.subTest(grammar_selector_source=source, grammar_profile=profile):
+                    result = subprocess.run([sys.executable, str(ROOT / "tests/provider_flow_probe.py"),
+                        "--source", source, "--root", str(current_root), "--endpoint", self.fixture.endpoint,
+                        "--worker", str(self.worker), "--bundle", bundle, "--counter", str(self.counter),
+                        "--tokenizer-library", str(self.tokenizer_library), *profile_args],
+                        capture_output=True, timeout=30)
+                    self.assertEqual(result.returncode, 0, result.stderr.decode() + result.stdout.decode())
+                    report = json.loads(result.stdout)
+                    self.assertTrue(report["schema_compiler_executed"] and report["original_typed_parser_used"]
+                                    and report["native_waitpid_proven"] and report["malformed_json_rejected"]
+                                    and report["task_deadline_cancelled_with_native_cleanup"]
+                                    and report["native_timeout_classified"] and report["worker_deadline_classified"]
+                                    and report["owner_cancel_preserved"] and report["vlm_bound_in_intent_and_receipt"])
+                    self.assertEqual(report["grammar_profile"], profile)
+                    self.assertEqual(len(report["cases"]), 6)
+                    self.assertFalse(report["phone_actions_dispatched"] or report["http_transport_called"]
+                                     or report["grammar_enforced_by_host_model_fixture"])
 
 
 if __name__ == "__main__":

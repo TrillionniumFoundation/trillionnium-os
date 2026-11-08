@@ -1,0 +1,256 @@
+--- a/native_backend.py
++++ b/native_backend.py
+@@ -499,8 +499,17 @@
+                     and "\0" not in self.core_android and "\n" not in self.core_android
+                     and PurePosixPath(self.core_android).name == "libgeniex_core.so",
+                     "noncanonical grammar core path")
+-            require(str(PurePosixPath(self.core_android).parent) == self.plugin_path == self.ld_library_path.split(":")[0],
+-                    "grammar core must be the selected first loader directory")
++            # The reviewed Android bundle keeps its QAIRT DSOs under lib/qairt;
++            # lib and lib/llama_cpp precede it in the measured loader order.
++            # The explicit Python-only host policy keeps its existing flat
++            # fixture layout. JSON configuration cannot select that policy.
++            grammar_directory = self.plugin_path + "/qairt" if policy.production else self.plugin_path
++            require(str(PurePosixPath(self.core_android).parent) == grammar_directory,
++                    "grammar core differs from the selected QAIRT directory" if policy.production
++                    else "grammar core must be the selected first loader directory")
++            if not policy.production:
++                require(self.plugin_path == self.ld_library_path.split(":")[0],
++                        "grammar core must be the selected first loader directory")
+             if self.grammar_profile == GRAMMAR_R3_PROFILE:
+                 require(isinstance(self.vlm_android, str) and hex_string(self.vlm_sha256, 64),
+                         "R3 output grammar requires an explicit VLM path and pin")
+@@ -512,9 +521,18 @@
+             require(vlm_path.startswith("/") and str(PurePosixPath(vlm_path)) == vlm_path
+                     and ".." not in PurePosixPath(vlm_path).parts and "\0" not in vlm_path and "\n" not in vlm_path
+                     and PurePosixPath(vlm_path).name == "libgeniex_vlm.so", "noncanonical grammar VLM path")
+-            require(str(PurePosixPath(vlm_path).parent) == self.plugin_path == self.ld_library_path.split(":")[0],
+-                    "grammar VLM must be the selected first loader directory")
++            require(str(PurePosixPath(vlm_path).parent) == grammar_directory,
++                    "grammar VLM differs from the selected QAIRT directory" if policy.production
++                    else "grammar VLM must be the selected first loader directory")
+             if policy.production:
++                expected_loader = [self.plugin_path, self.plugin_path + "/llama_cpp", grammar_directory,
++                                   grammar_directory + "/htp-files", "/system/lib64", "/vendor/lib64"]
++                require(self.ld_library_path.split(":") == expected_loader,
++                        "Android grammar bundle loader layout differs")
++                require(self.qairt_lib_path == grammar_directory + "/htp-files",
++                        "Android grammar QAIRT HTP directory differs")
++                require(self.tokenizer_library_android == grammar_directory + "/libgeniex-proc.so",
++                        "Android grammar tokenizer library path differs")
+                 require(self.core_sha256 == GRAMMAR_CORE_SHA, "unreviewed Android output grammar core")
+                 expected_vlm = GRAMMAR_R3_VLM_SHA if self.grammar_profile == GRAMMAR_R3_PROFILE else ORIGINAL_VLM_SHA
+                 require(vlm_sha == expected_vlm, "Android VLM hash differs from the explicit grammar profile")
+@@ -632,6 +650,14 @@
+             env_binary, sha_binary = "/usr/bin/env", "/usr/bin/sha256sum"
+         env.append("PATH=/system/bin:/vendor/bin" if self.policy.production else "PATH=/usr/bin:/bin")
+         checks = []
++        if self.policy.production and c.grammar_profile in GRAMMAR_PROFILES:
++            # These directories precede the pinned QAIRT directory. Even a
++            # dangling symlink is an unexpected shadow and must stop this exact
++            # request before any tokenizer or model process can start.
++            for directory in (c.plugin_path, c.plugin_path + "/llama_cpp"):
++                for name in ("libgeniex_core.so", "libgeniex_vlm.so"):
++                    shadow = shlex.quote(directory + "/" + name)
++                    checks.append("[ ! -e " + shadow + " ] && [ ! -L " + shadow + " ] || exit 65")
+         artifacts = [(c.worker_android, c.worker_sha256), (c.counter_android, c.counter_sha256),
+                      (c.tokenizer_library_android, c.tokenizer_library_sha256), (c.tokenizer_android, c.tokenizer_sha256)]
+         if c.grammar_profile is not None:
+--- a/tests/test_backend.py
++++ b/tests/test_backend.py
+@@ -101,6 +101,20 @@
+         str(root / "counter"), "b" * 64, str(runtime / "libgeniex-proc.so"), b.TOKENIZER_LIBRARY_SHA)
+ 
+ 
++def production_grammar_layout_fixture(original, profile=b.GRAMMAR_R3_PROFILE):
++    """Actual bundle layout and pins; no library/model is loaded by this helper."""
++    plugin = original.plugin_path
++    qairt = plugin + "/qairt"
++    return dataclasses.replace(original, grammar_profile=profile,
++        core_android=qairt + "/libgeniex_core.so", core_sha256=b.GRAMMAR_CORE_SHA,
++        schema_compiler_sha256="d" * 64, vlm_android=qairt + "/libgeniex_vlm.so",
++        vlm_sha256=b.GRAMMAR_R3_VLM_SHA if profile == b.GRAMMAR_R3_PROFILE else b.ORIGINAL_VLM_SHA,
++        qairt_lib_path=qairt + "/htp-files", tokenizer_library_android=qairt + "/libgeniex-proc.so",
++        tokenizer_library_sha256=b.TOKENIZER_LIBRARY_SHA,
++        ld_library_path=":".join((plugin, plugin + "/llama_cpp", qairt, qairt + "/htp-files",
++                                  "/system/lib64", "/vendor/lib64")))
++
++
+ class ContractTests(unittest.TestCase):
+     def test_native_terminal_validator_rejects_every_missing_essential_proof(self):
+         valid = native_row()
+@@ -176,16 +190,13 @@
+         self.assertEqual({key: value[key] for key in ("context_tokens", "admission_limit_tokens", "generation_tokens", "reserved_tokens")},
+             {"context_tokens": 4096, "admission_limit_tokens": 3584, "generation_tokens": 256, "reserved_tokens": 256})
+ 
+-    def test_production_r3_requires_exact_vlm_pin_in_the_first_loader_directory(self):
++    def test_production_r3_requires_exact_pins_and_actual_qairt_bundle_layout(self):
+         with tempfile.TemporaryDirectory() as temp:
+             original = config_contract_fixture(Path(temp))
+             # Only the private staging UID is adapted for this config-only
+             # test. Production artifact and loader checks remain enabled.
+             policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
+-            good = dataclasses.replace(original, grammar_profile=b.GRAMMAR_R3_PROFILE,
+-                core_android=original.plugin_path + "/libgeniex_core.so", core_sha256=b.GRAMMAR_CORE_SHA,
+-                schema_compiler_sha256="d" * 64, vlm_android=original.plugin_path + "/libgeniex_vlm.so",
+-                vlm_sha256=b.GRAMMAR_R3_VLM_SHA)
++            good = production_grammar_layout_fixture(original)
+             good.validate(policy)
+             bad_values = [
+                 {"vlm_android": None}, {"vlm_sha256": None}, {"vlm_sha256": "0" * 64},
+@@ -193,7 +204,18 @@
+                 {"vlm_android": original.plugin_path + "/libgeniex_core.so"},
+                 {"vlm_android": original.plugin_path + "/../libgeniex_vlm.so"},
+                 {"vlm_android": "/other/libgeniex_vlm.so"},
++                {"core_android": original.plugin_path + "/libgeniex_core.so"},
++                {"vlm_android": original.plugin_path + "/libgeniex_vlm.so"},
++                {"core_android": original.plugin_path + "/qairt/other.so"},
++                {"qairt_lib_path": original.plugin_path + "/htp-files"},
++                {"qairt_lib_path": original.plugin_path + "/qairt"},
++                {"tokenizer_library_android": original.plugin_path + "/libgeniex-proc.so"},
++                {"tokenizer_library_android": original.plugin_path + "/qairt/other.so"},
++                {"tokenizer_library_sha256": "0" * 64},
+                 {"ld_library_path": "/other:" + good.ld_library_path},
++                {"ld_library_path": good.ld_library_path.replace("/llama_cpp:", "/qairt:", 1)},
++                {"ld_library_path": good.ld_library_path.replace(original.plugin_path + "/llama_cpp:", "", 1)},
++                {"ld_library_path": good.ld_library_path.replace("/system/lib64:/vendor/lib64", "/vendor/lib64:/system/lib64")},
+                 {"grammar_profile": b.GRAMMAR_PROFILE}, {"grammar_profile": None},
+             ]
+             transport = types.SimpleNamespace(policy=policy)
+@@ -203,14 +225,67 @@
+             self.assertFalse(list(original.evidence_root.iterdir()))
+             self.assertFalse(list(original.stage_root.iterdir()))
+ 
++    def test_production_shadow_files_and_dangling_symlinks_stop_before_artifact_checks(self):
++        # Run the complete production command with shell tracing. Deliberately
++        # absent Android programs are never reached; trace and empty stage prove
++        # this is the shadow guard, not a later artifact failure returning 65.
++        with tempfile.TemporaryDirectory(prefix="hepta layout ") as temp:
++            root = Path(temp)
++            config = production_grammar_layout_fixture(config_contract_fixture(root))
++            Path(config.model_android).parent.mkdir(mode=0o700)
++            Path(config.plugin_path).mkdir(mode=0o700)
++            Path(config.plugin_path, "llama_cpp").mkdir(mode=0o700)
++            policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
++            runner = b.NativeBackend(config, types.SimpleNamespace(policy=policy))
++            for directory in (config.plugin_path, config.plugin_path + "/llama_cpp"):
++                for name in ("libgeniex_core.so", "libgeniex_vlm.so"):
++                    for kind in ("regular", "dangling_symlink"):
++                        with self.subTest(directory=directory, name=name, kind=kind):
++                            path = Path(directory, name)
++                            if kind == "regular":
++                                write(path, b"unexpected earlier loader entry")
++                            else:
++                                path.symlink_to(root / ("missing-" + uuid.uuid4().hex))
++                                self.assertFalse(path.exists())
++                                self.assertTrue(path.is_symlink())
++                            try:
++                                request_id = uuid.uuid4().hex
++                                stage = config.stage_root / request_id; stage.mkdir(mode=0o700)
++                                command = runner._command(request_id, str(stage), True, True, False)
++                                result = subprocess.run(["/bin/sh", "-c", "set -x; " + command],
++                                    capture_output=True, timeout=3)
++                                self.assertEqual(result.returncode, 65, result.stderr)
++                                trace = result.stderr.decode("utf-8", errors="strict")
++                                self.assertIn(str(path), trace)
++                                self.assertTrue(trace.rstrip().endswith("exit 65"), trace)
++                                self.assertNotIn("/system/bin/sha256sum", trace)
++                                self.assertNotIn("/system/bin/env", trace)
++                                self.assertEqual(result.stdout, b"")
++                                self.assertFalse(list(stage.iterdir()))
++                            finally:
++                                path.unlink()
++
++    def test_flat_grammar_layout_is_only_accepted_by_explicit_python_host_policy(self):
++        with tempfile.TemporaryDirectory() as temp:
++            original = config_contract_fixture(Path(temp))
++            flat = dataclasses.replace(original, grammar_profile=b.GRAMMAR_R3_PROFILE,
++                core_android=original.plugin_path + "/libgeniex_core.so", core_sha256="e" * 64,
++                schema_compiler_sha256="d" * 64, vlm_android=original.plugin_path + "/libgeniex_vlm.so",
++                vlm_sha256="f" * 64)
++            host = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid(), production=False)
++            flat.validate(host)
++            with self.assertRaisesRegex(b.BackendError, "selected QAIRT directory"):
++                flat.validate(dataclasses.replace(host, production=True))
++            self.assertNotIn("production", {field.name for field in dataclasses.fields(b.BackendConfig)})
++            self.assertNotIn("policy", {field.name for field in dataclasses.fields(b.BackendConfig)})
++
+     def test_old_v1_and_r2_json_without_new_vlm_fields_still_parse_and_pin_original_vlm(self):
+         with tempfile.TemporaryDirectory() as temp:
+             root = Path(temp)
+             original = config_contract_fixture(root)
+             policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
+-            old_r2 = dataclasses.replace(original, grammar_profile=b.GRAMMAR_PROFILE,
+-                core_android=original.plugin_path + "/libgeniex_core.so", core_sha256=b.GRAMMAR_CORE_SHA,
+-                schema_compiler_sha256="d" * 64)
++            old_r2 = dataclasses.replace(production_grammar_layout_fixture(original, b.GRAMMAR_PROFILE),
++                vlm_android=None, vlm_sha256=None)
+             captured = []
+             class ReachedArtifactBoundary(Exception):
+                 pass
+@@ -247,10 +322,10 @@
+             self.assertEqual(len(captured), 3)
+             self.assertEqual(captured[0].selected_vlm(), (None, None))
+             self.assertEqual(captured[1].selected_vlm(), (None, None))
+-            self.assertEqual(captured[2].selected_vlm(), (original.plugin_path + "/libgeniex_vlm.so", b.ORIGINAL_VLM_SHA))
++            self.assertEqual(captured[2].selected_vlm(), (original.plugin_path + "/qairt/libgeniex_vlm.so", b.ORIGINAL_VLM_SHA))
+             command = b.NativeBackend(captured[2], types.SimpleNamespace(policy=policy))._command(
+                 "a" * 32, str(original.stage_root / ("a" * 32)), True, True, False)
+-            self.assertIn(b.ORIGINAL_VLM_SHA + "  " + original.plugin_path + "/libgeniex_vlm.so", command)
++            self.assertIn(b.ORIGINAL_VLM_SHA + "  " + original.plugin_path + "/qairt/libgeniex_vlm.so", command)
+             self.assertLess(command.index(b.ORIGINAL_VLM_SHA), command.index(" -i "))
+             self.assertNotIn(b.GRAMMAR_R3_VLM_SHA, command)
+ 
+@@ -464,6 +539,52 @@
+         recovered = self.run_request(grammar=grammar)
+         self.assertTrue(recovered["receipt"]["model_result_usable"], recovered)
+         self.assertNotEqual(recovered["receipt"]["request_id"], rejected["receipt"]["request_id"])
++
++    def test_actual_production_shadow_guard_exits_65_with_real_native_cleanup(self):
++        # Construct under production layout/pin validation, then run its complete
++        # command through the real HOST r6 supervisor. Only the temporary shadow
++        # files exist: the first guard must prevent every artifact/counter/model
++        # program from being reached. This is not an Android-domain receipt.
++        config = production_grammar_layout_fixture(self.config)
++        Path(config.plugin_path, "llama_cpp").mkdir(mode=0o700)
++        construction_policy = dataclasses.replace(b.ANDROID_POLICY, execution_uid=os.getuid())
++        command_builder = b.NativeBackend(config, types.SimpleNamespace(policy=construction_policy))
++        server_instance = self.transport.health()["server_instance"]
++        for directory in (config.plugin_path, config.plugin_path + "/llama_cpp"):
++            for name in ("libgeniex_core.so", "libgeniex_vlm.so"):
++                for kind in ("regular", "dangling_symlink"):
++                    with self.subTest(directory=directory, name=name, kind=kind):
++                        shadow = Path(directory, name)
++                        if kind == "regular":
++                            write(shadow, b"unexpected earlier loader entry")
++                        else:
++                            shadow.symlink_to(self.directory / ("missing-" + uuid.uuid4().hex))
++                        try:
++                            request_id = uuid.uuid4().hex
++                            stage = self.stage / request_id; stage.mkdir(mode=0o700)
++                            command = "set -x; " + command_builder._command(request_id, str(stage), True, True, False)
++                            command_sha = b.sha(command.encode("utf-8"))
++                            envelope = self.fixture.request({"op": "execute", "action_id": request_id,
++                                "command_sha256": command_sha, "command": command, "timeout_ms": 2000})
++                            native = b.validate_native(envelope, request_id=request_id,
++                                command_sha256=command_sha, server_instance=server_instance, policy=self.policy)
++                            self.assertEqual(native["state"], "failed", envelope)
++                            self.assertEqual(native["exit_code"], 65, envelope)
++                            self.assertTrue(native["waitpid_joined"] and native["process_group_absent"])
++                            self.assertFalse(native["can_redispatch"])
++                            trace = base64.b64decode(envelope["stderr_b64"], validate=True).decode("utf-8", errors="strict")
++                            self.assertIn(str(shadow), trace)
++                            self.assertTrue(trace.rstrip().endswith("exit 65"), trace)
++                            self.assertNotIn("/system/bin/sha256sum", trace)
++                            self.assertNotIn("/system/bin/env", trace)
++                            self.assertEqual(base64.b64decode(envelope["stdout_b64"], validate=True), b"")
++                            self.assertFalse(list(stage.iterdir()))
++                            inspected = self.fixture.inspect(request_id, command_sha, include_output=True)
++                            b.validate_native(inspected, request_id=request_id, command_sha256=command_sha,
++                                server_instance=server_instance, policy=self.policy)
++                            self.assertEqual(inspected["receipt"], native)
++                        finally:
++                            shadow.unlink()
+ 
+     def test_original_profile_and_wrong_loader_cannot_enable_output_grammar(self):
+         with self.assertRaises(b.BackendError):

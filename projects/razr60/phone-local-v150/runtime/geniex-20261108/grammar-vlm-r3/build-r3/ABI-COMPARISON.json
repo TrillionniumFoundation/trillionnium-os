@@ -1,0 +1,140 @@
+{
+  "schema": "hepta.vlm-r3-abi.v1",
+  "original_sha256": "8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87",
+  "candidate_sha256": "773e23de3f892d2cd9c468e7b0af32e6c254af341d4ed0e7ef0eda95f6ee1d73",
+  "soname": [
+    "libgeniex_vlm.so"
+  ],
+  "original_soname": [
+    "libgeniex_vlm.so"
+  ],
+  "needed": [
+    "libgeniex_core.so",
+    "libgeniex-proc-vision.so",
+    "libgeniex-proc.so",
+    "liblog.so",
+    "libdl.so",
+    "libm.so",
+    "libc.so"
+  ],
+  "original_needed": [
+    "libgeniex_core.so",
+    "libgeniex-proc-vision.so",
+    "libgeniex-proc.so",
+    "liblog.so",
+    "libm.so",
+    "libdl.so",
+    "libc.so"
+  ],
+  "runpath": [
+    "$ORIGIN"
+  ],
+  "original_runpath": [
+    "$ORIGIN"
+  ],
+  "missing_original_definitions": {
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSO_E_JRKNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSN_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSO_E_JRKNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSN_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSO_E_JRKNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSN_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSO_E_JRKNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSN_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    },
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSO_E_JRKNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSN_DpT0_": {
+      "binding": "WEAK",
+      "visibility": "DEFAULT",
+      "type": "FUNC"
+    }
+  },
+  "new_definitions": [
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0ELm0EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSL_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOST_EEEDcSL_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0ELm0EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSN_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEERKSV_EEEDcSN_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1ELm1EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSL_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOST_EEEDcSL_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1ELm1EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSN_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEERKSV_EEEDcSN_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2ELm2EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSL_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOST_EEEDcSL_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2ELm2EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSN_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEERKSV_EEEDcSN_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3ELm3EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSL_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOST_EEEDcSL_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3ELm3EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSN_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEERKSV_EEEDcSN_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4ELm4EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSL_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOST_EEEDcSL_DpT0_",
+    "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4ELm4EEE10__dispatchB8ne190000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne190000IRKNS0_18__copy_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlRSN_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEERKSV_EEEDcSN_DpT0_",
+    "_ZTINSt6__ndk117bad_function_callE",
+    "_ZTSNSt6__ndk117bad_function_callE",
+    "_ZTVNSt6__ndk117bad_function_callE"
+  ],
+  "consumers": {
+    "original-libgeniex_plugin.so": {
+      "required": [
+        "_ZN6geniex10qwen2_5_vl9makeModelERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZN6geniex11VLMPipeline13setBosTokenIdEi",
+        "_ZN6geniex11VLMPipeline5resetEv",
+        "_ZN6geniex11VLMPipeline6createENSt6__ndk110unique_ptrINS_8VLMModelENS1_14default_deleteIS3_EEEENS2_INS_15VisionProcessorENS4_IS7_EEEERNS_9TokenizerE",
+        "_ZN6geniex11VLMPipeline8generateERKNSt6__ndk112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEERKNS1_6vectorIS7_NS5_IS7_EEEERKNS_16GenerationConfigENS1_8functionIFbPKcEEE",
+        "_ZN6geniex11VLMPipelineC1EOS0_",
+        "_ZN6geniex11VLMPipelineC1Ev",
+        "_ZN6geniex11VLMPipelineD1Ev",
+        "_ZN6geniex12intern3_5_vl9makeModelERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZN6geniex6gemma415makeVLMPipelineERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZN6geniex8qwen3_vl9makeModelERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZNK6geniex11VLMPipeline17applyChatTemplateERKNSt6__ndk16vectorINS_11ChatMessageENS1_9allocatorIS3_EEEERKNS_24ApplyChatTemplateOptionsE"
+      ],
+      "missing": []
+    }
+  },
+  "new_undefined_resolution": {
+    "_ZNKSt9exception4whatEv": [
+      "libgeniex-proc.so"
+    ],
+    "_ZNSt6__ndk115basic_streambufIcNS_11char_traitsIcEEEC2Ev": [
+      "libgeniex-proc.so"
+    ],
+    "_ZNSt6__ndk115basic_streambufIcNS_11char_traitsIcEEED2Ev": [
+      "libgeniex-proc.so"
+    ],
+    "_ZdlPv": [
+      "libgeniex-proc.so"
+    ],
+    "__cxa_rethrow": [
+      "libgeniex-proc.so"
+    ]
+  },
+  "source_or_abi_qualification_only": true,
+  "phone_tested": false
+}

@@ -1,0 +1,17 @@
+test_artifacts_refuse_shared_paths_duplicates_writes_and_fake_integers (__main__.BundleContract.test_artifacts_refuse_shared_paths_duplicates_writes_and_fake_integers) ... ok
+test_json_and_immutable_build_inputs_cannot_silently_drift (__main__.BundleContract.test_json_and_immutable_build_inputs_cannot_silently_drift) ... ok
+test_regular_input_reader_refuses_links_and_oversized_files (__main__.BundleContract.test_regular_input_reader_refuses_links_and_oversized_files) ... ok
+test_written_modes_are_exact_under_restrictive_umask_and_never_overwrite (__main__.BundleContract.test_written_modes_are_exact_under_restrictive_umask_and_never_overwrite) ... ok
+test_bind_refuses_before_bootstrap_readiness_without_reaching_mutations (__main__.StagingContract.test_bind_refuses_before_bootstrap_readiness_without_reaching_mutations) ... ok
+test_claims_stop_and_original_state_preservation_are_required (__main__.StagingContract.test_claims_stop_and_original_state_preservation_are_required) ... ok
+test_instance_and_rc_digest_cannot_inject_commands (__main__.StagingContract.test_instance_and_rc_digest_cannot_inject_commands) ... ok
+test_new_policy_preserves_non_executable_stage_and_no_device_grants (__main__.StagingContract.test_new_policy_preserves_non_executable_stage_and_no_device_grants) ... ok
+test_parses_exact_stats_and_rejects_missing_or_duplicate_observations (__main__.StagingContract.test_parses_exact_stats_and_rejects_missing_or_duplicate_observations) ... ok
+test_rendered_scripts_pass_shell_parser_without_execution (__main__.StagingContract.test_rendered_scripts_pass_shell_parser_without_execution) ... ok
+test_service_is_disabled_same_domain_and_no_automatic_replay (__main__.StagingContract.test_service_is_disabled_same_domain_and_no_automatic_replay) ... ok
+test_stage_metadata_is_exact_and_cannot_be_already_bound (__main__.StagingContract.test_stage_metadata_is_exact_and_cannot_be_already_bound) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.019s
+
+OK

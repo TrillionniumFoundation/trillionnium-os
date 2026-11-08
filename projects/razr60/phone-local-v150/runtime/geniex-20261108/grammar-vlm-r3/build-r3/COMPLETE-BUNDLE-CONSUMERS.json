@@ -1,0 +1,603 @@
+{
+  "schema": "hepta.vlm-r3-official-bundle-consumers.v1",
+  "phone_accessed": false,
+  "all_52_official_files_sha_verified": true,
+  "runtime_manifest_sha256": "c4551f10e683382fc1e2285b21c67482d006223ace13c0ddcc6faebbe71b85d8",
+  "candidate_vlm_sha256": "773e23de3f892d2cd9c468e7b0af32e6c254af341d4ed0e7ef0eda95f6ee1d73",
+  "all_known_consumers": [
+    {
+      "path": "lib/qairt/libgeniex_plugin.so",
+      "needed_vlm_directly": true,
+      "required": [
+        "_ZN6geniex10qwen2_5_vl9makeModelERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZN6geniex11VLMPipeline13setBosTokenIdEi",
+        "_ZN6geniex11VLMPipeline5resetEv",
+        "_ZN6geniex11VLMPipeline6createENSt6__ndk110unique_ptrINS_8VLMModelENS1_14default_deleteIS3_EEEENS2_INS_15VisionProcessorENS4_IS7_EEEERNS_9TokenizerE",
+        "_ZN6geniex11VLMPipeline8generateERKNSt6__ndk112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEERKNS1_6vectorIS7_NS5_IS7_EEEERKNS_16GenerationConfigENS1_8functionIFbPKcEEE",
+        "_ZN6geniex11VLMPipelineC1EOS0_",
+        "_ZN6geniex11VLMPipelineC1Ev",
+        "_ZN6geniex11VLMPipelineD1Ev",
+        "_ZN6geniex12intern3_5_vl9makeModelERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZN6geniex6gemma415makeVLMPipelineERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZN6geniex8qwen3_vl9makeModelERKNS_16QnnRuntimeConfigERKNS_9VLMConfigE",
+        "_ZNK6geniex11VLMPipeline17applyChatTemplateERKNSt6__ndk16vectorINS_11ChatMessageENS1_9allocatorIS3_EEEERKNS_24ApplyChatTemplateOptionsE"
+      ],
+      "missing_from_candidate": []
+    }
+  ],
+  "missing_consumer_requirements": 0,
+  "inventory": [
+    {
+      "path": "lib/libgeniex.so",
+      "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+      "elf": true,
+      "needed": [
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libgeniex_plugin.so",
+      "sha256": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a",
+      "elf": true,
+      "needed": [
+        "libllama-common.so",
+        "libgeniex.so",
+        "libmtmd.so",
+        "libllama.so",
+        "libggml.so",
+        "libggml-cpu.so",
+        "libggml-opencl.so",
+        "libggml-hexagon.so",
+        "libggml-base.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-base.so",
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40",
+      "elf": true,
+      "needed": [
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-cpu.so",
+      "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b",
+      "elf": true,
+      "needed": [
+        "libggml-base.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-hexagon.so",
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f",
+      "elf": true,
+      "needed": [
+        "liblog.so",
+        "libdl.so",
+        "libggml-base.so",
+        "libm.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-htp-v73.so",
+      "sha256": "e8ed08627e9faa5739c6185187a2c3dbe0a2ac7d0a9aded15fea3f1009de18c8",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libgcc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-htp-v75.so",
+      "sha256": "bd7837ec03fd123cb0cf33608fb0d8c7d49f86fdd4001683e0918b72f0f1ca07",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libgcc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-htp-v79.so",
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libgcc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-htp-v81.so",
+      "sha256": "1bd534df154a45a261aeedaf7be316d01e4f6c0d2c18ed2c235e991c74160d00",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libgcc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-htp-v85.so",
+      "sha256": "3a4c104a0a12b2b63245f1f866f0f37bff0be5eebc08d104678a71a379618c7a",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libgcc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml-opencl.so",
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875",
+      "elf": true,
+      "needed": [
+        "libggml-base.so",
+        "libOpenCL.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libggml.so",
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149",
+      "elf": true,
+      "needed": [
+        "libggml-cpu.so",
+        "libggml-opencl.so",
+        "libggml-hexagon.so",
+        "libggml-base.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libllama-common.so",
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122",
+      "elf": true,
+      "needed": [
+        "libllama.so",
+        "libggml.so",
+        "libggml-cpu.so",
+        "libggml-opencl.so",
+        "libggml-hexagon.so",
+        "libggml-base.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libllama.so",
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835",
+      "elf": true,
+      "needed": [
+        "libggml.so",
+        "libggml-cpu.so",
+        "libggml-opencl.so",
+        "libggml-hexagon.so",
+        "libggml-base.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libmtmd.so",
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d",
+      "elf": true,
+      "needed": [
+        "libllama.so",
+        "libggml.so",
+        "libggml-cpu.so",
+        "libggml-opencl.so",
+        "libggml-hexagon.so",
+        "libggml-base.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/llama_cpp/libomp.so",
+      "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76",
+      "elf": true,
+      "needed": [
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libCalculator_skel.so",
+      "sha256": "0883ddf51f73c163b45412c052ac4b3f37d2421fa56f991c083a935577976ade",
+      "elf": true,
+      "needed": [
+        "libgcc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libPlatformValidatorShared.so",
+      "sha256": "88f6014139cd82b4f06259d9af308de7440fdb6b93c2cbf3c24e300cde269ecd",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "libEGL.so",
+        "libGLESv2.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnChrometraceProfilingReader.so",
+      "sha256": "8d66dbc262a4b4edda6a9ba4022726152b788f06df7c3c948d701de4d5876f73",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHta.so",
+      "sha256": "82e97740bdbda65cf3c910a2475a91bc251ea8c792d7ee96bf2ec24780d7f9c7",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtaNetRunExtensions.so",
+      "sha256": "58ba5424fc7669e670a450a879c8ba938cf39c4a90f8c4f30a6be67d54b31712",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtp.so",
+      "sha256": "d299323d79868adbb18997c8e99ae18f961005589ab137f56a51d27e67d6bf0f",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpNetRunExtensions.so",
+      "sha256": "2923a52c9c3d4039ee181fc3978aff7546aa34ea970de939b0793954ae9c2345",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpOptraceProfilingReader.so",
+      "sha256": "fd6af8230acb3cfb93116a35a30a8cf570b9055978491a5df19ff7e68ae2bf55",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpPrepare.so",
+      "sha256": "c59eb2c24dbc797d86963f02180baab0ad09bc7e2177db895010f2fd5930db75",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpProfilingReader.so",
+      "sha256": "1596d567b0b544a8a8c7dbe4c8c0182cb0b57254c6aee96c58e8476998e8e923",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV79.so",
+      "sha256": "f07b3e9d3f4709d5fa4a9573e7368143f716b311ba722157fd03729544576764",
+      "elf": true,
+      "needed": [
+        "libc++.so.1",
+        "libc++abi.so.1"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV79CalculatorStub.so",
+      "sha256": "b32f6fa802b1b197083513dd5e9e0d6172cc39cc4704892e76a98aa48205b73c",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV79Skel.so",
+      "sha256": "53ad8cde08c1ca2c95bdde7f6f10ab8855f5423edb16e1e7fd6e724ffc27c32b",
+      "elf": true,
+      "needed": [
+        "libc++.so.1",
+        "libc++abi.so.1"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV79Stub.so",
+      "sha256": "166a3bb724c448e9425aa8f98f16b25aa1465eae6334553e408da7256d76fc99",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV81.so",
+      "sha256": "c626100f79fac84fa3a1493cc3be297cb2b4c2c83e7ac79b3140877ee17d7fe3",
+      "elf": true,
+      "needed": []
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV81CalculatorStub.so",
+      "sha256": "7729c3d166b5116fc6c1a9007170c1d60d928826917c5e3e181e56525fecf5c8",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV81Skel.so",
+      "sha256": "0df1a63f7fcf60b2f6ca419228c36bb97dc225ba69b24ea3a150a533e9bf3f5f",
+      "elf": true,
+      "needed": []
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnHtpV81Stub.so",
+      "sha256": "8cfb232be5f3f09d732805a8cfe222515460625a00267ed6648667e140be8a31",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnIr.so",
+      "sha256": "1d53cc6532809f7b287b3d1a99a41d1d67a4d96150307873344bd56effcca8a0",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnJsonProfilingReader.so",
+      "sha256": "776d5846bd2c116f30efff669b4b56c561c9227196f91297e623bb0249a95295",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnModelDlc.so",
+      "sha256": "19706fd25cc7a8228a0f5840b4fc9f70a79532fb000636953a327c753189edec",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnNetRunDirectV79Skel.so",
+      "sha256": "75f6cc403486a067b99cc2664d66d81f7702ad52f64add339f4cdc19e1367671",
+      "elf": true,
+      "needed": [
+        "libc++.so.1",
+        "libc++abi.so.1"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnNetRunDirectV79Stub.so",
+      "sha256": "4cea506eef49e2d0a35af56fdac97a700b0a7fc697721d60b680962b29e3c8ef",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnNetRunDirectV81Skel.so",
+      "sha256": "fbc66bdc7e33ba840e58bf8a9dc016e223d3d961c6689adb87a446dd8eaea14a",
+      "elf": true,
+      "needed": []
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnNetRunDirectV81Stub.so",
+      "sha256": "fc8aa46aa09bd177dacb61ed9bb9d4b88a002d2c19c4c0a4eb9649716cc7f7f8",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnSaver.so",
+      "sha256": "14ad780a981fdc34a82f80648972720229f077379fa77700822351927c67a729",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libQnnSystem.so",
+      "sha256": "b30bd9880dc48f6c5349185a7d45b326f8a064b10072e60094354fa23d9a2027",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libcalculator.so",
+      "sha256": "766a4c6ba03105c1b94577bb54369d4bfbde09f008a4e001566bc0e57ae8e690",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libhta_hexagon_runtime_qnn.so",
+      "sha256": "a74731a15015b41a12b165aade3b497dbd1d681e1778689446a6b313fb2480fb",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libhta_hexagon_runtime_snpe.so",
+      "sha256": "a74731a15015b41a12b165aade3b497dbd1d681e1778689446a6b313fb2480fb",
+      "elf": true,
+      "needed": [
+        "libc.so",
+        "libm.so",
+        "libdl.so",
+        "liblog.so",
+        "libcdsprpc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/htp-files/libqnnhtpv81.cat",
+      "sha256": "819e35b8c9da1334d8e697ebb871c5ed71a2de102879377ecd624b96fdc16284",
+      "elf": false
+    },
+    {
+      "path": "lib/qairt/libgeniex-proc-vision.so",
+      "sha256": "5517a4ca8e754e6df46859f914ce779dd30831e5a33bc457d40bec744d699be9",
+      "elf": true,
+      "needed": [
+        "libgeniex-proc.so",
+        "liblog.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/libgeniex-proc.so",
+      "sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+      "elf": true,
+      "needed": [
+        "liblog.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/libgeniex_core.so",
+      "sha256": "fb8a118c0e352eb74d4487cf490c671f8462ca8de26e5889fdded18ea04e5696",
+      "elf": true,
+      "needed": [
+        "libgeniex-proc.so",
+        "liblog.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/libgeniex_plugin.so",
+      "sha256": "384eaaeaa1254126f4a07ef2a8e28bb5df9ee20d0b0bc54bc0d4874e02d9eab3",
+      "elf": true,
+      "needed": [
+        "libgeniex.so",
+        "libgeniex_vlm.so",
+        "libgeniex_core.so",
+        "libgeniex-proc-vision.so",
+        "libgeniex-proc.so",
+        "liblog.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    },
+    {
+      "path": "lib/qairt/libgeniex_vlm.so",
+      "sha256": "8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87",
+      "elf": true,
+      "needed": [
+        "libgeniex_core.so",
+        "libgeniex-proc-vision.so",
+        "libgeniex-proc.so",
+        "liblog.so",
+        "libm.so",
+        "libdl.so",
+        "libc.so"
+      ]
+    }
+  ],
+  "tool": "/usr/bin/readelf"
+}

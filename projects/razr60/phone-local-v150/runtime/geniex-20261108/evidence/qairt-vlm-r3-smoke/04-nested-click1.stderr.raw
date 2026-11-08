@@ -1,0 +1,4060 @@
+[32m[ INFO] [plugins/qairt/src/../include/qnn_runtime_utils.h:225:make_qnn_runtime_config] Overriding the bundled QAIRT runtime from GENIEX_QAIRT_LIB: /data/local/tmp/hepta-geniex-vlm-r3-20261108/lib/qairt/htp-files (host libs: /data/local/tmp/hepta-geniex-vlm-r3-20261108/lib/qairt/htp-files)[0m
+[32m[ INFO] extensions_path is ignored; HTP config is applied via the QNN C API directly[0m
+[32m[ INFO] htp config: 'weight_sharing_enabled' under context is an offline-preparation option; already baked into the context binary, nothing to apply at load time[0m
+[32m[ INFO] htp config: 'dsp_arch' under devices[] is an offline-preparation option; already baked into the context binary, nothing to apply at load time[0m
+[32m[ INFO] htp config: 'soc_model' under devices[] is an offline-preparation option; already baked into the context binary, nothing to apply at load time[0m
+[32m[ INFO] htp config: perf_profile=5 rpc_control_latency=100us rpc_polling=0us hmx_timeout=0us adaptive_polling=0us[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnLog_create started.
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> Initializing HtpProvider
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exit with 0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exit with 0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnLog_create exit.
+[0m
+[32m[ INFO] [QNN] Creating backend with QnnGraphTransformerAdapter[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnBackend_create started. backend = 0x9ded3690
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnBackend_create done successfully. backend = 0x9ded3690
+[0m
+[32m[ INFO] [QNN] QnnGraphTransformer createBackend done, status = 0x0[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_create started
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> No scheduler was created for deviceId=0 coreId=0 pdId=0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_create done. device = 0x1. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary started. backend = 0x1, device = 0x1
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> This option (6) is only for create context from binary use case.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph qwen3_vl_4b_instruct is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 1, graphs: 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary done successfully. context = 0x1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 1, graphs: 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x1 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureCreatePowerConfigId started for deviceId: 0, coreId: 0
+
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureCreatePowerConfigId done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureSetPowerConfig started for powerConfigId: 2143172840
+
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureSetPowerConfig done. status 0x0
+[0m
+[32m[ INFO] HTP power vote applied (perf_profile=4, rpc_control_latency=100us)[0m
+[32m[ INFO] HTP device reports 1 NSP core(s)[0m
+[32m[ INFO] HTP graphs will execute on 1 core (default; set num_cores or add htp_backend_ext_config.json `cores` entries to request more)[0m
+[32m[ INFO] extensions_path is ignored; HTP config is applied via the QNN C API directly[0m
+[32m[ INFO] htp config: 'weight_sharing_enabled' under context is an offline-preparation option; already baked into the context binary, nothing to apply at load time[0m
+[32m[ INFO] htp config: 'dsp_arch' under devices[] is an offline-preparation option; already baked into the context binary, nothing to apply at load time[0m
+[32m[ INFO] htp config: 'soc_model' under devices[] is an offline-preparation option; already baked into the context binary, nothing to apply at load time[0m
+[32m[ INFO] htp config: perf_profile=5 rpc_control_latency=100us rpc_polling=0us hmx_timeout=0us adaptive_polling=0us[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnLog_create started.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnLog_create exit.
+[0m
+[32m[ INFO] [QNN] Creating backend with QnnGraphTransformerAdapter[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnBackend_create started. backend = 0x9ded54c0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnBackend_create done successfully. backend = 0x9ded54c0
+[0m
+[32m[ INFO] [QNN] QnnGraphTransformer createBackend done, status = 0x0[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_create started
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_create done. device = 0x2. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary started. backend = 0x2, device = 0x2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exits with 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> This option (6) is only for create context from binary use case.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl512_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl1024_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl2048_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl4096_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl512_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl1024_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl2048_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl4096_1_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary done successfully. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 9
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x2 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary started. backend = 0x2, device = 0x2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exits with 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> This option (6) is only for create context from binary use case.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl512_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl1024_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl2048_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl4096_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl512_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl1024_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl2048_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl4096_2_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary done successfully. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x3 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary started. backend = 0x2, device = 0x2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[31m[ERROR] [QNN] QnnDsp <E>  contextFromBin (submit) Failed code: 5005
+[0m
+[31m[ERROR] [QNN] QnnDsp <E> Skel failed to process context binary.
+[0m
+[31m[ERROR] [QNN] QnnDsp <E> Context create from binary failed for deviceId 0 coreId 0 pdId 0 for context 4, err 5005
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[31m[ERROR] [QNN] QnnDsp <E> Context 4 failed on pd 0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> No scheduler was created for deviceId=0 coreId=0 pdId=2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> updatePerfInfraConfigs started for deviceId: 0, coreId: 0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> updatePerfInfraConfigs done. status 0x0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exits with 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> This option (6) is only for create context from binary use case.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl512_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl1024_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl2048_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl4096_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl512_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl1024_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl2048_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl4096_3_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary done successfully. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x4
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 25
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x4 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary started. backend = 0x2, device = 0x2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel: not supported for DeviceId 0 coreId 0 pdId 2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> setInferenceBufferForHtpExtensionSkel not supported on this platform
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exits with 0
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> This option (6) is only for create context from binary use case.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl512_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl1024_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl2048_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar128_cl4096_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl512_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl1024_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl2048_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> graph ar1_cl4096_4_of_4 is loaded 1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_createFromBinary done successfully. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve started. context = 0x5
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 5, graphs: 33
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_retrieve done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register started. context 0x5 
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_register done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureCreatePowerConfigId started for deviceId: 0, coreId: 0
+
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureCreatePowerConfigId done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureSetPowerConfig started for powerConfigId: 2143172841
+
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> htpPerfInfrastructureSetPowerConfig done. status 0x0
+[0m
+[32m[ INFO] HTP power vote applied (perf_profile=4, rpc_control_latency=100us)[0m
+[32m[ INFO] HTP device reports 1 NSP core(s)[0m
+[32m[ INFO] HTP graphs will execute on 1 core (default; set num_cores or add htp_backend_ext_config.json `cores` entries to request more)[0m
+[32m[ INFO] LLMModel initialized: 4 shards, 4 CL variants [512,1024,2048,4096], vocab=151936, hidden=2560[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xa
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x12
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1a
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xa
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x12
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1a
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xa
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x12
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1a
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x3
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xb
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x13
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1b
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x7
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0xf
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x17
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute started. graph = 0x1f
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnGraph_execute done. status 0x0
+[0m
+[32m[ INFO] [QNN] Free context with QnnGraphTransformerAdapter[0m
+[32m[ INFO] [QNN] QnnGraphTransformer context freed successfully[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free started. context = 0x1
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister started
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 4, graphs: 32
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free done successfully.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_free started. device = 0x1
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_free done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnBackend_free started. backend = 0x1
+[0m
+[32m[ INFO] [QNN] Free context with QnnGraphTransformerAdapter[0m
+[32m[ INFO] [QNN] QnnGraphTransformer context freed successfully[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free started. context = 0x2
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister started
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 3, graphs: 24
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free done successfully.
+[0m
+[32m[ INFO] [QNN] Free context with QnnGraphTransformerAdapter[0m
+[32m[ INFO] [QNN] QnnGraphTransformer context freed successfully[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free started. context = 0x3
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister started
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 2, graphs: 16
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free done successfully.
+[0m
+[32m[ INFO] [QNN] Free context with QnnGraphTransformerAdapter[0m
+[32m[ INFO] [QNN] QnnGraphTransformer context freed successfully[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free started. context = 0x4
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister started
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 1, graphs: 8
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free done successfully.
+[0m
+[32m[ INFO] [QNN] Free context with QnnGraphTransformerAdapter[0m
+[32m[ INFO] [QNN] QnnGraphTransformer context freed successfully[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free started. context = 0x5
+[0m
+[33m[ WARN] [QNN] QnnDsp <W> m_CFBCallbackInfoObj is not initialized, return emptyList
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister started
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnMem_deRegister done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Number of existing contexts: 0, graphs: 0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnContext_free done successfully.
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_free started. device = 0x2
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Exiting thread
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exits with 0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> Exiting thread
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> exits with 0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnDevice_free done. status 0x0
+[0m
+[32m[ INFO] [QNN] QnnDsp <I> QnnBackend_free started. backend = 0x2
+[0m

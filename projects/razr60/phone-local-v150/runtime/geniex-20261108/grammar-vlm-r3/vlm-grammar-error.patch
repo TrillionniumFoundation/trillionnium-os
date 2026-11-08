@@ -1,0 +1,43 @@
+--- a/core/src/pipeline/vlm_pipeline.cpp
++++ b/core/src/pipeline/vlm_pipeline.cpp
+@@ -5,6 +5,7 @@
+ 
+ #include <chrono>
+ #include <cstring>
++#include <exception>
+ #include <sstream>
+ #include <utility>
+ 
+@@ -12,6 +13,7 @@
+ #include "geniex-proc/tokenizer.h"
+ #include "geniex-proc/types.h"
+ #include "llm/llm_model.h"  // PromptTooLongError
++#include "logging.h"
+ 
+ namespace geniex {
+ 
+@@ -206,6 +208,24 @@
+         finalize_generate_result(
+             result, full_text, streamed_tokens, t_start, t_first_token, t_end, got_first, "context_length");
+         return result;
++    } catch (const std::exception& error) {
++        // Keep requested-grammar failures at the nearest existing nonthrow
++        // Result boundary. The observed full-SDK invalid-grammar request
++        // aborted despite its outer catch. Never retry without grammar.
++        // Preserve the original no-grammar exception behavior.
++        if (effective_cfg.grammar_str.empty()) throw;
++        GENIEX_LOG_ERROR("VLM generation failed with requested grammar: {}", error.what());
++        const auto t_end = Clock::now();
++        finalize_generate_result(
++            result, full_text, streamed_tokens, t_start, t_first_token, t_end, got_first, "error");
++        return result;
++    } catch (...) {
++        if (effective_cfg.grammar_str.empty()) throw;
++        GENIEX_LOG_ERROR("VLM generation failed with requested grammar: unknown exception");
++        const auto t_end = Clock::now();
++        finalize_generate_result(
++            result, full_text, streamed_tokens, t_start, t_first_token, t_end, got_first, "error");
++        return result;
+     }
+ }
+ 

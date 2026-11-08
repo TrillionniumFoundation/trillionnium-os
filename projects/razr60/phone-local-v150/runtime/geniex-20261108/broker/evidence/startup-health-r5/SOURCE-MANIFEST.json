@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.startup-health-source-delta.v1",
+  "public_parent": "a6e023176766d85098e98be9a5b6b1288dec1282",
+  "base_layout": "runtime-layout-r4; not yet a deployed/private-closed source",
+  "files": [
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/native_backend.py",
+      "before_sha256": "2049294d6ff4087f2e6af4861ff0c4542fe26a33b0e5fee8c35b3ef86686c6d5",
+      "after_sha256": "9dbe467b6dfb3cd2ddf0582c930cf2f95700222498df3e82bf4f914a57555124",
+      "before_bytes": 56866,
+      "after_bytes": 58976,
+      "baseline": "verified_pre_health_local_snapshot"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/startup_health.py",
+      "before_sha256": null,
+      "after_sha256": "368af8d41998e2f7122daa56b8f8124fda81bab0577895cbf0b35c8e000b36d0",
+      "before_bytes": 0,
+      "after_bytes": 15955,
+      "baseline": "new_file"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/apply_provider_overlay.py",
+      "before_sha256": "af8ceae756ddb32062ba122e1a0376db62bb3b77e9f3882ee109d03e05d92f46",
+      "after_sha256": "c0128f27415f3adf61ebaf7907028662ce6193bbd2c03ab2a46d4ac9f61c8b01",
+      "before_bytes": 11676,
+      "after_bytes": 11718,
+      "baseline": "verified_pre_health_local_snapshot"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_startup_health.py",
+      "before_sha256": null,
+      "after_sha256": "fa7bf88ee825ecef769453b704d13173f906566f5aecf49b09aa3123e0791a67",
+      "before_bytes": 0,
+      "after_bytes": 25948,
+      "baseline": "new_file"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/broker_stub.c",
+      "before_sha256": "12b3df72d92ae725fa5f20555bb1b1f07b10370c876e1cf8db3d0a394340b399",
+      "after_sha256": "927679297941f1eddf4411f1ad7edea65882e112e370cc2356be8acd15f4b54f",
+      "before_bytes": 2896,
+      "after_bytes": 3176,
+      "baseline": "a6e0231_public_archive"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/provider_entry.py",
+      "before_sha256": "6b217143f27db1c3a0b63676af6115f35795902a53253c51965b94908e627056",
+      "after_sha256": "d838c7a2223c6cd134b4b530bcc26b36a44dc7236f9584be1bcfc7d49b2271df",
+      "before_bytes": 11423,
+      "after_bytes": 11785,
+      "baseline": "verified_pre_health_local_snapshot"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/build_startup_bundle.py",
+      "before_sha256": "2b8367630eb32f907311c4069af132332a2e7b7765accbe0da187a312c418ca2",
+      "after_sha256": "d1b285e4f2348fca09037bfab2e28be6f241da4fdf044d5f9ad3484e68ef43db",
+      "before_bytes": 19263,
+      "after_bytes": 19284,
+      "baseline": "verified_pre_health_local_snapshot"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/tests/test_entry.py",
+      "before_sha256": "cf263bc21e68cc935f7cb6b6a4cf53b977f1cca9182d7d80e102e8b2c897526d",
+      "after_sha256": "c05110b7a20408a4980d7b587f70517ed12dd1658edfdf3c6f722f95a910bb17",
+      "before_bytes": 12885,
+      "after_bytes": 12906,
+      "baseline": "verified_pre_health_local_snapshot"
+    }
+  ],
+  "patch_sha256": "9abf144512454a66a0b50ca54cf0faaf4f159a90b51f6686c0e5f7f5a872e4e5",
+  "candidate_only": true,
+  "full_private_source_manifest": null
+}

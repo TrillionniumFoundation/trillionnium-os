@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.grammar-vlm-r3-review.v1",
+  "candidate_only": true,
+  "android_built": false,
+  "device_qualified": false,
+  "upstream": {
+    "repository": "qualcomm/geniex-qairt-plugin",
+    "commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+    "path": "core/src/pipeline/vlm_pipeline.cpp",
+    "git_blob": "2c9a2fa61d2eb274f4489351446863ca498d0ac5",
+    "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/core/src/pipeline/vlm_pipeline.cpp"
+  },
+  "changed_library": "lib/qairt/libgeniex_vlm.so",
+  "unchanged_r2_core_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+  "official_vlm_sha256": "8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87",
+  "official_proc_sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+  "official_proc_vision_sha256": "5517a4ca8e754e6df46859f914ce779dd30831e5a33bc457d40bec744d699be9",
+  "scope": "requested-grammar exceptions inside existing model generation try become existing error Result; no-grammar rethrows; earlier typed errors and normal behavior unchanged",
+  "class_layout_changed": false,
+  "public_headers_changed": false,
+  "host_controls": {
+    "candidate_passed": 16,
+    "upstream_expected_negative_failures": 4,
+    "fake_dependencies_not_model_qualification": true
+  },
+  "files": {
+    "vlm-grammar-error.patch": "5d6e35d07c872124e7e160eee7831f4cbdb0fe0b832c25c0cc6b7ea5b6be9821",
+    "candidate/vlm_pipeline.cpp": "cfee2c080b42b59e4edcf7e8313b5e52297539ed70c38aa405fd948042d74866",
+    "upstream/vlm_pipeline.cpp": "5521c482190254af65e3070d1413d3d919a8e6b8f80bf3ddb7125d8ef676807d",
+    "candidate/pipeline_generate.inc": "dd934102489d41666634b803f804d1bdc2793d68ab13ede30f4c454ede11482d",
+    "tests/pipeline_error_test.cpp": "e71f79824e5b93e1adf117dee792fbb3221d7d002b2cc106bf205f2eeeac3ccc",
+    "tests/generate_result.inc": "f8aed5bf47382488b56c335e97f6133d88827f95de60c02f52d86587cb5498d3",
+    "tests/finalize_generate_result.inc": "b8acafdd393395757d479306c258376d95569cd2fb64597d6556cb2d4fed54fc",
+    "host-validation-r2/HOST-TESTS.json": "605f43545d5ccbd6aedb6a0a3d3da39346f591218c76c8f3b634590b7108619d",
+    "run_host_tests.py": "ad6ca9348e35f33ebe886d8bb347a99bf4a0424a48fe137f569892906687b8a6"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.init-boot-backup-and-roundtrip-summary.v1",
+  "active_slot": "_a",
+  "active_partition_bytes": 8388608,
+  "active_original_sha256": "ff159c91e06c34b0611ed5b071575dded3955e62f263fb5fec7d96b42c19436f",
+  "host_copies": [
+    {
+      "host_role": "pocket4",
+      "full_file_sha256_verified": true,
+      "manifest_sha256": "eedd33507c81cae10c01fd487fd356ff0acfce0978aea41df427250f7433158f"
+    },
+    {
+      "host_role": "Mac",
+      "full_file_sha256_verified": true,
+      "mode": "0400",
+      "manifest_sha256": "734e5bfdb9364a605919c619f225f5d74286ac3738ca2c3e9f500b812a3f6052"
+    }
+  ],
+  "original_cpio_members": 33,
+  "original_cpio_bytes": 4550456,
+  "original_cpio_sha256": "8171c6c6ac63ba1dcafe51fbbef4fa15474a1f93e3b4a0786c84fd4e11b2b5d1",
+  "original_early_rc_sha256": "a2f43dc3a9fe8db8d47dcaf6a1c435b8a53232dfce378593ab8830fec49275ca",
+  "phone_magiskboot_bytes": 988984,
+  "phone_magiskboot_sha256": "97e9ec75731103d31c9e1effca7a50c6444309ce8f78c2ec27e9fe721da4bb54",
+  "magisk_version": "31.1/31100",
+  "unchanged_ordinary_file_roundtrip_bit_exact": true,
+  "roundtrip_result_sha256": "bc7c367a939ad74240811edfa958fdd1610f718448d119f9a0786db4473e6f81",
+  "partition_written": false,
+  "phone_rebooted": false,
+  "provider_service_started": false,
+  "original_stop_and_claims_unchanged": true,
+  "current_bootloader_usb_enumeration_verified": false,
+  "fastboot_restore_executed": false,
+  "modified_image_built": false,
+  "limitation": "Two complete original backups and ordinary-file roundtrip are verified. The final measured-stage rc/image and current USB bootloader recovery path are not yet verified. Do not treat this report as flash approval."
+}

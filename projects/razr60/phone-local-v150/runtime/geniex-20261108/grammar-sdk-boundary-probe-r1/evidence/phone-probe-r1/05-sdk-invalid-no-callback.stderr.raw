@@ -1,0 +1,12 @@
+boundary-probe: loading tokenizer only
+boundary-probe: path=sdk-invalid callback=false
+[90m[TRACE] [src/vlm.cpp:116:geniex_vlm_generate] VlmGenerateInput(prompt_utf8: diagnostic only, config: nullptr, on_token: nullptr, user_data: nullptr)[0m
+fake-backend: entering original proc Grammar constructor
+parse: error parsing grammar: unexpected end of input
+
+root ::= "unterminated
+
+geniex_grammar_init_from_string: failed to parse grammar
+boundary-probe: exception escaped original SDK C ABI and caught by caller std::exception: geniex::Grammar: failed to initialise grammar sampler
+loader: returned 30 before dlclose
+loader: normal dlclose complete

@@ -1,0 +1,178 @@
+{
+  "schema": "hepta.startup-health-host-validation.v1",
+  "status": "LOCAL_SCOPED_PASS_REMOTE_GATES_PENDING",
+  "source_manifest_sha256": "716e2e5a71955b31494258796de1f0f021cea2ede342446239f2254896283619",
+  "tests": [
+    {
+      "suite": "startup_health_contracts_and_real_signal_child_processes",
+      "tests": 12,
+      "elapsed_seconds": 1.012,
+      "exit_code": 0,
+      "test_names": [
+        "StartupContractTests.test_overlay_pins_startup_helper_and_real_daily_import_refuses_changed_bytes",
+        "StartupContractTests.test_fixed_schema_does_not_force_42_and_has_no_phone_actions",
+        "StartupContractTests.test_startup_binding_records_actual_host_identity_without_owner_turn",
+        "StartupContractTests.test_production_policy_rejects_current_host_as_init_bootstrap",
+        "StartupContractTests.test_changed_proof_config_pid_or_preflight_mode_is_rejected",
+        "StartupContractTests.test_real_shared_failure_path_is_durable_and_never_becomes_user_receipt",
+        "StartupContractTests.test_prior_unknown_remains_global_and_unchanged",
+        "StartupContractTests.test_cancelled_before_dispatch_cannot_pass_startup_or_create_owner_claim",
+        "StartupContractTests.test_answer_validation_uses_persisted_bytes_and_refuses_repaired_wrong_or_user_receipts",
+        "StartupContractTests.test_post_model_sigterm_sticky_latch_prevents_handoff",
+        "StartupContractTests.test_sigterm_after_restoration_or_result_return_terminates_before_handoff",
+        "StartupContractTests.test_ignored_or_custom_inherited_sigterm_rejected_before_model_boundary"
+      ],
+      "command": [
+        "python3",
+        "broker/tests/test_startup_health.py",
+        "--unit-only"
+      ],
+      "scope": "Actual binding/strict persisted bytes/shared no-dispatch backend, actual default signal termination, import-pin closure; signal tests stub the model boundary explicitly."
+    },
+    {
+      "suite": "existing_backend_contracts",
+      "tests": 15,
+      "elapsed_seconds": 0.198,
+      "exit_code": 0,
+      "test_names": [
+        "ContractTests.test_native_terminal_validator_rejects_every_missing_essential_proof",
+        "ContractTests.test_cancellation_wins_serialized_acceptance_and_records_original_order",
+        "ContractTests.test_owner_bytes_and_claim_must_match",
+        "ContractTests.test_context_admission_rejects_8192_and_unbound_or_overflow_budget",
+        "ContractTests.test_output_grammar_requires_explicit_profile_and_exact_conversion_binding",
+        "ContractTests.test_r3_uses_its_actual_profile_without_changing_the_token_budget",
+        "ContractTests.test_production_r3_requires_exact_pins_and_actual_qairt_bundle_layout",
+        "ContractTests.test_production_shadow_files_and_dangling_symlinks_stop_before_artifact_checks",
+        "ContractTests.test_flat_grammar_layout_is_only_accepted_by_explicit_python_host_policy",
+        "ContractTests.test_old_v1_and_r2_json_without_new_vlm_fields_still_parse_and_pin_original_vlm",
+        "ContractTests.test_grammar_prompt_keeps_all_open_choices_without_unavailable_click_example",
+        "ContractTests.test_overlay_keeps_old_completion_ast_and_adds_explicit_selector",
+        "ContractTests.test_compact_body_preserves_owner_and_full_semantic_transcript",
+        "ContractTests.test_already_open_owner_app_does_not_break_next_round_or_other_app_navigation",
+        "ContractTests.test_required_field_projection_does_not_present_optional_or_open_schema_as_required"
+      ],
+      "command": [
+        "python3",
+        "broker/tests/test_backend.py",
+        "--unit-only"
+      ],
+      "log_sha256": "c2f4dce59316294fedf48bbcb1d1aafa9a5bc0e9666317ae46af146fdba74d4a"
+    },
+    {
+      "suite": "entry_contracts_after_helper_pin_and_prelisten_hook",
+      "tests": 16,
+      "elapsed_seconds": 7.886,
+      "exit_code": 0,
+      "test_names": [
+        "NativeEntryContract.test_valid_plan_is_explicitly_parser_only",
+        "NativeEntryContract.test_plan_digest_and_private_file_mode_are_enforced",
+        "NativeEntryContract.test_duplicate_key_rejected_even_with_matching_raw_sha",
+        "NativeEntryContract.test_unknown_config_fields_and_paths_do_not_become_commands",
+        "NativeEntryContract.test_stage_integer_types_and_instance_are_not_coerced",
+        "NativeEntryContract.test_missing_entry_and_disagreeing_launch_pin_rejected",
+        "NativeEntryContract.test_json_depth_bounded_before_any_activation",
+        "NativeEntryContract.test_actual_immutable_python_mode_is_accepted",
+        "NativeEntryContract.test_python_file_checker_rejects_symlink_or_writable_mode",
+        "PythonEntryContract.test_explicit_preflight_and_serve_modes",
+        "PythonEntryContract.test_no_shell_argv_uid_or_context_override",
+        "PythonEntryContract.test_sources_must_be_complete_pinned_python_basenames",
+        "PythonEntryContract.test_stage_bool_and_unknown_modes_rejected",
+        "PythonEntryContract.test_duplicate_and_nonfinite_json_rejected",
+        "PythonEntryContract.test_post_exec_evidence_binds_original_intent_and_is_create_only",
+        "PythonEntryContract.test_post_exec_wrong_pid_or_launch_hash_cannot_publish_proof"
+      ],
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "deployment/tests",
+        "-p",
+        "test_entry.py",
+        "-v"
+      ]
+    },
+    {
+      "suite": "startup_bundle_after_required_helper_source",
+      "tests": 12,
+      "elapsed_seconds": 0.032,
+      "exit_code": 0,
+      "test_names": [
+        "StagingContract.test_parses_exact_stats_and_rejects_missing_or_duplicate_observations",
+        "StagingContract.test_stage_metadata_is_exact_and_cannot_be_already_bound",
+        "StagingContract.test_claims_stop_and_original_state_preservation_are_required",
+        "StagingContract.test_instance_and_rc_digest_cannot_inject_commands",
+        "StagingContract.test_rendered_scripts_pass_shell_parser_without_execution",
+        "StagingContract.test_bind_refuses_before_bootstrap_readiness_without_reaching_mutations",
+        "StagingContract.test_service_is_disabled_same_domain_and_no_automatic_replay",
+        "StagingContract.test_new_policy_preserves_non_executable_stage_and_no_device_grants",
+        "BundleContract.test_written_modes_are_exact_under_restrictive_umask_and_never_overwrite",
+        "BundleContract.test_regular_input_reader_refuses_links_and_oversized_files",
+        "BundleContract.test_artifacts_refuse_shared_paths_duplicates_writes_and_fake_integers",
+        "BundleContract.test_json_and_immutable_build_inputs_cannot_silently_drift"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "deployment/tests",
+        "-p",
+        "test_startup_bundle.py",
+        "-v"
+      ],
+      "log_sha256": "104581d90785220048f5aac513028cc3652d454d5608b9bced7a1fb6fa30011c"
+    }
+  ],
+  "host_fixture_compilation": {
+    "normal_and_aborting_workers": 2,
+    "exit_codes": [
+      0,
+      0
+    ],
+    "elapsed_seconds": 1.0847080539970193,
+    "flags": [
+      "-std=c11",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-Werror",
+      "-isystem vendor"
+    ],
+    "aborting_define": "HEPTA_HOST_STARTUP_ABORT",
+    "production_worker_changed": false,
+    "executed_as_android": false
+  },
+  "ordinary_branch_ast": {
+    "ordinary_run_arguments_unchanged": true,
+    "ordinary_run_body_recovered_exactly": true,
+    "ordinary_terminal_body_recovered_exactly": true,
+    "baseline_backend_sha256": "2049294d6ff4087f2e6af4861ff0c4542fe26a33b0e5fee8c35b3ef86686c6d5",
+    "candidate_backend_sha256": "9dbe467b6dfb3cd2ddf0582c930cf2f95700222498df3e82bf4f914a57555124",
+    "ordinary_run_body_ast_sha256": "7f1b8d9814023e4ec88b5c5701d66dae5a1381b32e2f7f0446783df70c32b543",
+    "ordinary_terminal_body_ast_sha256": "97f04b7c7e5e3e046b6a32af2bda6fe3d48b2c8a594916cd62c38d37947e8c01",
+    "method": "Restore only the owner_binding call in shared body and remove exactly two startup-only body branches and one startup-only terminal branch, then compare complete AST bodies."
+  },
+  "new_full_native_startup_cases": {
+    "defined": 2,
+    "executed": 0,
+    "reason": "Cloud AF_UNIX denied; pocket4 H connector unavailable. No mock result is counted as native IPC success."
+  },
+  "pending": [
+    "new private layout+health source overlay/PARENTS manifest",
+    "full unchanged r6 native tests and new startup two cases on pocket4",
+    "actual private r9 regression38",
+    "actual selected init entry/stage/UID2000 phone_worker NPU health and App qualification"
+  ],
+  "phone_operations": 0,
+  "partition_writes": 0,
+  "service_started": false,
+  "listener_opened": false,
+  "actual_uid2000_npu_qualified": false,
+  "final_startup_bundle_materialized": false,
+  "patch_checked_against_exact_baseline_and_all_result_hashes": true
+}

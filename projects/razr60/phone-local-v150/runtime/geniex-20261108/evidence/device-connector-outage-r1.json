@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.device-connector-availability.v1",
+  "recorded_utc": "2026-11-08 14:45:48 UTC",
+  "checks": [
+    {
+      "observed_utc": "2026-11-08 14:35 UTC",
+      "operation": "h.host_list",
+      "is_error": true,
+      "content": [
+        "tool call error: tool call failed for `codex_apps/h.host_list`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+      ]
+    },
+    {
+      "observed_utc": "2026-11-08 14:43:46 UTC",
+      "operation": "h.host_list",
+      "is_error": true,
+      "content": [
+        "tool call error: tool call failed for `codex_apps/h.host_list`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+      ]
+    }
+  ],
+  "interpretation": "Connector-level errors include inventory without SSH. Device jobs and process state cannot be inferred from these errors.",
+  "model_failure_claim": false,
+  "approval_rejection": false,
+  "unknown_job_policy": "Reconcile original stable-key requests and existing outputs before issuing any new device job.",
+  "fallback": "Independent GitHub connection remains available for source/evidence checkpointing; it does not control pocket4 or the phone."
+}

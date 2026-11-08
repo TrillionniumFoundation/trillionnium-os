@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.independent-startup-health-review.v1",
+  "recorded_utc": "2026-11-08T15:03:20.610342+00:00",
+  "reviewer": "mobile_models",
+  "status": "PREVIOUS_SIGNAL_HANDOFF_BLOCKER_CLOSED_NO_NEW_BLOCKER_IN_REVIEWED_SCOPE",
+  "review_scope": "Final delta of startup identity, source pins, pre-listen entry, stop/signal handling, and overlay/bundle closure. Native shared executor, budget and result validation received a separate android_inference review and are not requalified as phone behavior here.",
+  "initial_helper_review_sha256": "35e731db35a0204606f899b6b3d87d7837e613efd5f63ec9b3f2c0aaf24060e3",
+  "source_manifest": {
+    "bytes": 3450,
+    "sha256": "716e2e5a71955b31494258796de1f0f021cea2ede342446239f2254896283619"
+  },
+  "provided_validation": {
+    "bytes": 8926,
+    "sha256": "4cd325399460779771792106fdbfae2d976e54d7167031fbc44dcc4817326beb"
+  },
+  "reviewed_sources": {
+    "broker/startup_health.py": {
+      "bytes": 15955,
+      "sha256": "368af8d41998e2f7122daa56b8f8124fda81bab0577895cbf0b35c8e000b36d0"
+    },
+    "broker/native_backend.py": {
+      "bytes": 58976,
+      "sha256": "9dbe467b6dfb3cd2ddf0582c930cf2f95700222498df3e82bf4f914a57555124"
+    },
+    "broker/tests/test_startup_health.py": {
+      "bytes": 25948,
+      "sha256": "fa7bf88ee825ecef769453b704d13173f906566f5aecf49b09aa3123e0791a67"
+    },
+    "broker/apply_provider_overlay.py": {
+      "bytes": 11718,
+      "sha256": "c0128f27415f3adf61ebaf7907028662ce6193bbd2c03ab2a46d4ac9f61c8b01"
+    },
+    "deployment/provider_entry.py": {
+      "bytes": 11785,
+      "sha256": "d838c7a2223c6cd134b4b530bcc26b36a44dc7236f9584be1bcfc7d49b2271df"
+    },
+    "deployment/build_startup_bundle.py": {
+      "bytes": 19284,
+      "sha256": "d1b285e4f2348fca09037bfab2e28be6f241da4fdf044d5f9ad3484e68ef43db"
+    },
+    "deployment/staging.py": {
+      "bytes": 13660,
+      "sha256": "e09bf70e573c6a7700ee7af79a59d9c1610e2ef4281cc486a46832c5b351908f"
+    }
+  },
+  "all_eight_manifest_source_pins_verified_before_and_after": true,
+  "previous_blocker": {
+    "description": "SIGTERM accepted after the initial post-model cancellation check could be consumed by a flag-only handler, then forgotten when the old handler was restored, allowing a health-success return toward the listener.",
+    "status": "CLOSED_IN_REVIEWED_SOURCE",
+    "fix": "Only default terminating SIGTERM and default SIGINT policies are admitted. During supervision cancellation is sticky. After result validation, the original terminating handlers are restored before a final poll and sticky gate check. Signals before restoration cause failure; signals after restoration terminate instead of being swallowed. Success evidence explicitly records listener_ready=false.",
+    "focused_independent_test_result": {
+      "test_functions": 3,
+      "real_child_subcases": 6,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_startup_health.StartupContractTests.test_post_model_sigterm_sticky_latch_prevents_handoff",
+        "test_startup_health.StartupContractTests.test_sigterm_after_restoration_or_result_return_terminates_before_handoff",
+        "test_startup_health.StartupContractTests.test_ignored_or_custom_inherited_sigterm_rejected_before_model_boundary"
+      ],
+      "working_directory": "broker/tests",
+      "exit_code": 0,
+      "elapsed_seconds": 0.7238545060099568,
+      "stdout": {
+        "file": "independent-signal-review-r1.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "file": "independent-signal-review-r1.stderr",
+        "bytes": 648,
+        "sha256": "e0d56e16d2cec161d0000fb6e0635c34d2b910542b40cc4c9df2fcb3ea411fea"
+      },
+      "cases": [
+        {
+          "point": "during_validation",
+          "expected_and_asserted": "child exit70, failed_no_listen, listen_authorized=false, retained intent, no handoff marker"
+        },
+        {
+          "point": "post_validation_no_stop",
+          "expected_and_asserted": "child exit70, failed_no_listen, listen_authorized=false, retained intent, no handoff marker"
+        },
+        {
+          "point": "after_handler_restoration",
+          "expected_and_asserted": "actual SIGTERM exit -15, no health-result success and no handoff marker; intent retained"
+        },
+        {
+          "point": "after_health_return_before_handoff",
+          "expected_and_asserted": "actual SIGTERM exit -15, no handoff marker; existing health result still says listener_ready=false"
+        },
+        {
+          "point": "inherited_SIGTERM_ignored",
+          "expected_and_asserted": "exit70 before stub model boundary, no listen or handoff"
+        },
+        {
+          "point": "inherited_SIGTERM_custom",
+          "expected_and_asserted": "exit70 before stub model boundary, no listen or handoff"
+        }
+      ],
+      "model_boundary_explicitly_stubbed": true,
+      "actual_native_ipc_executed": false,
+      "android_signal_behavior_qualified": false
+    }
+  },
+  "other_final_deltas_reviewed": [
+    "Added explicit original plan schema and launch schema/serve-mode requirements strengthen the already reviewed per-boot identity/hash chain.",
+    "Failure catches BaseException and explicitly resets listen_authorized=false; installed-handler tracking restores only handlers actually installed.",
+    "Final success is named model_health_passed_handoff_authorized_not_listening and keeps listener_ready=false, separating model qualification from a bound/listening server.",
+    "provider_entry, overlay and bundle helper-pin changes remain byte-identical to the first architecture review; startup_health remains required and copied into the exact source closure."
+  ],
+  "blocking_findings": [],
+  "remaining_gates": [
+    "Generate a new actual private source overlay/PARENTS manifest for the full layout+health revision; do not reuse old R3 source or old 31-test qualification.",
+    "Run the full unchanged r6 native suite plus the two new startup native cases on a host with AF_UNIX, then actual private r9 regression38.",
+    "Observe real Android stage identity/mount namespace, init-owned entry and UID2000 phone_worker NPU health before permitting production listen.",
+    "Boot/SELinux/service readiness and real App operations remain separate acceptance work. This review does not turn root-model or host-signal fixtures into those proofs."
+  ],
+  "production_source_changed_by_reviewer": false,
+  "unrelated_tests_rerun": false,
+  "H_connector_calls": 0,
+  "phone_operations": 0,
+  "model_inference_calls": 0,
+  "ui_actions": 0,
+  "actual_uid2000_npu_qualified": false,
+  "service_started": false,
+  "listener_opened": false,
+  "full_suite_pass_claim": false
+}

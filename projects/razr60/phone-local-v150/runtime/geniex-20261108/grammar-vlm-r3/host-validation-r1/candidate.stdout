@@ -1,0 +1,16 @@
+{"test":"valid_grammar_unchanged","pass":true}
+{"test":"valid_no_grammar_unchanged","pass":true}
+{"test":"requested_grammar_standard_error_result","pass":true}
+{"test":"requested_grammar_nonstandard_error_result","pass":true}
+{"test":"no_grammar_standard_still_propagates","pass":true}
+{"test":"no_grammar_unknown_still_propagates","pass":true}
+{"test":"prompt_too_long_priority_preserved","pass":true}
+{"test":"context_length_priority_preserved","pass":true}
+{"test":"no_grammar_context_preserved","pass":true}
+{"test":"partial_output_is_error_not_eos","pass":true}
+{"test":"invalid_then_next_request_is_not_downgraded","pass":true}
+{"test":"callback_stop_preserved","pass":true}
+{"test":"processor_failure_grammar_preserved","pass":true}
+{"test":"processor_failure_no_grammar_preserved","pass":true}
+{"test":"not_ready_preserved","pass":true}
+{"passed":15,"failed":0}

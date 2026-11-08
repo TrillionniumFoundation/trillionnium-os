@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.init-provider-entry-build.v1",
+  "candidate_only": true,
+  "deployed_to_phone": false,
+  "source_archive_sha256": "95f8db212c4593a5ab57b71e52618facc60bed727cda8241c54f0610db6cdeb1",
+  "source_files": [
+    {
+      "path": "provider_entry.cpp",
+      "bytes": 19607,
+      "sha256": "3fa0003cee6d513fdbb22f153b2d22f95d5726c9dc62c0e907dbaeebd085aa17"
+    },
+    {
+      "path": "vendor/json.hpp",
+      "bytes": 987455,
+      "sha256": "08f19bbcc66ff3082f5caf58867b1232987dba98d82e2b29d870722fce42776b"
+    },
+    {
+      "path": "vendor/hash/hash.cpp",
+      "bytes": 581,
+      "sha256": "083a5a64f04667a78a03d09ce3e8499defa88f7b0aedace049749c97366d8b47"
+    },
+    {
+      "path": "vendor/hash/hash.h",
+      "bytes": 216,
+      "sha256": "63f7f0f5c1e8f1d98187af2dc37ad938863730fad59bca1f0d0573ad7272b549"
+    },
+    {
+      "path": "vendor/hash/sha256/sha256.c",
+      "bytes": 5282,
+      "sha256": "ba7a8ea69ad125385db28ef17e77be4a09dfdc30bb9532c30b259baaf670129c"
+    },
+    {
+      "path": "vendor/hash/sha256/sha256.h",
+      "bytes": 549,
+      "sha256": "6086b0330eafe9ddef74072738290bc268b2dcccae16bc6d6cde84dc7585ca07"
+    },
+    {
+      "path": "vendor/hash/rotate-bits/rotate-bits.h",
+      "bytes": 1017,
+      "sha256": "4a100f5e9b6bdc3e780bec38caeaec7f0edc87cf06b69b5bc1f87c2c867bdf23"
+    }
+  ],
+  "compiler": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: aarch64-unknown-linux-android28\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "ndk_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "api": 28,
+  "host_fixture_defined": false,
+  "steps": [
+    {
+      "label": "compiler-version",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++",
+        "--version"
+      ],
+      "rc": 0,
+      "seconds": 0.020337416
+    },
+    {
+      "label": "sha256",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wpedantic",
+        "-I",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/src/vendor/hash",
+        "-c",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/src/vendor/hash/sha256/sha256.c",
+        "-o",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/sha256.o"
+      ],
+      "rc": 0,
+      "seconds": 0.048195667000000005
+    },
+    {
+      "label": "entry",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wpedantic",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/src/vendor",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/src/provider_entry.cpp",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/src/vendor/hash/hash.cpp",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/sha256.o",
+        "-static-libstdc++",
+        "-o",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/hepta-provider-entry"
+      ],
+      "rc": 0,
+      "seconds": 1.25635575
+    },
+    {
+      "label": "strip",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "--strip-unneeded",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/hepta-provider-entry"
+      ],
+      "rc": 0,
+      "seconds": 0.0077615410000000384
+    },
+    {
+      "label": "elf",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-h",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-init-entry-r3-build/hepta-provider-entry"
+      ],
+      "rc": 0,
+      "seconds": 0.006447291999999827
+    }
+  ],
+  "binary": {
+    "bytes": 465960,
+    "sha256": "2d27ec9d9ecdddda8f8180e89d6759d327e41072cc65acc88b2e4d242b1c5caa"
+  },
+  "elf": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00\n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Shared object file)\n  Machine:                           AArch64\n  Version:                           0x1\n  Entry point address:               0x2AF30\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          464232 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         11\n  Size of section headers:           64 (bytes)\n  Number of section headers:         27\n  Section header string table index: 26\nDynamic section at offset 0x70b98 contains 25 entries:\n  Tag                Type           Name/Value\n  0x0000000000000001 (NEEDED)       Shared library: [libm.so]\n  0x0000000000000001 (NEEDED)       Shared library: [libdl.so]\n  0x0000000000000001 (NEEDED)       Shared library: [libc.so]\n  0x000000000000001e (FLAGS)        BIND_NOW \n  0x000000006ffffffb (FLAGS_1)      NOW PIE \n  0x0000000000000015 (DEBUG)        0x0\n  0x0000000000000007 (RELA)         0x1018\n  0x0000000000000008 (RELASZ)       44232 (bytes)\n  0x0000000000000009 (RELAENT)      24 (bytes)\n  0x000000006ffffff9 (RELACOUNT)    1840\n  0x0000000000000017 (JMPREL)       0xbce0\n  0x0000000000000002 (PLTRELSZ)     2016 (bytes)\n  0x0000000000000003 (PLTGOT)       0x78e80\n  0x0000000000000014 (PLTREL)       RELA\n  0x0000000000000006 (SYMTAB)       0x358\n  0x000000000000000b (SYMENT)       24 (bytes)\n  0x0000000000000005 (STRTAB)       0xca4\n  0x000000000000000a (STRSZ)        878 (bytes)\n  0x000000006ffffef5 (GNU_HASH)     0xc88\n  0x0000000000000019 (INIT_ARRAY)   0x78b88\n  0x000000000000001b (INIT_ARRAYSZ) 16 (bytes)\n  0x000000006ffffff0 (VERSYM)       0xb98\n  0x000000006ffffffe (VERNEED)      0xc48\n  0x000000006fffffff (VERNEEDNUM)   2\n  0x0000000000000000 (NULL)         0x0\n"
+}

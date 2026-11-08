@@ -1,0 +1,170 @@
+{
+  "files": [
+    {
+      "path": "core/src/vlm/vlm_input_provider.cpp",
+      "bytes": 15617,
+      "sha256": "a447c5cfc1ef89f4b238e07df025714b6149649ef5bcb6334718e1ff0ca15f18",
+      "includes": [
+        "#include \"vlm/vlm_input_provider.h\"",
+        "#include <algorithm>",
+        "#include <cctype>",
+        "#include <cmath>",
+        "#include <fstream>",
+        "#include <numeric>",
+        "#include <stdexcept>",
+        "#include <string>",
+        "#include \"llm/llm_utils.h\"",
+        "#include \"xtensor/io/xnpy.hpp\""
+      ]
+    },
+    {
+      "path": "core/src/vlm/vlm_model.cpp",
+      "bytes": 2830,
+      "sha256": "26d2da608b46a5ea29b7508f3b1f51beeccae107fcce054f54e0eaaa81185cfa",
+      "includes": [
+        "#include \"vlm/vlm_model.h\"",
+        "#include <algorithm>",
+        "#include <chrono>",
+        "#include <stdexcept>",
+        "#include \"vlm/vlm_types.h\""
+      ]
+    },
+    {
+      "path": "core/src/vlm/vision_encoder.cpp",
+      "bytes": 353,
+      "sha256": "90a008c38f2d0086423c965717e9497471f5d5d9bbd76757bf29a95ed2130605",
+      "includes": [
+        "#include \"vlm/vision_encoder.h\""
+      ]
+    },
+    {
+      "path": "core/src/vlm/vit_utils.cpp",
+      "bytes": 8863,
+      "sha256": "62d3789e57d4a50d6fe98885febf6fb3ba26325aac7be54d6184f74fac7cb188",
+      "includes": [
+        "#include \"vlm/vit_utils.h\"",
+        "#include <cmath>",
+        "#include <cstring>",
+        "#include <stdexcept>",
+        "#include <string>"
+      ]
+    },
+    {
+      "path": "core/src/vlm/vlm_utils.cpp",
+      "bytes": 2983,
+      "sha256": "6e3b3362eefa3108ffefbab7284ac6d51527ec68b40fc89a502726c530587132",
+      "includes": [
+        "#include \"vlm/vlm_utils.h\"",
+        "#include <algorithm>"
+      ]
+    },
+    {
+      "path": "core/src/pipeline/vlm_pipeline.cpp",
+      "bytes": 8880,
+      "sha256": "5521c482190254af65e3070d1413d3d919a8e6b8f80bf3ddb7125d8ef676807d",
+      "includes": [
+        "#include \"pipeline/vlm_pipeline.h\"",
+        "#include <chrono>",
+        "#include <cstring>",
+        "#include <sstream>",
+        "#include <utility>",
+        "#include \"geniex-proc/processor.h\"",
+        "#include \"geniex-proc/tokenizer.h\"",
+        "#include \"geniex-proc/types.h\"",
+        "#include \"llm/llm_model.h\"  // PromptTooLongError"
+      ]
+    },
+    {
+      "path": "models/qwen2_5_vl/qwen2_5_vl.cpp",
+      "bytes": 9387,
+      "sha256": "42d34b31c94216a04feec41ce9e3cdc95c3a530bdf55cbb00cc1d0e2f2978251",
+      "includes": [
+        "#include \"qwen2_5_vl.h\"",
+        "#include <algorithm>",
+        "#include <array>",
+        "#include <cstddef>",
+        "#include <cstdint>",
+        "#include <cstring>",
+        "#include <stdexcept>",
+        "#include <string>",
+        "#include <vector>",
+        "#include \"logging.h\"",
+        "#include \"utils.h\"",
+        "#include \"vlm/vit_utils.h\"",
+        "#include \"vlm/vlm_utils.h\""
+      ]
+    },
+    {
+      "path": "models/qwen3_vl/qwen3_vl.cpp",
+      "bytes": 12749,
+      "sha256": "b4c8fa6c0439f07176d4db6dcc9ac6f2c9ac5351be0d9d110e75c65475e86a70",
+      "includes": [
+        "#include \"qwen3_vl.h\"",
+        "#include <algorithm>",
+        "#include <array>",
+        "#include <cstddef>",
+        "#include <cstdint>",
+        "#include <cstring>",
+        "#include <stdexcept>",
+        "#include <string>",
+        "#include <vector>",
+        "#include \"logging.h\"",
+        "#include \"utils.h\"",
+        "#include \"vlm/vit_utils.h\"",
+        "#include \"vlm/vlm_utils.h\""
+      ]
+    },
+    {
+      "path": "models/intern3_5_vl/intern3_5_vl.cpp",
+      "bytes": 5696,
+      "sha256": "7765473b95d32b20741f3d49f8f4d829d3674bc1f9589cbc508cf9729e7093fd",
+      "includes": [
+        "#include \"intern3_5_vl.h\"",
+        "#include <cstddef>",
+        "#include <cstdint>",
+        "#include <stdexcept>",
+        "#include <string>",
+        "#include <vector>",
+        "#include \"logging.h\"",
+        "#include \"utils.h\""
+      ]
+    },
+    {
+      "path": "models/gemma4/gemma4.cpp",
+      "bytes": 22811,
+      "sha256": "3040a8245879e5b7fea7e4e6bf137bd914a5bc32f389a5a5b2d0bf9f2b5a3de1",
+      "includes": [
+        "#include \"gemma4/gemma4.h\"",
+        "#include <algorithm>",
+        "#include <cstddef>",
+        "#include <cstdint>",
+        "#include <filesystem>",
+        "#include <functional>",
+        "#include <map>",
+        "#include <memory>",
+        "#include <stdexcept>",
+        "#include <string>",
+        "#include <type_traits>",
+        "#include <utility>",
+        "#include <variant>",
+        "#include <vector>",
+        "#include \"geniex-proc/gemma4.h\"",
+        "#include \"graph.h\"",
+        "#include \"llm/llm_model.h\"",
+        "#include \"logging.h\"",
+        "#include \"model.h\"",
+        "#include \"utils.h\""
+      ]
+    }
+  ],
+  "count": 10,
+  "public_processor_includes": [
+    "#include <memory>",
+    "#include <stdexcept>",
+    "#include <string>",
+    "#include <vector>",
+    "#include \"geniex-proc/export.h\"",
+    "#include \"geniex-proc/tokenizer.h\"  // ApplyChatTemplateOptions",
+    "#include \"geniex-proc/types.h\""
+  ]
+}

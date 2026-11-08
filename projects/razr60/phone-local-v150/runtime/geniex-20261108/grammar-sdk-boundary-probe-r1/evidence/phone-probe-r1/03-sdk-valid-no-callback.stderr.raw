@@ -1,0 +1,9 @@
+boundary-probe: loading tokenizer only
+boundary-probe: path=sdk-valid callback=false
+[90m[TRACE] [src/vlm.cpp:116:geniex_vlm_generate] VlmGenerateInput(prompt_utf8: diagnostic only, config: nullptr, on_token: nullptr, user_data: nullptr)[0m
+fake-backend: entering original proc Grammar constructor
+fake-backend: valid Grammar constructed; no tokens generated
+[90m[TRACE] [src/vlm.cpp:149:geniex_vlm_generate] ErrorCode[0](Success): VlmGenerateOutput(full_text: nullptr, profile_data: ProfileData(ttft: 0 us, prompt_time: 0 us, decode_time: 0 us, prompt_tokens: 0, generated_tokens: 0, prefill_speed: 0 tokens/s, decoding_speed: 0 tokens/s, stop_reason: nullptr))[0m
+boundary-probe: returned sdk_rc=0 full_text_null=true callbacks=0
+loader: returned 0 before dlclose
+loader: normal dlclose complete

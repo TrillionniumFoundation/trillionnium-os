@@ -1,0 +1,12 @@
+test_duplicate_unsafe_or_binary_rc_is_rejected (__main__.CpioPreservation.test_duplicate_unsafe_or_binary_rc_is_rejected) ... ok
+test_missing_overlay_directory_or_nonzero_trailer_is_rejected (__main__.CpioPreservation.test_missing_overlay_directory_or_nonzero_trailer_is_rejected) ... ok
+test_one_new_rc_keeps_all_original_metadata_payloads_and_record_bytes (__main__.CpioPreservation.test_one_new_rc_keeps_all_original_metadata_payloads_and_record_bytes) ... ok
+test_copy_renderer_reuses_model_and_only_writes_new_runtime_root (__main__.FinalConfiguration.test_copy_renderer_reuses_model_and_only_writes_new_runtime_root) ... ok
+test_explicit_upgrade_preserves_base_template_stage_and_model_without_mutating_original (__main__.FinalConfiguration.test_explicit_upgrade_preserves_base_template_stage_and_model_without_mutating_original) ... ok
+test_real_52_file_qairt_layout_is_preserved (__main__.FinalConfiguration.test_real_52_file_qairt_layout_is_preserved) ... ok
+test_wrong_model_compiler_library_and_unexpected_old_fields_fail (__main__.FinalConfiguration.test_wrong_model_compiler_library_and_unexpected_old_fields_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.011s
+
+OK

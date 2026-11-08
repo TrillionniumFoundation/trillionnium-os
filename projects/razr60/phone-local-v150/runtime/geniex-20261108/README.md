@@ -317,3 +317,26 @@ replace production-domain or fixed19 App tests, whose qualification remains
 0/19. See `broker/README.md` and `VALIDATION.md` for exact hashes, scope and
 preserved failures. No production runtime or startup service is activated by
 these source files.
+
+
+## R3 VLM repair and deployment follow-up
+
+The historical R2 status above is preserved. A separate R3 VLM patch now returns
+malformed-grammar failure normally through the existing SDK error path. Five
+root/network-isolated phone cases pass: malformed grammar, new no-grammar
+recovery, an A-versus-B discriminator and two synthetic visual decisions. See
+`evidence/qairt-vlm-r3-smoke/RESULT.json` and `VALIDATION.md`. No UI action ran.
+
+Initial R3 provider-source tests passed 31 backend and 38 original private host
+regressions. Deployment review then found and fixed a real nested QAIRT loader
+layout mismatch. That r4 correction passes 15 local contracts; its 34-test full
+suite remains pending. A separate startup-health candidate now passes its 12 local health, 15 backend,
+16 entry and 12 bundle contracts. Neither later source can inherit the earlier
+full-suite result.
+The original fixed19 acceptance remains unqualified, and production execution
+permissions, init startup and real App behavior remain untested.
+
+Current MoE research also identifies MobiInfer with MiniCPM-V-4.7-35B-A3B as a
+concrete larger native-v79 route. Its author measurements are distinct from
+this razr's results; source/default drift, full weight pins, continuous
+reliability and GUI action correctness still require qualification.

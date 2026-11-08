@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.init-provider-entry-host-contract-tests.v1",
+  "status": "PASS",
+  "test_count": 14,
+  "passed": 14,
+  "elapsed_seconds": 8.154,
+  "exit_code": 0,
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/tests",
+    "-v"
+  ],
+  "host_scope": "Cloud Linux UID0 parser, compilation and filesystem contract only; no Android init, SELinux, capability inheritance, native execution or NPU claim",
+  "native_android_executed": false,
+  "production_services_started": false,
+  "test_names": [
+    "NativeEntryContract.test_valid_plan_is_explicitly_parser_only",
+    "NativeEntryContract.test_plan_digest_and_private_file_mode_are_enforced",
+    "NativeEntryContract.test_duplicate_key_rejected_even_with_matching_raw_sha",
+    "NativeEntryContract.test_unknown_config_fields_and_paths_do_not_become_commands",
+    "NativeEntryContract.test_stage_integer_types_and_instance_are_not_coerced",
+    "NativeEntryContract.test_missing_entry_and_disagreeing_launch_pin_rejected",
+    "NativeEntryContract.test_json_depth_bounded_before_any_activation",
+    "PythonEntryContract.test_explicit_preflight_and_serve_modes",
+    "PythonEntryContract.test_no_shell_argv_uid_or_context_override",
+    "PythonEntryContract.test_sources_must_be_complete_pinned_python_basenames",
+    "PythonEntryContract.test_stage_bool_and_unknown_modes_rejected",
+    "PythonEntryContract.test_duplicate_and_nonfinite_json_rejected",
+    "PythonEntryContract.test_post_exec_evidence_binds_original_intent_and_is_create_only",
+    "PythonEntryContract.test_post_exec_wrong_pid_or_launch_hash_cannot_publish_proof"
+  ],
+  "sources": [
+    {
+      "path": "provider_entry.cpp",
+      "bytes": 19106,
+      "sha256": "c1c9698c1fbc4976fdbb9ac778e932990168fc6d7d005c9a1090cbaa42784fa4"
+    },
+    {
+      "path": "provider_entry.py",
+      "bytes": 11423,
+      "sha256": "6b217143f27db1c3a0b63676af6115f35795902a53253c51965b94908e627056"
+    },
+    {
+      "path": "tests/test_entry.py",
+      "bytes": 11451,
+      "sha256": "659132d69e0c34501276616071eb2c13dfbdfa0d9619eb0f6883bf07cc7dc706"
+    },
+    {
+      "path": "build-r2/BUILD-MANIFEST.json",
+      "bytes": 7378,
+      "sha256": "4d24beac3a2e5c8af11c0fa6337a86a15db92c3ca2d1b3fa2b6781951a22ef87"
+    }
+  ]
+}

@@ -30,7 +30,13 @@ SDK_COMMIT = "071f609995470bdb0e0769ab964754adfaab7e47"
 WORKER_SOURCE_SHA = "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
 TOKENIZER_LIBRARY_SHA = "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d"
 GRAMMAR_PROFILE = "qairt-output-grammar-core-r2-v1"
+GRAMMAR_R3_PROFILE = "qairt-output-grammar-core-r2-vlm-r3-v1"
+GRAMMAR_PROFILES = frozenset((GRAMMAR_PROFILE, GRAMMAR_R3_PROFILE))
 GRAMMAR_CORE_SHA = "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d"
+ORIGINAL_VLM_SHA = "8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87"
+# This is the actual built R3 candidate, not an assertion of deployment or of
+# passing its independent ABI/phone gates. Selecting it requires the R3 profile.
+GRAMMAR_R3_VLM_SHA = "773e23de3f892d2cd9c468e7b0af32e6c254af341d4ed0e7ef0eda95f6ee1d73"
 GRAMMAR_SUBSET = "hepta.mobile-schema-gbnf-subset.v1"
 GRAMMAR_COMPILER_KIND = "reviewed_python_source"
 GRAMMAR_CONVERTER_COMMIT = "19cce6919992fdffd92e0ac152caaf1e2b8f254e"
@@ -394,7 +400,7 @@ def validate_counter(value, native, *, request_id, expected_inputs, original_inp
             "native counter was not in the supervised model process group")
     require(value.get("input_sha256") == {key: expected_inputs[key] for key in ("prompt", "system", "image")}
             and ((expected_inputs["grammar"] is None and config.grammar_profile is None)
-                 or (hex_string(expected_inputs["grammar"], 64) and config.grammar_profile == GRAMMAR_PROFILE))
+                 or (hex_string(expected_inputs["grammar"], 64) and config.grammar_profile in GRAMMAR_PROFILES))
             and value.get("input_unchanged") is True and value.get("raw_input_preserved") is True,
             "native token admission inputs differ")
     require(value.get("method") == "exact_sdk_formatted_text_segments_plus_bos_upper_bound"
@@ -456,6 +462,8 @@ class BackendConfig:
     core_android: str | None = None
     core_sha256: str | None = None
     schema_compiler_sha256: str | None = None
+    vlm_android: str | None = None
+    vlm_sha256: str | None = None
 
     def validate(self, policy=ANDROID_POLICY):
         private_dir(self.evidence_root, os.getuid())
@@ -478,10 +486,11 @@ class BackendConfig:
             require(isinstance(value, str) and value and all(part.startswith("/") and "\0" not in part and "\n" not in part
                     for part in value.split(separator)), "runtime library path list differs")
         if self.grammar_profile is None:
-            require(self.core_android is None and self.core_sha256 is None and self.schema_compiler_sha256 is None,
+            require(self.core_android is None and self.core_sha256 is None and self.schema_compiler_sha256 is None
+                    and self.vlm_android is None and self.vlm_sha256 is None,
                     "grammar artifacts require their explicit reviewed profile")
         else:
-            require(self.grammar_profile == GRAMMAR_PROFILE
+            require(self.grammar_profile in GRAMMAR_PROFILES
                     and hex_string(self.core_sha256, 64) and hex_string(self.schema_compiler_sha256, 64),
                     "unknown or unpinned output grammar profile")
             require(isinstance(self.core_android, str) and self.core_android.startswith("/")
@@ -490,15 +499,63 @@ class BackendConfig:
                     and "\0" not in self.core_android and "\n" not in self.core_android
                     and PurePosixPath(self.core_android).name == "libgeniex_core.so",
                     "noncanonical grammar core path")
-            require(str(PurePosixPath(self.core_android).parent) == self.plugin_path == self.ld_library_path.split(":")[0],
-                    "grammar core must be the selected first loader directory")
+            # The reviewed Android bundle keeps its QAIRT DSOs under lib/qairt;
+            # lib and lib/llama_cpp precede it in the measured loader order.
+            # The explicit Python-only host policy keeps its existing flat
+            # fixture layout. JSON configuration cannot select that policy.
+            grammar_directory = self.plugin_path + "/qairt" if policy.production else self.plugin_path
+            require(str(PurePosixPath(self.core_android).parent) == grammar_directory,
+                    "grammar core differs from the selected QAIRT directory" if policy.production
+                    else "grammar core must be the selected first loader directory")
+            if not policy.production:
+                require(self.plugin_path == self.ld_library_path.split(":")[0],
+                        "grammar core must be the selected first loader directory")
+            if self.grammar_profile == GRAMMAR_R3_PROFILE:
+                require(isinstance(self.vlm_android, str) and hex_string(self.vlm_sha256, 64),
+                        "R3 output grammar requires an explicit VLM path and pin")
+            else:
+                require((self.vlm_android is None and self.vlm_sha256 is None)
+                        or (isinstance(self.vlm_android, str) and hex_string(self.vlm_sha256, 64)),
+                        "R2 VLM path and pin must be supplied together")
+            vlm_path, vlm_sha = self.selected_vlm()
+            require(vlm_path.startswith("/") and str(PurePosixPath(vlm_path)) == vlm_path
+                    and ".." not in PurePosixPath(vlm_path).parts and "\0" not in vlm_path and "\n" not in vlm_path
+                    and PurePosixPath(vlm_path).name == "libgeniex_vlm.so", "noncanonical grammar VLM path")
+            require(str(PurePosixPath(vlm_path).parent) == grammar_directory,
+                    "grammar VLM differs from the selected QAIRT directory" if policy.production
+                    else "grammar VLM must be the selected first loader directory")
             if policy.production:
+                expected_loader = [self.plugin_path, self.plugin_path + "/llama_cpp", grammar_directory,
+                                   grammar_directory + "/htp-files", "/system/lib64", "/vendor/lib64"]
+                require(self.ld_library_path.split(":") == expected_loader,
+                        "Android grammar bundle loader layout differs")
+                require(self.qairt_lib_path == grammar_directory + "/htp-files",
+                        "Android grammar QAIRT HTP directory differs")
+                require(self.tokenizer_library_android == grammar_directory + "/libgeniex-proc.so",
+                        "Android grammar tokenizer library path differs")
                 require(self.core_sha256 == GRAMMAR_CORE_SHA, "unreviewed Android output grammar core")
+                expected_vlm = GRAMMAR_R3_VLM_SHA if self.grammar_profile == GRAMMAR_R3_PROFILE else ORIGINAL_VLM_SHA
+                require(vlm_sha == expected_vlm, "Android VLM hash differs from the explicit grammar profile")
         if policy.production:
             parts = self.ld_library_path.split(":")
             require(parts[-2:] == ["/system/lib64", "/vendor/lib64"], "Android system/vendor loader order differs")
             require(self.tokenizer_library_sha256 == TOKENIZER_LIBRARY_SHA,
                     "native counter library differs from selected official QAIRT package")
+
+    def selected_vlm(self):
+        if self.grammar_profile is None:
+            return None, None
+        if self.grammar_profile == GRAMMAR_PROFILE and self.vlm_android is None and self.vlm_sha256 is None:
+            # Old R2 JSON remains readable. New source pins the original VLM
+            # rather than silently using whichever SONAME is in the directory.
+            return str(PurePosixPath(self.core_android).with_name("libgeniex_vlm.so")), ORIGINAL_VLM_SHA
+        return self.vlm_android, self.vlm_sha256
+
+    def vlm_binding(self):
+        if self.grammar_profile is None:
+            return {}
+        path, digest = self.selected_vlm()
+        return {"vlm_android": path, "vlm_sha256": digest}
 
     def digest(self):
         value = dataclasses.asdict(self)
@@ -543,7 +600,7 @@ def validate_budget(budget, inputs, tokenizer_sha256, *, grammar_profile=None, s
         require(inputs["grammar"] is None and budget.get("schema_conversion") is None,
                 "original QAIRT runtime must not receive grammar")
     else:
-        require(grammar_profile == GRAMMAR_PROFILE and hex_string(inputs["grammar"], 64)
+        require(grammar_profile in GRAMMAR_PROFILES and hex_string(inputs["grammar"], 64)
                 and hex_string(schema_compiler_sha256, 64), "output grammar input/pin absent")
         proof = budget.get("schema_conversion")
         require(isinstance(proof, dict) and proof.get("schema") == "hepta.schema-gbnf-conversion.v1"
@@ -593,10 +650,19 @@ class NativeBackend:
             env_binary, sha_binary = "/usr/bin/env", "/usr/bin/sha256sum"
         env.append("PATH=/system/bin:/vendor/bin" if self.policy.production else "PATH=/usr/bin:/bin")
         checks = []
+        if self.policy.production and c.grammar_profile in GRAMMAR_PROFILES:
+            # These directories precede the pinned QAIRT directory. Even a
+            # dangling symlink is an unexpected shadow and must stop this exact
+            # request before any tokenizer or model process can start.
+            for directory in (c.plugin_path, c.plugin_path + "/llama_cpp"):
+                for name in ("libgeniex_core.so", "libgeniex_vlm.so"):
+                    shadow = shlex.quote(directory + "/" + name)
+                    checks.append("[ ! -e " + shadow + " ] && [ ! -L " + shadow + " ] || exit 65")
         artifacts = [(c.worker_android, c.worker_sha256), (c.counter_android, c.counter_sha256),
                      (c.tokenizer_library_android, c.tokenizer_library_sha256), (c.tokenizer_android, c.tokenizer_sha256)]
         if c.grammar_profile is not None:
             artifacts.append((c.core_android, c.core_sha256))
+            artifacts.append(c.selected_vlm())
         for path, expected_sha in artifacts:
             verify = shlex.quote(sha_binary) + " " + shlex.quote(path)
             checks.append("[ \"$(" + verify + ")\" = " + shlex.quote(expected_sha + "  " + path) + " ] || exit 65")
@@ -607,7 +673,7 @@ class NativeBackend:
             "--max-prompt", "3584"]
         if has_image:
             counter += ["--image", native_dir + "/current.png"]
-        require(has_system and has_grammar == (c.grammar_profile == GRAMMAR_PROFILE),
+        require(has_system and has_grammar == (c.grammar_profile in GRAMMAR_PROFILES),
                 "native QAIRT system/grammar selection differs from the configured runtime")
         return ("cd " + shlex.quote(str(PurePosixPath(c.model_android).parent)) + " || exit 65; "
                 + "; ".join(checks) + "; " + shlex.join([env_binary, "-i", *env, *counter]) + " && exec "
@@ -615,6 +681,27 @@ class NativeBackend:
 
     def run(self, *, request_id, prompt: bytes, system: bytes | None, grammar: bytes | None, image: bytes | None,
             owner_path: Path, owner_claim_path: Path, budget: dict, gate: CancelGate, on_poll: Callable | None = None):
+        # The ordinary request interface, owner proof and resulting evidence
+        # shapes are unchanged. Startup diagnostics have a separate entry point
+        # and never manufacture an accepted user turn.
+        return self._run_bound(request_id=request_id, prompt=prompt, system=system, grammar=grammar, image=image,
+            binding_loader=lambda: owner_binding(owner_path, owner_claim_path), budget=budget, gate=gate, on_poll=on_poll)
+
+    def run_startup_health(self, *, candidate: Path, counter, compiler, gate: CancelGate,
+                           on_poll: Callable | None = None):
+        import startup_health
+        prepared = startup_health.prepare_request(self, candidate, counter, compiler)
+        def binding_loader():
+            current = startup_health.startup_binding(self, candidate)
+            require(current == prepared["binding"], "startup proof changed before native intent")
+            return current
+        return self._run_bound(request_id=prepared["request_id"], prompt=startup_health.PROMPT,
+            system=startup_health.SYSTEM, grammar=prepared["grammar"], image=None,
+            binding_loader=binding_loader, budget=prepared["budget"], gate=gate, on_poll=on_poll)
+
+    def _run_bound(self, *, request_id, prompt: bytes, system: bytes | None, grammar: bytes | None,
+                   image: bytes | None, binding_loader: Callable, budget: dict, gate: CancelGate,
+                   on_poll: Callable | None = None):
         require(hex_string(request_id, 32), "request identity malformed")
         inputs = {"prompt": prompt, "system": system, "grammar": grammar, "image": image}
         for key, raw in inputs.items():
@@ -626,7 +713,7 @@ class NativeBackend:
         expected_inputs = {key: sha(raw) if raw is not None else None for key, raw in inputs.items()}
         admission_limit = validate_budget(budget, expected_inputs, self.config.tokenizer_sha256,
             grammar_profile=self.config.grammar_profile, schema_compiler_sha256=self.config.schema_compiler_sha256)
-        binding = owner_binding(owner_path, owner_claim_path)
+        binding = binding_loader()
         lock_fd = os.open(self.config.evidence_root / "backend.lock", os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
         try:
             lock_info = os.fstat(lock_fd)
@@ -669,10 +756,13 @@ class NativeBackend:
                       "counter_executable_sha256": self.config.counter_sha256,
                       "tokenizer_library_sha256": self.config.tokenizer_library_sha256,
                       "grammar_profile": self.config.grammar_profile, "core_sha256": self.config.core_sha256,
+                      **self.config.vlm_binding(),
                       "schema_compiler_sha256": self.config.schema_compiler_sha256,
                       "input_sha256": expected_inputs, "token_budget": budget, "command_sha256": command_digest,
                       "profile": PROFILE, "stage_directory": str(stage), "android_stage_directory": native_dir,
                       "endpoint": self.transport.endpoint, "automatic_retry": False, "can_redispatch": False}
+            if binding.get("request_kind") == "startup_health":
+                intent["schema"] = "hepta.geniex-startup-native-intent.v1"
             exclusive(directory / "intent.json", canonical_json(intent))
             for name, key in (("prompt.txt", "prompt"), ("system.txt", "system"), ("grammar.txt", "grammar"), ("current.png", "image")):
                 if inputs[key] is not None:
@@ -687,6 +777,9 @@ class NativeBackend:
                 require(health.get("protocol") == PROTOCOL and health.get("executor_revision") == 6
                         and health.get("state") == "ready" and health.get("execute_authorized") is True
                         and hex_string(health.get("server_instance"), 32), "native executor not ready/authorized; original recovery gate remains enforced")
+                if binding.get("request_kind") == "startup_health":
+                    require(health["server_instance"] == binding["startup_binding"]["native_server_instance"],
+                            "startup native executor restarted after post-exec preflight")
             except Exception as exc:
                 return self._terminal(directory, intent, "failed", True, False, "known_not_dispatched: " + str(exc))
             instance = health["server_instance"]
@@ -799,7 +892,11 @@ class NativeBackend:
                "cleanup_confirmed": cleanup, "model_result_usable": usable, "error": error,
                "inference_backend": "geniex_qairt_isolated_process", "profile": PROFILE["name"],
                "grammar_profile": self.config.grammar_profile, "core_sha256": self.config.core_sha256,
+               **self.config.vlm_binding(),
                "proof_environment": "android_native" if self.policy.production else "host_fixture",
                "automatic_retry": False, "can_redispatch": False, "native_action_authorized": False, **hashes}
+        if intent.get("request_kind") == "startup_health":
+            row.update(schema="hepta.geniex-startup-process-receipt.v1", request_kind="startup_health",
+                       startup_binding_sha256=sha(canonical_json(intent["startup_binding"])))
         exclusive(directory / "terminal.json", canonical_json(row))
         return {"receipt": row, "text": None}

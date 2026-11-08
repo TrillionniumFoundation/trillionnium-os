@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.native-grammar-vlm-r3-host-validation.v1",
+  "started_unix": 1794146702.8694272,
+  "pack_sha256": "baba43778559889dc572358ea1addefcf78af24ce8b0bb704d93a5b13ede2a8d",
+  "phone_contacted": false,
+  "UI_actions": 0,
+  "production_qualified": false,
+  "all_pass": true,
+  "tests": [
+    {
+      "name": "create-private-overlay",
+      "exit_code": 0,
+      "seconds": 0.14241835195571184,
+      "stdout_sha256": "a7379c6ba2d09bdc4333c500d3e5a8bec38d219c7063ef6840a76fcf10847fb4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "backend-31-with-private-v1-r2-r3-selectors",
+      "exit_code": 0,
+      "seconds": 33.849353739991784,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "56b650768617702c7460832ff8d2821e10fcdd1e2bc3a8aa6d96eca8a5952482"
+    },
+    {
+      "name": "private-r9-original-38",
+      "exit_code": 0,
+      "seconds": 7.795839399797842,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "adfd42b2eea251d86d8d2dcc26b003b229579a063854b8dc04f4c0036d3292bf"
+    },
+    {
+      "name": "private-pins-import",
+      "exit_code": 0,
+      "seconds": 0.10593573399819434,
+      "stdout_sha256": "7cdb8a89ac503eb7d260527d9dc70da7b433b35bdf7a2805427f9c16ac9b315c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "candidate_public_sha256": {
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/native_backend.py": "0f6ca4b9937ef5ad9f7b46ff48059c980424f0c7811ede5b9d72ff202d12e58b",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/provider_bridge.py": "9b8d82f225ccffebdabe4cc67514514cb93841cf7abde0c50e297a013b1706fd",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/prompt_budget.py": "f84ff82c221d9262b6e40032d91863a6752f4abbce05bc32530efcbebf67c4dc",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_backend.py": "66947090db7f898ce8aec630d4db70f01b06bae795be3a79a6bbcdc6e82f742d",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/provider_flow_probe.py": "c39c4a7a234433b3a962fa01d39f51424463eac11b5f7a40e76ac3247b6f14a1"
+  },
+  "private_source_sha256": {
+    "task_postconditions.py": "b08e1c4174effb891defd2b055291c2c3a2e17435c9705d331fbe440fe5f0d45",
+    "retirement_recovery.py": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+    "phone_observation_tools.py": "ed855866475efb7334f5a5a20d7622541f532cfcc778b8813908eb860cda198c",
+    "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "action_ledger.py": "9fdf249d60b539f8630ff82c611f76caa5dba188eb846b66fc9d493be03b48b7",
+    "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "provider_phone_local.py": "9ffe3dbe7029986c907343981d080a7f77ad925c55151a63e5cf9330b1a5fcf3",
+    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+    "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+    "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+    "prompt_budget.py": "f84ff82c221d9262b6e40032d91863a6752f4abbce05bc32530efcbebf67c4dc",
+    "native_backend.py": "0f6ca4b9937ef5ad9f7b46ff48059c980424f0c7811ede5b9d72ff202d12e58b",
+    "schema_grammar.py": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8",
+    "daily_phone_local.py": "cc4f6a0fbd16d2e4d6dee43c10dbb5b590487b34662ba227c5f8215acf1a8b49",
+    "phone_local_tools.py": "b653796658ff7cef0b286ccf25f560f8fd67cbe24017876d041f9412b24eacbe",
+    "ledger_round_evidence.py": "68d715d01916b0fe6c18ee5e5ccf458e8b5100710c50e2517dccb221d9eb500c",
+    "provider_bridge.py": "9b8d82f225ccffebdabe4cc67514514cb93841cf7abde0c50e297a013b1706fd",
+    "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+    "phone_task_guards.py": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+  },
+  "finished_unix": 1794146744.779503
+}

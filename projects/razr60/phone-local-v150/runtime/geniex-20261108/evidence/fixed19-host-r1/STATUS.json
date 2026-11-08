@@ -1,0 +1,384 @@
+{
+  "schema": "hepta.fixed19.host-attempt-status.v1",
+  "recorded_utc": "2026-11-08T14:24:20.820739+00:00",
+  "scope": "This independent runner attempt only; does not replace any previous fixed-set ledger or report.",
+  "fixed_set_id": "stock16-phone-local-fixed-set-r4",
+  "fixed_set_definition": {
+    "bytes": 37318,
+    "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+  },
+  "runner": {
+    "path_from_phone_project": "tools/fixed19_host_acceptance.py",
+    "bytes": 37102,
+    "sha256": "60302575a2cb9142fa8b230a7a12cc1c16ec0c8f3ec1d82277e27b09d23d03a7"
+  },
+  "actual_private_fixture": {
+    "bytes": 49824,
+    "sha256": "09576bc787bb4488af697b2577677bc49409c466cba2e56f0e53ccd4a6390854"
+  },
+  "selected_private_source": {
+    "kind": "actual_private_r9_with_explicit_r3_grammar_profile",
+    "overlay_manifest_sha256": "efd9838a9fb635a0749164def3fa49fc8e3834596a8f34ae8d4dcc405d78c035",
+    "daily_phone_local_sha256": "cc4f6a0fbd16d2e4d6dee43c10dbb5b590487b34662ba227c5f8215acf1a8b49",
+    "source_pin_origin": "Root-provided frozen manifest; runner must independently verify the full closure at execution.",
+    "full_closure_locally_available": false,
+    "public_r7_substitution": false
+  },
+  "local_validation": {
+    "kind": "Python source compilation only",
+    "passed": true,
+    "python_version": "3.12.14",
+    "semantic_tests_executed": 0
+  },
+  "remote_request": {
+    "host": "pocket4",
+    "executable": "python3",
+    "idempotency_key": "mobile-models-fixed19-host-neg10-14-r1-60302575a2cb9142",
+    "timeout_seconds": 180,
+    "nice": 5,
+    "exact_request_saved_in_scratch": "fixed19_host_r1_process_request.json",
+    "exact_request": {
+      "bytes": 51212,
+      "sha256": "0cd0bee60e753750161e42be85511d318d3de149df34b185b65bc2783b148d52"
+    },
+    "owned_directory_basename": "fixed19-host-acceptance-r1",
+    "selected_cases": [
+      "NEG-10",
+      "NEG-11",
+      "NEG-12",
+      "NEG-13",
+      "NEG-14"
+    ],
+    "job_id": null,
+    "status": "REMOTE_START_OUTCOME_UNKNOWN",
+    "confirmed_started": false,
+    "confirmed_not_started": false,
+    "confirmed_terminal": false,
+    "duplicate_new_key_attempted": false,
+    "same_key_reconciliation_attempted": true
+  },
+  "connector_observations": {
+    "raw_responses": "CONNECTOR-RESPONSES.json",
+    "error_code": -32603,
+    "message": "Internal error",
+    "interpretation": "Connector operations returned no job identity or terminal evidence. This does not prove the remote command never began."
+  },
+  "counts_for_this_attempt": {
+    "host_case_definitions": 11,
+    "full_host_case_implementations_ready": 4,
+    "partial_host_case_implementations_ready": 1,
+    "host_cases_not_implemented": 6,
+    "observed_host_case_passes": 0,
+    "observed_host_case_failures": 0,
+    "selected_cases_with_unknown_remote_execution": 5,
+    "local_semantic_tests": 0,
+    "phone_tests": 0,
+    "model_inference_calls": 0,
+    "ui_actions": 0
+  },
+  "all_19_pass": false,
+  "installed_lifecycle_qualified": false,
+  "original_fixed_set_modified": false,
+  "production_source_modified_by_this_runner": false,
+  "production_claims_or_ledgers_modified_by_this_runner": false,
+  "resume_rule": "Reconcile the exact saved process_start request with its original idempotency key or recover that owned job/directory. Do not use a new key, reset claims, overwrite evidence, or infer success from the connector error.",
+  "cases": [
+    {
+      "id": "NEG-04",
+      "title": "断连发生于dispatch之前",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Not implemented: owned transport close before dispatch, persisted admission/unknown state, replacement stream refusal; physical follow-up still required.",
+      "implementation_complete": false,
+      "selected_in_owned_request": false,
+      "execution_status": "NOT_REQUESTED_NOT_IMPLEMENTED",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "No tool is dispatched and the accepted semantic identity remains consumed.",
+          "observed_result": null
+        },
+        {
+          "text": "No automatic request/stream replay occurs.",
+          "observed_result": null
+        },
+        {
+          "text": "No business success is emitted; unknown transport outcome remains unknown where no terminal is observed.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": true,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-05",
+      "title": "作用已开始后断连：保持未知且不重放",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Not implemented: independent disposable effect counter, effect-start disconnect, unknown outcome and no replay; physical follow-up still required.",
+      "implementation_complete": false,
+      "selected_in_owned_request": false,
+      "execution_status": "NOT_REQUESTED_NOT_IMPLEMENTED",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Effect count is at most one.",
+          "observed_result": null
+        },
+        {
+          "text": "Unknown result is not inferred as success and not retried.",
+          "observed_result": null
+        },
+        {
+          "text": "A reconnect/new stream cannot reuse the semantic identity.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": true,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-06",
+      "title": "模型超时：有界结束且清理原进程组",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Not implemented: original local HTTP fixture, bounded model_timeout, exact spawned/joined HTTP-client process-group cleanup. NPU timeout is not a substitute.",
+      "implementation_complete": false,
+      "selected_in_owned_request": false,
+      "execution_status": "NOT_REQUESTED_NOT_IMPLEMENTED",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Existing fail frame contains model_timeout; business_verified=false.",
+          "observed_result": null
+        },
+        {
+          "text": "No tool dispatch, child process group leak, account/model fallback or relaunch occurs.",
+          "observed_result": null
+        },
+        {
+          "text": "The claim remains consumed.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": false,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-07",
+      "title": "执行器结果超时：不能用迟到结果认定成功或再执行",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Not implemented: delayed executor result, deadline, unchanged terminal/unknown outcome and independent no-second-effect evidence; physical follow-up still required.",
+      "implementation_complete": false,
+      "selected_in_owned_request": false,
+      "execution_status": "NOT_REQUESTED_NOT_IMPLEMENTED",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "No second effect is executed.",
+          "observed_result": null
+        },
+        {
+          "text": "Late or unmatched results do not rewrite the accepted terminal/unknown outcome.",
+          "observed_result": null
+        },
+        {
+          "text": "Business remains false and cancellation/cleanup state is explicit.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": true,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-08",
+      "title": "dispatch前取消",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Not implemented: original local HTTP fixture cancellation before dispatch and exact process-group cleanup; physical follow-up still required.",
+      "implementation_complete": false,
+      "selected_in_owned_request": false,
+      "execution_status": "NOT_REQUESTED_NOT_IMPLEMENTED",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Existing turn.cancelled (or explicitly unknown transport outcome if the cancel acknowledgement is lost) is retained.",
+          "observed_result": null
+        },
+        {
+          "text": "Zero phone effects; no automatic navigation on cancellation; business_verified=false.",
+          "observed_result": null
+        },
+        {
+          "text": "No original HTTP-client process group remains after confirmed cleanup.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": true,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-09",
+      "title": "首次作用后取消",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Not implemented: cancellation after one observed disposable effect, no follow-up or forced return, retained claim; physical follow-up still required.",
+      "implementation_complete": false,
+      "selected_in_owned_request": false,
+      "execution_status": "NOT_REQUESTED_NOT_IMPLEMENTED",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Exactly the already-observed effect remains; no follow-up input or forced return occurs.",
+          "observed_result": null
+        },
+        {
+          "text": "Cancellation is not labelled complete business success.",
+          "observed_result": null
+        },
+        {
+          "text": "No automatic replay or identity release occurs.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": true,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-10",
+      "title": "图片字节预算/过期图像/旧round绑定",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Implemented for four separate fresh durable identities: remaining image budget 65535; age 121; foreign call ID; non-current attached round. Not executed/observed.",
+      "implementation_complete": true,
+      "selected_in_owned_request": true,
+      "execution_status": "REMOTE_START_OUTCOME_UNKNOWN",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Each invalid condition fails before dispatch.",
+          "observed_result": null
+        },
+        {
+          "text": "No budget extension, stale-image fallback or guessed generic tap occurs.",
+          "observed_result": null
+        },
+        {
+          "text": "Maximum single image remains 196608 bytes and turn image budget 393216 bytes.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": false,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-11",
+      "title": "native输出损坏/截断/错误身份",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Implemented retained-shape synthetic image/public-text/return envelopes with independent identity/sequence/byte-count/exit/truncation/Base64/source/hash faults. Not executed/observed.",
+      "implementation_complete": true,
+      "selected_in_owned_request": true,
+      "execution_status": "REMOTE_START_OUTCOME_UNKNOWN",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Each malformed envelope is rejected as insufficient evidence.",
+          "observed_result": null
+        },
+        {
+          "text": "No image/text/return fact is admitted and no business success is synthesized.",
+          "observed_result": null
+        },
+        {
+          "text": "Original test fixtures remain clearly labelled synthetic.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": false,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-12",
+      "title": "部分任务被模型说成完成：必须失败终态",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Implemented original contract/parser/ledger/terminal paths for input-only, missing-return, and declared-postconditions-only coverage. Not executed/observed.",
+      "implementation_complete": true,
+      "selected_in_owned_request": true,
+      "execution_status": "REMOTE_START_OUTCOME_UNKNOWN",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Existing wire kind is turn.fail with business_not_verified.",
+          "observed_result": null
+        },
+        {
+          "text": "business-outcome.json lists missing conditions and business_verified=false.",
+          "observed_result": null
+        },
+        {
+          "text": "Native complete or model summary cannot hide a missing app receipt/return/full-request coverage.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": false,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-13",
+      "title": "一次性模板并发/旧nonce重用",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Implemented wrong-scope no-consumption and concurrent one-time-template O_EXCL race/reuse checks using actual durable owner admission. Not executed/observed.",
+      "implementation_complete": true,
+      "selected_in_owned_request": true,
+      "execution_status": "REMOTE_START_OUTCOME_UNKNOWN",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Exactly one O_EXCL binding succeeds; wrong scope does not consume the template.",
+          "observed_result": null
+        },
+        {
+          "text": "Consumed template cannot qualify or dispatch another task.",
+          "observed_result": null
+        },
+        {
+          "text": "All claims/bindings remain; no deletion/reset to obtain a pass.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": false,
+      "physical_followup_executed_by_this_runner": false
+    },
+    {
+      "id": "NEG-14",
+      "title": "容量/原子rename竞态与资源收尾",
+      "original_layer": "host_isolated",
+      "implementation_scope": "Partially implemented: recognized atomic-rename race, unknown/canonical missing and unreadable/nonregular paths, exact original capacity AST boundary and local fixture FD/child baseline. Retained orphan-spawn receipts and whole serve/worker cleanup remain uncovered. Not executed/observed.",
+      "implementation_complete": false,
+      "selected_in_owned_request": true,
+      "execution_status": "REMOTE_START_OUTCOME_UNKNOWN",
+      "fixed19_case_pass": false,
+      "business_verified": false,
+      "original_postconditions": [
+        {
+          "text": "Only the exact recognized rename race is tolerated.",
+          "observed_result": null
+        },
+        {
+          "text": "Unknown files/I/O failures fail closed; no accepted claim is deleted for capacity.",
+          "observed_result": null
+        },
+        {
+          "text": "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline.",
+          "observed_result": null
+        }
+      ],
+      "physical_followup_required": false,
+      "physical_followup_executed_by_this_runner": false
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+boundary-probe: loading tokenizer only
+boundary-probe: path=sdk-contained callback=false
+[90m[TRACE] [src/vlm.cpp:116:geniex_vlm_generate] VlmGenerateInput(prompt_utf8: diagnostic only, config: nullptr, on_token: nullptr, user_data: nullptr)[0m
+fake-backend: entering original proc Grammar constructor
+parse: error parsing grammar: unexpected end of input
+
+root ::= "unterminated
+
+geniex_grammar_init_from_string: failed to parse grammar
+fake-backend: caught std::exception locally: geniex::Grammar: failed to initialise grammar sampler
+[90m[TRACE] [src/vlm.cpp:149:geniex_vlm_generate] ErrorCode[-201201](Multimodal generation failed): VlmGenerateOutput(full_text: nullptr, profile_data: ProfileData(ttft: 0 us, prompt_time: 0 us, decode_time: 0 us, prompt_tokens: 0, generated_tokens: 0, prefill_speed: 0 tokens/s, decoding_speed: 0 tokens/s, stop_reason: nullptr))[0m
+boundary-probe: returned sdk_rc=-201201 full_text_null=true callbacks=0
+loader: returned 22 before dlclose
+loader: normal dlclose complete

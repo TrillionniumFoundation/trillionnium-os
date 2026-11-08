@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.init-provider-host-validation.v1",
+  "status": "PASS",
+  "tests_run": 35,
+  "elapsed_seconds": 8.038,
+  "source_files": [
+    {
+      "path": "backup_active_init_boot.py",
+      "bytes": 7852,
+      "sha256": "22481a1ae587f91323fe7c0c5ec074acd3a9a208e202516a29829fbfd79996e7"
+    },
+    {
+      "path": "build-r3/BUILD-MANIFEST.json",
+      "bytes": 7378,
+      "sha256": "dd8e700204acb92a3dfe6781eea69d20c2595983461e2bcbc7b54db1e45b2f42"
+    },
+    {
+      "path": "build_init_boot_candidate.py",
+      "bytes": 10522,
+      "sha256": "b9880b600982a301daa0ec48d770ff852a51f8f8a5e65d73d487d22a344a8919"
+    },
+    {
+      "path": "build_startup_bundle.py",
+      "bytes": 19263,
+      "sha256": "2b8367630eb32f907311c4069af132332a2e7b7765accbe0da187a312c418ca2"
+    },
+    {
+      "path": "final_config.py",
+      "bytes": 6121,
+      "sha256": "6c70658570f1ecc963a599ebbd316c4ee6158363f02ab192f8a852ad3109cf84"
+    },
+    {
+      "path": "inspect_init_boot.py",
+      "bytes": 8352,
+      "sha256": "c642717be0537e6c52bf3d538bbd98f2a9aaf310e9b7f608a4cb0945808bccf8"
+    },
+    {
+      "path": "phone_magisk_roundtrip.py",
+      "bytes": 8121,
+      "sha256": "7a4afd49ec11433250e81581974c59b1e573a51ddf5ff027cecab2ebf8cf7412"
+    },
+    {
+      "path": "prepare_final_artifacts.py",
+      "bytes": 7569,
+      "sha256": "1d5f263cc482f882a6eba9713e558ad617f337a9d148f37d952e5c2c38a5909a"
+    },
+    {
+      "path": "provider_entry.cpp",
+      "bytes": 19607,
+      "sha256": "3fa0003cee6d513fdbb22f153b2d22f95d5726c9dc62c0e907dbaeebd085aa17"
+    },
+    {
+      "path": "provider_entry.py",
+      "bytes": 11423,
+      "sha256": "6b217143f27db1c3a0b63676af6115f35795902a53253c51965b94908e627056"
+    },
+    {
+      "path": "staging.py",
+      "bytes": 13660,
+      "sha256": "e09bf70e573c6a7700ee7af79a59d9c1610e2ef4281cc486a46832c5b351908f"
+    },
+    {
+      "path": "tests/test_entry.py",
+      "bytes": 12885,
+      "sha256": "cf263bc21e68cc935f7cb6b6a4cf53b977f1cca9182d7d80e102e8b2c897526d"
+    },
+    {
+      "path": "tests/test_final_materialization.py",
+      "bytes": 9340,
+      "sha256": "8db78cf079bd7d4c36441338e5a96ee7676dcfd1734522f55a29d4da04830fb6"
+    },
+    {
+      "path": "tests/test_startup_bundle.py",
+      "bytes": 9611,
+      "sha256": "a62da80feaa47b6f7abe67c6ea7a2fa15fd2d42067957aa9f4a89e3d526e0a8f"
+    }
+  ],
+  "test_names": [
+    "test_entry.NativeEntryContract.test_actual_immutable_python_mode_is_accepted",
+    "test_entry.NativeEntryContract.test_duplicate_key_rejected_even_with_matching_raw_sha",
+    "test_entry.NativeEntryContract.test_json_depth_bounded_before_any_activation",
+    "test_entry.NativeEntryContract.test_missing_entry_and_disagreeing_launch_pin_rejected",
+    "test_entry.NativeEntryContract.test_plan_digest_and_private_file_mode_are_enforced",
+    "test_entry.NativeEntryContract.test_python_file_checker_rejects_symlink_or_writable_mode",
+    "test_entry.NativeEntryContract.test_stage_integer_types_and_instance_are_not_coerced",
+    "test_entry.NativeEntryContract.test_unknown_config_fields_and_paths_do_not_become_commands",
+    "test_entry.NativeEntryContract.test_valid_plan_is_explicitly_parser_only",
+    "test_entry.PythonEntryContract.test_duplicate_and_nonfinite_json_rejected",
+    "test_entry.PythonEntryContract.test_explicit_preflight_and_serve_modes",
+    "test_entry.PythonEntryContract.test_no_shell_argv_uid_or_context_override",
+    "test_entry.PythonEntryContract.test_post_exec_evidence_binds_original_intent_and_is_create_only",
+    "test_entry.PythonEntryContract.test_post_exec_wrong_pid_or_launch_hash_cannot_publish_proof",
+    "test_entry.PythonEntryContract.test_sources_must_be_complete_pinned_python_basenames",
+    "test_entry.PythonEntryContract.test_stage_bool_and_unknown_modes_rejected",
+    "test_final_materialization.CpioPreservation.test_duplicate_unsafe_or_binary_rc_is_rejected",
+    "test_final_materialization.CpioPreservation.test_missing_overlay_directory_or_nonzero_trailer_is_rejected",
+    "test_final_materialization.CpioPreservation.test_one_new_rc_keeps_all_original_metadata_payloads_and_record_bytes",
+    "test_final_materialization.FinalConfiguration.test_copy_renderer_reuses_model_and_only_writes_new_runtime_root",
+    "test_final_materialization.FinalConfiguration.test_explicit_upgrade_preserves_base_template_stage_and_model_without_mutating_original",
+    "test_final_materialization.FinalConfiguration.test_real_52_file_qairt_layout_is_preserved",
+    "test_final_materialization.FinalConfiguration.test_wrong_model_compiler_library_and_unexpected_old_fields_fail",
+    "test_startup_bundle.BundleContract.test_artifacts_refuse_shared_paths_duplicates_writes_and_fake_integers",
+    "test_startup_bundle.BundleContract.test_json_and_immutable_build_inputs_cannot_silently_drift",
+    "test_startup_bundle.BundleContract.test_regular_input_reader_refuses_links_and_oversized_files",
+    "test_startup_bundle.BundleContract.test_written_modes_are_exact_under_restrictive_umask_and_never_overwrite",
+    "test_startup_bundle.StagingContract.test_bind_refuses_before_bootstrap_readiness_without_reaching_mutations",
+    "test_startup_bundle.StagingContract.test_claims_stop_and_original_state_preservation_are_required",
+    "test_startup_bundle.StagingContract.test_instance_and_rc_digest_cannot_inject_commands",
+    "test_startup_bundle.StagingContract.test_new_policy_preserves_non_executable_stage_and_no_device_grants",
+    "test_startup_bundle.StagingContract.test_parses_exact_stats_and_rejects_missing_or_duplicate_observations",
+    "test_startup_bundle.StagingContract.test_rendered_scripts_pass_shell_parser_without_execution",
+    "test_startup_bundle.StagingContract.test_service_is_disabled_same_domain_and_no_automatic_replay",
+    "test_startup_bundle.StagingContract.test_stage_metadata_is_exact_and_cannot_be_already_bound"
+  ],
+  "log_sha256": "6e83bcb509e64fee9e4e3a6442a6708a69cf6d0c276f74d64e6fd569048ad9ff",
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "deployment/tests",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "scope": "Host contract checks, real host C/C++ compilation, synthetic file/CPIO/config metadata. No Android init, live policy, mount, model, App or boot qualification.",
+  "phone_operations": 0,
+  "partition_writes": 0,
+  "phone_reboots": 0,
+  "native_uid2000_npu_qualified": false,
+  "final_startup_bundle_materialized": false,
+  "production_service_started": false
+}

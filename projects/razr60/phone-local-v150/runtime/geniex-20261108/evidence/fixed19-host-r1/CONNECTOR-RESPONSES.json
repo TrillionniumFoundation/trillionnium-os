@@ -1,0 +1,51 @@
+[
+  {
+    "stored_result_key": "fixed19_host_job_r1",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+        }
+      ],
+      "isError": true
+    }
+  },
+  {
+    "stored_result_key": "fixed19_host_dir_r1",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.view`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+        }
+      ],
+      "isError": true
+    }
+  },
+  {
+    "stored_result_key": "fixed19_process_inventory_reconcile_r1",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.process_list`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+        }
+      ],
+      "isError": true
+    }
+  },
+  {
+    "stored_result_key": "fixed19_start_reconcile_r1",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+        }
+      ],
+      "isError": true
+    }
+  }
+]
+

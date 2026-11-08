@@ -30,6 +30,12 @@ int32_t geniex_vlm_generate(geniex_VLM *handle,const geniex_VlmGenerateInput *in
         if(strstr(in->prompt_utf8,marker))setenv("STUB_CASE",cases[i],1);
     }
     const char *valid="{\"name\":\"mobile_use\",\"arguments\":{\"action\":\"screenshot\",\"display_id\":0,\"summary\":\"Inspect current screen\"}}";
+    if(strstr(in->prompt_utf8,"HEPTA_STARTUP_HEALTH_V1")){
+#ifdef HEPTA_HOST_STARTUP_ABORT
+        abort();
+#endif
+        valid="{\"kind\":\"turn.complete\",\"call_id\":\"\",\"tool\":\"none\",\"command\":\"\",\"argv\":[],\"task_status\":\"completed\",\"summary\":\"42\"}";
+    }
     if(strstr(in->prompt_utf8,"[[case=malformed_json]]"))valid="{\"name\":\"mobile_use\",\"arguments\":{\"action\":\"screenshot\"}";
     setenv("STUB_TEXT",valid,1);
     int32_t rc=original_fixture_vlm_generate(handle,in,out);

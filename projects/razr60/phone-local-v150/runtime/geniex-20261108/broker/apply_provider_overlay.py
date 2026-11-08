@@ -154,13 +154,13 @@ def build(base: Path, out: Path):
             raise ValueError("source file is not a regular pinned Python file")
         shutil.copyfile(item, source / item.name)
     here = Path(__file__).resolve().parent
-    for name in ("native_backend.py", "prompt_budget.py", "provider_bridge.py"):
+    for name in ("native_backend.py", "prompt_budget.py", "provider_bridge.py", "startup_health.py"):
         shutil.copyfile(here / name, source / name)
     shutil.copyfile(here.parent / "schema-grammar-python-r1" / "python_schema_grammar.py", source / "schema_grammar.py")
     before = {p.name: digest(p.read_bytes()) for p in base.glob("*.py")}
     new_provider, evidence = provider_overlay((base / "provider_phone_local.py").read_text())
     (source / "provider_phone_local.py").write_text(new_provider)
-    changed = ["native_backend.py", "prompt_budget.py", "provider_bridge.py", "provider_phone_local.py", "schema_grammar.py"]
+    changed = ["native_backend.py", "prompt_budget.py", "provider_bridge.py", "provider_phone_local.py", "schema_grammar.py", "startup_health.py"]
     if (base / "ledger_round_evidence.py").is_file():
         (source / "ledger_round_evidence.py").write_text(ledger_profile_overlay((base / "ledger_round_evidence.py").read_text()))
         changed.append("ledger_round_evidence.py")

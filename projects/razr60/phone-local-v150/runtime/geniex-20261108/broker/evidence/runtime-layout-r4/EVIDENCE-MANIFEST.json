@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.runtime-layout-evidence-manifest.v1",
+  "files": {
+    "BASELINE-MANIFEST.json": {
+      "bytes": 433,
+      "sha256": "78509a57f4982fc6888ce7c9da30e4e190509feb836dd0c13a5e754a01bb3a11"
+    },
+    "README.md": {
+      "bytes": 3363,
+      "sha256": "13c4b3d140a861c1e67de889a738a54ae574daee9e421b224b865a33d333feee"
+    },
+    "SOURCE-MANIFEST.json": {
+      "bytes": 980,
+      "sha256": "f02282818b87e003c9019caedc0da03eab25cafae589e09be19461a484639892"
+    },
+    "VALIDATION.json": {
+      "bytes": 2316,
+      "sha256": "15163f55ced713ecec9aa19bc1062c87a446c5b8ebd4461a726d0691332c4852"
+    },
+    "contract-tests.stderr": {
+      "bytes": 2691,
+      "sha256": "2395a9b7eadfd972129b669dc2d8f2c67602e17b5529a10997ee7c6e03ca2096"
+    },
+    "contract-tests.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "runtime-layout-r4.patch": {
+      "bytes": 18535,
+      "sha256": "8f59a1b7f0cb7e1455f8043d61b064f392ab9b5b98bfde5314a967fe92aa350d"
+    }
+  }
+}

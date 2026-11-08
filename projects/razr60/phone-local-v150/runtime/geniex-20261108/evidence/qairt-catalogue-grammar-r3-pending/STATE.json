@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.remote-model-launch-pending.v1",
+  "scope": "public_execution_identity_only_no_private_prompt_or_catalogue_body",
+  "state": "LAUNCH_ACK_UNKNOWN",
+  "request_idempotency_key": "hepta-vlm-r3-catalogue-two-gates-78305f75-20261108",
+  "configured_host": "pocket4",
+  "known_remote_job_id": null,
+  "attempted_tool": "h_process_start",
+  "same_exact_request_attempts": 2,
+  "tool_acknowledgement_received": false,
+  "model_requests_completed": null,
+  "phone_actions_authorized_or_executed_by_runner": 0,
+  "runtime_profile": "qairt-output-grammar-core-r2-vlm-r3-v1",
+  "runtime_gate_result_sha256": "8af9108bdbbe67d81f4c2b2efcde8ebe0d40f80a1e7e5047ec732aa0b171cfad",
+  "runner_sha256": "78305f755262b7a05b2d349be03fbc71961e6b8c9f509d508b6e16bec891f3ec",
+  "fixture_manifest_sha256": "9cb73dfc1008c4e27a2474464fa81a67b7a47bae389e7ea325b9e163119fce98",
+  "host_staging_job": {
+    "id": "1a1bb81f4ba-13c47-2b8",
+    "state": "succeeded",
+    "exit_code": 0,
+    "phone_accessed": false
+  },
+  "read_only_reconciliation": [
+    "h_process_list_page on pocket4 returned Internal error",
+    "h_file_info for intended PUBLIC-SUMMARY.json returned Internal error"
+  ],
+  "recovery_rule": "After connector recovery, reconcile only the exact saved process_start request and stable key. Use returned durable identity to read authoritative status/results. Do not invent a new key, infer nonexecution from the absent acknowledgement, or launch another phone test concurrently.",
+  "not_yet_qualified": [
+    "The two R3 full-catalogue model samples have no observed terminal result.",
+    "Production-domain and real App control remain untested by this runner."
+  ]
+}

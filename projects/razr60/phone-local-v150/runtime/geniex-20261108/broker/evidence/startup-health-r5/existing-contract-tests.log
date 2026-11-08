@@ -1,0 +1,20 @@
+test_already_open_owner_app_does_not_break_next_round_or_other_app_navigation (__main__.ContractTests.test_already_open_owner_app_does_not_break_next_round_or_other_app_navigation) ... ok
+test_cancellation_wins_serialized_acceptance_and_records_original_order (__main__.ContractTests.test_cancellation_wins_serialized_acceptance_and_records_original_order) ... ok
+test_compact_body_preserves_owner_and_full_semantic_transcript (__main__.ContractTests.test_compact_body_preserves_owner_and_full_semantic_transcript) ... ok
+test_context_admission_rejects_8192_and_unbound_or_overflow_budget (__main__.ContractTests.test_context_admission_rejects_8192_and_unbound_or_overflow_budget) ... ok
+test_flat_grammar_layout_is_only_accepted_by_explicit_python_host_policy (__main__.ContractTests.test_flat_grammar_layout_is_only_accepted_by_explicit_python_host_policy) ... ok
+test_grammar_prompt_keeps_all_open_choices_without_unavailable_click_example (__main__.ContractTests.test_grammar_prompt_keeps_all_open_choices_without_unavailable_click_example) ... ok
+test_native_terminal_validator_rejects_every_missing_essential_proof (__main__.ContractTests.test_native_terminal_validator_rejects_every_missing_essential_proof) ... ok
+test_old_v1_and_r2_json_without_new_vlm_fields_still_parse_and_pin_original_vlm (__main__.ContractTests.test_old_v1_and_r2_json_without_new_vlm_fields_still_parse_and_pin_original_vlm) ... ok
+test_output_grammar_requires_explicit_profile_and_exact_conversion_binding (__main__.ContractTests.test_output_grammar_requires_explicit_profile_and_exact_conversion_binding) ... ok
+test_overlay_keeps_old_completion_ast_and_adds_explicit_selector (__main__.ContractTests.test_overlay_keeps_old_completion_ast_and_adds_explicit_selector) ... ok
+test_owner_bytes_and_claim_must_match (__main__.ContractTests.test_owner_bytes_and_claim_must_match) ... ok
+test_production_r3_requires_exact_pins_and_actual_qairt_bundle_layout (__main__.ContractTests.test_production_r3_requires_exact_pins_and_actual_qairt_bundle_layout) ... ok
+test_production_shadow_files_and_dangling_symlinks_stop_before_artifact_checks (__main__.ContractTests.test_production_shadow_files_and_dangling_symlinks_stop_before_artifact_checks) ... ok
+test_r3_uses_its_actual_profile_without_changing_the_token_budget (__main__.ContractTests.test_r3_uses_its_actual_profile_without_changing_the_token_budget) ... ok
+test_required_field_projection_does_not_present_optional_or_open_schema_as_required (__main__.ContractTests.test_required_field_projection_does_not_present_optional_or_open_schema_as_required) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.198s
+
+OK

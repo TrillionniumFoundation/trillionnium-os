@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.init-provider-independent-static-review.v1",
+  "scope": "read_only_source_review_no_phone_no_policy_or_boot_mutation",
+  "reviewer_role": "android_inference",
+  "source_files": {
+    "provider_entry.cpp": "3fa0003cee6d513fdbb22f153b2d22f95d5726c9dc62c0e907dbaeebd085aa17",
+    "provider_entry.py": "6b217143f27db1c3a0b63676af6115f35795902a53253c51965b94908e627056",
+    "staging.py": "e09bf70e573c6a7700ee7af79a59d9c1610e2ef4281cc486a46832c5b351908f"
+  },
+  "additional_unfrozen_file_observed": {
+    "path": "build_startup_bundle.py",
+    "observed_sha256": "ff6fb79b50d5d32ee4caa40576eaff5bad6486393da88730ac6f8a0b07864fb4",
+    "review_complete": false,
+    "reason": "Author is adding explicit v1-to-R3 final configuration conversion and manifest pins; no final builder approval is implied."
+  },
+  "new_static_blockers_in_reviewed_entry_and_stage_scope": [],
+  "checked_source_properties": [
+    "Native entry requires actual UID/GID zero, parent PID one, real bootstrap SELinux context, enforcing policy, and exactly four effective/permitted capabilities.",
+    "Native entry verifies immutable-root filesystem type/flags, writable noexec state-bind flags, candidate/state inode equivalence, and all three stage views with fixed dev/ino/owner/mode/SELinux label.",
+    "The pinned interpreter is required to be a regular, single-link root-owned 0555 file; source/config/claims are pinned private 0600 files.",
+    "Owner stop is checked before intent, before chroot/exec, and again by Python before health/serve; init also has a stop-property trigger.",
+    "Python rechecks process domain/capabilities, source/config/claims and stage identity, then obtains native health through the kernel-peer-checked R6 transport before entering the daily provider in the same process.",
+    "Stage provisioning and binding use fresh identities; binding requires the existing bootstrap running and both ready properties before and after the new bind.",
+    "No DSP permission grant, original-state chmod, owner-stop removal or service start is performed by the reviewed renderers."
+  ],
+  "operational_constraints": [
+    {
+      "kind": "one_attempt_per_candidate_per_boot",
+      "detail": "preflight_only still creates the exclusive entry and post-exec intent files for this instance/boot. It cannot be changed into a same-boot automatic serve retry."
+    },
+    {
+      "kind": "rollback_script_scope",
+      "detail": "unbind-empty-stage.sh deliberately refuses nonempty stage data. It is a pre-use rollback helper, not a complete used-instance rollback. A used instance needs the separately reviewed stopped-service/original-image/reboot rollback path while retaining request evidence."
+    }
+  ],
+  "not_established_by_static_review": [
+    "Successful early init import or actual post-exec capability inheritance on the device.",
+    "Production phone_worker access to DSP devices and NPU libraries.",
+    "Real App operations or completion of a phone-control loop."
+  ],
+  "loader_layout_issue": "A separate native_backend layout-r4 fix is owned by the parent/mobile_models review; this record does not qualify the old layout."
+}

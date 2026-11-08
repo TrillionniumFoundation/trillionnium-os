@@ -1,0 +1,247 @@
+{
+  "schema": "hepta.startup-health-independent-backend-review.v1",
+  "review_date_utc": "2026-11-08",
+  "reviewer": "android_inference",
+  "status": "SCOPED_STATIC_REVIEW_NO_NEW_BLOCKERS_RUNTIME_GATES_PENDING",
+  "candidate_only": true,
+  "source_manifest": {
+    "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/evidence/startup-health-r5/SOURCE-MANIFEST.json",
+    "bytes": 3450,
+    "sha256": "716e2e5a71955b31494258796de1f0f021cea2ede342446239f2254896283619"
+  },
+  "existing_validation_report": {
+    "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/evidence/startup-health-r5/VALIDATION.json",
+    "bytes": 8926,
+    "sha256": "4cd325399460779771792106fdbfae2d976e54d7167031fbc44dcc4817326beb"
+  },
+  "review_scope": [
+    "Mechanical equivalence of ordinary NativeBackend.run and _terminal after extracting the shared _run_bound executor.",
+    "Retention of original error, cancellation, timeout, UNKNOWN, inspection-only reconciliation, cleanup, locking and no-redispatch behavior.",
+    "Fixed startup input, schema-to-grammar conversion, native token admission and independent answer-42 semantic validation.",
+    "Separation of startup intent/receipt bindings from accepted user-turn evidence and the ordinary provider consumer."
+  ],
+  "separate_review_scope": {
+    "reviewer": "mobile_models",
+    "items": [
+      "Init/entry identity and source pins",
+      "Overlay and startup-bundle source closure",
+      "Final signal restoration, sticky cancellation and transition to provider listen"
+    ],
+    "note": "These areas are not promoted by this narrower backend review. Their frozen bytes were hashed here to verify the stated source manifest."
+  },
+  "baseline_native_backend": {
+    "bytes": 56866,
+    "sha256": "2049294d6ff4087f2e6af4861ff0c4542fe26a33b0e5fee8c35b3ef86686c6d5"
+  },
+  "manifest_member_hashes_verified": [
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/native_backend.py",
+      "bytes": 58976,
+      "sha256": "9dbe467b6dfb3cd2ddf0582c930cf2f95700222498df3e82bf4f914a57555124"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/startup_health.py",
+      "bytes": 15955,
+      "sha256": "368af8d41998e2f7122daa56b8f8124fda81bab0577895cbf0b35c8e000b36d0"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/apply_provider_overlay.py",
+      "bytes": 11718,
+      "sha256": "c0128f27415f3adf61ebaf7907028662ce6193bbd2c03ab2a46d4ac9f61c8b01"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_startup_health.py",
+      "bytes": 25948,
+      "sha256": "fa7bf88ee825ecef769453b704d13173f906566f5aecf49b09aa3123e0791a67"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/broker_stub.c",
+      "bytes": 3176,
+      "sha256": "927679297941f1eddf4411f1ad7edea65882e112e370cc2356be8acd15f4b54f"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/provider_entry.py",
+      "bytes": 11785,
+      "sha256": "d838c7a2223c6cd134b4b530bcc26b36a44dc7236f9584be1bcfc7d49b2271df"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/build_startup_bundle.py",
+      "bytes": 19284,
+      "sha256": "d1b285e4f2348fca09037bfab2e28be6f241da4fdf044d5f9ad3484e68ef43db"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/deployment/tests/test_entry.py",
+      "bytes": 12906,
+      "sha256": "c05110b7a20408a4980d7b587f70517ed12dd1658edfdf3c6f722f95a910bb17"
+    }
+  ],
+  "supplemental_source_pins": [
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/prompt_budget.py",
+      "bytes": 16639,
+      "sha256": "f84ff82c221d9262b6e40032d91863a6752f4abbce05bc32530efcbebf67c4dc"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/provider_bridge.py",
+      "bytes": 14550,
+      "sha256": "9b8d82f225ccffebdabe4cc67514514cb93841cf7abde0c50e297a013b1706fd"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/runtime/geniex-20261108/schema-grammar-python-r1/python_schema_grammar.py",
+      "bytes": 15177,
+      "sha256": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8"
+    }
+  ],
+  "mechanical_comparison": {
+    "ordinary_run_arguments_unchanged": true,
+    "ordinary_run_body_ast_equal": true,
+    "ordinary_terminal_body_ast_equal": true,
+    "binding_replacements": 1,
+    "startup_body_guards_removed": 2,
+    "startup_terminal_guards_removed": 1,
+    "ast_serialization": "ast.dump(ast.Module(body=method.body,type_ignores=[]),include_attributes=False)",
+    "run_body_ast_sha256": "7f1b8d9814023e4ec88b5c5701d66dae5a1381b32e2f7f0446783df70c32b543",
+    "terminal_body_ast_sha256": "97f04b7c7e5e3e046b6a32af2bda6fe3d48b2c8a594916cd62c38d37947e8c01",
+    "method": "Parse the exact frozen files with Python AST; normalize only the one binding-loader assignment and remove exactly two startup-only shared-body guards and one startup-only terminal guard. Compare complete AST method bodies and the unchanged public run arguments.",
+    "normalizations": [
+      "Replace binding = binding_loader() with the original binding = owner_binding(owner_path, owner_claim_path).",
+      "Remove the startup-only intent-schema selection.",
+      "Remove the startup-only native-server-instance consistency check.",
+      "For _terminal only, remove the startup-only receipt-schema and binding-digest fields."
+    ],
+    "ordinary_wrapper": "NativeBackend.run forwards the same original request/input/budget/gate/on_poll values and obtains owner evidence through a zero-argument lambda at the original point in the shared body.",
+    "scope_limit": "AST equivalence establishes the stated source transformation. It is not an execution result for Android, SELinux, r6 IPC or the NPU."
+  },
+  "findings": [
+    {
+      "id": "ordinary_execution_unchanged",
+      "result": "NO_NEW_BLOCKER",
+      "evidence": [
+        "native_backend.py:NativeBackend.run",
+        "native_backend.py:NativeBackend._run_bound",
+        "native_backend.py:NativeBackend._terminal"
+      ],
+      "detail": "The original input validation, budget validation, backend lock, prior unresolved-intent scan, create-only evidence, execute call, original-action inspect fallback, timeout and cancellation classification, native credential/waitpid/process-group validators, SDK/counter/raw-byte validators and completion-acceptance order are retained. Startup uses this same body; it does not create a retry, alternate supervisor or weaker terminal validator."
+    },
+    {
+      "id": "unknown_and_cleanup_remain_fail_closed",
+      "result": "NO_NEW_BLOCKER",
+      "evidence": [
+        "native_backend.py:NativeBackend._run_bound",
+        "startup_health.py:validate_answer"
+      ],
+      "detail": "A missing or invalid native terminal remains UNKNOWN with cleanup_confirmed=false. Known failures/cancellation/timeouts remain unusable model results. Startup validation requires completed, usable, cleanup-confirmed native proof, so these outcomes cannot authorize handoff. Existing prior-UNKNOWN evidence still prevents later dispatch under the same global lock."
+    },
+    {
+      "id": "ordinary_and_startup_bindings_are_distinct",
+      "result": "NO_NEW_BLOCKER",
+      "evidence": [
+        "native_backend.py:owner_binding",
+        "native_backend.py:NativeBackend.run_startup_health",
+        "native_backend.py:NativeBackend._terminal",
+        "provider_bridge.py:completion path"
+      ],
+      "detail": "Ordinary owner_binding returns only identity and the three original owner/claim digests; it cannot set request_kind. Ordinary run therefore retains the original intent and receipt shapes. The startup-only method supplies request_kind=startup_health and a separately typed init binding, returns independently named startup intent/receipt schemas and creates no accepted-owner-request or user claim. The ordinary provider consumer still calls run with owner_path and owner_claim_path."
+    },
+    {
+      "id": "fixed_prompt_does_not_supply_or_force_answer",
+      "result": "NO_NEW_BLOCKER",
+      "evidence": [
+        "startup_health.py:SYSTEM",
+        "startup_health.py:PROMPT",
+        "startup_health.py:health_schema",
+        "python_schema_grammar.py:_validate_health",
+        "python_schema_grammar.py:_Generator.node"
+      ],
+      "detail": "The fixed prompt asks 6 times 7. The schema fixes only the non-action envelope and permits an arbitrary summary string of up to 1024 characters. The converter requires that non-constant summary schema and emits the generic scalar string rule; the output grammar does not encode 42 as a constant, enum, pattern or literal. Schema validity alone is insufficient for success."
+    },
+    {
+      "id": "native_budget_and_grammar_binding_preserved",
+      "result": "NO_NEW_BLOCKER",
+      "evidence": [
+        "startup_health.py:prepare_request",
+        "prompt_budget.py:NativeTokenizerBudget.budget",
+        "native_backend.py:validate_budget",
+        "native_backend.py:NativeBackend._command",
+        "native_backend.py:validate_counter",
+        "native_backend.py:validate_worker"
+      ],
+      "detail": "The startup request requires the explicit R3 profile and exact compiler SHA, converts the canonical fixed health schema, verifies both schema digests and binds the actual grammar bytes. Its fixed prompt/system and no-image inputs enter the same native counter-first command, hard 3584-token admission, 256 generated-token limit and 256-token reserve within the compiled 4096 context. Python does not claim to have measured tokens. The original worker/native result validation and all eight successful SDK stage codes remain required."
+    },
+    {
+      "id": "answer_check_uses_original_complete_bytes",
+      "result": "NO_NEW_BLOCKER",
+      "evidence": [
+        "startup_health.py:validate_answer",
+        "native_backend.py:strict_json"
+      ],
+      "detail": "The helper checks the returned startup receipt against the original create-only terminal.json bytes, verifies the generated.bin digest and exact UTF-8 text equality, parses strict complete JSON with duplicate/nonfinite rejection and compares the complete seven-field object with summary equal to the string 42. Missing braces, wrong answers, extra fields, actions, repaired text, generic user receipts or incomplete cleanup do not satisfy this check."
+    },
+    {
+      "id": "final_helper_increment_remains_within_scope",
+      "result": "NO_NEW_BLOCKER",
+      "evidence": [
+        "startup_health.py:run_prelisten"
+      ],
+      "detail": "The final helper adds explicit non-listening result state, validates inherited signal handlers, restores terminating handlers before the final sticky cancellation check and handles exceptional exits without granting listen authorization. The fixed prompt/schema, prepare_request, receipt/raw-byte validation and shared backend selection retain the reviewed behavior. The separate entry/signal reviewer is responsible for the detailed handoff race assessment."
+    }
+  ],
+  "test_evidence": {
+    "frozen_suites_reexecuted_by_this_review": 0,
+    "frozen_suite_results_reported_by_audit": [
+      {
+        "suite": "startup_health_contracts_and_real_signal_child_processes",
+        "tests": 12,
+        "exit_code": 0
+      },
+      {
+        "suite": "existing_backend_contracts",
+        "tests": 15,
+        "exit_code": 0
+      },
+      {
+        "suite": "entry_contracts_after_helper_pin_and_prelisten_hook",
+        "tests": 16,
+        "exit_code": 0
+      },
+      {
+        "suite": "startup_bundle_after_required_helper_source",
+        "tests": 12,
+        "exit_code": 0
+      }
+    ],
+    "reported_results_source_sha256": "4cd325399460779771792106fdbfae2d976e54d7167031fbc44dcc4817326beb",
+    "reported_results_not_relabelled_as_independent_runtime_execution": true,
+    "earlier_development_only_observation_excluded_from_final_qualification": "An earlier in-development 8-case unit run is not used to qualify this frozen 12-case revision.",
+    "new_r6_native_startup_cases_executed": 0,
+    "actual_android_startup_health_executed": false
+  },
+  "remaining_gates": [
+    "Materialize the final private layout-plus-health source overlay and close its complete source/PARENTS manifest.",
+    "Run unchanged r6 native integration and the two new startup cases on a host where actual AF_UNIX is available.",
+    "Run the actual private r9 regression suite against the new source overlay.",
+    "Obtain actual init-entry/stage/UID2000 phone_worker NPU health proof with the original stop and permission boundaries enforced.",
+    "Complete production provider and App-operation acceptance separately; fixed arithmetic health does not qualify vision grounding or App tasks."
+  ],
+  "new_blockers_in_assigned_scope": [],
+  "operations": {
+    "source_files_modified": 0,
+    "independent_review_files_added": 1,
+    "H_requests": 0,
+    "phone_operations": 0,
+    "model_processes_started": 0,
+    "services_started": 0,
+    "listeners_opened": 0,
+    "partition_writes": 0,
+    "owner_stop_changes": 0,
+    "pending_full53_request_replayed": false
+  },
+  "qualification": {
+    "source_review_scoped_complete": true,
+    "full_private_source_qualified": false,
+    "actual_r6_startup_qualified": false,
+    "actual_uid2000_npu_qualified": false,
+    "app_operations_qualified": false,
+    "hepta_end_to_end_qualified": false
+  }
+}

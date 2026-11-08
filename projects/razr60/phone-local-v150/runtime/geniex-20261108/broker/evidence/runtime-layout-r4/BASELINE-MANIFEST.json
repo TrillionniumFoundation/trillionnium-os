@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.runtime-layout-baseline.v1",
+  "source_revision": "R3 grammar profile before actual runtime-layout correction",
+  "files": {
+    "native_backend.py": {
+      "bytes": 54826,
+      "sha256": "0f6ca4b9937ef5ad9f7b46ff48059c980424f0c7811ede5b9d72ff202d12e58b"
+    },
+    "tests/test_backend.py": {
+      "bytes": 49540,
+      "sha256": "66947090db7f898ce8aec630d4db70f01b06bae795be3a79a6bbcdc6e82f742d"
+    }
+  }
+}

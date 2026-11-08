@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.runtime-layout-source-manifest.v1",
+  "files": {
+    "native_backend.py": {
+      "bytes": 56866,
+      "sha256": "2049294d6ff4087f2e6af4861ff0c4542fe26a33b0e5fee8c35b3ef86686c6d5"
+    },
+    "tests/test_backend.py": {
+      "bytes": 58388,
+      "sha256": "5cde876819ce63bf40b6a7b190c716db6658f54d723ba009a875e6865c1187c1"
+    }
+  },
+  "baseline_files": {
+    "native_backend.py": {
+      "bytes": 54826,
+      "sha256": "0f6ca4b9937ef5ad9f7b46ff48059c980424f0c7811ede5b9d72ff202d12e58b"
+    },
+    "tests/test_backend.py": {
+      "bytes": 49540,
+      "sha256": "66947090db7f898ce8aec630d4db70f01b06bae795be3a79a6bbcdc6e82f742d"
+    }
+  },
+  "patch": {
+    "bytes": 18535,
+    "sha256": "8f59a1b7f0cb7e1455f8043d61b064f392ab9b5b98bfde5314a967fe92aa350d"
+  },
+  "changed_production_methods": [
+    "BackendConfig.validate",
+    "NativeBackend._command"
+  ],
+  "local_contracts_passed": 15,
+  "full_suite_passed": false,
+  "promotion_or_activation": false
+}

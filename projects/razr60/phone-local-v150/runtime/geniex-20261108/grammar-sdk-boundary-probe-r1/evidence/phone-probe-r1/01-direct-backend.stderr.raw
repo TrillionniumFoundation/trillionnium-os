@@ -1,0 +1,9 @@
+boundary-probe: loading tokenizer only
+boundary-probe: path=direct-invalid callback=false
+fake-backend: entering original proc Grammar constructor
+parse: error parsing grammar: unexpected end of input
+
+root ::= "unterminated
+
+geniex_grammar_init_from_string: failed to parse grammar
+boundary-probe: exception escaped fake backend and caught by caller std::exception: geniex::Grammar: failed to initialise grammar sampler

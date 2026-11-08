@@ -53,16 +53,17 @@ def configure(args, path):
                     and binding.get("new_dedicated_mount") is True and binding.get("old_state_permissions_changed") is False
                     and backend.hex_string(binding.get("instance"), 32), "explicit shared staging binding absent")
     fields = {field.name for field in dataclasses.fields(backend.BackendConfig)}
-    grammar_fields = {"grammar_profile", "core_android", "core_sha256", "schema_compiler_sha256"}
+    vlm_fields = {"vlm_android", "vlm_sha256"}
+    grammar_fields = {"grammar_profile", "core_android", "core_sha256", "schema_compiler_sha256"} | vlm_fields
     backend.require(isinstance(value["backend"], dict)
-                    and (set(value["backend"]) == fields
+                    and (set(value["backend"]) in (fields, fields - vlm_fields)
                          or (not grammar_selected and set(value["backend"]) == fields - grammar_fields)),
                     "GenieX backend config fields differ")
     params = dict(value["backend"])
     params["evidence_root"] = Path(params["evidence_root"])
     params["stage_root"] = Path(params["stage_root"])
     config = backend.BackendConfig(**params)
-    backend.require((config.grammar_profile == backend.GRAMMAR_PROFILE) if grammar_selected
+    backend.require((config.grammar_profile in backend.GRAMMAR_PROFILES) if grammar_selected
                     else all(getattr(config, field) is None for field in grammar_fields),
                     "explicit config version/output grammar selection differs")
     backend.require(config.tokenizer_sha256 == QWEN_TOKENIZER_SHA,
@@ -112,7 +113,7 @@ def prepare_body(adapter, body):
     if getattr(adapter.args, "geniex_backend", None) is None:
         return body
     value = compact_provider_body(body,
-        grammar_enabled=adapter.args.geniex_backend["runner"].config.grammar_profile == backend.GRAMMAR_PROFILE)
+        grammar_enabled=adapter.args.geniex_backend["runner"].config.grammar_profile in backend.GRAMMAR_PROFILES)
     value["model"] = adapter.local_config["model"]
     value["max_tokens"] = 256
     return value
