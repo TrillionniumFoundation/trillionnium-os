@@ -182,6 +182,23 @@ class R10SourceCheckpointTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "source JSON pointer does not resolve"):
                 verify_checkpoint(copied)
 
+    def test_offline_selector_cannot_promote_runtime_admission(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / "checkpoint"
+            shutil.copytree(PACKAGE, copied)
+            name = "unadopted/topology-20261107/SELECTOR-CANDIDATE-MANIFEST.json"
+            value = json.loads((copied / name).read_text())
+            value["runtime_admission"] = True
+            raw = json.dumps(value).encode()
+            (copied / name).write_bytes(raw)
+            manifest = json.loads((copied / "MANIFEST.json").read_text())
+            for row in manifest["files"]:
+                if row["path"] == name:
+                    row.update(bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
+            (copied / "MANIFEST.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "offline selector claim ceiling differs"):
+                verify_checkpoint(copied)
+
 
 class UnadoptedTopologyGuardTest(unittest.TestCase):
     @classmethod
@@ -289,6 +306,27 @@ class UnadoptedTopologyGuardTest(unittest.TestCase):
             self.assertEqual(inventory["topology_comparisons"], 1754)
             self.assertEqual(scope["source_parent_inventory"]["inventory_comparisons"], 788)
             self.assertEqual(scope["scope_topology_subgraph"]["comparisons"], 285)
+
+    def test_bound_offline_selector_rebuilds_and_rejects_source_or_receipt_mismatch(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "candidate"
+            shutil.copytree(CANDIDATE, target)
+            environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", HEPTA_TOPOLOGY_SYNTHETIC_ONLY="1")
+            built = subprocess.run([sys.executable, "-B", "tools/build_selector_manifest.py"],
+                                   cwd=target, env=environment, capture_output=True, timeout=60)
+            self.assertEqual(built.returncode, 0, built.stdout + built.stderr)
+            self.assertEqual(built.stdout, (CANDIDATE / "SELECTOR-CANDIDATE-MANIFEST.json").read_bytes())
+            result = subprocess.run([sys.executable, "-B", "tests/test_reader_selector.py"],
+                                    cwd=target, env=environment, text=True, capture_output=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual(report["state"], "PASS")
+            self.assertEqual(report["tests_run"], 11)
+            self.assertEqual(len(report["skips"]), 1)
+            self.assertEqual(len(report["constructed_modules"]), 5)
+            self.assertEqual(report["rejected_source_or_binding_cases"], 36)
+            self.assertEqual(report["inventory_comparisons"], 30)
+            self.assertEqual(report["retained_inventory_comparisons"], 0)
 
 
 if __name__ == "__main__":

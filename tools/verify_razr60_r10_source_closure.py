@@ -341,6 +341,7 @@ def verify_checkpoint(root: Path) -> dict:
             need(len(raw) == descriptor["bytes"]
                  and hashlib.sha256(raw).hexdigest() == descriptor["sha256"],
                  "derived function source binding differs")
+    verify_selector_candidate(contents)
     return {
         "schema": "hepta.razr60.r10.source-closure-check.v1",
         "result": "PASS_SOURCE_BYTES_AND_STRUCTURE_ONLY",
@@ -353,6 +354,59 @@ def verify_checkpoint(root: Path) -> dict:
         "phone_or_model_requests": 0, "fixed19_credits_added": 0,
         "whole_stage_budget_verified": False,
     }
+
+
+def verify_selector_candidate(contents: dict[str, bytes]) -> None:
+    prefix = "unadopted/topology-20261107/"
+    selector = strict_json(contents[prefix + "SELECTOR-CANDIDATE-MANIFEST.json"])
+    need(selector["schema"] == "hepta.UNADOPTED.reader-selector-candidate.v1"
+         and selector["state"] == "OFFLINE_TESTED_NOT_PRODUCTION_ADOPTED"
+         and selector["native_case_credit"] == 0
+         and selector["production_policy_status"] == "HOLD"
+         and selector["source_parent_boundary_reader_status"] == "HOLD_REQUIRES_NEW_PROVENANCE_POLICY"
+         and all(selector[field] is False for field in (
+             "runtime_admission", "production_selector_adopted", "validation_result_cache",
+             "live_observation_cache", "original_module_globals_reassigned", "original_source_bytes_changed",
+             "source_parent_full_boundary_composed", "new_runtime_policy_or_freeze_provided",
+             "whole_stage_budget_verified"))
+         and selector["new_code_provenance_is_separate"] is True,
+         "offline selector claim ceiling differs")
+    pins = {
+        "selector_source": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2",
+        "bound_loader_source": "4aa4fb101dca5f4532c70ec071231b036df6e63940d08d6613305be6cb699b82",
+    }
+    for field, digest in pins.items():
+        need(selector[field]["sha256"] == digest, "offline selector identity was reassigned")
+    for row in [selector["selector_source"], selector["bound_loader_source"], *selector["original_sources"]]:
+        raw = contents[prefix + row["path"]]
+        need(len(raw) == row["bytes"] and hashlib.sha256(raw).hexdigest() == row["sha256"],
+             "offline selector source binding differs")
+    need([row["kind"] for row in selector["constructions"]] ==
+         ["r7-reader", "r8-reader", "r8-scope", "r9-reader", "r9-scope"],
+         "offline selector construction set differs")
+    for row in selector["constructions"]:
+        need(row["original_module_mutated"] is False
+             and row["reference_source_bytes_changed"] is False
+             and row["fresh_module_globals"] is True
+             and row["whole_byte_inverse_verified"] is True
+             and row["derived_source"]["sha256"] != row["original_source"]["sha256"],
+             "offline selector provenance boundary differs")
+    delivery = strict_json(contents[prefix + "PORTABLE-DELIVERY-MANIFEST-v2.json"])
+    need(delivery["state"] == "UNADOPTED_OFFLINE_SELECTOR_INCREMENT"
+         and delivery["v1_all_35_files_unchanged"] is True,
+         "offline selector delivery boundary differs")
+    for manifest_name, count in (("PORTABLE-DELIVERY-MANIFEST-v1.json", 35),
+                                 ("PORTABLE-DELIVERY-MANIFEST-v2.json", 11)):
+        manifest = strict_json(contents[prefix + manifest_name])
+        need(len(manifest["files"]) == count
+             and len({row["path"] for row in manifest["files"]}) == count,
+             "offline selector delivery membership differs")
+        for row in manifest["files"]:
+            raw = contents[prefix + row["path"]]
+            need(len(raw) == row["bytes"] and hashlib.sha256(raw).hexdigest() == row["sha256"],
+                 "offline candidate delivery source differs")
+    for private in delivery["private_evidence_do_not_import"]:
+        need(prefix + private["artifact"] not in contents, "private selector evidence was published")
 
 
 def materialize_checkpoint(root: Path, output: Path) -> dict:

@@ -1,0 +1,476 @@
+{
+  "exception_type_and_message_equal": true,
+  "external_original_read_count": 5,
+  "external_read_order_equal": true,
+  "full_valid_return_equal": true,
+  "historical_failure_semantics": {
+    "baseline_device_shell_wire_dispatched": null,
+    "business_qualified": false,
+    "component_qualified": false,
+    "first_launch_receipt_gap": true,
+    "global_unknown_effect_count": null,
+    "historical_failed_listener_identity": null,
+    "historical_failed_route_callsite": null,
+    "native_case_credit": 0,
+    "native_terminal": null,
+    "new_nonce_authorized": false,
+    "original_nonce_consumed": true,
+    "original_retried_launch": false,
+    "original_start_reused": true,
+    "original_wrapper_status": "failed_or_unknown_no_retry",
+    "remote_cleanup_proven": false,
+    "replay_authorized": false,
+    "standalone_execution_authorized": false
+  },
+  "historical_module_globals_reassigned": false,
+  "historical_phone_scope_verified": true,
+  "historical_proof_is_not_current_phone_observation": true,
+  "historical_retirement_accepted": false,
+  "historical_source_files_changed": false,
+  "initial_derived_construction_receipt": {
+    "constructions": [
+      {
+        "derived_source": {
+          "bytes": 34737,
+          "sha256": "8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7"
+        },
+        "fresh_module_globals": true,
+        "kind": "r9-reader",
+        "module_file": "<UNADOPTED_derived_r9_reader:sha256=8d582d044e3e80bbc824ec6878927825b1a04cae7f4efbedd76ed8b7e53020d7>",
+        "module_name": "UNADOPTED_derived_r9_reader",
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 34650,
+          "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+        },
+        "reference_source_bytes_changed": false,
+        "transformation_sites": [
+          "scope-selection-after-archive-member-pins",
+          "r8-selection-after-read-exact"
+        ],
+        "whole_byte_inverse_verified": true
+      },
+      {
+        "derived_source": {
+          "bytes": 37770,
+          "sha256": "5c6ae675180c119b1cca647dc486638abe6f3a9b6ace3cd67bf17099ed06e9cf"
+        },
+        "fresh_module_globals": true,
+        "kind": "r9-scope",
+        "module_file": "<UNADOPTED_derived_r9_scope:sha256=5c6ae675180c119b1cca647dc486638abe6f3a9b6ace3cd67bf17099ed06e9cf>",
+        "module_name": "UNADOPTED_derived_r9_scope",
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 37788,
+          "sha256": "f59bae34d9acc80d2c28cd5636b53e13b68d911d2121735883dc7b001e57779f"
+        },
+        "reference_source_bytes_changed": false,
+        "transformation_sites": [
+          "explicit-validator-provenance-comment",
+          "inventory-selection-after-original-source-pins"
+        ],
+        "whole_byte_inverse_verified": true
+      },
+      {
+        "derived_source": {
+          "bytes": 96044,
+          "sha256": "df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727"
+        },
+        "fresh_module_globals": true,
+        "kind": "r8-reader",
+        "module_file": "<UNADOPTED_derived_r8_reader:sha256=df682dd96ec97ee0371d054d18f57a6ea421fd6cac81195236095ef5fa8c8727>",
+        "module_name": "UNADOPTED_derived_r8_reader",
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 96088,
+          "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+        },
+        "reference_source_bytes_changed": false,
+        "transformation_sites": [
+          "scope-selection-after-original-pin",
+          "r7-reader-selection-after-original-pin",
+          "inventory-selection-after-original-source-check"
+        ],
+        "whole_byte_inverse_verified": true
+      },
+      {
+        "derived_source": {
+          "bytes": 22151,
+          "sha256": "520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed"
+        },
+        "fresh_module_globals": true,
+        "kind": "r8-scope",
+        "module_file": "<UNADOPTED_derived_r8_scope:sha256=520f0f9a1eab1de60a165908536c03559f3bc49214a3e74b4c5d9036197619ed>",
+        "module_name": "UNADOPTED_derived_r8_scope",
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 21865,
+          "sha256": "937a34f4ba752e14bb78b1566c672e89b2e26502392d8d2a3561a52ceb88af38"
+        },
+        "reference_source_bytes_changed": false,
+        "transformation_sites": [
+          "old-root-child-membership"
+        ],
+        "whole_byte_inverse_verified": true
+      },
+      {
+        "derived_source": {
+          "bytes": 37442,
+          "sha256": "9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52"
+        },
+        "fresh_module_globals": true,
+        "kind": "r7-reader",
+        "module_file": "<UNADOPTED_derived_r7_reader:sha256=9c8c09cd0296d769f255876253ddd88d7b607c99d2ac1a924f297855a279ae52>",
+        "module_name": "UNADOPTED_derived_r7_reader",
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 37404,
+          "sha256": "5935f4d4b3f00d914c6e0f9aec4429cf424a0601685061fe9277de3df5403b21"
+        },
+        "reference_source_bytes_changed": false,
+        "transformation_sites": [
+          "inventory-selection"
+        ],
+        "whole_byte_inverse_verified": true
+      },
+      {
+        "context": "r7-readers",
+        "derived_function": {
+          "bytes": 3827,
+          "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+        },
+        "fresh_function_globals": true,
+        "kind": "inventory-function",
+        "namespace_bindings": [
+          "C",
+          "Path",
+          "re",
+          "stat"
+        ],
+        "original_function": {
+          "bytes": 3788,
+          "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+        },
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 181669,
+          "sha256": "0a9f52cf8fb71177d0816f561cce279811a7182e986c12912d9431bde5997cda"
+        },
+        "validation_result_cache": false
+      },
+      {
+        "context": "r8-payload",
+        "derived_function": {
+          "bytes": 3827,
+          "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+        },
+        "fresh_function_globals": true,
+        "kind": "inventory-function",
+        "namespace_bindings": [
+          "C",
+          "Path",
+          "re",
+          "stat"
+        ],
+        "original_function": {
+          "bytes": 3788,
+          "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+        },
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 218894,
+          "sha256": "9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54"
+        },
+        "validation_result_cache": false
+      },
+      {
+        "context": "r9-scope",
+        "derived_function": {
+          "bytes": 3827,
+          "sha256": "0356d2bd56da36267a72bfb732125eb8807dc6ff32c47789ba8cbc1b523e7f51"
+        },
+        "fresh_function_globals": true,
+        "kind": "inventory-function",
+        "namespace_bindings": [
+          "C",
+          "Path",
+          "re",
+          "stat"
+        ],
+        "original_function": {
+          "bytes": 3788,
+          "sha256": "086dedcdc7ac8d1627e1c2592ed7a9f130a4395dd4b27e9bc86a512c91af06f1"
+        },
+        "original_module_mutated": false,
+        "original_source": {
+          "bytes": 218894,
+          "sha256": "9adcd6a865875f209bf56cfadc952b40cf4984889cb3450837446b6b95dcbd54"
+        },
+        "validation_result_cache": false
+      }
+    ],
+    "live_observation_cache": false,
+    "native_case_credit": 0,
+    "new_validator_implementation_identity": true,
+    "original_module_globals_reassigned": false,
+    "original_source_bytes_changed": false,
+    "production_policy_status": "HOLD",
+    "production_selector_adopted": false,
+    "runtime_admission": false,
+    "schema": "hepta.UNADOPTED.derived-reader-construction.v1",
+    "selector_source": {
+      "bytes": 11956,
+      "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+    },
+    "source_construction_only": true,
+    "source_parent_boundary_reader_status": "HOLD_REQUIRES_NEW_PROVENANCE_POLICY",
+    "validation_result_cache": false,
+    "whole_stage_budget_verified": false
+  },
+  "inventory": {
+    "bytes": 1403290,
+    "sha256": "bb8cfb6dd2f108046e8296956e514f7b3eec0ea5aaac5794ad86c70174478609"
+  },
+  "inventory_entries": 3991,
+  "inventory_roots": 49,
+  "live_observation_cache": false,
+  "manifest_representation": {
+    "changed_field": "archive.path",
+    "is_new_phone_observation": false,
+    "mac_source": {
+      "bytes": 422,
+      "sha256": "b005ba692ea1f31e93858628eb9ae64c936c83193c632002eafa1dfb84f7f7f0"
+    },
+    "phone_representation": {
+      "bytes": 409,
+      "sha256": "247ebf979d69cfd5b9b55b5cdbe55b2d1a57c481d3ceb67ef5e4ece91f7d78f6"
+    }
+  },
+  "measurement": {
+    "alternating_order": true,
+    "boundary": "complete verify_retained_transport_archive; preloaded immutable retained bytes; nested modules rebuilt each call",
+    "median_wall_ratio_original_over_derived": 1.6317234752720313,
+    "medians": {
+      "derived": {
+        "cpu_seconds": 1.560159,
+        "wall_seconds": 1.560952625
+      },
+      "original": {
+        "cpu_seconds": 2.545899,
+        "wall_seconds": 2.547043042
+      }
+    },
+    "rounds": 3,
+    "samples": {
+      "derived": [
+        {
+          "cpu_seconds": 1.542867,
+          "wall_seconds": 1.543583333
+        },
+        {
+          "cpu_seconds": 1.560159,
+          "wall_seconds": 1.560952625
+        },
+        {
+          "cpu_seconds": 1.562956,
+          "wall_seconds": 1.563740792
+        }
+      ],
+      "original": [
+        {
+          "cpu_seconds": 2.510706,
+          "wall_seconds": 2.511866125
+        },
+        {
+          "cpu_seconds": 2.545899,
+          "wall_seconds": 2.547043042
+        },
+        {
+          "cpu_seconds": 2.569107,
+          "wall_seconds": 2.570287042
+        }
+      ]
+    }
+  },
+  "native_case_credit": 0,
+  "nine_field_metadata_bookends": [
+    "dev",
+    "ino",
+    "mode",
+    "uid",
+    "gid",
+    "nlink",
+    "size",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "operator_status": {
+    "at_unix_ms": 1794095898131,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b872991c-12894-f78",
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "parsing_note": "Canonical derived result rebuilt losslessly with Python from exact raw stdout; intermediate rounded JavaScript projection retained separately and excluded from evidence.",
+  "phone_calls": 0,
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "production_policy_status": "HOLD",
+  "production_selector_adopted": false,
+  "profiler_enabled": false,
+  "python": "3.9.6 (default, Oct 19 2026, 19:18:13) \n[Clang 21.0.0 (clang-2100.4.1.1)]",
+  "raw_originals_retained_locally_not_in_repository": [
+    {
+      "artifact": "reports/selector-full-mac.stdout.original.jsonl",
+      "bytes": 31632,
+      "sha256": "7d3fffb4e5f71444e3889a15b69b29bc677f3d4641c60bd2189cc2620d5f2dd1"
+    },
+    {
+      "artifact": "reports/selector-full-mac-results.json",
+      "bytes": 18655,
+      "sha256": "31f6237ac3eb41be64e9beec83dccf7356e5f013110aadd57a9e4d473bd09473"
+    },
+    {
+      "artifact": "reports/selector-full-mac-execution.json",
+      "bytes": 234436,
+      "sha256": "5fab5ddbe40ff3a5d01d2797ec15832c5f73c54610dcb864943724db418799a1"
+    },
+    {
+      "artifact": "reports/selector-r9-scope-export.json",
+      "bytes": 17161,
+      "sha256": "e131a5ed50652f8300c53d432174b5cc611a12a55a2af4de080ae8a83e40a076"
+    }
+  ],
+  "readset_originals": [
+    {
+      "bytes": 3000200,
+      "relative_project_path": "retained-preaccept-r7-failed01/ORIGINALS.zlib",
+      "sha256": "4010779b9a3810dc7d0d51072dc76dd52be2327301b857df2b04ddb004a5edca"
+    },
+    {
+      "bytes": 2066079,
+      "relative_project_path": "retained-staged-r8-failed01-ast02/ORIGINALS.zlib",
+      "sha256": "d66d286bfb7890e0b32358326b669ac4a47d5f4ba43c524bc3f129f5bf631e93"
+    },
+    {
+      "bytes": 422,
+      "relative_project_path": "retained-staged-r8-failed01-ast02/RETENTION-INPUTS.json",
+      "sha256": "b005ba692ea1f31e93858628eb9ae64c936c83193c632002eafa1dfb84f7f7f0"
+    },
+    {
+      "bytes": 96088,
+      "relative_project_path": "retained-staged-r8-failed01-ast02/verify_retained_staged_r8.py",
+      "sha256": "614f44d6eb75f47b02e32b463f18534e2d0bc5a3e8fd928535e7da17909679ae"
+    },
+    {
+      "bytes": 2174339,
+      "relative_project_path": "retained-transport-r9-failed01/ORIGINALS.zlib",
+      "sha256": "18da9626e5ae687adb4087b5a5484d9d2a8dc8885fdaabfd57b829ec02d20fd3"
+    },
+    {
+      "bytes": 34650,
+      "relative_project_path": "retained-transport-r9-failed01/verify_retained_transport_r9.py",
+      "sha256": "919d508899f405a5942766ad5d9adf0bfa0600aa0bc2e51552a835b5a8c7fbd3"
+    }
+  ],
+  "reference_module_bindings_unchanged": true,
+  "rejected_cases": [
+    {
+      "accepted": false,
+      "case": "r9-archive-byte",
+      "exception_type": "ValueError",
+      "external_read_count": 1,
+      "external_read_order_equal": true,
+      "message": "complete exact external original read"
+    },
+    {
+      "accepted": false,
+      "case": "r8-reader-byte",
+      "exception_type": "ValueError",
+      "external_read_count": 2,
+      "external_read_order_equal": true,
+      "message": "complete exact external original read"
+    },
+    {
+      "accepted": false,
+      "case": "r8-manifest-byte",
+      "exception_type": "ValueError",
+      "external_read_count": 3,
+      "external_read_order_equal": true,
+      "message": "complete exact external original read"
+    },
+    {
+      "accepted": false,
+      "case": "r8-archive-byte",
+      "exception_type": "ValueError",
+      "external_read_count": 4,
+      "external_read_order_equal": true,
+      "message": "complete exact external original read"
+    },
+    {
+      "accepted": false,
+      "case": "r7-archive-byte",
+      "exception_type": "ValueError",
+      "external_read_count": 5,
+      "external_read_order_equal": true,
+      "message": "complete exact external original read"
+    },
+    {
+      "accepted": false,
+      "case": "r9-archive-before-r8-reader",
+      "exception_type": "ValueError",
+      "external_read_count": 1,
+      "external_read_order_equal": true,
+      "message": "complete exact external original read"
+    },
+    {
+      "accepted": false,
+      "case": "entrypoint-pin-before-read",
+      "exception_type": "ValueError",
+      "external_read_count": 0,
+      "external_read_order_equal": true,
+      "message": "exact canonical R9 archive entrypoint"
+    }
+  ],
+  "return_pin": {
+    "bytes": 1514745,
+    "sha256": "bfbe12ae9d23456b1e5a6c2211243c79d0cdf0206f3ad27bddc1cd1ae4bb8265"
+  },
+  "runtime_admission": false,
+  "schema": "hepta.offline.complete-retained-reader-selector-safe-summary.v1",
+  "selector_source": {
+    "bytes": 11956,
+    "sha256": "de7dc784654dec65f0e6d2d7fd81918caf9c3c634d152295c1fb7928cf04a5c2"
+  },
+  "source_archive_bookends_equal": true,
+  "source_parent_full_boundary_composed": false,
+  "state": "PASS",
+  "stderr": {
+    "bytes": 0,
+    "eof": true,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 31632,
+    "eof": true,
+    "sha256": "7d3fffb4e5f71444e3889a15b69b29bc677f3d4641c60bd2189cc2620d5f2dd1"
+  },
+  "support_source": {
+    "bytes": 14290,
+    "sha256": "c11951766978bbb0345dbbf853bb8b73a145f7f0f6cfdb65d18dbc3e48a91c78"
+  },
+  "test_elapsed_seconds": 17.207430667,
+  "test_harness": {
+    "bytes": 14569,
+    "path": "tests/selector_full_replay_readonly.py",
+    "sha256": "28fb5a1133b1709b7432bf85298884f40fd9b0a35b9e40fdf0b6cb9573320bc6"
+  },
+  "total_constructions": 38,
+  "trace_enabled": false,
+  "validation_result_cache": false,
+  "whole_stage_budget_verified": false
+}

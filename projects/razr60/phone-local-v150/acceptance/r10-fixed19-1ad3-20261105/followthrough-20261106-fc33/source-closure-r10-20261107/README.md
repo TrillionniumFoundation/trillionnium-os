@@ -55,6 +55,16 @@ The separate topology candidate replaces a quadratic root-overlap predicate with
 
 The portable G1 tests rebuild the exact current and derived fragments in a temporary directory and independently run 788 generated whole-inventory comparisons and 1,754 root-topology comparisons for both inventory versions, plus 285 synthetic R8-scope subgraph comparisons. The full retained-fixture suites additionally require the private, hash-pinned fixture bytes; CI explicitly skips those cases. A separate retained Mac report compared the complete original/derived R8 scope with identical full returns and six rejection cases, measuring a host median 0.983766 to 0.254996 seconds (3.858x). These are offline function measurements, not a whole-stage 90-second result. No production selector, historical reader substitution or new runtime admission is provided.
 
+## Latest offline selector increment
+
+The second public increment is [SELECTOR-CANDIDATE-MANIFEST.json](unadopted/topology-20261107/SELECTOR-CANDIDATE-MANIFEST.json), with the design in [SELECTOR-DESIGN.md](unadopted/topology-20261107/reports/SELECTOR-DESIGN.md). The earlier v1 README and coverage report remain unchanged milestone records; this increment supplies the separately identified **offline** R9 → R8 → R7 reader/scope selector.
+
+A bound loader verifies the actual selector source pin before compilation and requires the declared implementation source to be those exact bytes. Five derived modules have fresh globals and their own implementation identities; their original reference bytes are checked and retained. The historical response is a data projection, with new validator provenance recorded separately.
+
+The additional portable suite runs 11 tests with one explicit private-fixture skip, five module constructors, 36 source/binding rejection cases and 30 complete-inventory outcome comparisons. Its deterministic constructor manifest must reproduce byte for byte. Original requests, full private reports/readsets and archived inventories remain outside this repository; the public [safe summary](unadopted/topology-20261107/reports/selector-full-safe-summary.json) binds their exact retained originals.
+
+Production policy remains **HOLD**. The complete source-parent boundary reader is not composed, no new runtime policy/freeze is supplied, and the whole-stage 90-second budget remains unverified. This increment adds no runtime admission or case credit.
+
 ## Publication, compatibility and rollback
 
 This is a D5 source-custody/evidence-boundary change for MOD-ANDROID and MOD-EVIDENCE, plus an unadopted D3 algorithm candidate. No production API, state schema, ordering, cancellation, nonce reservation, source seal, budget or deployed runtime is changed. Existing failures and UNKNOWN originals remain preserved. A later adopted implementation needs its own source derivation, complete proof-reader coverage, full original-budget validation, new freeze/admission and independent review.
