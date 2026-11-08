@@ -1,0 +1,93 @@
+name: Hepta local Android candidate
+
+on:
+  pull_request:
+    paths:
+      - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
+      - '.github/workflows/hepta-local-android.yml'
+  push:
+    branches:
+      - 'codex/razr60-local-r3-*'
+    paths:
+      - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
+      - '.github/workflows/hepta-local-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-and-android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the exact candidate source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Set up Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify complete source closure
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/verify_source.py
+      - name: Run host contracts
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks"
+      - name: Prepare Android build dependencies
+        run: |
+          hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
+          "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'platforms;android-34' 'build-tools;34.0.0' 'ndk;28.2.13676358'
+          printf '%s\n' "ANDROID_SDK_ROOT=$hepta_sdk" "AAPT2=$hepta_sdk/build-tools/34.0.0/aapt2" "APKSIGNER=$hepta_sdk/build-tools/34.0.0/apksigner" "READELF=/usr/bin/readelf" "KEYTOOL=$JAVA_HOME/bin/keytool" "HEPTA_BUILD_OUT=$RUNNER_TEMP/hepta-build" >> "$GITHUB_ENV"
+      - name: Verify and extract pinned GenieX runtime
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: |
+          python -B tools/fetch_pinned_runtime.py --destination "$RUNNER_TEMP/hepta-geniex"
+          printf '%s\n' "GENIEX_ANDROID_LIB_DIR=$RUNNER_TEMP/hepta-geniex/lib" >> "$GITHUB_ENV"
+      - name: Compile Android Java and arm64 runner
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B build_mac.py
+      - name: Verify packaging with an ephemeral development signer
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B assemble_pocket4.py
+      - name: Preserve host and static build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-host-and-static-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-host-checks/HOST-CHECKS.json
+            ${{ runner.temp }}/hepta-host-checks/*.stdout
+            ${{ runner.temp }}/hepta-host-checks/*.stderr
+            ${{ runner.temp }}/hepta-geniex/dependency-receipt.json
+            ${{ runner.temp }}/hepta-build/mac-build-receipt.json
+            ${{ runner.temp }}/hepta-build/worker-adapter.json
+            ${{ runner.temp }}/hepta-build/control-v3-static/*.json
+            ${{ runner.temp }}/hepta-build/control-v3-static/*.txt
+      - name: Preserve unsigned build inputs for same-signer device assembly
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-unsigned-build-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hepta-build/base.apk
+            ${{ runner.temp }}/hepta-build/dex/classes.dex
+            ${{ runner.temp }}/hepta-build/libhepta_local_runner.so
+            ${{ runner.temp }}/hepta-build/mac-build-receipt.json
