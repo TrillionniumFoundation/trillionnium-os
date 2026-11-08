@@ -6,6 +6,8 @@ Evidence date: 2026-11-08. This is a candidate runtime validation record, not a 
 
 Actual disconnected Android execution has established Hexagon v79 inference on the target Snapdragon 8 Elite. The hardware-targeted **Qwen3-VL-4B W4A16 QAIRT candidate has passed a text smoke, two image-position cases, and two revised strict-JSON click-decision cases**. An earlier action-prompt case failed JSON syntax and remains recorded as failed. No generated decision was executed on the phone. The full Hepta APK-to-model-to-action path remains unqualified.
 
+The separate R2 QAIRT core repair subsequently passed the output-grammar discriminator, no-grammar recovery and two constrained synthetic image decisions on this phone. Its malformed-grammar negative case still aborted, so its five-case suite is **not wholly passed**. The latest backend integration passed 27/27 host tests and the unchanged private r9 regressions passed 38/38. The original fixed19 phone acceptance plan remains 0/19.
+
 The existing GUI-Owl 2B GGUF model/runtime combination has **not passed visual grounding**. `MODEL-CANDIDATES.json` records the selected QAIRT bundle's fixed source and download version, compiled context limits, actual test scope and remaining acceptance gates.
 
 ## Target and actual accelerator evidence
@@ -41,7 +43,7 @@ On the two revised cases the SDK reports image processing of 143.7/142.5 ms, pre
 
 Original evidence: `evidence/qairt-acceptance-r1/ACCEPTANCE.json`, SHA256 `9b1fbaba62320b4391bc5cdc0f5ac18d00165dcdce3a9e25c91fb252178f0dc8`; revised cases: `evidence/qairt-protocol-r2/PROTOCOL-CHECK.json`, SHA256 `d377fcc3e7bdff78caae85e2be45e6be4a72a708d98489b8b7834b6aadac8211`. The original manifest's `blue_hit=false` follows failed JSON parsing; it does not establish a geometric miss.
 
-The QAIRT sampler has a grammar implementation in fixed source, but the actual discriminator failed at runtime. Passing a grammar flag is not proof that constraints work. The candidate integration therefore keeps QAIRT grammar disabled and checks complete native output against JSON syntax, the original strict action schema and the current observation after generation. Malformed output is rejected without repair or action execution. Grammar evidence is `evidence/qairt-grammar-r3/PROTOCOL-CHECK.json` (SHA256 `18368bade247c7f85b3eac5815c0af61a4ec08ef2e533339402027153c6c3be5`); recovery is `evidence/qairt-recovery-r4/RECOVERY.json` (SHA256 `f6d4ef5b595bcf7a64279e6b104d650eff3ea8c30fad1743d85098bd5a6cc4ab`). Recovery does not convert the original failed grammar case into a pass.
+The QAIRT sampler has a grammar implementation in fixed source, but the actual discriminator failed at runtime. Passing a grammar flag is not proof that constraints work. The original v1 candidate therefore keeps QAIRT grammar disabled and checks complete native output against JSON syntax, the original strict action schema and the current observation after generation. Malformed output is rejected without repair or action execution. Grammar evidence is `evidence/qairt-grammar-r3/PROTOCOL-CHECK.json` (SHA256 `18368bade247c7f85b3eac5815c0af61a4ec08ef2e533339402027153c6c3be5`); recovery is `evidence/qairt-recovery-r4/RECOVERY.json` (SHA256 `f6d4ef5b595bcf7a64279e6b104d650eff3ea8c30fad1743d85098bd5a6cc4ab`). Recovery does not convert the original failed grammar case into a pass.
 
 The requested QAIRT power mode is sustained performance (enum 6). Fixed source shows that it overrides the bundle's burst default. Successful QAIRT power votes are not logged by the compiled INFO/WARN macros, so source/config and absence of power errors do not establish actual frequency, utilization or watts.
 
@@ -132,7 +134,7 @@ The installed Hepta native supervisor uses a different UID/SELinux execution con
 ## Verification checklist and remaining tests
 
 1. Completed: fixed-version Qwen3-VL-4B archive verification. The 3,029,730,149-byte archive has locally computed SHA256 `9053855d9b45d2dc1c41b8cc5d7d792887dd1549b8ebf3a7f3dfb0ef5b762599`. All 26 ZIP entries match the earlier fixed-version central-directory inventory and pass CRC checks; 24 regular files were safely extracted, totaling 4,356,290,162 bytes. This is a locally computed digest, not a claimed publisher-supplied SHA. The final 606,561,670 bytes were fetched on AI MAX and reverified after transfer; all 41 source pieces were rehashed during new-directory assembly. No partially downloaded archive was used for phone inference.
-2. Completed for the stated synthetic cases: actual QAIRT loading, text and image correctness, plus revised complete-JSON decisions. The original malformed-JSON failure and subsequent grammar abort remain unchanged. QAIRT grammar is disabled in the candidate integration; realistic held-out screens remain pending.
+2. Completed for the stated synthetic cases: actual QAIRT loading, text and image correctness, plus revised complete-JSON decisions. The original malformed-JSON failure and subsequent grammar abort remain unchanged. The original v1 profile keeps grammar disabled; the separate R2/v2 constrained candidate below is not production-qualified. Realistic held-out screens remain pending.
 3. Completed for two recorded image prompts: actual phone tokenizer/SDK context comparison. Full real-catalogue provider prompts and unseen multi-round admission remain separately tested; do not infer a larger context from the source checkpoint.
 4. Real native-supervisor permissions, bounded cancellation and process termination evidence for the new backend.
 5. Fresh natural-language requests from the Hepta APK through the local model to real reversible app actions on an unlocked phone, with postcondition checks.
@@ -141,3 +143,125 @@ The installed Hepta native supervisor uses a different UID/SELinux execution con
 Earlier read-only device checks confirmed that the screen was off and keyguard reported `showing=true` / `mIsShowing=true`; the owner emergency-stop remains present with SHA256 `ff6401f96ef8d2206e61e9fdf6d75d1dd11fe25f5696d7f6996b6647023fdb07`. The GNU root has no matching active mount. No unlock, stop removal or production bootstrap was performed by these inference tests.
 
 **Later device-state update, approximately 11:41 UTC:** an additional read-only check found `showing=false`, `mIsShowing=false`, `inputRestricted=false`, `secure=false`, `SCREEN_STATE_ON` and `AWAKE`. No test runner performed a wake, unlock or UI action. The earlier locked-screen snapshot is historical and must not be presented as the current blocker. The owner-stop digest remains unchanged, bootstrap is stopped, and no model-worker process remained after the catalogue test. Production runtime/domain and App acceptance remain separate from the changed screen state.
+
+
+## R2 constrained-output candidate and v2 integration
+
+The fixed QAIRT source attached output grammar before seeding prompt history,
+and accepted generated tokens again after the proc sampler had already
+accepted them. The separately built R2 core validates a fresh output grammar,
+seeds prompt history without grammar, then attaches the new output grammar.
+It avoids double acceptance only for grammar-enabled requests. No new class
+fields were introduced; the frozen worker, proc, model and QNN files remain
+unchanged. This is an isolated candidate, not an overwrite of the original
+phone runtime.
+
+Core SHA256 is `06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d`.
+The actual five-case report is `evidence/qairt-core-r2-smoke/RESULT.json`,
+SHA256 `8f8592fff439a7c85512483339b9b2b28c540703bcc6e3337ede0ac2f83760e4`.
+
+| Case | Observed outcome | Qualification |
+| --- | --- | --- |
+| Prompt A, grammar only B | Native `B`, EOS, all SDK return codes zero; 9.750 s | Positive passed |
+| Invalid GBNF | Exit 134, no worker metadata or raw text; uncaught `std::runtime_error` | Graceful-error contract failed |
+| Fresh no-grammar recovery | Native `42`, EOS, SDK success; 9.714 s | Positive passed |
+| Constrained image 1 | Complete original JSON, coordinate `[500,250]`; 12.358 s | Positive passed |
+| Constrained image 2 | Complete original JSON, coordinate `[499,728]`; 12.189 s | Positive passed |
+
+Both image runs used 407 prompt and 38 generated tokens. SDK decode rates
+were 16.649 and 16.607 tokens/s, with vision processing 142.8 and 146.0 ms.
+SDK TTFT was 537.4 and 528.1 ms after model creation; it excludes the full
+process/model-load time. These are short synthetic decision cases, not a
+fixed-length steady-state benchmark. All processes ended and no model process
+remained. The stop file and original core were unchanged; no UI action ran.
+
+The official outer `geniex_vlm_generate` already contains a `std::exception`
+catch; the observed abort cannot accurately be described as a missing outer
+catch. A later CPU-only Android probe caught the invalid-grammar exception
+both directly and through a C-only dlopen DSO against the unchanged proc.
+It also constructed both full real-r9 action grammars successfully. That
+probe loaded no QNN/model and is not evidence that the complete SDK exception
+path works. Its original report is
+`grammar-exception-probe-r1/evidence/phone-probe-r2/RESULT.json`, SHA256
+`fb210546856e2eacf5fbf2694c6bf831541685bdfec5de2c6544e166198a9737`.
+
+### Schema conversion and context
+
+The v2 provider uses a separately reviewed standard-library Python converter,
+pinned before import. The existing state bind stays `nosuid,nodev,noexec`.
+Only the exact reviewed closed mobile/health schema subset is accepted;
+unknown constructs fail closed. Conversion retains the original schema and
+binds its exact bytes, canonical value, grammar bytes and converter source.
+The grammar describes a conservative fixed-order serialization of allowed
+JSON values, not every possible JSON spelling. All current App aliases and
+full semantic history remain in the model prompt. GBNF is loaded outside the
+model prompt, and the compiled 4096 / admitted 3584 budget is unchanged.
+
+The Python converter passed 18/18 host tests, including 4515 integer boundary
+cases and an independent C++ GBNF recognizer. A separate private test compared
+1075 values against the two original real-r9 schemas and both grammar
+implementations, with agreement throughout. The original schemas contain
+53 App entries and 13/18 action branches; their generated grammars are
+7667/9659 bytes. These comparisons establish the tested schema subset, not
+phone task accuracy.
+
+The full backend integration report
+`broker/evidence/host-grammar-python-r2/HOST-VALIDATION.json` has SHA256
+`f8c045dcc9354f7aecc020963e63e4ecd0d8670d431e21aae55ee447a714ad8e`.
+Its 27/27 backend tests exercise the real host r6 supervisor and frozen worker
+with an explicit SDK fixture, plus six selector/parser outcomes for each
+public/private v1/v2 combination. The private original regression suite
+passed 38/38, and source-pin import passed. The host SDK stub does not enforce
+GBNF; no phone or model was involved in these host suites.
+
+### Startup boundary
+
+Static installation into new directories verified 78 model/runtime/worker/
+counter files totaling 4,630,850,230 bytes plus private sources/configuration.
+It did not select or start the backend. The old provider is started in the
+Magisk domain, while the existing r6 execute path requires the bootstrap
+caller domain. The original bootstrap's fixed two-child supervisor does not
+provide a provider-entry hook. A separate init-owned entry and staging policy
+are being prepared, with actual identity/capability/mount checks; neither is
+activated. The active init_boot_a was backed up read-only as an 8,388,608-byte
+image with SHA256
+`ff159c91e06c34b0611ed5b071575dded3955e62f263fb5fec7d96b42c19436f`.
+No boot partition was written and no reboot occurred in this phase. Actual
+phone-worker NPU access and all original fixed19 App/component cases remain
+pending. Historical UNKNOWN and retained claims are not cleared or replayed.
+
+
+## Full 53-entry catalogue constrained positives
+
+The two fresh constrained model requests passed on the actual phone NPU,
+using the original 53-entry App catalogue, original owner bytes, original
+strict action schema and unchanged typed mapper. This is **two model samples
+with the full catalogue**, not 53 tested App workflows. The second input uses
+a synthetic blue-target image and a host-constructed three-action history.
+No action from either model output was dispatched.
+
+| Case | Counter / actual SDK prompt tokens | Generated tokens | Full process time | Result |
+| --- | ---: | ---: | ---: | --- |
+| First-round open | 964 / 964 | 37 | 13.445 s | Complete 150-byte JSON; correct alias; strict parser and semantics pass |
+| Click after three prior actions | 1991 / 1991 | 62 | 17.098 s | Complete 181-byte JSON; correct target region; strict parser and semantics pass |
+
+Both counters admitted the exact inputs below 3584 before any model ran.
+Grammar sizes were 7667 and 9659 bytes; no owner text, allowed alias or semantic
+history was removed to fit. All SDK stages returned zero and both results
+stopped at EOS. No output repair occurred. SDK decode was 12.056 and 11.146
+tokens/s for these short, constrained decisions; these figures must not be
+replaced by the smaller image-only 16.6 tokens/s measurement. Counter processes
+took 1.063 and 1.045 s separately from the model durations above.
+
+The original and candidate runtime libraries, all 24 model files, owner stop
+and retained claims were unchanged after both tests. Every recorded counter
+and worker PID was absent, and the terminal process check found no model
+process. The test context was root/Magisk in a no-route network namespace,
+with phone timeout 60 s plus 5 s kill grace, not an r6 production receipt.
+The earlier R2 malformed-grammar abort remains failed; overall runtime and
+App qualification remain false.
+
+Original report: `evidence/qairt-catalogue-grammar-r1/PUBLIC-SUMMARY.json`,
+SHA256 `9afc4efddaef47d97317ddecaedd1308f9dd72075f96bda467fd641eeb24ce91`.
+The terminal job, exact runner/source/runtime bindings and publication scope
+are recorded in the adjacent `RUN-BINDINGS.json` and evidence manifest.

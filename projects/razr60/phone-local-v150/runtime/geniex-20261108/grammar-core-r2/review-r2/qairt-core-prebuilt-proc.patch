@@ -1,0 +1,43 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -23,8 +23,29 @@
+ if(GENIEX_BUILD_VLM)
+     set(GENIEXPROC_ENABLE_VISION ON CACHE BOOL "" FORCE)
+ endif()
+-set(GENIEXPROC_BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party/geniex-proc third-party/geniex-proc)
++# Optional core-only build against the exact already-qualified processor ABI.
++# The default path remains the upstream source build.
++set(GENIEX_PROC_PREBUILT_LIBRARY "" CACHE FILEPATH "Pinned Android libgeniex-proc.so")
++set(GENIEX_PROC_PREBUILT_INCLUDE_DIR "" CACHE PATH "Pinned geniex-proc public include directory")
++set(GENIEX_PROC_PUBLIC_DEPENDENCY_INCLUDE_DIRS "" CACHE STRING "Pinned transitive public header directories")
++option(GENIEX_SKIP_HTP_RUNTIME_COPY "Skip runtime copying for an isolated core-only build" OFF)
++if(GENIEX_PROC_PREBUILT_LIBRARY)
++    if(NOT ANDROID OR GENIEX_BUILD_VLM OR GENIEX_BUILD_AUDIO OR GENIEX_BUILD_OCR)
++        message(FATAL_ERROR "Prebuilt processor mode is limited to the Android core-only target")
++    endif()
++    if(NOT EXISTS "${GENIEX_PROC_PREBUILT_LIBRARY}" OR
++       NOT EXISTS "${GENIEX_PROC_PREBUILT_INCLUDE_DIR}/geniex-proc/sampler.h")
++        message(FATAL_ERROR "Pinned processor library/public headers are absent")
++    endif()
++    add_library(geniex-proc SHARED IMPORTED GLOBAL)
++    set_target_properties(geniex-proc PROPERTIES
++        IMPORTED_LOCATION "${GENIEX_PROC_PREBUILT_LIBRARY}"
++        INTERFACE_INCLUDE_DIRECTORIES "${GENIEX_PROC_PREBUILT_INCLUDE_DIR};${GENIEX_PROC_PUBLIC_DEPENDENCY_INCLUDE_DIRS}"
++        INTERFACE_COMPILE_DEFINITIONS GENIEXPROC_SHARED)
++else()
++    set(GENIEXPROC_BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
++    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third-party/geniex-proc third-party/geniex-proc)
++endif()
+ 
+ # ── Compile definitions ───────────────────────────────────────────────────────
+ set(GENIEX_COMPILE_DEFS
+@@ -306,7 +327,7 @@
+     set(GENIEX_HTP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third-party/linux-gcc11.2")
+ endif()
+ 
+-if(DEFINED GENIEX_HTP_DIR)
++if(DEFINED GENIEX_HTP_DIR AND NOT GENIEX_SKIP_HTP_RUNTIME_COPY)
+     # Copy into build tree after every geniex_core build so examples run
+     # directly from build/bin/Release/ without a separate install step.
+     add_custom_command(TARGET geniex_core POST_BUILD

@@ -1,0 +1,51 @@
+{
+  "compiler_source_sha256": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8",
+  "model_loaded": false,
+  "phone_actions_executed": 0,
+  "production_modules": [
+    "python_schema_grammar.py"
+  ],
+  "schema": "hepta.reviewed-python-schema-source.v1",
+  "source_files": [
+    {
+      "bytes": 7831,
+      "path": "README.md",
+      "sha256": "1ce9f0b87ffff94b81fdf774516e895ab2b3476b7274f4f71749f6806d71c205"
+    },
+    {
+      "bytes": 1977,
+      "path": "evidence/ACTUAL-R9-SCHEMA-ORACLE-SUMMARY.json",
+      "sha256": "dde5a08b83ead7b97629c1115555fab12ab924d6ea78e3f784f64f5540f3cc75"
+    },
+    {
+      "bytes": 1050,
+      "path": "evidence/HOST-TESTS.json",
+      "sha256": "f6a3641f0061d4708204073fe93efe2e85585abb50538e2062c051071d76630a"
+    },
+    {
+      "bytes": 2567,
+      "path": "evidence/HOST-TESTS.stderr",
+      "sha256": "fa6ca43a38ee22555511f661552d602835b369869ee45305491545f08e25c67a"
+    },
+    {
+      "bytes": 803,
+      "path": "evidence/HOST-TESTS.stdout",
+      "sha256": "e24bf8c674edf378e756247df58d180a221413cabf8eae5eb3f39eb2535ad952"
+    },
+    {
+      "bytes": 15177,
+      "path": "python_schema_grammar.py",
+      "sha256": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8"
+    },
+    {
+      "bytes": 10740,
+      "path": "tests/test_python_converter.py",
+      "sha256": "73e34dd50db364bcf740b2ad07afe80d4712025b54e9673366042c9e00ad434b"
+    },
+    {
+      "bytes": 9438,
+      "path": "tests/validate_private_fixtures.py",
+      "sha256": "59054eb81998982827ae15bd21b0cb7c9243186632c4b11c0bd6649389f16483"
+    }
+  ]
+}

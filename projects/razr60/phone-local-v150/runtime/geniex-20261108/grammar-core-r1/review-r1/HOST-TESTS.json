@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.qairt-grammar-host-behavior.v1",
+  "Android_compiler_invoked": false,
+  "processor_runtime_faked": true,
+  "phone_or_NPU_tested": false,
+  "candidate_function_sha256": "2a95ca42772a6db7ea0c0ac1b4cc9375dcb773b4a2b785999781af40da55ae31",
+  "harness_sha256": "90d56be723b7a1ef0132f4e1132517e9e7a4f9ccfe35d9c0ce79d567361cf034",
+  "compiler_basename": "c++",
+  "started_unix": 1794140013.1429179,
+  "runs": [
+    {
+      "name": "pinned-upstream",
+      "flags": [
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror"
+      ],
+      "compile_exit": 0,
+      "process_exit": -6,
+      "stdout": "",
+      "stderr": "terminate called after throwing an instance of 'std::runtime_error'\n  what():  grammar rejected token\n",
+      "function_sha256": "3313e3470c2136520b2d6fe1ee539d3882d795e7b8dfabac929d670189aba964"
+    },
+    {
+      "name": "candidate",
+      "flags": [
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror"
+      ],
+      "compile_exit": 0,
+      "process_exit": 0,
+      "stdout": "PASS: prompt EOG isolation; generated-token constraints; multi-turn/empty-prompt grammar reset; invalid grammar/root/missing tokenizer rejection; no-grammar reuse/config-change/disable behavior\n",
+      "stderr": "",
+      "function_sha256": "2a95ca42772a6db7ea0c0ac1b4cc9375dcb773b4a2b785999781af40da55ae31"
+    }
+  ],
+  "upstream_reproduced_prompt_grammar_failure": true,
+  "candidate_behavioral_checks_pass": true,
+  "all_pass": true,
+  "finished_unix": 1794140015.5719707
+}

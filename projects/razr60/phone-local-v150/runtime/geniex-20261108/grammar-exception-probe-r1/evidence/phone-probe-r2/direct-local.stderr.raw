@@ -1,0 +1,1 @@
+probe: local std::exception caught: local throw control

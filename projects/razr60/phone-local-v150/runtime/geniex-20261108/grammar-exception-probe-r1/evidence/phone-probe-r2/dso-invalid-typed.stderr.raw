@@ -1,0 +1,13 @@
+probe: before Tokenizer::from_file
+probe: tokenizer loaded; vocab=151669; grammar_bytes=23
+probe: before Grammar constructor (typed catch)
+parse: error parsing grammar: unexpected end of input
+
+root ::= "unterminated
+
+geniex_grammar_init_from_string: failed to parse grammar
+probe: caught std::exception: geniex::Grammar: failed to initialise grammar sampler
+probe: constructor result=10; normal tokenizer cleanup
+probe: all cleanup complete
+loader: returned 10 before dlclose
+loader: normal dlclose complete

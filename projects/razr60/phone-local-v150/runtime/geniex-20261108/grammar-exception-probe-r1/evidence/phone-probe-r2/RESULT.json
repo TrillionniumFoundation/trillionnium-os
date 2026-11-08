@@ -1,0 +1,181 @@
+{
+  "schema": "hepta.grammar-exception-probe.v1",
+  "diagnostic_only": true,
+  "npu_model_loaded": false,
+  "ui_actions": 0,
+  "production_domain_tested": false,
+  "cases": [
+    {
+      "name": "direct-local",
+      "kind": "direct",
+      "mode": "local",
+      "returncode": 13,
+      "seconds": 0.09074994502589107,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-direct",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "local"
+      ],
+      "stdout_sha256": "9d91b3f6c80a7e88326e64ebcb872893432fd4d3c2d5c3534751890bcd20e69c",
+      "stderr_sha256": "069407bf463dc4ee8b78514bf25365323e0a9bbcb3c5746bdd68feaba1d88975",
+      "stderr": "probe: local std::exception caught: local throw control\n",
+      "expected_normal_return": 13,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "direct-valid",
+      "kind": "direct",
+      "mode": "valid",
+      "returncode": 0,
+      "seconds": 1.188102844869718,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-direct",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "valid"
+      ],
+      "stdout_sha256": "842501c265ba341f10eeb026b1283214747247a1f1928738ea97d0a8c3ed9dd5",
+      "stderr_sha256": "57a3a9e4f2f419ca7b11bdcff538d4f571f5b5be705dd73ad0214b03d79c45be",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=13\nprobe: before Grammar constructor (typed catch)\nprobe: Grammar constructed and will destroy normally\nprobe: constructor result=0; normal tokenizer cleanup\nprobe: all cleanup complete\n",
+      "expected_normal_return": 0,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "direct-invalid-typed",
+      "kind": "direct",
+      "mode": "invalid-typed",
+      "returncode": 10,
+      "seconds": 1.1979284049011767,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-direct",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "invalid-typed"
+      ],
+      "stdout_sha256": "9d91b3f6c80a7e88326e64ebcb872893432fd4d3c2d5c3534751890bcd20e69c",
+      "stderr_sha256": "2fc90dd55a417c0f5f887115731ef359dd3c199477d6c6bd366a322f3d07a223",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=23\nprobe: before Grammar constructor (typed catch)\nparse: error parsing grammar: unexpected end of input\n\nroot ::= \"unterminated\n\ngeniex_grammar_init_from_string: failed to parse grammar\nprobe: caught std::exception: geniex::Grammar: failed to initialise grammar sampler\nprobe: constructor result=10; normal tokenizer cleanup\nprobe: all cleanup complete\n",
+      "expected_normal_return": null,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "direct-invalid-all",
+      "kind": "direct",
+      "mode": "invalid-all",
+      "returncode": 12,
+      "seconds": 1.2394177799578756,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-direct",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "invalid-all"
+      ],
+      "stdout_sha256": "842501c265ba341f10eeb026b1283214747247a1f1928738ea97d0a8c3ed9dd5",
+      "stderr_sha256": "0c41b829d8f7496421225932a57e29d2eb381d225976aee25aa3b982a8151807",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=23\nprobe: before Grammar constructor (catch-all only)\nparse: error parsing grammar: unexpected end of input\n\nroot ::= \"unterminated\n\ngeniex_grammar_init_from_string: failed to parse grammar\nprobe: caught exception in catch-all-only handler\nprobe: constructor result=12; normal tokenizer cleanup\nprobe: all cleanup complete\n",
+      "expected_normal_return": null,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "dso-valid",
+      "kind": "dso",
+      "mode": "valid",
+      "returncode": 0,
+      "seconds": 1.2272211441304535,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-loader",
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/libgrammar_exception_probe.so",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "valid"
+      ],
+      "stdout_sha256": "9d91b3f6c80a7e88326e64ebcb872893432fd4d3c2d5c3534751890bcd20e69c",
+      "stderr_sha256": "cc997246193cea0e851bcf5d504e25760c1c13c093fb174676a6848ad3ecec3f",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=13\nprobe: before Grammar constructor (typed catch)\nprobe: Grammar constructed and will destroy normally\nprobe: constructor result=0; normal tokenizer cleanup\nprobe: all cleanup complete\nloader: returned 0 before dlclose\nloader: normal dlclose complete\n",
+      "expected_normal_return": 0,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "dso-invalid-typed",
+      "kind": "dso",
+      "mode": "invalid-typed",
+      "returncode": 10,
+      "seconds": 1.0573608938138932,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-loader",
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/libgrammar_exception_probe.so",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "invalid-typed"
+      ],
+      "stdout_sha256": "842501c265ba341f10eeb026b1283214747247a1f1928738ea97d0a8c3ed9dd5",
+      "stderr_sha256": "a11edba7ce28efeec57e055ec1cca7d851cd902b2415d640372aa0ab10f90cac",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=23\nprobe: before Grammar constructor (typed catch)\nparse: error parsing grammar: unexpected end of input\n\nroot ::= \"unterminated\n\ngeniex_grammar_init_from_string: failed to parse grammar\nprobe: caught std::exception: geniex::Grammar: failed to initialise grammar sampler\nprobe: constructor result=10; normal tokenizer cleanup\nprobe: all cleanup complete\nloader: returned 10 before dlclose\nloader: normal dlclose complete\n",
+      "expected_normal_return": null,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "dso-invalid-all",
+      "kind": "dso",
+      "mode": "invalid-all",
+      "returncode": 12,
+      "seconds": 1.1886597219854593,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-loader",
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/libgrammar_exception_probe.so",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "invalid-all"
+      ],
+      "stdout_sha256": "9d91b3f6c80a7e88326e64ebcb872893432fd4d3c2d5c3534751890bcd20e69c",
+      "stderr_sha256": "1f351431725568ae4d2e3c999641092aecb4f3bfe1158e54d018f4a058b7274b",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=23\nprobe: before Grammar constructor (catch-all only)\nparse: error parsing grammar: unexpected end of input\n\nroot ::= \"unterminated\n\ngeniex_grammar_init_from_string: failed to parse grammar\nprobe: caught exception in catch-all-only handler\nprobe: constructor result=12; normal tokenizer cleanup\nprobe: all cleanup complete\nloader: returned 12 before dlclose\nloader: normal dlclose complete\n",
+      "expected_normal_return": null,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "dso-schema-01",
+      "kind": "dso",
+      "mode": "file",
+      "returncode": 0,
+      "seconds": 1.1647343910299242,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-loader",
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/libgrammar_exception_probe.so",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "file",
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/case-01.gbnf"
+      ],
+      "stdout_sha256": "842501c265ba341f10eeb026b1283214747247a1f1928738ea97d0a8c3ed9dd5",
+      "stderr_sha256": "cf795ab50f3058a90281c4f9e375690394136c168e68cc1267b60832a8a32e87",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=7667\nprobe: before Grammar constructor (typed catch)\nprobe: Grammar constructed and will destroy normally\nprobe: constructor result=0; normal tokenizer cleanup\nprobe: all cleanup complete\nloader: returned 0 before dlclose\nloader: normal dlclose complete\n",
+      "expected_normal_return": 0,
+      "network_isolated": true,
+      "finished": true
+    },
+    {
+      "name": "dso-schema-02",
+      "kind": "dso",
+      "mode": "file",
+      "returncode": 0,
+      "seconds": 1.1705851759761572,
+      "argv": [
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/grammar-exception-loader",
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/libgrammar_exception_probe.so",
+        "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108/model/tokenizer.json",
+        "file",
+        "/data/local/tmp/hepta-grammar-exception-probe-r2-20261108/case-02.gbnf"
+      ],
+      "stdout_sha256": "9d91b3f6c80a7e88326e64ebcb872893432fd4d3c2d5c3534751890bcd20e69c",
+      "stderr_sha256": "bb5d9edbba5ea99c93f79039a0584f440d8fe40b1838241174348f8b504752cf",
+      "stderr": "probe: before Tokenizer::from_file\nprobe: tokenizer loaded; vocab=151669; grammar_bytes=9659\nprobe: before Grammar constructor (typed catch)\nprobe: Grammar constructed and will destroy normally\nprobe: constructor result=0; normal tokenizer cleanup\nprobe: all cleanup complete\nloader: returned 0 before dlclose\nloader: normal dlclose complete\n",
+      "expected_normal_return": 0,
+      "network_isolated": true,
+      "finished": true
+    }
+  ],
+  "complete": true,
+  "input_artifacts_unchanged": true,
+  "no_residual_probe": true
+}

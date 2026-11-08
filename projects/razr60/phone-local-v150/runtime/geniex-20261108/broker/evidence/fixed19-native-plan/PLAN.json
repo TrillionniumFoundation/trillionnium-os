@@ -1,0 +1,409 @@
+{
+  "schema": "hepta.fixed19-native-adaptation-plan.v1",
+  "status": "PLAN_NOT_EXECUTION_EVIDENCE",
+  "source_definition": "provider-r5/qa/fixed-acceptance-set.json",
+  "source_definition_sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0",
+  "source_set_id": "stock16-phone-local-fixed-set-r4",
+  "original_protocol_sha256": "07433e17cb71592a011a54c787ac61947b727ec5ae6f507bca22f8fa6dfb0736",
+  "checkpoint_git_commit": "9383657347fbcd65bf289dc91474fdf28778c6ff",
+  "case_ids": [
+    "E2E-01",
+    "E2E-02",
+    "E2E-03",
+    "E2E-04",
+    "COMP-01",
+    "NEG-01",
+    "NEG-02",
+    "NEG-03",
+    "NEG-04",
+    "NEG-05",
+    "NEG-06",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09",
+    "NEG-10",
+    "NEG-11",
+    "NEG-12",
+    "NEG-13",
+    "NEG-14"
+  ],
+  "case_count": 19,
+  "executed_cases_under_this_plan": 0,
+  "passed_cases_under_this_plan": 0,
+  "automatic_execution": false,
+  "automatic_schedule": false,
+  "no_original_results_modified": true,
+  "host_20_counter_20_private_38_and_synthetic_model_runs_are_not_fixed19_passes": true,
+  "original_limits_preserved": {
+    "maximum_sequential_tool_calls_before_final_summary": 7,
+    "model_rounds": 8,
+    "turn_deadline_seconds": 300,
+    "max_single_image_bytes": 196608,
+    "max_turn_image_bytes": 393216,
+    "min_image_budget": 65536,
+    "max_image_age_seconds": 120
+  },
+  "explicit_transport_differences": {
+    "old": "phone_local_http with HTTP worker/server-slot and CPU receipt",
+    "new": "counter then single-request GenieX QAIRT process under the existing r6 fork/setsid/waitpid supervisor",
+    "old_default_model_round_deadline_seconds": 120,
+    "new_model_worker_deadline_seconds": 55,
+    "new_native_supervision_seconds": 60,
+    "native_transport_and_cleanup_allowance_seconds": 18,
+    "compiled_context_tokens": 4096,
+    "max_prompt_tokens": 3584,
+    "max_generation_tokens": 256,
+    "reserved_context_tokens": 256,
+    "no_cpu_safe_point_or_token_ids_fabricated": true,
+    "new_profile_must_not_raise_fixed19_action_or_image_budgets": true
+  },
+  "required_physical_lifecycle_followups": [
+    "NEG-04",
+    "NEG-05",
+    "NEG-07",
+    "NEG-08",
+    "NEG-09"
+  ],
+  "original_qualified_geometry_requires_fresh_device_confirmation": {
+    "display_id": 0,
+    "external_display_qualification": false,
+    "height": 2992,
+    "rotation": 0,
+    "width": 1224
+  },
+  "case_results_remain_separate_from_preparation_tests": true,
+  "cases": [
+    {
+      "id": "E2E-01",
+      "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA",
+      "original_layer": "model_e2e",
+      "target_qualification": "real_phone_model_e2e",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "bbba2fa8258d95428868fa97496a8293ea1870ae0042e3b32afd2cba84d6737d",
+      "unchanged_pass_postconditions": [
+        "Actual local HTTP model request includes the newly captured verified JPEG and its hash matches the bound native result.",
+        "Exactly one choice was dispatched; no recapture-to-guess or second challenge attempt is hidden.",
+        "Public challenge is literal 挑战码： plus exactly eight uppercase hex characters.",
+        "Public receipt is HEPTA_VISUAL_OK plus one space and the same code from the same UI snapshot.",
+        "Final actual focus/resumed activity is the fixed HEPTA activity on qualified display 0.",
+        "Native terminal is complete and business_verified=true for coverage=entire_request."
+      ],
+      "native_transport_adaptation": "Preserve the original one-shot fresh visual challenge, exactly one screenshot-bound selection, same-snapshot challenge/receipt readback, and requested HEPTA return. Replace only HTTP/image/slot evidence with the exact staged image SHA, successful native counter, original GenieX raw output/SDK profile, validated r6 waitpid/group-absent receipt, and unchanged action/business parsers.",
+      "remaining_prerequisites": "Installed qualified VisualChallengeActivity; fresh current display/focus; qualified native NPU domain; model semantic gate.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "E2E-02",
+      "title": "全新中文/emoji/换行输入、确认、公开回执与返回",
+      "original_layer": "model_e2e",
+      "target_qualification": "real_phone_model_e2e",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "d65bc28b6611ab9b397693afe6b84a8bcdd2c687bdf8dee27d0e8e208659145c",
+      "unchanged_pass_postconditions": [
+        "Helper operation/package/view/old-text/requested/after hashes and exact UTF8 readback all match.",
+        "Public unicode_readback equals the fresh literal input byte for byte.",
+        "Public receipt exactly equals the source-defined four-line format in unicode_receipt_formula.",
+        "Literal newline remains a newline; XML normalization to a space is a failure, not an allowed rewrite.",
+        "Actual HEPTA focus is verified after return.",
+        "Input-only success without confirmation, public receipt or return must end as turn.fail/business_verified=false."
+      ],
+      "native_transport_adaptation": "Preserve exact fresh UTF-8 (Chinese, emoji, LF, quotes, metacharacters), focused old-text binding, one input/confirmation, source-defined public receipt and requested return. Do not normalize LF or synthesize public text from the model.",
+      "remaining_prerequisites": "Installed TextEntryActivity/qualified input helper; exact public view IDs/readback; original contract bound to the accepted turn.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "E2E-03",
+      "title": "计算器完成全新随机简单表达式并核验结果",
+      "original_layer": "model_e2e",
+      "target_qualification": "real_phone_model_e2e",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "517634c557cf0e3dee833f7e4d401cd1a4b9032eb2749cf6baf3a537d857dfe3",
+      "unchanged_pass_postconditions": [
+        "Expression and expected result use the fresh parameters, not values from prior examples.",
+        "A public visible result proves the arithmetic; a model mental calculation is insufficient.",
+        "No repeated evaluation after an uncertain effect.",
+        "The exact result contract and requested return both pass."
+      ],
+      "native_transport_adaptation": "Resolve the actual calculator/result view. Keep fresh (a*b)+c, independent arithmetic, visible UI result, no uncertain evaluation replay and requested return. If seven tools cannot complete this exact case, fail/mark blocked under the original budget; do not silently use the daily 24-tool profile.",
+      "remaining_prerequisites": "Current installed app and unique public result view; observed controls; original seven-tool feasibility.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "E2E-04",
+      "title": "只读查看设置中的公开系统版本字段",
+      "original_layer": "model_e2e",
+      "target_qualification": "real_phone_model_e2e",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "a06d0bf4642c93c4e7773d2288de12257d2bcf825d7fc9c54c0935557197ac49",
+      "unchanged_pass_postconditions": [
+        "The app field, package, focus and unique view are independently verified.",
+        "No settings value, permission, network configuration or account state is changed.",
+        "The result is based on actual UI text rather than a prefilled model answer.",
+        "No return is forced by generic completion; the contract covers exactly the read-only request."
+      ],
+      "native_transport_adaptation": "Read only a public non-sensitive Settings field, independently compare it, change no preference/network/account, and do not force an unrequested return. Keep entire-request coverage.",
+      "remaining_prerequisites": "Current Settings detail view and unique public field; independent read-only system observation.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "COMP-01",
+      "title": "显式返回：launch状态和实际焦点双核验",
+      "original_layer": "component_direct",
+      "target_qualification": "real_phone_component",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "95ddef76d837e1ccec9209955c9ec7e3f248f1c294296b853bd10a9e02e11357",
+      "unchanged_pass_postconditions": [
+        "Launch rc is captured immediately and is zero.",
+        "One Status: ok and the exact known activity occur in launch output.",
+        "Inner display focus/app/top-resumed all name HEPTA and keyguard is false.",
+        "Mark only direct component acceptance, not model or native-task acceptance."
+      ],
+      "native_transport_adaptation": "Dispatch one explicit phone.return_hepta through the existing r6 input executor and qualify launch status plus actual focus/resumed activity/display/keyguard. This never qualifies model output or a full model task.",
+      "remaining_prerequisites": "Verified safe non-HEPTA foreground; fresh component identity; actual production input domain.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-01",
+      "title": "截图后焦点切换：必须在input之前拒绝",
+      "original_layer": "component_direct",
+      "target_qualification": "real_phone_component",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "a0f1bf4dc3fddd3b3521f034b14d7b5beb7fdb215b8e666472597e738f36e2ae",
+      "unchanged_pass_postconditions": [
+        "Guard exits 70 or fails earlier with an explicitly recorded known precondition.",
+        "No input effect is observed on either old or new page.",
+        "The image is consumed and the effect is not retried."
+      ],
+      "native_transport_adaptation": "Use a new disposable probe screenshot, deliberately change focus, then dispatch only that pending guarded tap once. Require rejection before input, no public effect, consumed image and no retry.",
+      "remaining_prerequisites": "Qualified disposable probe and independent public effect counter; exclusive phone operator.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-02",
+      "title": "同viewport内容变化：精确像素guard必须拒绝",
+      "original_layer": "component_direct",
+      "target_qualification": "real_phone_component",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "2499af106dfa520292a74eedab533f61571bc22eaefc9947fcd3ad563d055e0e",
+      "unchanged_pass_postconditions": [
+        "Viewport and focus remain the same, but PNG SHA differs.",
+        "Guard exits 71 before input.",
+        "No selection/submission/other app effect and no automatic retry occur."
+      ],
+      "native_transport_adaptation": "Change disposable page contents without changing focus/viewport. Require original/guard PNG SHA mismatch and rejection before input; independently observe zero selection/submission.",
+      "remaining_prerequisites": "Actual same-viewport controlled content change; no rotation/focus substitute.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-03",
+      "title": "外屏或旋转：拒绝未资格显示配置",
+      "original_layer": "component_direct",
+      "target_qualification": "component_fixture_then_separately_labelled_physical",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "8b36671d86cc9606dd1373933b6c10681311bbe324ce884ff84eaf034f8c174d",
+      "unchanged_pass_postconditions": [
+        "Screenshot/tap/public-return qualification rejects anything outside the qualified display 0 portrait geometry.",
+        "No input is injected on another display.",
+        "Fixture and physical-device outcomes remain separately labelled."
+      ],
+      "native_transport_adaptation": "Run the original-shaped receipt parser/mapper rejection for unqualified display/rotation. A separately scheduled physical fold/rotation follow-up must record/restored baseline and can never be inferred from the fixture.",
+      "remaining_prerequisites": "Frozen mapper and exact display geometry; physical configuration capability if physical coverage is claimed.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-04",
+      "title": "断连发生于dispatch之前",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated_and_physical_native_task",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "22485479985c975e04d4545e6d8f204303c81270d832a0206ef63e7167f57a56",
+      "unchanged_pass_postconditions": [
+        "No tool is dispatched and the accepted semantic identity remains consumed.",
+        "No automatic request/stream replay occurs.",
+        "No business success is emitted; unknown transport outcome remains unknown where no terminal is observed."
+      ],
+      "native_transport_adaptation": "Close the test-owned Hepta transport after durable owner admission and before any phone effect. For model-in-flight cancellation use the new native request connection/inspection path rather than an HTTP client. Require zero phone effects, consumed semantic identity, no replacement-stream replay and no business success.",
+      "remaining_prerequisites": "Dedicated host fixture plus a fresh disposable installed lifecycle follow-up; original claims remain intact.",
+      "physical_followup_required": true
+    },
+    {
+      "id": "NEG-05",
+      "title": "作用已开始后断连：保持未知且不重放",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated_and_physical_native_task",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "e3b83bb76d756e4186ace7e2ce8336c81ac1bbdeeb269be55f43f74315969bb9",
+      "unchanged_pass_postconditions": [
+        "Effect count is at most one.",
+        "Unknown result is not inferred as success and not retried.",
+        "A reconnect/new stream cannot reuse the semantic identity."
+      ],
+      "native_transport_adaptation": "After one disposable phone/probe effect begins, disconnect only its owning stream before the result reaches the provider. The phone-action UNKNOWN remains global and distinct from a model-process abort. Count at most one effect and forbid any redispatch.",
+      "remaining_prerequisites": "Fresh isolated effect counter and physical probe follow-up; no real messages/payments/deletion.",
+      "physical_followup_required": true
+    },
+    {
+      "id": "NEG-06",
+      "title": "模型超时：有界结束且清理原进程组",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated_native_model_timeout",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "36d7e8fb089f673a445f6bde0a3b5e9e752b141796675a52d3af96526978b3af",
+      "unchanged_pass_postconditions": [
+        "Existing fail frame contains model_timeout; business_verified=false.",
+        "No tool dispatch, child process group leak, account/model fallback or relaunch occurs.",
+        "The claim remains consumed."
+      ],
+      "native_transport_adaptation": "Replace the HTTP hold/slot fixture with the real r6 supervised counter→frozen worker plus a controlled host SDK hold. Check separate native deadline and frozen-worker deadline paths, real join/group absence, consumed identity, zero phone actions and original turn.fail/model_timeout. Never claim an HTTP slot proof or CPU safe point.",
+      "remaining_prerequisites": "Known compatibility gap in checkpoint 9383657: native timeout is currently merged into cancelled then unknown_model_failure. Root is preparing a separate correction; this case is NOT passed.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-07",
+      "title": "执行器结果超时：不能用迟到结果认定成功或再执行",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated_and_physical_native_task",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "75a80fb606acf51fedbd1808ae0106c2f4ff4d71e2ca815d5a922c762b9093ec",
+      "unchanged_pass_postconditions": [
+        "No second effect is executed.",
+        "Late or unmatched results do not rewrite the accepted terminal/unknown outcome.",
+        "Business remains false and cancellation/cleanup state is explicit."
+      ],
+      "native_transport_adaptation": "Delay the original phone-action result, retain its dispatch identity, expire the result deadline, and present a late original receipt only as evidence. Require no second effect and no rewriting an accepted UNKNOWN/terminal outcome. New model cleanup proof cannot resolve an unrelated phone action.",
+      "remaining_prerequisites": "Delayed disposable executor fixture plus fresh physical lifecycle follow-up.",
+      "physical_followup_required": true
+    },
+    {
+      "id": "NEG-08",
+      "title": "dispatch前取消",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated_and_physical_native_task",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "c157ff10f55ad997c2d62270669d9a80d1b925865b6c617d76eca1b2adf7cb8d",
+      "unchanged_pass_postconditions": [
+        "Existing turn.cancelled (or explicitly unknown transport outcome if the cancel acknowledgement is lost) is retained.",
+        "Zero phone effects; no automatic navigation on cancellation; business_verified=false.",
+        "No original HTTP-client process group remains after confirmed cleanup."
+      ],
+      "native_transport_adaptation": "Cancel an admitted turn before first phone dispatch. Exercise cancellation before native model dispatch, during supervised model generation, and at completion acceptance. Close/inspect the original r6 request; cancel ordering must win when accepted first. Require zero phone effects, no automatic navigation and retained cancelled/unknown outcome.",
+      "remaining_prerequisites": "Host gate/order fixtures and fresh physical accepted-turn follow-up; actual process cleanup proof.",
+      "physical_followup_required": true
+    },
+    {
+      "id": "NEG-09",
+      "title": "首次作用后取消",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated_and_physical_native_task",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "9791284898cbef840db3b19362da0793f94d7fea57d513706389a3131f9fface",
+      "unchanged_pass_postconditions": [
+        "Exactly the already-observed effect remains; no follow-up input or forced return occurs.",
+        "Cancellation is not labelled complete business success.",
+        "No automatic replay or identity release occurs."
+      ],
+      "native_transport_adaptation": "Cancel after one confirmed disposable phone effect and before the next action. Preserve exactly that effect, issue no further input or forced return, retain claims, and do not declare whole-task success.",
+      "remaining_prerequisites": "Fresh single-effect probe and installed lifecycle follow-up; independent public counter.",
+      "physical_followup_required": true
+    },
+    {
+      "id": "NEG-10",
+      "title": "图片字节预算/过期图像/旧round绑定",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "59e3a56c87b49a8a02679594132583bf9740ae8b363937a6286c088272036942",
+      "unchanged_pass_postconditions": [
+        "Each invalid condition fails before dispatch.",
+        "No budget extension, stale-image fallback or guessed generic tap occurs.",
+        "Maximum single image remains 196608 bytes and turn image budget 393216 bytes."
+      ],
+      "native_transport_adaptation": "Keep the ORIGINAL fixed19 image limits: 196608 per image, 393216 per turn, minimum admission 65536, 120-second expiry and current call/round binding. Do not substitute the ordinary larger image budget. Add native 3584-token admission boundaries as a separate extension, not a replacement for this case.",
+      "remaining_prerequisites": "Frozen fixed19 operation profile selected by the one-time exact contract; fresh fixture identity for each boundary.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-11",
+      "title": "native输出损坏/截断/错误身份",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "9cb19577d9fd8dbb7682d696ccdb378433efccf9d2b06c9ee403e6c76da769c3",
+      "unchanged_pass_postconditions": [
+        "Each malformed envelope is rejected as insufficient evidence.",
+        "No image/text/return fact is admitted and no business success is synthesized.",
+        "Original test fixtures remain clearly labelled synthetic."
+      ],
+      "native_transport_adaptation": "Keep every original native phone-output corruption/identity/size/Base64/truncation check. Add (without replacing them) malformed model-native receipt, bad formatter/input SHA, missing waitpid/group absence, nonzero SDK result, invalid EOS/UTF-8, and abort/no-output variants. Only the process with complete cleanup proof may be marked cleaned; no app fact follows from model cleanup.",
+      "remaining_prerequisites": "Synthetic retained-shape envelopes only; never edit real evidence.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-12",
+      "title": "部分任务被模型说成完成：必须失败终态",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "d13cd89cb7781bc2914d1ea98f5c64256c708bb32cbd10478b3c5358502de350",
+      "unchanged_pass_postconditions": [
+        "Existing wire kind is turn.fail with business_not_verified.",
+        "business-outcome.json lists missing conditions and business_verified=false.",
+        "Native complete or model summary cannot hide a missing app receipt/return/full-request coverage."
+      ],
+      "native_transport_adaptation": "Preserve original contracts demanding input, public confirmation and return. Feed a valid input-only receipt plus a model completed decision; also test missing return and partial coverage. Require turn.fail/business_not_verified and explicit missing conditions. Neither new model receipt nor NPU exit0 changes this.",
+      "remaining_prerequisites": "New exact registered test contracts and unmodified business-outcome evaluator.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-13",
+      "title": "一次性模板并发/旧nonce重用",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "b500b291e1ab04ed290908a3c487f1ed5ab646a2b52288d0ed213e39b1c8dc4d",
+      "unchanged_pass_postconditions": [
+        "Exactly one O_EXCL binding succeeds; wrong scope does not consume the template.",
+        "Consumed template cannot qualify or dispatch another task.",
+        "All claims/bindings remain; no deletion/reset to obtain a pass."
+      ],
+      "native_transport_adaptation": "Preserve original O_EXCL one-time contract races, scope rejection and consumed-template semantics. Separately test ordinary accepted-owner new turns within the same UI task; this new-turn path must not permit reusing the same nonce/template or a same-turn replacement stream.",
+      "remaining_prerequisites": "Private temporary task-contract/claim roots; actual accepted owner bytes and request SHA bound to the current run.",
+      "physical_followup_required": false
+    },
+    {
+      "id": "NEG-14",
+      "title": "容量/原子rename竞态与资源收尾",
+      "original_layer": "host_isolated",
+      "target_qualification": "host_isolated",
+      "status": "NOT_RUN_UNDER_THIS_ADAPTATION",
+      "counted_as_pass": false,
+      "original_case_canonical_sha256": "72674d51b208939d59e1a1bd85d8d9761e3936952a3b2574a9c702e15f4c5704",
+      "unchanged_pass_postconditions": [
+        "Only the exact recognized rename race is tolerated.",
+        "Unknown files/I/O failures fail closed; no accepted claim is deleted for capacity.",
+        "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline."
+      ],
+      "native_transport_adaptation": "Preserve exact recognized rename-race tolerance, unknown/missing canonical evidence rejection, unreadable paths, orphan/FD cleanup and capacity behavior. Include the explicitly added operation-profile.json.new rule and new backend atomic artifacts; never broadly ignore arbitrary .new names or delete claims for capacity.",
+      "remaining_prerequisites": "Temporary evidence/state roots only; measure real fixture child/FD baseline.",
+      "physical_followup_required": false
+    }
+  ]
+}

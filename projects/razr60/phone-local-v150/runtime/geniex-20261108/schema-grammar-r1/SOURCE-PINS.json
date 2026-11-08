@@ -1,0 +1,129 @@
+{
+  "commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+  "compiled_upstream_cpp": [
+    "json-schema-to-grammar.cpp",
+    "json-schema.cpp",
+    "json.cpp",
+    "trie.cpp",
+    "unicode.cpp"
+  ],
+  "full_llama_ggml_or_inference_linked": false,
+  "helpers": {
+    "file": "support.cpp",
+    "file_sha256": "8ee669a7dc8f268a644958b0ec39b001436dc06a22f15a0d3a13a4455f747214",
+    "functions": [
+      "string_join",
+      "string_split",
+      "string_repeat"
+    ],
+    "recursive_limit": 128,
+    "recursive_limit_source": "common/common.h",
+    "recursive_limit_source_git_blob_sha1": "a0d960c5eeaefb016514454453aa2a465054f490",
+    "source_git_blob_sha1": "ca85f66d23caa3cb7f56d199f82f51a1a25cfe40",
+    "source_lines": [
+      533,
+      573
+    ],
+    "source_path": "common/common.cpp"
+  },
+  "repository": "https://github.com/ggml-org/llama.cpp",
+  "schema": "hepta.standalone-schema-converter-sources.v1",
+  "upstream": [
+    {
+      "bytes": 44841,
+      "git_blob_sha1": "6f3ecc992113dcfcce7cb48d22da8e8eafdabcde",
+      "path": "upstream/json-schema-to-grammar.cpp",
+      "sha256": "cb744e5dfa94f38d88900e3bc455cb21e6c6e4449f3e4b70f3283dc8a443ea81",
+      "upstream_path": "common/json-schema-to-grammar.cpp",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/json-schema-to-grammar.cpp"
+    },
+    {
+      "bytes": 804,
+      "git_blob_sha1": "b948743997ff4ef6f12d885a8ed684536fe3c974",
+      "path": "upstream/json-schema-to-grammar.h",
+      "sha256": "9e4d9f1d426bef42e1ebcb66c551fe3f2eae700a361e7e698f2e382d600432ca",
+      "upstream_path": "common/json-schema-to-grammar.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/json-schema-to-grammar.h"
+    },
+    {
+      "bytes": 21755,
+      "git_blob_sha1": "eb57a524a6050b8220cf42690c016cacf406e371",
+      "path": "upstream/json-schema.cpp",
+      "sha256": "1d39f46e92345419da65504995a89b05ed083163968d799f0b3c3c1dced8c490",
+      "upstream_path": "common/json-schema.cpp",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/json-schema.cpp"
+    },
+    {
+      "bytes": 6095,
+      "git_blob_sha1": "084208c962014a45571fd2610fecc3b683c00e7f",
+      "path": "upstream/json-schema.h",
+      "sha256": "57933a181ec0e84cbba1abea7fd898dc03e452d7de1a35795b787cee679d02af",
+      "upstream_path": "common/json-schema.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/json-schema.h"
+    },
+    {
+      "bytes": 14613,
+      "git_blob_sha1": "37713cef29e78833fd09cfff607cc83b3eb871c6",
+      "path": "upstream/json.cpp",
+      "sha256": "d8c556445cef8e7c93b0857f6ca7ae7ebd8295f169403ac66641b72f6b0598f2",
+      "upstream_path": "common/json.cpp",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/json.cpp"
+    },
+    {
+      "bytes": 13476,
+      "git_blob_sha1": "95b6d6f212e533fc83072b0c8f40120b36c33eef",
+      "path": "upstream/json.h",
+      "sha256": "a352f31307f1be2bdb34c027b876f42a1c5d1ea775cc8e4f11d703b16c40d22f",
+      "upstream_path": "common/json.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/json.h"
+    },
+    {
+      "bytes": 3838,
+      "git_blob_sha1": "b5c9666ba2eeacd3d1308191c1505629f3efc54a",
+      "path": "upstream/trie.cpp",
+      "sha256": "807cac6c6296ca294397360fbfdd5f19a65fb7c50a587c8b56094261eec5acb2",
+      "upstream_path": "common/trie.cpp",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/trie.cpp"
+    },
+    {
+      "bytes": 2337,
+      "git_blob_sha1": "0f7b16a36ad2b043471ab06f4846759211068cee",
+      "path": "upstream/trie.h",
+      "sha256": "391806c154f074d63e208f5a79d4d19df07592a645d860bb2c845525afda898e",
+      "upstream_path": "common/trie.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/trie.h"
+    },
+    {
+      "bytes": 4327,
+      "git_blob_sha1": "4ebe94a9ec8cc4abadfe0f842579e63cb02370ad",
+      "path": "upstream/unicode.cpp",
+      "sha256": "191c00abab788e59e83e29fb877047fcbac1f4d6088c5e9962d38ac2e694686c",
+      "upstream_path": "common/unicode.cpp",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/unicode.cpp"
+    },
+    {
+      "bytes": 1139,
+      "git_blob_sha1": "380e77e4c759a736c2fb4304a0de50ff208879c7",
+      "path": "upstream/unicode.h",
+      "sha256": "219b9257ac567a3e6bcf0f552c9a9ddc01d46a15eb4d2829ae5e069e643f0ec5",
+      "upstream_path": "common/unicode.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/common/unicode.h"
+    },
+    {
+      "bytes": 1078,
+      "git_blob_sha1": "e7dca554bcb802f98408383a864404e3aa4eacca",
+      "path": "upstream/LICENSE",
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
+      "upstream_path": "LICENSE",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/LICENSE"
+    },
+    {
+      "bytes": 987455,
+      "git_blob_sha1": "8547911c08984414c680fc2b775b87de63cc9499",
+      "path": "upstream/nlohmann/json.hpp",
+      "sha256": "08f19bbcc66ff3082f5caf58867b1232987dba98d82e2b29d870722fce42776b",
+      "upstream_path": "vendor/nlohmann/json.hpp",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/vendor/nlohmann/json.hpp"
+    }
+  ]
+}

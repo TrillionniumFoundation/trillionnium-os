@@ -20,9 +20,9 @@ from prompt_budget import NativeTokenizerBudget, QWEN_TOKENIZER_SHA, QWEN_TOKENI
 
 def _read_artifact(path, expected, limit):
     path = Path(path)
-    backend.require(path.is_absolute() and path.resolve(strict=True) == path, "noncanonical tokenizer artifact")
+    backend.require(path.is_absolute() and path.resolve(strict=True) == path, "noncanonical configured artifact")
     raw = path.read_bytes()
-    backend.require(0 < len(raw) <= limit and backend.sha(raw) == expected, "tokenizer artifact size/hash differs")
+    backend.require(0 < len(raw) <= limit and backend.sha(raw) == expected, "configured artifact size/hash differs")
     return raw
 
 
@@ -37,8 +37,12 @@ def configure(args, path):
     value = backend.strict_json(raw)
     required = {"schema", "base_provider_config_sha256", "model_id", "backend", "tokenizer_gnu_path",
                 "tokenizer_config_gnu_path", "template_contract", "deployment_binding"}
+    grammar_selected = isinstance(value, dict) and value.get("schema") == "hepta.provider-geniex-native.v2"
+    if grammar_selected:
+        required.add("schema_compiler")
     backend.require(isinstance(value, dict) and set(value) == required
-                    and value["schema"] == "hepta.provider-geniex-native.v1", "GenieX provider config differs")
+                    and value["schema"] in {"hepta.provider-geniex-native.v1", "hepta.provider-geniex-native.v2"},
+                    "GenieX provider config differs")
     backend.require(value["base_provider_config_sha256"] == args.local_config_sha256,
                     "base provider config differs; no silent reassignment of its native executor/claims")
     backend.require(value["model_id"] == "Qwen3-VL-4B-Instruct-QAIRT-w4a16-SM8750-v79",
@@ -49,11 +53,18 @@ def configure(args, path):
                     and binding.get("new_dedicated_mount") is True and binding.get("old_state_permissions_changed") is False
                     and backend.hex_string(binding.get("instance"), 32), "explicit shared staging binding absent")
     fields = {field.name for field in dataclasses.fields(backend.BackendConfig)}
-    backend.require(set(value["backend"]) == fields, "GenieX backend config fields differ")
+    grammar_fields = {"grammar_profile", "core_android", "core_sha256", "schema_compiler_sha256"}
+    backend.require(isinstance(value["backend"], dict)
+                    and (set(value["backend"]) == fields
+                         or (not grammar_selected and set(value["backend"]) == fields - grammar_fields)),
+                    "GenieX backend config fields differ")
     params = dict(value["backend"])
     params["evidence_root"] = Path(params["evidence_root"])
     params["stage_root"] = Path(params["stage_root"])
     config = backend.BackendConfig(**params)
+    backend.require((config.grammar_profile == backend.GRAMMAR_PROFILE) if grammar_selected
+                    else all(getattr(config, field) is None for field in grammar_fields),
+                    "explicit config version/output grammar selection differs")
     backend.require(config.tokenizer_sha256 == QWEN_TOKENIZER_SHA,
                     "QAIRT bundle tokenizer is not the selected verified artifact")
     backend.require(binding.get("gnu_path") == str(config.stage_root)
@@ -62,10 +73,24 @@ def configure(args, path):
     backend.require(type(binding.get("st_dev")) is int and type(binding.get("st_ino")) is int
                     and info.st_dev == binding["st_dev"] and info.st_ino == binding["st_ino"], "shared mount identity differs")
     model = backend.NativeBackend(config)
+    compiler = None
+    if grammar_selected:
+        import schema_grammar
+        compiler_value = value["schema_compiler"]
+        backend.require(isinstance(compiler_value, dict) and set(compiler_value) == {"kind", "sha256", "subset"}
+                        and compiler_value["kind"] == backend.GRAMMAR_COMPILER_KIND
+                        and compiler_value["subset"] == backend.GRAMMAR_SUBSET
+                        and compiler_value["sha256"] == config.schema_compiler_sha256,
+                        "schema compiler/profile binding differs")
+        compiler_source = Path(__file__).with_name("schema_grammar.py")
+        backend.require(Path(schema_grammar.__file__) == compiler_source, "schema compiler module is outside pinned provider source")
+        _read_artifact(str(compiler_source), compiler_value["sha256"], 65536)
+        compiler = {**compiler_value, "convert": schema_grammar.convert_schema}
     counter = NativeTokenizerBudget(_read_artifact(value["tokenizer_gnu_path"], QWEN_TOKENIZER_SHA, 16 * 1024 * 1024),
         expected_tokenizer_sha256=QWEN_TOKENIZER_SHA,
         tokenizer_config_raw=_read_artifact(value["tokenizer_config_gnu_path"], QWEN_TOKENIZER_CONFIG_SHA, 65536),
-        expected_tokenizer_config_sha256=QWEN_TOKENIZER_CONFIG_SHA, template_contract=value["template_contract"])
+        expected_tokenizer_config_sha256=QWEN_TOKENIZER_CONFIG_SHA, template_contract=value["template_contract"],
+        grammar_profile=config.grammar_profile, schema_compiler_sha256=config.schema_compiler_sha256)
     # Add an explicit new profile. Existing fixed19 and ordinary CPU definitions
     # are preserved byte-for-byte and continue to select their old transport.
     profile = {"name": backend.PROFILE["name"], "max_tool_calls": 24, "max_rounds": 25,
@@ -77,7 +102,7 @@ def configure(args, path):
     args.local_config.update(model=value["model_id"], operation_profile=profile["name"], context_tokens=4096, max_tokens=256,
                              service_manifest_sha256=config.artifact_manifest_sha256)
     args.geniex_backend = {"runner": model, "counter": counter, "config_path": Path(path), "config_sha256": backend.sha(raw),
-                           "base_config_sha256": args.local_config_sha256, "active_gate": None}
+                           "base_config_sha256": args.local_config_sha256, "active_gate": None, "schema_compiler": compiler}
     args.geniex_effective_config_sha256 = backend.sha(backend.canonical_json(args.local_config))
     args.geniex_config_sha256 = backend.sha(raw)
     return args
@@ -86,7 +111,8 @@ def configure(args, path):
 def prepare_body(adapter, body):
     if getattr(adapter.args, "geniex_backend", None) is None:
         return body
-    value = compact_provider_body(body)
+    value = compact_provider_body(body,
+        grammar_enabled=adapter.args.geniex_backend["runner"].config.grammar_profile == backend.GRAMMAR_PROFILE)
     value["model"] = adapter.local_config["model"]
     value["max_tokens"] = 256
     return value
@@ -123,11 +149,22 @@ def complete(adapter, body, prefix, request_id):
     owner_evidence = backend.strict_json(backend.read_private(adapter.run_dir / "accepted-owner-request.json", os.getuid(), 1024 * 1024))
     exact_owner = base64.b64decode(owner_evidence["request_utf8_b64"], validate=True)
     backend.require(prompt.endswith(exact_owner), "model prompt lost the exact final owner-request bytes")
-    # The fixed QAIRT v0.10.0 device discriminator aborted with EOG forbidden.
-    # Grammar is therefore disabled in this candidate. The complete example is
-    # presentation only; the original strict JSON/schema tail remains mandatory.
-    grammar = None
-    budget = selected["counter"].budget(prompt=prompt, system=system, grammar=grammar, image=image)
+    # Original QAIRT stays grammar-disabled. The explicit patched-core profile
+    # converts the unchanged current schema outside the model input context.
+    # The original r9 JSON/schema/typed/observation tail still validates output.
+    grammar, conversion = None, None
+    compiler = selected.get("schema_compiler")
+    if compiler is not None:
+        schema = body.get("response_format", {}).get("json_schema", {}).get("schema")
+        backend.require(isinstance(schema, dict), "current original output schema missing")
+        schema_raw = backend.canonical_json(schema)
+        grammar, conversion = compiler["convert"](schema_raw, compiler_source_sha256=compiler["sha256"])
+        backend.require(conversion.get("original_schema_sha256") == backend.sha(schema_raw)
+                        and conversion.get("canonical_schema_sha256") == backend.sha(schema_raw)
+                        and conversion.get("root_schema_kind") == ("health_final_only" if len(messages) == 2 else "mobile_use"),
+                        "converter lost the exact current schema")
+    budget = selected["counter"].budget(prompt=prompt, system=system, grammar=grammar, image=image,
+                                        schema_conversion=conversion)
     adapter.atomic_record(prefix.with_suffix(".geniex-budget.json"), budget)
     identity = adapter.accepted_identity
     key = backend.sha(json.dumps([identity[name] for name in ("session_id", "profile_id", "task_id", "turn_id")], separators=(",", ":")).encode())
@@ -173,6 +210,8 @@ def complete(adapter, body, prefix, request_id):
             raise owner_transport_error
         if gate.cancelled or adapter.cancelled.is_set():
             return None
+        if answer["receipt"]["cleanup_confirmed"] and answer["receipt"]["state"] == "timed_out":
+            raise ModelFailure("model_timeout", answer["receipt"])
         if not answer["receipt"]["model_result_usable"]:
             raise ModelFailure("unknown_model_failure", answer["receipt"])
         # The original r9 common tail will validate this one assistant content,

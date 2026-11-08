@@ -31,6 +31,7 @@ def main():
     parser.add_argument("--counter", type=Path, required=True)
     parser.add_argument("--tokenizer-library", type=Path, required=True)
     parser.add_argument("--bundle", type=Path, required=True)
+    parser.add_argument("--schema-grammar", action="store_true")
     options = parser.parse_args()
     sys.path.insert(0, str(options.source))
     import daily_phone_local as daily
@@ -72,6 +73,17 @@ def main():
         str(options.bundle), str(options.bundle), "/usr/lib:/lib", "/tmp", "c" * 64, pb.QWEN_TOKENIZER_SHA,
         str(options.counter), b.sha(options.counter.read_bytes()), str(options.tokenizer_library), b.sha(options.tokenizer_library.read_bytes()),
         max_worker_ms=55000, max_native_ms=60000)
+    compiler_value = None
+    if options.schema_grammar:
+        # Explicit host model ABI fixture: it does not enforce GBNF or load this
+        # dummy core. The actual pinned Python schema compiler is executed.
+        runtime = root / "host-loader-fixture"; runtime.mkdir(mode=0o700)
+        core = write(runtime / "libgeniex_core.so", b"HOST FIXTURE core hash only; not an Android SDK")
+        compiler_path = (options.source / "schema_grammar.py").resolve(strict=True)
+        compiler_value = {"kind": b.GRAMMAR_COMPILER_KIND, "sha256": b.sha(compiler_path.read_bytes()), "subset": b.GRAMMAR_SUBSET}
+        backend_config = dataclasses.replace(backend_config, grammar_profile=b.GRAMMAR_PROFILE,
+            core_android=str(core), core_sha256=b.sha(core.read_bytes()), schema_compiler_sha256=compiler_value["sha256"],
+            plugin_path=str(runtime), ld_library_path=str(runtime) + ":/usr/lib:/lib")
     backend_value = dataclasses.asdict(backend_config)
     for field in ("evidence_root", "stage_root"):
         backend_value[field] = str(backend_value[field])
@@ -87,7 +99,7 @@ def main():
         "tools_passed_to_sdk": False,
         "image_tokens": 256, "vision_shape": [512, 512], "context_tokens": 4096,
     }
-    geniex_path = write(root / "geniex-provider.json", {
+    geniex_value = {
         "schema": "hepta.provider-geniex-native.v1", "base_provider_config_sha256": b.sha(base_path.read_bytes()),
         "model_id": "Qwen3-VL-4B-Instruct-QAIRT-w4a16-SM8750-v79", "backend": backend_value,
         "tokenizer_gnu_path": str(options.bundle / "tokenizer.json"),
@@ -95,7 +107,10 @@ def main():
         "deployment_binding": {"schema": "hepta.geniex-shared-mount.v1", "execution_uid": 2000, "execution_gid": 2000,
             "new_dedicated_mount": True, "old_state_permissions_changed": False, "instance": uuid.uuid4().hex,
             "gnu_path": str(stage), "android_path": str(stage), "st_dev": info.st_dev, "st_ino": info.st_ino},
-    })
+    }
+    if compiler_value is not None:
+        geniex_value.update(schema="hepta.provider-geniex-native.v2", schema_compiler=compiler_value)
+    geniex_path = write(root / "geniex-provider.json", geniex_value)
     retained = write(root / "fixture-retained-unread.json", b"[]\n")
     policy = b.NativePolicy(server_uid=os.getuid(), execution_uid=os.getuid(),
         server_context="host_fixture_parent_not_android_selinux", caller_context=b.ANDROID_POLICY.caller_context,
@@ -103,6 +118,9 @@ def main():
         supplementary_group_count=len(os.getgroups()), production=False)
     native_class = b.NativeBackend
     def host_backend(config):
+        # Short deadlines are explicit host-fixture injection only. Production
+        # config/profile parsing above still uses the original 55s/60s limits.
+        config = dataclasses.replace(config, max_worker_ms=500, max_native_ms=1500)
         return native_class(config, b.R6Transport(options.endpoint, policy))
     captured = []
     argv = ["daily_phone_local.py", "--state", str(state), "--config", str(base_path),
@@ -137,7 +155,8 @@ def main():
     assert provider.OPERATION_PROFILES[b.PROFILE["name"]]["max_inference_seconds"] == 55
 
     rows = []
-    for index, marker in enumerate(("", " [[case=malformed_json]]", " [[case=hard_hang]]")):
+    for index, marker in enumerate(("", " [[case=malformed_json]]", " [[case=hard_hang]]",
+                                   " [[case=hard_hang]]", " [[case=hard_hang]]", " [[case=worker_deadline]]")):
         run = evidence / ("20261108-000000-" + uuid.uuid4().hex); run.mkdir(mode=0o700)
         read_fd, write_fd = os.pipe(); source = os.fdopen(read_fd, "rb", buffering=0); sink = io.StringIO()
         owner_text = "  Open Settings and inspect the current screen.\nKeep these owner bytes.  " + marker
@@ -155,12 +174,16 @@ def main():
             messages = [{"role": "user", "content": owner_text}]
             rejected = False
             deadline_cancelled = False
-            if index == 2:
+            timeout_category = None
+            if index in (2, 4):
                 started = time.monotonic()
                 original_receive = adapter.receive
                 def expire_during_native(*a, **kw):
                     if time.monotonic() - started > 0.25:
-                        adapter.session_deadline = time.monotonic() - 0.01
+                        if index == 2:
+                            adapter.session_deadline = time.monotonic() - 0.01
+                        else:
+                            adapter.cancelled.set()
                     return original_receive(*a, **kw)
                 adapter.receive = expire_during_native
             try:
@@ -170,9 +193,10 @@ def main():
                      mock.patch.object(adapter, "spawn_model", side_effect=AssertionError("NPU branch must not spawn HTTP worker")):
                     answer = adapter.completion(messages)
             except ModelFailure as error:
-                if index != 2 or error.category != "model_timeout":
+                if index not in (2, 3, 5) or error.category != "model_timeout":
                     raise
-                deadline_cancelled = True
+                deadline_cancelled = index == 2
+                timeout_category = error.category
                 answer = None
             except (ProviderError, json.JSONDecodeError, ValueError):
                 if index != 1:
@@ -184,11 +208,20 @@ def main():
             native = b.strict_json((request / "native-result.json").read_bytes())["receipt"]
             prompt = (stage / adapter.last_request_id / "prompt.txt").read_bytes()
             assert prompt.endswith(owner_text.encode())
+            if compiler_value is not None:
+                admission = b.strict_json((run / "local-01.geniex-budget.json").read_bytes())
+                grammar_path = stage / adapter.last_request_id / "grammar.txt"
+                assert admission["grammar_profile"] == b.GRAMMAR_PROFILE
+                assert admission["input_sha256"]["grammar"] == b.sha(grammar_path.read_bytes())
+                assert admission["schema_conversion"]["compiler_source_sha256"] == compiler_value["sha256"]
+                assert admission["schema_conversion"]["root_schema_kind"] == "mobile_use"
+                assert b.sha(b.canonical_json(b.strict_json((run / "local-01.request.json").read_bytes())
+                       ["response_format"]["json_schema"]["schema"])) == admission["schema_conversion"]["original_schema_sha256"]
             assert native["waitpid_joined"] is True and native["process_group_absent"] is True
             assert receipt["proof_environment"] == "host_fixture"
             # Complete model text still needs the separate original JSON/phone
             # authority. A session deadline permits cleanup only.
-            assert receipt["model_result_usable"] is (index != 2)
+            assert receipt["model_result_usable"] is (index in (0, 1))
             if index == 0:
                 call_id = answer["choices"][0]["message"]["tool_calls"][0]["id"]
                 assert adapter.phone_tools.calls[call_id]["semantic_tool"] == "phone.screenshot"
@@ -199,11 +232,20 @@ def main():
             elif index == 1:
                 assert rejected and not adapter.phone_tools.calls
                 assert not (run / "local-01.decision.json").exists()
-            else:
+            elif index == 2:
                 assert deadline_cancelled and receipt["state"] == "cancelled"
+                assert receipt["cleanup_confirmed"] and not adapter.phone_tools.calls
+            elif index == 4:
+                assert adapter.cancelled.is_set() and answer is None and timeout_category is None
+                assert receipt["state"] == "cancelled" and receipt["cleanup_confirmed"]
+                assert not adapter.phone_tools.calls
+            else:
+                assert timeout_category == "model_timeout" and receipt["state"] == "timed_out"
+                assert receipt["timeout_origin"] == ("native_supervisor" if index == 3 else "frozen_worker")
                 assert receipt["cleanup_confirmed"] and not adapter.phone_tools.calls
             assert "tool.call" not in sink.getvalue() and not adapter.dispatched_calls
             rows.append({"rejected": rejected, "deadline_cancelled": deadline_cancelled,
+                         "timeout_category": timeout_category, "owner_cancelled": adapter.cancelled.is_set(),
                          "receipt_state": receipt["state"], "owner_sha256": b.sha(owner_text.encode())})
         finally:
             adapter.frames.close(); adapter.inputs.close(); source.close(); os.close(write_fd)
@@ -211,8 +253,15 @@ def main():
         "owner_bytes_preserved": True, "original_typed_parser_used": True,
         "phone_actions_dispatched": False, "malformed_json_rejected": rows[1]["rejected"],
         "task_deadline_cancelled_with_native_cleanup": rows[2]["deadline_cancelled"],
+        "native_timeout_classified": rows[3]["timeout_category"] == "model_timeout",
+        "owner_cancel_preserved": rows[4]["owner_cancelled"] and rows[4]["timeout_category"] is None,
+        "worker_deadline_classified": rows[5]["timeout_category"] == "model_timeout",
+        "host_fixture_deadlines_ms": {"worker": 500, "native": 1500},
         "cpu_cleanup_binding_absent": not getattr(args, "slot_cleanup_binding", None),
         "cpu_mode_without_binding_rejected": cpu_gate_checked,
+        "schema_compiler_executed": compiler_value is not None,
+        "grammar_profile": backend_config.grammar_profile,
+        "grammar_enforced_by_host_model_fixture": False,
         "http_transport_called": False,
         "proof_environment": "host_fixture", "cases": rows}))
 

@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.native-timeout-review.v1",
+  "parent_public_commit": "9383657347fbcd65bf289dc91474fdf28778c6ff",
+  "source_diff_sha256": "71a3df57f59940cfe1444fc8e5bec387bf8a6b71fbbb377dae03d70cf796b85a",
+  "root_and_independent_review_passed": true,
+  "host_result_sha256": "9f8e628ecda9fa37bbfe51bed512070a56ab6acf7bf4d85a4d98168f102d8586",
+  "backend_tests_passed": 23,
+  "private_r9_regressions_passed": 38,
+  "private_selector_cases_per_source": 6,
+  "unchanged_worker_and_counter": true,
+  "host_sdk_and_tokenizer_fixtures": true,
+  "real_r6_host_process_supervision": true,
+  "phone_NPU_or_UI_tested": false,
+  "original_fixed19_qualification_changed": false,
+  "source_root_local_AF_UNIX": "PermissionError before socket creation; complete integration executed on pocket4",
+  "launch_note": "Initial remote executable validation rejected a non-absolute python3 before launch. Corrected absolute /usr/bin/python3 job completed once.",
+  "job_id": "1a1bb25be50-13c47-d4",
+  "classification": {
+    "owner_cancel": "cancelled; no model output accepted",
+    "native_supervisor_timeout": "model_timeout after original native termination proof",
+    "frozen_worker_deadline": "model_timeout only with exit124 and bound original deadline metadata",
+    "bare_exit124": "failed; not sufficient timeout evidence",
+    "unresolved_cleanup": "unknown; blocks later inference"
+  }
+}

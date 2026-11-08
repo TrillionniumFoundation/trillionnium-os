@@ -29,6 +29,11 @@ ENDPOINT = "hepta_phone_executor_v150_r6"
 SDK_COMMIT = "071f609995470bdb0e0769ab964754adfaab7e47"
 WORKER_SOURCE_SHA = "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
 TOKENIZER_LIBRARY_SHA = "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d"
+GRAMMAR_PROFILE = "qairt-output-grammar-core-r2-v1"
+GRAMMAR_CORE_SHA = "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d"
+GRAMMAR_SUBSET = "hepta.mobile-schema-gbnf-subset.v1"
+GRAMMAR_COMPILER_KIND = "reviewed_python_source"
+GRAMMAR_CONVERTER_COMMIT = "19cce6919992fdffd92e0ac152caaf1e2b8f254e"
 MAX_NATIVE_OUTPUT = 8 * 1024 * 1024
 MAX_RAW_TEXT = 1024 * 1024
 PROFILE = {
@@ -336,6 +341,36 @@ def validate_worker(value, raw, native, *, request_id, expected_inputs, expected
     return raw.decode("utf-8")
 
 
+def validate_worker_deadline(value, native, *, request_id, expected_inputs, expected_model, expected_output_path):
+    """Classify a frozen worker deadline only after native process cleanup.
+
+    This accepts no model text and grants no phone action. Exit 124 alone is
+    insufficient: the original worker metadata must bind the same request,
+    process, artifacts and inputs and explicitly attest its deadline fence.
+    """
+    require(isinstance(value, dict) and value.get("schema") == "hepta.geniex-once.result.v1",
+            "deadline worker schema differs")
+    require(value.get("production_receipt") is False and value.get("process_exit_observed") is False
+            and value.get("native_action_authorized") is False, "deadline metadata claims native authority")
+    require(value.get("request_id") == request_id and value.get("sdk_source_commit") == SDK_COMMIT
+            and value.get("sdk_version") in {"0.10.0", "v0.10.0"}, "deadline worker request/ABI differs")
+    require(value.get("mode") == "vlm" and value.get("runtime") == "qairt"
+            and value.get("compute_requested") == "npu" and value.get("device_resolved") == "NPU"
+            and value.get("device_warning") is None and value.get("vit_device_requested") is None,
+            "deadline worker runtime/device differs")
+    integers = {"pid": native["pid"], "pgid": native["pgid"], "sid": native["pid"],
+                "n_ctx_create": 0, "n_gpu_layers_create": 0, "power_mode_create": 6,
+                "signal_observed": 0, "max_tokens": 256, "worker_exit_status_planned": 124}
+    require(all(type(value.get(key)) is int and value[key] == expected for key, expected in integers.items()),
+            "deadline worker process/config differs")
+    require(value.get("model_path") == expected_model and value.get("input_sha256") == expected_inputs
+            and value.get("raw_text_file") == expected_output_path and value.get("input_metadata_unchanged") is True,
+            "deadline worker input binding differs")
+    require(value.get("automatic_retry") is False and value.get("generation_complete") is False
+            and value.get("deadline_observed") is True and value.get("worker_outcome") == "deadline_observed",
+            "worker did not attest a deadline fence")
+
+
 def formatter_segments(original_inputs):
     head, middle, tail = b"<|im_start|>system\n", b"<|im_end|>\n<|im_start|>user\n", b"<|im_end|>\n<|im_start|>assistant\n"
     first = head + original_inputs["system"] + middle
@@ -358,7 +393,8 @@ def validate_counter(value, native, *, request_id, expected_inputs, original_inp
             and type(value.get("sid")) is int and value["sid"] == native["pid"],
             "native counter was not in the supervised model process group")
     require(value.get("input_sha256") == {key: expected_inputs[key] for key in ("prompt", "system", "image")}
-            and expected_inputs["grammar"] is None
+            and ((expected_inputs["grammar"] is None and config.grammar_profile is None)
+                 or (hex_string(expected_inputs["grammar"], 64) and config.grammar_profile == GRAMMAR_PROFILE))
             and value.get("input_unchanged") is True and value.get("raw_input_preserved") is True,
             "native token admission inputs differ")
     require(value.get("method") == "exact_sdk_formatted_text_segments_plus_bos_upper_bound"
@@ -416,6 +452,10 @@ class BackendConfig:
     tokenizer_library_sha256: str
     max_worker_ms: int = 55000
     max_native_ms: int = 60000
+    grammar_profile: str | None = None
+    core_android: str | None = None
+    core_sha256: str | None = None
+    schema_compiler_sha256: str | None = None
 
     def validate(self, policy=ANDROID_POLICY):
         private_dir(self.evidence_root, os.getuid())
@@ -437,6 +477,23 @@ class BackendConfig:
         for value, separator in ((self.ld_library_path, ":"), (self.adsp_library_path, ";")):
             require(isinstance(value, str) and value and all(part.startswith("/") and "\0" not in part and "\n" not in part
                     for part in value.split(separator)), "runtime library path list differs")
+        if self.grammar_profile is None:
+            require(self.core_android is None and self.core_sha256 is None and self.schema_compiler_sha256 is None,
+                    "grammar artifacts require their explicit reviewed profile")
+        else:
+            require(self.grammar_profile == GRAMMAR_PROFILE
+                    and hex_string(self.core_sha256, 64) and hex_string(self.schema_compiler_sha256, 64),
+                    "unknown or unpinned output grammar profile")
+            require(isinstance(self.core_android, str) and self.core_android.startswith("/")
+                    and str(PurePosixPath(self.core_android)) == self.core_android
+                    and ".." not in PurePosixPath(self.core_android).parts
+                    and "\0" not in self.core_android and "\n" not in self.core_android
+                    and PurePosixPath(self.core_android).name == "libgeniex_core.so",
+                    "noncanonical grammar core path")
+            require(str(PurePosixPath(self.core_android).parent) == self.plugin_path == self.ld_library_path.split(":")[0],
+                    "grammar core must be the selected first loader directory")
+            if policy.production:
+                require(self.core_sha256 == GRAMMAR_CORE_SHA, "unreviewed Android output grammar core")
         if policy.production:
             parts = self.ld_library_path.split(":")
             require(parts[-2:] == ["/system/lib64", "/vendor/lib64"], "Android system/vendor loader order differs")
@@ -462,7 +519,7 @@ def owner_binding(owner_path: Path, claim_path: Path):
             "accepted_owner_evidence_sha256": sha(owner_raw), "accepted_claim_sha256": sha(claim_raw)}
 
 
-def validate_budget(budget, inputs, tokenizer_sha256):
+def validate_budget(budget, inputs, tokenizer_sha256, *, grammar_profile=None, schema_compiler_sha256=None):
     """Bind the required pre-generation native counting operation to its input.
 
     This is a reservation with a hard 3584 admission ceiling. It is not a Python
@@ -481,6 +538,30 @@ def validate_budget(budget, inputs, tokenizer_sha256):
             and budget.get("context_tokens") == 4096 and type(budget.get("context_tokens")) is int,
             "QAIRT budget exceeds the compiled 4096 context")
     require(hex_string(budget.get("counter_contract_sha256"), 64), "token counter/template contract pin absent")
+    require(budget.get("grammar_profile") == grammar_profile, "output grammar profile/budget differs")
+    if grammar_profile is None:
+        require(inputs["grammar"] is None and budget.get("schema_conversion") is None,
+                "original QAIRT runtime must not receive grammar")
+    else:
+        require(grammar_profile == GRAMMAR_PROFILE and hex_string(inputs["grammar"], 64)
+                and hex_string(schema_compiler_sha256, 64), "output grammar input/pin absent")
+        proof = budget.get("schema_conversion")
+        require(isinstance(proof, dict) and proof.get("schema") == "hepta.schema-gbnf-conversion.v1"
+                and proof.get("subset") == GRAMMAR_SUBSET
+                and proof.get("reference_converter_commit") == GRAMMAR_CONVERTER_COMMIT
+                and proof.get("compiler_kind") == GRAMMAR_COMPILER_KIND
+                and proof.get("compiler_source_sha256") == schema_compiler_sha256
+                and proof.get("grammar_sha256") == inputs["grammar"] and proof.get("grammar_root") == "root"
+                and proof.get("root_schema_kind") in {"mobile_use", "health_final_only"}
+                and hex_string(proof.get("original_schema_sha256"), 64)
+                and hex_string(proof.get("canonical_schema_sha256"), 64), "schema/grammar conversion binding differs")
+        require(all(type(proof.get(key)) is int and 0 < proof[key] <= 65536
+                    for key in ("original_schema_bytes", "grammar_bytes"))
+                and all(proof.get(key) is True for key in ("input_bytes_preserved", "conversion_completed"))
+                and all(proof.get(key) is False for key in ("model_loaded", "native_action_authorized", "production_receipt")),
+                "schema converter did not finish cleanly")
+        require(not ({"executable_elf", "returncode", "child_waited", "input_sent_unchanged"} & set(proof)),
+                "in-process Python conversion is not a native subprocess receipt")
     return budget["admission_limit_tokens"]
 
 
@@ -512,9 +593,11 @@ class NativeBackend:
             env_binary, sha_binary = "/usr/bin/env", "/usr/bin/sha256sum"
         env.append("PATH=/system/bin:/vendor/bin" if self.policy.production else "PATH=/usr/bin:/bin")
         checks = []
-        for path, expected_sha in ((c.worker_android, c.worker_sha256), (c.counter_android, c.counter_sha256),
-                                   (c.tokenizer_library_android, c.tokenizer_library_sha256),
-                                   (c.tokenizer_android, c.tokenizer_sha256)):
+        artifacts = [(c.worker_android, c.worker_sha256), (c.counter_android, c.counter_sha256),
+                     (c.tokenizer_library_android, c.tokenizer_library_sha256), (c.tokenizer_android, c.tokenizer_sha256)]
+        if c.grammar_profile is not None:
+            artifacts.append((c.core_android, c.core_sha256))
+        for path, expected_sha in artifacts:
             verify = shlex.quote(sha_binary) + " " + shlex.quote(path)
             checks.append("[ \"$(" + verify + ")\" = " + shlex.quote(expected_sha + "  " + path) + " ] || exit 65")
         counter = [c.counter_android, "--request-id", request_id, "--library", c.tokenizer_library_android,
@@ -524,7 +607,8 @@ class NativeBackend:
             "--max-prompt", "3584"]
         if has_image:
             counter += ["--image", native_dir + "/current.png"]
-        require(has_system and not has_grammar, "native QAIRT path requires explicit system and disabled grammar")
+        require(has_system and has_grammar == (c.grammar_profile == GRAMMAR_PROFILE),
+                "native QAIRT system/grammar selection differs from the configured runtime")
         return ("cd " + shlex.quote(str(PurePosixPath(c.model_android).parent)) + " || exit 65; "
                 + "; ".join(checks) + "; " + shlex.join([env_binary, "-i", *env, *counter]) + " && exec "
                 + shlex.join([env_binary, "-i", *env, *args]))
@@ -540,7 +624,8 @@ class NativeBackend:
             if key != "image":
                 raw.decode("utf-8", errors="strict"); require(b"\0" not in raw, "NUL text input")
         expected_inputs = {key: sha(raw) if raw is not None else None for key, raw in inputs.items()}
-        admission_limit = validate_budget(budget, expected_inputs, self.config.tokenizer_sha256)
+        admission_limit = validate_budget(budget, expected_inputs, self.config.tokenizer_sha256,
+            grammar_profile=self.config.grammar_profile, schema_compiler_sha256=self.config.schema_compiler_sha256)
         binding = owner_binding(owner_path, owner_claim_path)
         lock_fd = os.open(self.config.evidence_root / "backend.lock", os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
         try:
@@ -583,6 +668,8 @@ class NativeBackend:
                       "worker_source_sha256": WORKER_SOURCE_SHA, "worker_executable_sha256": self.config.worker_sha256,
                       "counter_executable_sha256": self.config.counter_sha256,
                       "tokenizer_library_sha256": self.config.tokenizer_library_sha256,
+                      "grammar_profile": self.config.grammar_profile, "core_sha256": self.config.core_sha256,
+                      "schema_compiler_sha256": self.config.schema_compiler_sha256,
                       "input_sha256": expected_inputs, "token_budget": budget, "command_sha256": command_digest,
                       "profile": PROFILE, "stage_directory": str(stage), "android_stage_directory": native_dir,
                       "endpoint": self.transport.endpoint, "automatic_retry": False, "can_redispatch": False}
@@ -648,9 +735,28 @@ class NativeBackend:
                 return self._terminal(directory, intent, "failed", True, False,
                                       "counter_evidence_unreadable: " + str(exc), native_sha=sha(native_raw))
             counter_hashes = {"counter_sha": sha(counter_raw)} if counter_raw is not None else {}
-            if gate.cancelled or native["state"] in {"cancelled", "timed_out"}:
+            if gate.cancelled or native["state"] == "cancelled":
                 return self._terminal(directory, intent, "cancelled", True, False,
-                                      "accepted_cancel_or_native_timeout", native_sha=sha(native_raw), **counter_hashes)
+                                      "accepted_cancel_or_native_cancel", native_sha=sha(native_raw), **counter_hashes)
+            if native["state"] == "timed_out":
+                return self._terminal(directory, intent, "timed_out", True, False,
+                                      "native_supervisor_timeout", timeout_origin="native_supervisor",
+                                      native_sha=sha(native_raw), **counter_hashes)
+            if (native["state"] == "completed" and type(native.get("exit_code")) is int
+                    and native["exit_code"] == 124 and native.get("term_signal") is None
+                    and native.get("client_disconnected") is False and native.get("error") in (None, "")):
+                try:
+                    deadline_raw = read_private(stage / "worker-result.json", self.policy.execution_uid, 131072)
+                    exclusive(directory / "worker-result.json", deadline_raw)
+                    validate_worker_deadline(strict_json(deadline_raw), native, request_id=request_id,
+                        expected_inputs=expected_inputs, expected_model=self.config.model_android,
+                        expected_output_path=native_dir + "/generated.bin")
+                except Exception as exc:
+                    return self._terminal(directory, intent, "failed", True, False,
+                                          "unverified_worker_deadline: " + str(exc), native_sha=sha(native_raw), **counter_hashes)
+                return self._terminal(directory, intent, "timed_out", True, False,
+                                      "worker_deadline_observed", timeout_origin="frozen_worker",
+                                      native_sha=sha(native_raw), worker_sha=sha(deadline_raw), **counter_hashes)
             if not (native["state"] == "completed" and type(native.get("exit_code")) is int and native["exit_code"] == 0
                     and native.get("term_signal") is None and native.get("client_disconnected") is False
                     and native.get("error") in (None, "")):
@@ -692,6 +798,7 @@ class NativeBackend:
                "request_id": intent["request_id"], "intent_sha256": sha(canonical_json(intent)), "state": state,
                "cleanup_confirmed": cleanup, "model_result_usable": usable, "error": error,
                "inference_backend": "geniex_qairt_isolated_process", "profile": PROFILE["name"],
+               "grammar_profile": self.config.grammar_profile, "core_sha256": self.config.core_sha256,
                "proof_environment": "android_native" if self.policy.production else "host_fixture",
                "automatic_retry": False, "can_redispatch": False, "native_action_authorized": False, **hashes}
         exclusive(directory / "terminal.json", canonical_json(row))

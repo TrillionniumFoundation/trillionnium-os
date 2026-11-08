@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.catalogue-grammar-positive-run-bindings.v1",
+  "runner": {
+    "path": "tools/phone_qairt_catalogue_grammar_check.py",
+    "bytes": 32953,
+    "sha256": "17a2638e71cc3beeeb694a801cf082a7d20892c6f5e60c748c1b0785334ec96e"
+  },
+  "job": {
+    "host": "pocket4",
+    "id": "1a1bb5c552d-13c47-216",
+    "idempotency_key": "hepta-qairt-catalogue-grammar-r1-positive-20261108",
+    "state": "succeeded",
+    "exit_code": 0,
+    "terminal_publication_confirmed": true,
+    "output_complete": true
+  },
+  "public_summary": {
+    "bytes": 4493,
+    "sha256": "9afc4efddaef47d97317ddecaedd1308f9dd72075f96bda467fd641eeb24ce91",
+    "source_path": "/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/qairt-catalogue-grammar-r1/results/PUBLIC-SUMMARY.json"
+  },
+  "fixture_summary_sha256": "45a5437d39fa20ebfa3b4c4bdbba97c3365b77724884f5831b181dc15df0dd4f",
+  "fixture_manifest_sha256": "7aceb7cc424be4d088a16b1a76ce8a2da8cdc56954fafb0a90d1dc6427af9dcb",
+  "source_pins": {
+    "native_backend.py": {
+      "sha256": "a9329d2dc22eea9953b9106510d4b46df1bafaf643d4614eca8443ac2d3bfc89",
+      "content_exported": false
+    },
+    "phone_local_tools.py": {
+      "sha256": "b653796658ff7cef0b286ccf25f560f8fd67cbe24017876d041f9412b24eacbe",
+      "content_exported": false
+    },
+    "phone_observation_tools.py": {
+      "sha256": "ed855866475efb7334f5a5a20d7622541f532cfcc778b8813908eb860cda198c",
+      "content_exported": false
+    },
+    "prompt_budget.py": {
+      "sha256": "bdb71b2c82b49866af3324c3cf1f7a99a1c9ebbe4b157413b7b728b56d95148b",
+      "content_exported": false
+    },
+    "provider_bridge.py": {
+      "sha256": "75b9dd2a391e187231c6e2674d929637b338cbfd2ffde96dea07c5dbf8be41fb",
+      "content_exported": false
+    },
+    "provider_phone_local.py": {
+      "sha256": "9ffe3dbe7029986c907343981d080a7f77ad925c55151a63e5cf9330b1a5fcf3",
+      "content_exported": false
+    },
+    "schema_grammar.py": {
+      "sha256": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8",
+      "content_exported": false
+    }
+  },
+  "compiler": {
+    "path": "runtime/geniex-20261108/schema-grammar-python-r1/python_schema_grammar.py",
+    "sha256": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8"
+  },
+  "worker": {
+    "source_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+    "binary_sha256": "67d4e368da136f74a7ab1022013cf1def64f75ebb32d91962772e28a2363864f"
+  },
+  "counter": {
+    "source_sha256": "59fc52b4cc23db15093c072b3514ccf5b11e2d8ccbfaf920d2db5e3f24c7f132",
+    "binary_sha256": "09c2c8fb4b0c0095ffe612be82bc1b2124d47f9351c53fd0a77384c74395589c"
+  },
+  "runtime": {
+    "manifest_path": "runtime/geniex-20261108/evidence/qairt-core-r2-smoke/RUNTIME-CANDIDATE-MANIFEST.json",
+    "manifest_sha256": "c4551f10e683382fc1e2285b21c67482d006223ace13c0ddcc6faebbe71b85d8",
+    "core_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+    "proc_sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+    "sdk_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "qairt_core_upstream_commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+    "changed_runtime_artifacts": [
+      "lib/qairt/libgeniex_core.so"
+    ],
+    "known_invalid_grammar_negative_pass": false,
+    "overall_runtime_qualified": false
+  },
+  "model": {
+    "archive_sha256": "9053855d9b45d2dc1c41b8cc5d7d792887dd1549b8ebf3a7f3dfb0ef5b762599",
+    "model_pins_sha256": "1676a2ff35b577da6426cbe9790e2a5d1dbcfdeae1dc7c0e8898554f11026a6b",
+    "tokenizer_sha256": "be75606093db2094d7cd20f3c2f385c212750648bd6ea4fb2bf507a6a4c55506",
+    "files_verified_before_after": 24
+  },
+  "scope": {
+    "registered_app_entries": 53,
+    "model_samples": 2,
+    "phone_ui_actions": 0,
+    "synthetic_history": true,
+    "production_domain_tested": false,
+    "external_inference_used": false,
+    "process_supervisor": "phone_timeout_60s_plus_5s_kill_grace_not_r6_native_receipt",
+    "worker_deadline_ms": 55000,
+    "max_prompt_tokens": 3584,
+    "compiled_context_tokens": 4096,
+    "image_is_synthetic_blue_target_fixture": true
+  },
+  "observations": {
+    "counter_upper_and_sdk_prompt_tokens": [
+      964,
+      1991
+    ],
+    "generated_tokens": [
+      37,
+      62
+    ],
+    "strict_parser_and_semantics_pass": [
+      true,
+      true
+    ],
+    "terminal_no_model_process": true,
+    "owner_stop_and_retained_claims_unchanged": true,
+    "original_and_candidate_runtime_unchanged": true
+  }
+}

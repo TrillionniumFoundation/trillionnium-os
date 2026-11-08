@@ -1,0 +1,231 @@
+{
+  "schema": "hepta.grammar-exception-probe-build.v1",
+  "diagnostic_only": true,
+  "model_loaded": false,
+  "npu_loaded": false,
+  "source_files": [
+    {
+      "path": "loader.c",
+      "bytes": 1067,
+      "sha256": "bbc43cc592e3bda787a251200c4b3a86067bd90fbf5f82ce44face5f329c8df2"
+    },
+    {
+      "path": "probe.cpp",
+      "bytes": 3964,
+      "sha256": "2a1c264a6dbb2ae24b6e6dbd1181b8bb70689e52115fc5e25348f9148c592837"
+    }
+  ],
+  "compiler": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: aarch64-unknown-linux-android31\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "ndk_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "api": 31,
+  "stl": "c++_static",
+  "proc_sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+  "upstream_source_manifest_sha256": "45c6f4e58ed9d14e1c687ca05b687571ed00059530927f6125e9590b7ee34779",
+  "build_steps": [
+    {
+      "label": "compiler-version",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android31-clang++",
+        "--version"
+      ],
+      "rc": 0,
+      "seconds": 4.117041749999999
+    },
+    {
+      "label": "direct",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android31-clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-fPIC",
+        "-fexceptions",
+        "-frtti",
+        "-static-libstdc++",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "-march=armv8.7a+fp16+dotprod+i8mm",
+        "-fvectorize",
+        "-ffp-model=fast",
+        "-fno-finite-math-only",
+        "-flto",
+        "-D_GNU_SOURCE",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtl/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-io/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-blas/include",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/probe.cpp",
+        "-L/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/prebuilt",
+        "-lgeniex-proc",
+        "-llog",
+        "-ldl",
+        "-latomic",
+        "-lm",
+        "-Wl,-rpath,$ORIGIN",
+        "-o",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/grammar-exception-direct"
+      ],
+      "rc": 0,
+      "seconds": 0.7494011250000003
+    },
+    {
+      "label": "dso",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android31-clang++",
+        "-std=c++20",
+        "-O3",
+        "-DNDEBUG",
+        "-fPIC",
+        "-fexceptions",
+        "-frtti",
+        "-static-libstdc++",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "-march=armv8.7a+fp16+dotprod+i8mm",
+        "-fvectorize",
+        "-ffp-model=fast",
+        "-fno-finite-math-only",
+        "-flto",
+        "-D_GNU_SOURCE",
+        "-DGRAMMAR_PROBE_DSO",
+        "-shared",
+        "-Wl,-soname,libgrammar_exception_probe.so",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtl/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-io/include",
+        "-isystem",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-blas/include",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/probe.cpp",
+        "-L/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/prebuilt",
+        "-lgeniex-proc",
+        "-llog",
+        "-ldl",
+        "-latomic",
+        "-lm",
+        "-Wl,-rpath,$ORIGIN",
+        "-o",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/libgrammar_exception_probe.so"
+      ],
+      "rc": 0,
+      "seconds": 0.41249158300000044
+    },
+    {
+      "label": "loader",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android31-clang",
+        "-std=c11",
+        "-O2",
+        "-fPIE",
+        "-pie",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/loader.c",
+        "-ldl",
+        "-o",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/grammar-exception-loader"
+      ],
+      "rc": 0,
+      "seconds": 0.6583707920000004
+    },
+    {
+      "label": "strip-grammar-exception-direct",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "--strip-unneeded",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/grammar-exception-direct"
+      ],
+      "rc": 0,
+      "seconds": 0.025429750000000695
+    },
+    {
+      "label": "elf-grammar-exception-direct",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-h",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/grammar-exception-direct"
+      ],
+      "rc": 0,
+      "seconds": 0.025936875000000192
+    },
+    {
+      "label": "strip-grammar-exception-loader",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "--strip-unneeded",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/grammar-exception-loader"
+      ],
+      "rc": 0,
+      "seconds": 0.006045999999999552
+    },
+    {
+      "label": "elf-grammar-exception-loader",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-h",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/grammar-exception-loader"
+      ],
+      "rc": 0,
+      "seconds": 0.006133291999999457
+    },
+    {
+      "label": "strip-libgrammar_exception_probe.so",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "--strip-unneeded",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/libgrammar_exception_probe.so"
+      ],
+      "rc": 0,
+      "seconds": 0.006019708000000179
+    },
+    {
+      "label": "elf-libgrammar_exception_probe.so",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-h",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-exception-probe-r1/artifacts/libgrammar_exception_probe.so"
+      ],
+      "rc": 0,
+      "seconds": 0.005944000000000393
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "grammar-exception-direct",
+      "bytes": 13968,
+      "sha256": "1639b357c6e497f0e8228a342b0fb8f4b72ecbca253f3b0c5a6ef57fe0c58c30",
+      "elf_text": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00\n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Shared object file)\n  Machine:                           AArch64\n  Version:                           0x1\n  Entry point address:               0x5A10\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          12368 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         12\n  Size of section headers:           64 (bytes)\n  Number of section headers:         25\n  Section header string table index: 24\nDynamic section at offset 0x2b40 contains 26 entries:\n  Tag                Type         Name/Value\n  0x000000000000001d (RUNPATH)    Library runpath: [$ORIGIN]\n  0x0000000000000001 (NEEDED)     Shared library: [libgeniex-proc.so]\n  0x0000000000000001 (NEEDED)     Shared library: [liblog.so]\n  0x0000000000000001 (NEEDED)     Shared library: [libdl.so]\n  0x0000000000000001 (NEEDED)     Shared library: [libm.so]\n  0x0000000000000001 (NEEDED)     Shared library: [libc.so]\n  0x000000000000001e (FLAGS)      BIND_NOW \n  0x000000006ffffffb (FLAGS_1)    NOW PIE \n  0x0000000000000015 (DEBUG)      0x0\n  0x0000000000000007 (RELA)       0xe18\n  0x0000000000000008 (RELASZ)     360 (bytes)\n  0x0000000000000009 (RELAENT)    24 (bytes)\n  0x000000006ffffff9 (RELACOUNT)  4\n  0x0000000000000017 (JMPREL)     0xf80\n  0x0000000000000002 (PLTRELSZ)   840 (bytes)\n  0x0000000000000003 (PLTGOT)     0xad40\n  0x0000000000000014 (PLTREL)     RELA\n  0x0000000000000006 (SYMTAB)     0x390\n  0x000000000000000b (SYMENT)     24 (bytes)\n  0x0000000000000005 (STRTAB)     0x8a4\n  0x000000000000000a (STRSZ)      1394 (bytes)\n  0x000000006ffffef5 (GNU_HASH)   0x888\n  0x000000006ffffff0 (VERSYM)     0x7f8\n  0x000000006ffffffe (VERNEED)    0x858\n  0x000000006fffffff (VERNEEDNUM) 1\n  0x0000000000000000 (NULL)       0x0\n"
+    },
+    {
+      "path": "grammar-exception-loader",
+      "bytes": 5616,
+      "sha256": "dd058956493b47c0deccb68c9c9628530528b529f3f7167ba07e7f057a1506e4",
+      "elf_text": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00\n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Shared object file)\n  Machine:                           AArch64\n  Version:                           0x1\n  Entry point address:               0x48F8\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          4080 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         12\n  Size of section headers:           64 (bytes)\n  Number of section headers:         24\n  Section header string table index: 23\nDynamic section at offset 0xc40 contains 22 entries:\n  Tag                Type         Name/Value\n  0x0000000000000001 (NEEDED)     Shared library: [libdl.so]\n  0x0000000000000001 (NEEDED)     Shared library: [libc.so]\n  0x000000000000001e (FLAGS)      BIND_NOW \n  0x000000006ffffffb (FLAGS_1)    NOW PIE \n  0x0000000000000015 (DEBUG)      0x0\n  0x0000000000000007 (RELA)       0x5d0\n  0x0000000000000008 (RELASZ)     120 (bytes)\n  0x0000000000000009 (RELAENT)    24 (bytes)\n  0x000000006ffffff9 (RELACOUNT)  4\n  0x0000000000000017 (JMPREL)     0x648\n  0x0000000000000002 (PLTRELSZ)   264 (bytes)\n  0x0000000000000003 (PLTGOT)     0x8dc0\n  0x0000000000000014 (PLTREL)     RELA\n  0x0000000000000006 (SYMTAB)     0x390\n  0x000000000000000b (SYMENT)     24 (bytes)\n  0x0000000000000005 (STRTAB)     0x544\n  0x000000000000000a (STRSZ)      133 (bytes)\n  0x000000006ffffef5 (GNU_HASH)   0x528\n  0x000000006ffffff0 (VERSYM)     0x4c8\n  0x000000006ffffffe (VERNEED)    0x4e4\n  0x000000006fffffff (VERNEEDNUM) 2\n  0x0000000000000000 (NULL)       0x0\n"
+    },
+    {
+      "path": "libgrammar_exception_probe.so",
+      "bytes": 13632,
+      "sha256": "589b5a9cd9226718bbd37fd4de9022bdb23c306e777b358c551e739ba430840f",
+      "elf_text": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00\n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Shared object file)\n  Machine:                           AArch64\n  Version:                           0x1\n  Entry point address:               0x0\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          12096 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         10\n  Size of section headers:           64 (bytes)\n  Number of section headers:         24\n  Section header string table index: 23\nDynamic section at offset 0x2a38 contains 28 entries:\n  Tag                Type           Name/Value\n  0x000000000000001d (RUNPATH)      Library runpath: [$ORIGIN]\n  0x0000000000000001 (NEEDED)       Shared library: [libgeniex-proc.so]\n  0x0000000000000001 (NEEDED)       Shared library: [liblog.so]\n  0x0000000000000001 (NEEDED)       Shared library: [libdl.so]\n  0x0000000000000001 (NEEDED)       Shared library: [libm.so]\n  0x0000000000000001 (NEEDED)       Shared library: [libc.so]\n  0x000000000000000e (SONAME)       Library soname: [libgrammar_exception_probe.so]\n  0x000000000000001e (FLAGS)        BIND_NOW \n  0x000000006ffffffb (FLAGS_1)      NOW \n  0x0000000000000007 (RELA)         0xde8\n  0x0000000000000008 (RELASZ)       336 (bytes)\n  0x0000000000000009 (RELAENT)      24 (bytes)\n  0x000000006ffffff9 (RELACOUNT)    3\n  0x0000000000000017 (JMPREL)       0xf38\n  0x0000000000000002 (PLTRELSZ)     840 (bytes)\n  0x0000000000000003 (PLTGOT)       0xac40\n  0x0000000000000014 (PLTREL)       RELA\n  0x0000000000000006 (SYMTAB)       0x308\n  0x000000000000000b (SYMENT)       24 (bytes)\n  0x0000000000000005 (STRTAB)       0x838\n  0x000000000000000a (STRSZ)        1451 (bytes)\n  0x000000006ffffef5 (GNU_HASH)     0x818\n  0x000000000000001a (FINI_ARRAY)   0xaa28\n  0x000000000000001c (FINI_ARRAYSZ) 16 (bytes)\n  0x000000006ffffff0 (VERSYM)       0x788\n  0x000000006ffffffe (VERNEED)      0x7e8\n  0x000000006fffffff (VERNEEDNUM)   1\n  0x0000000000000000 (NULL)         0x0\n"
+    }
+  ]
+}

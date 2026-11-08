@@ -1,0 +1,3405 @@
+{
+  "schema": "hepta.qairt-core-build-inputs.v1",
+  "phone_accessed": false,
+  "compiler_invoked": false,
+  "qairt_commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+  "processor_commit": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+  "sdk_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "files": [
+    {
+      "input": "qairt",
+      "path": "CMakeLists.txt",
+      "git_blob": "89e4e256887eac74540b43cce0bfccc63f9a8127",
+      "bytes": 18110,
+      "sha256": "b33192d8d430913e2c4ae4ef36b37301c3d589da3648224d8cbf976157c5c13a"
+    },
+    {
+      "input": "qairt",
+      "path": "LICENSE.txt",
+      "git_blob": "b83d6b9f3bf4bf2b3a764d6c42c49369c553d185",
+      "bytes": 1497,
+      "sha256": "b037d8583105b909a8eb6715b28d4f25f205bc889bb047e5680471ce945dcd30"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/geniex_export.h",
+      "git_blob": "27a2a478982d7fd5a253a99381e3dd50a73a4b45",
+      "bytes": 770,
+      "sha256": "c7e69ab326e635b978e9c1b2f18fe1954c3ff830e803505e333fdb48f64c553e"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/graph.h",
+      "git_blob": "3510636f85b080ad7c4bbfb6029226e18d7a9e42",
+      "bytes": 4895,
+      "sha256": "185226f4c8ed5e22500926e86b7026399a2788b8c3a5e1b7da0d2701cf05e6f4"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/eagle_model.h",
+      "git_blob": "9d90242032af3321a5541e30ad63cb91f1bd0a4c",
+      "bytes": 8063,
+      "sha256": "ec0b091db1051cce96b0ec3c85512fe6eef82ca65733b42239276eec6836776f"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/eagle_types.h",
+      "git_blob": "411821a663821980c89b32fa8dc0ffae837d63e2",
+      "bytes": 4806,
+      "sha256": "5a3c0ac7130860785e45952e695f67f5f0f89a1ebabaa6573db396a75a4c501c"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/input_provider.h",
+      "git_blob": "91c54426b329925a2f508849438ade03326f84cf",
+      "bytes": 12170,
+      "sha256": "4b909c1595f0425697d68d4658d0171163d653ab1260f9ecceff83ca5cf8814f"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/kv_eviction.h",
+      "git_blob": "ec69c2b42dfeb34a052c1c471563217f2a5da6b4",
+      "bytes": 2334,
+      "sha256": "61d720603418b8ab219b20f09f0908a9761c950a5adac9ee2e54bba29e28936e"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/kv_layout.h",
+      "git_blob": "cee14e0239c8859645cc0d7c9cfe80e8ac17ada0",
+      "bytes": 7586,
+      "sha256": "ca473e37736a4be363fae2a56881b588fb0cb0d8e5f29164c93af61c5962165c"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/llm_model.h",
+      "git_blob": "1deb2bc925d4d4828e7dca5a6c86bc14ea23577f",
+      "bytes": 23363,
+      "sha256": "660d23e70e47577474ad0531fe9a181ea03032daa9b33958b9e114c18e717923"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/llm_spec_loader.h",
+      "git_blob": "d733ee8ce885636428de85ad234c2cb7c2379f32",
+      "bytes": 11667,
+      "sha256": "0a140e8b1f6ec2f0d85776cb7670337b4de43f100ddb9555432b35313ad2bd49"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/llm_types.h",
+      "git_blob": "39e5119cafd88044acc5a07bbdba35d7e315b845",
+      "bytes": 6184,
+      "sha256": "e99e0f44dd5eedb8a8ff836dc40d9ec06ea1689e553e0189c3167352370652fb"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/llm_utils.h",
+      "git_blob": "cc00bad0e415db36c2473eaabe49e8ab0f4a16b4",
+      "bytes": 6744,
+      "sha256": "caa964a97ed0833caa552480ade44944377ca79b57b4540a22fe150980f4db75"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/position_encoder.h",
+      "git_blob": "e1554de3a9a562fae8ed59631b4b13444ef4c8ab",
+      "bytes": 1284,
+      "sha256": "22a85a4ed151cda6f4887f3dde6d12947bb6502c1eb494836cd7a43635b45841"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/quantized_lut.h",
+      "git_blob": "25d05e2cbb8cb1792f485a1853a9483fff902210",
+      "bytes": 2762,
+      "sha256": "fc9d3bc6bb044e80db4d38bd579783c4c2b6012e06ce711420540fa678b87485"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/sampler_utils.h",
+      "git_blob": "f9fdd4d345590e438cecef7fe941ba4db5f07161",
+      "bytes": 2492,
+      "sha256": "1ef79f1e37ee06b362ff244d0ad0c214bb36673be646bd7c45c896b8606bb470"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/speculative_llm_model.h",
+      "git_blob": "01c434fe2acffcb7c1887f6c7d87718a2fd32c0b",
+      "bytes": 8439,
+      "sha256": "abb89565c95f0987495319a9da17e866957c036e7bb5902123f1c2495020a85b"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/token_generator.h",
+      "git_blob": "40a63e1418c8ebad08f4da68c443f6ffa8a83228",
+      "bytes": 2043,
+      "sha256": "acfe3d66bffd402c29e59ddb70de6637b1278ddc5ddec6b4cbafbc248340e8e1"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/llm/xtensor_utils.h",
+      "git_blob": "8a94d7a61ea7de885ef9ed5bbd07fa363dcd6522",
+      "bytes": 3357,
+      "sha256": "5e7de0b5cb1ec877ee706491c98e73ff5bd2b8e9115782302b77306f128ede32"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/logging.h",
+      "git_blob": "876c2f1fc26358680afec785735316a8bc2c35df",
+      "bytes": 3934,
+      "sha256": "1e75413eaa0713b4b33835a3587990bc802794ca521fd79de2027335da5baa52"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/model.h",
+      "git_blob": "89a5216788873033cd4faf6f3fd4bb2978c6539d",
+      "bytes": 2266,
+      "sha256": "49caaefd8e6746723388f740ee6916856558e35d4f35e6a2ad8fb1ff568f6815"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/pipeline/auto_llm.h",
+      "git_blob": "952649ebc79c445f643a7ca7b17c1359f7825db7",
+      "bytes": 2126,
+      "sha256": "1be974444efa23d484b9e29082124659ac881bfe0fed0aa44a2907d6f26f05f8"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/pipeline/llm_pipeline.h",
+      "git_blob": "06b88f20891334f38654e8b2c3f92755314d2b09",
+      "bytes": 6048,
+      "sha256": "dcf695d610bf7db58c6e074c6599d992db0d74b2f57648d0d46a87c0b5787f0f"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/pipeline/vlm_pipeline.h",
+      "git_blob": "fa6ca792e36540f9fe80e176d33dbe43bb67f71b",
+      "bytes": 3567,
+      "sha256": "962a44c21d10f770d40576cbe23cf35f34205ecbe7e1ba9b320ac8a3fb5466d7"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/runtime.h",
+      "git_blob": "7ccd475ae704dde93df96414a327fb4d3834acfb",
+      "bytes": 19097,
+      "sha256": "dc1ba77e7dbefc63edbb26ca1e4b6389daec0aaaf1286468303b823085f55804"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/threadpool.h",
+      "git_blob": "78bf7e726c5c4cf57db4e6688535b7fdf1a34d12",
+      "bytes": 3077,
+      "sha256": "c1dbfa68479c86af6042503725d9dd8e20597aa566f5b2ad41efb81ed017d07f"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/types.h",
+      "git_blob": "afe582f1b45a26317ac525b044387fbf894348a5",
+      "bytes": 11105,
+      "sha256": "9c6d5308b3fe90437ef74465c421b18afe8e0de6d66eb920856ebc067555d1dc"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/utils.h",
+      "git_blob": "5310bacd2c9fc60b48587441f07d098cb0f21fe9",
+      "bytes": 6146,
+      "sha256": "f3fc0731563b90a5125b52de9ef6544fba9df6604a0cf527e1f5ede62e236c56"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/version.h",
+      "git_blob": "1d9be7fb2d68ffe60004be5c7d3d7e388060cca6",
+      "bytes": 358,
+      "sha256": "e220cfa6c3ac9ce418ca525a8d64bd20655b030366fba1f32e0bc2902ee91d36"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/vlm/vision_encoder.h",
+      "git_blob": "3aa0788c6ee19de7dd9e4eb5f8a80d1fab77debb",
+      "bytes": 1022,
+      "sha256": "55e52398a41309424b78236579df7ca79aca0358a91e0d42d0175fd3a3ed3138"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/vlm/vit_utils.h",
+      "git_blob": "f5f1ebce7d126db197f3343c310469fd00d247f8",
+      "bytes": 2566,
+      "sha256": "17c45112018253e001810cd821b191de299720342a52570fa4b4d3d53e5955bb"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/vlm/vlm_input_provider.h",
+      "git_blob": "73dbff7d88aab5d1e1ccc03d7cb7ff83af53b505",
+      "bytes": 8292,
+      "sha256": "ea5dd34a22e2bce7503fd3a7a315f9c2e0bd90674a182efdb5c021e70fc2429c"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/vlm/vlm_model.h",
+      "git_blob": "98530e51ef2215896faf00cc79daf67dca0ccd13",
+      "bytes": 3339,
+      "sha256": "5cd7019a57cf82b4fea4da32c6b4dcfb495da7f4b641ea81d645bfcb42d1ca5d"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/vlm/vlm_types.h",
+      "git_blob": "49ce8c4746b9a5a087cccb9d0d255370d2511796",
+      "bytes": 380,
+      "sha256": "0d15654d70ea9152c24f36b0fae457e82aff92b1199148ed3e321addb7e55292"
+    },
+    {
+      "input": "qairt",
+      "path": "core/include/vlm/vlm_utils.h",
+      "git_blob": "45e33b70d3c2940aeb9fa9862dfe7a1fa29d9969",
+      "bytes": 1407,
+      "sha256": "770b79992fa1f69785d9207dcbaddf96508b5fdf62015cce00f1c15a42bd2163"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/cdsprpc_alias.cpp",
+      "git_blob": "2828adce45e2af2be1fbfd2b274562e4d69e1b63",
+      "bytes": 359,
+      "sha256": "10de920d3c6304e27b0c3dec9e8305991e7efc6c9d06f284471e1de3cbdbb80e"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/graph.cpp",
+      "git_blob": "1f0bcf1b5e1c6651366cffd905bb394a3a9c21b7",
+      "bytes": 21337,
+      "sha256": "391d37d679136b0176002453a8fa7284015261a81e21bd446e157f818caa369b"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/eagle_model.cpp",
+      "git_blob": "0b562ee9a8692b6fddcbe3b576bb4a3e740fb214",
+      "bytes": 44490,
+      "sha256": "46c6f486e33bca792c67e1d9a554d510ff4e6d8c1e97dee1d5cc768103179aa8"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/eagle_model_init.cpp",
+      "git_blob": "22503aa7912aa27ac198f77f6df59cbb9c12c1c8",
+      "bytes": 7047,
+      "sha256": "748e84def2be0d477aad9440589863b8d7a192749a38c89ae92107e7f3a11fb0"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/input_provider.cpp",
+      "git_blob": "28b32ab8df2be5e4fcfa591797ab14bc135ae1d3",
+      "bytes": 18576,
+      "sha256": "8fde762d7425128bc488b356a10b3a4f8bea9c1ffd1271e74d9bfd5194598633"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/kv_eviction.cpp",
+      "git_blob": "354ff71c8f5192c67b80b3bdd237d542dddcaeb5",
+      "bytes": 3368,
+      "sha256": "7adbd4799241b2fd26e00304429a1ba3e48ad9b18196d3c7fba93aeff73de292"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/kv_layout.cpp",
+      "git_blob": "bcd696b937c9ecbe8766447414bd13fb4bf6873f",
+      "bytes": 23953,
+      "sha256": "1b67dcf80f26b104f6c53431a1ccd9bdf46f9282ed590bfb4dec0ec22edfe69c"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/llm_model.cpp",
+      "git_blob": "0cf276786431f9190b90c599bd57a893caebfae0",
+      "bytes": 80109,
+      "sha256": "d164374f843ab3918134e1f7f0e6b1e436f212ba2e574dcc1be03ebf074a6eb8"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/llm_spec_loader.cpp",
+      "git_blob": "7ef34800bd0369e52b37e424e916131660462ce0",
+      "bytes": 39177,
+      "sha256": "88615f9cc9c9703eb1f25294dfb06905b31bc86fd8817530b4304c872563e134"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/llm_utils.cpp",
+      "git_blob": "5d06b2ea63d921be05a44bfb45fe4dd1cff14062",
+      "bytes": 13527,
+      "sha256": "bb08162f8dc86892a3ed0fbcd2963747b2e8e7f969ce7ffc6649394a303dd280"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/position_encoder.cpp",
+      "git_blob": "9555080d584744fbfee068c3f0e0d098dade3754",
+      "bytes": 2132,
+      "sha256": "888e9e3bc1dd540d09120c3e2f4e616424aa60622599d0e0925e6597680b2722"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/quantized_lut.cpp",
+      "git_blob": "f3700fdc683a187bc9d4675c50bca2a39547ff68",
+      "bytes": 6030,
+      "sha256": "637302cd7bea29b6b0fee78c2a9c2e06aaebb9c410377356037a8f9efca22751"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/speculative_llm_model.cpp",
+      "git_blob": "f043078368f87050bfa86060fcb2350fdf58b74d",
+      "bytes": 12423,
+      "sha256": "fd6f8e5369bb5591399b8d2654ae4b13c2da942ef820d3120e3350371d301b94"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/llm/xtensor_utils.cpp",
+      "git_blob": "f3fd2f115e470923f2c3f1b7e76632ead9e96740",
+      "bytes": 11520,
+      "sha256": "b26a6f319e4ce53228a606febe991ad9bd81bb33b76a15066c4ea1505ca2ef8e"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/logging.cpp",
+      "git_blob": "e115262b6734cd6869e707fa63aface03281f47d",
+      "bytes": 1499,
+      "sha256": "271e95aa05184f7bd618c56d35d646afcc5bc9018270390e7d093baee951f890"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/model.cpp",
+      "git_blob": "804616606171caa2d8bd1bbafd491e12a79dc9f0",
+      "bytes": 1812,
+      "sha256": "9788ba5bde08c5ae0255965cd7e6f6bb3437191fd81f07638f7d9f683c80bd65"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/model_init.cpp",
+      "git_blob": "de3efb6f5e92f175a20d32153f257827ec946599",
+      "bytes": 8169,
+      "sha256": "0f77ce97416fd1247fe1e3c0c375aed7898e216d323cc80a207b81e7c87995b8"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/pipeline/llm_pipeline.cpp",
+      "git_blob": "80cd2e044be2130129be82a9dac61bae159d4cba",
+      "bytes": 14171,
+      "sha256": "514563f564306afcb7e8719faccc34519bb26fd5ad52da4ebc45ddbd09668267"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/pipeline/vlm_pipeline.cpp",
+      "git_blob": "2c9a2fa61d2eb274f4489351446863ca498d0ac5",
+      "bytes": 8880,
+      "sha256": "5521c482190254af65e3070d1413d3d919a8e6b8f80bf3ddb7125d8ef676807d"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/runtime.cpp",
+      "git_blob": "29e0e313983c09f476e6fc6149c1aceadb4a4d0a",
+      "bytes": 2188,
+      "sha256": "f056b0f6ef99cc2f7c52568b86414aef98911a93966110f49e7562ea38b117a7"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/threadpool.cpp",
+      "git_blob": "408bc900ac0ae1d5b5128c39241140ae49793430",
+      "bytes": 4397,
+      "sha256": "8ac871b55dd2acd2bfbd9809a68c01969d9c671af0ee4d125f93cd0287814c5b"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/utils.cpp",
+      "git_blob": "65de15aa642129281e900b812f0026462b7207e6",
+      "bytes": 4271,
+      "sha256": "caf37208769e892b93cea1f1d996b26ab5bef50d524a335ce319f8c142ca0549"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/vlm/vision_encoder.cpp",
+      "git_blob": "1f11928fc22d58474f6e7cc34eb2a894764fe802",
+      "bytes": 353,
+      "sha256": "90a008c38f2d0086423c965717e9497471f5d5d9bbd76757bf29a95ed2130605"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/vlm/vit_utils.cpp",
+      "git_blob": "0db0ef77108467acbb7d4c7fa57a6336ad916db9",
+      "bytes": 8863,
+      "sha256": "62d3789e57d4a50d6fe98885febf6fb3ba26325aac7be54d6184f74fac7cb188"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/vlm/vlm_input_provider.cpp",
+      "git_blob": "17974979b62129d60831d49e4b387ba926762c3c",
+      "bytes": 15617,
+      "sha256": "a447c5cfc1ef89f4b238e07df025714b6149649ef5bcb6334718e1ff0ca15f18"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/vlm/vlm_model.cpp",
+      "git_blob": "aecc22f859301bf00208864a7e582d24da21fcad",
+      "bytes": 2830,
+      "sha256": "26d2da608b46a5ea29b7508f3b1f51beeccae107fcce054f54e0eaaa81185cfa"
+    },
+    {
+      "input": "qairt",
+      "path": "core/src/vlm/vlm_utils.cpp",
+      "git_blob": "49850fd30167b50794f1d073a6a87fc85c33bd65",
+      "bytes": 2983,
+      "sha256": "6e3b3362eefa3108ffefbab7284ac6d51527ec68b40fc89a502726c530587132"
+    },
+    {
+      "input": "qairt",
+      "path": "models/dispatch.h",
+      "git_blob": "5ff03a2044cc447189e7a308ad5884b6d3f4fa9b",
+      "bytes": 6349,
+      "sha256": "695158631fabbc3c95b3b92985a12b97e96882c6fb4bae0c7efddafe3d4b24bd"
+    },
+    {
+      "input": "qairt",
+      "path": "models/falcon3/CMakeLists.txt",
+      "git_blob": "aefe2183c6056484a89fa87eb041b691c1fee89a",
+      "bytes": 330,
+      "sha256": "d7f67491c5b7f5a527ddf9acd2cc8fed1b98e1c96a54357613da27f636a56d0c"
+    },
+    {
+      "input": "qairt",
+      "path": "models/falcon3/falcon3_7b_example.cpp",
+      "git_blob": "43b6840ea700ecc2b8f9c1ab0f2ad6a571fc9a70",
+      "bytes": 6892,
+      "sha256": "0517f6aea7e230ac64d4140813a1253eff793150d5c70c388a9068b980a84110"
+    },
+    {
+      "input": "qairt",
+      "path": "models/gemma4/CMakeLists.txt",
+      "git_blob": "7c96d8d2fe4b600cebe611e6f2f79c02b3ddb2d4",
+      "bytes": 1532,
+      "sha256": "8bff6d53001e88601fe08b86af924740c8ef136f082f4856e20b26cd8ce05c40"
+    },
+    {
+      "input": "qairt",
+      "path": "models/gemma4/README.md",
+      "git_blob": "f9fccfe50162ec9d6cebdf2eeb30d876eb143d83",
+      "bytes": 16038,
+      "sha256": "c4ba5ddb29694d67eb4bf26654d684b379e93efb72e09ecc7b4a80e922595be7"
+    },
+    {
+      "input": "qairt",
+      "path": "models/gemma4/gemma4.cpp",
+      "git_blob": "572336d592f7affed7c5085b3e8e2471e7c2343f",
+      "bytes": 22811,
+      "sha256": "3040a8245879e5b7fea7e4e6bf137bd914a5bc32f389a5a5b2d0bf9f2b5a3de1"
+    },
+    {
+      "input": "qairt",
+      "path": "models/gemma4/gemma4.h",
+      "git_blob": "59b774e5ed4f95adb60fd9da3a16d4ce7b35ce5b",
+      "bytes": 11107,
+      "sha256": "c8ad2ebc24af49b431c6b6d6ea22485de23f82f51cac4fdfe62520d6b122a41c"
+    },
+    {
+      "input": "qairt",
+      "path": "models/gemma4/gemma4_example.cpp",
+      "git_blob": "ac01c52b4f192df6fb7899b9a49ec7920939725a",
+      "bytes": 15020,
+      "sha256": "56d2e5d1d96be22f2403baffd4a40d0e55ab58a99e1368bab1874f362ea52f94"
+    },
+    {
+      "input": "qairt",
+      "path": "models/intern3_5_vl/CMakeLists.txt",
+      "git_blob": "4f7002814391c254ee3a2e7f3910a6c5d24cbfab",
+      "bytes": 529,
+      "sha256": "c14ec5d548ee9f979c618a6e80b40ef306970e59a83d73ed90c3f5dff2678d80"
+    },
+    {
+      "input": "qairt",
+      "path": "models/intern3_5_vl/intern3_5_vl.cpp",
+      "git_blob": "459b28a85a3e825842dc753f811734edec0fe3eb",
+      "bytes": 5696,
+      "sha256": "7765473b95d32b20741f3d49f8f4d829d3674bc1f9589cbc508cf9729e7093fd"
+    },
+    {
+      "input": "qairt",
+      "path": "models/intern3_5_vl/intern3_5_vl.h",
+      "git_blob": "87ef861a29fa8a2b64d5cfdf414f2ebec854c4fa",
+      "bytes": 5036,
+      "sha256": "ac0ceaa0f633d4d49ce6b5d50a34a8481992212796f0668d55ce0f16b8424705"
+    },
+    {
+      "input": "qairt",
+      "path": "models/intern3_5_vl/intern3_5_vl_2b_pipeline_example.cpp",
+      "git_blob": "8d1b11fdf0765dd8a249697b95d764023e4723d9",
+      "bytes": 8114,
+      "sha256": "7b6017909ffd11ec9f12b5b16531a48c37cb9d71131b2145a6092d20a89f549b"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/CMakeLists.txt",
+      "git_blob": "fedc7b9cae2504c5c8a55b604f179cda8364f82d",
+      "bytes": 729,
+      "sha256": "52ffe8fbe1572a80be733be0c465cb92c7bcf5eb0d77b320f67e35009ba569ba"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/llama3_1_8b_example.cpp",
+      "git_blob": "e67af5aaa6e006262696d19939dc42e882bcbd7c",
+      "bytes": 7076,
+      "sha256": "5656aa3d86b327d32d246133fccc57c967ef56f3e2807fef2b24673af6ddec3c"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/llama3_2_1b_example.cpp",
+      "git_blob": "6c91ed28935d66aca0eb33bb5fc3417518b77d46",
+      "bytes": 6944,
+      "sha256": "f92dff98e0b6da63cb42c3f745017708f71ded9930e5062c8acc2252dd3afe83"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/llama3_2_3b_example.cpp",
+      "git_blob": "f0f7ef4f4ccaa15e9605f51b43d613fd2da5bbd8",
+      "bytes": 6953,
+      "sha256": "4af53f3f7757cd76f4bae360edee737bbd525831b1bc13bc33cf21822b208b02"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/llama_v3_8b_instruct_example.cpp",
+      "git_blob": "510329f4c9dd435f52bc320f47472698966dfa60",
+      "bytes": 7325,
+      "sha256": "16e5b4edd5b85d9f1fda5847cb6228fb4fc7f7e22ef5e8bf5492f82c7bb5ee3c"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/llama_v3_elyza_jp_8b_example.cpp",
+      "git_blob": "163cb6e6424fa9d2004f8f98661aa1a2b5c6c57b",
+      "bytes": 7325,
+      "sha256": "f5e97503331e7e1e0d74c8bdb6c9a804ef2d7419d6faed1666127ff1cc86d1a9"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/llama_v3_taide_8b_chat_example.cpp",
+      "git_blob": "82fcb90f6c78117a48ab3a34e3ce4dc6ec43fbf4",
+      "bytes": 7337,
+      "sha256": "4c4fafcd453ebe5374c62f3b4ebdfbdeedaf227017c66f5c6c92515c362eb436"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3/sea_lion_8b_example.cpp",
+      "git_blob": "0701a15018082ff63cf89122f874353a293cf5dc",
+      "bytes": 7193,
+      "sha256": "c0df56646fa4e8ec63f8f95f3f74b226f625b2ed75a0ce8578cca0a19ef77f47"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3_2_ssd/CMakeLists.txt",
+      "git_blob": "04fb053ce79d640f81dda3483e5df4e0604b4543",
+      "bytes": 432,
+      "sha256": "3199de9de48f8cce55967e69b42416dca0b5677a128871f18db93c9077dc0a09"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3_2_ssd/README.md",
+      "git_blob": "c9efe7bbe6e86982760af9f4cdf06d2a60a4bed4",
+      "bytes": 3608,
+      "sha256": "6ef3de24c07371ca9df4aaa30ba127e2008c28844991a488e2af89e3f15b4d79"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3_2_ssd/llama3_2_ssd.h",
+      "git_blob": "1adcd5c5f08fa0b6aacbe4cb9ba9e403401167c0",
+      "bytes": 2182,
+      "sha256": "37dd2446864b8b318f050a23e361ee2cb60073876a020c884c62968d8746bf35"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3_2_ssd/llama3_2_ssd_example.cpp",
+      "git_blob": "db7ed228a5f6f16c48776981c362cc7149e25899",
+      "bytes": 8219,
+      "sha256": "95c252fb4395bb4310267f0b033c71f5b228bb096c4137069e3f387dcf564488"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3_2_ssd/ssd_model.cpp",
+      "git_blob": "eb2964369f594d550f0a733edaef789c6df601a0",
+      "bytes": 30893,
+      "sha256": "5b584ebeb6284eb9b1bc7fa39396594c2d6207abf8f040460edb76bff6e94b14"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3_2_ssd/ssd_model.h",
+      "git_blob": "62d8d9d6855d42e0b3d4ae223e3b89a84384f207",
+      "bytes": 5907,
+      "sha256": "41899f3aa741c1417cba7507a1c467df7d3aa93dfe42b06927ae16d8d2e62ed0"
+    },
+    {
+      "input": "qairt",
+      "path": "models/llama3_2_ssd/ssd_types.h",
+      "git_blob": "030252ba3a1f71a178678117ea0020e08e019d39",
+      "bytes": 1636,
+      "sha256": "0225b6fd0b5fdd27393705793fc4375cf816264b7e4b2e45759c4e67ca8623c2"
+    },
+    {
+      "input": "qairt",
+      "path": "models/phi3_5/CMakeLists.txt",
+      "git_blob": "859cad6e3b70dc19e3893102266ddc25f4bf08b4",
+      "bytes": 426,
+      "sha256": "b9e775a81ecb4dd1ed34eb39758d1a4dba93468976a916cd986610a3b08cd8a6"
+    },
+    {
+      "input": "qairt",
+      "path": "models/phi3_5/phi3_5_mini_instruct_example.cpp",
+      "git_blob": "fbb429c4af53dc3ecf511773297e72777de41787",
+      "bytes": 6757,
+      "sha256": "f3ee0fbecf84cb72caa4b75573149978143587537ce955e6bc0b640eabd58879"
+    },
+    {
+      "input": "qairt",
+      "path": "models/phi4/CMakeLists.txt",
+      "git_blob": "7af4a62df8853176e8bb57fd80e0756a2e718ebd",
+      "bytes": 424,
+      "sha256": "f0f1e4baac61b8e2872bedacf3759086797ca828d3f8f4c6743ca2ea35da44e4"
+    },
+    {
+      "input": "qairt",
+      "path": "models/phi4/phi4_mini_instruct_example.cpp",
+      "git_blob": "7ad7464491379fca77e423c0cc24a6a6d1efe427",
+      "bytes": 9356,
+      "sha256": "f8d9c67383474c2db2a68eac55e67d409d459d9f0abddfb7aed836427818fcc6"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5/CMakeLists.txt",
+      "git_blob": "daa7d7746902221dbf7d0f3ca8d3597eeb75afb0",
+      "bytes": 366,
+      "sha256": "c7e379b850b4af605adf618e8b4eaf770b56616a2e307f0640e16d2ce7f42d3f"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5/qwen2_5_7b_instruct_example.cpp",
+      "git_blob": "12f35e1f4473e6ce1c7cbbdbec98a137e315b9e9",
+      "bytes": 7223,
+      "sha256": "d3c6611557b69c1b5124e932d298311bb32324a4e309793a27ccd33ea03dfe64"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5_vl/CMakeLists.txt",
+      "git_blob": "25578829915d4162921a99fda6eb0757e087dd4d",
+      "bytes": 850,
+      "sha256": "ab3f7fa60a34df42da59dc4f97a83013d669efe865c4ea06aee6ab4b0f09afa9"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5_vl/README.md",
+      "git_blob": "0b753ef1fda79f6e99cdd29a7a74a639b9aeab90",
+      "bytes": 1297,
+      "sha256": "5d36bccb2845197ec0bfd39222531a69eb88bd36082ded6a2d4fee0f7a7d4ef3"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5_vl/qwen2_5_vl.cpp",
+      "git_blob": "de73b368ce54d74f34f6bcde353df4d1c5a7961c",
+      "bytes": 9387,
+      "sha256": "42d34b31c94216a04feec41ce9e3cdc95c3a530bdf55cbb00cc1d0e2f2978251"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5_vl/qwen2_5_vl.h",
+      "git_blob": "16b1df1e649afd924fe3c024675b2a8cae82bf5f",
+      "bytes": 4759,
+      "sha256": "dd5b538727217f9652b33f151828f45665351b6b9f8b41cfa581cc227617a8d0"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5_vl/qwen2_5_vl_7b_example.cpp",
+      "git_blob": "d1bbd39e4ac9484bb371ec31f9565d5be0fb10d3",
+      "bytes": 11619,
+      "sha256": "c9702c69431050120e81dec6184e24d7250f28e59c4b7dc52a2a38aa20b6b597"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen2_5_vl/qwen2_5_vl_7b_pipeline_example.cpp",
+      "git_blob": "6e1c66593c0b43396334999702e958aae39bd18c",
+      "bytes": 7435,
+      "sha256": "9261a2f8fe1f08e31821bd92b11c2efa4ccc7dedeb30e329f4004e6a8cad7a34"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3/CMakeLists.txt",
+      "git_blob": "4784aa2b03c412ea2e6a395f233dcb1bda87a094",
+      "bytes": 930,
+      "sha256": "1fd08c1fe37d57c67e7735e3301ffe16d3205529a8fd1a86dda387d1e9429054"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3/qwen3_1_7b_example.cpp",
+      "git_blob": "28ec1d7295d568fc5fd4522843e3c96f0e04243b",
+      "bytes": 5567,
+      "sha256": "5b16b15cbc121858fc81aa61f56d62374bd2bdbae570451eb469dfa66e515d94"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3/qwen3_4b_example.cpp",
+      "git_blob": "9c821fff8cdc21ebc4b79f24110b9839d9fb1977",
+      "bytes": 6204,
+      "sha256": "3aef4b4e1418d576d05945a7eaddb0e392119cb9185ec0bbae0459b9bf254113"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3/qwen3_4b_instruct_2507_example.cpp",
+      "git_blob": "03283c2296123850f9cfaa18f94692fe876d6467",
+      "bytes": 6592,
+      "sha256": "f713b07a4f6954a56ffc8568e8bf9e1b6d9d998c616973925a8469d41fc056c5"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3/qwen3_4b_xtensor_example.cpp",
+      "git_blob": "896e73af0a9f1f3f72f17cbf19b72b76b31eaaef",
+      "bytes": 20550,
+      "sha256": "828117ee44d1777cf90e0bde9dc27a95ddae696b9859d2943259785b858dffcc"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3/qwen3_8b_example.cpp",
+      "git_blob": "6ab6c7572d05c3d10370e7b751b0ff4ffcf955b1",
+      "bytes": 5625,
+      "sha256": "0e767cfd2f631515f33fb98faefcc18f068f8f4bbfda69c9156366423fd52770"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_eaglet/CMakeLists.txt",
+      "git_blob": "8b657f35d381876c4c5027290b350c7952a332a8",
+      "bytes": 476,
+      "sha256": "e9fa104b156d96c18bf9bcd50fec48071043b2dfffa7af120e0cca04dc18a262"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_eaglet/eaglet_example.cpp",
+      "git_blob": "e1d897f5e2213d75197e3452f7d83523467c067c",
+      "bytes": 16197,
+      "sha256": "a3910babd6e726b7195e42c6b133e57a5a5e7dee941851cdc7ede87741f33471"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_eaglet/qwen3_eaglet.h",
+      "git_blob": "45421c4b9e50995ee956fa2a84760cf6c5e59444",
+      "bytes": 10617,
+      "sha256": "bcd54e276fa5db91cd18a4b2c6016ba8cc42180885f7c3f1d7e912be8c691b59"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_vl/CMakeLists.txt",
+      "git_blob": "13c64e6fdb2adc5d2158cb03462b874175da29f0",
+      "bytes": 1230,
+      "sha256": "20b842bee1b08f246bec3069376d5b095a6a226a76bacd0f527ff74440064212"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_vl/qwen3_vl.cpp",
+      "git_blob": "45f299802a4e4d60a5859a3fe6a05afb29049ff4",
+      "bytes": 12749,
+      "sha256": "b4c8fa6c0439f07176d4db6dcc9ac6f2c9ac5351be0d9d110e75c65475e86a70"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_vl/qwen3_vl.h",
+      "git_blob": "bbac23136d31f2c235bcbd976d9ad986cc234582",
+      "bytes": 8601,
+      "sha256": "e527b1161574897aea660a10d70d37a4d618f143c79416f614399325bdaa2950"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_vl/qwen3_vl_4b_example.cpp",
+      "git_blob": "7e4f06833068915496e0086fb26d89cad10ea6cb",
+      "bytes": 12179,
+      "sha256": "0d6b98ce165bfde404830656881444df70c23f0051f6cbd26b7c9f73a469ba1e"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_vl/qwen3_vl_4b_pipeline_example.cpp",
+      "git_blob": "87a0a1311848eb51571297a809564bb6ec0629ea",
+      "bytes": 7387,
+      "sha256": "afdfffac4d3b219198b0f60b7c5734872bc452c9aec7d5f54d1d738551b4a227"
+    },
+    {
+      "input": "qairt",
+      "path": "models/qwen3_vl/qwen3_vl_8b_pipeline_example.cpp",
+      "git_blob": "5d3c47cd50cae3ff15a1b45059de92e385ebc6cb",
+      "bytes": 7485,
+      "sha256": "2020fb08b8b3585adb4211a214f456adb3c5850f1d003dd81bda8adf3143f3c9"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/.clang-format",
+      "git_blob": "a931f4e1868624907d1282353732180822aad767",
+      "bytes": 260,
+      "sha256": "b02b3ad15053ac31fe2cd42f1bb328cd1e8a759349cb599f7ebae933cdf476b2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/README.md",
+      "git_blob": "2981955b378cf10e47979402dba194dd814e05af",
+      "bytes": 4185,
+      "sha256": "a6967bfd8ec3ad6dd7fc2b8068edaf7cc265bb33722fdcd25b075476fe5a9b0b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpCommon.h",
+      "git_blob": "a487ab3104db5eb405b1ee1e02bf4cbe66a4d207",
+      "bytes": 3888,
+      "sha256": "857c7c3245b870b14f91d1394016553b8ed946cdbef70a3d74b8485e05c85cfd"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpContext.h",
+      "git_blob": "212b5a757adb19d7f289efdfef4aba0b9b2475a8",
+      "bytes": 24240,
+      "sha256": "a190c7e124c904a44947e3fcdd71a096f0ef9585d784aa43e247d102c58aade9"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpDevice.h",
+      "git_blob": "e6ec95166117f1c9688235d4af6aa94b2b781479",
+      "bytes": 4104,
+      "sha256": "2ce36fc976f5aae7daf9c5696b61cf4748030f120514c9aefe0b531f23b903ef"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpDeviceConfigShared.h",
+      "git_blob": "f376cbeaa3f16047db6f6c496b3da99189dc0db8",
+      "bytes": 2976,
+      "sha256": "326deddfea2ac4bd9d19d8ca2570257f91d529fe33d93db3b70650130b790055"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpGraph.h",
+      "git_blob": "3427ada6662f1b336cef8b09f7dde1bb6620c497",
+      "bytes": 19439,
+      "sha256": "5e79f754ef06074aa2e60290cc875b8ba381fb501ad90b9f88594370c32dd67a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpMem.h",
+      "git_blob": "f6997f8fbdaa88e482625bc7906505c78162e159",
+      "bytes": 2572,
+      "sha256": "5a7c54ea0451cc78de9ccc71df22f492544251f5398bf2f94678f4eec9a0d0be"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpPerfInfrastructure.h",
+      "git_blob": "a085df4cb76a3f8ae7728d9f9b387aa87639b8c1",
+      "bytes": 34511,
+      "sha256": "c0b3746f9979f0146b56c20df29125712ce398264a4933c2ec68e4193da45fb7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpProfile.h",
+      "git_blob": "3aa7ffcffc57bc4f69a4d5ede83073f80fde0488",
+      "bytes": 28168,
+      "sha256": "100f108cb4e39a962b7534d15508de75cbaeda16cfa5199e3b84261da6f21b9f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpProperty.h",
+      "git_blob": "51440061dc611ab4dd9a21d2a7f0a7ab76ee7971",
+      "bytes": 828,
+      "sha256": "766da7f9133a4d7b00ea5b2c40197497f096e830129edff54b50e3b440ab5948"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/QnnHtpSystemContext.h",
+      "git_blob": "76d4d1820a49594932258e1a1b79e5ed8f9518c8",
+      "bytes": 6794,
+      "sha256": "5e57862a69b65f3e8549f89ff1e9350ba0804423a4bdad16b690a13d2d3e461f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/afuncs.h",
+      "git_blob": "6c13e17074d14ff4ad1f06fc5e70e9d01303b805",
+      "bytes": 15083,
+      "sha256": "2040548915092a20ffb6cb8eb2e2b679ccf0d9f950945edb62b8be3ca9e8a004"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/allocator.h",
+      "git_blob": "ca7d0c9836cbc2dc90ee03ea6eef0f6ec0ce4a14",
+      "bytes": 10172,
+      "sha256": "a3b133fb66255efaf59a471ca12fcba3e91f3cc5be8ea0a8a28a74e723196308"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/arg_tup_filter.h",
+      "git_blob": "b58a7a3ca7f8cc06442d91b303effdc3636c3f0b",
+      "bytes": 1698,
+      "sha256": "909bb1662793f4a0088b534d6d4c5dd6a36740b8d6fa8d3c2a7901e1db95e76d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/bake_defs.h",
+      "git_blob": "3787d6e4cb92e2c28844bf5c6272358450fdc520",
+      "bytes": 10465,
+      "sha256": "313a260d780c05c07ec376b7be1b88ebbbf7211e20944ae637bb0e5f7be3538d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/bfloat16.h",
+      "git_blob": "b1263000ac1927cac57638e54e997f982e3e3301",
+      "bytes": 18578,
+      "sha256": "557a47dfbfb783d69ec9eea807f13349d64b2f4b26054dba22abb492d3c32008"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/bit_vector.h",
+      "git_blob": "e5c7e01b32d85f0899d6b611c90279308f1368b2",
+      "bytes": 5735,
+      "sha256": "9fba1ee3953b05dfc01ecedcc912cff157c299f5af41efbfc85f576e4a1db96b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/build_options_pub.h",
+      "git_blob": "0c3c9b2fc1ae1ed5bd7a379816cd6665865a0791",
+      "bytes": 968,
+      "sha256": "33b4748628fa88d97843b7cbfa9e0c2dd7bc41a7b7c0e359d4ffb3b512395e34"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/built_array.h",
+      "git_blob": "4ce37d5b3f1bd0138e189f64a88472839851b884",
+      "bytes": 7395,
+      "sha256": "452b68956a51ef768bd0e90a062a2c3f352e8a697a4f3f3c3b1a69de22e71f08"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/builtin_intrinsics.h",
+      "git_blob": "3e2fb9c1575a868982226a37920f6b66a02f1d08",
+      "bytes": 8202,
+      "sha256": "0ff62c4aae5f603f230e42de70ec4f2b3fbfbbfa3dfa5ce90c5cec92b87e07e6"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/c_tricks.h",
+      "git_blob": "f8d7109ec19a59cc986fa7238c4b619f380ed5d3",
+      "bytes": 483,
+      "sha256": "748716e1595ad4c31112e1ce20a91589318e01eb40bc214a1352c8c88e8c2de2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/cc_pp.h",
+      "git_blob": "8b5b80fed27a95db071b17d0b1623253a26853ce",
+      "bytes": 538,
+      "sha256": "85c16cac8d0586805b3befc8fd9500293752a4a257432f2b2a6dab8e9bb4795e"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/check_hvx.h",
+      "git_blob": "67b394ac82cb308ebb02b3e114f1a245d6e59b11",
+      "bytes": 795,
+      "sha256": "21474132c40536ccd629f6f7683d917cea1d5f6885e33ee683962d0a372a52d3"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/compile_time_string.h",
+      "git_blob": "b2bbfa8d32492307aa309f21bec83b25426683ed",
+      "bytes": 2884,
+      "sha256": "c13fd8d9182995c9b11c9ac9915abb418e04e1e2abc5856f3ab2b535f85f12d2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/conditional_default_deleter.h",
+      "git_blob": "4db8b1623eabc340d0d6f4580a8cb9461b7bc0aa",
+      "bytes": 2530,
+      "sha256": "cfaf3cede76c25858380c81503baedecf7fb9fec7c03eb96ec98f19b5594269d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/const_extent_descriptor.h",
+      "git_blob": "3aa18d4c552201793ef2b35a3b6c985dcf6fd1a4",
+      "bytes": 11500,
+      "sha256": "bc2a88c76c0bd85a0a7e9ad93a90d5b897ec048868bbece607e355d72d4a44e5"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/const_extent_shared.h",
+      "git_blob": "aa6fbc4c20fa5179f4dd5556a7be47d46d22f011",
+      "bytes": 3513,
+      "sha256": "0d0957d3e7e9d310ca5a82b921cad59816075d81cd3119f483595a4ac7ced0be"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/constexpr_util.h",
+      "git_blob": "c5cd7874af687ec2ea4d9f4921ff725ff59879bb",
+      "bytes": 4110,
+      "sha256": "0a23330203d1c115f3cdff6c11a8a39ef5ba70293856dcc01c7ede4cdb5d8ac7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/constraints.h",
+      "git_blob": "345fd2f7bd48477cc92947e71745416d1adfcda6",
+      "bytes": 7279,
+      "sha256": "360b3ab471f7c0eb3a12ab2a6524b6306ee4ae4a91daa141187063c7ba1ad083"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/conversions.h",
+      "git_blob": "a13ce73bfc4224e3817306f2f66440b169450601",
+      "bytes": 21099,
+      "sha256": "6e970b773c59d0eda5919c0f8baa8c1ec414deb86e128f14821b45b1211b9c7d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/cost.h",
+      "git_blob": "d11ce22e12c9e88576c166d57a52bfbf715832b5",
+      "bytes": 2263,
+      "sha256": "a56bb1b3088e5e8013a406afbe449dbb4a3f75f17730ab8883ecd0df238d9cdb"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/cost_funcs.h",
+      "git_blob": "6578cd447135f03c2bbbc9bc7adf8c09f0b1c002",
+      "bytes": 2326,
+      "sha256": "1fa74bd9950426f55ca8f1d93a4a7de4ce9b3482f30ce9cea7ac65818420c259"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/crate.h",
+      "git_blob": "e6fe41ea3fd32b0eadb63816ee71d99c206ce3aa",
+      "bytes": 19008,
+      "sha256": "edb4533390bda4f0b36f761f0d6dc9db09724d74c4a976a78dd89555f0b5c881"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/ctor_hook.h",
+      "git_blob": "3da1f9bb374f3d6401e87a73328763b97db8b39c",
+      "bytes": 3322,
+      "sha256": "eec749f80d08a63a396653edb75e63347f3a9dee5b2204338ffe182603031138"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/dcrate_inlines.h",
+      "git_blob": "323092da04c59f302b7676dd3b6d03d97eb140fc",
+      "bytes": 3070,
+      "sha256": "fd92cc12a02be1a451ce0e241fbf27003b2a74c1d3a395899715f6097f8c8a3d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/define_deserialization_enabled.h",
+      "git_blob": "8be1157541eab201e432731886aff27861176eec",
+      "bytes": 968,
+      "sha256": "81192788009e33bfcade61e16516d3448bcc91fd26e452ac1f4d9f5581202268"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/defopt2qhpi.h",
+      "git_blob": "a709e9ba271f5333645802c267c7a7e4408dab9b",
+      "bytes": 29848,
+      "sha256": "506da2b3f7b12b144343bd53bf95b25adcd90a47aeee156609a665d7bd53c1c7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/deser_concurrent.h",
+      "git_blob": "0802c46bfe143cb172936502d7410e301fe98ffc",
+      "bytes": 13825,
+      "sha256": "12232280d2c8bb5810c8c7e5c236058c8945413cf0fe1baed50321d83880b79b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/deser_concurrent_defs.h",
+      "git_blob": "208fc37d2f1481cee4089c19f8400987579dc919",
+      "bytes": 5064,
+      "sha256": "6b57dc2ef17b8c5d801c5ffab5b24846c442fbb96c610e0f97763106b1555709"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/deserialize_tensors.h",
+      "git_blob": "93ccf20d330f5702cac182b05b86bbbb7e3b983b",
+      "bytes": 2260,
+      "sha256": "4cd4da24f23d59d32d006ce2aa522acd724b1d09846340e22bcc018ab02a382d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/deserializer.h",
+      "git_blob": "4cb276b4039b67ac815b5532294280526c780d41",
+      "bytes": 34259,
+      "sha256": "53a955c64c5699880c5df9ab7bfe89eb277037eca4f01d3014e8683bc20196db"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/dma_id.h",
+      "git_blob": "c91b95f8bddd43505eeb3fb4f17ba46aec65e2f0",
+      "bytes": 1154,
+      "sha256": "16d220d6d765c6fd335be47e341aa1df6056f70841fbec6cde354e627e7972db"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/dsp_queue.h",
+      "git_blob": "8d194f4d9b0d341cdb9505dcace72e0253c240ff",
+      "bytes": 14671,
+      "sha256": "dadfe669893f7fc44916de6dca7febe41f07802e990ecb96dd93c16a6f889235"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/dtype.h",
+      "git_blob": "d0330fd412037c76e3108ef630838757c02c1067",
+      "bytes": 6855,
+      "sha256": "a645aa608e10a6ed8af504eb1279f4a945c69494969d09174f118432f5274e49"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/dtype_enum.h",
+      "git_blob": "2d554c0075eafe4079e086718b409f89da0cccc2",
+      "bytes": 2394,
+      "sha256": "b3b76d43e4e2bcdc3f5845c5f325048a95f853be5fb2c7339397d5728a5c920e"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/entire_defopt.h",
+      "git_blob": "76a893c00ac92aa42d5e6a4dbe886a3ec8cb6157",
+      "bytes": 763,
+      "sha256": "3fb7f4f2cffc0b458a5852ebc160545943f2df86ba1e5ed08676c013e7bf5a3d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/executable.h",
+      "git_blob": "37e4919c03d42940fe6e6da9c76c39c04b0cd0d1",
+      "bytes": 7012,
+      "sha256": "a945fcb09501ce1a2cbfe8fa6d96a97cff5df5e7ef770572c40ee211e7e148a4"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/flags.h",
+      "git_blob": "dca61fb076c1c917cd5fbadaebe651c3ae9b4671",
+      "bytes": 10167,
+      "sha256": "0c3cbbe072f087e244c5b2be12936a5097cbea86ba86582e684132f52660520f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/float16.h",
+      "git_blob": "0a4e3d29c4a0d569730b7e995c91905b8dfe8bee",
+      "bytes": 25892,
+      "sha256": "bb4f395c9956943a1d5dbd14f4b59a34055c72532de1a9d9a1cc8b78b8ff5195"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/forward_classes.h",
+      "git_blob": "60b765031ed5dfb66293ce26d3fe09a5a9434ce4",
+      "bytes": 3725,
+      "sha256": "dc51b243ba38208dfc9a3df5d905617cbaa09a16d24d893de4b501fa236826cc"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/graph_handle_defs.h",
+      "git_blob": "fe219adeb43770c8b0b548c9db6d57d1b2356d7f",
+      "bytes": 4836,
+      "sha256": "948b9020f2c9657302200abdbe5a3014fdd8f6398bca609b00fe83657bff0116"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/graph_handle_dma.h",
+      "git_blob": "de2599b56d78890930cd445f2e35a7cb19d3ec79",
+      "bytes": 3966,
+      "sha256": "2c8ce9e7900ce33ca07055aa03fa0161122b7efbfa8f13eb0ad183fbb9683096"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/graph_handle_input_output.h",
+      "git_blob": "882a794b9d4126d4bc67f5bf4d8d5e8185754cb9",
+      "bytes": 2227,
+      "sha256": "904eb515dd2957444ad5f30aed6fc1301a824b488b4b20ba93de4d0b4f72dfb8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/graph_status.h",
+      "git_blob": "aecb7155bb1bf1e9afb0bcb6660ed4fef2333211",
+      "bytes": 3505,
+      "sha256": "324f60303aa4bf381bf02976da8d60ee5e4844378fb7d51438b807098234b5cf"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/hexagon_nn_types.h",
+      "git_blob": "f483bbfb7a911826f5d5257ff5d2462be32db4f8",
+      "bytes": 4348,
+      "sha256": "2b47a4325ceaddd64b3e3fdae8966d80405f5380b238d475141a0d347c4c225b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/hexnn_fp.h",
+      "git_blob": "fe7f39c8b503b903fbc501b4a23693df66b48e15",
+      "bytes": 10659,
+      "sha256": "a57a8893df0759acca1e0bbb2b358d827a849c912b9c02e60850db57024a5de2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/hvx_mathops.h",
+      "git_blob": "83d89ae55570d722e08e4ff4e607db7bbb8985d2",
+      "bytes": 3579,
+      "sha256": "0afe50ab8321da12e1f3a87e234e312141388740b84f06e9a28076b6c68f2f24"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/interface.h",
+      "git_blob": "012d4b4256abe8b7259e463efac8e4223581bcfe",
+      "bytes": 38230,
+      "sha256": "1ad4fc79bc98b0b86fbbeb1addf01573b013d3bbccc3cab5801539601b0c50c6"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/interface_defs.h",
+      "git_blob": "162e080160103521ef7e35cdacd4a2373d3ffb47",
+      "bytes": 1238,
+      "sha256": "1327c1aa0047d45107867e9c979dec83fe22cb0fffd6684a7a06ceae63ec560a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/intrinsics.h",
+      "git_blob": "47adede9171707b9f88c261220322444ec03cd6d",
+      "bytes": 27876,
+      "sha256": "ad84578a9423d083ec5b7bf5ad41a3c98cc04177caae57ab9d34015cfdc8346b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/is_detected.h",
+      "git_blob": "e41dac54f426e1f4f36eb995c5525645205b3e54",
+      "bytes": 1349,
+      "sha256": "27c0b876b09f820126294263104511838d8e30d33b539c6dc5d9576cb06a9d49"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/list_type.h",
+      "git_blob": "f304025d42bf68f52b997f1d28f15d0f34ba8099",
+      "bytes": 578,
+      "sha256": "f5deb6162e5b37838dc50c928af527a4209e4a335fcaaced164cee72081b0a87"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/log.h",
+      "git_blob": "ebcc3e45d15aa5a3a7814f57c163e4186f76b5cb",
+      "bytes": 18851,
+      "sha256": "db658b6e3c961ac98c41fcf8b5e6f346e194f558a502406e1063290affcdbae0"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/macros_attribute.h",
+      "git_blob": "f4344219e4d20b333c0c1f7c57a014c42e1ea384",
+      "bytes": 4655,
+      "sha256": "6e85a0e2a740ffc9dd051a9186ed48e3700ba5882548dd6e4ede2367692df49f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/make_op_custom.h",
+      "git_blob": "10ba8737c830df940785ee40368cb0a7a31c94af",
+      "bytes": 1336,
+      "sha256": "ba057e935f3580f07ac263e34201e20bf77b6e5f2c007ec49918e227eacb2203"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/match_op.h",
+      "git_blob": "b5254fefdd383736af7ea2be794a4b26ea7b32f0",
+      "bytes": 9004,
+      "sha256": "c4e93913813979e646725dfb9aa534ad8a890043ac0d401617240cef3b3fcda3"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/match_op_fwd.h",
+      "git_blob": "9ac00ef15ace780b4dede4941dfed65e29b4e5cc",
+      "bytes": 543,
+      "sha256": "c9bf56ee872475d7a33f3d19e47792f80db6819f7fc2fee7a09be6ed87cfa5f1"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/memory_layout.h",
+      "git_blob": "8ef2f1232b072edeb06a5611b9035ff71b1a8d68",
+      "bytes": 15984,
+      "sha256": "4940e681373ccf97b6bcaccab5ebbe2b99e40db133862540b908e5a57457d70a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/meta_op_base.h",
+      "git_blob": "4b7a217044fa2ac3b11f15bcacf6602a634ff77d",
+      "bytes": 1798,
+      "sha256": "607bc4a3b713df5862078cc7ec95a7c43d87ebb019a65009ffe650ee0d0a0efc"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/minihash.h",
+      "git_blob": "ba7f48a62641660140fc49dc6bf8c2835007d999",
+      "bytes": 37449,
+      "sha256": "99adabab3249fe6e1f335072ef8f7882b1970500869177152ba6b7981992f216"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/oexpr.h",
+      "git_blob": "bd8c0372705d05d9c52a65004435f78ef6d52d4e",
+      "bytes": 34491,
+      "sha256": "43860d444bc2eaab079e71c188f675c7f3125829ac6cfa5bf4543e281e723345"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/oexpr_post.h",
+      "git_blob": "3b3c5fef1e65d9d99b7ef0179595c86aecf123dc",
+      "bytes": 41126,
+      "sha256": "54737ff5f978c8906fc1413b5d089063e35c6e6da803bdebd42f7628c2009b91"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op.h",
+      "git_blob": "6bf2c25de73696dfa4f3a15c686266d000123eb2",
+      "bytes": 18264,
+      "sha256": "26e150211e6fe48e403d29d7ff5dc67077aff40f538e04394e54763ffa1dbeb5"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_arg_category.h",
+      "git_blob": "2b4d4e2442204c2f9fba2ca24be68656117d8eaa",
+      "bytes": 3012,
+      "sha256": "7d8f25d72a48ba3e4d66fd12eb12e1c797b82a7fe5429b734019de0bfbe8ef3e"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_def.h",
+      "git_blob": "ca8398b74c81dee3c696c5ff4d3b57952ab59d34",
+      "bytes": 23860,
+      "sha256": "f33f3a278f63fdee9b4e34385220d21f8c144ab50b583a6c7e6e316263b7d4ec"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_extra_info.h",
+      "git_blob": "f4ec80c4200c63b121c51c06045613f0fe50a53d",
+      "bytes": 2945,
+      "sha256": "ec1f0f3d75c337a09bff5e72cfe43cab6515f64aa18dbffa0559b5299efa070b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_factory.h",
+      "git_blob": "45c8da9b55fdfb6005ee59a13953f68fa8ea8d15",
+      "bytes": 618,
+      "sha256": "e5c02b2cb7d05bf63167e1e0d7c4d29f86ae3987c095affc5fd44ff47468c1e1"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_hook_base.h",
+      "git_blob": "50bad8f3870332252240a7ea47702471ed3ebfcf",
+      "bytes": 1202,
+      "sha256": "6155a1b4112850f6ac020f7e9e069c1b9e72eff1d36b16db8dcff2848ac48c78"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_info.h",
+      "git_blob": "ee2a4ed2d5296ccce7ecda6a923772a85564ad60",
+      "bytes": 3056,
+      "sha256": "a28c160f9d0c96d6422c3f688a9fe3c0505e9cbc2906c73d1cdd4ce1528049e7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_io_ptrs.h",
+      "git_blob": "c5bc537eab59c0ff3fbb22a3da5f2599d2388af4",
+      "bytes": 4382,
+      "sha256": "81908517145ce9e77fdf477919b2f27690a1c4385b1ca586228f6a4537821a2e"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_package_feature_support.h",
+      "git_blob": "4d903fd8411da608bffa51cfb36e5024d1b65ea0",
+      "bytes": 11707,
+      "sha256": "029e33c00964482eba5eada453b84c8ebbc6e80a5bf2a5eecdce341e898e0c51"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_package_name.h",
+      "git_blob": "66e01fa81f425b9115e63c41c1ee6a8356e36a12",
+      "bytes": 1260,
+      "sha256": "83d946bfc4cd9ceb7ba1949b0fac495fdb0fe4c97dd75ea7236573e1cb6882a2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_reg_parms.h",
+      "git_blob": "50abe544eeda51b154c711a526c1f87cb9712da5",
+      "bytes": 2202,
+      "sha256": "f805827b39e3be5024faab7667984507b82937dfc0f0ba31074e29a31f454bdb"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_register.h",
+      "git_blob": "37675b43a60421e6f55b37da721922ad6d8681ec",
+      "bytes": 1958,
+      "sha256": "8dfe26a8e6a10c4863bf7b6630c9818e0a9a76375b7986e6515c2644b3cb8867"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_register_ext.h",
+      "git_blob": "f903d6d6d370ff72e23c8d3d22d0d3b1dec21524",
+      "bytes": 9612,
+      "sha256": "ac6ac32e82659a85abd11a52200f6a53563136c31397bec9184209d7d4c4c333"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_register_ext_fwd.h",
+      "git_blob": "16464991ccc6e500ca47b4b36b7a61b07bf68033",
+      "bytes": 583,
+      "sha256": "dad4d7a46dc5fce5d40252f5cd0e4852ab3e1f86e1978ecde253a0b02c323b18"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_register_macros.h",
+      "git_blob": "8357193eae8b4e737691ad9aa6f361654753042f",
+      "bytes": 21226,
+      "sha256": "185f9d46cdae5557a0e1fe66f3f2e641c71ab940055872894639fd6b82403cb1"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_register_types.h",
+      "git_blob": "54a5e46c2b90d8500f75b49f2ed2556f709cdabf",
+      "bytes": 1661,
+      "sha256": "cb5ed67bce1b39163eb9ab228b8c59a897e2e740d374a890f00731221a7b0bfd"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_registries.h",
+      "git_blob": "408fd5f9ad24fd265bf33d93b626cf9e19f026a4",
+      "bytes": 625,
+      "sha256": "b60f0c6631a3fec33ef6be65869600e331554881ab21ca5665d1b5f39ea7db2f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_registry.h",
+      "git_blob": "f7d710592d9caa7b58bce91daf2745016dd72976",
+      "bytes": 3440,
+      "sha256": "3e392f490c44560a8761d28d71ea08f3403cc2ded0d28e17bd8b96897237a74c"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_slice_utils.h",
+      "git_blob": "d0f44ddc617635122746e09e18ddb518e07a372e",
+      "bytes": 3684,
+      "sha256": "1febdd560040ca1bf665beb9d6a837ccd1a9256faaf614b75d21b1c0eed2d819"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_utils.h",
+      "git_blob": "a3b4302712b1cc9be2f4bc267fa284dac319edca",
+      "bytes": 8411,
+      "sha256": "a2fb052e58333c204f71d2dd9234266523ba3cc7685f2e497bc64469df9411f8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/op_version.h",
+      "git_blob": "575dbff5f79ecefea3456333f1f9dc0a1c379c66",
+      "bytes": 2222,
+      "sha256": "e3a5bc37a9d178c2fe0b213d1265a9e00562d8022f71ef821b5851971fa0a8f6"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/opname_tag.h",
+      "git_blob": "28689f606bc9a4be6c144f42fd5be1eae0a94075",
+      "bytes": 10001,
+      "sha256": "97289b6b46fda70068b18c8f4a6b5d87c1b5cf12fb996015749206323241c3e0"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/ops_opts_registration.h",
+      "git_blob": "7e9578a2f0bb4212a51c8f276390700da7a34131",
+      "bytes": 9344,
+      "sha256": "b94e94b7b1bdf3ce638f4251ea5d623e37fcd1b1c443675978c82be53313c025"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/ops_opts_registration_defs.h",
+      "git_blob": "7ad10ae10ab4656e3b8858265db4022a4cdc96b2",
+      "bytes": 57999,
+      "sha256": "184dcaad8ea134a5e8480f3801d3ed3e60effa7a148776f93709a09e32b4212a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/opt_function.h",
+      "git_blob": "3ef37085a4030953e427827266dbfc7ce035493d",
+      "bytes": 1837,
+      "sha256": "92737046786a45a3cbf5183edc4952e8be1b4a5f4e53d842d96ef4c218985eea"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/optim_filter.h",
+      "git_blob": "87826c3581e943eb3033947aafff375acf0efbe0",
+      "bytes": 1826,
+      "sha256": "c3ac963a51a89d032d84369e9b8cfb0d648811a176c3c6352e80bcae3b29e6b0"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/optimize.h",
+      "git_blob": "79b32eb9573da644c01b491582ac0dea56bc7f94",
+      "bytes": 138030,
+      "sha256": "d8eaacd98a1f24b038736cd90de353961364bd38b4dc7461992acc7166fbe7b8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/optimize_defs.h",
+      "git_blob": "a65b28cb2f81c4c45c4356e2f0f4d861eceaaba3",
+      "bytes": 34714,
+      "sha256": "1a40f716e8ef34a384488d35728cc72cd03b5770467c89c66097918227a72b8d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/optimize_flags.h",
+      "git_blob": "b7cc3af905df903b467107d19ab8f500317e8537",
+      "bytes": 9361,
+      "sha256": "81ef3d0c159d4e8c2790524e060631ecee1aca9a9bc8eeb2d83b4d01b4e4f38a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/optimize_fwd.h",
+      "git_blob": "aa736188a6d4eb7b6f6655f1416ec2fd0fcfcb85",
+      "bytes": 2563,
+      "sha256": "343507810e3eeb0c2dc379dbbe26d630c8a714c322953635873cd70a3c6195c8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/package_op_storage_base.h",
+      "git_blob": "15bbb5fe90c6e6ca499b459a6cd84c5957c7985d",
+      "bytes": 1331,
+      "sha256": "5601c07bf069204b49512990343c4019dd344118d4cc56ad296121c255abeaca"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/padding.h",
+      "git_blob": "4441f3c4c81bf6c8b80483670a03507771efcfeb",
+      "bytes": 2500,
+      "sha256": "527e0354921b2cc675022337108d75fe2ad88124b3c9c858d13866f32ec6cd9f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/pco_declarations.h",
+      "git_blob": "747e8f023c62f640bca17e8d1dd7b34067baf7c4",
+      "bytes": 3626,
+      "sha256": "257536a0c04d68992e6af9401514f06a0364493392634fa5ff9c512cb6c6aac7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/perf_timing.h",
+      "git_blob": "951fa9d3d9e1f8fd0ed680ef7b96c1c02c07e493",
+      "bytes": 847,
+      "sha256": "721b9f337a134e674f55ccfe337c31d0bf648ac4faf9881f4f90e81540df1f20"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/pickle_header_tags.h",
+      "git_blob": "f4d6ddaa3fc3729f1323ea5c0c310d24884da140",
+      "bytes": 4069,
+      "sha256": "1c8a6894fabd2b4a1b8135057294091cfeb47344bb94c723c56e2cb7346a7287"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/pmu_counters.h",
+      "git_blob": "20675efe6e5481617524ad2c2030439c92bf4949",
+      "bytes": 867,
+      "sha256": "9205f9aec49d04b511fa0f932ce601e36567f28c7117373c92006dfc27998460"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/qhpi.h",
+      "git_blob": "f30579c33d6f1b97d684eec933d66f3f8b4b1afe",
+      "bytes": 42076,
+      "sha256": "486c944cc3a6b2e178a616d7bfc1e5f95f327811aad05cf0bb2255ca79747ccd"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/qhpi_cxx.h",
+      "git_blob": "40f662cfaf4d0662235d327750c921fce9b7dd7f",
+      "bytes": 26035,
+      "sha256": "de7c02f7c0e81ad48057c1160438c55aaf830a638b8ae5305275be5a6e2e76b9"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/qhpi_internal.h",
+      "git_blob": "3ae8940fb5278dd8bdf51e3a8b14ba5f723967cd",
+      "bytes": 1357,
+      "sha256": "75a81b14b92b928a523879ab4b4e4febbc006084ea48e8cd3722ccdbf175cfa7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/qhpi_type_info.h",
+      "git_blob": "04e09b5bf75dff73d414474ef5bb42735875050c",
+      "bytes": 2889,
+      "sha256": "43ef4b0d24d90a4227476635781ea15f3422fb5fff108595b7bf78f2051422d8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/reg_op_node.h",
+      "git_blob": "a66d2067081271b9004fdc48a5fa45c8a0750c7e",
+      "bytes": 5059,
+      "sha256": "d00b7d1487e871afbc9c0c7ffe526f08375c22ac9fb82ad1fb748aad63dac85b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/reg_op_table.h",
+      "git_blob": "b67f2446e443fa27a13ce9ae29972f86d38036c3",
+      "bytes": 3627,
+      "sha256": "0d68e453fed8b591ba0ec633a61c30d2a808ad3bdb5231553eecbce0a1d8475f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/reg_optim_node.h",
+      "git_blob": "d1c3cb5ddb7f13c3f324a30b99baabc7693afac0",
+      "bytes": 2631,
+      "sha256": "150975b23f8833685002aee3c8cb24b6adbe11b261c7eadbaffee45393743557"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/repl_funcs.h",
+      "git_blob": "ccfb209b3b63fd9561396324d1097e92e3f45dd9",
+      "bytes": 910,
+      "sha256": "996da6d574981a616ddf0ce8936158eb43adfcde8c1bd9b0a55f092eafe69543"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/serdes_tensors.h",
+      "git_blob": "e540805017d230bc87a35d0d891dd87015f4bdda",
+      "bytes": 5834,
+      "sha256": "ebc38be6c826b95431f65107a1af75c11e55a3265c7924e88984d9b51b6ad567"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/serialize_defs.h",
+      "git_blob": "1219c3e9d59e67a84438d0c445835e7467cc5866",
+      "bytes": 3784,
+      "sha256": "2add25eaeccb394b909ecfa0167860e484160a376a2504f1f18abfc72dee5c7a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/serialize_oplist.h",
+      "git_blob": "72f46378d75d50082533d8d7d34471b6a46f9047",
+      "bytes": 12717,
+      "sha256": "e2d53f056eb2046e1630a6777b5d939cfe0eb190d6b7171b40b2b7425c34c2a7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/serialize_register.h",
+      "git_blob": "05ff257d13c140b7480b31c76464c07b6fd2e0d2",
+      "bytes": 2563,
+      "sha256": "63e8f80793aa31c373fbffc813c8de60926069d137794e9b018a73d7115d56c1"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/shape.h",
+      "git_blob": "7b1081a03974f359f187d979698920675d82f143",
+      "bytes": 6253,
+      "sha256": "968acf494f01dad9f4624b9045292ecd73d5779008c29e00f0bf274a6d3f9241"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/simple_reg.h",
+      "git_blob": "fc1c5a8bd227ab2f0b967728916a5c99287485bf",
+      "bytes": 846,
+      "sha256": "a24bc93d5fc60dabde563a21dcea319689b6d03a6c414f27b4c337eadebd663f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/size_align_code.h",
+      "git_blob": "82a83206cfd0e835cfa5caea0e74eb116a628dff",
+      "bytes": 3765,
+      "sha256": "d2fffa8335423c0299035a325a98214f1e73c7f293ca7d3a3da248b9d5bbcff9"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/special_prep_op_base.h",
+      "git_blob": "4c801b4d39a7dd2706bd7d7ae674ff36815b9479",
+      "bytes": 2074,
+      "sha256": "543bc0b28706efbd84f959a4bcd2d13de785130cb895f7433411b7275fd29a84"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/splithist.h",
+      "git_blob": "6c66317fa80d9e282d9992031e2996f7dfe4f606",
+      "bytes": 9387,
+      "sha256": "71f0e925f63477fa9fe36cced54517db4d26c5d303b774fd4ac7290d0c8dec55"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/string_registry2.h",
+      "git_blob": "361015bb2f809e31f0ec48a69b0fe1d3733a8480",
+      "bytes": 7112,
+      "sha256": "c2bd276985d8454fdcca55b63fc3c22f62a7e15d2882c4b3a46f27a31331db9d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/template_help.h",
+      "git_blob": "a6956e6114ea9c15028d12c720262d6cc9a2db38",
+      "bytes": 22666,
+      "sha256": "ea24f77672f7c1d29b30d2f317aed51e6150070b1c9879d0533d5e93abc1dbba"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/template_help_tensor_ext.h",
+      "git_blob": "3e7e7ae00bd872a6ab9a80607027d7e4b9fc5c7b",
+      "bytes": 6856,
+      "sha256": "ef2bbe0e6ea6d3dbff383cd96d743b7b829d050b73707d91537b3f81b67e80ac"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tens/block_enumeration.h",
+      "git_blob": "0612566e9d6c516c1ce82b6c9c0053d297e27ec0",
+      "bytes": 5097,
+      "sha256": "d3e13904eaec37c245ee94e9a88ef1b9cb5a38fdcb5eacb8cdb56f161482c5d9"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tens/tensor_base.h",
+      "git_blob": "8c65b2c1d4069181e51cb9461b287e7d798678d2",
+      "bytes": 41388,
+      "sha256": "c50f5a14e35ac859cacb9ed92e66191615b2e4f33e9a178b02cb86124f1cbc32"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tens/tensor_concrete.h",
+      "git_blob": "d9cc4d9ff54d16342992d264e389c7cef199ee72",
+      "bytes": 54632,
+      "sha256": "2c76e39ca21cbef760b8791bae7e68299bed55869e3cf89372560bef35790602"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tens/tensor_definitions.h",
+      "git_blob": "6d9a7a6fa377954970bc8589db7c59175d3ce99a",
+      "bytes": 33530,
+      "sha256": "eee8c9741a2aec6c870a363ce6ae21bc887eb359a50a46db551a449986ed08c9"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tens/tensor_generator.h",
+      "git_blob": "49adfdff6ff2aefcf1ea826bc7512bc7e486df7f",
+      "bytes": 12038,
+      "sha256": "44312426b82d0fc80d06ac427f6c4bd0fd2e9229c88d97e7506a95e3f0ce0220"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tensor.h",
+      "git_blob": "e9778026e2583bae961632ec0f184b9b3cd1d306",
+      "bytes": 5172,
+      "sha256": "d05a98f66963ccc14162d0d7f31daf4f897cb31d4dbfdcadd2d41559a2a2fc7c"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tensor_info.h",
+      "git_blob": "83ce9183bd8c71aed48216f3cc03ad8c839dc0b0",
+      "bytes": 8821,
+      "sha256": "6c3ab931d7a909e19f26c10eed09f47ea81917d3cc0cb6fcce73bbe4f9d92a3b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tensor_iterator.h",
+      "git_blob": "2f0c2f3d1260d0f94644943ee52418c8e92bdd76",
+      "bytes": 8689,
+      "sha256": "a2300bf55790b0a7f5c930ee23c2748d84ccdb2c350d2d3f2fab8e4da80257a4"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/throw_error.h",
+      "git_blob": "a4da627b4b2ff1a06e0b18259a79eea979932077",
+      "bytes": 1169,
+      "sha256": "5908d29828d98d3065b78d2c7d68ae01c98bccf6a2b658027b8e20b638a2ccd5"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/tile_extract.h",
+      "git_blob": "a81b2cafc9fb3374b92e37f95ca81404f64256eb",
+      "bytes": 36211,
+      "sha256": "92bf568c072f8cf623e69fa6b0aef604eef3b216f560bf6b608cbdef2e529d08"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/type_help.h",
+      "git_blob": "12196384852fe6dffd4039224f9ba37fa23327e7",
+      "bytes": 2233,
+      "sha256": "957c2f676b135d345255536dfce0be929aeb80f746ed39c1d31c146c991e5f5d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/type_name.h",
+      "git_blob": "3de88070fa2fa32da310d23797a21e813974cc4f",
+      "bytes": 5328,
+      "sha256": "48379bfd8157e8d5c8053c51328abef6a055442687878ed304f72fab994a1ea3"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/typical_op.h",
+      "git_blob": "329d61737f5a78bfadd4e78b1ac6b72723349bfb",
+      "bytes": 33671,
+      "sha256": "2d4f49c073f5575d31b3102259698f3f890e3e1a65fdae956f3b9ac91a722aaf"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/unique_types.h",
+      "git_blob": "c0dfca989c924270eb4204d44254b76b04676b21",
+      "bytes": 805,
+      "sha256": "270da36fdd3e073a634b064bcbf21b0e6720f10584d96f7d7da5c8f0a750f51a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/HTP/core/weak_linkage.h",
+      "git_blob": "714b25bbdcd9bacd90210cf856f64ab6e1106a93",
+      "bytes": 1625,
+      "sha256": "73e8f6ee504ba8ab9ac0d302df7796693a11ee8e90cd8feebf16078d84b810b6"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/MmappedFile.hpp",
+      "git_blob": "2bcb967ada9bb041efb36da1144c85865e2880a2",
+      "bytes": 5706,
+      "sha256": "a8428c325816cd9ddcdcb6ba219726347568044af49058452eeb57da4c5aa8f8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/MmappedReader.hpp",
+      "git_blob": "bee1f81581a36ae1d89e5c2eb7a5efef4c531c7f",
+      "bytes": 7632,
+      "sha256": "768d5ed400833019ae0acde5e7ed9a1b1098131bbcd394b5a7aff1c9cb34bafb"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnBackend.h",
+      "git_blob": "8e03198d238ef290076dc19e7e74bfbfa4e4ea16",
+      "bytes": 21184,
+      "sha256": "d9662e3c0dceb2a486e602ab36c7c8c9ca47bd9ffdf0a3c119f99fe1bf6e25ba"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnCommon.h",
+      "git_blob": "bc3e287380eab8d173d84693d70c29f55bf575f0",
+      "bytes": 7976,
+      "sha256": "a3fa7c6f67ab57b179b59035e8d5b11b7dd651bd133ee0e2017bfce7259d083b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnContext.h",
+      "git_blob": "c35cba5e5c404582e58620dbe9543c84fa101f20",
+      "bytes": 76085,
+      "sha256": "bd3b26371342ddf7de86b54d7a65812e6aa24badd4a74bc9d64f588c603b9f94"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnDevice.h",
+      "git_blob": "732b87547160fc1372382cbbf00dc17d69351cd2",
+      "bytes": 17734,
+      "sha256": "ab283a12d6d7827c7ba1080e8109873c4bf0d6e61c4423cc5b8d2b3cda31965a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnError.h",
+      "git_blob": "5948b23f8786ad358d9540daa761d7e9142e6df9",
+      "bytes": 4711,
+      "sha256": "0ac4a282886b24457090fac0e4198601fccd1166611b8d9bc0d3bed74032e7eb"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnGlobalConfig.h",
+      "git_blob": "5ff883c49660776bc9ba615eefa263ec54401b2e",
+      "bytes": 2494,
+      "sha256": "6a057b4e71ccf76e2c1dbd4b65341e2373feeb6739b602e05e96c4feca8e5a1a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnGraph.h",
+      "git_blob": "cde00ef0c2875554747ffe408c372dbe8aaa22c7",
+      "bytes": 52492,
+      "sha256": "c983fd5f290cc8d27217d2d547e29d59739e48d0bbfd2219939c330d82fcac6d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnGraphTransformerConfig.h",
+      "git_blob": "e9cc80dd537909ea0e1be812d224a4b01fae8367",
+      "bytes": 9944,
+      "sha256": "f5213cab720445170a4aaf79ddc4cfea5749bb8cb3848be1bd4cbd2622987f48"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnInterface.h",
+      "git_blob": "923f2f76dfe7b54d415ac5d4482628aca1548f0b",
+      "bytes": 32919,
+      "sha256": "b650191d3b990054e5c7b3e15a96e2614266d3ab320584ae0e394ac3485127df"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnLog.h",
+      "git_blob": "5a1ae624a40563995a6cad200d50b0f282f91f7a",
+      "bytes": 5929,
+      "sha256": "fa4691cf9dc20b6013c8eab6e906f85a15eea41bb95ce734503ca8ce500a5ad2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnMem.h",
+      "git_blob": "2ec092f612c929ba71df5120eedc28bc0e29efe7",
+      "bytes": 11532,
+      "sha256": "fa2164a9e60f1fec996ec04df2682d7a96587c8697abead8a45ac2d9b4b1c617"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnOpDef.h",
+      "git_blob": "c237abd217a3921960eea890c6617abfbd672f60",
+      "bytes": 35052,
+      "sha256": "c7f6b78c68d7d94704ef0bd186565430ee0605d3c4b6a34d6ace7b941a9e56a4"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnOpPackage.h",
+      "git_blob": "d84017e3c946ec3ee557142af7eae665f0cb5cf2",
+      "bytes": 24410,
+      "sha256": "f07aae269872c8073d0966df9935af6e5e4169c7d13618368565195fd3ea1d0d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnProfile.h",
+      "git_blob": "6bdc2708349708c03410dc1068f31c905c4aa8c9",
+      "bytes": 21864,
+      "sha256": "0aff7acd395485a8190c8dc68727e05b2fbc6d0cce003911a5e71f7e6533dcb7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnProperty.h",
+      "git_blob": "1772c330b974c63231657a4902ad4ce6277ab1d3",
+      "bytes": 36253,
+      "sha256": "0d385797c61318cb4c6872a3c89f6564d009e3cdacb4cdfed8f460674bee083f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnSdkBuildId.h",
+      "git_blob": "af25e6b6c11ac80d3f127b0a62c8d1d1ff4db777",
+      "bytes": 693,
+      "sha256": "866b31be0a0678c4fea1b6935a1d1a039e9b634c1ac7c0b3b49a31a9aa5ceccc"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnSignal.h",
+      "git_blob": "34cd3bca4d2a1bc6baee03a1f1d079459dfd7f65",
+      "bytes": 9077,
+      "sha256": "0033ff4c0939b85115be64e1e126b8d3b184146e6e912b9cd4d1ebfce689b9b3"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnTensor.h",
+      "git_blob": "a8fbec5fe45c37fbbdc71b0d06a93cd5d0f479e7",
+      "bytes": 11343,
+      "sha256": "44cb3bbba83ca522b3c2b02be725b0ad8d9d4973f08ed8a0972fef7abd05b254"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/QnnTypes.h",
+      "git_blob": "fdd1f4e6dc93ce1aafb69981f44f41a75c5101b2",
+      "bytes": 76201,
+      "sha256": "0df15e2b4784708f939b0f9931978f271d69492aabec06ca3324a7b981bde9bc"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/System/QnnSystemCommon.h",
+      "git_blob": "4d779e749723a0e111c80ce541f4409e3747c30e",
+      "bytes": 2908,
+      "sha256": "4bcd69875f23a45a2436f4aa895117a34c037cfa07e1ac1d967c3c03306cb9a1"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/System/QnnSystemContext.h",
+      "git_blob": "8660777fef25801b1cbd147b58a264971a142cf4",
+      "bytes": 22631,
+      "sha256": "47cf78fcf4514eddf625b5ecb9d9499ace070c960127974f05d0ea228158f835"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/System/QnnSystemDlc.h",
+      "git_blob": "1196f3e5633116a3a71b482c76473914f180a81a",
+      "bytes": 67803,
+      "sha256": "a7a49b780769422a93a38f6618779759e11a9f07e1c1c50b37e871d4f243361a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/System/QnnSystemInterface.h",
+      "git_blob": "e127cfe436dba9877e8118a760ee2896e4cef135",
+      "bytes": 42141,
+      "sha256": "f92809652b1b777c91f7fa8513d2fd1138f513a4bb3389e35f3562e4add34988"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/System/QnnSystemLog.h",
+      "git_blob": "5a0f2ed3baabb42fe0c91b4c60b30f1a3dcd51ab",
+      "bytes": 3465,
+      "sha256": "50a12f15a0d8f4d10555ef05cac1313339a262f12df313d8a1b05a33a8872ec2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/System/QnnSystemProfile.h",
+      "git_blob": "de84f0d26657736cc658722d19aa28d519238f3b",
+      "bytes": 10945,
+      "sha256": "feb494b3da50b4cb4a7dd0537dfe604016321c05026f33e7f4acba9e35dd0ad3"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/include/System/QnnSystemTensor.h",
+      "git_blob": "5a47940d360a36eedb65d39c465a647dbc883fd1",
+      "bytes": 2706,
+      "sha256": "398712e0ff6cb9254d1988b935d2ff1665797897143e4bd044d44e009c6f944e"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/ClientBuffer.cpp",
+      "git_blob": "a283a642c77f52bf2026b49dc34e7ec707202985",
+      "bytes": 3582,
+      "sha256": "7775f2fef90e31a0d3ffb8b71eaae8ec32195b1d24bde77729fbc5769ca72d91"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/ClientBuffer.hpp",
+      "git_blob": "f8861370049bf3ec37971f35f9447f20daf3ef77",
+      "bytes": 2656,
+      "sha256": "396de38b3e363fcbeb33d5c21ba2f75aaa2535bf70e906854f793cdbe05c62f8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/DmaBufAllocator.cpp",
+      "git_blob": "cde0524a3b2e0016b1c71352e5a383f002dd3d6d",
+      "bytes": 15113,
+      "sha256": "b056dcc3e6b27fcd63d658fe7cf9a244e158867e033afbfde0e52a1e2229d25e"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/DmaBufAllocator.hpp",
+      "git_blob": "d0fd196fbdb0bc3dde55156ff17093d2a06484d3",
+      "bytes": 5327,
+      "sha256": "c8de08964c2111b5f9bd0fa47f6084caa9d19f52900acaf3350251eb4af6f99c"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/IBufferAlloc.hpp",
+      "git_blob": "b0ed335be09c18c4122eb554fbdb5ca12c48c12d",
+      "bytes": 3014,
+      "sha256": "a8a7630dff721b989a827e81808823d13753ccf7544be6d2c631732014ef3cd8"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/IOTensor.cpp",
+      "git_blob": "689a20e827b882a243dd3ac5e512c54bea8c9573",
+      "bytes": 16895,
+      "sha256": "ead35b032cf241a04d51e3e45d5304c38ef9bcaf4ced66cad8241d23da112af4"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/IOTensor.hpp",
+      "git_blob": "04eb852d581f8c1d1b0b19bfb1d097fbfd5a5fa4",
+      "bytes": 7381,
+      "sha256": "79fb98366e011b554d21fc3b2d83d3cb1174f797652a9462263c92bc5eb893b7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/Log.hpp",
+      "git_blob": "bfdb1257c49902b02fac558b03375a4f0fbcf436",
+      "bytes": 808,
+      "sha256": "e522ee69a85f1a889185884637020124c7c670a7ee435b6719db6a663f95ecf1"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/MmappedFile.cpp",
+      "git_blob": "5b34844c41d492b655b23655f89142d9cf4458ef",
+      "bytes": 11919,
+      "sha256": "82d3704846da4ed679f08f84d630c35a7684caec03a792caa9ea041573d999e2"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/MmappedReader.cpp",
+      "git_blob": "2e81e532c3fcff84514e667b5953ac44e1f7e699",
+      "bytes": 1448,
+      "sha256": "0274337da661ca6ab87fbcbd56de59388cf73441bdde7e12be9014ed011fdd6b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/PerfProfile.hpp",
+      "git_blob": "0dd8fd17e7c1e336f7c38e2609152c4f1b1225b3",
+      "bytes": 2288,
+      "sha256": "ebf5224bc90bb0d6201d89cd45425774cfab9e6ab300a9874ea6d7535e9d9db0"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnApi.cpp",
+      "git_blob": "6838f58259e1d5ad369feb2fee0928010075e2e2",
+      "bytes": 126688,
+      "sha256": "0b6137c9d9d022a9a7baaa4938858a4923cf18005919607a7684df124ae0b888"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnApi.hpp",
+      "git_blob": "225e259de23cd2a3a52a7ebedfca54447b92f10f",
+      "bytes": 20897,
+      "sha256": "4812fd052d140172fedd30f9f5d53eeaf061728d1b581e46d07bbc71a7c0fd22"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnApiUtils.cpp",
+      "git_blob": "35b2fa93dbe532eaadcc8df8d68221611558c914",
+      "bytes": 21950,
+      "sha256": "6b7132e8cdc26e0e6bbffd06cd72955c423a32fcacfca15e14e59644de9f777c"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnApiUtils.hpp",
+      "git_blob": "4189dab83dfd62a3999a60a267264bfaececdd98",
+      "bytes": 3290,
+      "sha256": "dd570de57403edff5ebbec5a045cbdb5ac213ae1bb24a1e36bc5bad5ee5f919b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnConfig.hpp",
+      "git_blob": "c0fd082983def972e40e8a17a1ff9c97eb16c882",
+      "bytes": 1147,
+      "sha256": "92a077b78071ba8f0229979d64964bb947a8e6eab118f9e2d172e2059259daa0"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnSystemProfileCompat.hpp",
+      "git_blob": "4653e2a1394b218f1f627de15d3469b833fbcc6b",
+      "bytes": 5278,
+      "sha256": "612a7d3f454b906a11abec68c3496cd27e35c1f4ae15b5043b0781ae80c80005"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnTypeMacros.hpp",
+      "git_blob": "0bb71e51c034e00ec6167a89d780c06015ec6478",
+      "bytes": 24329,
+      "sha256": "31b1b9e8751e526768471201a745fedd8f37f2a369bcc24f77b8bbde362b7a19"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/QnnWrapperUtils.hpp",
+      "git_blob": "81bfd6504e1ecfcd442a8820acfe3d37ee8b8ba4",
+      "bytes": 8596,
+      "sha256": "aa910fb8f631f7d8794610028328a15deb8e936cda16f15f6ad0f0b311504173"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/RpcMem.cpp",
+      "git_blob": "7dc82534745a3fb308d6b708f3f8a80c4131338c",
+      "bytes": 16982,
+      "sha256": "9c0ab7a0dabf15eb25a6dc2c3e97326a69840e0c3fdc076e1ae66557244488dc"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/RpcMem.hpp",
+      "git_blob": "3cf89238ce3b831882e4c7587e761e304a8d0233",
+      "bytes": 4393,
+      "sha256": "c7df49ec6737a4a30145653aedef105ba343a2bfc65a13f7405144881889738d"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/config/Config.hpp",
+      "git_blob": "af32d57bc4bf6643d03b27015ca7e51261819d0b",
+      "bytes": 1968,
+      "sha256": "801f4363fa98b0e58859921bbee822f9994294edad7f4cb4602282a0bb47ab59"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/config/ConfigList.hpp",
+      "git_blob": "702a3f7a2b1c8157c052ff44b415a9ad6eb226c8",
+      "bytes": 3561,
+      "sha256": "981d61e86c8da32e983c93e8ad5ba8ccb99bfacaec4ecf41d2d19073aef098b1"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/config/ConfigPrintUtilities.cpp",
+      "git_blob": "8e13df512256171e4b53c2c7536a0a6ade4cb96f",
+      "bytes": 1778,
+      "sha256": "52d245d2c76f994ab3d9d58e9787bcb263337fd76aaa8f0476df613b4ba99899"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/config/ConfigPrintUtilities.hpp",
+      "git_blob": "23b50abaf4d50a39eb28b0a4d1f22ba83a77e7a1",
+      "bytes": 517,
+      "sha256": "b802dd4c5954b96c4b3d0b7eb3bcfa70f9a694630ca22af8644a581c9924e262"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/config/ContextConfig.cpp",
+      "git_blob": "b6bd47c4c188560358cc893dda417d50fdb93f8f",
+      "bytes": 5536,
+      "sha256": "91901c21844d37387db451da5bdd814f8f31ac18b89c84167d9de818630aed4a"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/config/ContextConfig.hpp",
+      "git_blob": "4910a49ef3534b45a7a461c62bcf8a7717e310db",
+      "bytes": 2603,
+      "sha256": "52f014b8b180ce0eafa972768a3aae6f102140ec15e7ebfe4451706f47c2b6fa"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/dlwrap.cpp",
+      "git_blob": "9d9fb101c63b9713f7a8847e5721f24622b630b2",
+      "bytes": 1313,
+      "sha256": "48a18fad6b25379c957910011b1e931ab7c82ff6fe3883d116c4698d1f0cba2f"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/dlwrap.hpp",
+      "git_blob": "49444ab0208671bee17fcf4013b6757ceb1d9dd5",
+      "bytes": 787,
+      "sha256": "4265fc53a9c2c83c07b7549dde476765c057815b9f2e13dcd7302df4c7aa4f9b"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/qnn-utils.cpp",
+      "git_blob": "c4f38b607fced42c13c48353828ba119cf0df5fd",
+      "bytes": 7125,
+      "sha256": "118c5e8d321cfec8474fc787b98441d2ffa46651a0d495ed73675bd606a6b3bf"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/qnn-utils.hpp",
+      "git_blob": "0aa148bdb81cb0fa7f9293a844aba237fe502a85",
+      "bytes": 6747,
+      "sha256": "1ee8804c0b9c69308ac3ebf13946a549d93dc665a1158af07f92eea69f09dc11"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/detail/json.hpp",
+      "git_blob": "e228ac8aa16041aab8936b164388095f539ed722",
+      "bytes": 906064,
+      "sha256": "a4fd7431e19926043d9226b83068da9ab5916cd0e06403945e9309b35e08e1d9"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/detail/utils.hpp",
+      "git_blob": "ba7d9fe0a3add5db34d9a726c4db3310d70e973f",
+      "bytes": 703,
+      "sha256": "5c1f6fbba60f0280f7f13b7936cb629ddbc51abce01711d0cc7c85edd133865e"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/fmt/core.h",
+      "git_blob": "f9e3b7d6dc1632c0596194f22218c976deedea54",
+      "bytes": 98378,
+      "sha256": "2c0366208c7677171b8cf188e5c6553a7d78c8272ae4ef893b2d6c8311968504"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/fmt/format-inl.h",
+      "git_blob": "dac2d437a41ab7b0b4e72895212b5a972ada73a9",
+      "bytes": 73122,
+      "sha256": "dabbdd38d59b2a38e14f299226455094e7caac76ad936444778bbb2dfef68013"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/fmt/format.h",
+      "git_blob": "87a34b972ce6af4e2209e4d6cf78e8401e8f0037",
+      "bytes": 163914,
+      "sha256": "492b5dc209b7f2c577181f1d83c458a34808c71ae3ede1173db1fab7d0fee6d7"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/fmt/os.h",
+      "git_blob": "2126424d39cbf311a5806545a255c9a3166bf170",
+      "bytes": 13040,
+      "sha256": "6fd21dd576e48d83e5c9b8b4de16027ffca6616a4d9fc4db1365263eca759ba5"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/fmt/ranges.h",
+      "git_blob": "65beba5bfccc52b08c47be15a26972280c5d394f",
+      "bytes": 24258,
+      "sha256": "4517687b7cb24f0dacf9e077bf522ad409545ead5840ca773e97329277c51194"
+    },
+    {
+      "input": "qairt",
+      "path": "qnn-api/src/utils/performance_profile.hpp",
+      "git_blob": "fa8629502f4a74eb79048f5062f0cc2a33bff9e1",
+      "bytes": 946,
+      "sha256": "e0bf9e4ed643a1eb9392ed07443b898c6e745a32c12879be1c04c4cf5fc25076"
+    },
+    {
+      "input": "proc",
+      "path": "LICENSE.txt",
+      "git_blob": "c44c4fefbad58d09f5799659deb2d4087d4b0c71",
+      "bytes": 1577,
+      "sha256": "8dccd2bf8fab3f113bfd6c52b1b38e2428dfb5267e3baa354729157e4965a414"
+    },
+    {
+      "input": "proc",
+      "path": "include/README.md",
+      "git_blob": "ea704f3230af347468840186265603098fa898d6",
+      "bytes": 301,
+      "sha256": "c06b825b995ab20285758b8702336c7a50b09b3699a4c05df1655de381066323"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-audio.h",
+      "git_blob": "4b2ad4aa9438fec2935d213e4d4c9853795a3450",
+      "bytes": 193,
+      "sha256": "a1eae193030aef88152b8d69c8fffbf70a8dcc80a0f0f55f348afa2f1c4a8388"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc.h",
+      "git_blob": "c3cc0bd9c59daddd0e7845cd89db941e253c3683",
+      "bytes": 526,
+      "sha256": "2cbcb018ad9eb25dd909b9d3a229b0842b390e0f8a11a40d409e273dd701a578"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/export.h",
+      "git_blob": "f31bce2c64bd896128d2644ae865f2c2380dff72",
+      "bytes": 439,
+      "sha256": "067e969d600409b6653ee2e3f791577c29a0f4bc11e9b178d65dd555a98b9c86"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/gemma4.h",
+      "git_blob": "7b4e02b2dcb269fe13204af1ea2034d80dea1c62",
+      "bytes": 5282,
+      "sha256": "5181a98be3aac12ee34bce78822a74f02f2a323087a8048247d3bf23c54783ac"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/internvl.h",
+      "git_blob": "cb608c871be3fa45c3a8e405dbd78fa3012cb5b6",
+      "bytes": 4619,
+      "sha256": "d8f3414e839a10a2a86c14bba552db205028df7f3364f1b40a1fa8c15b366e59"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/processor.h",
+      "git_blob": "fd25c3916d7a6fadd0ff5cf348a612e29299a507",
+      "bytes": 3187,
+      "sha256": "b09bfc20436164b5d51aff15fbb3c3a2c422ccc493d884088a49df5566f6bfc8"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/qwen2vl.h",
+      "git_blob": "1c5a278b54c7f37dcc6a44cfb7f0bae3d47ea6aa",
+      "bytes": 3281,
+      "sha256": "970ab648649ebb994fb008fc8f126fcb1e914e11de06d76bf8dbfdc6d378c476"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/sampler.h",
+      "git_blob": "32bdc2f42c94f2ce3d6fea9133df648284ef6725",
+      "bytes": 5209,
+      "sha256": "3cd0485b3c00b0ee07b5c9a02283df7506302ec81531345894e56efb6758ab1f"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/stop_matcher.h",
+      "git_blob": "12969e051bd10c504c3ad28be2e668bd6bff819a",
+      "bytes": 4304,
+      "sha256": "669afabb744b6d6f9f9850aca4fbdf974b2f908b4034b8ff17228f9a6f276a11"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/tokenizer.h",
+      "git_blob": "2285d1a5b30fac0e31aed81213647c8a7cc3f2b1",
+      "bytes": 6143,
+      "sha256": "1567de4aa139b5b2410e96900e83d184d4098cd4d6866df2de449c34ae6379b2"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-proc/types.h",
+      "git_blob": "317b2b31ee79cbf418bb7460f59128adb2ea2a96",
+      "bytes": 8798,
+      "sha256": "82f173ce5fd1034669f78acae29b16dc9edb650020dae0dc1b5d7e9b3860b452"
+    },
+    {
+      "input": "proc",
+      "path": "include/geniex-vision.h",
+      "git_blob": "3c865d2134693f1205127f3b52df05c6dce296d1",
+      "bytes": 294,
+      "sha256": "96e9f7e5a9e82e3f977c63f183ac8964bcd06ccf34830cd597a8d859727ccad4"
+    },
+    {
+      "input": "proc",
+      "path": "include/json.hpp",
+      "git_blob": "e66265542d54d4974bcd63d61ccfb58a95562ffe",
+      "bytes": 960863,
+      "sha256": "e7982bd41736c7e7a6963d6e65e81ea78d9e82465d41f6b124ddc008acb6578c"
+    },
+    {
+      "input": "proc",
+      "path": "include/nlohmann/json.hpp",
+      "git_blob": "6bbc6292a455e29393a79b83b33003e107eff825",
+      "bytes": 409,
+      "sha256": "acff23c571ac52338c70b784377bbebf65193e63389037c6a20346dfed382ef2"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/LICENSE",
+      "git_blob": "920b749a23242fed138543b14ff30a9a3e13d33c",
+      "bytes": 1558,
+      "sha256": "bfa93bd6a56734c186f7de1d1b53d98657d372487d486094143aabedb5061b55"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xflens/cxxblas/LICENSE",
+      "git_blob": "7b176f2c17b5364a935fe1619461add4ba35ccab",
+      "bytes": 1508,
+      "sha256": "da16b17567c6dd853300ad3d0d52d375fcd8a7a1c9a5fd20c526bac4d9a43dbe"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xflens/cxxlapack/LICENSE",
+      "git_blob": "7b176f2c17b5364a935fe1619461add4ba35ccab",
+      "bytes": 1508,
+      "sha256": "da16b17567c6dd853300ad3d0d52d375fcd8a7a1c9a5fd20c526bac4d9a43dbe"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xtensor-blas/xblas.hpp",
+      "git_blob": "53c8e2e60499d4fb57da1f7e7d2c0acaac2e1e85",
+      "bytes": 10281,
+      "sha256": "a28d8e81d18a0a3238643c3cf791e17d20e963c09d604a6fcb8f6c482f99d08a"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xtensor-blas/xblas_config.hpp",
+      "git_blob": "a7e319b9604fc99c737e676e4e1dbddd760a5fbb",
+      "bytes": 1079,
+      "sha256": "c48c30ff58e42f8255791ec254271719b42afdc7c47e33300964aaa659b15f42"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xtensor-blas/xblas_config_cling.hpp.in",
+      "git_blob": "85b496a34c135569905800fb09f00ba0f87b790a",
+      "bytes": 1015,
+      "sha256": "66c1083ecce654a30131b6e6849be16c93ef45a3b30947f1f2efa5419c44936e"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xtensor-blas/xblas_utils.hpp",
+      "git_blob": "a9ab5318f03afead76c2edb473a9b6659e4e0e9c",
+      "bytes": 6804,
+      "sha256": "f643abbfcfa5e22eead482fa3eb1165bc035d77022487bd2382a1cf6b4f3bfc1"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xtensor-blas/xlapack.hpp",
+      "git_blob": "cffecf078431be5f0d2ece191dd54e6aac3fc165",
+      "bytes": 29820,
+      "sha256": "14dea2d5617a14c6396e4ca991206e4828010729b307d3eb1369102ae7768a1f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-blas/include/xtensor-blas/xlinalg.hpp",
+      "git_blob": "283a9a318df333c1524529e9e8cf2ef7e75695c0",
+      "bytes": 69632,
+      "sha256": "1de15bc768c4cd0e14c9d538cdf148bbbfcee45646b21b38142969d5152f1b32"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/LICENSE",
+      "git_blob": "920b749a23242fed138543b14ff30a9a3e13d33c",
+      "bytes": 1558,
+      "sha256": "bfa93bd6a56734c186f7de1d1b53d98657d372487d486094143aabedb5061b55"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/thirdparty/zstr/strict_fstream.hpp",
+      "git_blob": "eb2bc575e253583b5d24353d62e5969c8897d796",
+      "bytes": 6252,
+      "sha256": "b10125a66e6048f6c3658cc0a14fca81380cb7af39a032ed9c855f678f68574b"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/thirdparty/zstr/zstr.hpp",
+      "git_blob": "a6898665550031ffad82abfa83a01639b931a8fd",
+      "bytes": 13712,
+      "sha256": "7dfc04793f20ab675be0b23e26dfc33629665bf71b1a865713129308e2d5bfab"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xaudio.hpp",
+      "git_blob": "29b8b2072d77ed404fce8292e4d9552c278f20ed",
+      "bytes": 3034,
+      "sha256": "273c8a60756f4a0df41687f062f521e714028334283c6191a40651222d4529a1"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xchunk_store_manager.hpp",
+      "git_blob": "f4d04d123479428f610ffba9412201dab8af36a6",
+      "bytes": 28792,
+      "sha256": "e52e7ff36d2fb0fd40f3cbcc742f989bf9d1aec1edff99cb4a0ee0c588210bcb"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xfile_array.hpp",
+      "git_blob": "1860f8bb3196b701561eb1047fc4b820a4764d10",
+      "bytes": 21878,
+      "sha256": "8cd7dc5f69b8b48869f67a69f9006f74991c19e2c811131b5acd28e15fd9fa06"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xgdal.hpp",
+      "git_blob": "26cecb6bbfee893d4a9882dcfc0b8590b65d85c2",
+      "bytes": 19720,
+      "sha256": "7007ad21182b5585358b2656d08f9e10028cd7acf46a3ebbbdbb317373c641dc"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xhighfive.hpp",
+      "git_blob": "b5c06c6c2ad5c1c1770858f6d37c821b584e51b1",
+      "bytes": 7077,
+      "sha256": "bae6d2042884f5eabef39dd0988304bc7317d116f50106fcae9a6703296a96f8"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/ximage.hpp",
+      "git_blob": "6701471b59f1e919e2ead960f31524034b9976df",
+      "bytes": 5760,
+      "sha256": "c2c720a0bed5abe19d47f608257b2985e280adbec4251bd91ab7c7c293a300a0"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_aws_handler.hpp",
+      "git_blob": "576e79bc5b98c9ba2a7273123013af8537e29d58",
+      "bytes": 4015,
+      "sha256": "58dade5bef039f0a6c09ad843fb1bca771518096067848e02bd19dbb913b34e6"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_binary.hpp",
+      "git_blob": "7a6f95366a8227ad42ddc57231c45a8b76bd9608",
+      "bytes": 7439,
+      "sha256": "5009d0a0708e5b050a3fd6c9cc8626d33337e394929a83359ffb64d45eb2b89b"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_blosc.hpp",
+      "git_blob": "2b4ff0a81653cff032fbfa6d3cde36e48922d965",
+      "bytes": 10792,
+      "sha256": "a03036507e539d263eae69726458a63ae3032488f6929d6b655a3ebc99b235cf"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_disk_handler.hpp",
+      "git_blob": "9115a4b4f71f362c05957cf5770a5cee8d73ae17",
+      "bytes": 3325,
+      "sha256": "bd9b1efc54b1b14528aaae0579f5eb9237d58b5cda4f08bcb0e855e395d7e31c"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_file_wrapper.hpp",
+      "git_blob": "646b77059d2cda1e5c1ba5e00ec54ae710d5f6a1",
+      "bytes": 1532,
+      "sha256": "37cd76321187deed4ca89528f3816bab670714b02cbc15de20579789a2989412"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_gcs_handler.hpp",
+      "git_blob": "d31e3e6d01b95b5eacb85228d09dfb49920a5f9a",
+      "bytes": 2316,
+      "sha256": "57ea9f40774b55a151c8a8e9b1284c25ccc4cbe598b2d5b363760678b90ebe54"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_gdal_handler.hpp",
+      "git_blob": "3af17b1c0cd946122871d68378a9a50068e4c51c",
+      "bytes": 2192,
+      "sha256": "bdaf96f1df8dfe0bd202fb129c7bf60ad014cd8a5f28db92e3f863b2ffe0da30"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_gzip.hpp",
+      "git_blob": "9d17dbd55a15d2fdd76bbaf25d763ee2c1a82891",
+      "bytes": 10152,
+      "sha256": "fdf5073d81653d5471d02b3fda853eda51467f7c5affa622996183e6c4734ab3"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_stream_wrapper.hpp",
+      "git_blob": "47af548005904159ec782a6a8d3f3cecb225d8f7",
+      "bytes": 1633,
+      "sha256": "72c4b708a318346282a648f1ca1a7333024caadfb96480b270cf451b31faf99f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_vsilfile_wrapper.hpp",
+      "git_blob": "746440510a2cdaba73d2af5e9e949bdb207d51df",
+      "bytes": 1642,
+      "sha256": "7c8e5919cdb3deac49e69b08dd413f871bc709ba9a27cd32675bb8ce63001df4"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xio_zlib.hpp",
+      "git_blob": "217618f0965ebcaa43834f5f954108f058c91ed9",
+      "bytes": 12056,
+      "sha256": "e8ce0676674d981d143e3e0f9e345de42874c64528801066cdc1a8a2a305de25"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xnpz.hpp",
+      "git_blob": "0f92c3dd1d34981253642ec0f1414bd24da3637e",
+      "bytes": 21495,
+      "sha256": "a2b432ec5b2db3657a048a54f5a0034cf35415491af3539f7f1e22873237d3b1"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xtensor-io.hpp",
+      "git_blob": "12fca551634e30ad3ae297d7b95d4dab87f9a6c5",
+      "bytes": 1379,
+      "sha256": "d359b678b440c68503fe9606e80ecbb7af729f94defdc944049915bcfa847cad"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/xtensor-io/xtensor_io_config.hpp.in",
+      "git_blob": "c095fa81445cc974e5331f89c4ebd182e51cc64d",
+      "bytes": 989,
+      "sha256": "7c8f77f9b8208aaf3249f27c8161786fe63cf5f01f87ca9d367cec5980d61201"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/zlib/zconf.h",
+      "git_blob": "ede3c82e3eb129528194a2045c808b418fb20296",
+      "bytes": 16464,
+      "sha256": "44e543ff4514c7a9a01d648019c2c9a81d1105cbfa3c77f1faf6cd86eafa8abd"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor-io/include/zlib/zlib.h",
+      "git_blob": "8d4b932eaf6a0fbb8133b3ab49ba5ef587059fa0",
+      "bytes": 96829,
+      "sha256": "8a5579af72ea4f427ff00a4150f0ccb3fc5c1e4379f726e101133b1ab9fc600c"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/LICENSE",
+      "git_blob": "03d48a3bc7a895205455b9fd4ba0e7c399a49d30",
+      "bytes": 1558,
+      "sha256": "c810b7b1fe91f0f8ff2fa24c4016031c9e988a525e78d48f77d1bf9a9bd02556"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/chunk/xchunked_array.hpp",
+      "git_blob": "53a53aba14d3469652c02f08480955866cd1c6ce",
+      "bytes": 24374,
+      "sha256": "04ceb37c9659514765c570ece14930b12373c980601bbfdf319d78a77ec388bc"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/chunk/xchunked_assign.hpp",
+      "git_blob": "334e824b9d1fca1af7282e1dbb0547b1453661e9",
+      "bytes": 11403,
+      "sha256": "3a64eb431d6593106eb835786214b804b7b326628e95c8a29cfde32bee260813"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/chunk/xchunked_view.hpp",
+      "git_blob": "6c9d0a3f29e818567225b652f0a91b4c71df8097",
+      "bytes": 8891,
+      "sha256": "a782234dd82d173bdf14e65c6287b1e7c713dc015c23f8033d26bab1f28738c3"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xadapt.hpp",
+      "git_blob": "725a75d425bd37576094f514b8cf72ca65c9d834",
+      "bytes": 36212,
+      "sha256": "520eae4eba3da33d038d8a4d4e0fd38403e9260ef9bbe0aa71e1e6d2b9d91538"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xarray.hpp",
+      "git_blob": "7455b885410c3feb24a35d76c0db1df8a57de890",
+      "bytes": 24676,
+      "sha256": "9307f0b971b614822857c2bc7c67b52e5dfa87f0b5e958fa30c881ac609579d8"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xbuffer_adaptor.hpp",
+      "git_blob": "f9ac409a18e1c89c07d1df87756721690fba7cac",
+      "bytes": 41471,
+      "sha256": "966061e510006b8c40f67a6c6f97bf7190850364c212092cdea628ee062b2364"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xcontainer.hpp",
+      "git_blob": "70ebaa79839f109f1a2b8087cd42adeb88ef9466",
+      "bytes": 41795,
+      "sha256": "28cdb781c642cd75120a8007de9b36b85fba68a76614417443c29d6f6da02756"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xfixed.hpp",
+      "git_blob": "4ab3a75c3463066177c8ada2e5fd235443e76423",
+      "bytes": 37621,
+      "sha256": "c588721fad37aee8d6fc913b40ea1884aa5eff3851b9f6644cd63362a470d0ba"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xscalar.hpp",
+      "git_blob": "9464f4721aadaf4c23b6487127039e1979f4fdbc",
+      "bytes": 34273,
+      "sha256": "4fe6901c814e87c934849ca8f5ca87eac13d8adc79ca969dd4e9c7d1122e28fe"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xstorage.hpp",
+      "git_blob": "28ad238e5c5f8b5d39da6c20e9fb65ae28ed52a2",
+      "bytes": 58732,
+      "sha256": "d197569bef84f070f18910294fdd1c35b1b2c49f5415d0ec2bb88e6b30a48cdb"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/containers/xtensor.hpp",
+      "git_blob": "db8d92385269f621b63298f9166a5c9438dc2386",
+      "bytes": 35975,
+      "sha256": "f4167fc487a89e20c54d8b3507c17b8e08d6ea0abcb8a32f5b3fe8fc12464350"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xaccessible.hpp",
+      "git_blob": "fa494e4eab2fd8ba9f4ef386040c0a9033616d5b",
+      "bytes": 11701,
+      "sha256": "0676732eb58aaac4b1fb4c91c267d58cb1fd86b8aadadee6f4c128cf87ebdece"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xassign.hpp",
+      "git_blob": "9041138146d71b33194c8a2ceca01c681d931e37",
+      "bytes": 48878,
+      "sha256": "617787c32ed96a744e626ef3efe6e27282e2436178fa27ef8d1afc81ca9a4b77"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xeval.hpp",
+      "git_blob": "231f47312b67e770327e9a7657ddb5b6098fb3fa",
+      "bytes": 5832,
+      "sha256": "0758a2b313ee82bbcadf0c7dd91293d451df45637b75fc0955c3fb33941d12e5"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xexpression.hpp",
+      "git_blob": "1f8c98194219be260b665815239215aa4ca9d892",
+      "bytes": 24893,
+      "sha256": "95138fbab41ff01537cd9fc1dbb9e965de7c9c511cb1ad9dc12bb2660a6a5e3d"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xexpression_traits.hpp",
+      "git_blob": "5ec0f86fec881505fe7c2439176033555087d2cc",
+      "bytes": 5767,
+      "sha256": "b441231cad2ac5d90c6bbb158b9fde3eb38ad03f5aac332e713903f6521cef50"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xfunction.hpp",
+      "git_blob": "65ee5050ec0dc43def9aca9a666c0c25b808fbab",
+      "bytes": 41164,
+      "sha256": "2b0e608ef322a3c0ca972d0ab626605a7e670f900f17e254de81442ff4d830ab"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xiterable.hpp",
+      "git_blob": "d0caf9d6f2daa53662df27cba31a09d9a413dccc",
+      "bytes": 51585,
+      "sha256": "666a0d220974efe5cc7fae24d10bea262906c12cdb9be415a0a919e90c78f19b"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xiterator.hpp",
+      "git_blob": "ca3faef217e462d3282b44b13f3d36d2ef80f7ee",
+      "bytes": 36857,
+      "sha256": "90c70879fb1312de755b17cf85b98bfaca5ce7a1072f04b1d9d07bad178b895a"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xlayout.hpp",
+      "git_blob": "f3330f4274245280a68f08277dcfb43813fcaa59",
+      "bytes": 3460,
+      "sha256": "33c786c5484c8a98e52654c7ccb201fb91437b2d094fc2baf02f19d241c135e7"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xmath.hpp",
+      "git_blob": "77f864929cdccccb6ac04e77bd12bac08530c03d",
+      "bytes": 124092,
+      "sha256": "7331f4255572a1c47797223a44c72d31703366d0dccaf17e6a8b49842e2681be"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xmultiindex_iterator.hpp",
+      "git_blob": "f0fdd041bb2890a0bf54def72fb670ec330b10a6",
+      "bytes": 3738,
+      "sha256": "96a731e5c7767be3b894acb1e792fe550d7198141a35c63ad7f4560cb5b5bc18"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xnoalias.hpp",
+      "git_blob": "7d95a3b1a6e5b25923fd111e5a91094069ce4998",
+      "bytes": 6204,
+      "sha256": "97b52da923cfe1a886178686c39f72e7ce4684e2ee482d2ec0281672f4ae1f22"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xoperation.hpp",
+      "git_blob": "533ad65130317debac50087a35e0928c90370034",
+      "bytes": 34615,
+      "sha256": "07aeedf6e13f44cae110611e8d5192eca9610dc1daa915a08fc2b097c3012080"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xsemantic.hpp",
+      "git_blob": "bafad4aca8bb21e90e82afe22a82bddce9e3aa3c",
+      "bytes": 25790,
+      "sha256": "a079e067059a0a23592577029ab075cd1a0884b421618eda853d8abaa3f4c119"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xshape.hpp",
+      "git_blob": "28fbe43cc58fa70a05d86b513ed7813ced4a1861",
+      "bytes": 17085,
+      "sha256": "4169dbd176d9743a0c127ba26a365d1cbcca21e9272e4c2fb42e89caa342f103"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xstrides.hpp",
+      "git_blob": "f8735f7e3b4e425ed915b6b62215aceda4e31abf",
+      "bytes": 31509,
+      "sha256": "e77452f7d283126fe5b7df6e812aa99955db26b61e1fe996d99bcd7f688fb622"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xtensor_config.hpp",
+      "git_blob": "09b8565541c8aa4b3ed37cbea8947b73711cf264",
+      "bytes": 4140,
+      "sha256": "f97e6abb83444f6090e3b22251ac906cc32fb7e88f3c4364915466373c86e44c"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xtensor_forward.hpp",
+      "git_blob": "0183b4527bc8f872de687f8de57119a39fee4de4",
+      "bytes": 7858,
+      "sha256": "6c66bfac05c2009b50baad7f927496c65b3fe75b96af6fa55fb666f78109d397"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/core/xvectorize.hpp",
+      "git_blob": "053d7c92bd142dc45289b777a2922beb70530cf5",
+      "bytes": 3172,
+      "sha256": "65074ac54e712d4b4037886799e8ff50540354d0a72bcfdc16e7a2f082c891a6"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/generators/xbuilder.hpp",
+      "git_blob": "8a2f61147abb444712e91f8d12790d31e962d803",
+      "bytes": 44356,
+      "sha256": "e8838e882686d64683e24f2cbf12059111c2e5a3fbc36eea6af55e84add7e27b"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/generators/xgenerator.hpp",
+      "git_blob": "f4dfc191f7f066188aa0efeba855535e8e5be14f",
+      "bytes": 17669,
+      "sha256": "97cf32645e14accc0e757998648c553db6a8218564deb548fcc708d9c2fc5ed6"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/generators/xrandom.hpp",
+      "git_blob": "5e365f667512159a25eae4849d5b7fdd9dc390b4",
+      "bytes": 40484,
+      "sha256": "1572dd6e950b1e9da6a5aa28234e4b0d0bf149c2dfec74cf5436ed9fcc385f8e"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/io/xcsv.hpp",
+      "git_blob": "2b758bd9ee7c3d586d8749775c2123933c33f9e2",
+      "bytes": 8619,
+      "sha256": "92c94181986d20c11e037e974a3d7ed6fb59990a55725beca84ae4e548bdeff9"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/io/xinfo.hpp",
+      "git_blob": "f78cc3c76fff2a025eae6aaed429c680d9e651fe",
+      "bytes": 3922,
+      "sha256": "89d23b39c702c32e61c2e82574ceeaf8469f42b9265e9ce94859e419b90bdc67"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/io/xio.hpp",
+      "git_blob": "ca9d694a46c8ea7ee792d82817e4aa922b259516",
+      "bytes": 26850,
+      "sha256": "78e8c11177a9cab43d2d322d0be1e7f814f316bff2aed747fd035a768fb7ff4b"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/io/xjson.hpp",
+      "git_blob": "18623b7f8bf2c6cf646e9be5d326e81b23b66c5e",
+      "bytes": 6797,
+      "sha256": "7cda7c1f90414d8ce353cd6a828ca44abb2948f8513f444e172271724da47d5b"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/io/xmime.hpp",
+      "git_blob": "3e3502cb0dd2511a5c9b9492f7617b045932eb3c",
+      "bytes": 13004,
+      "sha256": "98ba1436f2c22b45d2afc1f93107488032c445ce51f64384db1e25969bcc6ce4"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/io/xnpy.hpp",
+      "git_blob": "369d68c9de222a14bec94cd570ebc3157ba62ec9",
+      "bytes": 27264,
+      "sha256": "375edc750675e57075d769561495197e739a781b0d19c0c91a376fe4e84cad5e"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xcomplex.hpp",
+      "git_blob": "308218f60bb6e878d42a349427f2514e0a486f6f",
+      "bytes": 8415,
+      "sha256": "695b16b136ab84aaee92515f765179adaf6af41af39ed9a0e09c0dc661c1624c"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xexpression_holder.hpp",
+      "git_blob": "f720cc006e64a4dce66b405243a342588d71e4c0",
+      "bytes": 7644,
+      "sha256": "0ad5ecc447989c1403685143cf374f0ca50fd5c68275158ab452cc51112b2efa"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xfft.hpp",
+      "git_blob": "954b55a9bdb8d042375b89977ac8babc0900dba4",
+      "bytes": 8704,
+      "sha256": "dbd795618a1596461c69a322d693dc1ced7988b7493c9b2e1287e8edb250cbd1"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xhistogram.hpp",
+      "git_blob": "b8fdd9da11492c85fea0f559e8d0e3c25c926c0d",
+      "bytes": 21665,
+      "sha256": "35a9de73b6dcb1d68d6132373326b6aee08c0d1b0c4f1a7e90e53ad08b1688ce"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xmanipulation.hpp",
+      "git_blob": "f0af928928b99abbdc4a310a331bc53cc89e4cbe",
+      "bytes": 37965,
+      "sha256": "eaa884bc177f5b0946e6d0ebc64a9fe632968573bf77bbb277786fc2df9dee0c"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xpad.hpp",
+      "git_blob": "1204632f3d346a378247b7829b129fb368de135a",
+      "bytes": 11885,
+      "sha256": "a17d914413b1af4fda989ccff6b6dbb08cb74e18aff7bdabd2b48044535436e5"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xset_operation.hpp",
+      "git_blob": "94b7e23a725b27598ceb69c77ce1f555ecdda264",
+      "bytes": 7294,
+      "sha256": "450d205d755c424edc3dcbe26f686d9f5e366b6a8ae84c3fcfcd543017e5c82d"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xsort.hpp",
+      "git_blob": "aa9ea4cfa10c0220e23d55a5a017efe17196e324",
+      "bytes": 50057,
+      "sha256": "5ee2f7201c6f874b856f93b2d4252928de1e81b3bedde614ed8cf63fe728a2c9"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/misc/xtl_concepts.hpp",
+      "git_blob": "163139812b06398718fca1cc3c0daa843b16d153",
+      "bytes": 1093,
+      "sha256": "366085ffc0815b80684f543f14db3e352d4cd34bbd151e8709e41f52fe467047"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/optional/xoptional.hpp",
+      "git_blob": "6c690b0d61fbd2cbffe8bf107d1702b0e9787073",
+      "bytes": 48905,
+      "sha256": "bcc52423b6cde2433c0a70f41e93d4e77e9498334e05f9ae4b35464a6fcb2f00"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/optional/xoptional_assembly.hpp",
+      "git_blob": "062a1f9faa79d48129202ea10b9d88f3113c132b",
+      "bytes": 27148,
+      "sha256": "645f4c4cc3d8104cc03286882f75404c18c28164548a94caf7ea8f8bd237b3b9"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/optional/xoptional_assembly_base.hpp",
+      "git_blob": "3f60cc359e6e8e6921b5b81118dcddca762da32f",
+      "bytes": 37763,
+      "sha256": "67b2a200ba575e9a710879a48dff2e4d6842c1d6786c1f066773edeef5e129f9"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/optional/xoptional_assembly_storage.hpp",
+      "git_blob": "0ec1c0a4413ebc3c691bc7ffac14a25be2676e76",
+      "bytes": 19564,
+      "sha256": "75a77e6531bb699fece53b637066b6b6a5fdab38f7882abd5f026eee948ac193"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/reducers/xaccumulator.hpp",
+      "git_blob": "50d927e21a4421b9d4ef5a42f1ff5696b2f23192",
+      "bytes": 14259,
+      "sha256": "464c8b66e18b0fa2a304b1bc0e33b2d71dba0462ed0631e64151ee79e2f440a6"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/reducers/xblockwise_reducer.hpp",
+      "git_blob": "902b41f080b67dd3f785982349639ff1feb1af2d",
+      "bytes": 38604,
+      "sha256": "a29a11fb42d8591c1219b979b20ca7c5be20e90ee035f67f6f7b4bb053f722ef"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/reducers/xblockwise_reducer_functors.hpp",
+      "git_blob": "4ac9e649d0d08b8c4ac54a910554127fe11d3ebb",
+      "bytes": 17828,
+      "sha256": "6c1615b509b4432f3fd006803da3e48d2b85dbd14f9116ec58ab88a53e42528f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/reducers/xnorm.hpp",
+      "git_blob": "b883573f6534c2946d7738e66f356a822648999d",
+      "bytes": 31234,
+      "sha256": "56e34454039b89ef2603b1ddcd974c47529b645fee96f138dde937a5a599d5d5"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/reducers/xreducer.hpp",
+      "git_blob": "3cf8ec76f1368c48357e926ec8c1fe996a51b048",
+      "bytes": 64600,
+      "sha256": "53b43fb19d17fe5cf3b6b8dcc720143da55482ae0e1b6936b55892b283658878"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/utils/xexception.hpp",
+      "git_blob": "10a75d190c6d18d936cdcb9b6ef4372174fc25bb",
+      "bytes": 13192,
+      "sha256": "b114a9d1b0e119521c010d66e51c7469694426251a2a0fe6a62e30d984d1e2a0"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/utils/xtensor_simd.hpp",
+      "git_blob": "59816114b5e115e2fcff008194ae3311fb07692c",
+      "bytes": 8307,
+      "sha256": "2f8ecff51030edf667f9dd240a0eb0d9d5a50c1a40cd613db9129a9d1d21c387"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/utils/xutils.hpp",
+      "git_blob": "8f40b0c053795ee7e04ac7c4b0d895c73c6ce7e2",
+      "bytes": 31274,
+      "sha256": "d0f7429c8cb90017588719a476ab30a16ef555a7b774a5f9b1cec2b80880a47d"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xaxis_iterator.hpp",
+      "git_blob": "62489b08ff864bd31e7dcbba829ff2ff591a2d07",
+      "bytes": 10611,
+      "sha256": "4d7d01ae12907a56cfa82200f867681f04e8e538ae38a0a9a56df25e54b286d9"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xaxis_slice_iterator.hpp",
+      "git_blob": "10895559534184ee9952a84a76482b2a3cf86045",
+      "bytes": 11310,
+      "sha256": "edbaacd4c3d3a45a1795911090afaadc655f15f2c6513a4a09472d20be73871f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xbroadcast.hpp",
+      "git_blob": "412c81fce22b3b677c33370a60af4a943d5be1e6",
+      "bytes": 15784,
+      "sha256": "3b070778dd6b074ef3a9e470a55021dc831edb4583e765ee898f8761e9a2a92e"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xdynamic_view.hpp",
+      "git_blob": "5ab298f23d34bf07857277c19bb9c28125a54e16",
+      "bytes": 29008,
+      "sha256": "6fca578eef55cf971d639eb88e92aab0594a8abca6f9ea8773e98d1021b76bdf"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xfunctor_view.hpp",
+      "git_blob": "9f2daf712162cd9fe6666f57afe4b7d948cadd50",
+      "bytes": 57722,
+      "sha256": "8d17c4cb7156ad9ac61d24d4bff0ac5e36b514b50e8a034f690de8eb474c6605"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xindex_view.hpp",
+      "git_blob": "8b911afb819295b8f206e8616eb28566d588e4f5",
+      "bytes": 26819,
+      "sha256": "50d5167f6b4e7b1d97dc053ecd59b6f2852990127cf54fb57ca6fc2eb7cbae20"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xmasked_view.hpp",
+      "git_blob": "05210d8c8cb0e5cfe24e866beced92b2f696ddb7",
+      "bytes": 24080,
+      "sha256": "3b604846d4769b0062617b228b1a303446309590b2224fb4d7b630ebc5fbbf10"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xoffset_view.hpp",
+      "git_blob": "db94e40617368189ec15ac3db36eb09bbd6d6204",
+      "bytes": 3287,
+      "sha256": "933aace88bc0bd0071ece293a6be7ecf6f5d6c1127cbb4932468eadd4c637f3f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xrepeat.hpp",
+      "git_blob": "0c119c9af69444127bc1f4bed7d4443a59cfd3ae",
+      "bytes": 23329,
+      "sha256": "d32d2afa072296adeab1c0b09d53371a1d86368da611dac2c4629e40e6687573"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xslice.hpp",
+      "git_blob": "4faa17ccad2ee4cc177c05b02081a15c2d57349b",
+      "bytes": 49289,
+      "sha256": "75bf96335bd580d63bc53d5a5b852b597048747eec1278fce3a81c3af1ff2193"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xstrided_view.hpp",
+      "git_blob": "b52da8e308a46231fbc7e8d4fbad042c0569072b",
+      "bytes": 33747,
+      "sha256": "bf3cc56d7d06b6af56066d8994c6ce80fd3c699638281c84264141d95e544a77"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xstrided_view_base.hpp",
+      "git_blob": "be67ee19153370bc071d226370e34379f4dc3a38",
+      "bytes": 34251,
+      "sha256": "e1c9e7a7c7f0973b685a6efcf920fd8262647517a55a12f98676cf0d8cf1a434"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xview.hpp",
+      "git_blob": "be4c05e1ac947720d6f910ab0a2648c3e1de636c",
+      "bytes": 82558,
+      "sha256": "71c8521564ff64c9dad0901bacfcf7e4a97e52b7ffca4f264c5a6734ba21c9a5"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtensor/include/xtensor/views/xview_utils.hpp",
+      "git_blob": "5c072dbf0e7ef8619b06f5ceac85d72f05c718bf",
+      "bytes": 8391,
+      "sha256": "a1cf12c64253ba5b701ebe67bbdaa2c8c827d06cf7f7b81794e39fd1cee6bf9b"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/LICENSE",
+      "git_blob": "d553f7dc0a919bad268a717dc8755d2e3cf71da5",
+      "bytes": 1580,
+      "sha256": "b5ab7b1d364112a59b717b622f7914a9d545de1fa62febf22f50e728a241a487"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xbase64.hpp",
+      "git_blob": "7e607c8be8b58206ac172612c4bf01d7475f9369",
+      "bytes": 2337,
+      "sha256": "387dbdc53d317932ad1170d29aac36490af1da4df330b0dd8cb23093fbe7f83f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xbasic_fixed_string.hpp",
+      "git_blob": "53b022c64cf9022686abbc78f5b92308b7841b76",
+      "bytes": 100900,
+      "sha256": "4d35181e4c33d4aafaf6ff584aa6b3d957b13759b301028c0b5f608f62eabeaf"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xclosure.hpp",
+      "git_blob": "30dedd319c2aef880d8c7218541a58e2e456afae",
+      "bytes": 12658,
+      "sha256": "2f46f8804512198142d254a0902b2b067cd7df5cb4abfaa55f4387fe9227abdf"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xcompare.hpp",
+      "git_blob": "d68380a1b1163e88fe1128b89c7c18729c6eae43",
+      "bytes": 4665,
+      "sha256": "da2b1fc3f431f2c74c23cc32e019c958e051272e0b5c9579c6832959dbcca6ae"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xcomplex.hpp",
+      "git_blob": "53fb52a836467bef9d2e57a7d1912d337494445b",
+      "bytes": 47691,
+      "sha256": "098400ba71692fee91788ae9dfa60f2494e0e71a5790a26e69e100b22dedf80e"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xcomplex_sequence.hpp",
+      "git_blob": "4199c3f18f115506532231ea0fdd2e793ba30b78",
+      "bytes": 18183,
+      "sha256": "abd6f905188e8f798eb2efb0129a5987e309bf328782a890bab08f19f98fa87f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xdynamic_bitset.hpp",
+      "git_blob": "9ccce79ba3859f68b6c73c07be153a7932f389f6",
+      "bytes": 42317,
+      "sha256": "5a6ce151036b440c6f21c8731bf7a69cca0bfe8c90300a83aaa1a8ccbc74f910"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xfunctional.hpp",
+      "git_blob": "1277b619d4cc33b31b38ea7429ca9a6bd8164cff",
+      "bytes": 1346,
+      "sha256": "2163b726cc72abbb42a2cc9415a2d614e8b8baefeb7ba303b7fbd08dfec72385"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xhalf_float.hpp",
+      "git_blob": "8c6b3048a84bf20cd7c49e53c4196a3212d88d30",
+      "bytes": 1135,
+      "sha256": "d4bdbaf6b7244f12263e6012cacb73550387a2e5216745d05ffd0846cd6ecb0e"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xhalf_float_impl.hpp",
+      "git_blob": "12a9086562233a117f9ad59c05602ef45c23ec49",
+      "bytes": 198035,
+      "sha256": "47ec470d7a65e2a2a3ff889c0b550fe81bf41d6efa4eb282c38be47bc87a39ad"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xhash.hpp",
+      "git_blob": "52bbacaedd6e6231c8e6dabd5e7ea769290a3615",
+      "bytes": 6518,
+      "sha256": "03bc6a0216f33c89724b07efdd9d147a7cfcd2cca5163ce4a0c0f8b4deb6437f"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xhierarchy_generator.hpp",
+      "git_blob": "5478d066dee9d2ff813a841dd62f760d05ed4572",
+      "bytes": 2394,
+      "sha256": "1d2c3267a163ccae96a4a4662b428cff18c92d1ce3fe5b138bf07a70a9424ee4"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xiterator_base.hpp",
+      "git_blob": "29796ca32027af7ee818fd46dca61c09478e2770",
+      "bytes": 13096,
+      "sha256": "587e2daaa289ac3d176ce7a2d0dfffacd6687fbd3cd54a2badc6c5164b3994d7"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xjson.hpp",
+      "git_blob": "7587dd5584519fadb607b21dc3ec0daf81197370",
+      "bytes": 2665,
+      "sha256": "ad9c9612dc2fba62eb7aab3f53bd3c6806f337b7476602f646f9dbf10a3db21c"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xmasked_value.hpp",
+      "git_blob": "ebe2f571f60598c8ead6144f3157aadb38afe89d",
+      "bytes": 27850,
+      "sha256": "5acf41b172a7147dddd3b9d88c41b51d6a3a9426fc0a49d345bb088d29e64ff9"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xmasked_value_meta.hpp",
+      "git_blob": "f7d0b8114c54687f82415b8b5c78a8ccfd3d51d2",
+      "bytes": 1354,
+      "sha256": "bf67d56519171cfa23c547e8cf876b5a32403d4f6d6db95dc1f1d3bb620a9689"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xmeta_utils.hpp",
+      "git_blob": "49599e0d741ca1738824eb5b98a5fc5125ff1a39",
+      "bytes": 15856,
+      "sha256": "53fcd1d16178059a25a35ae1907896f09ffc7e74c8878eb435d4e2cf7d5f0108"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xmultimethods.hpp",
+      "git_blob": "cf8b9c963ec15e99cb8a8872e84c97fee0e09ca1",
+      "bytes": 12987,
+      "sha256": "7e0010b9a48ca329f2e43a2ae8d245e509e4ebc12d2652b3d539170a90ec010a"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xoptional.hpp",
+      "git_blob": "c875085c55f71f938dd9b1f7b2aea58ec696f85e",
+      "bytes": 54841,
+      "sha256": "8b7d83204db9e2cefd3b04116494a18f97eb6c9bbea87b8cd19b4728acfe6c5a"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xoptional_meta.hpp",
+      "git_blob": "1a57d22eb4e2a65d1b2a6cbf5f63f9b7eba49317",
+      "bytes": 4871,
+      "sha256": "9fa72d4eed6067c25b2a96b844797d3afcddc70755938b15e71381bbcc8cb4ea"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xoptional_sequence.hpp",
+      "git_blob": "535b176ae5f6d29ce793b5cccc6fef822fd5cb38",
+      "bytes": 21055,
+      "sha256": "9f01127c9216ab8abf949cb804bfd196bd8d88a81326cf7d80a535b220f12fd6"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xplatform.hpp",
+      "git_blob": "c0c15b21347dff032d4e0c465a5a02372053fa42",
+      "bytes": 1207,
+      "sha256": "53617a36784f4de5de2f508f03d0afeec5b47bd5733e4c8a7f7b94afd0005b9d"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xproxy_wrapper.hpp",
+      "git_blob": "c6baa38d2d1013576c18342b3f567ddfa238ced5",
+      "bytes": 1527,
+      "sha256": "37d64b79daab893256db9b370a89ebc92ee1cf19161ff04657ca00eed92bd568"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xsequence.hpp",
+      "git_blob": "55c7b64423f2326e499c8a47a3b0ea74755d5508",
+      "bytes": 5593,
+      "sha256": "2d4f246a0a2f4a2f0ec7cf080708e01168d93f9e63d3154ab5ebf799a504d5a2"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xspan.hpp",
+      "git_blob": "07f2920c1f004a392701aa60493d1bf3990edd41",
+      "bytes": 798,
+      "sha256": "1a07f4ce2a16144405a1cc5ba59601b51975584096a1b5cb48d0476b9232f431"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xspan_impl.hpp",
+      "git_blob": "4ad45d74b17f99afc6ed9dcf892a0cb08e58c564",
+      "bytes": 23095,
+      "sha256": "f1883f77c43b6a2579d30949283077409e6ea2931303457e879e5993c8b225b0"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xsystem.hpp",
+      "git_blob": "3c75b5e0ef523ce5260cf8747f48ba6e76b62ed8",
+      "bytes": 3281,
+      "sha256": "3b89f782220f7e4bd703387367267a1d236ade5cba747e03c7a268209f0036dc"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xtl_config.hpp",
+      "git_blob": "4305324ad797174553ac063392cf9b7ddf92bc03",
+      "bytes": 1426,
+      "sha256": "af40961088e8af842342e3a3d57bb18809b573f6dcc9e991ebf4d5c4d4018df9"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xtype_traits.hpp",
+      "git_blob": "8c36836b840ad54c218141a5cb34352b74304c77",
+      "bytes": 10390,
+      "sha256": "37b1d459ffc7cf240f4593b8fc2a9c54a51dfa577eb7ad695fba82b3da400a3a"
+    },
+    {
+      "input": "proc",
+      "path": "third-party/xtl/include/xtl/xvisitor.hpp",
+      "git_blob": "3039c74189ea6e55b91f60ddebd864af74be7b75",
+      "bytes": 5388,
+      "sha256": "9183ee20bfc8af5e68588c55a095ed35fe7d301e0bf95d3e8b4a1b70283906f7"
+    },
+    {
+      "input": "sdk",
+      "path": "sdk/cmake/arm64-android-llvm.cmake",
+      "git_blob": "021263d2e653c5c1d5541c760e2b3e1dfc20c526",
+      "bytes": 367,
+      "sha256": "930e32d2b82910d41b2809d20ffb051808b643e7ad13367235a2fc91e013aa9c",
+      "url": "https://raw.githubusercontent.com/qualcomm/GenieX/071f609995470bdb0e0769ab964754adfaab7e47/sdk/cmake/arm64-android-llvm.cmake"
+    },
+    {
+      "input": "official-prebuilt",
+      "path": "prebuilt/libgeniex-proc.so",
+      "bytes": 19225824,
+      "sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d"
+    }
+  ]
+}

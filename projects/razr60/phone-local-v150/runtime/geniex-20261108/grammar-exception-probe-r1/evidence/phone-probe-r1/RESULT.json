@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.grammar-exception-probe.v1",
+  "diagnostic_only": true,
+  "npu_model_loaded": false,
+  "ui_actions": 0,
+  "production_domain_tested": false,
+  "cases": [],
+  "complete": false,
+  "error": "push-grammar-exception-direct failed 1: /home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-exception-probe-r1/grammar-exception-direct: 1 file pushed, 0 skipped. 56.3 MB/s (13968 bytes in 0.000s)\nadb: error: failed to copy '/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-exception-probe-r1/grammar-exception-direct' to '/data/local/tmp/hepta-grammar-exception-probe-r1-20261108/grammar-exception-direct': remote couldn't create file: Permission denied\n"
+}

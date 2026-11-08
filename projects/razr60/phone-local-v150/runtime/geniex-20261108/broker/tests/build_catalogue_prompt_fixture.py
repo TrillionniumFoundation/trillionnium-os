@@ -104,6 +104,7 @@ def main():
         ap.add_argument("--" + name, type=Path, required=True)
     ap.add_argument("--target-alias", required=True)
     ap.add_argument("--owner", required=True)
+    ap.add_argument("--schema-grammar", action="store_true")
     args = ap.parse_args()
     source = args.source.resolve(strict=True)
     require(source.is_dir(), "provider source directory required")
@@ -125,6 +126,12 @@ def main():
     provider = importlib.import_module("provider_phone_local")
     prompt_budget = importlib.import_module("prompt_budget")
     backend = importlib.import_module("native_backend")
+    grammar_module = None
+    compiler_sha = None
+    if args.schema_grammar:
+        grammar_module = importlib.import_module("schema_grammar")
+        require(Path(grammar_module.__file__) == source / "schema_grammar.py", "compiler outside selected provider source")
+        compiler_sha = sha(read(source / "schema_grammar.py", 65536))
     provider.validate_apps(apps)
     # In-memory harness configuration mirrors the explicit new selector. It
     # does not edit provider source or bypass the original composition limit.
@@ -144,6 +151,9 @@ def main():
         if not path.exists():
             path = BROKER / name
         source_pins[name] = {"path": str(path), "sha256": sha(path.read_bytes())}
+    if grammar_module is not None:
+        helper = source / "schema_grammar.py"
+        source_pins[helper.name] = {"path": str(helper), "sha256": sha(helper.read_bytes())}
     manifest = {"schema": "hepta.catalogue-model-prompt-fixture.v1", "fixture_id": run_id,
                 "scope": "host_semantic_fixture_not_phone_evidence", "phone_actions_executed": 0,
                 "model_inference_executed": False, "native_receipts_validated": False,
@@ -153,6 +163,9 @@ def main():
                 "image_ground_truth_source": "tools/phone_qairt_acceptance.py public synthetic FIXTURES",
                 "image_ground_truth_excluded_from_prompt": True, "source_compose_max_prompt_bytes": 24576,
                 "operation_profile": profile, "cases": [], "all_inputs_generated": False}
+    manifest.update(grammar_profile=backend.GRAMMAR_PROFILE if grammar_module is not None else None,
+                    schema_compiler_sha256=compiler_sha,
+                    grammar_model_enforcement_tested=False)
     save(args.out, "owner.txt", owner_raw)
     messages = [{"role": "user", "content": args.owner}]
     calls, facts = {}, {}
@@ -202,7 +215,7 @@ def main():
                     "stream": False, "temperature": 0, "max_tokens": 256,
                     "response_format": {"type": "json_schema", "json_schema": {
                         "name": "hepta_mobile_use_action", "strict": True, "schema": model_schema}}}
-            compact = prompt_budget.compact_provider_body(body)
+            compact = prompt_budget.compact_provider_body(body, grammar_enabled=grammar_module is not None)
             before, after = [strict_json(item["messages"][1]["content"].encode()) for item in (body, compact)]
             require(compact["response_format"] == body["response_format"] and compact["messages"][2] == body["messages"][2],
                     "owner/image/authoritative schema changed in projection")
@@ -211,6 +224,15 @@ def main():
             prompt = ("VERIFIED_CONTEXT_JSON\n" + compact["messages"][1]["content"] + "\nOWNER_INSTRUCTION\n").encode() + owner_raw
             system = compact["messages"][0]["content"].encode()
             require(prompt.endswith(owner_raw), "exact final owner bytes missing")
+            if grammar_module is not None:
+                grammar, conversion = grammar_module.convert_schema(encode(model_schema),
+                    compiler_source_sha256=compiler_sha)
+                require(conversion["root_schema_kind"] == "mobile_use"
+                        and conversion["original_schema_sha256"] == case["files"]["model-schema.json"]["sha256"],
+                        "converter did not bind the original current model schema")
+                case["files"]["grammar.gbnf"] = save(directory, "grammar.gbnf", grammar)
+                case["files"]["schema-conversion.json"] = save(directory, "schema-conversion.json", encode(conversion))
+                case["grammar_bytes"] = len(grammar)
             for filename, raw in (("system.txt", system), ("prompt.txt", prompt),
                                   ("original-body.json", encode(body)), ("body.json", encode(compact))):
                 case["files"][filename] = save(directory, filename, raw)

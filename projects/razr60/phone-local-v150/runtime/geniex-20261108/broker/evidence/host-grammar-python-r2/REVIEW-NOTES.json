@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.grammar-python-host-review.v1",
+  "job_id": "1a1bb4a771e-13c47-1b2",
+  "terminal_state": "succeeded",
+  "exit_code": 0,
+  "output_complete": true,
+  "backend_tests": 27,
+  "private_regressions": 38,
+  "selector_modes": [
+    "public v1",
+    "actual-private v1",
+    "public v2",
+    "actual-private v2"
+  ],
+  "cases_per_selector_mode": [
+    "success",
+    "malformed JSON",
+    "task deadline",
+    "native timeout",
+    "accepted owner cancellation",
+    "frozen-worker deadline"
+  ],
+  "model_implementation": "frozen C worker linked to explicit host SDK stub; stub does not enforce GBNF",
+  "actual_schema_compiler_executed": "pinned Python source with actual selected provider schema",
+  "real_native_supervisor": "r6 HEPTA_TESTING host build",
+  "phone_contacted": false,
+  "UI_actions": 0,
+  "original_fixed19_qualification_changed": false,
+  "files": [
+    {
+      "file": "HOST-VALIDATION.json",
+      "sha256": "f8c045dcc9354f7aecc020963e63e4ecd0d8670d431e21aae55ee447a714ad8e",
+      "bytes": 4920
+    },
+    {
+      "file": "backend-native-public-private-v1-v2.log",
+      "sha256": "da9fffca37d0467bd57cf8c34d09571bb2bc3d4d19658d4db12beb98515db9e9",
+      "bytes": 4845
+    },
+    {
+      "file": "private-r9-original-38.log",
+      "sha256": "fee43a6038f3e02732ce653668a7ab40265fc1844763cbce4fabaf152813a555",
+      "bytes": 7231
+    },
+    {
+      "file": "private-pins-import.log",
+      "sha256": "7cdb8a89ac503eb7d260527d9dc70da7b433b35bdf7a2805427f9c16ac9b315c",
+      "bytes": 27
+    }
+  ]
+}

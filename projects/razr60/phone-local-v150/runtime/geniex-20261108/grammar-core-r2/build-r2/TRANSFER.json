@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.qairt-core-artifact-transfer.v1",
+  "phone_accessed": false,
+  "pocket4_directory": "/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-core-r2-candidate",
+  "files": [
+    {
+      "path": "libgeniex_core.so",
+      "bytes": 1176008,
+      "sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d"
+    },
+    {
+      "path": "BUILD-MANIFEST.json",
+      "bytes": 15495,
+      "sha256": "0edd0c174a64b0269bad20a408fd5e7e96bdc778ab846c7384557b27af83734e"
+    },
+    {
+      "path": "INPUTS-MANIFEST.json",
+      "bytes": 126830,
+      "sha256": "45c6f4e58ed9d14e1c687ca05b687571ed00059530927f6125e9590b7ee34779"
+    },
+    {
+      "path": "ABI-COMPARISON.json",
+      "bytes": 16980,
+      "sha256": "a0f0d0b28c3947adb1015b8c4075eb9ae8c0bbf509253d04fe741448cffaf7ee"
+    },
+    {
+      "path": "ABI-RESOLUTION.json",
+      "bytes": 11387,
+      "sha256": "893f33eddb9a6d7d6b84519fbae125e3225d0a55fb4b2ad3b9b67b4ba2beecf3"
+    },
+    {
+      "path": "candidate-symbols.json",
+      "bytes": 208790,
+      "sha256": "c0d7ebdc69c17e4fdb42f367e723074ce48afeb52883fad251da6e7333038c3d"
+    },
+    {
+      "path": "header.txt",
+      "bytes": 937,
+      "sha256": "809b3b6a683a1bdf10bf98af74c97fb08691e3a9c8dda10cd4c1a8110a450030"
+    },
+    {
+      "path": "dynamic.txt",
+      "bytes": 1583,
+      "sha256": "7ad9af5231292e01d7eee0c7763ed056b98e4dcd04e8852c10a384eb90f767be"
+    },
+    {
+      "path": "versions.txt",
+      "bytes": 24089,
+      "sha256": "cfabb28de8b82fe347ac28edcfc3a46174a505c1d44a192d6e31ee8deeb9c3e1"
+    },
+    {
+      "path": "comment.txt",
+      "bytes": 449,
+      "sha256": "c640de20a411006c2dac3599664fae12086a4a5ab35db9c59eb64acb2850dcb9"
+    }
+  ],
+  "source_manifest_parts": [
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/abi/INPUTS-MANIFEST.part00.txt",
+      "bytes": 50000,
+      "sha256": "cd3f8a2be23e787eef4dd1480ccda644db48ba8e58dc1ff8bd35c2497624db5a"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/abi/INPUTS-MANIFEST.part01.txt",
+      "bytes": 50000,
+      "sha256": "2cea5b0ded602b8921c6ea844028a5d58960dd65fc86c84a0ec6ac6406acd607"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/abi/INPUTS-MANIFEST.part02.txt",
+      "bytes": 26830,
+      "sha256": "0bfdce23e7fff1b6c73348e05f57867b2e8f300d864f9add6c0768cb70391efa"
+    }
+  ],
+  "new_undefined_resolved": true,
+  "missing_required_exports": [],
+  "missing_old_definition_bindings": [
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    },
+    {
+      "type": "FUNC",
+      "binding": "WEAK",
+      "visibility": "DEFAULT"
+    }
+  ],
+  "note": "Mac-to-pocket4 copy only; no phone deploy or execution"
+}

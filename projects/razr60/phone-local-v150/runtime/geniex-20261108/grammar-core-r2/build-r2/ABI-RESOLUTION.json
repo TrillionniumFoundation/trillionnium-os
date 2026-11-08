@@ -1,0 +1,139 @@
+{
+  "schema": "hepta.qairt-core-abi-resolution.v1",
+  "phone_accessed": false,
+  "candidate_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+  "processor_sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+  "all_new_undefined_resolved_in_unchanged_proc": true,
+  "unresolved_new_symbols": [],
+  "new_undefined_resolutions": [
+    {
+      "name": "_ZNKSt9exception4whatEv",
+      "resolved_in": "unchanged libgeniex-proc.so",
+      "definition": {
+        "binding": "GLOBAL",
+        "name": "_ZNKSt9exception4whatEv",
+        "section": "15",
+        "type": "FUNC",
+        "visibility": "DEFAULT"
+      }
+    },
+    {
+      "name": "_ZNSt6__ndk112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE7reserveEm",
+      "resolved_in": "unchanged libgeniex-proc.so",
+      "definition": {
+        "binding": "WEAK",
+        "name": "_ZNSt6__ndk112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE7reserveEm",
+        "section": "15",
+        "type": "FUNC",
+        "visibility": "DEFAULT"
+      }
+    },
+    {
+      "name": "_ZNSt6__ndk115basic_streambufIcNS_11char_traitsIcEEEC2Ev",
+      "resolved_in": "unchanged libgeniex-proc.so",
+      "definition": {
+        "binding": "WEAK",
+        "name": "_ZNSt6__ndk115basic_streambufIcNS_11char_traitsIcEEEC2Ev",
+        "section": "15",
+        "type": "FUNC",
+        "visibility": "DEFAULT"
+      }
+    },
+    {
+      "name": "_ZNSt6__ndk115basic_streambufIcNS_11char_traitsIcEEED2Ev",
+      "resolved_in": "unchanged libgeniex-proc.so",
+      "definition": {
+        "binding": "WEAK",
+        "name": "_ZNSt6__ndk115basic_streambufIcNS_11char_traitsIcEEED2Ev",
+        "section": "15",
+        "type": "FUNC",
+        "visibility": "DEFAULT"
+      }
+    }
+  ],
+  "missing_original_definitions": [
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0ELm0EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm0ELm0EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1ELm1EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm1ELm1EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2ELm2EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm2ELm2EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3ELm3EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm3ELm3EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4EEE10__dispatchB8ne210000IOZNS0_6__ctorINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE19__generic_constructB8ne210000INS0_18__move_constructorISE_LNS0_6_TraitE1EEEEEvRSF_OT_EUlSM_E_JONS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEEEEDcSL_DpT0_"
+    },
+    {
+      "binding": "WEAK",
+      "name": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4ELm4EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_",
+      "section": "15",
+      "type": "FUNC",
+      "visibility": "DEFAULT",
+      "demangled": "_ZNSt6__ndk116__variant_detail12__visitation6__base12__dispatcherIJLm4ELm4EEE10__dispatchB8ne210000IOZNS0_12__assignmentINS0_8__traitsIJN6geniex12StandardRopeENS8_17Llama3RopeScalingENS8_15LongRopeScalingENS8_18PartialRopeScalingENS8_12MRopeScalingEEEEE16__generic_assignB8ne210000INS0_17__move_assignmentISE_LNS0_6_TraitE1EEEEEvOT_EUlRSK_OT0_E_JRNS0_6__baseILSI_1EJS9_SA_SB_SC_SD_EEEOSS_EEEDcSK_DpT0_"
+    }
+  ],
+  "missing_known_consumer_requirements": [],
+  "known_consumer_requirement_count": 95,
+  "status": "ELF_CHECKS_ONLY_NO_RUNTIME_TEST"
+}

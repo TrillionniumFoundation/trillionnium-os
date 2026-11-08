@@ -1,0 +1,23 @@
+test_all_ascii_and_scalar_boundaries (__main__.PythonConverterTests.test_all_ascii_and_scalar_boundaries) ... ok
+test_complete_53_alias_enum_and_exact_screenshot (__main__.PythonConverterTests.test_complete_53_alias_enum_and_exact_screenshot) ... ok
+test_complete_action_set_and_all_fields (__main__.PythonConverterTests.test_complete_action_set_and_all_fields) ... ok
+test_conservative_serialization_never_claims_full_json_language (__main__.PythonConverterTests.test_conservative_serialization_never_claims_full_json_language) ... ok
+test_coordinate_and_duration_exhaustive_boundaries (__main__.PythonConverterTests.test_coordinate_and_duration_exhaustive_boundaries) ... ok
+test_duplicate_schema_keys_and_size_fail_before_output (__main__.PythonConverterTests.test_duplicate_schema_keys_and_size_fail_before_output) ... ok
+test_exact_health_contract_shape_without_nonce_or_tools (__main__.PythonConverterTests.test_exact_health_contract_shape_without_nonce_or_tools) ... ok
+test_exact_tuple_lengths_and_types (__main__.PythonConverterTests.test_exact_tuple_lengths_and_types) ... ok
+test_literal_enum_cannot_inject_grammar_and_zero_length (__main__.PythonConverterTests.test_literal_enum_cannot_inject_grammar_and_zero_length) ... ok
+test_malformed_json_extra_tokens_and_missing_closers (__main__.PythonConverterTests.test_malformed_json_extra_tokens_and_missing_closers) ... ok
+test_nested_tuple_whitespace_and_object_order_are_sound (__main__.PythonConverterTests.test_nested_tuple_whitespace_and_object_order_are_sound) ... ok
+test_no_image_schema_cannot_gain_visual_actions (__main__.PythonConverterTests.test_no_image_schema_cannot_gain_visual_actions) ... ok
+test_package_and_view_patterns (__main__.PythonConverterTests.test_package_and_view_patterns) ... ok
+test_scalar_length_and_surrogate_representation_boundary (__main__.PythonConverterTests.test_scalar_length_and_surrogate_representation_boundary) ... ok
+test_source_file_mode_link_and_byte_binding (__main__.PythonConverterTests.test_source_file_mode_link_and_byte_binding) ... ok
+test_text_length_unicode_and_json_escaping (__main__.PythonConverterTests.test_text_length_unicode_and_json_escaping) ... ok
+test_truthful_proof_original_bytes_and_fixed_source (__main__.PythonConverterTests.test_truthful_proof_original_bytes_and_fixed_source) ... ok
+test_unknown_keywords_and_unsupported_combinations_fail (__main__.PythonConverterTests.test_unknown_keywords_and_unsupported_combinations_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.526s
+
+OK

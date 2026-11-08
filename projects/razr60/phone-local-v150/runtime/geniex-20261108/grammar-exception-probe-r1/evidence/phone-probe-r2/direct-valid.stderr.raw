@@ -1,0 +1,6 @@
+probe: before Tokenizer::from_file
+probe: tokenizer loaded; vocab=151669; grammar_bytes=13
+probe: before Grammar constructor (typed catch)
+probe: Grammar constructed and will destroy normally
+probe: constructor result=0; normal tokenizer cleanup
+probe: all cleanup complete

@@ -1,0 +1,13 @@
+probe: before Tokenizer::from_file
+probe: tokenizer loaded; vocab=151669; grammar_bytes=23
+probe: before Grammar constructor (catch-all only)
+parse: error parsing grammar: unexpected end of input
+
+root ::= "unterminated
+
+geniex_grammar_init_from_string: failed to parse grammar
+probe: caught exception in catch-all-only handler
+probe: constructor result=12; normal tokenizer cleanup
+probe: all cleanup complete
+loader: returned 12 before dlclose
+loader: normal dlclose complete

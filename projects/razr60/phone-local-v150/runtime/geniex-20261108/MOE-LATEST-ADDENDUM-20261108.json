@@ -46,11 +46,42 @@
       "assessment": "Mobile-focused MoE/QAT research baseline; no established Chinese visual tool-task or target HTP qualification here."
     }
   ],
+  "related_current_runtime_checks": [
+    {
+      "name": "TokForge Qwen3.5-4B W4 / QAIRT 2.51 prompt pack",
+      "source": "https://huggingface.co/darkmaniac7/TokForge-NPU-packs",
+      "model_is_moe": false,
+      "published_v79_download_gb_approx": 2.08,
+      "published_v79_additional_npu_resident_gb_approx": 4.34,
+      "resident_number_scope": "Publisher says NPU memory is additional to the separately paired MNN model; it is not whole-process RSS or just the downloaded pack size.",
+      "publisher_measured_v79": true,
+      "execution_split": "NPU prompt processing; CPU reply decoding with the exactly paired MNN model.",
+      "pinned_pack_commit_prefix_from_index_card": "e22fbfefdcd8",
+      "full_manifest_retrieved": false,
+      "target_phone_tested": false,
+      "assessment": "Additional primary evidence that hybrid NPU-prefill/CPU-decode is implemented on v79. This is a separate runtime and weight-pairing route, not a drop-in model or measured Hepta improvement."
+    },
+    {
+      "name": "Qualcomm Qwen3-VL-8B-Instruct full QAIRT bundle availability",
+      "source": "https://huggingface.co/qualcomm/Qwen3-VL-8B-Instruct",
+      "assessment": "The inspected official card lists complete pre-exported GENIEX_QAIRT bundles for X2 Elite, X Elite and Dragonwing targets, but no complete SM8750 bundle. Its SM8750 table entries are Vision-Encoder rows without full decoder measurements. The broad chipset list on the hub landing page is insufficient proof of a ready whole-model phone package.",
+      "target_phone_tested": false,
+      "custom_export_ruled_out": false
+    }
+  ],
   "accelerator_guidance": {
     "source": "https://docs.qualcomm.com/bundle/publicresource/topics/80-63442-10/htp_backend.html",
     "retrieval_scope": "Official search-index excerpt; full documentation page required JavaScript and had no readable lines.",
     "prefill": "Parallel input phase uses HMX/HVX compute.",
     "decode": "Autoregressive batch-one decode is commonly DDR weight/KV bandwidth limited.",
     "no_new_frequency_or_power_measurement": true
+  },
+  "generation_boundary": {
+    "source": "https://www.qualcomm.com/news/onq/2026/09/hexagon-npu-agentic-ai-architecture",
+    "deployment_source": "https://www.qualcomm.cn/news/releases/2026/09/releases-2026-09-22-2",
+    "publisher_claim": "Next-generation Hexagon adds an Element Accelerator and 50% larger shared memory; a 30B MoE example activates approximately 3B routed parameters and uses flash-to-memory expert management. The September 22 StepEdge-Omni deployment announcement explicitly names Snapdragon 8 Elite Gen 6.",
+    "target_is_that_platform": false,
+    "target_platform": "SM8750 / Snapdragon 8 Elite / Hexagon v79",
+    "assessment": "These announcements support a newer-platform research direction; they do not establish INT2 hardware execution, whole-model deployment or those performance gains on this razr. No Gen 6 result is counted as a v79 test."
   }
 }

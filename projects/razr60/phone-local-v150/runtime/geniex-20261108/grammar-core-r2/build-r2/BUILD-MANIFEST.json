@@ -1,0 +1,345 @@
+{
+  "schema": "hepta.qairt-core-android-build.v1",
+  "status": "BUILD_CANDIDATE_REQUIRES_REVIEW_AND_PHONE_TESTS",
+  "phone_accessed": false,
+  "model_qnn_processor_worker_modified": false,
+  "source_inputs_manifest_sha256": "45c6f4e58ed9d14e1c687ca05b687571ed00059530927f6125e9590b7ee34779",
+  "review_patch_manifest_sha256": "580c4b9340ed244a2585946123489e0c14bdf03916e7dc6132da0ef8a28a044c",
+  "ndk_directory": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358",
+  "ndk_source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "compiler": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: x86_64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "cmake": "cmake version 4.3.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+  "toolchain_source_sha256": "930e32d2b82910d41b2809d20ffb051808b643e7ad13367235a2fc91e013aa9c",
+  "configure_argv": [
+    "/opt/homebrew/bin/cmake",
+    "-S",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/qairt-patched",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/build",
+    "-G",
+    "Unix Makefiles",
+    "-DCMAKE_MAKE_PROGRAM=/usr/bin/make",
+    "-DCMAKE_TOOLCHAIN_FILE=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/arm64-android-llvm.cmake",
+    "-DANDROID_ABI=arm64-v8a",
+    "-DANDROID_PLATFORM=android-31",
+    "-DANDROID_STL=c++_static",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-rpath,$ORIGIN",
+    "-DCMAKE_CXX_STANDARD_LIBRARIES=-llog -ldl -latomic -lm",
+    "-DGENIEX_BUILD_VLM=OFF",
+    "-DGENIEX_BUILD_AUDIO=OFF",
+    "-DGENIEX_BUILD_OCR=OFF",
+    "-DGENIEX_BUILD_EXAMPLES=OFF",
+    "-DGENIEX_BUILD_TESTS=OFF",
+    "-DGENIEX_DEBUG=OFF",
+    "-DGENIEX_SKIP_HTP_RUNTIME_COPY=ON",
+    "-DGENIEX_PROC_PREBUILT_LIBRARY=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/prebuilt/libgeniex-proc.so",
+    "-DGENIEX_PROC_PREBUILT_INCLUDE_DIR=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/include",
+    "-DGENIEX_PROC_PUBLIC_DEPENDENCY_INCLUDE_DIRS=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtl/include;/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor/include;/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-io/include;/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-blas/include"
+  ],
+  "build_parallelism": 4,
+  "android_stl": "c++_static",
+  "android_api": 31,
+  "system_link_libraries": [
+    "log",
+    "dl",
+    "atomic",
+    "m"
+  ],
+  "unstripped_bytes": 3177824,
+  "unstripped_sha256": "6bfdf81439c2d7aa1c29a17fd088987c6736abecd2f7b898cf277e08db523798",
+  "candidate_bytes": 1176008,
+  "candidate_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+  "abi_comparison_sha256": "a0f0d0b28c3947adb1015b8c4075eb9ae8c0bbf509253d04fe741448cffaf7ee",
+  "compile_commands_sha256": "0edd0eacac6bf87f4adea1f0b414e4e4e5228ac4b0970a552f7a6e9793a999bc",
+  "cmake_cache_sha256": "cd505f29507364c313865aaa8847ca830b39d9e386f773face4e905fec00510c",
+  "processor_sha256_unchanged": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+  "build_steps": [
+    {
+      "stage": "copy-fixed-inputs",
+      "argv": [
+        "/usr/bin/scp",
+        "-p",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "hepta-pocket4:/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-core-r2-build-inputs/core-r2-fixed-inputs.tar.gz",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/core-r2-fixed-inputs.tar.gz"
+      ],
+      "returncode": 0,
+      "seconds": 0.318
+    },
+    {
+      "stage": "copy-libgeniex_core.so.symbols.json",
+      "argv": [
+        "/usr/bin/scp",
+        "-p",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "hepta-pocket4:/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-core-r2-abi-baseline/libgeniex_core.so.symbols.json",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/reference/libgeniex_core.so.symbols.json"
+      ],
+      "returncode": 0,
+      "seconds": 0.261
+    },
+    {
+      "stage": "copy-libgeniex-proc.so.symbols.json",
+      "argv": [
+        "/usr/bin/scp",
+        "-p",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "hepta-pocket4:/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-core-r2-abi-baseline/libgeniex-proc.so.symbols.json",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/reference/libgeniex-proc.so.symbols.json"
+      ],
+      "returncode": 0,
+      "seconds": 0.305
+    },
+    {
+      "stage": "copy-libgeniex_vlm.so.symbols.json",
+      "argv": [
+        "/usr/bin/scp",
+        "-p",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "hepta-pocket4:/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-core-r2-abi-baseline/libgeniex_vlm.so.symbols.json",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/reference/libgeniex_vlm.so.symbols.json"
+      ],
+      "returncode": 0,
+      "seconds": 0.274
+    },
+    {
+      "stage": "copy-libgeniex_plugin.so.symbols.json",
+      "argv": [
+        "/usr/bin/scp",
+        "-p",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "hepta-pocket4:/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-core-r2-abi-baseline/libgeniex_plugin.so.symbols.json",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/reference/libgeniex_plugin.so.symbols.json"
+      ],
+      "returncode": 0,
+      "seconds": 0.271
+    },
+    {
+      "stage": "copy-original-core-dynamic",
+      "argv": [
+        "/usr/bin/scp",
+        "-p",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "-o",
+        "StrictHostKeyChecking=yes",
+        "hepta-pocket4:/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/grammar-core-r2-abi-baseline/libgeniex_core.so.dynamic.stdout",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/reference/libgeniex_core.so.dynamic.stdout"
+      ],
+      "returncode": 0,
+      "seconds": 0.267
+    },
+    {
+      "stage": "init-isolated-patched-source",
+      "argv": [
+        "/usr/bin/git",
+        "init",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/qairt-patched"
+      ],
+      "returncode": 0,
+      "seconds": 0.023
+    },
+    {
+      "stage": "check-qairt-core-sampler.patch",
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--check",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/review/review-r2/qairt-core-sampler.patch"
+      ],
+      "returncode": 0,
+      "seconds": 0.012
+    },
+    {
+      "stage": "apply-qairt-core-sampler.patch",
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/review/review-r2/qairt-core-sampler.patch"
+      ],
+      "returncode": 0,
+      "seconds": 0.011
+    },
+    {
+      "stage": "check-qairt-core-prebuilt-proc.patch",
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "--check",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/review/review-r2/qairt-core-prebuilt-proc.patch"
+      ],
+      "returncode": 0,
+      "seconds": 0.012
+    },
+    {
+      "stage": "apply-qairt-core-prebuilt-proc.patch",
+      "argv": [
+        "/usr/bin/git",
+        "apply",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/review/review-r2/qairt-core-prebuilt-proc.patch"
+      ],
+      "returncode": 0,
+      "seconds": 0.011
+    },
+    {
+      "stage": "compiler-version",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++",
+        "--version"
+      ],
+      "returncode": 0,
+      "seconds": 0.093
+    },
+    {
+      "stage": "cmake-version",
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "--version"
+      ],
+      "returncode": 0,
+      "seconds": 0.048
+    },
+    {
+      "stage": "cmake-configure",
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "-S",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/qairt-patched",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/build",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_MAKE_PROGRAM=/usr/bin/make",
+        "-DCMAKE_TOOLCHAIN_FILE=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/arm64-android-llvm.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-31",
+        "-DANDROID_STL=c++_static",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-rpath,$ORIGIN",
+        "-DCMAKE_CXX_STANDARD_LIBRARIES=-llog -ldl -latomic -lm",
+        "-DGENIEX_BUILD_VLM=OFF",
+        "-DGENIEX_BUILD_AUDIO=OFF",
+        "-DGENIEX_BUILD_OCR=OFF",
+        "-DGENIEX_BUILD_EXAMPLES=OFF",
+        "-DGENIEX_BUILD_TESTS=OFF",
+        "-DGENIEX_DEBUG=OFF",
+        "-DGENIEX_SKIP_HTP_RUNTIME_COPY=ON",
+        "-DGENIEX_PROC_PREBUILT_LIBRARY=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/prebuilt/libgeniex-proc.so",
+        "-DGENIEX_PROC_PREBUILT_INCLUDE_DIR=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/include",
+        "-DGENIEX_PROC_PUBLIC_DEPENDENCY_INCLUDE_DIRS=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtl/include;/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor/include;/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-io/include;/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/inputs/proc/third-party/xtensor-blas/include"
+      ],
+      "returncode": 0,
+      "seconds": 0.715
+    },
+    {
+      "stage": "cmake-build-core",
+      "argv": [
+        "/opt/homebrew/bin/cmake",
+        "--build",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/build",
+        "--target",
+        "geniex_core",
+        "--parallel",
+        "4"
+      ],
+      "returncode": 0,
+      "seconds": 10.114
+    },
+    {
+      "stage": "strip-candidate",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "--strip-unneeded",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/artifacts/libgeniex_core.so"
+      ],
+      "returncode": 0,
+      "seconds": 0.012
+    },
+    {
+      "stage": "candidate-header",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-W",
+        "-h",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/artifacts/libgeniex_core.so"
+      ],
+      "returncode": 0,
+      "seconds": 0.047
+    },
+    {
+      "stage": "candidate-dynamic",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-W",
+        "-d",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/artifacts/libgeniex_core.so"
+      ],
+      "returncode": 0,
+      "seconds": 0.012
+    },
+    {
+      "stage": "candidate-dynsym",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-W",
+        "--dyn-syms",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/artifacts/libgeniex_core.so"
+      ],
+      "returncode": 0,
+      "seconds": 0.023
+    },
+    {
+      "stage": "candidate-versions",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-W",
+        "--version-info",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/artifacts/libgeniex_core.so"
+      ],
+      "returncode": 0,
+      "seconds": 0.011
+    },
+    {
+      "stage": "candidate-comment",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-W",
+        "-p",
+        ".comment",
+        "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/geniex-grammar-core-r2-build/artifacts/libgeniex_core.so"
+      ],
+      "returncode": 0,
+      "seconds": 0.011
+    }
+  ]
+}

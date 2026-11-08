@@ -1,0 +1,250 @@
+--- a/broker/native_backend.py
++++ b/broker/native_backend.py
+@@ -334,6 +334,36 @@
+             and type(profile.get("generated_tokens")) is int and 0 <= profile["generated_tokens"] <= max_tokens,
+             "actual SDK token count differs from counted QAIRT segments/BOS bound")
+     return raw.decode("utf-8")
++
++
++def validate_worker_deadline(value, native, *, request_id, expected_inputs, expected_model, expected_output_path):
++    """Classify a frozen worker deadline only after native process cleanup.
++
++    This accepts no model text and grants no phone action. Exit 124 alone is
++    insufficient: the original worker metadata must bind the same request,
++    process, artifacts and inputs and explicitly attest its deadline fence.
++    """
++    require(isinstance(value, dict) and value.get("schema") == "hepta.geniex-once.result.v1",
++            "deadline worker schema differs")
++    require(value.get("production_receipt") is False and value.get("process_exit_observed") is False
++            and value.get("native_action_authorized") is False, "deadline metadata claims native authority")
++    require(value.get("request_id") == request_id and value.get("sdk_source_commit") == SDK_COMMIT
++            and value.get("sdk_version") in {"0.10.0", "v0.10.0"}, "deadline worker request/ABI differs")
++    require(value.get("mode") == "vlm" and value.get("runtime") == "qairt"
++            and value.get("compute_requested") == "npu" and value.get("device_resolved") == "NPU"
++            and value.get("device_warning") is None and value.get("vit_device_requested") is None,
++            "deadline worker runtime/device differs")
++    integers = {"pid": native["pid"], "pgid": native["pgid"], "sid": native["pid"],
++                "n_ctx_create": 0, "n_gpu_layers_create": 0, "power_mode_create": 6,
++                "signal_observed": 0, "max_tokens": 256, "worker_exit_status_planned": 124}
++    require(all(type(value.get(key)) is int and value[key] == expected for key, expected in integers.items()),
++            "deadline worker process/config differs")
++    require(value.get("model_path") == expected_model and value.get("input_sha256") == expected_inputs
++            and value.get("raw_text_file") == expected_output_path and value.get("input_metadata_unchanged") is True,
++            "deadline worker input binding differs")
++    require(value.get("automatic_retry") is False and value.get("generation_complete") is False
++            and value.get("deadline_observed") is True and value.get("worker_outcome") == "deadline_observed",
++            "worker did not attest a deadline fence")
+ 
+ 
+ def formatter_segments(original_inputs):
+@@ -648,9 +678,28 @@
+                 return self._terminal(directory, intent, "failed", True, False,
+                                       "counter_evidence_unreadable: " + str(exc), native_sha=sha(native_raw))
+             counter_hashes = {"counter_sha": sha(counter_raw)} if counter_raw is not None else {}
+-            if gate.cancelled or native["state"] in {"cancelled", "timed_out"}:
++            if gate.cancelled or native["state"] == "cancelled":
+                 return self._terminal(directory, intent, "cancelled", True, False,
+-                                      "accepted_cancel_or_native_timeout", native_sha=sha(native_raw), **counter_hashes)
++                                      "accepted_cancel_or_native_cancel", native_sha=sha(native_raw), **counter_hashes)
++            if native["state"] == "timed_out":
++                return self._terminal(directory, intent, "timed_out", True, False,
++                                      "native_supervisor_timeout", timeout_origin="native_supervisor",
++                                      native_sha=sha(native_raw), **counter_hashes)
++            if (native["state"] == "completed" and type(native.get("exit_code")) is int
++                    and native["exit_code"] == 124 and native.get("term_signal") is None
++                    and native.get("client_disconnected") is False and native.get("error") in (None, "")):
++                try:
++                    deadline_raw = read_private(stage / "worker-result.json", self.policy.execution_uid, 131072)
++                    exclusive(directory / "worker-result.json", deadline_raw)
++                    validate_worker_deadline(strict_json(deadline_raw), native, request_id=request_id,
++                        expected_inputs=expected_inputs, expected_model=self.config.model_android,
++                        expected_output_path=native_dir + "/generated.bin")
++                except Exception as exc:
++                    return self._terminal(directory, intent, "failed", True, False,
++                                          "unverified_worker_deadline: " + str(exc), native_sha=sha(native_raw), **counter_hashes)
++                return self._terminal(directory, intent, "timed_out", True, False,
++                                      "worker_deadline_observed", timeout_origin="frozen_worker",
++                                      native_sha=sha(native_raw), worker_sha=sha(deadline_raw), **counter_hashes)
+             if not (native["state"] == "completed" and type(native.get("exit_code")) is int and native["exit_code"] == 0
+                     and native.get("term_signal") is None and native.get("client_disconnected") is False
+                     and native.get("error") in (None, "")):
+--- a/broker/provider_bridge.py
++++ b/broker/provider_bridge.py
+@@ -173,6 +173,8 @@
+             raise owner_transport_error
+         if gate.cancelled or adapter.cancelled.is_set():
+             return None
++        if answer["receipt"]["cleanup_confirmed"] and answer["receipt"]["state"] == "timed_out":
++            raise ModelFailure("model_timeout", answer["receipt"])
+         if not answer["receipt"]["model_result_usable"]:
+             raise ModelFailure("unknown_model_failure", answer["receipt"])
+         # The original r9 common tail will validate this one assistant content,
+--- a/broker/tests/test_backend.py
++++ b/broker/tests/test_backend.py
+@@ -372,8 +372,41 @@
+         answer = self.run_request("[[case=hard_hang]]")
+         self.assertFalse(answer["receipt"]["model_result_usable"])
+         self.assertTrue(answer["receipt"]["cleanup_confirmed"])
++        self.assertEqual(answer["receipt"]["state"], "timed_out")
++        self.assertEqual(answer["receipt"]["timeout_origin"], "native_supervisor")
+         native = b.strict_json((self.evidence / answer["receipt"]["request_id"] / "native-result.json").read_bytes())["receipt"]
+         self.assertEqual(native["state"], "timed_out")
++
++    def test_real_worker_deadline_requires_bound_metadata_and_never_uses_partial_text(self):
++        self.config = dataclasses.replace(self.config, max_worker_ms=500, max_native_ms=2000)
++        self.runner = b.NativeBackend(self.config, self.transport)
++        answer = self.run_request("[[case=worker_deadline]]")
++        receipt = answer["receipt"]
++        self.assertEqual(receipt["state"], "timed_out", answer)
++        self.assertEqual(receipt["timeout_origin"], "frozen_worker")
++        self.assertTrue(receipt["cleanup_confirmed"])
++        self.assertFalse(receipt["model_result_usable"])
++        self.assertIsNone(answer["text"])
++        directory = self.evidence / receipt["request_id"]
++        native = b.strict_json((directory / "native-result.json").read_bytes())["receipt"]
++        worker = b.strict_json((directory / "worker-result.json").read_bytes())
++        self.assertEqual(native["exit_code"], 124)
++        self.assertTrue(native["waitpid_joined"] and native["process_group_absent"])
++        kwargs = {"request_id": receipt["request_id"], "expected_inputs": worker["input_sha256"],
++                  "expected_model": self.config.model_android, "expected_output_path": worker["raw_text_file"]}
++        for key, value in (("deadline_observed", False), ("generation_complete", True), ("pid", 1),
++                           ("input_sha256", {}), ("sdk_source_commit", "0" * 40), ("worker_exit_status_planned", 0)):
++            with self.subTest(field=key):
++                changed = copy.deepcopy(worker); changed[key] = value
++                with self.assertRaises(b.BackendError):
++                    b.validate_worker_deadline(changed, native, **kwargs)
++
++    def test_exit_124_without_original_worker_deadline_metadata_is_not_classified_as_timeout(self):
++        answer = self.run_request("[[case=exit124]]")
++        self.assertEqual(answer["receipt"]["state"], "failed", answer)
++        self.assertIn("unverified_worker_deadline", answer["receipt"]["error"])
++        self.assertTrue(answer["receipt"]["cleanup_confirmed"])
++        self.assertFalse(answer["receipt"]["model_result_usable"])
+ 
+     def test_duplicate_request_and_unresolved_local_intent_are_not_dispatched(self):
+         identity = uuid.uuid4().hex
+@@ -417,6 +450,8 @@
+         self.assertFalse(report["phone_actions_dispatched"])
+         self.assertTrue(report["malformed_json_rejected"])
+         self.assertTrue(report["task_deadline_cancelled_with_native_cleanup"])
++        self.assertTrue(report["native_timeout_classified"] and report["worker_deadline_classified"]
++                        and report["owner_cancel_preserved"])
+         self.assertTrue(report["cpu_cleanup_binding_absent"])
+         self.assertFalse(report["http_transport_called"])
+         private_source = os.environ.get("HEPTA_PRIVATE_GENIEX_SOURCE")
+@@ -433,6 +468,8 @@
+             self.assertTrue(report["selector_selected_geniex"] and report["original_typed_parser_used"]
+                             and report["cpu_cleanup_binding_absent"] and report["cpu_mode_without_binding_rejected"]
+                             and report["task_deadline_cancelled_with_native_cleanup"])
++            self.assertTrue(report["native_timeout_classified"] and report["worker_deadline_classified"]
++                            and report["owner_cancel_preserved"])
+             self.assertFalse(report["phone_actions_dispatched"] or report["http_transport_called"])
+ 
+ 
+--- a/broker/tests/provider_flow_probe.py
++++ b/broker/tests/provider_flow_probe.py
+@@ -103,6 +103,9 @@
+         supplementary_group_count=len(os.getgroups()), production=False)
+     native_class = b.NativeBackend
+     def host_backend(config):
++        # Short deadlines are explicit host-fixture injection only. Production
++        # config/profile parsing above still uses the original 55s/60s limits.
++        config = dataclasses.replace(config, max_worker_ms=500, max_native_ms=1500)
+         return native_class(config, b.R6Transport(options.endpoint, policy))
+     captured = []
+     argv = ["daily_phone_local.py", "--state", str(state), "--config", str(base_path),
+@@ -137,7 +140,8 @@
+     assert provider.OPERATION_PROFILES[b.PROFILE["name"]]["max_inference_seconds"] == 55
+ 
+     rows = []
+-    for index, marker in enumerate(("", " [[case=malformed_json]]", " [[case=hard_hang]]")):
++    for index, marker in enumerate(("", " [[case=malformed_json]]", " [[case=hard_hang]]",
++                                   " [[case=hard_hang]]", " [[case=hard_hang]]", " [[case=worker_deadline]]")):
+         run = evidence / ("20261108-000000-" + uuid.uuid4().hex); run.mkdir(mode=0o700)
+         read_fd, write_fd = os.pipe(); source = os.fdopen(read_fd, "rb", buffering=0); sink = io.StringIO()
+         owner_text = "  Open Settings and inspect the current screen.\nKeep these owner bytes.  " + marker
+@@ -155,12 +159,16 @@
+             messages = [{"role": "user", "content": owner_text}]
+             rejected = False
+             deadline_cancelled = False
+-            if index == 2:
++            timeout_category = None
++            if index in (2, 4):
+                 started = time.monotonic()
+                 original_receive = adapter.receive
+                 def expire_during_native(*a, **kw):
+                     if time.monotonic() - started > 0.25:
+-                        adapter.session_deadline = time.monotonic() - 0.01
++                        if index == 2:
++                            adapter.session_deadline = time.monotonic() - 0.01
++                        else:
++                            adapter.cancelled.set()
+                     return original_receive(*a, **kw)
+                 adapter.receive = expire_during_native
+             try:
+@@ -170,9 +178,10 @@
+                      mock.patch.object(adapter, "spawn_model", side_effect=AssertionError("NPU branch must not spawn HTTP worker")):
+                     answer = adapter.completion(messages)
+             except ModelFailure as error:
+-                if index != 2 or error.category != "model_timeout":
++                if index not in (2, 3, 5) or error.category != "model_timeout":
+                     raise
+-                deadline_cancelled = True
++                deadline_cancelled = index == 2
++                timeout_category = error.category
+                 answer = None
+             except (ProviderError, json.JSONDecodeError, ValueError):
+                 if index != 1:
+@@ -188,7 +197,7 @@
+             assert receipt["proof_environment"] == "host_fixture"
+             # Complete model text still needs the separate original JSON/phone
+             # authority. A session deadline permits cleanup only.
+-            assert receipt["model_result_usable"] is (index != 2)
++            assert receipt["model_result_usable"] is (index in (0, 1))
+             if index == 0:
+                 call_id = answer["choices"][0]["message"]["tool_calls"][0]["id"]
+                 assert adapter.phone_tools.calls[call_id]["semantic_tool"] == "phone.screenshot"
+@@ -199,11 +208,20 @@
+             elif index == 1:
+                 assert rejected and not adapter.phone_tools.calls
+                 assert not (run / "local-01.decision.json").exists()
++            elif index == 2:
++                assert deadline_cancelled and receipt["state"] == "cancelled"
++                assert receipt["cleanup_confirmed"] and not adapter.phone_tools.calls
++            elif index == 4:
++                assert adapter.cancelled.is_set() and answer is None and timeout_category is None
++                assert receipt["state"] == "cancelled" and receipt["cleanup_confirmed"]
++                assert not adapter.phone_tools.calls
+             else:
+-                assert deadline_cancelled and receipt["state"] == "cancelled"
++                assert timeout_category == "model_timeout" and receipt["state"] == "timed_out"
++                assert receipt["timeout_origin"] == ("native_supervisor" if index == 3 else "frozen_worker")
+                 assert receipt["cleanup_confirmed"] and not adapter.phone_tools.calls
+             assert "tool.call" not in sink.getvalue() and not adapter.dispatched_calls
+             rows.append({"rejected": rejected, "deadline_cancelled": deadline_cancelled,
++                         "timeout_category": timeout_category, "owner_cancelled": adapter.cancelled.is_set(),
+                          "receipt_state": receipt["state"], "owner_sha256": b.sha(owner_text.encode())})
+         finally:
+             adapter.frames.close(); adapter.inputs.close(); source.close(); os.close(write_fd)
+@@ -211,6 +229,10 @@
+         "owner_bytes_preserved": True, "original_typed_parser_used": True,
+         "phone_actions_dispatched": False, "malformed_json_rejected": rows[1]["rejected"],
+         "task_deadline_cancelled_with_native_cleanup": rows[2]["deadline_cancelled"],
++        "native_timeout_classified": rows[3]["timeout_category"] == "model_timeout",
++        "owner_cancel_preserved": rows[4]["owner_cancelled"] and rows[4]["timeout_category"] is None,
++        "worker_deadline_classified": rows[5]["timeout_category"] == "model_timeout",
++        "host_fixture_deadlines_ms": {"worker": 500, "native": 1500},
+         "cpu_cleanup_binding_absent": not getattr(args, "slot_cleanup_binding", None),
+         "cpu_mode_without_binding_rejected": cpu_gate_checked,
+         "http_transport_called": False,
+--- a/broker/tests/broker_stub.c
++++ b/broker/tests/broker_stub.c
+@@ -22,6 +22,8 @@
+ int32_t geniex_vlm_generate(geniex_VLM *handle,const geniex_VlmGenerateInput *in,geniex_VlmGenerateOutput *out) {
+     if(strstr(in->prompt_utf8,"[[case=sdk_abort]]"))abort();
+     if(strstr(in->prompt_utf8,"[[case=exit134]]"))_exit(134);
++    if(strstr(in->prompt_utf8,"[[case=exit124]]"))_exit(124);
++    if(strstr(in->prompt_utf8,"[[case=worker_deadline]]"))delay_ms(750);
+     const char *cases[]={"length","generate_fail_with_text","generate_fail","signal_last_token","hard_hang","deadline"};
+     for(unsigned i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
+         char marker[96];snprintf(marker,sizeof(marker),"[[case=%s]]",cases[i]);

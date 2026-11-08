@@ -1,0 +1,148 @@
+{
+  "files": [
+    {
+      "bytes": 9841,
+      "path": "README.md",
+      "sha256": "0c6b813695fc0502d93cbe891a61997e9e84b723020158742d9d9da61853e94a"
+    },
+    {
+      "bytes": 5613,
+      "path": "SOURCE-PINS.json",
+      "sha256": "78d7c89567d470b86024b6b3eb5effddf7fdbca6fbfd90b899e6f66b67e224d8"
+    },
+    {
+      "bytes": 5428,
+      "path": "build.py",
+      "sha256": "279375029fa0571c5cee0751b8ae5245c69794afce8d8ea83025e5305fd5afe8"
+    },
+    {
+      "bytes": 567,
+      "path": "compat/common.h",
+      "sha256": "0ed28c7d194864ced73576d7d65b5e488c7c42fa372dde96a75690e5d1594c57"
+    },
+    {
+      "bytes": 261,
+      "path": "compat/ggml.h",
+      "sha256": "ad088035d517e378c8d78c1600084fb641cf943ea576f7f566d8e65540f61cb4"
+    },
+    {
+      "bytes": 8792,
+      "path": "convert_schema.py",
+      "sha256": "2230701186c5757fe518da5d0a3f2df82ebd339efdd9fda1b5f25e7a289b25d9"
+    },
+    {
+      "bytes": 13947,
+      "path": "converter.cpp",
+      "sha256": "4f554aa8b5073261a36e63ad41c0e669705d93f49ec8e04ec2f31863efa28cef"
+    },
+    {
+      "bytes": 3036,
+      "path": "evidence/HOST-BUILD.json",
+      "sha256": "72dbff0876ca31cfca9efb06193c84df6a711794400b4f04b28b9bea188849a4"
+    },
+    {
+      "bytes": 803,
+      "path": "evidence/HOST-TESTS.json",
+      "sha256": "7fe7ac25e48c0d8638e258e43582052ca3e40bb5a801bf97cb6c53946cf30394"
+    },
+    {
+      "bytes": 2044,
+      "path": "evidence/HOST-TESTS.stderr",
+      "sha256": "0933ebac1b179a1150ffbe8db3d5c9139a8b29dd7124b19f8e00462557ac3445"
+    },
+    {
+      "bytes": 562,
+      "path": "evidence/HOST-TESTS.stdout",
+      "sha256": "bdfa2532c79860c19040de567d410ba9e969b0e5c4676be764e2da63db96255a"
+    },
+    {
+      "bytes": 515,
+      "path": "fail-closed-warnings.patch",
+      "sha256": "daf8857ce57d226e64ae77e0e312c74cd31cc248a23148073efb128cd67e939d"
+    },
+    {
+      "bytes": 817,
+      "path": "scalar-string.patch",
+      "sha256": "46f36bfac573addb4c2ff13b95bf6db42dec4d02de2198cfb78f993f25472aaf"
+    },
+    {
+      "bytes": 1184,
+      "path": "support.cpp",
+      "sha256": "8ee669a7dc8f268a644958b0ec39b001436dc06a22f15a0d3a13a4455f747214"
+    },
+    {
+      "bytes": 5787,
+      "path": "tests/gbnf_recognizer.py",
+      "sha256": "a9317c9eb2e7461e9b4656a8541791e7f13ca9b60e9c0296d2d4ac94970ab1c3"
+    },
+    {
+      "bytes": 22111,
+      "path": "tests/test_converter.py",
+      "sha256": "be63477c1130ffdc1b2bd84bab63021721352598bcc126396d1d9dcb993117ee"
+    },
+    {
+      "bytes": 1078,
+      "path": "upstream/LICENSE",
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "bytes": 44841,
+      "path": "upstream/json-schema-to-grammar.cpp",
+      "sha256": "cb744e5dfa94f38d88900e3bc455cb21e6c6e4449f3e4b70f3283dc8a443ea81"
+    },
+    {
+      "bytes": 804,
+      "path": "upstream/json-schema-to-grammar.h",
+      "sha256": "9e4d9f1d426bef42e1ebcb66c551fe3f2eae700a361e7e698f2e382d600432ca"
+    },
+    {
+      "bytes": 21755,
+      "path": "upstream/json-schema.cpp",
+      "sha256": "1d39f46e92345419da65504995a89b05ed083163968d799f0b3c3c1dced8c490"
+    },
+    {
+      "bytes": 6095,
+      "path": "upstream/json-schema.h",
+      "sha256": "57933a181ec0e84cbba1abea7fd898dc03e452d7de1a35795b787cee679d02af"
+    },
+    {
+      "bytes": 14613,
+      "path": "upstream/json.cpp",
+      "sha256": "d8c556445cef8e7c93b0857f6ca7ae7ebd8295f169403ac66641b72f6b0598f2"
+    },
+    {
+      "bytes": 13476,
+      "path": "upstream/json.h",
+      "sha256": "a352f31307f1be2bdb34c027b876f42a1c5d1ea775cc8e4f11d703b16c40d22f"
+    },
+    {
+      "bytes": 987455,
+      "path": "upstream/nlohmann/json.hpp",
+      "sha256": "08f19bbcc66ff3082f5caf58867b1232987dba98d82e2b29d870722fce42776b"
+    },
+    {
+      "bytes": 3838,
+      "path": "upstream/trie.cpp",
+      "sha256": "807cac6c6296ca294397360fbfdd5f19a65fb7c50a587c8b56094261eec5acb2"
+    },
+    {
+      "bytes": 2337,
+      "path": "upstream/trie.h",
+      "sha256": "391806c154f074d63e208f5a79d4d19df07592a645d860bb2c845525afda898e"
+    },
+    {
+      "bytes": 4327,
+      "path": "upstream/unicode.cpp",
+      "sha256": "191c00abab788e59e83e29fb877047fcbac1f4d6088c5e9962d38ac2e694686c"
+    },
+    {
+      "bytes": 1139,
+      "path": "upstream/unicode.h",
+      "sha256": "219b9257ac567a3e6bcf0f552c9a9ddc01d46a15eb4d2829ae5e069e643f0ec5"
+    }
+  ],
+  "model_requests": 0,
+  "phone_tested": false,
+  "production_integrated": false,
+  "schema": "hepta.schema-converter-source-closure.v1"
+}

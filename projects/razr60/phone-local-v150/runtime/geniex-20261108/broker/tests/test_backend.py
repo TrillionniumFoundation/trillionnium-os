@@ -52,13 +52,25 @@ def owner(root, text="打开 Settings 并检查当前页面。"):
     return write(run / "accepted-owner-request.json", b.canonical_json(evidence)), write(run / "claim", b.canonical_json(claim))
 
 
-def budget(prompt, system, grammar=None, image=None, tokenizer="a" * 64):
+def budget(prompt, system, grammar=None, image=None, tokenizer="a" * 64, grammar_profile=None, schema_conversion=None):
     return {"schema": "hepta.qairt-token-budget.v1", "profile": b.PROFILE["name"], "method": "native_pre_generation_tokenizer_required",
             "python_token_count_performed": False,
             "tokenizer_sha256": tokenizer, "input_sha256": {key: b.sha(value) if value is not None else None for key, value in
             {"prompt": prompt, "system": system, "grammar": grammar, "image": image}.items()},
             "admission_limit_tokens": 3584, "generation_tokens": 256, "reserved_tokens": 256,
-            "context_tokens": 4096, "counter_contract_sha256": "b" * 64}
+            "context_tokens": 4096, "counter_contract_sha256": "b" * 64,
+            "grammar_profile": grammar_profile, "schema_conversion": schema_conversion}
+
+
+def conversion_fixture(grammar, schema=b"{}", compiler_sha="d" * 64):
+    """Binding fixture only; this does not claim that a converter executed."""
+    return {"schema": "hepta.schema-gbnf-conversion.v1", "subset": b.GRAMMAR_SUBSET,
+        "reference_converter_commit": b.GRAMMAR_CONVERTER_COMMIT,
+        "compiler_kind": b.GRAMMAR_COMPILER_KIND, "compiler_source_sha256": compiler_sha,
+        "original_schema_bytes": len(schema), "original_schema_sha256": b.sha(schema),
+        "canonical_schema_sha256": b.sha(schema), "grammar_bytes": len(grammar), "grammar_sha256": b.sha(grammar),
+        "grammar_root": "root", "root_schema_kind": "mobile_use", "input_bytes_preserved": True,
+        "conversion_completed": True, "model_loaded": False, "native_action_authorized": False, "production_receipt": False}
 
 
 def native_row():
@@ -122,6 +134,44 @@ class ContractTests(unittest.TestCase):
             changed = dict(value); changed[field] = new
             with self.assertRaises(b.BackendError):
                 b.validate_budget(changed, inputs, "a" * 64)
+
+    def test_output_grammar_requires_explicit_profile_and_exact_conversion_binding(self):
+        grammar = b'root ::= "B"\n'
+        value = budget(b"prompt", b"system", grammar=grammar, grammar_profile=b.GRAMMAR_PROFILE,
+                       schema_conversion=conversion_fixture(grammar))
+        inputs = value["input_sha256"]
+        kwargs = {"grammar_profile": b.GRAMMAR_PROFILE, "schema_compiler_sha256": "d" * 64}
+        self.assertEqual(b.validate_budget(value, inputs, "a" * 64, **kwargs), 3584)
+        with self.assertRaises(b.BackendError):
+            b.validate_budget(value, inputs, "a" * 64)
+        for field, new in (("grammar_sha256", "0" * 64), ("compiler_source_sha256", "0" * 64),
+                           ("input_bytes_preserved", False), ("conversion_completed", 1), ("grammar_bytes", 65537),
+                           ("native_action_authorized", True), ("production_receipt", True),
+                           ("returncode", 0)):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(value); changed["schema_conversion"][field] = new
+                with self.assertRaises(b.BackendError):
+                    b.validate_budget(changed, inputs, "a" * 64, **kwargs)
+
+    def test_grammar_prompt_keeps_all_open_choices_without_unavailable_click_example(self):
+        schema = self.closed_action_schema({"action": {"const": "open"},
+            "text": {"type": "string", "enum": ["Calculator", "Settings"]}, "summary": {"type": "string"}})
+        aliases = {name: {"label": name, "component": "com.example." + name.lower() + "/.Main"}
+                   for name in ("Calculator", "Settings")}
+        context = {"approved_apps": aliases, "transcript": [{"public_text": "earlier exact observation"}]}
+        body = {"messages": [{"role": "system", "content": "original policy"},
+            {"role": "user", "content": json.dumps(context)},
+            {"role": "user", "content": [{"type": "text", "text": " Open Calculator \n"}]}],
+            "response_format": {"json_schema": {"schema": schema}}}
+        projected = pb.compact_provider_body(body, grammar_enabled=True)
+        data = json.loads(projected["messages"][1]["content"])
+        self.assertEqual(data["current_action_fields"]["open"]["text"], ["Calculator", "Settings"])
+        self.assertEqual(set(data["current_action_fields"]), {"open"})
+        self.assertEqual(data["transcript"], context["transcript"])
+        self.assertTrue(data["catalogue_projection"]["all_current_open_aliases_shown"])
+        self.assertEqual(projected["messages"][-1], body["messages"][-1])
+        self.assertEqual(projected["response_format"], body["response_format"])
+        self.assertNotIn("example_only", projected["messages"][0]["content"])
 
     def test_overlay_keeps_old_completion_ast_and_adds_explicit_selector(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -230,11 +280,50 @@ class NativeIntegrationTests(unittest.TestCase):
         self.runner = b.NativeBackend(self.config, self.transport)
         self.owner_path, self.claim_path = owner(self.directory)
 
-    def run_request(self, marker="", gate=None, on_poll=None, request_id=None, image=None):
+    def run_request(self, marker="", gate=None, on_poll=None, request_id=None, image=None, grammar=None):
         prompt = ("Fixture evidence " + "p" * 800 + marker).encode(); system = b"fixture system"
-        return self.runner.run(request_id=request_id or uuid.uuid4().hex, prompt=prompt, system=system, grammar=None, image=image,
+        return self.runner.run(request_id=request_id or uuid.uuid4().hex, prompt=prompt, system=system, grammar=grammar, image=image,
             owner_path=self.owner_path, owner_claim_path=self.claim_path,
-            budget=budget(prompt, system, image=image, tokenizer=self.config.tokenizer_sha256), gate=gate or b.CancelGate(), on_poll=on_poll)
+            budget=budget(prompt, system, grammar=grammar, image=image, tokenizer=self.config.tokenizer_sha256,
+                grammar_profile=self.config.grammar_profile,
+                schema_conversion=conversion_fixture(grammar) if grammar is not None else None),
+            gate=gate or b.CancelGate(), on_poll=on_poll)
+
+    def test_grammar_binding_and_loader_hash_are_checked_with_real_native_cleanup(self):
+        # This host SDK does not enforce grammar. It checks transport, pins,
+        # inputs, counter separation and cleanup; Android enforcement is separate.
+        core = write(self.model / "libgeniex_core.so", b"HOST FIXTURE loader hash only")
+        self.config = dataclasses.replace(self.config, grammar_profile=b.GRAMMAR_PROFILE,
+            core_android=str(core), core_sha256=b.sha(core.read_bytes()), schema_compiler_sha256="d" * 64,
+            ld_library_path=str(self.model) + ":/usr/lib:/lib")
+        self.runner = b.NativeBackend(self.config, self.transport)
+        grammar = b'root ::= "B"\n'
+        answer = self.run_request(grammar=grammar)
+        self.assertTrue(answer["receipt"]["model_result_usable"], answer)
+        directory = self.evidence / answer["receipt"]["request_id"]
+        intent = b.strict_json((directory / "intent.json").read_bytes())
+        worker = b.strict_json((directory / "worker-result.json").read_bytes())
+        counter = b.strict_json((directory / "counter-result.json").read_bytes())
+        self.assertEqual(worker["input_sha256"]["grammar"], b.sha(grammar))
+        self.assertNotIn("grammar", counter["input_sha256"])
+        self.assertEqual(intent["core_sha256"], self.config.core_sha256)
+        self.assertEqual(answer["receipt"]["grammar_profile"], b.GRAMMAR_PROFILE)
+        write(core, b"CHANGED HOST FIXTURE")
+        rejected = self.run_request(grammar=grammar)
+        self.assertEqual(rejected["receipt"]["state"], "failed")
+        self.assertTrue(rejected["receipt"]["cleanup_confirmed"])
+        self.assertFalse((self.stage / rejected["receipt"]["request_id"] / "counter-result.json").exists())
+        self.assertFalse((self.stage / rejected["receipt"]["request_id"] / "worker-result.json").exists())
+
+    def test_original_profile_and_wrong_loader_cannot_enable_output_grammar(self):
+        with self.assertRaises(b.BackendError):
+            self.run_request(grammar=b'root ::= "B"\n')
+        self.assertFalse(list(self.evidence.iterdir()))
+        bad = dataclasses.replace(self.config, grammar_profile=b.GRAMMAR_PROFILE,
+            core_android=str(self.model / "libgeniex_core.so"), core_sha256="e" * 64,
+            schema_compiler_sha256="d" * 64)
+        with self.assertRaisesRegex(b.BackendError, "first loader"):
+            b.NativeBackend(bad, self.transport)
 
     def test_real_native_success_joins_exact_worker_and_host_proof_stays_host(self):
         answer = self.run_request()
@@ -372,8 +461,41 @@ class NativeIntegrationTests(unittest.TestCase):
         answer = self.run_request("[[case=hard_hang]]")
         self.assertFalse(answer["receipt"]["model_result_usable"])
         self.assertTrue(answer["receipt"]["cleanup_confirmed"])
+        self.assertEqual(answer["receipt"]["state"], "timed_out")
+        self.assertEqual(answer["receipt"]["timeout_origin"], "native_supervisor")
         native = b.strict_json((self.evidence / answer["receipt"]["request_id"] / "native-result.json").read_bytes())["receipt"]
         self.assertEqual(native["state"], "timed_out")
+
+    def test_real_worker_deadline_requires_bound_metadata_and_never_uses_partial_text(self):
+        self.config = dataclasses.replace(self.config, max_worker_ms=500, max_native_ms=2000)
+        self.runner = b.NativeBackend(self.config, self.transport)
+        answer = self.run_request("[[case=worker_deadline]]")
+        receipt = answer["receipt"]
+        self.assertEqual(receipt["state"], "timed_out", answer)
+        self.assertEqual(receipt["timeout_origin"], "frozen_worker")
+        self.assertTrue(receipt["cleanup_confirmed"])
+        self.assertFalse(receipt["model_result_usable"])
+        self.assertIsNone(answer["text"])
+        directory = self.evidence / receipt["request_id"]
+        native = b.strict_json((directory / "native-result.json").read_bytes())["receipt"]
+        worker = b.strict_json((directory / "worker-result.json").read_bytes())
+        self.assertEqual(native["exit_code"], 124)
+        self.assertTrue(native["waitpid_joined"] and native["process_group_absent"])
+        kwargs = {"request_id": receipt["request_id"], "expected_inputs": worker["input_sha256"],
+                  "expected_model": self.config.model_android, "expected_output_path": worker["raw_text_file"]}
+        for key, value in (("deadline_observed", False), ("generation_complete", True), ("pid", 1),
+                           ("input_sha256", {}), ("sdk_source_commit", "0" * 40), ("worker_exit_status_planned", 0)):
+            with self.subTest(field=key):
+                changed = copy.deepcopy(worker); changed[key] = value
+                with self.assertRaises(b.BackendError):
+                    b.validate_worker_deadline(changed, native, **kwargs)
+
+    def test_exit_124_without_original_worker_deadline_metadata_is_not_classified_as_timeout(self):
+        answer = self.run_request("[[case=exit124]]")
+        self.assertEqual(answer["receipt"]["state"], "failed", answer)
+        self.assertIn("unverified_worker_deadline", answer["receipt"]["error"])
+        self.assertTrue(answer["receipt"]["cleanup_confirmed"])
+        self.assertFalse(answer["receipt"]["model_result_usable"])
 
     def test_duplicate_request_and_unresolved_local_intent_are_not_dispatched(self):
         identity = uuid.uuid4().hex
@@ -417,6 +539,8 @@ class NativeIntegrationTests(unittest.TestCase):
         self.assertFalse(report["phone_actions_dispatched"])
         self.assertTrue(report["malformed_json_rejected"])
         self.assertTrue(report["task_deadline_cancelled_with_native_cleanup"])
+        self.assertTrue(report["native_timeout_classified"] and report["worker_deadline_classified"]
+                        and report["owner_cancel_preserved"])
         self.assertTrue(report["cpu_cleanup_binding_absent"])
         self.assertFalse(report["http_transport_called"])
         private_source = os.environ.get("HEPTA_PRIVATE_GENIEX_SOURCE")
@@ -433,6 +557,28 @@ class NativeIntegrationTests(unittest.TestCase):
             self.assertTrue(report["selector_selected_geniex"] and report["original_typed_parser_used"]
                             and report["cpu_cleanup_binding_absent"] and report["cpu_mode_without_binding_rejected"]
                             and report["task_deadline_cancelled_with_native_cleanup"])
+        sources = [(manifest["candidate_source_directory"], self.directory / "grammar-flow")]
+        if private_source:
+            sources.append((private_source, Path(private_root) / "grammar-selector-flow"))
+        for source, flow_root in sources:
+            with self.subTest(grammar_selector_source=source):
+                result = subprocess.run([sys.executable, str(ROOT / "tests/provider_flow_probe.py"),
+                    "--source", source, "--root", str(flow_root), "--endpoint", self.fixture.endpoint,
+                    "--worker", str(self.worker), "--bundle", bundle, "--counter", str(self.counter),
+                    "--tokenizer-library", str(self.tokenizer_library), "--schema-grammar"],
+                    capture_output=True, timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr.decode() + result.stdout.decode())
+                report = json.loads(result.stdout)
+                self.assertTrue(report["schema_compiler_executed"] and report["original_typed_parser_used"]
+                                and report["native_waitpid_proven"] and report["malformed_json_rejected"]
+                                and report["task_deadline_cancelled_with_native_cleanup"]
+                                and report["native_timeout_classified"] and report["worker_deadline_classified"]
+                                and report["owner_cancel_preserved"])
+                self.assertEqual(report["grammar_profile"], b.GRAMMAR_PROFILE)
+                self.assertFalse(report["phone_actions_dispatched"] or report["http_transport_called"]
+                                 or report["grammar_enforced_by_host_model_fixture"])
+            self.assertTrue(report["native_timeout_classified"] and report["worker_deadline_classified"]
+                            and report["owner_cancel_preserved"])
             self.assertFalse(report["phone_actions_dispatched"] or report["http_transport_called"])
 
 

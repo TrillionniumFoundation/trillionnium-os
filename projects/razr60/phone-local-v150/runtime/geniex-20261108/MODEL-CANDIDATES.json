@@ -78,7 +78,7 @@
         "max_output_tokens": 256,
         "margin_tokens": 256,
         "actual_tokenizer_validation": true,
-        "validation_scope": "Two distinct root/network-isolated phone image prompts matched earlier SDK counts at 407 tokens each; production-domain and full-catalogue prompts are separate gates.",
+        "validation_scope": "Two small image prompts matched 407/407. Two full-53-entry-catalogue constrained model prompts matched counter/SDK at 964/964 and 1991/1991. All are root/network-isolated samples, not production-domain or real App qualification.",
         "sdk_prompt_token_contract": "counter_upper_bound - 1 <= SDK actual prompt tokens <= counter_upper_bound",
         "token_counter_binary_sha256": "09c2c8fb4b0c0095ffe612be82bc1b2124d47f9351c53fd0a77384c74395589c",
         "comparison_report_sha256": "028c9b0ae03ce702f3a62506cf9724e71e2230db3e0629653d363022792536f5"
@@ -107,7 +107,7 @@
         "type": "float32"
       },
       "qualified_for_phone_control": false,
-      "blocker": "Basic synthetic text/vision/revised click JSON passed, but two full-catalogue first-round open outputs failed the unchanged action schema. Production-domain and real App control remain pending. Latest screen state is unlocked/ON; owner stop remains.",
+      "blocker": "Two constrained actual-NPU model samples with the full 53-entry catalogue now pass the original parser and semantics, but malformed grammar still aborts. Production-domain and real App acceptance remain pending; zero UI actions and no production activation.",
       "phone_inference_tested": true,
       "synthetic_acceptance": {
         "text42": "pass",
@@ -117,12 +117,52 @@
         "real_app_actions_executed": 0,
         "production_qualified": false,
         "revised_protocol_report_sha256": "d377fcc3e7bdff78caae85e2be45e6be4a72a708d98489b8b7834b6aadac8211",
-        "grammar_discriminator": "SIGABRT exit134; failed; grammar image cases not run",
+        "grammar_discriminator": "Original official SDK SIGABRT exit134; failed; preserved. Separate patched R2 discriminator returns B and passes.",
         "post_abort_recovery": "text42 pass; no residual worker process",
         "full_catalogue_r1": "Counter 735/1943 passed; first model output omitted required open.text and failed strict schema; second model case not run.",
-        "full_catalogue_r3": "Counter 795/2004 passed; first model output omitted open.text and added invalid click fields; failed strict schema; second model case not run."
+        "full_catalogue_r3": "Counter 795/2004 passed; first model output omitted open.text and added invalid click fields; failed strict schema; second model case not run.",
+        "full_catalogue_r4": "Original full schema counters 3819/5458 exceed 3584; zero model requests.",
+        "full_catalogue_r5": "Lossless schema deduplication counters 2608/4104; second exceeds 3584; zero model requests.",
+        "r2_core_smoke": {
+          "report_sha256": "8f8592fff439a7c85512483339b9b2b28c540703bcc6e3337ede0ac2f83760e4",
+          "positive_cases_pass": true,
+          "all_pass": false,
+          "invalid_grammar_graceful_error_pass": false,
+          "core_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+          "image_decisions": [
+            [
+              500,
+              250
+            ],
+            [
+              499,
+              728
+            ]
+          ],
+          "production_domain_tested": false,
+          "UI_actions": 0
+        },
+        "full_catalogue_grammar_r1": {
+          "report_sha256": "9afc4efddaef47d97317ddecaedd1308f9dd72075f96bda467fd641eeb24ce91",
+          "model_samples": 2,
+          "registered_entries": 53,
+          "counter_and_sdk_prompt_tokens": [
+            964,
+            1991
+          ],
+          "original_strict_parser_and_semantics_pass": [
+            true,
+            true
+          ],
+          "grammar_profile": "qairt-output-grammar-core-r2-v1",
+          "image_and_prior_history_are_synthetic": true,
+          "no_output_repair": true,
+          "phone_actions": 0,
+          "runtime_overall_qualified": false
+        }
       },
-      "qairt_grammar_enabled_for_provider": false
+      "qairt_grammar_enabled_for_provider": false,
+      "candidate_grammar_profile": "qairt-output-grammar-core-r2-v1; explicit v2, host integrated, not activated"
     },
     {
       "id": "Qwen3.5-2B",

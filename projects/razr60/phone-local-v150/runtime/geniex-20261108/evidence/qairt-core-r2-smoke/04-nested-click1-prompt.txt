@@ -1,0 +1,1 @@
+当前截图ID为fixture_1。点击蓝色按钮。输出完整的mobile_use JSON，所有括号必须闭合。

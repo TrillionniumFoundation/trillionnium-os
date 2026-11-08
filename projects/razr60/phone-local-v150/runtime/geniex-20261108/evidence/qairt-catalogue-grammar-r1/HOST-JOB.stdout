@@ -1,0 +1,7 @@
+{"case": "01-first-open", "counter_pass": true, "counter_upper": 964}
+{"case": "02-after-three-actions-click", "counter_pass": true, "counter_upper": 1991}
+{"model_starting": "01-first-open", "ui_actions_executed": 0}
+{"case": "01-first-open", "pass": true, "failure_kind": null, "counter_upper": 964, "sdk_prompt_tokens": 964, "generated_tokens": 37, "elapsed_seconds": 13.444880421971902}
+{"model_starting": "02-after-three-actions-click", "ui_actions_executed": 0}
+{"case": "02-after-three-actions-click", "pass": true, "failure_kind": null, "counter_upper": 1991, "sdk_prompt_tokens": 1991, "generated_tokens": 62, "elapsed_seconds": 17.09754515509121}
+{"all_pass": true, "output": "/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/qairt-catalogue-grammar-r1/results", "ui_actions_executed": 0}

@@ -1,0 +1,16 @@
+# Two catalogue-aware QAIRT grammar positive cases
+
+The phone ran two local Qwen3-VL-4B QAIRT model requests using the reviewed R2 core and the full original schema compiled to GBNF by the pinned Python module. Both requests passed their original strict parser, typed mapper and expected-action checks. This is **two model samples with a 53-entry App catalogue**, not 53-App testing and not an executed phone workflow. The second input contains a host-created complete three-action history and the pinned synthetic blue-target image, not a captured App interface. No generated action was dispatched; no service was activated.
+
+| Case | Actual counter upper bound | SDK prompt tokens | Generated tokens | Model invocation wall time | Result |
+|---|---:|---:|---:|---:|---|
+| First instruction: open the requested App | 964 | 964 | 37 | 13.445 s | Correct registered alias, complete original JSON, original typed mapping |
+| After three semantic-history actions: click the screenshot target | 1991 | 1991 | 62 | 17.098 s | Current screenshot ID, original typed mapping, coordinate inside expected blue region |
+
+Both token counters ran before either model request. Their upper bounds were within 3584, retaining the fixed 4096 context / 256 generation / 256 reserve profile. The worker deadline was 55 seconds, with the existing Android timeout at 60 seconds plus a 5-second kill grace. This harness is root/Magisk isolation evidence, not a production UID2000 or r6 native receipt. Each model used a new network namespace with no IPv4 or IPv6 routes. Eight SDK lifecycle return codes, EOS, the complete untruncated SDK text, request and input hashes, actual formatter hash, profile counts and process termination were checked.
+
+The durable pocket4 job `1a1bb5c552d-13c47-216` completed successfully with exit 0 and empty stderr. Both worker and counter PIDs were absent after their runs, and the final model-process inventory was empty. The original stop and retained-claims files, all 52 original runtime files, all 52 R2 runtime files, the worker, counter, proc/tokenizer and all 24 model files matched their fixed hashes before and after. No cleanup assertion was inferred solely from model text or a `completed` field.
+
+`PUBLIC-SUMMARY.json` is preserved byte-for-byte from pocket4: 4493 bytes, SHA `9afc4efddaef47d97317ddecaedd1308f9dd72075f96bda467fd641eeb24ce91`. `RUN-BINDINGS.json` binds the runner, original fixture manifest, compiler, worker/counter, runtime and model sources. The runner is the independent `tools/phone_qairt_catalogue_grammar_check.py`, SHA `17a2638e71cc3beeeb694a801cf082a7d20892c6f5e60c748c1b0785334ec96e`; earlier runners and failures were not overwritten. Original prompt, schema, raw outputs, SDK logs and private detailed results remain on pocket4 under `qairt-catalogue-grammar-r1/results` and the original fixture directory.
+
+The R2 core's invalid-grammar case is still a failed graceful-error contract: it aborts in the full SDK path. Accordingly, the report keeps `core_negative_graceful_error_contract_pass: false` and `runtime_overall_qualified: false` even though these two positive cases passed. This result does not qualify service startup, cancellation under the production supervisor, arbitrary App use or the original fixed19 acceptance suite.

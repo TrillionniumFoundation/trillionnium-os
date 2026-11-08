@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.actual-r9-schema-python-oracle-summary.v1",
+  "job_id": "1a1bb4e8797-13c47-1c9",
+  "job_state": "succeeded",
+  "exit_code": 0,
+  "stderr_bytes": 0,
+  "all_pass": true,
+  "scope": "original_r9_generated_host_semantic_fixtures_not_phone_actions",
+  "compiler_source_sha256": "c230e076ae61c87a744c49b160a456c039d47441784ad3ccc2c6465bc67453a8",
+  "source_manifest_sha256": "8a32dc4b8e1ab1567c2253b2e25e22cd9090322fc8b31b7127e49a8b946a66f0",
+  "reference_executable_sha256": "02e822631e002b2d210cc6b6eea57937c0961d114cfc01e278c06a61a56ad03f",
+  "reference_elf": {
+    "dt_needed": [],
+    "elf_machine": 62,
+    "elf_type": 2,
+    "pt_interp": false
+  },
+  "cases": [
+    {
+      "index": 1,
+      "source_schema_bytes": 11517,
+      "source_schema_sha256": "e38aa481c52512eef9545d055b6a877f0c69bb9b1e5278576e23f4fdf49522ae",
+      "branches": 13,
+      "valid_values": 296,
+      "invalid_values": 165,
+      "python_conversion_seconds": 0.0015449479687958956,
+      "grammar_bytes": 7667,
+      "grammar_sha256": "c56896ce0512cb1d09fcfdfc1c1fa1f1ff4b616c43f4ef6b55289ff19c73c9e2",
+      "oracle_grammar_bytes": 23647,
+      "oracle_grammar_sha256": "d4aaa18896c40d0f935d73de8b9a7f187c05d6480d320057c3ea019e3818d947",
+      "pass": true
+    },
+    {
+      "index": 2,
+      "source_schema_bytes": 14223,
+      "source_schema_sha256": "ab5f19b1952739d27eea4b48ec3bad17fbca9d677816645f76ea6b882259ffc2",
+      "branches": 18,
+      "valid_values": 340,
+      "invalid_values": 274,
+      "python_conversion_seconds": 0.001187026035040617,
+      "grammar_bytes": 9659,
+      "grammar_sha256": "7b17e96cf9220129290989878bf4f5083a9dc899b3b640989a8e8a98dacc4069",
+      "oracle_grammar_bytes": 31757,
+      "oracle_grammar_sha256": "e4a4e1e3f94a9a20f2bf7eb388b4a29575f51bb774902a6b66863c31cebba76d",
+      "pass": true
+    }
+  ],
+  "model_requests": 0,
+  "phone_accessed": false,
+  "proc_grammar_parser_tested": false,
+  "private_schema_bytes_left_pocket4": false
+}

@@ -30,10 +30,12 @@
     "LLMModel::prepareSampler creates or reuses makeSampler(gen_cfg), then seeds it with sampler_->init(prompt_tokens).",
     "Sampler::init iterates over every prompt token and calls geniex_sampler_context_accept.",
     "geniex_sampler_context_accept first accepts the token into an attached grammar, then into the sampler chain and history.",
-    "This feeds input-prompt tokens into a grammar intended to constrain only newly generated output. The resulting path is consistent with the observed EOG-not-allowed exception."
+    "This feeds input-prompt tokens into a grammar intended to constrain only newly generated output. The resulting path is consistent with the observed EOG-not-allowed exception.",
+    "A second independent source defect exists in generated-token handling: the fixed proc Sampler::sample calls geniex_sampler_context_sample, which already calls geniex_sampler_context_accept internally.",
+    "The fixed QAIRT LLMModel::sampleNextToken then calls sampler_->accept(tok) again. With an attached grammar this consumes each generated token twice. The setup-only R1 patch therefore does not repair the full path."
   ],
-  "confidence_limit": "Source-level causal explanation corroborated by the actual exception; no patched-runtime retest or per-token exception trace was performed.",
-  "candidate_action": "QAIRT grammar disabled. Preserve original failure. Validate complete output JSON, action schema and observation bindings after generation; never repair malformed output into an accepted action.",
+  "confidence_limit": "The two source defects are supported by the pinned source and explicit host behavioral tests. The isolated R2 Android core now passes the A-versus-B discriminator, no-grammar recovery and two synthetic visual-click cases. Its malformed-grammar case still aborts, so the five-case suite is not all-pass. No production-domain or app action is proved.",
+  "candidate_action": "Preserve the original runtime and its grammar-disabled v1 provider. Investigate the R2 malformed-grammar exception path, then qualify a separate repair; the existing C ABI already has a std::exception catch, so absence of that catch is not an established cause.",
   "post_abort_recovery": {
     "report": "evidence/qairt-recovery-r4/RECOVERY.json",
     "report_sha256": "f6d4ef5b595bcf7a64279e6b104d650eff3ea8c30fad1743d85098bd5a6cc4ab",
@@ -41,6 +43,37 @@
     "output": "42",
     "residual_worker_processes": 0
   },
-  "sdk_patched": false,
-  "production_phone_actions_executed": 0
+  "production_phone_actions_executed": 0,
+  "repair_candidate": {
+    "directory": "grammar-core-r2",
+    "sampler_patch_sha256": "c743949fd6e646aeecc58f05add2ec3b8c01e8e05594d2b0817ac30dd6e89f02",
+    "cmake_patch_sha256": "c685a6fc95b478ca7c1629c4d2ee3302350176efe1a2c6c291d6e763d44c6bba",
+    "host_report": "grammar-core-r2/review-r2/HOST-TESTS.json",
+    "host_report_sha256": "8eebc0489d54037d05be4b036593bc1e6c0895630a79f544b8c4e1ce5fa4e1f7",
+    "source_changes": "Detach output grammar before prompt-history initialization, attach a freshly validated grammar per response, and omit the second generated-token accept only for grammar-enabled requests.",
+    "scope": "Core-only candidate; retain the official processor, QNN, model, plugin and C worker.",
+    "host_original_failed": true,
+    "host_setup_only_r1_failed": true,
+    "host_r2_passed": true,
+    "host_processor_and_graph_faked": true,
+    "android_build_authorized_after_two_reviews": true,
+    "patched_phone_grammar_tested": true,
+    "android_core_sha256": "06e65cbec4de0831e0010c02ff424e197a519f35b137344cb62ff92369abdb5d",
+    "android_report": "evidence/qairt-core-r2-smoke/RESULT.json",
+    "android_report_sha256": "8f8592fff439a7c85512483339b9b2b28c540703bcc6e3337ede0ac2f83760e4",
+    "android_positive_cases_pass": true,
+    "android_all_cases_pass": false,
+    "android_graceful_invalid_grammar_pass": false
+  },
+  "isolated_sdk_candidate_built": true,
+  "existing_phone_runtime_modified": false,
+  "malformed_grammar_followup": {
+    "process_exit": 134,
+    "raw_output_present": false,
+    "worker_metadata_present": false,
+    "exception": "std::runtime_error: geniex::Grammar: failed to initialise grammar sampler",
+    "no_residual_model_process": true,
+    "status": "FAIL_NO_GRACEFUL_REJECTION",
+    "normal_inference_recovery_passed": true
+  }
 }

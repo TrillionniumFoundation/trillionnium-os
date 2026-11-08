@@ -1,0 +1,25 @@
+{
+  "accepted_values": 3554,
+  "errors": 0,
+  "executable_sha256": "02e822631e002b2d210cc6b6eea57937c0961d114cfc01e278c06a61a56ad03f",
+  "failures": 0,
+  "fixture_aliases": 53,
+  "fixture_branches": [
+    13,
+    18
+  ],
+  "grammar_bytes": 31742,
+  "integer_cases": 4515,
+  "model_requests": 0,
+  "phone_accessed": false,
+  "private_actual_r9_schemas_tested": false,
+  "recognizer_scope": "independent_test_only_acyclic_GBNF_to_Unicode_regex_not_geniex_proc",
+  "rejected_values": 1292,
+  "returncode": 0,
+  "schema": "hepta.schema-converter-host-semantics.v1",
+  "schema_rejections": 17,
+  "status": "PASS",
+  "stderr_sha256": "0933ebac1b179a1150ffbe8db3d5c9139a8b29dd7124b19f8e00462557ac3445",
+  "stdout_sha256": "bdfa2532c79860c19040de567d410ba9e969b0e5c4676be764e2da63db96255a",
+  "tests_run": 15
+}

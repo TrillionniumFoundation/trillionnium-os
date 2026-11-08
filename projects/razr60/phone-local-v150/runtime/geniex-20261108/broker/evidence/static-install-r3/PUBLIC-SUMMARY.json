@@ -1,0 +1,114 @@
+{
+  "schema": "hepta.private-static-install.public-summary.v1",
+  "status": "STATICALLY_INSTALLED_NOT_SELECTED_NOT_ACTIVATED",
+  "completed_utc": "2026-11-08T12:20:42.471341+00:00",
+  "completion_timestamp_source": "private result file metadata, not time of delayed tool retrieval",
+  "private_configuration_or_directory_listing_published": false,
+  "private_result": {
+    "bytes": 3301,
+    "sha256": "e132225b623be717880e3ccad0e549f85739af0e795bf283fd05e5693e803da1"
+  },
+  "artifacts": {
+    "files": 78,
+    "bytes": 4630850230,
+    "all_copied_file_sha256_and_size_checks_passed": true,
+    "manifest_sha256": "368c2277edc3707f1b652b0dd917fff9878566bc44d0367ba01734aa43d8c84d",
+    "source_official_runtime_archive_sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+    "unhashed_original_regular_catalogue_file_verified_against_exact_archive_bytes_before_copy": true
+  },
+  "provider_payload": {
+    "files": 28,
+    "archive_bytes": 11991040,
+    "archive_sha256": "0cbdfeb66a79961617b3806b3e7ddce0bc3d87dc897561f829a0ec67ba61af34",
+    "manifest_sha256": "e0c936ef680639bd89223e875303112f14c24ac2265d23f50382ba26e37bd17c",
+    "private_source_overlay_manifest_sha256": "60acc5a3bf82da22c8a2441f06bd40ff9141760c4319087e978f84d7a48905a4",
+    "configuration_sha256": "55a1e8a8595b45d410e8edbc0170e0ba9b61bf235a8129e47b92b1dc4d10b38d",
+    "launcher_and_bind_script_host_and_Android_shell_parse_passed": true,
+    "selector": "--geniex-config",
+    "CPU_READY_identity_or_slot_binding_required": false,
+    "original_state_and_retained_claims_referenced": true
+  },
+  "observed_permissions": {
+    "existing_ancestor_modes": [
+      "0771",
+      "0751",
+      "0771"
+    ],
+    "existing_ancestor_modes_changed": false,
+    "new_artifact_directories": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0755",
+      "selinux_type": "shell_data_file"
+    },
+    "new_model_and_library_files": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0644"
+    },
+    "new_worker_and_counter": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0755"
+    },
+    "new_request_stage": {
+      "uid": 2000,
+      "gid": 2000,
+      "mode": "0700",
+      "selinux_type": "shell_data_file",
+      "actual_device_inode_recorded_privately": true
+    },
+    "private_candidate_directories": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0700",
+      "selinux_type": "trillionnium_owner_open_state_file"
+    },
+    "private_configuration_files": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0600"
+    },
+    "candidate_launcher": {
+      "uid": 0,
+      "gid": 0,
+      "mode": "0700"
+    },
+    "parent_traversal_mode_requirements_observed": true,
+    "permission_modes_are_not_a_production_SELinux_or_FastRPC_qualification": true
+  },
+  "preservation": {
+    "existing_artifact_permissions_unchanged": true,
+    "existing_stop_file_sha256_unchanged": true,
+    "existing_stop_file_sha256": "ff6401f96ef8d2206e61e9fdf6d75d1dd11fe25f5696d7f6996b6647023fdb07",
+    "original_retained_claims_sha256_unchanged": true,
+    "original_retained_claims_sha256": "7feecc970e6499cd1735e5b0bf2c68386c669462a89a76d84f5bfc8b2225dd8c",
+    "claims_deleted_or_replayed": false,
+    "old_source_or_launchers_changed": false
+  },
+  "not_performed": {
+    "production_activation": true,
+    "service_start": true,
+    "GNUroot_start_or_mount": true,
+    "stage_bind_mount": true,
+    "phone_UI_action": true,
+    "SELinux_policy_change": true,
+    "global_device_node_mode_change": true,
+    "ADB_server_reset": true
+  },
+  "remaining_qualification": {
+    "current_R3_model_decision_qualified": false,
+    "exact_production_worker_domain_NPU_qualified": false,
+    "GNU_shared_bind_verified": false,
+    "fixed19_cases_passed_by_this_installation": 0
+  },
+  "failure_history": {
+    "original_pre_ADB_manifest_preparation_failure_retained": true,
+    "original_ADB_closed_failure_and_failed_combined_inspection_retained": true,
+    "independent_split_inspection_proved_all_three_new_targets_absent_before_streamed_install": true,
+    "same_single_candidate_instance_preserved": true,
+    "reviewed_copy_script_bytes_preserved": "Only the ADB transport changed to a fixed non-PTY sh -s command with stdin; its copy/hash/ownership instructions were unchanged."
+  },
+  "final_observation_sha256": "da2f5456cd4ca8bf75a647349df246374c1864f9964de9876e452534092f3d28",
+  "private_install_generator_sha256": "54220f26e221afa9e72c2d69c070be9003d360a8ec5ed933c907c872c030121e"
+}

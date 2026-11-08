@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Compile a host-only behavioral harness around the exact patched method.
+
+The processor ABI is represented by explicit fakes. This verifies setup/history
+control flow, not binary compatibility, tokenizer numerics or phone/NPU behavior.
+The original pinned method must fail the regression harness; the candidate must
+pass it. No Android compiler, model or phone is used.
+"""
+from pathlib import Path
+import argparse
+import hashlib
+import json
+import resource
+import shutil
+import subprocess
+import time
+
+HERE = Path(__file__).resolve().parent
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def no_core():
+    resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--upstream-root", type=Path, required=True)
+    ap.add_argument("--work", type=Path, required=True)
+    ap.add_argument("--result", type=Path, required=True)
+    args = ap.parse_args()
+    original = (args.upstream_root / "core/src/llm/llm_model.cpp").read_bytes()
+    assert sha(original) == "d164374f843ab3918134e1f7f0e6b1e436f212ba2e574dcc1be03ebf074a6eb8"
+    text = original.decode()
+    start = text.index("void LLMModel::prepareSampler(")
+    end = text.index("\nvoid LLMModel::resolveKVLayout()", start)
+    baseline = text[start:end].rstrip() + "\n"
+    candidate = (HERE / "prepare_sampler.inc").read_bytes()
+    manifest = json.loads((HERE / "review-r1/PATCH-MANIFEST.json").read_text())
+    assert sha(candidate) == manifest["replacement_function_sha256"]
+    compiler = shutil.which("c++") or shutil.which("g++") or shutil.which("clang++")
+    assert compiler, "existing host C++ compiler required"
+    args.work.mkdir(parents=False, exist_ok=False)
+    source = (HERE / "tests/sampler_setup_test.cpp").read_bytes()
+    result = {"schema": "hepta.qairt-grammar-host-behavior.v1", "Android_compiler_invoked": False,
+              "processor_runtime_faked": True, "phone_or_NPU_tested": False,
+              "candidate_function_sha256": sha(candidate), "harness_sha256": sha(source),
+              "compiler_basename": Path(compiler).name, "started_unix": time.time(), "runs": []}
+    for name, function in (("pinned-upstream", baseline.encode()), ("candidate", candidate)):
+        folder = args.work / name
+        (folder / "tests").mkdir(parents=True)
+        (folder / "prepare_sampler.inc").write_bytes(function)
+        (folder / "tests/sampler_setup_test.cpp").write_bytes(source)
+        binary = folder / "host-test"
+        flags = ["-std=c++20", "-O2", "-Wall", "-Wextra", "-Wpedantic", "-Werror"]
+        built = subprocess.run([compiler, *flags, str(folder / "tests/sampler_setup_test.cpp"), "-o", str(binary)],
+                               capture_output=True, timeout=30)
+        (folder / "build.stderr").write_bytes(built.stderr)
+        assert built.returncode == 0, built.stderr.decode(errors="replace")
+        ran = subprocess.run([str(binary)], capture_output=True, timeout=10, preexec_fn=no_core)
+        (folder / "stdout.raw").write_bytes(ran.stdout)
+        (folder / "stderr.raw").write_bytes(ran.stderr)
+        result["runs"].append({"name": name, "flags": flags, "compile_exit": built.returncode,
+                               "process_exit": ran.returncode, "stdout": ran.stdout.decode(errors="replace"),
+                               "stderr": ran.stderr.decode(errors="replace"), "function_sha256": sha(function)})
+    result["upstream_reproduced_prompt_grammar_failure"] = (result["runs"][0]["process_exit"] != 0 and
+                                                           "grammar rejected token" in result["runs"][0]["stderr"])
+    result["candidate_behavioral_checks_pass"] = (result["runs"][1]["process_exit"] == 0 and
+                                                 result["runs"][1]["stdout"].startswith("PASS:"))
+    result["all_pass"] = result["upstream_reproduced_prompt_grammar_failure"] and result["candidate_behavioral_checks_pass"]
+    result["finished_unix"] = time.time()
+    with args.result.open("x") as stream:
+        print(json.dumps(result, indent=2), file=stream)
+    print(json.dumps(result, indent=2))
+    return 0 if result["all_pass"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

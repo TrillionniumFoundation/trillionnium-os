@@ -1,0 +1,78 @@
+{
+  "schema": "hepta.qairt-grammar-host-behavior.v2",
+  "Android_compiler_invoked": false,
+  "processor_and_graph_runtime_faked": true,
+  "sample_accepts_internally_like_pinned_proc": true,
+  "phone_or_NPU_tested": false,
+  "candidate_functions_sha256": {
+    "prepare_sampler.inc": "2a95ca42772a6db7ea0c0ac1b4cc9375dcb773b4a2b785999781af40da55ae31",
+    "sample_next_token.inc": "2d024801fb33cce99640b30b4dbe952d5c90866923283405afeec62d83a97e8a"
+  },
+  "harness_sha256": "5de0d4e70c1244349fc51886c384220a75765d7c31480ed1528893b17d5db79f",
+  "compiler_basename": "c++",
+  "started_unix": 1794140217.2900364,
+  "runs": [
+    {
+      "name": "pinned-upstream",
+      "flags": [
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror"
+      ],
+      "compile_exit": 0,
+      "process_exit": -6,
+      "stdout": "",
+      "stderr": "terminate called after throwing an instance of 'std::runtime_error'\n  what():  grammar rejected token\n",
+      "functions_sha256": {
+        "prepare_sampler.inc": "3313e3470c2136520b2d6fe1ee539d3882d795e7b8dfabac929d670189aba964",
+        "sample_next_token.inc": "dc4962bd2aea752ee41abd314cdd6bac22bfdf7ea068551c28da67ad9a49ecc0"
+      }
+    },
+    {
+      "name": "r1-setup-only",
+      "flags": [
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror"
+      ],
+      "compile_exit": 0,
+      "process_exit": -6,
+      "stdout": "",
+      "stderr": "terminate called after throwing an instance of 'std::runtime_error'\n  what():  grammar rejected token\n",
+      "functions_sha256": {
+        "prepare_sampler.inc": "2a95ca42772a6db7ea0c0ac1b4cc9375dcb773b4a2b785999781af40da55ae31",
+        "sample_next_token.inc": "dc4962bd2aea752ee41abd314cdd6bac22bfdf7ea068551c28da67ad9a49ecc0"
+      }
+    },
+    {
+      "name": "r2-candidate",
+      "flags": [
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror"
+      ],
+      "compile_exit": 0,
+      "process_exit": 0,
+      "stdout": "PASS: actual setup and sampleNextToken methods; prompt EOG isolation; first/subsequent/EOG accepted once; next-turn/empty-prompt reset; invalid/missing grammar inputs fail; no-grammar history and greedy behavior preserved\n",
+      "stderr": "",
+      "functions_sha256": {
+        "prepare_sampler.inc": "2a95ca42772a6db7ea0c0ac1b4cc9375dcb773b4a2b785999781af40da55ae31",
+        "sample_next_token.inc": "2d024801fb33cce99640b30b4dbe952d5c90866923283405afeec62d83a97e8a"
+      }
+    }
+  ],
+  "original_prompt_failure_reproduced": true,
+  "r1_generated_double_accept_failure_reproduced": true,
+  "r2_behavioral_checks_pass": true,
+  "all_pass": true,
+  "finished_unix": 1794140221.3038297
+}

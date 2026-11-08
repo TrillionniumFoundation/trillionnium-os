@@ -93,7 +93,7 @@ Optional arguments:
 | `--tokenizer` | Canonical regular file, when the runtime/bundle requires a separate tokenizer. |
 | `--image` | At most one current image; VLM only. |
 | `--system-file` | One UTF-8 system-message file. |
-| `--grammar-file` | UTF-8 grammar passed as `sampler_config.grammar_string`, not as an OpenAI response-format schema. Disabled in the selected QAIRT integration after the actual discriminator abort recorded in `VALIDATION.md`. |
+| `--grammar-file` | UTF-8 grammar passed as `sampler_config.grammar_string`, not as an OpenAI response-format schema. Disabled in the original v1 QAIRT profile. The explicit v2 candidate selects the separately patched R2 core; actual positive and negative outcomes are recorded in `VALIDATION.md`. |
 | `--vit-device` | `CPU`, `HTP0`, `HTP1`, or `GPUOpenCL`; only `llama_cpp` VLM. Unset leaves the SDK's default. |
 | `--ctx-size` | Integer 0–32768, default 0; QAIRT requires 0 at the C create API. |
 | `--max-tokens` | Integer 1–1024, default 256. |
@@ -298,3 +298,22 @@ unsupported option. Compare CPU versus HTP vision, check the runtime's real imag
 tokenization, and validate screen grounding with known geometry at a sufficient
 image resolution. Fluent text or an `eos` stop is not visual correctness and
 cannot authorize a phone tap.
+
+
+## Separate constrained-output integration candidate
+
+The frozen worker is unchanged. The new explicit provider v2 profile pins the
+separately built QAIRT R2 core and converts the unchanged original action
+schema to GBNF with a reviewed Python helper. The grammar is loaded separately
+from the counted prompt; all App aliases, owner bytes and semantic history
+remain in the input. Both original and constrained profiles retain the strict
+JSON/action parser and the original native cleanup/UNKNOWN rules.
+
+The R2 phone discriminator and two constrained synthetic image decisions
+passed, but malformed grammar still aborted and its graceful-error contract
+failed. The complete five-case suite is not wholly passed. Latest host tests
+are 27/27 backend and 38/38 original private regressions. Those counts do not
+replace production-domain or fixed19 App tests, whose qualification remains
+0/19. See `broker/README.md` and `VALIDATION.md` for exact hashes, scope and
+preserved failures. No production runtime or startup service is activated by
+these source files.

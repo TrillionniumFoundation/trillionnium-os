@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.native-timeout-host-validation.v1",
+  "started_unix": 1794141188.3010025,
+  "pack_sha256": "cb6a20a852dde400959fe938bbdb90f61541c5090c9d696dd124ded0b2d46541",
+  "phone_contacted": false,
+  "UI_actions": 0,
+  "production_qualified": false,
+  "tests": [
+    {
+      "name": "create-private-overlay",
+      "exit_code": 0,
+      "seconds": 0.12776817218400538,
+      "stdout_sha256": "cd2f4540cacf82536040dca204d98cb4884fe1265aa8e84afb51468f0aa4c456",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "backend-23-with-private-selector",
+      "exit_code": 0,
+      "seconds": 17.66626215004362,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "9a76285943872de492923100448a0fe47d0e21617cb10e8eb71b874e30ee266c"
+    },
+    {
+      "name": "private-r9-original-38",
+      "exit_code": 0,
+      "seconds": 8.02724429499358,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "832fd74996044c4adee22dc2a334b32563dd9dbedcdf683415e7aa764c7a9f30"
+    },
+    {
+      "name": "private-pins-import",
+      "exit_code": 0,
+      "seconds": 0.09297714103013277,
+      "stdout_sha256": "7cdb8a89ac503eb7d260527d9dc70da7b433b35bdf7a2805427f9c16ac9b315c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "all_pass": true,
+  "finished_unix": 1794141214.2156098,
+  "candidate_public_sha256": {
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/native_backend.py": "00ea8d6c5a35c58a74655492b7b1c4084883f5da2db03b7ecec5b62f08202724",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/provider_bridge.py": "45ddfade02ed318fb847b53d49cfd07e2a2c82d923aaa1126478afb6eb649a4b",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/prompt_budget.py": "8521bd21e8e2c6848491baa52c2bb6d4dc56ab0e0ea2ecb2be8a934b3bd877d4",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_backend.py": "cded9a2be25f893810a7e085904bab9b538e75c60e88101344ca60c0548ddc2b",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/provider_flow_probe.py": "b0d2c64d20f1c545623689b17ee806097a6ff146fd113c91a1cdd0a6319663aa",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/broker_stub.c": "12b3df72d92ae725fa5f20555bb1b1f07b10370c876e1cf8db3d0a394340b399"
+  },
+  "private_source_sha256": {
+    "task_postconditions.py": "b08e1c4174effb891defd2b055291c2c3a2e17435c9705d331fbe440fe5f0d45",
+    "retirement_recovery.py": "c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827",
+    "phone_observation_tools.py": "ed855866475efb7334f5a5a20d7622541f532cfcc778b8813908eb860cda198c",
+    "health_contracts.py": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "action_ledger.py": "9fdf249d60b539f8630ff82c611f76caa5dba188eb846b66fc9d493be03b48b7",
+    "phone_local_http_worker.py": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d",
+    "provider_phone_local.py": "9ffe3dbe7029986c907343981d080a7f77ad925c55151a63e5cf9330b1a5fcf3",
+    "provider_codex_host.py": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039",
+    "model_slot_cleanup.py": "9144bc864e245d63186f6b37760562e3b42554fdcc42ed792c9081761f315183",
+    "provider_openai_compatible.py": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc",
+    "prompt_budget.py": "8521bd21e8e2c6848491baa52c2bb6d4dc56ab0e0ea2ecb2be8a934b3bd877d4",
+    "native_backend.py": "00ea8d6c5a35c58a74655492b7b1c4084883f5da2db03b7ecec5b62f08202724",
+    "daily_phone_local.py": "38d8ce1324756635d16d0909b3d5c8aab093c6f46998165808a7d408b317f47e",
+    "phone_local_tools.py": "b653796658ff7cef0b286ccf25f560f8fd67cbe24017876d041f9412b24eacbe",
+    "ledger_round_evidence.py": "68d715d01916b0fe6c18ee5e5ccf458e8b5100710c50e2517dccb221d9eb500c",
+    "provider_bridge.py": "45ddfade02ed318fb847b53d49cfd07e2a2c82d923aaa1126478afb6eb649a4b",
+    "model_health.py": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80",
+    "phone_task_guards.py": "87d88e0e9f93b31cf69bf0e4cdb9c62fd20e03c2192a0ffec621eb84c26bba86"
+  }
+}

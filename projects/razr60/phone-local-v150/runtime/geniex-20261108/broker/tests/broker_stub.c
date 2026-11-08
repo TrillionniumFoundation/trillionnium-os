@@ -22,6 +22,8 @@ int32_t geniex_vlm_apply_chat_template(geniex_VLM *handle,const geniex_VlmApplyC
 int32_t geniex_vlm_generate(geniex_VLM *handle,const geniex_VlmGenerateInput *in,geniex_VlmGenerateOutput *out) {
     if(strstr(in->prompt_utf8,"[[case=sdk_abort]]"))abort();
     if(strstr(in->prompt_utf8,"[[case=exit134]]"))_exit(134);
+    if(strstr(in->prompt_utf8,"[[case=exit124]]"))_exit(124);
+    if(strstr(in->prompt_utf8,"[[case=worker_deadline]]"))delay_ms(750);
     const char *cases[]={"length","generate_fail_with_text","generate_fail","signal_last_token","hard_hang","deadline"};
     for(unsigned i=0;i<sizeof(cases)/sizeof(cases[0]);i++){
         char marker[96];snprintf(marker,sizeof(marker),"[[case=%s]]",cases[i]);

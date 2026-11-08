@@ -1,0 +1,1 @@
+只输出一个完整的JSON对象，不要Markdown或解释。每个对象和数组都必须闭合。下面是与当前图片无关的完整格式示例：{"name":"mobile_use","arguments":{"action":"open","text":"settings","summary":"打开设置"}}。当前点击任务的arguments应包含action、screenshot_id、coordinate和summary。action为click，coordinate是0到1000的两个整数，按原始完整图片的宽高归一化。必须闭合arguments对象和最外层对象。

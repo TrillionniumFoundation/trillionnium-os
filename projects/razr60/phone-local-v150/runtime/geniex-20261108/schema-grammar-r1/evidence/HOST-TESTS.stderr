@@ -1,0 +1,20 @@
+test_complete_53_alias_enum_and_exact_screenshot (__main__.ConverterTests.test_complete_53_alias_enum_and_exact_screenshot) ... ok
+test_complete_action_set_and_all_fields (__main__.ConverterTests.test_complete_action_set_and_all_fields) ... ok
+test_coordinate_and_duration_exhaustive_boundaries (__main__.ConverterTests.test_coordinate_and_duration_exhaustive_boundaries) ... ok
+test_duplicate_schema_keys_and_size_fail_before_output (__main__.ConverterTests.test_duplicate_schema_keys_and_size_fail_before_output) ... ok
+test_exact_health_contract_shape_without_nonce_or_tools (__main__.ConverterTests.test_exact_health_contract_shape_without_nonce_or_tools) ... ok
+test_exact_tuple_lengths_and_types (__main__.ConverterTests.test_exact_tuple_lengths_and_types) ... ok
+test_malformed_json_extra_tokens_and_missing_closers (__main__.ConverterTests.test_malformed_json_extra_tokens_and_missing_closers) ... ok
+test_no_image_schema_cannot_gain_visual_actions (__main__.ConverterTests.test_no_image_schema_cannot_gain_visual_actions) ... ok
+test_original_bytes_executable_and_grammar_bound (__main__.ConverterTests.test_original_bytes_executable_and_grammar_bound) ... ok
+test_package_and_view_patterns (__main__.ConverterTests.test_package_and_view_patterns) ... ok
+test_private_cli_preserves_original_and_never_overwrites (__main__.ConverterTests.test_private_cli_preserves_original_and_never_overwrites) ... ok
+test_scalar_length_and_surrogate_representation_boundary (__main__.ConverterTests.test_scalar_length_and_surrogate_representation_boundary) ... ok
+test_static_elf_has_no_interpreter_or_needed (__main__.ConverterTests.test_static_elf_has_no_interpreter_or_needed) ... ok
+test_text_length_unicode_and_json_escaping (__main__.ConverterTests.test_text_length_unicode_and_json_escaping) ... ok
+test_unknown_keywords_and_unsupported_combinations_fail (__main__.ConverterTests.test_unknown_keywords_and_unsupported_combinations_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.682s
+
+OK

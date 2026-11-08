@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.qairt-core-grammar-patch.v1",
+  "status": "source_candidate_only_no_Android_binary",
+  "upstream_repository": "qualcomm/geniex-qairt-plugin",
+  "upstream_commit": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c",
+  "processor_commit_unchanged": "6b68dd0de5b9a84c316cc3babfe9f2477d9c6079",
+  "processor_binary_sha256_unchanged": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+  "replacement_function_sha256": "2a95ca42772a6db7ea0c0ac1b4cc9375dcb773b4a2b785999781af40da55ae31",
+  "patches": [
+    {
+      "file": "qairt-core-sampler.patch",
+      "bytes": 2589,
+      "sha256": "f6ce8d4df615954530903ad9c6bdf703eff3fc4a89ad8b1b4aa240327be080db",
+      "target": "core/src/llm/llm_model.cpp",
+      "upstream_sha256": "d164374f843ab3918134e1f7f0e6b1e436f212ba2e574dcc1be03ebf074a6eb8",
+      "patched_source_sha256": "acae4d90e1005334c7e560c6aab7d001871ac89c760ae0d97096e1157013e240"
+    },
+    {
+      "file": "qairt-core-prebuilt-proc.patch",
+      "bytes": 2445,
+      "sha256": "c685a6fc95b478ca7c1629c4d2ee3302350176efe1a2c6c291d6e763d44c6bba",
+      "target": "CMakeLists.txt",
+      "upstream_sha256": "b33192d8d430913e2c4ae4ef36b37301c3d589da3648224d8cbf976157c5c13a",
+      "patched_source_sha256": "e2ddc17ba527a272cdb068bae1194f7ea5fb367ce98c74023d087ba52e1c24fd"
+    }
+  ],
+  "source_checks": [
+    {
+      "path": "core/src/llm/llm_model.cpp",
+      "git_blob_sha": "0cf276786431f9190b90c599bd57a893caebfae0",
+      "sha256": "d164374f843ab3918134e1f7f0e6b1e436f212ba2e574dcc1be03ebf074a6eb8"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "git_blob_sha": "89e4e256887eac74540b43cce0bfccc63f9a8127",
+      "sha256": "b33192d8d430913e2c4ae4ef36b37301c3d589da3648224d8cbf976157c5c13a"
+    },
+    {
+      "path": "core/include/llm/sampler_utils.h",
+      "git_blob_sha": "f9fdd4d345590e438cecef7fe941ba4db5f07161",
+      "sha256": "1ef79f1e37ee06b362ff244d0ad0c214bb36673be646bd7c45c896b8606bb470"
+    }
+  ],
+  "phone_runtime_modified": false,
+  "Android_compiler_invoked": false,
+  "model_weights_QNN_proc_worker_changed": false
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.qairt-catalogue-second-counter-only.v1",
+  "fixture_manifest_sha256": "fdc4472f3ccc35a773fb035b04807d89cf7460eb6485ba07bce98f2fb3e7f001",
+  "case": "02-after-three-actions-click",
+  "counter_request_id": "b028f4be0b384b29a01c8a7c7a844e58",
+  "counter_binary_sha256": "09c2c8fb4b0c0095ffe612be82bc1b2124d47f9351c53fd0a77384c74395589c",
+  "counter_result_sha256": "4ea2405c0aeb393fefe1c6ae7d8c97156eb3bd08abd1d6707435f87b399bfde9",
+  "counter_upper": 5458,
+  "process_exit": 2,
+  "elapsed_seconds": 1.0839947119820863,
+  "status": "oversize",
+  "valid_measurement": true,
+  "budget_admitted": false,
+  "input_sha256": {
+    "prompt": "7a04c1e2d77974879cef823e33461e8ba4af037c20de0d7f781bdd08375d2df3",
+    "system": "3c875aefa109e41154f40599d82c80d2e2b73171597313fe9f2e1a6cd7ae11f2",
+    "image": "3884af3cf4b76e45a6cd8a38084423241863079b48fa2b1fc437069b89591459"
+  },
+  "segment_sha256": [
+    "37c671095948c4152be55b008dfbfa9bb0df07fc8d94240201912035a716ca32",
+    "e37ec3232215b8124637314c88b5f727807e19a1c8762f5243b670b2cac04308"
+  ],
+  "counter_network_isolated": true,
+  "first_case_upper": 3819,
+  "admission_limit": 3584,
+  "all_cases_admitted": false,
+  "model_attempted": false,
+  "total_r4_model_requests": 0,
+  "ui_actions_executed": 0,
+  "original_first_gate_preserved": true
+}

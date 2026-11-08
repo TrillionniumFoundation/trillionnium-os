@@ -1,0 +1,40 @@
+{
+  "catalogue_entries": 53,
+  "files": [
+    {
+      "bytes": 730,
+      "path": "HOST-JOB-STATUS.json",
+      "sha256": "3c9ae53f9a0647cfbb7b7e3d81c89c97953d5acee5dcb319423f5b0646115f99"
+    },
+    {
+      "bytes": 0,
+      "path": "HOST-JOB.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 818,
+      "path": "HOST-JOB.stdout",
+      "sha256": "0d70f12e917621b423f09a237bd5ee160e1ef83cd14c5843cbf978e8dd3235e4"
+    },
+    {
+      "bytes": 4493,
+      "path": "PUBLIC-SUMMARY.json",
+      "sha256": "9afc4efddaef47d97317ddecaedd1308f9dd72075f96bda467fd641eeb24ce91"
+    },
+    {
+      "bytes": 3290,
+      "path": "README.md",
+      "sha256": "b7ef03315dafcbe6782f73fac4e7a295448726708fbe2c0486350a5b86336eb8"
+    },
+    {
+      "bytes": 4508,
+      "path": "RUN-BINDINGS.json",
+      "sha256": "61d4a7386010cd01bff3981fef8b7e2fa47e0639c184b3c47507c69e5d25f3cf"
+    }
+  ],
+  "model_samples": 2,
+  "phone_ui_actions": 0,
+  "r2_overall_runtime_qualified": false,
+  "schema": "hepta.qairt-catalogue-grammar-public-evidence.v1",
+  "source_job_id": "1a1bb5c552d-13c47-216"
+}
