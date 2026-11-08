@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.action-choice.public-source-manifest.v1",
+  "status": "work_in_progress_inference_only_candidate_not_qualified",
+  "runtime_or_android_source_modified": false,
+  "phone_or_model_runs_performed_by_publication": false,
+  "renderer_bytes_unchanged": true,
+  "system_bytes_unchanged": true,
+  "syntax_checked": true,
+  "private_fixtures_included": false,
+  "files": [
+    {
+      "path": "DIAGNOSIS.md",
+      "bytes": 12365,
+      "sha256": "dca9bf8c30cceb6be248e6163104bd65bcd225cf01a7f2778cd9f336ce5c252e"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2093,
+      "sha256": "530090e70ec17eeec8a87f6b86d67979830ebdaf7ba241c35550e6773d63e161"
+    },
+    {
+      "path": "SYSTEM.txt",
+      "bytes": 606,
+      "sha256": "d6c616ef53f7057caff592e8763fd0ecb4f36276f1da4569fb355ae201698112"
+    },
+    {
+      "path": "render_choice_probe.py",
+      "bytes": 5432,
+      "sha256": "e67d78103ee0e4d06d8183a9cd8b2ca80d9f3ec250a613a17c1062603e0cd6d4"
+    }
+  ],
+  "closure_sha256": "7cbb13d3fe40044d4e6c0b0d8da84ddfab9750cbda6fc7cc6f5dbcefda6c4ab6",
+  "closure_encoding": "UTF-8 JSON of files; sort_keys=true, separators=comma/colon; manifest itself excluded"
+}

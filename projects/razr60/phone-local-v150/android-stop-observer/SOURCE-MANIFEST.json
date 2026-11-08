@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.diagnostic.public-source-manifest.v1",
+  "directory": "android-stop-observer",
+  "closure_sha256": "abe18eb942e108f6eeb679164f3019314a48ded63328ca070322894670be6b44",
+  "files": [
+    {
+      "path": "AndroidManifest.xml",
+      "bytes": 676,
+      "sha256": "982b1e5a9353009474be261d73e6a24c8a9d4ac068ae4cef6bdb7517e4a66b69"
+    },
+    {
+      "path": "BUILD-VALIDATION.json",
+      "bytes": 762,
+      "sha256": "81df2d4916a95fdd7f68da44bb344461ad9a467bd07e13b0e3de0bddf481e346"
+    },
+    {
+      "path": "PUBLICATION-MANIFEST.json",
+      "bytes": 652,
+      "sha256": "69b787108bdb461c4f003f4d797772e8d6f485f9e1033172685afaaad6680afd"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4827,
+      "sha256": "9682b880e66a168cd8b5f64598cac14b8d3eadc52127de9dae4bd541b14691f0"
+    },
+    {
+      "path": "build_mac.py",
+      "bytes": 4621,
+      "sha256": "f3fd3511e929611d38afec3b2c70c54caba2b6b3e3c1ceb9a5e285ab8e9874fe"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/stopobserver/StopObserverInstrumentation.java",
+      "bytes": 16489,
+      "sha256": "154bc1da4eb43123b68bb617151da29adb8354f08ead1ecdc2e49ad0736242e0"
+    }
+  ]
+}

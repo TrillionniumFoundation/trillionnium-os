@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.diagnostic.public-source-boundary.v1",
+  "runtime_java_native_byte_identical_to_frozen_original": true,
+  "runtime_sources": [
+    {
+      "path": "native/probe-worker.c",
+      "sha256": "14fec553dd4eb0f651dee201381f242273a0cd49cc5a11029d91ad6c2cafed30"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/internprobe/LocalModelEngine.java",
+      "sha256": "88e2c0a4ebb549c7fa57ac1d2e6a1784557878872162876d1e8f0bdcfdd7e179"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/internprobe/MainActivity.java",
+      "sha256": "a2fd7fbb2f753451508e11b217b0c186aaffc1efbff445f6e38f381bfd56e16e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/internprobe/ProbeApplication.java",
+      "sha256": "b09419ed1daa1b7e6a3b5fdf6e05b84672c094743bd80e1b3f1441ddabeaca39"
+    }
+  ],
+  "allowed_public_changes": [
+    "build dependency paths",
+    "documentation",
+    "sanitized model/build metadata"
+  ],
+  "excluded": [
+    "weights",
+    "SDK binaries",
+    "APKs",
+    "signing keys",
+    "private host paths",
+    "raw phone UI",
+    "raw test receipts",
+    "remote operator requests"
+  ],
+  "public_revision": "r2",
+  "third_party_attribution": {
+    "upstream_repository": "https://github.com/qualcomm/GenieX",
+    "upstream_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "header_sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40",
+    "license_git_blob": "74eadadcbcbd7754420fde09f261326df8cf2697",
+    "notice_git_blob": "41cbbc8ffb15baaeb8f93b085d1f62de7497cdf4",
+    "files": [
+      {
+        "path": "native/vendor/GENIEX-LICENSE",
+        "sha256": "3a1d5f5b391581a14dd06df9859a327ca26f07452a0aa2cfd2008f173d3acbba"
+      },
+      {
+        "path": "native/vendor/GENIEX-UPSTREAM-NOTICE.md",
+        "sha256": "9461561a735065da88239a46ba1cafbe2a4d5b7d3b3e37825d2ebe9b0e88f9d9"
+      },
+      {
+        "path": "native/vendor/README.md",
+        "sha256": "841c1b6fc3efe5e5fb0a4740df71b9d05e647d33502f92e19de650cb849d3c72"
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.stop-observer.public-build-validation.v1",
+  "reference_apk_built": true,
+  "reference_apk_sha256": "54c2eb90a9e70e16ac5f258741ac7f28197dda0896771c4c5e4984e7c56c58fb",
+  "reference_apk_bytes": 29075,
+  "package": "org.trillionnium.hepta.stopobserver",
+  "instrumentation_target_package": "org.trillionnium.hepta.stopobserver",
+  "compile_sdk": 34,
+  "target_sdk": 35,
+  "min_sdk": 30,
+  "java_release": 8,
+  "ui_automation_flags": 1,
+  "build_commands_all_exit_zero": true,
+  "installed_on_phone": false,
+  "stop_behavior_qualified": false,
+  "service_binding_unchanged_qualified": false,
+  "model_process_exit_qualified": false,
+  "public_path_rebuild_performed": false,
+  "apk_in_repository": false,
+  "signing_key_in_repository": false
+}

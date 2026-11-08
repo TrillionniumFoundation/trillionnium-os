@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.diagnostic.public-source-manifest.v1",
+  "directory": "android-internvl-probe",
+  "closure_sha256": "bf78830662a0128e22b19dd549c8e9c0f08b085ca64c38fd17f419e47d4cc5d0",
+  "files": [
+    {
+      "path": "AndroidManifest.xml",
+      "bytes": 1307,
+      "sha256": "619c56c0188817fc6b8384bbcd241e259d4f058741d49015c661910c09238a78"
+    },
+    {
+      "path": "BUILD-VALIDATION.json",
+      "bytes": 683,
+      "sha256": "a848ec9e841802fcf28f5105d149601ba10dca19d7381a6d63612804da068c86"
+    },
+    {
+      "path": "ENGINE-DELTA.diff",
+      "bytes": 2552,
+      "sha256": "089527885fcb75a89e955bf419b7489c171ab65d8584e2195b4f128427bce3f1"
+    },
+    {
+      "path": "MODEL-TARGET.json",
+      "bytes": 2459,
+      "sha256": "76c633931f4a96344c364a901fbde7ff681a9517ee506761996f2b6a01f2a145"
+    },
+    {
+      "path": "PUBLICATION-MANIFEST.json",
+      "bytes": 2572,
+      "sha256": "9f9c8b19a485bb1b2a2a6315829727990f9f52a34bbc005564565b1727e11523"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4886,
+      "sha256": "f64ddbdbea77fbeecf4cdcbd4300d08bac1fc26ba7b0a4c26350cc1fc8ab064d"
+    },
+    {
+      "path": "assemble_pocket4.py",
+      "bytes": 6817,
+      "sha256": "1fb4e58fb4cc80e995d5f7fb9f7b38c0899cba8be3db7ba889db49df3355baa2"
+    },
+    {
+      "path": "build_mac.py",
+      "bytes": 3680,
+      "sha256": "a24f0e95b71c572eb8e73d7bfc5ea257d2051578b25a3a34f7cf1da8453a45e2"
+    },
+    {
+      "path": "native/generate_adapter.py",
+      "bytes": 1671,
+      "sha256": "25220d85b4e41b7ade9d54274eb888659affa3e87574eefe799319ec62c451a0"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "bytes": 2784,
+      "sha256": "14fec553dd4eb0f651dee201381f242273a0cd49cc5a11029d91ad6c2cafed30"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "bytes": 2430,
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/vendor/GENIEX-LICENSE",
+      "bytes": 1565,
+      "sha256": "3a1d5f5b391581a14dd06df9859a327ca26f07452a0aa2cfd2008f173d3acbba"
+    },
+    {
+      "path": "native/vendor/GENIEX-UPSTREAM-NOTICE.md",
+      "bytes": 8436,
+      "sha256": "9461561a735065da88239a46ba1cafbe2a4d5b7d3b3e37825d2ebe9b0e88f9d9"
+    },
+    {
+      "path": "native/vendor/README.md",
+      "bytes": 1131,
+      "sha256": "841c1b6fc3efe5e5fb0a4740df71b9d05e647d33502f92e19de650cb849d3c72"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "bytes": 30066,
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "res/values/strings.xml",
+      "bytes": 119,
+      "sha256": "2f6c3227202cc97f295576c54d780869f760882b4906b18ec0d43dc6b0e9bfa5"
+    },
+    {
+      "path": "runtime-libraries.json",
+      "bytes": 7245,
+      "sha256": "aad81501222a7e2ebbf3cf5f8239d959d9d4b93c05e51163bbeea3c036c9f3b4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/internprobe/LocalModelEngine.java",
+      "bytes": 20204,
+      "sha256": "88e2c0a4ebb549c7fa57ac1d2e6a1784557878872162876d1e8f0bdcfdd7e179"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/internprobe/MainActivity.java",
+      "bytes": 6167,
+      "sha256": "a2fd7fbb2f753451508e11b217b0c186aaffc1efbff445f6e38f381bfd56e16e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/internprobe/ProbeApplication.java",
+      "bytes": 412,
+      "sha256": "b09419ed1daa1b7e6a3b5fdf6e05b84672c094743bd80e1b3f1441ddabeaca39"
+    }
+  ]
+}

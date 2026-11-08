@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.gpu-budget.host-contract.v1",
+  "assertions": 288,
+  "backend_is_mocked": true,
+  "actual_tokenizer_tested": false,
+  "phone_or_gpu_qualified": false,
+  "result": "passed",
+  "boundary_scenarios": 16,
+  "source_under_test_sha256": "b753eb86e4e696b59ad74b5e8d262bb7bea3d224887519cb84a8db8e9f794585",
+  "test_source_sha256": "a6c697e7088dbc94a603d14d22cefa008d329dfd524a74bcf8c9d4e6b94e65d3",
+  "compiler": "cc -std=c11 -Wall -Wextra -Werror",
+  "tested_contracts": [
+    "full formatted text handed unchanged to tokenizer",
+    "BOS/special flags true",
+    "vocabulary-only and CPU counter placement",
+    "8192 admission boundary with generation and 64 reserve",
+    "INT32 overflow and ABI symbol absence fail closed",
+    "training context bound",
+    "placeholder pixel bound and non-PNG rejection",
+    "exact 1GiB OpenCL max-token override",
+    "CPU vision uses metadata default bounds",
+    "sum actual chunk n_tokens and reject audio/overflow",
+    "all allocated model/vision/chunk/bitmap resources freed",
+    "actual profile must equal pre-count, not merely fit context",
+    "JSON evidence reflects completed profile equality"
+  ]
+}

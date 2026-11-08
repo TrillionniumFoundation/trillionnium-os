@@ -1,0 +1,86 @@
+{
+  "llama_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+  "geniex_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "gitlink_verified": true,
+  "files": [
+    {
+      "path": "include/llama.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/include/llama.h",
+      "git_blob": "ae54e661bea6b305c0d3684670bc444c53d795bd",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "include/mtmd.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/tools/mtmd/mtmd.h",
+      "git_blob": "0a6bf4c4c4de583381b72e86671797c8e511864a",
+      "bytes": 26213,
+      "sha256": "8cca120b5095c19362aebff2d5b35a7247b364dc3fb28d8f0a3a99754c865813"
+    },
+    {
+      "path": "include/ggml.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/include/ggml.h",
+      "git_blob": "d62a631043a3745882dba3333004cb92cb75a7c6",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "include/ggml-cpu.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/include/ggml-cpu.h",
+      "git_blob": "dc6453c6eaa16667f720f987659ad42d03a403a2",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "include/ggml-backend.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/include/ggml-backend.h",
+      "git_blob": "7a65d8121b1c1f135bef3586058b83c07ce0cb73",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "include/ggml-opt.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/include/ggml-opt.h",
+      "git_blob": "1c2ed79b77420e74fd3b81b83367109164380853",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "include/gguf.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/include/gguf.h",
+      "git_blob": "b3a1e1230a06110a0a5f04469d849ac2000b467c",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "include/ggml-alloc.h",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/include/ggml-alloc.h",
+      "git_blob": "81cce2e2a60778f5fe6d923a74b38f7fa47d7dcc",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "geniex/vlm.cpp",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/llama_cpp/src/vlm.cpp",
+      "git_blob": "32a1e4b1393e2364d8efe87abebc152fcabcc68f",
+      "bytes": 38024,
+      "sha256": "b07d3eade2f9aa9bf79428297507ed4575fc2088e50b1209f880a3f7d88540f0"
+    },
+    {
+      "path": "geniex/params.cpp",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/llama_cpp/src/params.cpp",
+      "git_blob": "d01cf5f1b1cf238e00df225d1bf85f299f74a9b2",
+      "bytes": 20966,
+      "sha256": "0b809c0695583890396c07e85fd92b5f64e4869c824a7e82f312ad8040416457"
+    },
+    {
+      "path": "geniex/params.h",
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/llama_cpp/include/params.h",
+      "git_blob": "3340c896a5ee2001655f5a6304051e4e67e23f74",
+      "bytes": 5899,
+      "sha256": "962a5699c0c5328a1a6ce0a1733a8922a96068fac9d2607b67e127986943de19"
+    }
+  ],
+  "header_closure_syntax_compile_exit": 0,
+  "runtime_or_model_executed": false
+}

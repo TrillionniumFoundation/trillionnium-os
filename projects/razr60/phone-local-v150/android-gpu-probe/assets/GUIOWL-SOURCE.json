@@ -1,0 +1,33 @@
+{
+  "repository": "X-PLUG/MobileAgent",
+  "commit": "c4cd0a8f9ddedad24dd8a3daf3a56ca69343849f",
+  "purpose": "read-only source reference; not an executable phone or network integration",
+  "files": [
+    {
+      "path": "utils.py",
+      "blob": "ff9a3b097d23c7b8334ba56d730bbe1e9bb9a85d",
+      "url": "https://github.com/X-PLUG/MobileAgent/blob/c4cd0a8f9ddedad24dd8a3daf3a56ca69343849f/Mobile-Agent-v3.5/mobile_use/utils.py",
+      "sha256": "1cd5414943f379ddd6a46e279fd11b4cf6317e7e568cf1e94cb7749fc5732e3d",
+      "bytes": 24547
+    },
+    {
+      "path": "run_gui_owl_1_5_for_mobile.py",
+      "blob": "a160217f92f140f2b7d46d539224f16bd9f57bcc",
+      "url": "https://github.com/X-PLUG/MobileAgent/blob/c4cd0a8f9ddedad24dd8a3daf3a56ca69343849f/Mobile-Agent-v3.5/mobile_use/run_gui_owl_1_5_for_mobile.py",
+      "sha256": "8585222a9a8b194b36eb4cdabae5a3eaee34a301ac1deaeb8068935f9c05322a",
+      "bytes": 12664
+    }
+  ],
+  "system_prompt": {
+    "path": "guiowl-system.txt",
+    "bytes": 3825,
+    "sha256": "28235cbaf0bd969239f5cdd3f1fa67a59edf8de4a39c49e96011feac2fbf62fe",
+    "extracted_by": "Python AST Constant; module never imported or executed"
+  },
+  "license": {
+    "file": "MOBILEAGENT-LICENSE",
+    "url": "https://github.com/X-PLUG/MobileAgent/blob/c4cd0a8f9ddedad24dd8a3daf3a56ca69343849f/LICENSE",
+    "git_blob": "4539a4390a3eb18e2a71545ae75c32eea166be2d",
+    "sha256": "961819a89dacd1f4f161e1d2ebf616b538bf095a2eecfa3ef40b7ccec633fac4"
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "schema": "hepta.gpu-probe.public-source.v1",
+  "private_frozen_source_archive_sha256": "e3985b6a1bf0815b9e92d472c46075aaf7f5790bc76ff666a072213019422142",
+  "package": "org.trillionnium.hepta.gpuprobe",
+  "status": "work_in_progress_uncompiled_device_unqualified",
+  "android_apk_build_confirmed": false,
+  "installed_on_device": false,
+  "ordinary_uid_gpu_qualified": false,
+  "phone_actions_supported": false,
+  "runtime_sources_byte_identical_to_frozen_candidate": [
+    {
+      "path": "AndroidManifest.xml",
+      "bytes": 1219,
+      "sha256": "81b1d674fad7ba4f4b184680c156c76d76d76ab222882acaf050217a4fc6504c"
+    },
+    {
+      "path": "assets/guiowl-system.txt",
+      "bytes": 3825,
+      "sha256": "28235cbaf0bd969239f5cdd3f1fa67a59edf8de4a39c49e96011feac2fbf62fe"
+    },
+    {
+      "path": "native/generate_adapter.py",
+      "bytes": 1671,
+      "sha256": "25220d85b4e41b7ade9d54274eb888659affa3e87574eefe799319ec62c451a0"
+    },
+    {
+      "path": "native/generate_gpu_adapter.py",
+      "bytes": 2194,
+      "sha256": "16d305eedfd07049ef8b59b4ca2282bd915b9bc74209278901b1b69a1aca2a57"
+    },
+    {
+      "path": "native/gpu-budget.inc",
+      "bytes": 10827,
+      "sha256": "b753eb86e4e696b59ad74b5e8d262bb7bea3d224887519cb84a8db8e9f794585"
+    },
+    {
+      "path": "native/gpu-probe-worker.c",
+      "bytes": 2619,
+      "sha256": "bb1b2d7742de32da415b536fb8e3819302eec331152561972697d7049e85df99"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "bytes": 2784,
+      "sha256": "14fec553dd4eb0f651dee201381f242273a0cd49cc5a11029d91ad6c2cafed30"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "bytes": 2430,
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/vendor/GENIEX-LICENSE",
+      "bytes": 1565,
+      "sha256": "3a1d5f5b391581a14dd06df9859a327ca26f07452a0aa2cfd2008f173d3acbba"
+    },
+    {
+      "path": "native/vendor/GENIEX-UPSTREAM-NOTICE.md",
+      "bytes": 8436,
+      "sha256": "9461561a735065da88239a46ba1cafbe2a4d5b7d3b3e37825d2ebe9b0e88f9d9"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "path": "native/vendor/llama/SOURCE.json",
+      "bytes": 3988,
+      "sha256": "36ab8d23c49d581aba48b78f0f9fafa263f717f9c8ce116283f1980dac03a32e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "native/vendor/llama/mtmd.h",
+      "bytes": 26213,
+      "sha256": "8cca120b5095c19362aebff2d5b35a7247b364dc3fb28d8f0a3a99754c865813"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "bytes": 30066,
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/gpuprobe/GpuProbeApplication.java",
+      "bytes": 403,
+      "sha256": "cbb8f6bdce2b8d3fe79c171a395457f405ed2e60254975a12c301b1e8c181ed1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/gpuprobe/LocalModelEngine.java",
+      "bytes": 25578,
+      "sha256": "0c858d61ce15b46ab5ad35a2e7f3fd8c115e83e4b9d0cc7ebcfe2d5d49da371b"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/gpuprobe/MainActivity.java",
+      "bytes": 9800,
+      "sha256": "5b5e26a268e7880904670d81c3cf024fc99f4bf1a644be70e6439485596898e0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/gpuprobe/ProbeImagePreprocessor.java",
+      "bytes": 2784,
+      "sha256": "c92fe92722f7dd6f3b09ef0ba42b4fc7403c98f92349b74b37a7a6a2ab8caa97"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/gpuprobe/RuntimeProfile.java",
+      "bytes": 1833,
+      "sha256": "d120724bbac110ac6f9d28be1ba25ab3a977c82a4a951ff7ad21b81867c4d355"
+    }
+  ],
+  "parameterized_build_scripts": [
+    "build_mac.py",
+    "assemble_pocket4.py"
+  ],
+  "added_public_only_attribution": [
+    "assets/MOBILEAGENT-LICENSE",
+    "assets/GUIOWL-SOURCE.json",
+    "assets/THIRD-PARTY-NOTICES.txt",
+    "native/vendor/README.md"
+  ],
+  "host_tests": {
+    "boundary_scenarios": 16,
+    "assertions": 288,
+    "backend_is_mocked": true,
+    "real_tokenizer_tested": false,
+    "real_gpu_tested": false,
+    "result": "passed"
+  }
+}

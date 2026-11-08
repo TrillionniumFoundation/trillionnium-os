@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.internprobe.public-build-validation.v1",
+  "android_build_performed": false,
+  "android_type_check_performed": false,
+  "apk_sha256": null,
+  "installed_on_phone": false,
+  "ordinary_app_uid_intern_npu_qualified": false,
+  "input_context_admission_verified": false,
+  "model_archive_sha256": null,
+  "tokenizer_sha256": null,
+  "public_path_rebuild_performed": false,
+  "available_local_source_checks": {
+    "python_ast": true,
+    "manifest_no_permissions_or_control_components": true,
+    "java_8_syntax_parse_units": 3,
+    "java_symbol_analysis_performed": false,
+    "native_c11_syntax_exit": 0,
+    "native_adapter_matches_qualified_baseline": true
+  }
+}

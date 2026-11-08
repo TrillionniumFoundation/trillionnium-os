@@ -1,0 +1,41 @@
+--- qualified-code6/LocalModelEngine.java
++++ internprobe/LocalModelEngine.java
+@@ -1,4 +1,4 @@
+-package org.trillionnium.hepta.localprobe;
++package org.trillionnium.hepta.internprobe;
+ 
+ import android.app.ActivityManager;
+ import android.content.Context;
+@@ -128,6 +128,15 @@
+             put(receipt, "production_agent_ready", false);
+             put(receipt, "phone_actions_supported", false);
+             put(receipt, "automatic_retry", false);
++            put(receipt, "diagnostic_model_target", "intern3_5_vl_2b");
++            put(receipt, "model_release_expected", "v0.66.0");
++            put(receipt, "compiled_context_expected", 4096);
++            put(receipt, "compiled_image_width_expected", 448);
++            put(receipt, "compiled_image_height_expected", 448);
++            put(receipt, "compiled_visual_tokens_expected", 256);
++            put(receipt, "model_identity_verified_by_app", false);
++            put(receipt, "tokenizer_sha256_pinned", JSONObject.NULL);
++            put(receipt, "input_context_admission_verified", false);
+             put(receipt, "started_wall_ms", System.currentTimeMillis());
+             put(receipt, "minimum_available_memory_bytes", MIN_AVAILABLE_BYTES);
+             validateText(r.prompt, true);
+@@ -140,7 +149,7 @@
+             put(receipt, "android_low_memory", memory.lowMemory);
+             if (memory.lowMemory || memory.availMem < MIN_AVAILABLE_BYTES) {
+                 status = "insufficient_memory";
+-                throw new IOException("local 4B model refused: available RAM below conservative 5 GiB threshold or Android reports low memory");
++                throw new IOException("local model refused: available RAM below conservative 5 GiB threshold or Android reports low memory");
+             }
+             File model = modelDirectory().getCanonicalFile();
+             if (!model.getParentFile().equals(files.getCanonicalFile()) || !model.isDirectory())
+@@ -157,6 +166,7 @@
+             if (!new File(nativeDir, "libgeniex_plugin_qairt.so").isFile()) throw new IOException("QAIRT plugin not installed");
+             put(receipt, "model_directory", model.getPath());
+             put(receipt, "model_config", modelConfig.getPath());
++            put(receipt, "model_config_sha256_observed", sha256(readBounded(modelConfig, OUTPUT_LIMIT)));
+             put(receipt, "native_library_directory", nativeDir.getPath());
+             put(receipt, "runner_path", runner.getPath());
+             File prompt = new File(run, "prompt.txt"), system = new File(run, "system.txt");

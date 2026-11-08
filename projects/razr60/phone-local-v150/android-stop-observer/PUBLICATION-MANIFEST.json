@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.diagnostic.public-source-boundary.v1",
+  "runtime_java_native_byte_identical_to_frozen_original": true,
+  "runtime_sources": [
+    {
+      "path": "src/org/trillionnium/hepta/stopobserver/StopObserverInstrumentation.java",
+      "sha256": "154bc1da4eb43123b68bb617151da29adb8354f08ead1ecdc2e49ad0736242e0"
+    }
+  ],
+  "allowed_public_changes": [
+    "build dependency paths",
+    "documentation",
+    "sanitized model/build metadata"
+  ],
+  "excluded": [
+    "weights",
+    "SDK binaries",
+    "APKs",
+    "signing keys",
+    "private host paths",
+    "raw phone UI",
+    "raw test receipts",
+    "remote operator requests"
+  ]
+}

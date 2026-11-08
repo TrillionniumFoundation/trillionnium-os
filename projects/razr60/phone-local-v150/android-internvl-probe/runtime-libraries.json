@@ -1,0 +1,195 @@
+{
+  "schema": "hepta.internprobe.runtime-pin.v1",
+  "inherited_from_code6_source_commit": "71cac4bc9cefdf4c82113e15911d47316e10a10d",
+  "baseline_apk_sha256": "995d2283daa7e1db3740309951065be8422e9e385d8f23f10c93fad6a05af394",
+  "geniex_version": "0.10.0",
+  "qairt_version_expected": "2.50.0.260828221209",
+  "libraries": [
+    {
+      "name": "libhepta_probe_runner.so",
+      "bytes": 30760,
+      "sha256": "fe2c34782f5a043621e72ea26f5a805b2629c98cc66b51a49bb0b10bf1247b5a",
+      "source_relative": "@runner"
+    },
+    {
+      "name": "libgeniex.so",
+      "bytes": 19781824,
+      "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+      "source_relative": "libgeniex.so"
+    },
+    {
+      "name": "libgeniex-proc-vision.so",
+      "bytes": 1853776,
+      "sha256": "5517a4ca8e754e6df46859f914ce779dd30831e5a33bc457d40bec744d699be9",
+      "source_relative": "qairt/libgeniex-proc-vision.so"
+    },
+    {
+      "name": "libgeniex-proc.so",
+      "bytes": 19225824,
+      "sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d",
+      "source_relative": "qairt/libgeniex-proc.so"
+    },
+    {
+      "name": "libgeniex_core.so",
+      "bytes": 3075168,
+      "sha256": "fb8a118c0e352eb74d4487cf490c671f8462ca8de26e5889fdded18ea04e5696",
+      "source_relative": "qairt/libgeniex_core.so"
+    },
+    {
+      "name": "libgeniex_plugin_qairt.so",
+      "bytes": 436576,
+      "sha256": "384eaaeaa1254126f4a07ef2a8e28bb5df9ee20d0b0bc54bc0d4874e02d9eab3",
+      "source_relative": "qairt/libgeniex_plugin.so"
+    },
+    {
+      "name": "libgeniex_vlm.so",
+      "bytes": 499896,
+      "sha256": "8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87",
+      "source_relative": "qairt/libgeniex_vlm.so"
+    },
+    {
+      "name": "libCalculator_skel.so",
+      "bytes": 5656,
+      "sha256": "0883ddf51f73c163b45412c052ac4b3f37d2421fa56f991c083a935577976ade",
+      "source_relative": "qairt/htp-files/libCalculator_skel.so"
+    },
+    {
+      "name": "libPlatformValidatorShared.so",
+      "bytes": 18208552,
+      "sha256": "88f6014139cd82b4f06259d9af308de7440fdb6b93c2cbf3c24e300cde269ecd",
+      "source_relative": "qairt/htp-files/libPlatformValidatorShared.so"
+    },
+    {
+      "name": "libQnnChrometraceProfilingReader.so",
+      "bytes": 648112,
+      "sha256": "8d66dbc262a4b4edda6a9ba4022726152b788f06df7c3c948d701de4d5876f73",
+      "source_relative": "qairt/htp-files/libQnnChrometraceProfilingReader.so"
+    },
+    {
+      "name": "libQnnHta.so",
+      "bytes": 1046784,
+      "sha256": "82e97740bdbda65cf3c910a2475a91bc251ea8c792d7ee96bf2ec24780d7f9c7",
+      "source_relative": "qairt/htp-files/libQnnHta.so"
+    },
+    {
+      "name": "libQnnHtaNetRunExtensions.so",
+      "bytes": 428056,
+      "sha256": "58ba5424fc7669e670a450a879c8ba938cf39c4a90f8c4f30a6be67d54b31712",
+      "source_relative": "qairt/htp-files/libQnnHtaNetRunExtensions.so"
+    },
+    {
+      "name": "libQnnHtp.so",
+      "bytes": 3979248,
+      "sha256": "d299323d79868adbb18997c8e99ae18f961005589ab137f56a51d27e67d6bf0f",
+      "source_relative": "qairt/htp-files/libQnnHtp.so"
+    },
+    {
+      "name": "libQnnHtpNetRunExtensions.so",
+      "bytes": 1105096,
+      "sha256": "2923a52c9c3d4039ee181fc3978aff7546aa34ea970de939b0793954ae9c2345",
+      "source_relative": "qairt/htp-files/libQnnHtpNetRunExtensions.so"
+    },
+    {
+      "name": "libQnnHtpOptraceProfilingReader.so",
+      "bytes": 4139968,
+      "sha256": "fd6af8230acb3cfb93116a35a30a8cf570b9055978491a5df19ff7e68ae2bf55",
+      "source_relative": "qairt/htp-files/libQnnHtpOptraceProfilingReader.so"
+    },
+    {
+      "name": "libQnnHtpPrepare.so",
+      "bytes": 85047112,
+      "sha256": "c59eb2c24dbc797d86963f02180baab0ad09bc7e2177db895010f2fd5930db75",
+      "source_relative": "qairt/htp-files/libQnnHtpPrepare.so"
+    },
+    {
+      "name": "libQnnHtpProfilingReader.so",
+      "bytes": 639120,
+      "sha256": "1596d567b0b544a8a8c7dbe4c8c0182cb0b57254c6aee96c58e8476998e8e923",
+      "source_relative": "qairt/htp-files/libQnnHtpProfilingReader.so"
+    },
+    {
+      "name": "libQnnHtpV79.so",
+      "bytes": 12969720,
+      "sha256": "f07b3e9d3f4709d5fa4a9573e7368143f716b311ba722157fd03729544576764",
+      "source_relative": "qairt/htp-files/libQnnHtpV79.so"
+    },
+    {
+      "name": "libQnnHtpV79CalculatorStub.so",
+      "bytes": 250872,
+      "sha256": "b32f6fa802b1b197083513dd5e9e0d6172cc39cc4704892e76a98aa48205b73c",
+      "source_relative": "qairt/htp-files/libQnnHtpV79CalculatorStub.so"
+    },
+    {
+      "name": "libQnnHtpV79Skel.so",
+      "bytes": 12563756,
+      "sha256": "53ad8cde08c1ca2c95bdde7f6f10ab8855f5423edb16e1e7fd6e724ffc27c32b",
+      "source_relative": "qairt/htp-files/libQnnHtpV79Skel.so"
+    },
+    {
+      "name": "libQnnHtpV79Stub.so",
+      "bytes": 791424,
+      "sha256": "166a3bb724c448e9425aa8f98f16b25aa1465eae6334553e408da7256d76fc99",
+      "source_relative": "qairt/htp-files/libQnnHtpV79Stub.so"
+    },
+    {
+      "name": "libQnnIr.so",
+      "bytes": 1955504,
+      "sha256": "1d53cc6532809f7b287b3d1a99a41d1d67a4d96150307873344bd56effcca8a0",
+      "source_relative": "qairt/htp-files/libQnnIr.so"
+    },
+    {
+      "name": "libQnnJsonProfilingReader.so",
+      "bytes": 690688,
+      "sha256": "776d5846bd2c116f30efff669b4b56c561c9227196f91297e623bb0249a95295",
+      "source_relative": "qairt/htp-files/libQnnJsonProfilingReader.so"
+    },
+    {
+      "name": "libQnnModelDlc.so",
+      "bytes": 3352208,
+      "sha256": "19706fd25cc7a8228a0f5840b4fc9f70a79532fb000636953a327c753189edec",
+      "source_relative": "qairt/htp-files/libQnnModelDlc.so"
+    },
+    {
+      "name": "libQnnNetRunDirectV79Skel.so",
+      "bytes": 2421100,
+      "sha256": "75f6cc403486a067b99cc2664d66d81f7702ad52f64add339f4cdc19e1367671",
+      "source_relative": "qairt/htp-files/libQnnNetRunDirectV79Skel.so"
+    },
+    {
+      "name": "libQnnNetRunDirectV79Stub.so",
+      "bytes": 1024184,
+      "sha256": "4cea506eef49e2d0a35af56fdac97a700b0a7fc697721d60b680962b29e3c8ef",
+      "source_relative": "qairt/htp-files/libQnnNetRunDirectV79Stub.so"
+    },
+    {
+      "name": "libQnnSaver.so",
+      "bytes": 809568,
+      "sha256": "14ad780a981fdc34a82f80648972720229f077379fa77700822351927c67a729",
+      "source_relative": "qairt/htp-files/libQnnSaver.so"
+    },
+    {
+      "name": "libQnnSystem.so",
+      "bytes": 4068024,
+      "sha256": "b30bd9880dc48f6c5349185a7d45b326f8a064b10072e60094354fa23d9a2027",
+      "source_relative": "qairt/htp-files/libQnnSystem.so"
+    },
+    {
+      "name": "libcalculator.so",
+      "bytes": 250304,
+      "sha256": "766a4c6ba03105c1b94577bb54369d4bfbde09f008a4e001566bc0e57ae8e690",
+      "source_relative": "qairt/htp-files/libcalculator.so"
+    },
+    {
+      "name": "libhta_hexagon_runtime_qnn.so",
+      "bytes": 2450080,
+      "sha256": "a74731a15015b41a12b165aade3b497dbd1d681e1778689446a6b313fb2480fb",
+      "source_relative": "qairt/htp-files/libhta_hexagon_runtime_qnn.so"
+    },
+    {
+      "name": "libhta_hexagon_runtime_snpe.so",
+      "bytes": 2450080,
+      "sha256": "a74731a15015b41a12b165aade3b497dbd1d681e1778689446a6b313fb2480fb",
+      "source_relative": "qairt/htp-files/libhta_hexagon_runtime_snpe.so"
+    }
+  ]
+}
