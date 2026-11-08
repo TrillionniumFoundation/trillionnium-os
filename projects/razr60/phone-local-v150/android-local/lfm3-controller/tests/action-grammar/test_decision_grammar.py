@@ -19,6 +19,10 @@ class GrammarTests(unittest.TestCase):
         cls.system=Recognizer((DIRECTORY/'system.gbnf').read_text())
         cls.discovery_before=Recognizer((DIRECTORY/'discovery-before.gbnf').read_text())
         cls.discovery_after=Recognizer((DIRECTORY/'discovery-after.gbnf').read_text())
+        cls.repeat_before=Recognizer((DIRECTORY/'repeat-before.gbnf').read_text())
+        cls.repeat_blocked=Recognizer((DIRECTORY/'repeat-blocked.gbnf').read_text())
+        cls.repeat_discovery=Recognizer((DIRECTORY/'repeat-discovery-preserved.gbnf').read_text())
+        cls.repeat_home=Recognizer((DIRECTORY/'repeat-home-restored.gbnf').read_text())
     def test_each_action_has_legal_fields(self):
         for sample in [raw('open','com.android.settings'),raw('click',node_id='n11'),
                 raw('type',node_id='n2',text='中文😀\nline "\\'),raw('scroll',node_id='n3',direction='down'),
@@ -95,5 +99,22 @@ class GrammarTests(unittest.TestCase):
         self.assertFalse(self.discovery_after.accepts(raw('open','com.evil.injected')))
         self.assertFalse(self.discovery_after.accepts(raw('open','com.example.app00')))
         self.assertFalse(self.discovery_after.accepts(raw('open',target,node_id='n1')))
+
+    def test_repeat_guard_masks_only_known_unchanged_launch(self):
+        target='com.example.reader'
+        self.assertTrue(self.repeat_before.accepts(raw('open',target)))
+        self.assertFalse(self.repeat_blocked.accepts(raw('open',target)))
+        self.assertTrue(self.repeat_blocked.accepts(raw('open','com.example.notes')))
+        for sample in [raw('click',node_id='n1'),raw('back'),raw('home'),
+                raw('wait',duration_ms=100),raw('find_app',query='reader',offset=0),
+                raw('done',status='partial',summary='需要根据当前页面继续导航')]:
+            self.assertTrue(self.repeat_blocked.accepts(sample))
+        self.assertFalse(self.repeat_blocked.accepts(raw('open',CURRENT)))
+
+    def test_repeat_guard_preserves_discovery_and_ordered_navigation(self):
+        target='com.example.reader'
+        self.assertFalse(self.repeat_discovery.accepts(raw('open',target)))
+        self.assertTrue(self.repeat_home.accepts(raw('open',target)))
+        self.assertFalse(self.repeat_home.accepts(raw('open','com.example.unknown')))
 
 if __name__=='__main__':unittest.main(verbosity=2)

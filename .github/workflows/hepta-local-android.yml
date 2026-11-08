@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
-      - 'projects/razr60/phone-local-v150/android-local/validation/core-phone-suite/**'
+      - 'projects/razr60/phone-local-v150/android-local/validation/**'
       - '.github/workflows/hepta-local-android.yml'
   push:
     branches:
@@ -12,7 +12,7 @@ on:
       - 'codex/razr-local-profiles-*'
     paths:
       - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
-      - 'projects/razr60/phone-local-v150/android-local/validation/core-phone-suite/**'
+      - 'projects/razr60/phone-local-v150/android-local/validation/**'
       - '.github/workflows/hepta-local-android.yml'
   workflow_dispatch:
 
@@ -54,6 +54,9 @@ jobs:
       - name: Run independent core acceptance regressions
         working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite
         run: python -B -m unittest -v test_core_assertions.py
+      - name: Run independent GPU evidence regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/gpu-runtime
+        run: python -B -m unittest -v test_gpu_log_validation.py
       - name: Prepare Android build dependencies
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"

@@ -1,6 +1,11 @@
-# Hepta — LFM3 local phone controller
+# Hepta — local phone controller
 
-Independent package `org.trillionnium.hepta.local`, version 0.4.0 / code 4, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+Independent package `org.trillionnium.hepta.local`, version 0.5.0 / code 5, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+
+Code 5 exposes precise progress fields and removes an `open` candidate only when
+the existing unchanged-screen repeat guard would already reject that exact action.
+The dispatch-time guard remains active. See [CODE5-PROGRESS.md](CODE5-PROGRESS.md)
+for the preserved transition semantics and host/phone validation boundary.
 
 This candidate preserves the original default LFM3 profile and adds explicit,
 SHA-pinned MiniCPM5 and optional Spark profiles. New models require exact native

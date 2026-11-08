@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=["ActionDecision", "ActionPolicy", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
+PURE_CLASSES=["ActionDecision", "ActionPolicy", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
               "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
               "AppCatalogueRanker", "SessionRecovery"]
 
@@ -65,7 +65,7 @@ def main():
         for test in tests:
             name=test.stem
             command=[java,"-cp",classes,name]
-            if name in ("DecisionGrammarHostTest","AppCatalogueHostTest"):command.append(fixtures)
+            if name in ("DecisionGrammarHostTest","AppCatalogueHostTest","RepeatActionGuardHostTest"):command.append(fixtures)
             run(name,command)
         run("grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_decision_grammar.py",fixtures])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])

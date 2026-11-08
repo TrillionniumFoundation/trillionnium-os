@@ -1,6 +1,7 @@
 # Explicit local model profiles
 
-Version 0.4.0 / code 4 adds an explicit, closed artifact allowlist. The original
+Version 0.4.0 / code 4 introduced the explicit, closed artifact allowlist retained
+by code 5. The original
 LFM3 filename, bytes, SHA256 and default NPU / 4096 configuration are unchanged.
 No new Android permission is declared. The worker remains a private subprocess,
 without a local HTTP server. Phone execution and model quality are not established
@@ -74,9 +75,11 @@ it does not truncate or change the owner's instruction and does not retry.
 Chat templates receive `enable_thinking=false`. Controller history remains text
 inside the prompt; native tool-call XML is not used. When the controller supplies
 its observation-specific JSON GBNF, template-generated tool grammar is explicitly
-disabled so it cannot replace or lazily trigger the controller grammar. Sampling
-is deterministic greedy, with explicit `min_p=0`; it is not a reproduction of each
-model author's general chat benchmark settings.
+disabled so it cannot replace or lazily trigger the controller grammar. The worker
+requests temperature 0, top_k 1 and min_p 0. Pinned GenieX treats the zero-valued
+temperature and min_p as defaults (0.8 and 0.05); top_k remains 1. These requested
+and resolved values are distinct and do not reproduce the model authors' general
+chat benchmark settings. Code 5 does not change the sampler.
 
 NPU/GPU selection is checked before model creation and again in the app receipt.
 CPU tokenization is intentional. This selection check does not claim every

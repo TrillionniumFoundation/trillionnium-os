@@ -1,7 +1,7 @@
-# Build the independent LFM3 controller
+# Build the independent local controller
 
-The source is an ordinary Android app candidate, versionCode **3**, versionName
-**0.3.2-lfm3-local**. A successful build is not device acceptance or adoption into
+The source is an ordinary Android app candidate, versionCode **5**, versionName
+**0.5.0-local-progress**. A successful build is not device acceptance or adoption into
 the protected owner-open implementation. Read `CONTROL-INTEGRATION.md` first.
 
 ## Source and host verification
