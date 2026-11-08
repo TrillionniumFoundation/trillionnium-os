@@ -18,6 +18,7 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.File;
@@ -70,6 +71,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     @Override protected void onServiceConnected() {
         AccessibilityServiceInfo info=getServiceInfo();
         info.eventTypes=AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED|AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+                |AccessibilityEvent.TYPE_WINDOWS_CHANGED
                 |AccessibilityEvent.TYPE_VIEW_SCROLLED|AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED|AccessibilityEvent.TYPE_VIEW_FOCUSED;
         info.feedbackType=AccessibilityServiceInfo.FEEDBACK_GENERIC;
         info.flags|=AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS|AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS;
@@ -166,7 +168,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     path.setReadable(false,false);path.setReadable(true,true);path.setWritable(false,false);path.setWritable(true,true);
                     String digest=fileSha256(path);
                     PhoneObservation observation=new PhoneObservation(id,graph.packageName,SystemClock.elapsedRealtime(),
-                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.truncated,graph.rows);
+                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.truncated,graph.rows);
                     clearSnapshot();current=observation;currentGraph=graph;currentBitmap=bitmap;bitmap=null;
                     callback.onObservation(observation);
                 }catch(Exception e){graph.close();if(after!=null)after.close();if(bitmap!=null)bitmap.recycle();callback.onError("观察失败："+message(e));}
@@ -333,11 +335,38 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private static final class Graph {
         String packageName,digest;int windowId,rotation;Rect bounds;boolean truncated;
+        ObservationState state;
         final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
         boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
         boolean sameWindowAndTree(Graph other){return sameWindow(other)&&digest.equals(other.digest);}
         void close(){for(NodeRef n:refs.values())n.node.recycle();refs.clear();}
+    }
+    /** Inspect window metadata only. Never traverse an IME root or collect its text. */
+    private ImeVisibility readImeVisibility(int targetWindowId){
+        List<AccessibilityWindowInfo> windows=null;
+        try{
+            AccessibilityServiceInfo info=getServiceInfo();
+            if(info==null||(info.flags&AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS)==0
+                    ||(info.getCapabilities()&AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)==0)
+                return ImeVisibility.UNKNOWN;
+            windows=getWindows();
+            if(windows==null||windows.isEmpty())return ImeVisibility.UNKNOWN;
+            boolean complete=true,targetPresent=false,imePresent=false;
+            for(AccessibilityWindowInfo window:windows){
+                if(window==null){complete=false;continue;}
+                if(window.getDisplayId()!=Display.DEFAULT_DISPLAY)continue;
+                if(window.getId()==targetWindowId)targetPresent=true;
+                if(window.getType()==AccessibilityWindowInfo.TYPE_INPUT_METHOD){
+                    Rect bounds=new Rect();window.getBoundsInScreen(bounds);
+                    if(bounds.isEmpty())complete=false;else imePresent=true;
+                }
+            }
+            return ImeVisibility.observed(complete,targetPresent,imePresent);
+        }catch(RuntimeException unavailable){return ImeVisibility.UNKNOWN;}
+        finally{if(windows!=null)for(AccessibilityWindowInfo window:windows)if(window!=null){
+            try{window.recycle();}catch(RuntimeException ignored){/* No visibility conclusion from cleanup. */}
+        }}
     }
     private Graph readGraph(){
         AccessibilityNodeInfo root=getRootInActiveWindow();if(root==null)throw new IllegalStateException("没有活动窗口");
@@ -365,7 +394,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 }finally{node.recycle();}
             }
             if(!queue.isEmpty())graph.truncated=true;
-            graph.digest=sha((graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));return graph;
+            String appTree=sha((graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
+            graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId));
+            graph.digest=sha(graph.state.fingerprintInput().getBytes(StandardCharsets.UTF_8));return graph;
         }catch(RuntimeException e){graph.close();throw e;}
         finally{while(!queue.isEmpty())queue.removeFirst().recycle();}
     }

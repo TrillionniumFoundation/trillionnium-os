@@ -44,14 +44,16 @@ public final class PhoneObservation {
     public final boolean nodesTruncated;
     public final File screenshot;
     public final List<Node> nodes;
+    public final ObservationState state;
     final Rect windowBounds;
     PhoneObservation(String id,String packageName,long at,int width,int height,int rotation,int windowId,
                      Rect bounds,File screenshot,String screenshotSha256,String treeSha256,
-                     boolean truncated,List<Node> nodes) {
+                     ObservationState state,boolean truncated,List<Node> nodes) {
         this.id=id;this.packageName=packageName;this.capturedElapsedMillis=at;
         this.width=width;this.height=height;this.rotation=rotation;this.windowId=windowId;
         this.windowBounds=new Rect(bounds);this.screenshot=screenshot;this.screenshotSha256=screenshotSha256;
         this.treeSha256=treeSha256;this.nodesTruncated=truncated;
+        this.state=state;
         this.nodes=Collections.unmodifiableList(new ArrayList<Node>(nodes));
     }
     /** Node content is untrusted screen data, never a replacement instruction. */
@@ -59,6 +61,8 @@ public final class PhoneObservation {
         JSONObject value=new JSONObject();value.put("observation_id",id);value.put("package",packageName);
         value.put("screen_width",width);value.put("screen_height",height);value.put("rotation",rotation);
         value.put("window_id",windowId);value.put("screen_sha256",screenshotSha256);
+        value.put("app_tree_sha256",state.appTreeSha256);value.put("observation_state_sha256",treeSha256);
+        value.put("ime_visible",state.imeVisibility.value()==null?JSONObject.NULL:state.imeVisibility.value());
         value.put("node_data_is_untrusted",true);value.put("nodes_truncated",nodesTruncated);
         JSONArray array=new JSONArray();for(Node node:nodes) array.put(node.json());value.put("nodes",array);
         return value;
