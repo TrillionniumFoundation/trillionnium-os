@@ -244,7 +244,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             NodeRef reference=currentGraph.refs.get(action.nodeId);
             if(reference==null)throw new IllegalArgumentException("节点不属于这次观察");
             AccessibilityNodeInfo node=reference.node;
-            if(!node.refresh()||!reference.signature.equals(nodeSignature(node))||!node.isVisibleToUser()||!node.isEnabled()){
+            boolean refreshed=node.refresh();
+            ObservedChildText.Result freshChildText=refreshed?observedChildText(node):ObservedChildText.notApplicable();
+            if(!refreshed||!reference.signature.equals(nodeSignature(node,freshChildText))||!node.isVisibleToUser()||!node.isEnabled()){
                 callback.onResult(new ActionOutcome(false,false,true,"stale:目标节点已变化"));return;
             }
             if(node.isPassword())throw new IllegalArgumentException("不自动输入或操作密码节点");
@@ -254,6 +256,13 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             boolean accepted;
             if("click".equals(action.action)){
                 if(!hasAction(node,AccessibilityNodeInfo.ACTION_CLICK))throw new IllegalArgumentException("这个节点没有点击动作");
+                // Only actual editability grants the input-focus exemption. A nonzero
+                // raw inputType alone can also occur on a noneditable custom TextView.
+                PersistentActionPolicy.Decision policy=PersistentActionPolicy.evaluate(string(node.getText()),
+                        string(node.getContentDescription()),freshChildText.text,node.isEditable());
+                if(!policy.allowed){
+                    callback.onResult(new ActionOutcome(false,false,false,policy.reasonCode+": "+policy.detail));return;
+                }
                 accepted=node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                 finishAfter(350,accepted,accepted?"节点点击已接受":"节点点击未接受",callback);
             }else if("type".equals(action.action)){
@@ -331,7 +340,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     }
     private static final class NodeRef {
         final AccessibilityNodeInfo node;final String signature;
-        NodeRef(AccessibilityNodeInfo node){this.node=AccessibilityNodeInfo.obtain(node);this.signature=nodeSignature(node);}
+        NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText){
+            this.node=AccessibilityNodeInfo.obtain(node);this.signature=nodeSignature(node,childText);
+        }
     }
     private static final class Graph {
         String packageName,digest;int windowId,rotation;Rect bounds;boolean truncated;
@@ -382,10 +393,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     String description=node.isPassword()?"":limited(string(node.getContentDescription()),96);
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
-                        if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()<2400){
-                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node);graph.refs.put(id,reference);signatures.append(reference.signature).append('\n');
-                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),node.isFocused(),node.isPassword()));
-                            characters+=text.length()+description.length();
+                        ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node):ObservedChildText.notApplicable();
+                        if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<2400){
+                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText);graph.refs.put(id,reference);signatures.append(reference.signature).append('\n');
+                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),node.isFocused(),node.isPassword(),childText));
+                            characters+=text.length()+description.length()+childText.text.length();
                         }else graph.truncated=true;
                     }
                     int children=Math.min(node.getChildCount(),MAX_VISITED-visited-queue.size());
@@ -400,7 +412,40 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }catch(RuntimeException e){graph.close();throw e;}
         finally{while(!queue.isEmpty())queue.removeFirst().recycle();}
     }
-    private static String nodeSignature(AccessibilityNodeInfo node){
+    private static String nodeSignature(AccessibilityNodeInfo node,ObservedChildText.Result childText){
+        // Capture and target refresh both supply the same bounded subtree observation.
+        return childText.bind(baseNodeSignature(node));
+    }
+    private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root){
+        final Rect rootBounds=new Rect();root.getBoundsInScreen(rootBounds);
+        final String ownerPackage=string(root.getPackageName());final int ownerWindow=root.getWindowId();
+        return ObservedChildText.collect(root,new ObservedChildText.Reader<AccessibilityNodeInfo>(){
+            public ObservedChildText.Metadata metadata(AccessibilityNodeInfo node){
+                Rect bounds=new Rect();node.getBoundsInScreen(bounds);
+                boolean inputLike=node.isEditable()||node.getInputType()!=0;
+                boolean clickAction=hasAction(node,AccessibilityNodeInfo.ACTION_CLICK);
+                boolean interactive=node.isClickable()||node.isLongClickable()||inputLike||node.isScrollable()||node.isCheckable()
+                        ||clickAction||hasAction(node,AccessibilityNodeInfo.ACTION_LONG_CLICK)
+                        ||hasAction(node,AccessibilityNodeInfo.ACTION_SET_TEXT)
+                        ||hasAction(node,AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)||hasAction(node,AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD)
+                        ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_UP.getId())
+                        ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN.getId())
+                        ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_LEFT.getId())
+                        ||hasAction(node,AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_RIGHT.getId());
+                return new ObservedChildText.Metadata(node.isVisibleToUser()&&!bounds.isEmpty(),
+                        ownerWindow==node.getWindowId()&&ownerPackage.equals(string(node.getPackageName()))&&Rect.intersects(rootBounds,bounds),
+                        node.isClickable(),clickAction,inputLike,node.isPassword(),interactive);
+            }
+            // collect() checks metadata boundaries before calling either text accessor.
+            public String text(AccessibilityNodeInfo node){return string(node.getText());}
+            public String description(AccessibilityNodeInfo node){return string(node.getContentDescription());}
+            public String identity(AccessibilityNodeInfo node){return baseNodeSignature(node);}
+            public int childCount(AccessibilityNodeInfo node){return node.getChildCount();}
+            public AccessibilityNodeInfo child(AccessibilityNodeInfo node,int index){return node.getChild(index);}
+            public void release(AccessibilityNodeInfo node){node.recycle();}
+        });
+    }
+    private static String baseNodeSignature(AccessibilityNodeInfo node){
         Rect bounds=new Rect();node.getBoundsInScreen(bounds);
         String value=string(node.getPackageName())+"\u0001"+node.getWindowId()+"\u0001"+string(node.getClassName())+"\u0001"+string(node.getViewIdResourceName())+"\u0001"+bounds+"\u0001"+
                 (node.isPassword()?"<password>":string(node.getText())+"\u0001"+string(node.getContentDescription()))+"\u0001"+node.isEnabled()+"|"+node.isClickable()+"|"+node.isEditable()+"|"+node.isScrollable();

@@ -27,6 +27,10 @@ HEX32 = re.compile(r"[0-9a-f]{32}\Z")
 CASE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,79}\Z")
 SAFE_FILE = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,239}\Z")
 TERMINAL = {"model_reported_done", "partial", "failed", "cancelled", "blocked"}
+CONTROLLER_GRAMMAR_SCHEMAS = frozenset({
+    "hepta.observed-action-gbnf.v1",
+    "hepta.observed-action-gbnf.v2-reason-first",
+})
 
 
 class DriverError(Exception):
@@ -302,12 +306,36 @@ def accelerator_log_evidence(log, compute):
         "full_operator_coverage_proven": False}
 
 
+def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation_packages):
+    """Known grammar schema plus the same native bytes and observed window identity.
+
+    observation_packages is built only from real step-before/after observations,
+    never from a model's action package or its receipt. Conflicting packages for
+    one observation identity fail closed.
+    """
+    if not isinstance(receipt, dict) or not isinstance(native, dict) or not isinstance(grammar_bytes, bytes):
+        return False
+    schema = receipt.get("grammar_schema")
+    if not isinstance(schema, str) or schema not in CONTROLLER_GRAMMAR_SCHEMAS:
+        return False
+    observation = receipt.get("grammar_observation_id")
+    package = receipt.get("grammar_current_package")
+    if (not isinstance(observation, str) or not HEX32.fullmatch(observation)
+            or not isinstance(package, str) or not package or len(package) > 255
+            or observation_packages.get(observation) != {package}):
+        return False
+    input_hashes = native.get("input_sha256")
+    grammar_sha = digest(grammar_bytes)
+    return (isinstance(input_hashes, dict) and receipt.get("grammar_sha256") == grammar_sha
+            and input_hashes.get("grammar") == grammar_sha)
+
+
 def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screenshots, expected_uid,
         expected_compute="npu", expected_context=4096, expected_model_profile="lfm3-1.7b-qad-q4_0"):
     from model_profiles import profile
     selected=profile(expected_model_profile)
     report = {"task_id": task_id, "associated_runs": [], "omitted_screenshots": [], "errors": [], "files": []}
-    observations, explicit_runs = set(), set()
+    observations, explicit_runs, observation_packages = set(), set(), {}
     if not task_id:
         return report
     task_path = "files/control-tasks/" + task_id
@@ -327,7 +355,11 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
             if name.endswith(".json"):
                 value = strict_json(data)
                 observation = value.get("observation_id")
-                if isinstance(observation, str) and HEX32.fullmatch(observation): observations.add(observation)
+                if isinstance(observation, str) and HEX32.fullmatch(observation):
+                    observations.add(observation)
+                    if re.fullmatch(r"step-[0-9]{2,}-(?:before|after)\.json", name):
+                        package = value.get("package")
+                        observation_packages.setdefault(observation, set()).add(package if isinstance(package, str) else None)
                 run = value.get("run_id")
                 if isinstance(run, str) and HEX32.fullmatch(run): explicit_runs.add(run)
         except Exception as error:
@@ -398,12 +430,9 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
                 row["accelerator_offload_observed"] = log_evidence["accelerator_offload_observed"]
                 row["accelerator_log_evidence"] = log_evidence
                 grammar_file=directory / "runs" / run_id / "grammar.gbnf"
-                input_hashes=native.get("input_sha256")
-                if grammar_file.is_file() and app_file.exists() and isinstance(input_hashes,dict):
-                    grammar_sha=digest(grammar_file.read_bytes())
-                    row["controller_grammar_binding_valid"]=(receipt.get("grammar_schema")=="hepta.observed-action-gbnf.v1"
-                        and receipt.get("grammar_sha256")==grammar_sha and input_hashes.get("grammar")==grammar_sha
-                        and receipt.get("grammar_observation_id") in observations)
+                if grammar_file.is_file() and app_file.exists():
+                    row["controller_grammar_binding_valid"] = controller_grammar_binding_valid(
+                        receipt, native, grammar_file.read_bytes(), observation_packages)
                 row["runtime_evidence"] = {k: native.get(k) for k in ("mode", "runtime", "compute_requested", "device_resolved", "device_warning", "n_ctx_create", "n_gpu_layers_create", "prompt_budget", "profile")}
         except Exception as error:
             report["errors"].append("collect " + run_id + ": " + str(error))

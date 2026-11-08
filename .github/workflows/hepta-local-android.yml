@@ -74,6 +74,12 @@ jobs:
       - name: Run offline-transaction restoration regressions
         working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v1
         run: python -B -m unittest -v test_offline_transaction.py
+      - name: Run display-scoped lifecycle regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v3
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run qualified-data-key offline regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v2
+        run: python -B -m unittest -v test_offline_transaction.py
       - name: Prepare Android build dependencies
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"

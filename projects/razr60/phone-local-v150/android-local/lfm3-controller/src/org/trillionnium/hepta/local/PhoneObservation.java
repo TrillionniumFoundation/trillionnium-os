@@ -13,21 +13,34 @@ import java.util.List;
 public final class PhoneObservation {
     public static final class Node {
         public final String id, packageName, className, viewId, text, description;
+        public final ObservedChildText.Result childText;
         public final Rect bounds;
         public final boolean clickable, editable, scrollable, enabled, focused, password;
         Node(String id, String packageName, String className, String viewId, String text,
              String description, Rect bounds, boolean clickable, boolean editable,
-             boolean scrollable, boolean enabled, boolean focused, boolean password) {
+             boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText) {
             this.id=id; this.packageName=packageName; this.className=className; this.viewId=viewId;
             this.text=text; this.description=description; this.bounds=new Rect(bounds);
+            this.childText=childText;
             this.clickable=clickable; this.editable=editable; this.scrollable=scrollable;
             this.enabled=enabled; this.focused=focused; this.password=password;
         }
+        public String label(){return ObservedChildText.displayLabel(text,description,childText);}
         JSONObject json() throws JSONException {
             JSONObject value=new JSONObject();
             value.put("id",id); value.put("bounds",new JSONArray(new int[]{bounds.left,bounds.top,bounds.right,bounds.bottom}));
             if (!text.isEmpty()) value.put("text",text);
             if (!description.isEmpty()) value.put("description",description);
+            if (!"not_applicable".equals(childText.status)) {
+                value.put("child_text_status",childText.status).put("child_text_truncated",childText.truncated);
+                if(!childText.text.isEmpty()) {
+                    value.put("child_text",childText.text).put("child_text_source",ObservedChildText.SOURCE);
+                    JSONArray sources=new JSONArray();for(ObservedChildText.Source source:childText.sources)
+                        sources.put(new JSONObject().put("descendant_path",source.descendantPath).put("property",source.property)
+                                .put("text_sha256",source.textSha256).put("node_signature",source.nodeSignature));
+                    value.put("child_text_sources",sources);
+                }
+            }
             if (!viewId.isEmpty()) value.put("view_id",viewId);
             if (clickable) value.put("clickable",true);
             if (editable) value.put("editable",true);

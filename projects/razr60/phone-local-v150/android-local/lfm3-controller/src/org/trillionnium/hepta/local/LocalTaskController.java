@@ -200,7 +200,7 @@ public final class LocalTaskController implements AutoCloseable {
                 if(action.nodeId!=null){
                     row.put("node_id",action.nodeId);
                     for(PhoneObservation.Node node:before.nodes)if(action.nodeId.equals(node.id)){
-                        row.put("node_label",HeptaAccessibilityService.limited(node.text.isEmpty()?node.description:node.text,36));break;
+                        row.put("node_label",HeptaAccessibilityService.limited(node.label(),36));break;
                     }
                 }
                 if("type".equals(action.action))row.put("type_text",action.text);
@@ -317,7 +317,7 @@ public final class LocalTaskController implements AutoCloseable {
             JSONArray projectedNodes=new JSONArray();java.util.Set<String> ids=new java.util.HashSet<String>();
             for(int i=0;i<nodeCount;i++){
                 PhoneObservation.Node node=nodes.get(i);ids.add(node.id);
-                String label=node.text.isEmpty()?node.description:node.text;
+                String label=node.label();
                 String actions=(node.clickable?"c":"")+(node.editable?"t":"")+(node.scrollable?"s":"");
                 projectedNodes.put(new JSONArray().put(node.id).put(HeptaAccessibilityService.limited(label,36))
                         .put(new JSONArray(new int[]{node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom})).put(actions));
@@ -382,7 +382,7 @@ public final class LocalTaskController implements AutoCloseable {
     private static int nodeScore(PhoneObservation.Node node,String owner){
         int score=(node.clickable?4:0)+(node.editable?5:0)+(node.scrollable?2:0)+(node.enabled?1:-20);
         if(node.password)return -100;
-        String label=node.text.isEmpty()?node.description:node.text;
+        String label=node.label();
         if(!label.isEmpty()&&owner.contains(label))score+=20;
         if(label.length()<=4&&!label.isEmpty())score+=3;
         return score;

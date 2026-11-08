@@ -1,6 +1,11 @@
 # Hepta — local phone controller
 
-Independent package `org.trillionnium.hepta.local`, version 0.8.0 / code 8, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+Independent package `org.trillionnium.hepta.local`, version 0.9.0 / code 9, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+
+Code 9 exposes actual bounded descendant labels for otherwise blank clickable
+parents and binds their sources to target/whole-window freshness. It rejects
+explicitly labelled persistent destructive node clicks before dispatch and
+includes the compatible reason-first host verifier. See `CODE9-TARGETS.md`.
 
 Code 8 explicitly includes `done(status,summary)` in the tool menu, requires a
 tool-name string for `action`, and explains that waiting is for loading rather

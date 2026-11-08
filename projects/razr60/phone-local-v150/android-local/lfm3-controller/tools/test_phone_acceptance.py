@@ -51,7 +51,7 @@ class FakeAdb:
             grammar=b'root ::= "fixture-only"\n'
             records = {'files/debug-trigger-result.json':trigger,'files/control-session.json':session,
                 'files/control-tasks/'+TASK+'/owner.json':owner,'files/control-tasks/'+TASK+'/result.json':result,
-                'files/control-tasks/'+TASK+'/step-01-before.json':{'observation_id':OBS},
+                'files/control-tasks/'+TASK+'/step-01-before.json':{'observation_id':OBS,'package':'com.example.calculator'},
                 'files/control-tasks/'+TASK+'/step-01-model-0.json':{'run_id':RUN},
                 'files/runs/'+RUN+'/app-receipt.json':{'schema':'hepta.local-model.receipt.v2','package_name':m.PACKAGE,'app_uid':10042,'runtime':'llama_cpp','compute_requested':'npu','native_result_binding_valid':True,'run_id':RUN,'process_exit_observed':True,'exit_code':0,'inference_completed':True},
                 'files/runs/'+RUN+'/native-result.json':{'schema':'hepta.geniex-once.result.v1','request_id':RUN,
@@ -62,7 +62,7 @@ class FakeAdb:
                 'context_tokens':self.context,'model_sha256_verified':m.MODEL_SHA256,'model_path':model_path,
                 'image_sent_to_model':False,'fallback_allowed':False,'native_context_budget_valid':True,
                 'grammar_constraint_enabled':True,'grammar_binding_valid':True,'grammar_schema':'hepta.observed-action-gbnf.v1',
-                'grammar_sha256':m.digest(grammar),'grammar_observation_id':OBS})
+                'grammar_sha256':m.digest(grammar),'grammar_observation_id':OBS,'grammar_current_package':'com.example.calculator'})
             records['files/runs/'+RUN+'/native-result.json'].update({'mode':'llm','compute_requested':self.compute,
                 'device_resolved':'HTP0' if self.compute=='npu' else 'GPUOpenCL', 'model_path':model_path,
                 'n_ctx_create':self.context,'n_gpu_layers_create':-1,'max_tokens':256,
@@ -148,6 +148,34 @@ class AcceptanceTests(unittest.TestCase):
         for i,override in enumerate(({'grammar_constraint_enabled':False},{'grammar_binding_valid':False},{'grammar_observation_id':'d'*32})):
             FakeAdb.app_overrides=override
             code,report=self.run_fake(case_id='grammar-app-'+str(i));self.assertEqual(code,3)
+    def test_known_reason_first_schema_qualifies_without_changing_other_gates(self):
+        FakeAdb.app_overrides={'grammar_schema':'hepta.observed-action-gbnf.v2-reason-first'}
+        code,report=self.run_fake()
+        self.assertEqual(code,0);self.assertTrue(report['native_receipts_verified'])
+        self.assertTrue(report['collection']['associated_runs'][0]['controller_grammar_binding_valid'])
+    def test_unknown_or_missing_grammar_schema_cannot_qualify(self):
+        for i,schema in enumerate((None,'hepta.observed-action-gbnf.v2','hepta.observed-action-gbnf.v3',{})):
+            FakeAdb.app_overrides={'grammar_schema':schema}
+            code,report=self.run_fake(case_id='schema-'+str(i))
+            self.assertEqual(code,3)
+            self.assertFalse(report['collection']['associated_runs'][0]['controller_grammar_binding_valid'])
+    def test_grammar_observed_package_must_match_real_before_observation(self):
+        for i,package in enumerate((None,'com.android.settings','')):
+            FakeAdb.app_overrides={'grammar_current_package':package}
+            code,report=self.run_fake(case_id='package-'+str(i))
+            self.assertEqual(code,3)
+            self.assertFalse(report['collection']['associated_runs'][0]['controller_grammar_binding_valid'])
+    def test_grammar_helper_rejects_hash_identity_and_conflicting_packages(self):
+        grammar=b'root ::= "test"\n'; package='com.example.calculator'
+        receipt={'grammar_schema':'hepta.observed-action-gbnf.v2-reason-first',
+            'grammar_sha256':m.digest(grammar),'grammar_observation_id':OBS,'grammar_current_package':package}
+        native={'input_sha256':{'grammar':m.digest(grammar)}}
+        self.assertTrue(m.controller_grammar_binding_valid(receipt,native,grammar,{OBS:{package}}))
+        for bindings in ({},{'d'*32:{package}},{OBS:{package,'com.android.settings'}},{OBS:{package,None}}):
+            self.assertFalse(m.controller_grammar_binding_valid(receipt,native,grammar,bindings))
+        self.assertFalse(m.controller_grammar_binding_valid({**receipt,'grammar_sha256':'0'*64},native,grammar,{OBS:{package}}))
+        self.assertFalse(m.controller_grammar_binding_valid(receipt,{'input_sha256':{'grammar':'0'*64}},grammar,{OBS:{package}}))
+        self.assertFalse(m.controller_grammar_binding_valid(receipt,native,grammar+b' ',{OBS:{package}}))
     def test_app_receipt_identity_and_binding_required(self):
         for i,changed in enumerate(({'package_name':'other.app'}, {'app_uid':10043}, {'native_result_binding_valid':False}, {'runtime':'qairt'}, {'schema':'wrong'})):
             FakeAdb.app_overrides=changed
