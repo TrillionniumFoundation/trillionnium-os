@@ -1,20 +1,20 @@
 {
   "schema": "hepta.android-local.public-build-validation.v1",
-  "source_commit": "cb4c87aedc3401db7e2f6e36666ccccd91253b5b",
-  "source_archive_sha256": "3f0a327de30fec052edff63dc54bdcdd33efd5fd331bf5794c4dd83c83788b65",
-  "original_build_evidence_sha256": "71e12720f7b581f0bbec3747be27f1ca0dd2c2a731c0fd48f609d760c323ca02",
+  "source_commit": "71cac4bc9cefdf4c82113e15911d47316e10a10d",
+  "source_archive_sha256": "6700bc8ed1dc9c1e0db71760a8929b702426c2cb087e24fea055247f55985db7",
+  "original_build_evidence_sha256": "4528a9fa82b5e0f5093f13bf040627744b75d05d97499b73ff638bf83ce1cd78",
   "scope": "reference source build and static APK checks; operator paths and private host details omitted",
   "build_exit_code": 0,
   "static_acceptance": {
     "schema": "hepta.appuid-probe.static-acceptance.v1",
-    "apk_bytes": 75553753,
-    "apk_sha256": "55b753ba783e28dbe534a2645465b915dbb2a3432dae4e68da0e3956a3887535",
+    "apk_bytes": 75553752,
+    "apk_sha256": "995d2283daa7e1db3740309951065be8422e9e385d8f23f10c93fad6a05af394",
     "package": "org.trillionnium.hepta.localprobe",
     "permissions": [],
     "abi": [
       "arm64-v8a"
     ],
-    "version_code": 5,
+    "version_code": 6,
     "debuggable": true,
     "extract_native_libs": true,
     "compile_sdk": 34,
@@ -25,8 +25,6 @@
       "libcdsprpc.so",
       "libOpenCL.so"
     ],
-    "installed_on_phone": false,
-    "ordinary_app_uid_npu_qualified": false,
     "phone_actions_supported": true,
     "accessibility_service_guarded_by_bind_permission": true,
     "task_trigger_private_nonce": true,
@@ -34,10 +32,6 @@
     "process_wide_single_request": true,
     "native_runner_is_installed_pie": true,
     "model_in_apk": false,
-    "resources_arsc_uncompressed": true,
-    "resources_arsc_data_offset": 1840,
-    "resources_arsc_alignment": 4,
-    "apk_filename": "hepta-local-0.2.2.apk",
     "libraries": [
       {
         "name": "libhepta_probe_runner.so",
@@ -194,9 +188,21 @@
         "bytes": 2450080,
         "sha256": "a74731a15015b41a12b165aade3b497dbd1d681e1778689446a6b313fb2480fb"
       }
-    ]
+    ],
+    "resources_arsc_uncompressed": true,
+    "resources_arsc_data_offset": 1840,
+    "resources_arsc_alignment": 4,
+    "apk_filename": "hepta-local-0.2.3.apk"
   },
-  "full_phone_task_qualification": "pending",
+  "reference_build_time_state": {
+    "installed_on_phone": false,
+    "ordinary_app_uid_npu_qualified": false
+  },
+  "reference_build_time_state_scope": "recorded at packaging before subsequent phone runs; not the current phone state",
+  "current_phone_task_evidence": "PHONE-QUALIFICATION.json",
+  "host_parser_source_unchanged_from_code5": true,
+  "host_budget_source_unchanged_from_code5": true,
   "public_path_rebuild_performed": false,
+  "full_phone_task_qualification": "failed_four_case_matrix_0_of_4",
   "apk_in_repository": false
 }

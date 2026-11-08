@@ -1,12 +1,12 @@
 {
   "schema": "hepta.android-local.public-source-projection.v1",
-  "source_commit": "cb4c87aedc3401db7e2f6e36666ccccd91253b5b",
+  "source_commit": "71cac4bc9cefdf4c82113e15911d47316e10a10d",
   "source_commit_scope": "local Android build repository; not an external Git base",
-  "source_archive_sha256": "3f0a327de30fec052edff63dc54bdcdd33efd5fd331bf5794c4dd83c83788b65",
-  "reference_apk_sha256": "55b753ba783e28dbe534a2645465b915dbb2a3432dae4e68da0e3956a3887535",
-  "version_code": 5,
-  "version_name": "0.2.2-local-control",
-  "qualification_status": "work_in_progress; full phone task qualification pending",
+  "source_archive_sha256": "6700bc8ed1dc9c1e0db71760a8929b702426c2cb087e24fea055247f55985db7",
+  "reference_apk_sha256": "995d2283daa7e1db3740309951065be8422e9e385d8f23f10c93fad6a05af394",
+  "version_code": 6,
+  "version_name": "0.2.3-local-control",
+  "qualification_status": "work_in_progress; real phone task matrix 0 of 4 passed; not a release",
   "original_files": [
     {
       "path": ".gitignore",
@@ -16,7 +16,7 @@
     {
       "path": "AndroidManifest.xml",
       "bytes": 1869,
-      "sha256": "4ed0abad8739adf09e4360bbc98bdb9d44f4c14c171283244ef80e35b33ceb97"
+      "sha256": "7e46cbb0b7fbc49697fb22969280679f675c8d4546b34a5e29520343cdb7d1e1"
     },
     {
       "path": "CONTROL-INTEGRATION.md",
@@ -145,8 +145,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/localprobe/LocalTaskController.java",
-      "bytes": 30517,
-      "sha256": "145462df725f43f1f94f8a2afeaa22b41928ef8bcddd984b13e9a5f89edad9d7"
+      "bytes": 30626,
+      "sha256": "3982ac315bc76f48ab0e51473e38caaea7b3b91957ac26e980ca465ef3585727"
     },
     {
       "path": "src/org/trillionnium/hepta/localprobe/LocalTaskSession.java",
@@ -183,7 +183,7 @@
     {
       "path": "LOCAL-CONTROL.md",
       "original_sha256": "3550bd4fb9ef4d8db6e650ca016f50893676c09ec5db19ce0bafeba9c39468fc",
-      "published_sha256": "2b21b20f6bd63aac603f42bd1e5a3f283c2d4e373dae767b08266e9b604384bf"
+      "published_sha256": "e615693a7bd084b881282bd715dd0ed0f2c12dc58d7b744c74ea375e37031aa8"
     },
     {
       "path": "PROBE-README.md",
@@ -193,7 +193,7 @@
     {
       "path": "README.md",
       "original_sha256": "d248410f8e4644185fda4da645f33c6076fb19a2dbfa27fb44ab4d5e3c7fd481",
-      "published_sha256": "6977594e6cba04d623b95d31743ffb13039d8b48a557b2d9e7ca012b4f1d0194"
+      "published_sha256": "74b59ab6bb68da0d69d29709d1cd80b983ac408954d3ee6429502e1e21d823a7"
     },
     {
       "path": "assemble_pocket4.py",
@@ -237,5 +237,6 @@
       "synthetic ordinary UID fixture values"
     ],
     "device_or_model_runs_performed_by_publication": false
-  }
+  },
+  "phone_qualification_record": "PHONE-QUALIFICATION.json"
 }

@@ -9,12 +9,12 @@
     {
       "path": "AndroidManifest.xml",
       "bytes": 1869,
-      "sha256": "4ed0abad8739adf09e4360bbc98bdb9d44f4c14c171283244ef80e35b33ceb97"
+      "sha256": "7e46cbb0b7fbc49697fb22969280679f675c8d4546b34a5e29520343cdb7d1e1"
     },
     {
       "path": "BUILD-VALIDATION.json",
-      "bytes": 6970,
-      "sha256": "6edc294c4ad0b7d3ea2d8415a78a6a1b4b6b402814698251b50c78febc7d39e6"
+      "bytes": 7315,
+      "sha256": "ef341d32b27bb6ef5cc2c5fc6938455e2d2f3cc825a05081f60cd26f8b4112a0"
     },
     {
       "path": "CONTROL-INTEGRATION.md",
@@ -23,13 +23,18 @@
     },
     {
       "path": "HOST-CHECKS.json",
-      "bytes": 2009,
-      "sha256": "4d515cdeac22d7938534f718dcd1f4af1f3265eaeffd35cee580929fd9f638b8"
+      "bytes": 2295,
+      "sha256": "3c27904ad744552c03517a794e6eee34a2844f7ec070c37774b0b8bfc3307c70"
     },
     {
       "path": "LOCAL-CONTROL.md",
-      "bytes": 7128,
-      "sha256": "2b21b20f6bd63aac603f42bd1e5a3f283c2d4e373dae767b08266e9b604384bf"
+      "bytes": 7940,
+      "sha256": "e615693a7bd084b881282bd715dd0ed0f2c12dc58d7b744c74ea375e37031aa8"
+    },
+    {
+      "path": "PHONE-QUALIFICATION.json",
+      "bytes": 2905,
+      "sha256": "b80ae3c5bac3fe38523065e34cc18fd17457a31bf0e23e57ff6584f204e33650"
     },
     {
       "path": "PROBE-README.md",
@@ -38,18 +43,18 @@
     },
     {
       "path": "PUBLIC-BUILD.md",
-      "bytes": 5599,
-      "sha256": "b489d1fe47e2c6965a15316d70f8a87268681f6ea31c54a1da6bb62c42368b47"
+      "bytes": 5684,
+      "sha256": "2c0d52206aa99a45e3e6e9bf4da6b8a3c0f19d669ba05c7376fe6e571ab502aa"
     },
     {
       "path": "PUBLIC-SOURCE.json",
-      "bytes": 8944,
-      "sha256": "0654f98d822bae9c678cc104603decc594d50fe7286e28bb2ed77829ca6609c5"
+      "bytes": 9018,
+      "sha256": "a69db528b564ed999e2dc57a6d8cf0ef8ea751c120132b5a02927c26f209e8b3"
     },
     {
       "path": "README.md",
-      "bytes": 1680,
-      "sha256": "6977594e6cba04d623b95d31743ffb13039d8b48a557b2d9e7ca012b4f1d0194"
+      "bytes": 1832,
+      "sha256": "74b59ab6bb68da0d69d29709d1cd80b983ac408954d3ee6429502e1e21d823a7"
     },
     {
       "path": "assemble_pocket4.py",
@@ -173,8 +178,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/localprobe/LocalTaskController.java",
-      "bytes": 30517,
-      "sha256": "145462df725f43f1f94f8a2afeaa22b41928ef8bcddd984b13e9a5f89edad9d7"
+      "bytes": 30626,
+      "sha256": "3982ac315bc76f48ab0e51473e38caaea7b3b91957ac26e980ca465ef3585727"
     },
     {
       "path": "src/org/trillionnium/hepta/localprobe/LocalTaskSession.java",
@@ -217,7 +222,7 @@
       "sha256": "91a4ddfa1f0d839d525a1c61a2ad0211eec4693528c89808ae0f528f91b841fd"
     }
   ],
-  "closure_sha256": "08fb3105b48a047ad082881a88fb15b13916ddf7c8ca7d9c8ace0c9756aa9ca7",
-  "closure_encoding": "UTF-8 JSON of files; sort_keys=true, separators=comma/colon",
-  "self_excluded": true
+  "self_excluded": true,
+  "closure_sha256": "8a9b0d4a9ccf1c02343ff3ac9e925b8bfeb76c1e9924704add757fb6ba644529",
+  "closure_encoding": "UTF-8 JSON of files; sort_keys=true, separators=comma/colon"
 }

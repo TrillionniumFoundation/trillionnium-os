@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.android-local.sanitized-phone-qualification.v1",
+  "status": "work_in_progress_not_qualified_not_a_release",
+  "version_code": 6,
+  "version_name": "0.2.3-local-control",
+  "source_commit": "71cac4bc9cefdf4c82113e15911d47316e10a10d",
+  "source_archive_sha256": "6700bc8ed1dc9c1e0db71760a8929b702426c2cb087e24fea055247f55985db7",
+  "apk_sha256": "995d2283daa7e1db3740309951065be8422e9e385d8f23f10c93fad6a05af394",
+  "evidence_scope": "four real phone task attempts, independent acceptance helper outcomes; not host simulations",
+  "private_evidence_retained": true,
+  "private_evidence_reassembled_sha256": "44ca712a93f0aede897fa2d8785d691037701d144002f8daae691ec21b7f1f24",
+  "sanitization": "allowlisted aggregate outcomes and failure categories only; no raw model output, UI, screenshots, instructions, run identifiers, serials or operator paths",
+  "passed_count": 0,
+  "completed_count": 4,
+  "all_passed": false,
+  "cases": [
+    {
+      "case": "settings-home",
+      "verdict": "fail",
+      "helper_exit_code": 2,
+      "task_status": "failed",
+      "steps": 1,
+      "model_effect_count": 0,
+      "failure_category": "unknown_or_inapplicable_action_field",
+      "cleanup_unknown": false,
+      "model_reported_success": false,
+      "goal_independently_verified": false,
+      "passed": false
+    },
+    {
+      "case": "settings-apps",
+      "verdict": "fail",
+      "helper_exit_code": 2,
+      "task_status": "failed",
+      "steps": 1,
+      "model_effect_count": 0,
+      "failure_category": "redundant_open_of_current_foreground_package",
+      "cleanup_unknown": false,
+      "model_reported_success": false,
+      "goal_independently_verified": false,
+      "passed": false
+    },
+    {
+      "case": "calculator-multiply",
+      "verdict": "fail",
+      "helper_exit_code": 2,
+      "task_status": "failed",
+      "steps": 4,
+      "model_effect_count": 2,
+      "failure_category": "invalid_observation_identifier",
+      "cleanup_unknown": false,
+      "model_reported_success": false,
+      "goal_independently_verified": false,
+      "passed": false
+    },
+    {
+      "case": "settings-chinese-search",
+      "verdict": "fail",
+      "helper_exit_code": 2,
+      "task_status": "failed",
+      "steps": 1,
+      "model_effect_count": 0,
+      "failure_category": "unknown_or_inapplicable_action_field",
+      "cleanup_unknown": false,
+      "model_reported_success": false,
+      "goal_independently_verified": false,
+      "passed": false
+    }
+  ],
+  "limits": [
+    "Successful compilation and local NPU inference do not imply task completion.",
+    "No generic phone-operation qualification follows from this small matrix.",
+    "Stop, consecutive-task/restart, broader apps, orientations and thermal endurance are not qualified by these four task outcomes.",
+    "Model done is never promoted to independently verified completion by this record."
+  ]
+}

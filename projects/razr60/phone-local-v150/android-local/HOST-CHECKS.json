@@ -13,7 +13,8 @@
     "source_sha256": "e5ed93e866c28f54533b81d55ac4e33f28c087ec5c5d083166c02325425cfec6",
     "test_source_sha256": "231a4a7c0d388b54e6441e7c52219bc3b6c1368c97827322afe9b209d3a885bb",
     "runner_sha256": "1959f731f6a1e7ca70cd74da0bbe9951580a61c107a29bfbf1f1269acb34d9a8",
-    "evidence": "reference revision-5 Mac host build; exact published Java/test/runner bytes"
+    "evidence": "reference revision-5 Mac host build; exact published Java/test/runner bytes",
+    "reused_by_exact_source_sha256": true
   },
   "budget": {
     "compile_exit": 0,
@@ -22,7 +23,8 @@
     "is_exact_token_count": false,
     "source_sha256": "ff81f80ec3f8bb97723d5b9df026ae7b5a6d75b1feb93e2bad581af956e96452",
     "test_source_sha256": "5a8d18db17cd4b2ff30ff479723e2f909d39f9c1179a6f5a83ecba699d3e3570",
-    "evidence": "reference revision-5 Mac host build; exact published Java/test bytes"
+    "evidence": "reference revision-5 Mac host build; exact published Java/test bytes",
+    "reused_by_exact_source_sha256": true
   },
   "native_publication": {
     "compile_exit": 0,
@@ -47,5 +49,6 @@
     "test_source_sha256": "91a4ddfa1f0d839d525a1c61a2ad0211eec4693528c89808ae0f528f91b841fd",
     "reused_by_exact_source_sha256": true
   },
-  "source_archive_sha256": "3f0a327de30fec052edff63dc54bdcdd33efd5fd331bf5794c4dd83c83788b65"
+  "source_archive_sha256": "6700bc8ed1dc9c1e0db71760a8929b702426c2cb087e24fea055247f55985db7",
+  "publication_note": "Code 6 changes only the controller system instructions and APK version; the named parser, budget, native publication and acceptance-driver source/test bytes remain unchanged."
 }

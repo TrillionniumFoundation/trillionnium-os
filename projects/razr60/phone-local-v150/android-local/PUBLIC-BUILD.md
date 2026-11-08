@@ -1,8 +1,8 @@
 # Public source build and verification
 
 This is a public projection of the Android control candidate built at local
-source commit `cb4c87aedc3401db7e2f6e36666ccccd91253b5b`. The frozen source archive
-SHA256 is `3f0a327de30fec052edff63dc54bdcdd33efd5fd331bf5794c4dd83c83788b65`.
+source commit `71cac4bc9cefdf4c82113e15911d47316e10a10d`. The frozen source archive
+SHA256 is `6700bc8ed1dc9c1e0db71760a8929b702426c2cb087e24fea055247f55985db7`.
 Java, resources, manifest, native worker and the pinned SDK header retain their
 exact frozen bytes. Build scripts use explicit environment paths instead of
 one operator's cached workspace. `PUBLIC-SOURCE.json` records each original
@@ -90,25 +90,26 @@ No device acceptance is transferred merely by copying or rebuilding this source.
 python3 tools/test_phone_acceptance.py
 ```
 
-## Revision 5 status
+## Revision 6 status
 
-Revision 5 (`0.2.2-local-control`) grounds planning in the current foreground
-package and last action outcome, rejects redundant opens before dispatch, folds
-visible descendant labels into their real interactive ancestors, and accepts
-the exact system package `android`. Only app-opening uses window-level freshness;
-node, coordinate and terminal actions retain full-tree checks. The parser suite
-passed 41 accepting cases, 548 rejecting cases and 142 field assertions, and the
-budget suite passed 11 assertions. See `HOST-CHECKS.json` and
-`BUILD-VALIDATION.json` for source identities and verification scope.
+Revision 6 (`0.2.3-local-control`) changes the controller system instructions
+and APK version. The action parser, Accessibility implementation, token budget,
+process lifecycle and native runner are byte-for-byte unchanged from revision 5.
+The retained parser suite passed 41 accepting cases, 548 rejecting cases and
+142 field assertions; the budget suite passed 11 assertions. These checks are
+reused by exact source and test hashes, not rerun or broadened by this publication.
+See `HOST-CHECKS.json` and `BUILD-VALIDATION.json` for identities and scope.
 
-Earlier control trials exposed invalid action output and repeated reopening of
-an already opened app. Those trials did not establish completed task acceptance.
-Revision 5 is published as work in progress while real task qualification
-continues. No broad phone-operation claim follows from compilation, model
-self-report, or these host fixtures.
+The subsequent four-case real phone task matrix completed with **0/4 passing**.
+`PHONE-QUALIFICATION.json` records the sanitized outcomes. Invalid action fields,
+redundant app opening and a copied observation-ID error stopped the tasks; no
+goal was independently verified. This checkpoint is work in progress, not a
+release or a claim that offline phone control is complete. The original private
+evidence remains separate; screenshots, raw UI text and task payloads are not
+published.
 
 The reference source build produced APK SHA256
-`55b753ba783e28dbe534a2645465b915dbb2a3432dae4e68da0e3956a3887535`.
+`995d2283daa7e1db3740309951065be8422e9e385d8f23f10c93fad6a05af394`.
 That binds the recorded candidate, but does not promise that a rebuild with a
 different signing key or build path produces identical APK bytes. The public
 build-script changes parameterize paths; their syntax and exact source-only

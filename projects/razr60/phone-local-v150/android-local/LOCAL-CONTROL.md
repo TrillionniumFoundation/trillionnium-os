@@ -1,6 +1,6 @@
 # Hepta 本地: integrated local control candidate
 
-Package remains `org.trillionnium.hepta.localprobe` so signed updates preserve the imported model. Control versionCode is 5, versionName `0.2.2-local-control`; the separate ordinary-UID inference qualification builds are 0.1.0/code1 and 0.1.1/code2. The APK declares no application permissions, including no INTERNET permission. Android's standard Accessibility binding permission guards the service; the user enables it normally in Settings.
+Package remains `org.trillionnium.hepta.localprobe` so signed updates preserve the imported model. Control versionCode is 6, versionName `0.2.3-local-control`; the separate ordinary-UID inference qualification builds are 0.1.0/code1 and 0.1.1/code2. The APK declares no application permissions, including no INTERNET permission. Android's standard Accessibility binding permission guards the service; the user enables it normally in Settings.
 
 ## Owner interface and lifecycle
 
@@ -37,3 +37,16 @@ The meaningful acceptance gates are: fresh app-UID text and image inference usin
 ## Revision 5 grounding changes
 
 The prompt includes the last action outcome and current foreground package. It asks the model to finish a satisfied open-only task rather than repeatedly reopen the same app. Visible child labels are folded only into their real interactive ancestor, and the folded text is included in the observation digest. Node identity also includes checkable, checked and selected state. Parsing accepts the exact Android system package `android`; unrelated single-segment package strings remain invalid. These changes retain strict JSON validation, original owner text, bounded repair, cancellation ownership and the unverified model-done status.
+
+## Revision 6 checkpoint and real task failures
+
+Revision 6 changes only the controller system instructions and APK version from
+revision 5. It preserves the parser, observation freshness, process ownership,
+budget, action and terminal-state gates. The reference APK built successfully,
+but its four-case real phone matrix completed with **0/4 passing**: two cases
+stopped on unknown or inapplicable action fields, one attempted to reopen the
+current foreground app, and the calculator case stopped on an invalid copied
+observation identifier after two model-requested effects. No case had an
+independently verified goal. These failures are retained in
+`PHONE-QUALIFICATION.json`; neither compilation nor successful NPU inference
+establishes general phone-task completion. This remains a development candidate.
