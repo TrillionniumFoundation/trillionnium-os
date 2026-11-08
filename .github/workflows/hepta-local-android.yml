@@ -22,7 +22,6 @@ jobs:
     timeout-minutes: 25
     env:
       HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
-      HEPTA_BUILD_OUT: ${{ runner.temp }}/hepta-build
       PYTHONDONTWRITEBYTECODE: '1'
       SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     defaults:
@@ -53,7 +52,7 @@ jobs:
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
           "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'platforms;android-34' 'build-tools;34.0.0' 'ndk;28.2.13676358'
-          printf '%s\n' "ANDROID_SDK_ROOT=$hepta_sdk" "AAPT2=$hepta_sdk/build-tools/34.0.0/aapt2" "APKSIGNER=$hepta_sdk/build-tools/34.0.0/apksigner" "READELF=/usr/bin/readelf" "KEYTOOL=$JAVA_HOME/bin/keytool" >> "$GITHUB_ENV"
+          printf '%s\n' "ANDROID_SDK_ROOT=$hepta_sdk" "AAPT2=$hepta_sdk/build-tools/34.0.0/aapt2" "APKSIGNER=$hepta_sdk/build-tools/34.0.0/apksigner" "READELF=/usr/bin/readelf" "KEYTOOL=$JAVA_HOME/bin/keytool" "HEPTA_BUILD_OUT=$RUNNER_TEMP/hepta-build" >> "$GITHUB_ENV"
       - name: Verify and extract pinned GenieX runtime
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: |
