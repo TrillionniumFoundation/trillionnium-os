@@ -60,6 +60,20 @@ jobs:
       - name: Run independent lifecycle guard regressions
         working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle
         run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run compatible base-driver regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/compat-drivers-v1
+        run: python -B -m unittest -v test_phone_acceptance test_phone_suite test_phone_inventory
+      - name: Run core-v2 goal and ordering regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite-v2
+        env:
+          HEPTA_CORE_TEST_DRIVERS: ../compat-drivers-v1
+        run: python -B -m unittest -v test_core_assertions.py
+      - name: Run lifecycle path-binding regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v2
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run offline-transaction restoration regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v1
+        run: python -B -m unittest -v test_offline_transaction.py
       - name: Prepare Android build dependencies
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
