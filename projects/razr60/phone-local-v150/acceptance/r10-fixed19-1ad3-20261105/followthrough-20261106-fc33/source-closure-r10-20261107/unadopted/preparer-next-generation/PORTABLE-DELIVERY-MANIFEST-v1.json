@@ -1,0 +1,88 @@
+{
+  "ci_commands": [
+    "python3 -B tools/build_candidate.py --check",
+    "python3 -B tests/test_unbound_preparer.py"
+  ],
+  "derived_preparer": {
+    "bytes": 24838,
+    "sha256": "4b14289af161c4fd1bccbb6c34b49fd58d7c03ae176fe6d47e2b241e29b1953b"
+  },
+  "excluded_local_intermediate_reports": [
+    "reports/portable-tests-attempt01.json",
+    "reports/portable-tests-final.json",
+    "review-history/"
+  ],
+  "execution_enabled": false,
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 7000,
+      "path": "README.md",
+      "sha256": "1577bf563ff5e60fdf7bef2539f170894a52caed80d9b1e712e31c714814365f"
+    },
+    {
+      "bytes": 13191,
+      "path": "candidate/preparer_binding.py",
+      "sha256": "66f602f5828ae1246e6658d509364e9df3e2ad886eb421d90dd2d538095ecb69"
+    },
+    {
+      "bytes": 24838,
+      "path": "candidate/prepare_next_generation_UNBOUND.py",
+      "sha256": "4b14289af161c4fd1bccbb6c34b49fd58d7c03ae176fe6d47e2b241e29b1953b"
+    },
+    {
+      "bytes": 27261,
+      "path": "originals/prepare_native_bound_components_r10_fc33.original.py",
+      "sha256": "8e4bb7e8034dd09fde1cb93867f38f59f1487a6e06e4504eb8c201ee1df27b10"
+    },
+    {
+      "bytes": 2156,
+      "path": "tools/build_candidate.py",
+      "sha256": "7168050ef10b114402ef87e07acf790cd71979363f6d6cf1b3835610b6999b3e"
+    },
+    {
+      "bytes": 11954,
+      "path": "tests/test_unbound_preparer.py",
+      "sha256": "d7f5296882ea038f60d664a91b930cca14909014a004469ea073704cc608bd93"
+    },
+    {
+      "bytes": 734,
+      "path": "FUTURE-BINDING-UNBOUND.json",
+      "sha256": "7ebcf4d6b6e3e631b221bfee22477d42d1a163f586aeafc6f3ee5ef8dfc23bf9"
+    },
+    {
+      "bytes": 3157,
+      "path": "PREPARER-CANDIDATE-MANIFEST.json",
+      "sha256": "7aa644e32ab6a9fd7713b7c6aaa2136df60ae338433072bf109267649c238371"
+    },
+    {
+      "bytes": 604,
+      "path": "reports/portable-tests-final-r2.json",
+      "sha256": "6042b9571e52ce1f8779435c65c4732ae2bc246f1fc7372272abff45dd8afb6b"
+    }
+  ],
+  "freeze_executed": false,
+  "future_binding_values_unset": true,
+  "new_native_case_credit": 0,
+  "original_preparer": {
+    "bytes": 27261,
+    "sha256": "8e4bb7e8034dd09fde1cb93867f38f59f1487a6e06e4504eb8c201ee1df27b10"
+  },
+  "original_preparer_executed": false,
+  "pending_executable_semantics": [
+    "new complete freeze/controller verifier with actual source and terminal bindings",
+    "new admission-policy implementation validating the retained R10 failure without promotion",
+    "new full admission dependency closure including that R10 disposition implementation",
+    "new live namespace/boot/profile/CAS/freshness and sole-reservation checks",
+    "new predecessor, consumed-nonce and generation-specific constants bound to actual originals",
+    "reviewed integration of new source-parent result envelopes into the actual runtime"
+  ],
+  "production_adopted": false,
+  "review_fix": "Canonical original paths explicitly reject NUL; final report has79 negative cases.",
+  "runtime_admission": false,
+  "schema": "hepta.UNADOPTED.preparer-public-delivery.v1",
+  "source_ancestor_pr115_head": "eecffe52f6954511113edff87f15de3e8e0e8650",
+  "state": "UNBOUND_NOT_EXECUTABLE",
+  "total_bytes": 90895,
+  "whole_byte_inverse_verified": true
+}

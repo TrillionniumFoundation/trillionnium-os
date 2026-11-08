@@ -20,13 +20,15 @@ import unittest
 
 from tools.verify_razr60_r10_source_closure import (
     CHECKPOINT, NEGATIVE_CLAIMS, materialize_checkpoint, member_path, strict_json,
-    stable_stat_identity, verify_checkpoint, verify_members,
+    stable_stat_identity, verify_checkpoint, verify_members, verify_unbound_preparer,
+    verify_source_parent_candidate,
 )
 
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / CHECKPOINT
 CANDIDATE = PACKAGE / "unadopted/topology-20261107"
+PREPARER = PACKAGE / "unadopted/preparer-next-generation"
 
 
 class R10SourceCheckpointTest(unittest.TestCase):
@@ -199,6 +201,42 @@ class R10SourceCheckpointTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "offline selector claim ceiling differs"):
                 verify_checkpoint(copied)
 
+    def test_unbound_preparer_cannot_be_promoted_or_lose_a_public_member(self):
+        prefix = "unadopted/preparer-next-generation/"
+        contents = {str(path.relative_to(PACKAGE)): path.read_bytes()
+                    for path in PREPARER.rglob("*") if path.is_file()}
+        origin = "preparation/r10/prepare_native_bound_components_r10_fc33.py"
+        contents[origin] = (PACKAGE / origin).read_bytes()
+        verify_unbound_preparer(contents)
+        changed = dict(contents)
+        key = prefix + "FUTURE-BINDING-UNBOUND.json"
+        value = json.loads(changed[key])
+        value["state"] = "READY"
+        changed[key] = json.dumps(value).encode()
+        with self.assertRaisesRegex(ValueError, "future bindings must remain unset"):
+            verify_unbound_preparer(changed)
+        changed = dict(contents)
+        del changed[prefix + "tests/test_unbound_preparer.py"]
+        with self.assertRaisesRegex(ValueError, "public membership differs"):
+            verify_unbound_preparer(changed)
+
+    def test_full_source_parent_cannot_claim_runtime_budget_or_drop_a_member(self):
+        rows = json.loads((PACKAGE / "MANIFEST.json").read_text())["files"]
+        contents = {row["path"]: (PACKAGE / row["path"]).read_bytes() for row in rows}
+        verify_source_parent_candidate(contents)
+        prefix = "unadopted/topology-20261107/source-parent-v3/"
+        changed = dict(contents)
+        key = prefix + "SOURCE-PARENT-CANDIDATE-MANIFEST-v3.json"
+        value = json.loads(changed[key])
+        value["whole_stage_budget_verified"] = True
+        changed[key] = json.dumps(value).encode()
+        with self.assertRaisesRegex(ValueError, "full source-parent claim ceiling differs"):
+            verify_source_parent_candidate(changed)
+        changed = dict(contents)
+        del changed[prefix + "tests/replay_source_parent_fixture.py"]
+        with self.assertRaisesRegex(ValueError, "full source-parent public membership differs"):
+            verify_source_parent_candidate(changed)
+
 
 class UnadoptedTopologyGuardTest(unittest.TestCase):
     @classmethod
@@ -327,6 +365,47 @@ class UnadoptedTopologyGuardTest(unittest.TestCase):
             self.assertEqual(report["rejected_source_or_binding_cases"], 36)
             self.assertEqual(report["inventory_comparisons"], 30)
             self.assertEqual(report["retained_inventory_comparisons"], 0)
+
+    def test_next_preparer_stays_unbound_under_actual_negative_gates(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "preparer"
+            shutil.copytree(PREPARER, target)
+            environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+            built = subprocess.run([sys.executable, "-B", "tools/build_candidate.py", "--check"],
+                                   cwd=target, env=environment, capture_output=True, timeout=30)
+            self.assertEqual(built.returncode, 0, built.stdout + built.stderr)
+            result = subprocess.run([sys.executable, "-B", "tests/test_unbound_preparer.py"],
+                                    cwd=target, env=environment, capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual(report["state"], "PASS")
+            self.assertEqual(report["tests_run"], 11)
+            self.assertEqual(report["counters"]["negative_cases"], 79)
+            self.assertTrue(all(value == 0 for value in report["counters"]["unbound_entry_effects"].values()))
+            self.assertFalse(report["original_preparer_executed"])
+            self.assertFalse(report["freeze_executed"])
+
+    def test_complete_source_parent_constructor_and_portable_differentials(self):
+        with tempfile.TemporaryDirectory() as directory:
+            target = Path(directory) / "candidate"
+            shutil.copytree(CANDIDATE, target)
+            environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", HEPTA_TOPOLOGY_SYNTHETIC_ONLY="1")
+            built = subprocess.run([sys.executable, "-B", "source-parent-v3/tools/build_manifest.py", "--base", "."],
+                                   cwd=target, env=environment, capture_output=True, timeout=60)
+            self.assertEqual(built.returncode, 0, built.stdout + built.stderr)
+            self.assertEqual(built.stdout, (CANDIDATE / "source-parent-v3/SOURCE-PARENT-CANDIDATE-MANIFEST-v3.json").read_bytes())
+            result = subprocess.run([sys.executable, "-B", "source-parent-v3/tests/test_source_parent_candidate.py", "--base", "."],
+                                    cwd=target, env=environment, capture_output=True, text=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            report = json.loads(result.stdout)
+            self.assertEqual(report["state"], "PASS")
+            self.assertEqual(report["tests_run"], 14)
+            self.assertEqual(len(report["skips"]), 2)
+            self.assertEqual(report["source_contract_cases"], {
+                "source_binding_rejections": 10, "guarded_constructor_rejections": 3, "new_envelope_cases": 2})
+            self.assertEqual(report["inventory_differential"]["inventory_comparisons"], 788)
+            self.assertEqual(report["inventory_differential"]["topology_comparisons"], 1754)
+            self.assertFalse(report["private_complete_reader_test_performed"])
 
 
 if __name__ == "__main__":

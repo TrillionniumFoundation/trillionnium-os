@@ -11,15 +11,15 @@
   "executor_current": "r6",
   "files": [
     {
-      "bytes": 695981,
+      "bytes": 708121,
       "exact_original_bytes": false,
-      "git_blob_sha": "fa2f7fdadbdd22e72ebe3811a2e9ca6d891a4d54",
+      "git_blob_sha": "ef3b37c13f5739fc50d2d4b698d6746d2c130f17",
       "mode": "100644",
       "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "PUBLIC-PROJECTION-INDEX.json",
-      "sha256": "48e4c025aa5427d7e5f185879035521e8cd78615febd1893d263b61aade1b3ae",
+      "sha256": "371613929f3fae252c885d0d486adc2706c2f582540cd86f9fad1b161142c67b",
       "transformations": [
         {
           "rule": "generated-source-custody-index-or-source-only-boundary-document"
@@ -189,15 +189,15 @@
       ]
     },
     {
-      "bytes": 92280,
+      "bytes": 98390,
       "exact_original_bytes": false,
-      "git_blob_sha": "8e205afc5ccf34607a3095665f1a289e8f20b46f",
+      "git_blob_sha": "7a5797828b4c22a9e3f00cdcccb40a0b1fd598b9",
       "mode": "100644",
       "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/MANIFEST.json",
-      "sha256": "2ce9b640094e5721f014b7156d63c145a4b8fc95f852b22a2604b3836d7273c9",
+      "sha256": "69f80fcf071498b97e32c3b66973003ffb878bba8d52ee539186ae34b186d011",
       "transformations": [
         {
           "rule": "generated-source-custody-index-or-source-only-boundary-document"
@@ -221,15 +221,15 @@
       ]
     },
     {
-      "bytes": 9517,
+      "bytes": 13032,
       "exact_original_bytes": false,
-      "git_blob_sha": "4f36a6ddc383248ab3d807f9726de38bca327668",
+      "git_blob_sha": "67b216c85eaa668f30b32b1c00821f56281687e2",
       "mode": "100644",
       "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/README.md",
-      "sha256": "52158ec2e1948a23aba460eda446f2eb6bf71127db6c04d81a67ec09e8fd289f",
+      "sha256": "364ffd7777aa5ae326b7a4b263856fc290f9345d1c5f339f058bf7dd69e3c6b4",
       "transformations": [
         {
           "rule": "generated-source-custody-index-or-source-only-boundary-document"
@@ -237,15 +237,15 @@
       ]
     },
     {
-      "bytes": 1435,
+      "bytes": 2645,
       "exact_original_bytes": false,
-      "git_blob_sha": "18ece341576b02e89e65d13f666c591ce3d548af",
+      "git_blob_sha": "3c934f11d3096fd52723b4c674ee7f0ec2bf0e3b",
       "mode": "100644",
       "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
       "original_artifact_sha256": null,
       "original_bytes": null,
       "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/STATUS.json",
-      "sha256": "b049b02e329223d877965d3f72a8de395079254cf2f27d50b590318d13de8353",
+      "sha256": "d06771c3af4a1ee3b61068bd5bca981813f030e3871a7d860803aef8659f3227",
       "transformations": [
         {
           "rule": "generated-source-custody-index-or-source-only-boundary-document"
@@ -3277,6 +3277,126 @@
       "transformations": []
     },
     {
+      "bytes": 734,
+      "exact_original_bytes": true,
+      "git_blob_sha": "b7a45652585008bfc3f2893da093d1b3cab86418",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/FUTURE-BINDING-UNBOUND.json",
+      "sha256": "7ebcf4d6b6e3e631b221bfee22477d42d1a163f586aeafc6f3ee5ef8dfc23bf9",
+      "transformations": []
+    },
+    {
+      "bytes": 3240,
+      "exact_original_bytes": true,
+      "git_blob_sha": "4d63c47aa60ddd5a81edcd607cdd5c261f7a0009",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/PORTABLE-DELIVERY-MANIFEST-v1.json",
+      "sha256": "c043fab3ede304072e67e686ffa687f549caf277a92a25f05bd18b6c97f65117",
+      "transformations": []
+    },
+    {
+      "bytes": 3157,
+      "exact_original_bytes": true,
+      "git_blob_sha": "d7eabae639d05731c78b07c995a96f74f1fc5836",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/PREPARER-CANDIDATE-MANIFEST.json",
+      "sha256": "7aa644e32ab6a9fd7713b7c6aaa2136df60ae338433072bf109267649c238371",
+      "transformations": []
+    },
+    {
+      "bytes": 7000,
+      "exact_original_bytes": true,
+      "git_blob_sha": "3f4f4efa8cb5f11d3170e6dafe2a964299c95a82",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/README.md",
+      "sha256": "1577bf563ff5e60fdf7bef2539f170894a52caed80d9b1e712e31c714814365f",
+      "transformations": []
+    },
+    {
+      "bytes": 24838,
+      "exact_original_bytes": true,
+      "git_blob_sha": "c66ee62f7256263eb43a3b2a884b76e7cce92e40",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/candidate/prepare_next_generation_UNBOUND.py",
+      "sha256": "4b14289af161c4fd1bccbb6c34b49fd58d7c03ae176fe6d47e2b241e29b1953b",
+      "transformations": []
+    },
+    {
+      "bytes": 13191,
+      "exact_original_bytes": true,
+      "git_blob_sha": "9f4d4ccc797f3fd0ca41a6d9cb50c543a521be26",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/candidate/preparer_binding.py",
+      "sha256": "66f602f5828ae1246e6658d509364e9df3e2ad886eb421d90dd2d538095ecb69",
+      "transformations": []
+    },
+    {
+      "bytes": 27261,
+      "exact_original_bytes": true,
+      "git_blob_sha": "a792dacffa912187015bb8dafb6ccd414dca4cf9",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/originals/prepare_native_bound_components_r10_fc33.original.py",
+      "sha256": "8e4bb7e8034dd09fde1cb93867f38f59f1487a6e06e4504eb8c201ee1df27b10",
+      "transformations": []
+    },
+    {
+      "bytes": 604,
+      "exact_original_bytes": true,
+      "git_blob_sha": "a8015a384bb23b0bb025505d3bb337a19c246044",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/reports/portable-tests-final-r2.json",
+      "sha256": "6042b9571e52ce1f8779435c65c4732ae2bc246f1fc7372272abff45dd8afb6b",
+      "transformations": []
+    },
+    {
+      "bytes": 11954,
+      "exact_original_bytes": true,
+      "git_blob_sha": "ed2e20c458dae14126428b352e5bac40f17386f6",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/tests/test_unbound_preparer.py",
+      "sha256": "d7f5296882ea038f60d664a91b930cca14909014a004469ea073704cc608bd93",
+      "transformations": []
+    },
+    {
+      "bytes": 2156,
+      "exact_original_bytes": true,
+      "git_blob_sha": "6a992c215dd92cbb52e5f304bb273478f70f842d",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/preparer-next-generation/tools/build_candidate.py",
+      "sha256": "7168050ef10b114402ef87e07acf790cd71979363f6d6cf1b3835610b6999b3e",
+      "transformations": []
+    },
+    {
       "bytes": 1429,
       "exact_original_bytes": true,
       "git_blob_sha": "c24d719be51a24fd1820a4ae3545f192de0de8cc",
@@ -3810,6 +3930,126 @@
       "original_bytes": null,
       "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/reports/selector-portable-synthetic-results-r2.json",
       "sha256": "2a1cdfb7ca565be8d7d286bf39c5137405e5612d10e456225047f7da0ba5ff56",
+      "transformations": []
+    },
+    {
+      "bytes": 3681,
+      "exact_original_bytes": true,
+      "git_blob_sha": "c9c70a9abd7a4eaf3459bb3b5d66097d38c5dc4c",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/PORTABLE-DELIVERY-MANIFEST-v3.json",
+      "sha256": "5fdc8416e54c315fb03ca7fadbabf8dad1be0b290b0de356ccb02bd13c9fc490",
+      "transformations": []
+    },
+    {
+      "bytes": 10565,
+      "exact_original_bytes": true,
+      "git_blob_sha": "ad101a8d8a384252cc9d79643cdf0a07d26887f1",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/README.md",
+      "sha256": "17bc14b74ea574209e549ca03199d014711dd45ccef1e35f83c3367a9a6330c7",
+      "transformations": []
+    },
+    {
+      "bytes": 32500,
+      "exact_original_bytes": true,
+      "git_blob_sha": "2e1a812aec211a877afcf86e9cba01a9e7a4bf12",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/SOURCE-PARENT-CANDIDATE-MANIFEST-v3.json",
+      "sha256": "8d14561c54f9487a3a46801c8ac48634400c152077264f42d8807dd9aca69dc0",
+      "transformations": []
+    },
+    {
+      "bytes": 1023,
+      "exact_original_bytes": true,
+      "git_blob_sha": "21e6a3e1f8d6749c11535ed8027fdce41c618605",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/candidate/bound_loader.py",
+      "sha256": "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca",
+      "transformations": []
+    },
+    {
+      "bytes": 19589,
+      "exact_original_bytes": true,
+      "git_blob_sha": "20a01e6e285457f5c136abeb5d08c7a30d0b1b2c",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/candidate/source_parent_reader.py",
+      "sha256": "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42",
+      "transformations": []
+    },
+    {
+      "bytes": 23344,
+      "exact_original_bytes": true,
+      "git_blob_sha": "3c9acc4eb62da4652aa28c5802826caf3dc23747",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/reports/FULL-REPLAY-SAFE-v3.json",
+      "sha256": "84822e0d10e4738efde939f7ec92c7020f7bf6ab6e0d1e981d268e72b0b8c959",
+      "transformations": []
+    },
+    {
+      "bytes": 3387,
+      "exact_original_bytes": true,
+      "git_blob_sha": "6d759507bf6a1fbc2596fa37b6f3626aa0335c4b",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/reports/PORTABLE-SYNTHETIC-v3.json",
+      "sha256": "8cabd34422f512e9eda960c798b930cc7d04141b44ea7f85a085509f336f452d",
+      "transformations": []
+    },
+    {
+      "bytes": 22696,
+      "exact_original_bytes": true,
+      "git_blob_sha": "006bed38c70a96abbb9f8a1245117648a1d7198e",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/tests/replay_source_parent_fixture.py",
+      "sha256": "ef189c5e5fbbd0425cb39e440267e50eb2da24f8f0d595aac25354ec2e50ebe6",
+      "transformations": []
+    },
+    {
+      "bytes": 10711,
+      "exact_original_bytes": true,
+      "git_blob_sha": "d7d0f9320d2092d63ba3001a7fcabd7bc68b33ad",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/tests/test_source_parent_candidate.py",
+      "sha256": "74d80ed1e3eeca0a39f1b631600102ff6d84786991ad1cb32864e1072b8430b1",
+      "transformations": []
+    },
+    {
+      "bytes": 3698,
+      "exact_original_bytes": true,
+      "git_blob_sha": "907577b81fe9a848eccf917f3313c477d6731aac",
+      "mode": "100644",
+      "origin": "r10_current_source_checkpoint_and_unadopted_topology_candidate",
+      "original_artifact_sha256": null,
+      "original_bytes": null,
+      "path": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/unadopted/topology-20261107/source-parent-v3/tools/build_manifest.py",
+      "sha256": "15d299cf9355e570f19e99b6fa86f5d42f5b11593de7fe0c7661ef55e73feb6e",
       "transformations": []
     },
     {
@@ -17546,20 +17786,20 @@
   "provider_current": "r7",
   "public_projection_index": {
     "path": "PUBLIC-PROJECTION-INDEX.json",
-    "sha256": "48e4c025aa5427d7e5f185879035521e8cd78615febd1893d263b61aade1b3ae"
+    "sha256": "371613929f3fae252c885d0d486adc2706c2f582540cd86f9fad1b161142c67b"
   },
   "quality_public_sha256": "27781648eb66e7cb6b9a36d9a5f37ef936dadd41ea7e23d86ed189cec5017d3f",
   "repository": "TrillionniumFoundation/trillionnium-os",
   "schema": "hepta.source-publication.v150.r7.r3.checkpoint1",
   "source_checkpoint_r10_update": {
     "checkpoint": "acceptance/r10-fixed19-1ad3-20261105/followthrough-20261106-fc33/source-closure-r10-20261107/MANIFEST.json",
-    "checkpoint_sha256": "2ce9b640094e5721f014b7156d63c145a4b8fc95f852b22a2604b3836d7273c9",
+    "checkpoint_sha256": "69f80fcf071498b97e32c3b66973003ffb878bba8d52ee539186ae34b186d011",
     "external_bindings": 518,
     "fixed19_credits_added": 0,
     "historical_assembly_reexecution_established": false,
     "native_runtime_members": 38,
     "phone_or_model_requests": 0,
-    "public_members": 310,
+    "public_members": 330,
     "resolved_source_bindings": 506,
     "runtime_adopted": false,
     "source_ancestor_commit": "22e6105c2effe102c0f120a906752003aedfb37d",

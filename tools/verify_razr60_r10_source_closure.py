@@ -342,6 +342,8 @@ def verify_checkpoint(root: Path) -> dict:
                  and hashlib.sha256(raw).hexdigest() == descriptor["sha256"],
                  "derived function source binding differs")
     verify_selector_candidate(contents)
+    verify_source_parent_candidate(contents)
+    verify_unbound_preparer(contents)
     return {
         "schema": "hepta.razr60.r10.source-closure-check.v1",
         "result": "PASS_SOURCE_BYTES_AND_STRUCTURE_ONLY",
@@ -353,6 +355,8 @@ def verify_checkpoint(root: Path) -> dict:
         "runtime_imported": False, "runtime_adopted": False,
         "phone_or_model_requests": 0, "fixed19_credits_added": 0,
         "whole_stage_budget_verified": False,
+        "next_generation_preparer_execution_enabled": False,
+        "full_source_parent_composed_offline_only": True,
     }
 
 
@@ -407,6 +411,143 @@ def verify_selector_candidate(contents: dict[str, bytes]) -> None:
                  "offline candidate delivery source differs")
     for private in delivery["private_evidence_do_not_import"]:
         need(prefix + private["artifact"] not in contents, "private selector evidence was published")
+
+
+def verify_source_parent_candidate(contents: dict[str, bytes]) -> None:
+    base = "unadopted/topology-20261107/"
+    prefix = base + "source-parent-v3/"
+    delivery_name = prefix + "PORTABLE-DELIVERY-MANIFEST-v3.json"
+    delivery = strict_json(contents[delivery_name])
+    need(delivery["state"] == "FULL_OFFLINE_CANDIDATE_COMPLETE_NOT_ADOPTED"
+         and delivery["source_parent_full_boundary_reader_composed_offline"] is True
+         and delivery["ci_expected"]["private_complete_reader_test_claimed_by_CI"] is False
+         and delivery["native_case_credit"] == 0
+         and all(delivery[key] is False for key in (
+             "runtime_admission", "production_selector_adopted", "original_receipts_rewritten",
+             "validation_result_cache", "complete_production_IO_metering_verified",
+             "whole_stage_budget_verified")), "full source-parent delivery claim ceiling differs")
+    need(hashlib.sha256(contents[delivery_name]).hexdigest() ==
+         "5fdc8416e54c315fb03ca7fadbabf8dad1be0b290b0de356ccb02bd13c9fc490",
+         "full source-parent delivery identity was reassigned")
+    manifest = strict_json(contents[prefix + "SOURCE-PARENT-CANDIDATE-MANIFEST-v3.json"])
+    need(manifest["schema"] == "hepta.UNADOPTED.source-parent-candidate-manifest.v3"
+         and manifest["state"] == "SOURCE_CONSTRUCTED_NOT_ADOPTED"
+         and manifest["historical_reader_functions_changed"] is True
+         and manifest["current_native_case_credit"] == 0
+         and manifest["new_reader_schema"] == "hepta.UNADOPTED.derived-source-parent-reader.v1"
+         and manifest["new_result_schema"] == "hepta.UNADOPTED.derived-source-parent-result.v1"
+         and all(manifest[key] is False for key in (
+             "runtime_admission", "production_selector_adopted", "original_source_bytes_changed",
+             "original_receipts_rewritten", "production_outer_exact_original_binding_replaced",
+             "validation_result_cache", "live_observation_cache",
+             "complete_production_IO_metering_verified", "whole_stage_budget_verified")),
+         "full source-parent claim ceiling differs")
+    for field, location, digest in (
+        ("constructor", prefix, "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42"),
+        ("bound_loader", prefix, "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca"),
+        ("base_original_source", base, "27350db238c5ca31796af91c77b5c2fdb9d02b838d35140f759df907903d4fa4"),
+        ("base_original_current_factory", base, "f9a19df8a2a1d8b6a09a8c75eec118f4304ad1db5f40fc005fd7d59fb02837b7"),
+        ("base_inventory_fragment", base, "6428e3834749b21a92eb896b51d74cd4aa2dccca9b647dd9dc5df5e7c81c8b8b"),
+    ):
+        row = manifest[field]
+        raw = contents[location + row["path"]]
+        need(row["sha256"] == digest and len(raw) == row["bytes"]
+             and hashlib.sha256(raw).hexdigest() == digest, "full source-parent source identity differs")
+    need(contents[base + manifest["base_original_current_factory"]["path"]]
+         == contents["frozen/native/runtime/source/late_boundary.py"],
+         "full source-parent factory differs from the frozen current source")
+    for name, row in manifest["historical_dependency_pins"].items():
+        raw = contents["frozen/native/runtime/" + name]
+        need(len(raw) == row["bytes"] and hashlib.sha256(raw).hexdigest() == row["sha256"],
+             "full source-parent historical dependency differs")
+    derivation = manifest["derivation"]
+    need(derivation["whole_byte_inverse_verified"] is True
+         and manifest["actual_derived_whole_source"] == derivation["derived_source"]
+         and derivation["derived_source"] == {"bytes": 153792,
+             "sha256": "be12800aa1f8bec53a3c56545b5d8db17da864855e3c1d3e7d268451f544547d"},
+         "full source-parent derived whole-source binding differs")
+    for graph, count in ((derivation["original_call_graph"], 55),
+                         (derivation["derived_call_graph"], 56)):
+        need(graph["reachable_function_count"] == count and graph["reachable_class_count"] == 1
+             and graph["not_a_claim_of_complete_dynamic_IO_metering"] is True
+             and graph["entry_points"] == ["boundary_from_original", "closed_boundary_originals", "require_failed_ancestor_tail"],
+             "full source-parent three-entry closure differs")
+    safe = strict_json(contents[prefix + "reports/FULL-REPLAY-SAFE-v3.json"])
+    need(safe["all_historical_results_equal"] is True and safe["all_callback_reads_equal"] is True
+         and safe["source_original_file_count"] == 29 and safe["rounds"] == 3
+         and safe["original_unknown_retained"] == "UNKNOWN_UNCHANGED"
+         and safe["current_native_case_credit"] == safe["native_requests"] == safe["phone_calls"] == 0
+         and all(safe[key] is False for key in (
+             "runtime_admission", "production_adopted", "full_current_verify_retired_executed",
+             "historical_data_projection_is_original_execution_attestation",
+             "complete_production_IO_metering_verified", "stage_transport_90s_verified",
+             "whole_stage_budget_verified")), "full source-parent replay claim ceiling differs")
+    expected = {row["path"] for row in delivery["files"]}
+    actual = {name[len(prefix):] for name in contents if name.startswith(prefix)}
+    need(len(expected) == len(delivery["files"]) == 9
+         and actual == expected | {"PORTABLE-DELIVERY-MANIFEST-v3.json"},
+         "full source-parent public membership differs")
+    for row in delivery["files"]:
+        raw = contents[prefix + row["path"]]
+        need(len(raw) == row["bytes"] and hashlib.sha256(raw).hexdigest() == row["sha256"],
+             "full source-parent public source differs")
+
+
+def verify_unbound_preparer(contents: dict[str, bytes]) -> None:
+    prefix = "unadopted/preparer-next-generation/"
+    delivery_name = prefix + "PORTABLE-DELIVERY-MANIFEST-v1.json"
+    need(delivery_name in contents, "unbound preparer delivery is missing")
+    delivery = strict_json(contents[delivery_name])
+    need(delivery["state"] == "UNBOUND_NOT_EXECUTABLE"
+         and delivery["whole_byte_inverse_verified"] is True
+         and delivery["future_binding_values_unset"] is True
+         and delivery["new_native_case_credit"] == 0
+         and all(delivery[key] is False for key in (
+             "runtime_admission", "production_adopted", "execution_enabled",
+             "original_preparer_executed", "freeze_executed")),
+         "unbound preparer delivery claim ceiling differs")
+    need(hashlib.sha256(contents[delivery_name]).hexdigest() ==
+         "c043fab3ede304072e67e686ffa687f549caf277a92a25f05bd18b6c97f65117",
+         "unbound preparer delivery identity was reassigned")
+    manifest = strict_json(contents[prefix + "PREPARER-CANDIDATE-MANIFEST.json"])
+    need(manifest["state"] == "INERT_UNBOUND_SOURCE_ONLY"
+         and manifest["whole_byte_inverse_verified"] is True
+         and manifest["all_retained_function_class_bodies_unchanged"] is True
+         and manifest["unconditional_guard_before_import"] is True
+         and manifest["binding_cannot_enable_execution"] is True
+         and manifest["runtime_admission"] is False and manifest["production_adopted"] is False
+         and manifest["runtime_execution_performed"] is False
+         and manifest["new_nonce_generations"] == manifest["phone_calls"] == 0,
+         "unbound preparer source claim ceiling differs")
+    template = strict_json(contents[prefix + "FUTURE-BINDING-UNBOUND.json"])
+    need(template["schema"] == "hepta.UNADOPTED.future-preparer-binding.v1"
+         and template["state"] == "UNBOUND"
+         and template["runtime_admission"] is False and template["production_adopted"] is False
+         and all(value is None for value in template["originals"].values())
+         and len(template["originals"]) == 8
+         and all(value is None for value in template["admission_sources"].values())
+         and len(template["admission_sources"]) == 6
+         and template["labels"] == {"NEG-01": None, "NEG-02": None},
+         "unbound preparer future bindings must remain unset")
+    origin = contents[prefix + "originals/prepare_native_bound_components_r10_fc33.original.py"]
+    need(origin == contents["preparation/r10/prepare_native_bound_components_r10_fc33.py"]
+         and len(origin) == 27261 and hashlib.sha256(origin).hexdigest() ==
+         "8e4bb7e8034dd09fde1cb93867f38f59f1487a6e06e4504eb8c201ee1df27b10",
+         "unbound preparer ancestor differs from the reviewed current source")
+    expected = {row["path"] for row in delivery["files"]}
+    actual = {name[len(prefix):] for name in contents if name.startswith(prefix)}
+    need(len(expected) == len(delivery["files"]) == 9
+         and actual == expected | {"PORTABLE-DELIVERY-MANIFEST-v1.json"},
+         "unbound preparer public membership differs")
+    for row in delivery["files"]:
+        raw = contents[prefix + row["path"]]
+        need(len(raw) == row["bytes"] and hashlib.sha256(raw).hexdigest() == row["sha256"],
+             "unbound preparer public source differs")
+    raw = contents[prefix + "candidate/prepare_next_generation_UNBOUND.py"]
+    effect_nodes = [node for node in ast.parse(raw).body
+                   if not (isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant)
+                           and isinstance(node.value.value, str))]
+    need(isinstance(effect_nodes[0], ast.Raise), "unbound preparer must reject before imports")
 
 
 def materialize_checkpoint(root: Path, output: Path) -> dict:

@@ -17,17 +17,17 @@
       "source_bytes_exact": false
     },
     {
-      "bytes": 9517,
+      "bytes": 13032,
       "category": "generated_source_index",
       "path": "README.md",
-      "sha256": "52158ec2e1948a23aba460eda446f2eb6bf71127db6c04d81a67ec09e8fd289f",
+      "sha256": "364ffd7777aa5ae326b7a4b263856fc290f9345d1c5f339f058bf7dd69e3c6b4",
       "source_bytes_exact": false
     },
     {
-      "bytes": 1435,
+      "bytes": 2645,
       "category": "generated_source_index",
       "path": "STATUS.json",
-      "sha256": "b049b02e329223d877965d3f72a8de395079254cf2f27d50b590318d13de8353",
+      "sha256": "d06771c3af4a1ee3b61068bd5bca981813f030e3871a7d860803aef8659f3227",
       "source_bytes_exact": false
     },
     {
@@ -1795,6 +1795,76 @@
       "source_bytes_exact": true
     },
     {
+      "bytes": 734,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/FUTURE-BINDING-UNBOUND.json",
+      "sha256": "7ebcf4d6b6e3e631b221bfee22477d42d1a163f586aeafc6f3ee5ef8dfc23bf9",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 3240,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/PORTABLE-DELIVERY-MANIFEST-v1.json",
+      "sha256": "c043fab3ede304072e67e686ffa687f549caf277a92a25f05bd18b6c97f65117",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 3157,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/PREPARER-CANDIDATE-MANIFEST.json",
+      "sha256": "7aa644e32ab6a9fd7713b7c6aaa2136df60ae338433072bf109267649c238371",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 7000,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/README.md",
+      "sha256": "1577bf563ff5e60fdf7bef2539f170894a52caed80d9b1e712e31c714814365f",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 24838,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/candidate/prepare_next_generation_UNBOUND.py",
+      "sha256": "4b14289af161c4fd1bccbb6c34b49fd58d7c03ae176fe6d47e2b241e29b1953b",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 13191,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/candidate/preparer_binding.py",
+      "sha256": "66f602f5828ae1246e6658d509364e9df3e2ad886eb421d90dd2d538095ecb69",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 27261,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/originals/prepare_native_bound_components_r10_fc33.original.py",
+      "sha256": "8e4bb7e8034dd09fde1cb93867f38f59f1487a6e06e4504eb8c201ee1df27b10",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 604,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/reports/portable-tests-final-r2.json",
+      "sha256": "6042b9571e52ce1f8779435c65c4732ae2bc246f1fc7372272abff45dd8afb6b",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 11954,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/tests/test_unbound_preparer.py",
+      "sha256": "d7f5296882ea038f60d664a91b930cca14909014a004469ea073704cc608bd93",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 2156,
+      "category": "unadopted_next_generation_preparer_scaffold",
+      "path": "unadopted/preparer-next-generation/tools/build_candidate.py",
+      "sha256": "7168050ef10b114402ef87e07acf790cd71979363f6d6cf1b3835610b6999b3e",
+      "source_bytes_exact": true
+    },
+    {
       "bytes": 1429,
       "category": "unadopted_offline_candidate",
       "path": "unadopted/topology-20261107/CANDIDATE-MANIFEST.json",
@@ -2093,6 +2163,76 @@
       "category": "unadopted_offline_selector_increment",
       "path": "unadopted/topology-20261107/reports/selector-portable-synthetic-results-r2.json",
       "sha256": "2a1cdfb7ca565be8d7d286bf39c5137405e5612d10e456225047f7da0ba5ff56",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 3681,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/PORTABLE-DELIVERY-MANIFEST-v3.json",
+      "sha256": "5fdc8416e54c315fb03ca7fadbabf8dad1be0b290b0de356ccb02bd13c9fc490",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 10565,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/README.md",
+      "sha256": "17bc14b74ea574209e549ca03199d014711dd45ccef1e35f83c3367a9a6330c7",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 32500,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/SOURCE-PARENT-CANDIDATE-MANIFEST-v3.json",
+      "sha256": "8d14561c54f9487a3a46801c8ac48634400c152077264f42d8807dd9aca69dc0",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 1023,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/candidate/bound_loader.py",
+      "sha256": "845404b6ea78bd209c4cdf05d6c87453bda9ded4d46d6d42c6bd83757527a5ca",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 19589,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/candidate/source_parent_reader.py",
+      "sha256": "8f1eeb66110127ee295d356b3f365ea209969c689c6a80bfdb0ad1520658fd42",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 23344,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/reports/FULL-REPLAY-SAFE-v3.json",
+      "sha256": "84822e0d10e4738efde939f7ec92c7020f7bf6ab6e0d1e981d268e72b0b8c959",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 3387,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/reports/PORTABLE-SYNTHETIC-v3.json",
+      "sha256": "8cabd34422f512e9eda960c798b930cc7d04141b44ea7f85a085509f336f452d",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 22696,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/tests/replay_source_parent_fixture.py",
+      "sha256": "ef189c5e5fbbd0425cb39e440267e50eb2da24f8f0d595aac25354ec2e50ebe6",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 10711,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/tests/test_source_parent_candidate.py",
+      "sha256": "74d80ed1e3eeca0a39f1b631600102ff6d84786991ad1cb32864e1072b8430b1",
+      "source_bytes_exact": true
+    },
+    {
+      "bytes": 3698,
+      "category": "unadopted_complete_source_parent_increment",
+      "path": "unadopted/topology-20261107/source-parent-v3/tools/build_manifest.py",
+      "sha256": "15d299cf9355e570f19e99b6fa86f5d42f5b11593de7fe0c7661ef55e73feb6e",
       "source_bytes_exact": true
     },
     {

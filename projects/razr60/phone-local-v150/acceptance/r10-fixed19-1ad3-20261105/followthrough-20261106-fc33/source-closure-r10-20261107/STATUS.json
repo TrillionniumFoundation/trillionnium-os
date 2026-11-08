@@ -3,6 +3,28 @@
   "fixed19_credits_added": 0,
   "github_review": "REQUIRED_NOT_SUPPLIED_BY_LOCAL_REVIEW_RECORDS",
   "neg02_authorized_by_this_checkpoint": false,
+  "next_generation_preparer": {
+    "actual_future_bindings_supplied": false,
+    "execution_enabled": false,
+    "manifest_sha256": "c043fab3ede304072e67e686ffa687f549caf277a92a25f05bd18b6c97f65117",
+    "negative_cases": 79,
+    "production_semantics_complete": false,
+    "state": "INERT_UNBOUND_SOURCE_ONLY",
+    "tests": 11
+  },
+  "offline_source_parent_v3": {
+    "constructor_rejections": 2,
+    "full_current_verify_retired_executed": false,
+    "manifest_sha256": "5fdc8416e54c315fb03ca7fadbabf8dad1be0b290b0de356ccb02bd13c9fc490",
+    "negative_cases": 17,
+    "positive_cases": 12,
+    "production_outer_exact_original_binding_replaced": false,
+    "rounds": 3,
+    "runtime_admission": false,
+    "source_original_file_count": 29,
+    "state": "COMPLETE_OFFLINE_DIFFERENTIAL_PASS_NOT_ADOPTED",
+    "whole_stage_budget_verified": false
+  },
   "original_r10_freeze_result": {
     "bytes": 1613295,
     "sha256": "651b4dd0f4f1c32b1928d58480e1adc3f2fcf104884db44b4eac52a0c625ba6d"
@@ -23,6 +45,13 @@
   },
   "protected_integration_branch": "integration/razr60-r9-20261107",
   "r10_frozen_runtime_manifest_sha256": "94e945e55f4cda2c9d2c4bd473f6fdb8ec6eca425610db4fd59af1814f5fca02",
+  "remaining_technical_work": [
+    "production consumer wiring for the new source-parent envelope",
+    "R10 failure admission semantic verifier and closure",
+    "new full freeze/controller/preparer semantics",
+    "actual current originals, freshness, CAS and one reservation",
+    "real I/O90s and fixed19/BUILD/install/health/daily/rollback gates"
+  ],
   "schema": "hepta.razr60.r10.source-checkpoint-status.v1",
   "source_ancestor_commit": "22e6105c2effe102c0f120a906752003aedfb37d",
   "source_ancestor_pr": 112,

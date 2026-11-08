@@ -1,4 +1,4 @@
-# R10 source closure and unadopted topology candidate
+# R10 source closure and unadopted source preparation
 
 This checkpoint publishes the current R10 source bytes after PR #112. **The original R10 attempt failed and remains unqualified.** It grants no fresh admission, NEG-01/NEG-02 completion, BUILD, installation, READY, health, fixed19, business, or daily-use credit.
 
@@ -55,7 +55,7 @@ The separate topology candidate replaces a quadratic root-overlap predicate with
 
 The portable G1 tests rebuild the exact current and derived fragments in a temporary directory and independently run 788 generated whole-inventory comparisons and 1,754 root-topology comparisons for both inventory versions, plus 285 synthetic R8-scope subgraph comparisons. The full retained-fixture suites additionally require the private, hash-pinned fixture bytes; CI explicitly skips those cases. A separate retained Mac report compared the complete original/derived R8 scope with identical full returns and six rejection cases, measuring a host median 0.983766 to 0.254996 seconds (3.858x). These are offline function measurements, not a whole-stage 90-second result. No production selector, historical reader substitution or new runtime admission is provided.
 
-## Latest offline selector increment
+## v2 offline selector milestone
 
 The second public increment is [SELECTOR-CANDIDATE-MANIFEST.json](unadopted/topology-20261107/SELECTOR-CANDIDATE-MANIFEST.json), with the design in [SELECTOR-DESIGN.md](unadopted/topology-20261107/reports/SELECTOR-DESIGN.md). The earlier v1 README and coverage report remain unchanged milestone records; this increment supplies the separately identified **offline** R9 → R8 → R7 reader/scope selector.
 
@@ -63,7 +63,25 @@ A bound loader verifies the actual selector source pin before compilation and re
 
 The additional portable suite runs 11 tests with one explicit private-fixture skip, five module constructors, 36 source/binding rejection cases and 30 complete-inventory outcome comparisons. Its deterministic constructor manifest must reproduce byte for byte. Original requests, full private reports/readsets and archived inventories remain outside this repository; the public [safe summary](unadopted/topology-20261107/reports/selector-full-safe-summary.json) binds their exact retained originals.
 
-Production policy remains **HOLD**. The complete source-parent boundary reader is not composed, no new runtime policy/freeze is supplied, and the whole-stage 90-second budget remains unverified. This increment adds no runtime admission or case credit.
+At the v2 milestone, the complete source-parent boundary reader was not yet composed. The v3 section below records the completed offline extension. Production policy remains **HOLD**: no new runtime policy/freeze is supplied, and the whole-stage 90-second budget remains unverified. Neither increment adds runtime admission or case credit.
+
+## v3 complete offline source-parent reader
+
+The separately identified [source-parent v3 package](unadopted/topology-20261107/source-parent-v3/README.md) now constructs all three source-parent entries: boundary reading, complete boundary/inventory/closure validation, and complete failed-ancestor-tail validation. The original static closure has 55 functions and one class; the derivative has 56 functions and one class. The entire derived source has a verified whole-byte inverse. The constructor and independently pinned loader bind the declared implementation to the actual compiled bytes.
+
+Historical publisher identities remain data anchors. The new reader, result envelope, property-reader composition and sidebranch composition carry distinct derived identities/schemas. Historical values remain under the new envelope's historical_result; this projection does not attest execution of the old implementation. The original outer full-descriptor/full9 binding remains required and unchanged.
+
+A retained Mac run checked 29 exact original files before and after validation, with 12 complete positive cases, 17 rejection cases, two constructor-binding rejections and three unprofiled timing rounds. Historical returns/errors and callback descriptor/order/bytes matched. The original UNKNOWN_UNCHANGED state and historical final04 credit remain historical; current native case credit is zero. Full current verify_retired, production I/O metering and the stage/transport 90-second gate were not executed or verified. The [safe report](unadopted/topology-20261107/source-parent-v3/reports/FULL-REPLAY-SAFE-v3.json) binds the private original output without publishing its readset/body.
+
+Portable CI rebuilds the exact v3 manifest and runs 14 tests with two explicit private-fixture skips, 788 generated inventory comparisons, 1,754 root-topology comparisons, ten source-binding rejections, three dependency/constructor rejections and two envelope unit cases. It does not claim to rerun the complete private fixture suite. The 35 v1 and eleven v2 public files retain every original hash.
+
+## Unbound next-generation preparer
+
+The [preparer scaffold](unadopted/preparer-next-generation/README.md) retains all 15 reviewed function/class bodies from the exact 27,261-byte R10 preparer. Its five generation slots are None and an unconditional rejection precedes every import. The future-binding template contains no fabricated hashes or selected labels. Neither a completed JSON draft nor successful structural checks can enable execution.
+
+Its eleven portable tests cover 79 rejection cases, including the consumed R10 NEG-01 label, old-generation labels, old freeze/controller identities, missing/changed originals, six-source freeze links and invalid paths including NUL. Entry sentinels observe zero import/read/nonce/write/phone effects. Static test/build file reads are outside that entry-effect count.
+
+This is an inert preparation artifact, not a completed production preparer. Concrete implementation still includes production consumption of the new envelope, a new R10-failure admission verifier, complete new freeze/controller semantics, predecessor/consumed-nonce bindings and fresh namespace/boot/profile/CAS/reservation checks. Genuine new freeze/controller and retained-failure/admission originals remain necessary inputs. Independent GitHub review is a separate requirement; it does not replace this code or data work.
 
 ## Publication, compatibility and rollback
 
