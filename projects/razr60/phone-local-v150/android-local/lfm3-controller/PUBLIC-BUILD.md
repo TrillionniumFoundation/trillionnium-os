@@ -1,7 +1,7 @@
 # Build the independent local controller
 
-The source is an ordinary Android app candidate, versionCode **7**, versionName
-**0.7.0-local-ime**. A successful build is not device acceptance or adoption into
+The source is an ordinary Android app candidate, versionCode **8**, versionName
+**0.8.0-local-protocol**. A successful build is not device acceptance or adoption into
 the protected owner-open implementation. Read `CONTROL-INTEGRATION.md` first.
 
 ## Source and host verification
@@ -65,7 +65,7 @@ python3 -B assemble_pocket4.py
 The assembler refuses stale build inputs, changed artifacts, mismatched actual
 APK identity/version, missing runtime libraries and unexpected dependencies.
 It checks the manifest, service guard, ABI, signature, resource alignment and
-packaged library hashes. It outputs `hepta-local-0.7.0.apk` under the build output.
+packaged library hashes. It outputs `hepta-local-0.8.0.apk` under the build output.
 
 A fresh development checkout may omit both signing variables to create a local
 development key. CI uses that mode only for static packaging checks. Its key is

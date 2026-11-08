@@ -68,6 +68,7 @@ def main():
             if name in ("DecisionGrammarHostTest","AppCatalogueHostTest","RepeatActionGuardHostTest"):command.append(fixtures)
             run(name,command)
         run("grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_decision_grammar.py",fixtures])
+        run("completion-protocol",[sys.executable,ROOT/"tests/action-grammar/test_completion_protocol.py",fixtures])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         for source in sorted((ROOT/"native/tests").glob("*.c")):
             binary=out/source.stem

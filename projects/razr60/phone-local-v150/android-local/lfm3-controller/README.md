@@ -1,8 +1,13 @@
 # Hepta — local phone controller
 
-Independent package `org.trillionnium.hepta.local`, version 0.7.0 / code 7, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+Independent package `org.trillionnium.hepta.local`, version 0.8.0 / code 8, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
 
-Code 7 adds separately observed input-method window visibility to progress and
+Code 8 explicitly includes `done(status,summary)` in the tool menu, requires a
+tool-name string for `action`, and explains that waiting is for loading rather
+than completion. Existing grammar, owner task and dispatch gates are unchanged.
+See `CODE8-PROTOCOL.md`.
+
+Code 7 added separately observed input-method window visibility to progress and
 freshness checks, while preserving repeated-action rejection when no actual
 change is known. See `CODE7-IME.md`.
 

@@ -51,9 +51,10 @@ public final class LocalTaskController implements AutoCloseable {
             "先核对 recent 中 dispatched=true 的动作，再选择下一步。若打开应用后出现搜索页或其它子页，利用可见返回按钮或 back 返回上级；再次 open 通常仍恢复原页面。包名不同也可能是同一应用的关联页面，请看可见内容。不可为了重试而打开无关应用。\n" +
             "screen.ime_visible 表示输入法窗口：true=可见，false=已确认不可见，null=未知。back 可能先关闭输入法，仍需观察页面并决定是否继续返回；未知不是关闭的证据。\n" +
             "只输出一个 JSON，字段顺序是 reason,action,observation_id,package，然后是动作参数。observation_id 复制 screen.observation_id；open 的 package 必须来自 apps，其它动作复制 screen.package。节点格式是 [id,文字,边界,能力]，c=点击、t=输入、s=滚动；node_id 逐字复制。看不到图片，不猜坐标。\n" +
-            "工具：open 打开应用（不能重开当前应用）；click(node_id) 点击；type(node_id,text) 替换全部文字；scroll(node_id,direction) 滚动，direction=forward/backward/up/down/left/right；back 返回上级；home 到桌面；wait(duration_ms) 等待100..2000毫秒。\n" +
+            "工具：open 打开应用（不能重开当前应用）；click(node_id) 点击；type(node_id,text) 替换全部文字；scroll(node_id,direction) 滚动，direction=forward/backward/up/down/left/right；back 返回上级；home 到桌面；wait(duration_ms) 仅在页面仍在加载时等待100..2000毫秒；done(status,summary) 结束本次任务，status=success/partial/failure。\n" +
             "find_app(query,offset) 只读查询本机应用，query为空则浏览；首次offset=0，续页用app_search.next_offset。找不到目标应用时查询，不打开无关应用。blocked_action 已被排除。\n" +
-            "所有任务步骤按原顺序完成且有可见证据后，才输出 done，附status=success、summary；不能完成则status=partial或failure。应用启动成功不代表任务全部完成。不要改成计算答案代替操作应用。除了上述字段禁止其它字段，不输入密码，不执行网络或代码命令。\n";
+            "所有任务步骤按原顺序完成且有可见证据后，才输出 done，附status=success、summary；不能完成则status=partial或failure。应用启动成功不代表任务全部完成。不要改成计算答案代替操作应用。除了上述字段禁止其它字段，不输入密码，不执行网络或代码命令。\n" +
+            "结束任务也必须调用工具：所有目标已经实现时，输出action=\"done\",status=\"success\"，summary说明已经实现的目标；无法完成时也用action=\"done\"并给partial或failure。done必须同时包含status和summary。action必须是工具名字符串，不能为null。wait只表示暂时等待加载，不能表示完成或停留。\n";
 
 
     public LocalTaskController(HeptaAccessibilityService service,LocalInference inference){
