@@ -6,6 +6,7 @@ import hashlib, json, os, subprocess, sys, shutil
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
 from build_identity import source_inputs
+from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 OUT = Path(os.environ.get('HEPTA_BUILD_OUT', str(ROOT / 'out'))).expanduser().resolve()
 def required_path(name, alternate=None):
     value = os.environ.get(name) or (os.environ.get(alternate) if alternate else None)
@@ -26,6 +27,14 @@ OUT.mkdir(parents=True,exist_ok=True)
 sys.path.insert(0,str(ROOT/'native'))
 from generate_adapter import generate
 source_before=source_inputs(ROOT)
+llama_headers=ROOT/'native/vendor/llama'
+llama_pin=json.loads((llama_headers/'PIN.json').read_text())
+if llama_pin.get('commit')!=LLAMA_COMMIT:raise RuntimeError('llama header source pin differs')
+for member in llama_pin['files']:
+    if Path(member['path']).name!=member['path']:raise RuntimeError('invalid vendored header member')
+    data=(llama_headers/member['path']).read_bytes()
+    if len(data)!=member['bytes'] or hashlib.sha256(data).hexdigest()!=member['sha256']:
+        raise RuntimeError('vendored llama ABI header changed: '+member['path'])
 adapter_receipt=generate(ROOT,OUT)
 for directory in [OUT/'classes',OUT/'dex']:
     if directory.exists(): shutil.rmtree(directory)
@@ -46,8 +55,9 @@ if (ROOT/'res').is_dir():
     resources=[OUT/'resources.zip']
 run([BT/'aapt2','link','-I',ANDROID_JAR,'--manifest',ROOT/'AndroidManifest.xml','-o',OUT/'base.apk',*resources])
 run([NDK/'aarch64-linux-android30-clang','-std=c11','-O2','-fPIE','-pie','-Wall','-Wextra',
-    '-I'+str(ROOT/'native/vendor'),'-I'+str(OUT),ROOT/'native/probe-worker.c','-L'+str(GENIEX),'-lgeniex','-ldl','-lm',
-    '-Wl,-rpath,$ORIGIN','-Wl,-z,max-page-size=16384','-o',OUT/'libhepta_local_runner.so'])
+    '-I'+str(ROOT/'native/vendor'),'-I'+str(ROOT/'native'),'-I'+str(OUT),ROOT/'native/probe-worker.c',
+    '-L'+str(GENIEX),'-L'+str(GENIEX/'llama_cpp'),'-lgeniex','-lllama','-ldl','-lm',
+    '-Wl,-rpath,$ORIGIN','-Wl,-rpath-link,'+str(GENIEX/'llama_cpp'),'-Wl,-z,max-page-size=16384','-o',OUT/'libhepta_local_runner.so'])
 run([NDK/'llvm-strip',OUT/'libhepta_local_runner.so'])
 files = [OUT/'dex/classes.dex',OUT/'base.apk',OUT/'libhepta_local_runner.so']
 if source_inputs(ROOT)!=source_before:
@@ -60,6 +70,7 @@ receipt={'schema':'hepta.local-model.mac-build.v2','compile_sdk':34,'target_sdk'
     'geniex_version':'0.10.0','geniex_source_commit':'071f609995470bdb0e0769ab964754adfaab7e47',
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','model_sha256':'43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452',
     'compute_default':'npu','context_default':4096,
+    'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
     'worker_adapter':adapter_receipt,
     'artifacts':[{ 'path':str(f),'bytes':f.stat().st_size,'sha256':hashlib.sha256(f.read_bytes()).hexdigest()} for f in files]}
 (OUT/'mac-build-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')

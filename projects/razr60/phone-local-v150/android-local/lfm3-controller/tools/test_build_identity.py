@@ -8,7 +8,7 @@ from build_identity import source_inputs, verify_source_inputs
 class BuildIdentityTests(unittest.TestCase):
     def source(self, root):
         for name in ("AndroidManifest.xml", "build_mac.py", "assemble_pocket4.py", "tools/build_identity.py",
-                     "tools/verify_runtime.py", "tools/fetch_pinned_runtime.py",
+                     "tools/verify_runtime.py", "tools/fetch_pinned_runtime.py", "tools/model_profiles.py",
                      "src/example/Controller.java", "native/publish-appuid.inc", "native/worker.c", "res/values/strings.xml"):
             path = root/name
             path.parent.mkdir(parents=True, exist_ok=True)

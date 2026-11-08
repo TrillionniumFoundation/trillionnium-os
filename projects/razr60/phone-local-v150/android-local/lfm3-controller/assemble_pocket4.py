@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
 from build_identity import verify_source_inputs
+from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 from verify_runtime import verify_runtime_archive
 OUT=Path(os.environ.get('HEPTA_BUILD_OUT', str(ROOT/'out'))).expanduser().resolve()
 KEYS=ROOT/'keys'
@@ -178,6 +179,7 @@ receipt={'schema':'hepta.local-model.static-acceptance.v2','apk':str(APK),'apk_b
     'debuggable':True,'extract_native_libs':True,'compile_sdk':34,'min_sdk':30,'target_sdk':35,
     'uses_native_libraries_optional':['libadsprpc.so','libcdsprpc.so','libOpenCL.so'],
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','default_compute':'npu','default_context':4096,
+    'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
     'all_packaged_runtime_libraries_bound_to_pinned_archive':True,
     'fallback_allowed':False,'dsp_arch':'v79','host_library_dependencies':dependencies,
     'installed_on_phone':False,'ordinary_app_uid_accelerator_qualified':False,'phone_actions_supported':control,

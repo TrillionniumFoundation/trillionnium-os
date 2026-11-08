@@ -1,8 +1,8 @@
 {
   "schema": "hepta.local-source.v3",
   "package": "org.trillionnium.hepta.local",
-  "version_code": 3,
-  "version_name": "0.3.2-lfm3-local",
+  "version_code": 4,
+  "version_name": "0.4.0-local-profiles",
   "source_only_candidate": true,
   "phone_qualified": false,
   "integration_base": "ca3f26100c57579bcb740488e4a7f9ec8b912e4d",
@@ -19,8 +19,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1854,
-      "sha256": "b1057fc40ef829e462dfb10073f0c1751002dc2f1126610d80a8052193acf938"
+      "bytes": 1858,
+      "sha256": "7db67ad7af4bd3635a75b2e925af39734062825b766e8038d55a84666b9d7cb4"
     },
     {
       "path": "CONTROL-INTEGRATION.md",
@@ -29,13 +29,18 @@
     },
     {
       "path": "HOST-CHECKS.json",
-      "bytes": 14702,
-      "sha256": "802f6197db5e5b57bd9e2fbe57b4ee8387523f68f254facb851dabb960cf17fb"
+      "bytes": 17984,
+      "sha256": "e933f5c77ec21fd38ea79b642fd5436a00f6d910ea88b239f7125d29779fb6b1"
     },
     {
       "path": "LOCAL-CONTROL.md",
       "bytes": 5627,
       "sha256": "bd21baa5870e7169191c02f4d94117e3200ba30e6c983116ea7e618d7d53bd8b"
+    },
+    {
+      "path": "MODEL-PROFILES.md",
+      "bytes": 6249,
+      "sha256": "c67d612b3dad8521c2fd81b05ad0a10c19a6fb18cb563c6597a8b7038cdd270e"
     },
     {
       "path": "PUBLIC-BUILD.md",
@@ -44,8 +49,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 3690,
-      "sha256": "d8a245c8ab00dc3fb1324ff2d3d40ecd29e17af6bdd12c1af8e051307a4710d0"
+      "bytes": 4012,
+      "sha256": "fba01f0fbeff83116abdd44ef27b67fa3b0b303b686ed6fc51ed271fc1fb4b9d"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -59,13 +64,13 @@
     },
     {
       "path": "assemble_pocket4.py",
-      "bytes": 12993,
-      "sha256": "2e9354fcb00f2c2dc79b67946674db6c9c9b019e519181cbf418719c747011ac"
+      "bytes": 13164,
+      "sha256": "a04ca89c0663646afcd0f5f3fc0951d728bb948a887bb815f2a54d5f97b8eca2"
     },
     {
       "path": "build_mac.py",
-      "bytes": 3914,
-      "sha256": "c85dbc530d6f0f185df4f9abc095421c9cf72b7bfc840537373ed8a1664ea5df"
+      "bytes": 4752,
+      "sha256": "94139a8228d781ecff94f2ec0fba661e67cf341ff3e41f23b55d255b0f6c1ff0"
     },
     {
       "path": "host-evidence/r3/ActionDecisionHostTest.stdout",
@@ -134,8 +139,18 @@
     },
     {
       "path": "native/generate_adapter.py",
-      "bytes": 3722,
-      "sha256": "3a0ed06f6fb94a8c81831e1300fbb7ed7acd875181582922d3c6b732bdac571c"
+      "bytes": 6693,
+      "sha256": "e3e2efcf875db6a7d51e6865dce47086c9bbb44cf774b9367381745064129f42"
+    },
+    {
+      "path": "native/model-profile.h",
+      "bytes": 1639,
+      "sha256": "ee62a9b8be9c490401cc6965876241ca6eba68b791b2f9047486468967dc1ee4"
+    },
+    {
+      "path": "native/model-runtime.inc",
+      "bytes": 5488,
+      "sha256": "c747888cf3409b17f09165600e43599706f4c436e8464a7535bb7ee18b118fb1"
     },
     {
       "path": "native/parent-death-guard.h",
@@ -144,18 +159,23 @@
     },
     {
       "path": "native/probe-worker.c",
-      "bytes": 3503,
-      "sha256": "1f6b9f831cc6b180acb85fa954bdfebe60110f03169321a3a42b0c70853ae0c1"
+      "bytes": 3857,
+      "sha256": "6fe2ca2ada2bd543b56ec83428c0ad3500059d1665a3635413ebc0c066195900"
     },
     {
       "path": "native/prompt-budget.h",
-      "bytes": 2468,
-      "sha256": "4b007d2992ccc07e3927a4a2aec3867e9229195d23143bb100f8c0810e8b3f79"
+      "bytes": 4700,
+      "sha256": "47e8587a9762b6018748d3560344024fcbd875da280df93afb57976c5eee8c3e"
     },
     {
       "path": "native/publish-appuid.inc",
       "bytes": 1006,
       "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/tests/model_profile_contract.c",
+      "bytes": 767,
+      "sha256": "81db054ea7b8b2fb35bf8fc543064f560ea7682a37fb6cd58e464b123c2c2eb8"
     },
     {
       "path": "native/tests/parent_death_contract.c",
@@ -164,8 +184,8 @@
     },
     {
       "path": "native/tests/prompt_budget_contract.c",
-      "bytes": 1292,
-      "sha256": "0f2b12c883ba06949f49e430440c93b0ab2f5a56d7246d5669533a04669fc065"
+      "bytes": 1772,
+      "sha256": "71fe6d15efc4ecda21e47d805625e8463221af6bd63acfef1dedca6d5f6d0bc1"
     },
     {
       "path": "native/tests/publish_contract.c",
@@ -184,13 +204,58 @@
     },
     {
       "path": "native/vendor/README.md",
-      "bytes": 1131,
-      "sha256": "841c1b6fc3efe5e5fb0a4740df71b9d05e647d33502f92e19de650cb849d3c72"
+      "bytes": 1570,
+      "sha256": "291a13525dd1e0d6716e868054a9f609635e4dc8abe561d373ac5219a3a868f6"
     },
     {
       "path": "native/vendor/geniex.h",
       "bytes": 46665,
       "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "path": "native/vendor/llama/PIN.json",
+      "bytes": 1406,
+      "sha256": "c475b19715dcc77af1e444f6dbf190dc7b564f4e8487ae4cfe20e8be12307986"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
     },
     {
       "path": "native/worker-upstream.c",
@@ -224,8 +289,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
-      "bytes": 2495,
-      "sha256": "ecf0d23ec7fda433c8e2e509973d34a2954727fbfa022261bde211a0e57a0adc"
+      "bytes": 3395,
+      "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
     },
     {
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
@@ -249,8 +314,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "bytes": 28589,
-      "sha256": "82448e2b5fe74d1900058f0494319af107bb19ac6d1e744e27aaced151ca1649"
+      "bytes": 28652,
+      "sha256": "004c6538841141290182bf696c9ef8606db41a15a47c062ab5b3e697adc5b1c0"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
@@ -259,13 +324,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
-      "bytes": 1770,
-      "sha256": "71c3b65381eab665bf3acff4d38f727173116df3f431981238a4c61c4ec9a7af"
+      "bytes": 3352,
+      "sha256": "a21c20bf4862c7b246738f15321db66f733d3336eb57d8968c02c4f4e634c813"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 34708,
-      "sha256": "c49182807f73af186feebda1289c880354ab0cfea31c4e440eb65a14b6745061"
+      "bytes": 36246,
+      "sha256": "c56b92d9c4b845f3209783ba939271d860eabc874de5756b64cf519c4b6d1c28"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -274,8 +339,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "bytes": 12320,
-      "sha256": "26dd8990ee6f2597d61e7de5699c309d57dba21d0b00740d853546ed8f7ac94c"
+      "bytes": 12396,
+      "sha256": "f8dddb642f8153ee5e78e4d7940bfbe34d230d29129468aff470298f16e4ab06"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
@@ -284,8 +349,18 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
-      "bytes": 2181,
-      "sha256": "d20e138dcae3cb31490796979e0d81f48f1827c6e3aaebaaf0d275bda314632b"
+      "bytes": 2504,
+      "sha256": "77f9630a2d3ab77a723f6b0237d0e5a5f02e7371535e3fa53408b99315e1e4c7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "bytes": 2155,
+      "sha256": "19851ccdcd056f114300d0d9fc0ac8d76363fa601ed7f0a5c6b9eaaa57dc0bac"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
+      "bytes": 2562,
+      "sha256": "1a03857c440ea1349fd35f875395c66a58f12aaa9daa6e59d72eafa6cb30c13d"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
@@ -321,6 +396,11 @@
       "path": "tests/MemoryAvailabilityHostTest.java",
       "bytes": 3283,
       "sha256": "c1d24b1d49dc9c8d73ac01ec69a53e8dced7d0b31623f399de665363167e7f61"
+    },
+    {
+      "path": "tests/ModelProfileHostTest.java",
+      "bytes": 5257,
+      "sha256": "599faafd180fcd593d872282d00e25dce320a74d5541f48f15635b7742ffdd58"
     },
     {
       "path": "tests/SessionRecoveryHostTest.java",
@@ -369,8 +449,8 @@
     },
     {
       "path": "tools/build_identity.py",
-      "bytes": 1102,
-      "sha256": "06c7bb59abd135170b22c65b5a5ba6ec96afd9949492eee35826bb60e6956c2b"
+      "bytes": 1145,
+      "sha256": "4116f87e2cef1e5de1dacadf9500c7fa15d7e0d7db19fff3d111cecf62e6427c"
     },
     {
       "path": "tools/create_debug_task.py",
@@ -383,24 +463,29 @@
       "sha256": "3fd70e3fbe4e5f617a2cbab08bd703dd4795137c9d9562936cf996a9fe77f05c"
     },
     {
+      "path": "tools/model_profiles.py",
+      "bytes": 1002,
+      "sha256": "85b5a72f24912f705ec07bb033204724bdfbf5aad30dfdc0e76b9fccbda91c90"
+    },
+    {
       "path": "tools/phone_acceptance.py",
-      "bytes": 36610,
-      "sha256": "034d9a718f2e8e096f092450395408dc5aec3c7f0a8a4ffde40493a4043ea070"
+      "bytes": 39126,
+      "sha256": "d461a28b5739a3fad92283e82bd258fb5a315bc7264e621d71723a9d6c4432eb"
     },
     {
       "path": "tools/phone_inventory.py",
-      "bytes": 50442,
-      "sha256": "187efe297cb6a218fe373da14dbcff37460fa7a2bd36fad8a9159a051180c445"
+      "bytes": 50865,
+      "sha256": "e3a679c4f08c3a9ef2b9f1dda786a5b2638f1de349bb2c257c60dd1a7be32863"
     },
     {
       "path": "tools/phone_suite.py",
-      "bytes": 26594,
-      "sha256": "0f795f311b17345a42454c87a9dcc18bc4c94443d8672e9a071f50b92186ee49"
+      "bytes": 27038,
+      "sha256": "3ee862814c887faea4266f2c1d61892f3c3d2eed7c466c73f918fa8db4acdf65"
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 5038,
-      "sha256": "38acc734edadecad95b08d4bdaebfcf3addf9edd7baa887e93163f09a2ac0d88"
+      "bytes": 5102,
+      "sha256": "1734ff77d709fc926ccea1337ca8c88512179af2b6b356383198b05f1f615687"
     },
     {
       "path": "tools/suite-navigation-draft.json",
@@ -409,8 +494,13 @@
     },
     {
       "path": "tools/test_build_identity.py",
-      "bytes": 2396,
-      "sha256": "200ae0bda21ae43d065df1ba4eced2a52a135f1f885adc87391afa8f61218ec1"
+      "bytes": 2423,
+      "sha256": "cadc1bcdb9c132ee1f102223cf234cfba26bd74f45b5ab9373083422c3fc0333"
+    },
+    {
+      "path": "tools/test_model_profiles.py",
+      "bytes": 3293,
+      "sha256": "99411bf66d49bc5a7679df7324efbfe3f8e33d726f2665ff7e29d7b5a50eaea5"
     },
     {
       "path": "tools/test_phone_acceptance.py",

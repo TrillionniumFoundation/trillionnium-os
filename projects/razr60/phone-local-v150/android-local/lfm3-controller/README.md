@@ -1,6 +1,11 @@
 # Hepta — LFM3 local phone controller
 
-Independent package `org.trillionnium.hepta.local`, version 0.3.2 / code 3, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+Independent package `org.trillionnium.hepta.local`, version 0.4.0 / code 4, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+
+This candidate preserves the original default LFM3 profile and adds explicit,
+SHA-pinned MiniCPM5 and optional Spark profiles. New models require exact native
+tokenization and same-input-ID budget proof. See [MODEL-PROFILES.md](MODEL-PROFILES.md)
+for configuration, identity binding and remaining phone-validation gates.
 
 This candidate reuses the ordinary Android Accessibility controller, Start/Stop UI, private one-use test trigger, app-wide session, strict JSON action parser, fresh-screen checks and owned native-process cleanup. It selects **LiquidAI LFM3-1.7B QAD Q4_0** with the pinned **GenieX 0.10.0 llama_cpp** runtime. Defaults are **Hexagon NPU**, context **4096**, four CPU support threads. It declares no INTERNET or other application permissions. It has no model URL, HTTP client, shell tool, external model endpoint or automatic CPU fallback.
 

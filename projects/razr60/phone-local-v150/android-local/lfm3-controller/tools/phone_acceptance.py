@@ -250,11 +250,34 @@ def prompt_binding(prompt, instruction, observation_ids):
         return False
 
 
-def native_budget_valid(native, expected_context):
+def native_budget_valid(native, expected_context, expected_model_profile="lfm3-1.7b-qad-q4_0"):
+    from model_profiles import profile, LLAMA_COMMIT
+    try: selected=profile(expected_model_profile)
+    except ValueError: return False
     budget = native.get("prompt_budget")
     if not isinstance(budget, dict): return False
     size, generation = budget.get("formatted_utf8_bytes"), native.get("max_tokens")
     if type(size) is not int or size <= 0 or type(generation) is not int or not 1 <= generation <= 1024: return False
+    if selected["exact"]:
+        tokens=budget.get("prompt_tokens_exact")
+        sdk_profile=native.get("profile")
+        total=tokens+generation+256 if type(tokens) is int else -1
+        return (native.get("model_profile")==expected_model_profile
+            and native.get("model_sha256_verified")==selected["sha256"]
+            and native.get("model_architecture")==selected["architecture"]
+            and native.get("model_bytes_verified")==selected["bytes"] and native.get("model_metadata_unchanged") is True
+            and native.get("chat_template_enable_thinking") is False and native.get("automatic_cpu_fallback") is False
+            and budget.get("method")=="llama_tokenize_exact_same_input_ids"
+            and budget.get("model_contract_sha256")==selected["sha256"]
+            and budget.get("tokenizer_source_commit")==LLAMA_COMMIT
+            and budget.get("checked") is True and budget.get("admitted") is True and budget.get("is_exact_token_count") is True
+            and budget.get("add_special") is True and budget.get("parse_special") is True and budget.get("input_ids_passed_directly") is True
+            and type(tokens) is int and 0<tokens<=expected_context and type(budget.get("input_ids_count")) is int and budget["input_ids_count"]==tokens
+            and isinstance(sdk_profile,dict) and type(sdk_profile.get("prompt_tokens")) is int and sdk_profile["prompt_tokens"]==tokens
+            and isinstance(budget.get("input_ids_sha256"),str) and re.fullmatch(r"[a-f0-9]{64}",budget["input_ids_sha256"]) is not None
+            and budget.get("context_tokens")==expected_context and budget.get("generation_tokens")==generation
+            and budget.get("reserved_tokens")==256 and type(budget.get("total_context_tokens")) is int
+            and budget["total_context_tokens"]==total and total<=expected_context)
     return (budget.get("method") == "lfm3_rendered_utf8_bytes_upper_bound"
         and budget.get("model_contract_sha256") == MODEL_SHA256
         and budget.get("checked") is True and budget.get("admitted") is True
@@ -280,7 +303,9 @@ def accelerator_log_evidence(log, compute):
 
 
 def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screenshots, expected_uid,
-        expected_compute="npu", expected_context=4096):
+        expected_compute="npu", expected_context=4096, expected_model_profile="lfm3-1.7b-qad-q4_0"):
+    from model_profiles import profile
+    selected=profile(expected_model_profile)
     report = {"task_id": task_id, "associated_runs": [], "omitted_screenshots": [], "errors": [], "files": []}
     observations, explicit_runs = set(), set()
     if not task_id:
@@ -339,7 +364,8 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
                         and receipt.get("package_name") == PACKAGE and receipt.get("app_uid") == expected_uid
                         and expected_uid is not None and receipt.get("runtime") == "llama_cpp" and receipt.get("mode") == "llm"
                         and receipt.get("compute_requested") == expected_compute and receipt.get("context_tokens") == expected_context
-                        and receipt.get("model_sha256_verified") == MODEL_SHA256 and receipt.get("image_sent_to_model") is False
+                        and receipt.get("model_sha256_verified") == selected["sha256"] and receipt.get("image_sent_to_model") is False
+                        and (not selected["exact"] or receipt.get("model_profile")==expected_model_profile)
                         and receipt.get("fallback_allowed") is False and receipt.get("native_context_budget_valid") is True
                         and receipt.get("grammar_constraint_enabled") is True and receipt.get("grammar_binding_valid") is True
                         and receipt.get("native_result_binding_valid") is True),
@@ -364,9 +390,9 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
                     and "device_warning" in native and native.get("device_warning") is None
                     and type(native.get("n_gpu_layers_create")) is int and native["n_gpu_layers_create"] != 0
                     and native.get("n_ctx_create") == expected_context
-                    and isinstance(model_path, str) and Path(model_path).name == MODEL_FILE
+                    and isinstance(model_path, str) and Path(model_path).name == selected["file"]
                     and app_file.exists() and model_path == receipt.get("model_path")
-                    and native_budget_valid(native, expected_context))
+                    and native_budget_valid(native, expected_context, expected_model_profile))
                 stderr_file = directory / "runs" / run_id / "stderr.log"
                 log_evidence = accelerator_log_evidence(stderr_file.read_text(errors="replace") if stderr_file.exists() else "", expected_compute)
                 row["accelerator_offload_observed"] = log_evidence["accelerator_offload_observed"]
@@ -502,7 +528,7 @@ def run_task(args):
         report["cleanup_unknown"] = report["launch_attempt_count"] > 0 and final is None and not report.get("trigger_rejected", False)
     finally:
         try:
-            collection = collect_evidence(adb, directory, task_id, instruction, baseline_runs, args.include_screenshots, report.get("app_uid"), args.expected_compute, args.expected_context)
+            collection = collect_evidence(adb, directory, task_id, instruction, baseline_runs, args.include_screenshots, report.get("app_uid"), args.expected_compute, args.expected_context,getattr(args,"expected_model_profile","lfm3-1.7b-qad-q4_0"))
             report["collection"] = collection
             if collection["errors"] and report["verdict"] == "pass": report["verdict"] = "unverified"
             runs = collection["associated_runs"]
@@ -542,6 +568,7 @@ def main():
     run.add_argument("--expected-package"); run.add_argument("--expected-visible-text", action="append", default=[])
     run.add_argument("--expected-compute", choices=("npu", "gpu"), default="npu")
     run.add_argument("--expected-context", type=int, choices=(4096,8192), default=4096)
+    run.add_argument("--expected-model-profile",choices=("lfm3-1.7b-qad-q4_0","minicpm5-2b-q4_k_m","spark-x2.6-4b-q4_k_m"),default="lfm3-1.7b-qad-q4_0")
     run.add_argument("--text-match", choices=("exact", "contains"), default="exact")
     run.add_argument("--timeout", type=float, default=540); run.add_argument("--poll", type=float, default=2)
     run.add_argument("--stop-grace", type=float, default=25)

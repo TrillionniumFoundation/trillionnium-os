@@ -4,12 +4,15 @@ on:
   pull_request:
     paths:
       - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
+      - 'projects/razr60/phone-local-v150/android-local/validation/core-phone-suite/**'
       - '.github/workflows/hepta-local-android.yml'
   push:
     branches:
       - 'codex/razr60-local-r3-*'
+      - 'codex/razr-local-profiles-*'
     paths:
       - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
+      - 'projects/razr60/phone-local-v150/android-local/validation/core-phone-suite/**'
       - '.github/workflows/hepta-local-android.yml'
   workflow_dispatch:
 
@@ -48,6 +51,9 @@ jobs:
       - name: Run host contracts
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks"
+      - name: Run independent core acceptance regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite
+        run: python -B -m unittest -v test_core_assertions.py
       - name: Prepare Android build dependencies
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
@@ -78,8 +84,8 @@ jobs:
             ${{ runner.temp }}/hepta-geniex/dependency-receipt.json
             ${{ runner.temp }}/hepta-build/mac-build-receipt.json
             ${{ runner.temp }}/hepta-build/worker-adapter.json
-            ${{ runner.temp }}/hepta-build/control-v3-static/*.json
-            ${{ runner.temp }}/hepta-build/control-v3-static/*.txt
+            ${{ runner.temp }}/hepta-build/control-v*-static/*.json
+            ${{ runner.temp }}/hepta-build/control-v*-static/*.txt
       - name: Preserve unsigned build inputs for same-signer device assembly
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

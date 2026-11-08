@@ -6,10 +6,10 @@ from pathlib import Path
 def source_inputs(root):
     root = Path(root)
     paths = {root / "AndroidManifest.xml", root / "build_mac.py", root / "assemble_pocket4.py",
-             root / "tools/build_identity.py", root / "tools/verify_runtime.py", root / "tools/fetch_pinned_runtime.py"}
+             root / "tools/build_identity.py", root / "tools/verify_runtime.py", root / "tools/fetch_pinned_runtime.py",root / "tools/model_profiles.py"}
     paths.update((root / "src").rglob("*.java"))
     paths.update((root / "res").rglob("*.xml"))
-    for extension in ("*.c", "*.h", "*.inc", "*.py"):
+    for extension in ("*.c", "*.h", "*.inc", "*.py", "*.json"):
         paths.update((root / "native").rglob(extension))
     if any(p.is_symlink() or not p.is_file() for p in paths):
         raise RuntimeError("Build inputs must be existing regular source files")

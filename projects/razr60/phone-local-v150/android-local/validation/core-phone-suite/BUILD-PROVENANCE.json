@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.local-profiles.build-provenance.v1",
+  "recorded_date_utc": "2026-11-08",
+  "source_base_commit": "9e7b82285dbd4c4b4db8d20d93fd6db0995bc4b7",
+  "source_base_tree": "aff4b39372f70e663a8a88a880e0121ad63bc3f0",
+  "frozen_source_manifest_sha256": "0a0f04dbe75282eabf16dd9143f474358ce997c27d38a82e0c115a747d1bf470",
+  "frozen_source_manifest_members": 105,
+  "frozen_source_archive_sha256": "45aa2d5e86226c89204d16813b3860b75d054d9248279e60d52a1615b768e214",
+  "fresh_unsigned_archive_sha256": "24724248239121bfb7333c88493240622c5c18d11f9c5f832ac9713bb3876359",
+  "android_build": {
+    "host": "macOS",
+    "jdk": "Temurin 17",
+    "compile_sdk": 34,
+    "build_tools": "34.0.0",
+    "ndk": "28.2.13676358",
+    "java_recompiled": true,
+    "dex_recompiled": true,
+    "arm64_native_recompiled": true,
+    "old_ci_unsigned_inputs_reused": false,
+    "geniex_version": "0.10.0",
+    "runtime_archive_sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+    "all_packaged_runtime_libraries_bound_to_pinned_archive": true
+  },
+  "assembled_apk": {
+    "name": "hepta-local-0.4.0.apk",
+    "package": "org.trillionnium.hepta.local",
+    "version_code": 4,
+    "version_name": "0.4.0-local-profiles",
+    "bytes": 15365573,
+    "sha256": "bafa1a98cf893561209e0cc7fc1c89ff052a8e5d30a39ef8cde82a97609f2f8f",
+    "signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+    "original_key_matches_existing_installation_and_new_apk": true,
+    "new_signing_key_created": false
+  },
+  "host_validation": {
+    "app_host_check_groups_passed": 20,
+    "independent_core_regression_tests_passed": 20,
+    "synthetic_tests_prove_phone_success": false
+  },
+  "device_full_acceptance": "in_progress",
+  "production_qualified": false,
+  "source_candidate_only": true,
+  "phone_ui_or_raw_run_records_included": false,
+  "model_weights_included": false,
+  "signing_key_material_included": false,
+  "new_github_head_ci_status": "not_claimed_by_this_record"
+}

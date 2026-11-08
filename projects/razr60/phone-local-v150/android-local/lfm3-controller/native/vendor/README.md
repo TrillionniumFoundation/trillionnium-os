@@ -20,3 +20,11 @@ as upstream attribution and is not a list of Java or network dependencies added
 to this framework-only Android application. Native SDK libraries and model
 weights must be obtained separately under their applicable terms. They are not
 part of this source publication.
+
+## Matching llama.cpp public ABI
+
+`llama/` contains unchanged public headers and MIT `LICENSE` from the exact GenieX
+0.10.0 submodule commit `19cce6919992fdffd92e0ac152caaf1e2b8f254e`.
+`llama/PIN.json` records every file hash. The adapter links the already packaged
+`libllama.so` for vocabulary-only tokenization, without casting GenieX handles.
+Source: https://github.com/ggml-org/llama.cpp/tree/19cce6919992fdffd92e0ac152caaf1e2b8f254e

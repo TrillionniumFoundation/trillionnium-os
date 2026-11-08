@@ -53,7 +53,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         Button showDiagnostics=button("本地模型诊断");page.addView(showDiagnostics);
         diagnostics=new LinearLayout(this);diagnostics.setOrientation(LinearLayout.VERTICAL);diagnostics.setVisibility(View.GONE);page.addView(diagnostics);
         showDiagnostics.setOnClickListener(v -> diagnostics.setVisibility(diagnostics.getVisibility()==View.VISIBLE?View.GONE:View.VISIBLE));
-        diagnostics.addView(text("LFM3-1.7B 文字推理；控制任务读取无障碍节点。截图仅保留在手机内用于复核操作。",12));
+        diagnostics.addView(text("本地文字推理；控制任务读取无障碍节点。截图仅保留在手机内用于复核操作。",12));
         probePrompt=new EditText(this);probePrompt.setText("只输出 42。");probePrompt.setMinLines(2);diagnostics.addView(probePrompt);
         LinearLayout probes=new LinearLayout(this);diagnostics.addView(probes);
         runText=button("文本推理");probes.addView(runText);
@@ -99,7 +99,7 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private boolean beginTask(String owner,String source,String nonceSha){
         try{
             if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy())throw new IllegalStateException("已有本地请求正在运行或退出状态待确认");
-            if(!engine.modelFile().isFile())throw new IllegalStateException("LFM3 本地模型尚未导入");
+            if(!engine.modelFile().isFile())throw new IllegalStateException("所选本地模型尚未导入");
             engine.configuration();
             if(!tasks.schedule(owner,source,nonceSha,500))throw new IllegalStateException("本地任务未能取得唯一会话");
             InputMethodManager input=(InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
@@ -134,10 +134,10 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private void refresh(){
         if(modelInfo==null)return;
         boolean available=HeptaAccessibilityService.connected()!=null;
-        String device;
-        try { device="npu".equals(engine.configuration().compute)?"Hexagon NPU":"Adreno GPU"; }
+        String device,modelName="本地模型";
+        try { device="npu".equals(engine.configuration().compute)?"Hexagon NPU":"Adreno GPU";modelName=engine.configuration().profile.displayName; }
         catch(Exception error) { device="运行参数待修正"; }
-        modelInfo.setText("LFM3-1.7B · "+device+" · 无外部模型\n"
+        modelInfo.setText(modelName+" · "+device+" · 无外部模型\n"
             +(engine.modelFile().isFile()?"本地模型已导入":"本地模型待导入")
             +" · "+(available?"无障碍已启用":"无障碍未启用")+" · 可用 RAM "+String.format(Locale.US,"%.2f GiB",engine.availableMemoryBytes()/1073741824.0));
         taskState.setText(tasks.state());taskLog.setText(tasks.log());

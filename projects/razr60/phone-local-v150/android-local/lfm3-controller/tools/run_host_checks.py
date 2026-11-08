@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=["ActionDecision", "ActionPolicy", "DecisionGrammar", "LocalRuntimeConfig",
+PURE_CLASSES=["ActionDecision", "ActionPolicy", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
               "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
               "AppCatalogueRanker", "SessionRecovery"]
 
@@ -78,7 +78,7 @@ def main():
         generated=out/"native-generated"; generated.mkdir()
         report["native_adapter"]=generate(ROOT,generated)
         run("native-adapter-syntax",[cc,"-std=c11","-Wall","-Wextra","-Werror","-fsyntax-only",
-            "-I"+str(ROOT/"native/vendor"),"-I"+str(generated),ROOT/"native/probe-worker.c"])
+            "-I"+str(ROOT/"native/vendor"),"-I"+str(ROOT/"native"),"-I"+str(generated),ROOT/"native/probe-worker.c"])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:

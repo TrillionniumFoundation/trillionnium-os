@@ -17,6 +17,7 @@ import time
 from types import SimpleNamespace
 
 import phone_acceptance as acceptance
+from model_profiles import profile as selected_profile, DEFAULT_PROFILE
 from phone_inventory import require_existing_adb_server
 
 SCHEMA = "hepta.phone-suite.v1"
@@ -42,8 +43,10 @@ def validate_plan(plan, require_runnable=False):
     if plan["schema"] != SCHEMA or not isinstance(plan["suite_id"], str) or not acceptance.CASE_ID.fullmatch(plan["suite_id"]):
         raise acceptance.DriverError("invalid suite identity")
     candidate = plan["candidate"]
-    exact_keys(candidate, ("package", "apk_sha256", "version_code", "model_sha256", "compute", "context_tokens", "threads"))
-    if candidate["package"] != acceptance.PACKAGE or candidate["model_sha256"] != acceptance.MODEL_SHA256:
+    exact_keys(candidate, ("package", "apk_sha256", "version_code", "model_sha256", "compute", "context_tokens", "threads"),("model_profile",))
+    try: model=selected_profile(candidate.get("model_profile",DEFAULT_PROFILE))
+    except ValueError as error: raise acceptance.DriverError(str(error)) from error
+    if candidate["package"] != acceptance.PACKAGE or candidate["model_sha256"] != model["sha256"]:
         raise acceptance.DriverError("this driver only qualifies its fixed package and model")
     if type(candidate["version_code"]) is not int or candidate["version_code"] < 1:
         raise acceptance.DriverError("positive exact version_code required")
@@ -120,6 +123,7 @@ def preflight(adb, candidate):
     else:
         origin = "app_private_config"
     expected = {"schema": "hepta.local-runtime.v1", **{k: candidate[k] for k in ("compute", "context_tokens", "threads")}}
+    if "model_profile" in candidate: expected.update(schema="hepta.local-runtime.v2",model_profile=candidate["model_profile"])
     if not isinstance(config, dict) or type(config.get("context_tokens")) is not int or type(config.get("threads")) is not int or config != expected:
         raise acceptance.DriverError("actual on-phone configuration differs; no automatic switch attempted")
     latch_code, latch_output = adb.command(
@@ -296,7 +300,7 @@ def case_args(args, case, candidate, root):
         command_timeout=args.command_timeout, case_id=case["case_id"], instruction=case["instruction"],
         evidence_root=root / "cases", expected_package=case["expected_package"],
         expected_visible_text=case["expected_visible_text"], expected_compute=candidate["compute"],
-        expected_context=candidate["context_tokens"], text_match=case["text_match"],
+        expected_context=candidate["context_tokens"], expected_model_profile=candidate.get("model_profile",DEFAULT_PROFILE),text_match=case["text_match"],
         timeout=case["timeout_seconds"], poll=2, stop_grace=25, setup_home=case["setup_home"], include_screenshots=False)
 
 

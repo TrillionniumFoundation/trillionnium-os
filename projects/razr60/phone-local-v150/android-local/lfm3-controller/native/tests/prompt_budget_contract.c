@@ -22,6 +22,12 @@ int main(void) {
     assert(strstr(json,"\"is_exact_token_count\":false"));
     assert(strstr(json,"\"formatted_utf8_bytes\":10"));
     assert(strstr(json,HEPTA_MODEL_SHA256));
+    assert(hepta_check_exact_prompt_budget(10000,3584,256,4096,HEPTA_MODEL_SHA256));
+    assert(hepta_prompt_budget.exact&&hepta_prompt_budget.total_upper==4096);
+    assert(!hepta_check_exact_prompt_budget(1,3585,256,4096,HEPTA_MODEL_SHA256));
+    assert(!hepta_check_exact_prompt_budget(20,-1,256,4096,HEPTA_MODEL_SHA256));
+    assert(!hepta_check_exact_prompt_budget(20,INT32_MAX,256,4096,HEPTA_MODEL_SHA256));
+    assert(!hepta_check_exact_prompt_budget(20,1,256,4096,NULL));
     puts("PASS: rendered UTF-8 budget boundaries, overflow, invalid configuration and receipt");
     return 0;
 }

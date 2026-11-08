@@ -108,7 +108,7 @@ public final class LocalModelEngine implements AutoCloseable {
     public Result lastResult() { return lastResult; }
     public void cancelActive() { RunHandle h = active.get(); if (h != null) h.cancel(); }
     public File modelDirectory() { return new File(files, "model"); }
-    public File modelFile() { return new File(modelDirectory(), LocalRuntimeConfig.MODEL_FILE); }
+    public File modelFile() { return new File(modelDirectory(), configuration.profile.fileName); }
     public LocalRuntimeConfig configuration() {
         if (configurationError != null) throw new IllegalStateException("本地运行参数无效：" + configurationError);
         return configuration;
@@ -124,15 +124,9 @@ public final class LocalModelEngine implements AutoCloseable {
                 || st.st_nlink != 1 || (st.st_mode & 0777) != 0600)
             throw new IOException("runtime-config must be a single app-owned regular mode0600 file");
         JSONObject value = new JSONObject(new String(readBounded(file, 4096), StandardCharsets.UTF_8));
-        Set<String> keys = new HashSet<>(Arrays.asList("schema", "compute", "context_tokens", "threads"));
-        Iterator<String> names = value.keys();
-        while (names.hasNext()) if (!keys.contains(names.next())) throw new IOException("unknown runtime-config field");
-        if (value.length() != 4 || !"hepta.local-runtime.v1".equals(value.getString("schema")))
-            throw new IOException("runtime-config requires the exact v1 schema and four fields");
-        Object compute = value.get("compute"), ctx = value.get("context_tokens"), threads = value.get("threads");
-        if (!(compute instanceof String) || !(ctx instanceof Integer) || !(threads instanceof Integer))
-            throw new IOException("runtime-config types must be string/integer/integer");
-        return new LocalRuntimeConfig((String)compute, (Integer)ctx, (Integer)threads);
+        Map<String,Object> fields=new java.util.HashMap<>();
+        Iterator<String> names=value.keys();while(names.hasNext()){String key=names.next();fields.put(key,value.get(key));}
+        return LocalRuntimeConfig.fromFields(fields);
     }
     public long availableMemoryBytes() {
         ActivityManager.MemoryInfo info = memoryInfo();
@@ -167,7 +161,9 @@ public final class LocalModelEngine implements AutoCloseable {
             LocalRuntimeConfig config = configuration();
             put(receipt, "runtime", LocalRuntimeConfig.RUNTIME);
             put(receipt, "mode", LocalRuntimeConfig.MODE);
-            put(receipt, "model_id", LocalRuntimeConfig.MODEL_ID);
+            put(receipt, "model_id", config.profile.repository);
+            put(receipt, "model_profile", config.profile.id);
+            put(receipt, "model_revision", config.profile.revision);
             put(receipt, "compute_requested", config.compute);
             put(receipt, "context_tokens", config.contextTokens);
             put(receipt, "fallback_allowed", false);
@@ -178,10 +174,10 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt, "phone_actions_supported_by_engine", false);
             put(receipt, "automatic_retry", false);
             put(receipt, "started_wall_ms", System.currentTimeMillis());
-            put(receipt, "minimum_available_memory_bytes", MIN_AVAILABLE_BYTES);
+            put(receipt, "minimum_available_memory_bytes", config.profile.minimumAvailableBytes);
             validateText(r.prompt, true);
             validateText(r.systemPrompt, false);
-            if (r.imageOrNull != null) throw new IOException("LFM3-1.7B text requests cannot contain an image");
+            if (r.imageOrNull != null) throw new IOException("selected text profile cannot contain an image");
             if (r.maxTokens < 1 || r.maxTokens > 1024) throw new IOException("maxTokens must be 1..1024");
             if (r.timeoutMs < 1000 || r.timeoutMs > 300000) throw new IOException("timeoutMs must be 1000..300000");
             ActivityManager.MemoryInfo memory = memoryInfo();
@@ -189,18 +185,18 @@ public final class LocalModelEngine implements AutoCloseable {
             recordMemory(receipt,admission,"before");
             put(receipt, "total_memory_bytes", memory.totalMem);
             put(receipt, "android_low_memory", memory.lowMemory);
-            if (!admission.admits(MIN_AVAILABLE_BYTES)) {
+            if (!admission.admits(config.profile.minimumAvailableBytes)) {
                 status = "insufficient_memory";
-                throw new IOException("LFM3 model refused: invalid available-memory measurement, available RAM below 3 GiB, or Android lowMemory=true; source="+admission.source);
+                throw new IOException("selected model refused: available physical RAM below profile threshold, invalid measurement, or Android lowMemory=true; source="+admission.source);
             }
             File model = modelDirectory().getCanonicalFile();
             if (!model.getParentFile().equals(files.getCanonicalFile()) || !model.isDirectory())
                 throw new IOException("model must be imported into app private files/model");
             File selectedModel = modelFile().getCanonicalFile();
-            if (!selectedModel.getParentFile().equals(model) || !selectedModel.getName().equals(LocalRuntimeConfig.MODEL_FILE))
-                throw new IOException("only the fixed app-private LFM3 GGUF is accepted");
+            if (!selectedModel.getParentFile().equals(model) || !selectedModel.getName().equals(config.profile.fileName))
+                throw new IOException("only the selected pinned app-private GGUF is accepted");
             if (h.cancelRequested.get()) { status = "cancelled_before_start"; throw new IOException("cancel requested before model verification"); }
-            modelVerifier.verify(selectedModel, () -> h.cancelRequested.get());
+            modelVerifier.verify(selectedModel,config.profile, () -> h.cancelRequested.get());
             File nativeDir = new File(context.getApplicationInfo().nativeLibraryDir).getCanonicalFile();
             File runner = new File(nativeDir, "libhepta_local_runner.so").getCanonicalFile();
             if (!runner.getParentFile().equals(nativeDir) || !runner.isFile() || !runner.canExecute())
@@ -208,7 +204,7 @@ public final class LocalModelEngine implements AutoCloseable {
             if (!new File(nativeDir, "libgeniex_plugin_llama_cpp.so").isFile()) throw new IOException("llama_cpp plugin not installed");
             put(receipt, "model_directory", model.getPath());
             put(receipt, "model_path", selectedModel.getPath());
-            put(receipt, "model_sha256_verified", LocalRuntimeConfig.MODEL_SHA256);
+            put(receipt, "model_sha256_verified", config.profile.sha256);
             put(receipt, "native_library_directory", nativeDir.getPath());
             put(receipt, "runner_path", runner.getPath());
             File prompt = new File(run, "prompt.txt"), system = new File(run, "system.txt");
@@ -229,6 +225,7 @@ public final class LocalModelEngine implements AutoCloseable {
             writePrivate(stdout, new byte[0]); writePrivate(stderr, new byte[0]);
             List<String> args = new ArrayList<>(Arrays.asList(runner.getPath(),
                 "--expected-parent-pid", Integer.toString(android.os.Process.myPid()),
+                "--model-profile", config.profile.id,
                 "--request-id", h.runId, "--mode", LocalRuntimeConfig.MODE, "--runtime", LocalRuntimeConfig.RUNTIME, "--compute", config.compute,
                 "--model", selectedModel.getPath(), "--prompt-file", prompt.getPath(),
                 "--result-file", resultFile.getPath(), "--text-file", rawFile.getPath(),
@@ -286,12 +283,22 @@ public final class LocalModelEngine implements AutoCloseable {
                 && LocalRuntimeConfig.RUNTIME.equals(nativeResult.optString("runtime"))
                 && config.compute.equals(nativeResult.optString("compute_requested"))
                 && selectedModel.getPath().equals(nativeResult.optString("model_path"))
+                && config.profile.id.equals(nativeResult.optString("model_profile"))
+                && config.profile.sha256.equals(nativeResult.optString("model_sha256_verified"))
+                && config.profile.architecture.equals(nativeResult.optString("model_architecture"))
+                && config.profile.bytes==nativeResult.optLong("model_bytes_verified",-1)
+                && nativeResult.optBoolean("model_metadata_unchanged",false)
+                && nativeResult.has("chat_template_enable_thinking")&&!nativeResult.optBoolean("chat_template_enable_thinking",true)
+                && nativeResult.has("automatic_cpu_fallback")&&!nativeResult.optBoolean("automatic_cpu_fallback",true)
                 && nativeResult.optInt("n_ctx_create", 0) == config.contextTokens
                 && config.matchesResolvedDevice(nativeResult.optString("device_resolved"),
                     !nativeResult.has("device_warning") || !nativeResult.isNull("device_warning"),
                     nativeResult.optInt("n_gpu_layers_create", 0))
                 && nativeBudgetValid(nativeResult, config, r.maxTokens)
                 && grammarBinding
+                && nativeInputs!=null&&sha256(r.prompt.getBytes(StandardCharsets.UTF_8)).equals(nativeInputs.optString("prompt"))
+                && (system.isFile()?sha256(r.systemPrompt.getBytes(StandardCharsets.UTF_8)).equals(nativeInputs.optString("system"))
+                    :nativeInputs.has("system")&&nativeInputs.isNull("system"))
                 && !nativeResult.optBoolean("raw_text_truncated", true)
                 && nativeResult.optBoolean("raw_text_utf8", false)
                 && rawFile.isFile()
@@ -360,17 +367,10 @@ public final class LocalModelEngine implements AutoCloseable {
     private static boolean nativeBudgetValid(JSONObject nativeResult, LocalRuntimeConfig config, int generation) {
         JSONObject budget = nativeResult.optJSONObject("prompt_budget");
         if (budget == null) return false;
-        long formatted = budget.optLong("formatted_utf8_bytes", -1);
-        long upper = formatted + ConservativeTokenBudget.BOS_EOS_BOUND;
-        long total = upper + generation + ConservativeTokenBudget.RESERVED;
-        return "lfm3_rendered_utf8_bytes_upper_bound".equals(budget.optString("method"))
-                && LocalRuntimeConfig.MODEL_SHA256.equals(budget.optString("model_contract_sha256"))
-                && formatted > 0 && budget.optBoolean("checked", false) && budget.optBoolean("admitted", false)
-                && budget.optInt("context_tokens", 0) == config.contextTokens
-                && budget.optInt("generation_tokens", 0) == generation
-                && budget.optInt("bos_eos_upper", 0) == ConservativeTokenBudget.BOS_EOS_BOUND
-                && budget.optInt("reserved_tokens", 0) == ConservativeTokenBudget.RESERVED
-                && budget.optLong("total_context_upper", -1) == total && total <= config.contextTokens;
+        Map<String,Object> fields=new java.util.HashMap<>();
+        Iterator<String> names=budget.keys();while(names.hasNext()){String key=names.next();fields.put(key,budget.opt(key));}
+        JSONObject profile=nativeResult.optJSONObject("profile");
+        return NativeBudgetVerifier.valid(fields,config,generation,profile==null?-1:profile.optLong("prompt_tokens",-1));
     }
 
     private static void recordMemory(JSONObject receipt,MemoryAvailability value,String phase){

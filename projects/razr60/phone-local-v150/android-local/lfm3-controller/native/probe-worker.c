@@ -3,6 +3,7 @@
 #define _POSIX_C_SOURCE 200809L
 #define _XOPEN_SOURCE 700
 #include "vendor/geniex.h"
+#include "vendor/llama/llama.h"
 #include <dlfcn.h>
 #include <limits.h>
 #include <stdio.h>
@@ -12,6 +13,7 @@
 #include <sys/syscall.h>
 #include <linux/fs.h>
 #include "prompt-budget.h"
+#include "model-profile.h"
 #include "parent-death-guard.h"
 
 static void *probe_plugin_handle;
@@ -53,6 +55,10 @@ static int probe_bootstrap(void) {
 int main(int argc, char **argv) {
     if (argc == 2 && !strcmp(argv[1], "--help")) return upstream_worker_main(argc, argv);
     pid_t expected_parent = 0;
+    if(hepta_take_model_profile(&argc,argv)!=0){
+        fputs("HEPTA_MODEL_PROFILE missing, duplicated or unknown pinned profile\n",stderr);return 78;
+    }
+    if(hepta_model_profile->exact_tokens)hepta_prompt_budget=(HeptaPromptBudget){.exact=true,.model_sha256=hepta_model_profile->sha256};
     if (hepta_take_expected_parent(&argc, argv, &expected_parent) != 0) {
         fputs("HEPTA_PARENT_GUARD missing or invalid expected parent PID\n", stderr); return 78;
     }

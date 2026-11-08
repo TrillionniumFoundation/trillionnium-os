@@ -50,7 +50,8 @@ SESSION_KEYS = {
     "model_reported_success": "(true|false)", "steps": "[0-9]{1,6}",
 }
 CONFIG_KEYS = {
-    "schema": '"hepta[.]local-runtime[.]v1"', "compute": '"(npu|gpu)"',
+    "schema": '"hepta[.]local-runtime[.]v[12]"', "compute": '"(npu|gpu)"',
+    "model_profile": '"(lfm3-1[.]7b-qad-q4_0|minicpm5-2b-q4_k_m|spark-x2[.]6-4b-q4_k_m)"',
     "context_tokens": "(4096|8192)", "threads": "[1-8]",
 }
 
@@ -639,9 +640,13 @@ def parse_projection(data, fields, expected_schema, expected_uid):
         if not re.fullmatch(fields[key], encoded):
             raise DriverError("private state/config scalar is outside its type/enum contract")
         value.update(item)
-    if value.get("schema") != expected_schema:
+    schemas=("hepta.local-runtime.v1","hepta.local-runtime.v2") if fields is CONFIG_KEYS else (expected_schema,)
+    if value.get("schema") not in schemas:
         raise DriverError("private state/config schema not observed")
     required = {"schema", "compute", "context_tokens", "threads"} if fields is CONFIG_KEYS else {"schema", "status", "running", "pending", "cleanup_known", "app_uid"}
+    if fields is CONFIG_KEYS:
+        if value.get("schema")=="hepta.local-runtime.v2":required.add("model_profile")
+        elif "model_profile" in value:raise DriverError("legacy config cannot select a model_profile")
     if not required <= value.keys() or (fields is SESSION_KEYS and value["app_uid"] != expected_uid):
         raise DriverError("private state/config required identity or state missing")
     return {"status": "OBSERVED_PROJECTION", "values": value, "source_sha256": before[0], "source_size_bytes": size,

@@ -1,0 +1,107 @@
+# Explicit local model profiles
+
+Version 0.4.0 / code 4 adds an explicit, closed artifact allowlist. The original
+LFM3 filename, bytes, SHA256 and default NPU / 4096 configuration are unchanged.
+No new Android permission is declared. The worker remains a private subprocess,
+without a local HTTP server. Phone execution and model quality are not established
+by the host checks in this source package.
+
+| Profile | Pinned GGUF | Bytes | SHA256 |
+|---|---|---:|---|
+| `lfm3-1.7b-qad-q4_0` | `LFM3-1.7B-QAD-Q4_0.gguf` | 1049615680 | `43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452` |
+| `minicpm5-2b-q4_k_m` | `MiniCPM5-2B-Q4_K_M.gguf` | 1561318368 | `ec2d5801640099e97d8d7e8003ad4d81f336e757811f03a26173dddf386602fd` |
+| `spark-x2.6-4b-q4_k_m` | `Spark-X2.6-4B-Q4_K_M.gguf` | 3543441312 | `91cb2811aebb47ac916aa619d27d4cdd7f4143106b7917accb8ead4cd7f5cbd9` |
+
+MiniCPM5 source: `openbmb/MiniCPM5-2B-GGUF` revision
+`2079a22f3beaa4e306449978533478fe0522f4b3`. Spark source:
+`XHToken/Spark-X2.6-4B-GGUF` revision
+`9d716770ac7477776de5f891f70cdf98b003a5cd`.
+
+The existing app-private `files/model/runtime-config.json` keeps its strict v1
+four-field format for LFM3. To select a different profile, use this complete v2
+object in a canonical, app-owned, single-link regular mode0600 file, then restart
+the idle application process so its immutable configuration is reread:
+
+```json
+{
+  "schema": "hepta.local-runtime.v2",
+  "model_profile": "minicpm5-2b-q4_k_m",
+  "compute": "npu",
+  "context_tokens": 4096,
+  "threads": 4
+}
+```
+
+`compute` permits only `npu` or `gpu`; context permits only 4096 or 8192. There
+is no arbitrary model path, CPU mode, automatic retry or alternate-model fallback.
+The selected artifact must be under `files/model` with its exact original filename
+and mode0600. Minimum available physical RAM is 3 GiB for LFM3/MiniCPM5 and 5 GiB
+for Spark. These are admission thresholds, not measured peak-memory guarantees.
+
+## Native identity and context admission
+
+Java first verifies the selected artifact's full hash. Its existing process cache
+is additionally keyed by profile. The worker independently rehashes the entire
+GGUF on **every request**, checks filename, size, uid, mode, link count and
+architecture, and holds the verified descriptor. Both tokenizer and inference
+open `/proc/self/fd/N`, referring to that same inode. Metadata must remain unchanged
+through generation. Rehashing costs time inside the unchanged 55-second controller
+deadline; an overrun must remain a failure, not be relabeled a successful test.
+
+The SDK is still GenieX 0.10.0 at
+`071f609995470bdb0e0769ab964754adfaab7e47`. Its actual llama.cpp submodule is
+`19cce6919992fdffd92e0ac152caaf1e2b8f254e`. The matching public headers and MIT
+license are under `native/vendor/llama`; no opaque SDK handle layout is assumed.
+The build links the same packaged `libllama.so` already validated by the official
+runtime tarball hash. That exact source includes `llama`, `lfm3`, `spark2_5`
+model constructors and the `minicpm5` tokenizer preprocessor.
+
+LFM3 retains its original, artifact-specific rendered UTF-8 upper bound. Other
+profiles cannot use that proof. For MiniCPM5 and Spark, a vocabulary-only model
+performs `llama_tokenize(add_special=true, parse_special=true)` on the actual
+rendered chat template. It allocates no neural inference context or weight tensors.
+The identical token IDs, with their SHA256 over little-endian int32 values, are
+passed directly into `geniex_llm_generate`; GenieX adds no special tokens to this
+input path. Count + requested output + reserve256 must fit the selected context.
+The SDK's consumed prompt-token count must equal the counted IDs in a successful
+receipt. A failed exact tokenizer or admission never falls back to a byte estimate.
+
+Java observation selection for the new profiles uses a clearly labeled sizing
+heuristic (half UTF-8 bytes plus a formatting allowance); it is not a tokenizer
+proof. The native exact admission is authoritative. An underestimate fails closed;
+it does not truncate or change the owner's instruction and does not retry.
+
+Chat templates receive `enable_thinking=false`. Controller history remains text
+inside the prompt; native tool-call XML is not used. When the controller supplies
+its observation-specific JSON GBNF, template-generated tool grammar is explicitly
+disabled so it cannot replace or lazily trigger the controller grammar. Sampling
+is deterministic greedy, with explicit `min_p=0`; it is not a reproduction of each
+model author's general chat benchmark settings.
+
+NPU/GPU selection is checked before model creation and again in the app receipt.
+CPU tokenization is intentional. This selection check does not claim every
+operator executes on the accelerator; positive layer/buffer offload must still be
+established from the native backend logs in phone acceptance.
+
+## Controller change and test drivers
+
+The system prompt now distinguishes candidate apps from the current window,
+explains that opening an app can restore an old subpage or associated window,
+and requires all ordered parts of the owner task before `done success`. Recent
+history adds the actual target package, dispatched flag, clicked node label and
+typed text excerpt (with a truncation flag), in real action order. Up to six recent
+entries are projected subject to the selected context budget; omission counts
+remain explicit. App ranking, action policy and independent success predicates
+are unchanged.
+
+Phone-suite candidate JSON accepts optional `model_profile`; an omitted field
+retains the original strict LFM3/v1 contract. A supplied field requires the exact
+matching v2 on-phone config and matching `model_sha256`. All existing suite API
+signatures remain compatible. `phone_acceptance.py run` adds
+`--expected-model-profile`; exact-profile collection checks the model identity,
+input ID count/hash, context proof, raw output, grammar, UID and resolved device.
+No driver selects a model, imports weights or changes runtime configuration itself.
+
+Spark remains an optional candidate: source architecture support is verified;
+actual file import, accelerator load, exact prompt count and successful phone tasks
+remain separate gates. A matching model name alone establishes none of them.
