@@ -1,0 +1,21 @@
+# Hepta — LFM3 local phone controller
+
+Independent package `org.trillionnium.hepta.local`, version 0.3.2 / code 3, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+
+This candidate reuses the ordinary Android Accessibility controller, Start/Stop UI, private one-use test trigger, app-wide session, strict JSON action parser, fresh-screen checks and owned native-process cleanup. It selects **LiquidAI LFM3-1.7B QAD Q4_0** with the pinned **GenieX 0.10.0 llama_cpp** runtime. Defaults are **Hexagon NPU**, context **4096**, four CPU support threads. It declares no INTERNET or other application permissions. It has no model URL, HTTP client, shell tool, external model endpoint or automatic CPU fallback.
+
+The selected file is exactly `files/model/LFM3-1.7B-QAD-Q4_0.gguf`, 1,049,615,680 bytes, SHA-256 `43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452`. App-private ownership and a full first-use SHA verification bind the embedded tokenizer/template as well as the weights. The verification is reused only for the unchanged file in the same app process.
+
+The text model receives the owner's instruction, a bounded application catalogue, Accessibility node text/bounds, visible readouts and observed recent outcomes. A read-only `find_app` tool searches and pages the complete bounded installed launcher snapshot when the first prompt omits the target app. Screenshots stay on the phone for observation consistency and evidence; they are not sent to this text model. Only observed node clicks are accepted. An app with no usable Accessibility nodes may require a separately qualified vision model; this candidate does not pretend to see images.
+
+Read `LOCAL-CONTROL.md` for the task contract, `PUBLIC-BUILD.md` for build commands and `TOKEN-BUDGET.md` for the model-specific conservative bound. `tools/phone_acceptance.py` performs independent final UI checks and binds app/native receipts; self-reported completion is never enough.
+
+Host checks establish parser, policy, runtime configuration, Unicode/context, atomic publication and acceptance-driver behavior. They do not establish Android compilation, NPU/GPU access, phone control success, battery use or a full phone task suite. Those require fresh evidence from this exact package and APK.
+
+Each control request uses an observation-specific GBNF action grammar and validates its actual native input hash. Diagnostics remain unconstrained text. Available-memory admission now prefers valid Linux MemAvailable, records both kernel and ActivityManager metrics before/after, retains the 3 GiB threshold and always honors Android lowMemory.
+
+Revision 3 adds explicit package/normalized-label ranking and model-issued local app discovery. Search receipts distinguish an accepted read from a dispatched UI effect, and pagination advances only past entries actually shown after prompt budgeting. Opening an app still requires a package shown in the current prompt and a fresh launchability check. See `APP-DISCOVERY.md` for the schema, evidence and host/device validation boundary.
+
+Process recreation reads persisted session ownership before admitting new work. Only a known clean terminal state can allow another task; unresolved/corrupt state blocks without replay. The native worker validates its expected parent and uses a parent-death signal. `SESSION-RECOVERY.md` explains the remaining Android-specific qualification.
+
+This standalone candidate has no active Cargo/G1 adoption claim. `CONTROL-INTEGRATION.md` is its current interface, state, resource, evidence, migration and rollback contract. Historical source overlays and old test receipts are not part of this source closure.
