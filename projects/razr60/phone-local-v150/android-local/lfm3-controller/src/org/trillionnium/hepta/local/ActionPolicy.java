@@ -26,6 +26,14 @@ public final class ActionPolicy {
             throw new ActionDecision.InvalidActionException("text-only controller must click an observed node_id, not coordinates");
     }
 
+    /** Target-independent tools still require the observed live window identity.
+     * A changing clock/readout does not change the meaning of opening an exact
+     * installed package, going Home, waiting, or reading the app catalogue. */
+    public static boolean requiresStableTree(ActionDecision action) {
+        return !("open".equals(action.action)||"home".equals(action.action)
+                ||"wait".equals(action.action)||isReadOnlyDiscovery(action));
+    }
+
     public static boolean isReadOnlyDiscovery(ActionDecision action) {
         return "find_app".equals(action.action);
     }

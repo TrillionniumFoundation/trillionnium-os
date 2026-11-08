@@ -57,6 +57,9 @@ jobs:
       - name: Run independent GPU evidence regressions
         working-directory: projects/razr60/phone-local-v150/android-local/validation/gpu-runtime
         run: python -B -m unittest -v test_gpu_log_validation.py
+      - name: Run independent lifecycle guard regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle
+        run: python -B -m unittest -v test_lifecycle_guards.py
       - name: Prepare Android build dependencies
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"

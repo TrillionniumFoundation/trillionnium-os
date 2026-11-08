@@ -1,6 +1,7 @@
 """Generate closed model profiles and context guards; preserve upstream source."""
 from pathlib import Path
 import hashlib, json, difflib
+from prompt_evidence_adapter import adapt as add_prompt_evidence
 
 def generate(root, out):
     source_path=root/'native/worker-upstream.c'
@@ -12,6 +13,11 @@ def generate(root, out):
     last=source.index('static void destination_close(',first)
     replacement=(root/'native/publish-appuid.inc').read_text()
     adapted=source[:first]+replacement+'\n'+source[last:]
+    # Replace only the generated primitive. The pinned upstream bytes, full
+    # per-request model read, SHA comparison, held FD and metadata fences stay.
+    first=adapted.index('typedef struct { uint32_t h[8]; uint64_t bits; unsigned char block[64]; size_t used; } Sha256;')
+    last=adapted.index('static bool utf8(',first)
+    adapted=adapted[:first]+'#include "sha256-dispatch.h"\n\n'+adapted[last:]
     old='if(n<=0)return false;p+=n;size-=(size_t)n;'
     new='if(n<=0){int saved=errno;fprintf(stderr,"HEPTA_APPUID_PUBLISH stage=write_all fd=%d errno=%d error=%s\\n",fd,saved,strerror(saved));return false;}p+=n;size-=(size_t)n;'
     assert adapted.count(old)==1
@@ -94,6 +100,7 @@ def generate(root, out):
             insertions+=1
     assert insertions==1
     adapted=''.join(lines)
+    adapted=add_prompt_evidence(adapted)
     (out/'worker-appuid.c').write_text(adapted)
     difference=''.join(difflib.unified_diff(source.splitlines(True),adapted.splitlines(True),fromfile='frozen/worker-upstream.c',tofile='generated/worker-appuid.c'))
     (out/'worker-adapter.diff').write_text(difference)
@@ -104,6 +111,9 @@ def generate(root, out):
         'prompt_guard':'LFM3 original byte bound; other profiles exact same input_ids + output + reserve256',
         'llama_source_commit':'19cce6919992fdffd92e0ac152caaf1e2b8f254e',
         'model_verification':'native full SHA256, exact filename/size/architecture, held descriptor, unchanged metadata',
+        'sha256_dispatch':'runtime HWCAP_SHA2; target(sha2) function; exact upstream portable compression fallback',
+        'model_digest_cache':False,'full_model_read_every_request':True,
+        'private_prompt_evidence':'create-only formatted bytes and actual direct input IDs; same private request directory',
         'new_profile_exact_token_count':True,'no_context_truncation':True,
         'phase_timing_schema':'hepta.native-phase-timing.v1',
         'phase_timing_clock':'CLOCK_MONOTONIC',

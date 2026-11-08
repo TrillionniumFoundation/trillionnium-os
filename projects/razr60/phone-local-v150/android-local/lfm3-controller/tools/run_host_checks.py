@@ -71,14 +71,18 @@ def main():
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         for source in sorted((ROOT/"native/tests").glob("*.c")):
             binary=out/source.stem
-            run(source.stem+"-compile",[cc,"-std=c11","-Wall","-Wextra","-Werror","-O2",source,"-o",binary])
-            run(source.stem,[binary],timeout=30)
+            run(source.stem+"-compile",[cc,"-std=c11","-Wall","-Wextra","-Werror","-O2","-I"+str(ROOT/"native"),source,"-o",binary])
+            arguments=["--self-test"] if source.stem=="sha256_probe" else []
+            run(source.stem,[binary,*arguments],timeout=30)
+            if source.stem=="sha256_probe":
+                run("sha256-hashlib-differential",[sys.executable,ROOT/"native/tests/test_sha256.py","--probe",binary])
         sys.path.insert(0,str(ROOT/"native"))
         from generate_adapter import generate
         generated=out/"native-generated"; generated.mkdir()
         report["native_adapter"]=generate(ROOT,generated)
         run("native-adapter-syntax",[cc,"-std=c11","-Wall","-Wextra","-Werror","-fsyntax-only",
             "-I"+str(ROOT/"native/vendor"),"-I"+str(ROOT/"native"),"-I"+str(generated),ROOT/"native/probe-worker.c"])
+        run("private-prompt-evidence",[sys.executable,ROOT/"native/tests/test_prompt_evidence.py"])
         if all_inputs()!=report["source_inputs"]: raise RuntimeError("Source changed during host checks")
         report["all_pass"]=True
     except Exception as error:

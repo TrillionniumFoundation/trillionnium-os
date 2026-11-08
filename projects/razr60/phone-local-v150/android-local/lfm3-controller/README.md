@@ -1,6 +1,11 @@
 # Hepta — local phone controller
 
-Independent package `org.trillionnium.hepta.local`, version 0.5.0 / code 5, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+Independent package `org.trillionnium.hepta.local`, version 0.6.0 / code 6, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+
+Code 6 adds reason-first constrained decisions, action-specific observation
+freshness, CPU SHA2 acceleration of the still-complete per-invocation model
+integrity check, and private prompt/token diagnostics. See `CODE6-REASONING.md`.
+Successful compilation and host checks do not establish phone task completion.
 
 Code 5 exposes precise progress fields and removes an `open` candidate only when
 the existing unchanged-screen repeat guard would already reject that exact action.

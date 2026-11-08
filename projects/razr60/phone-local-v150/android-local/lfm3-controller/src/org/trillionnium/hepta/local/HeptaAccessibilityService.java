@@ -198,7 +198,12 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(age<0||age>MAX_OBSERVATION_AGE_MS)return "stale:观察已过期";
         if(!"open".equals(action.action)&&!expected.packageName.equals(action.packageName))return "stale:动作应用与观察不一致";
         Graph now=null;
-        try{now=readGraph();if(!currentGraph.sameWindowAndTree(now))return "stale:目标窗口或内容已变化";}
+        try{
+            now=readGraph();
+            if(!currentGraph.sameWindow(now))return "stale:目标窗口已变化";
+            if(ActionPolicy.requiresStableTree(action)&&!currentGraph.digest.equals(now.digest))
+                return "stale:目标窗口内容已变化";
+        }
         catch(Exception e){return "stale:无法复核当前窗口";}finally{if(now!=null)now.close();}
         return null;
     }
@@ -330,7 +335,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         String packageName,digest;int windowId,rotation;Rect bounds;boolean truncated;
         final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
-        boolean sameWindowAndTree(Graph other){return windowId==other.windowId&&rotation==other.rotation&&packageName.equals(other.packageName)&&bounds.equals(other.bounds)&&digest.equals(other.digest);}
+        boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
+        boolean sameWindowAndTree(Graph other){return sameWindow(other)&&digest.equals(other.digest);}
         void close(){for(NodeRef n:refs.values())n.node.recycle();refs.clear();}
     }
     private Graph readGraph(){

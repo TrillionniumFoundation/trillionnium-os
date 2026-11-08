@@ -10,7 +10,7 @@ OBS='f91c685bf5f04f5c9a6a3197eade1fed'
 CURRENT='com.example.launcher'
 
 def raw(action,package=CURRENT,**fields):
-    return json.dumps(dict(action=action,observation_id=OBS,package=package,**fields),ensure_ascii=False,separators=(',',':'))
+    return json.dumps(dict(reason=fields.pop('reason','根据当前页面推进用户任务'),action=action,observation_id=OBS,package=package,**fields),ensure_ascii=False,separators=(',',':'))
 
 class GrammarTests(unittest.TestCase):
     @classmethod
@@ -56,13 +56,21 @@ class GrammarTests(unittest.TestCase):
         self.assertFalse(self.all.accepts(raw('scroll',node_id='n3',direction='diagonal')))
         self.assertFalse(self.all.accepts(raw('done',status='maybe',summary='x')))
     def test_unicode_string_and_control_bounds(self):
-        self.assertTrue(self.all.accepts(raw('back',reason='😀'*256)))
-        self.assertFalse(self.all.accepts(raw('back',reason='😀'*257)))
+        self.assertTrue(self.all.accepts(raw('back',reason='😀'*96)))
+        self.assertFalse(self.all.accepts(raw('back',reason='😀'*97)))
         self.assertTrue(self.all.accepts(raw('type',node_id='n2',text='😀'*1024)))
         self.assertFalse(self.all.accepts(raw('type',node_id='n2',text='😀'*1025)))
         self.assertFalse(self.all.accepts(raw('type',node_id='n2',text='\0')))
         self.assertFalse(self.all.accepts(raw('done',status='success',summary='')))
         self.assertFalse(self.all.accepts(raw('back',reason='x').replace('"x"','"\\uD800"')))
+    def test_reason_precedes_action_and_is_bounded(self):
+        good=json.loads(raw('back'))
+        no_reason={key:value for key,value in good.items() if key!='reason'}
+        self.assertFalse(self.all.accepts(json.dumps(no_reason,separators=(',',':'))))
+        no_reason['reason']=good['reason']
+        self.assertFalse(self.all.accepts(json.dumps(no_reason,separators=(',',':'),ensure_ascii=False)))
+        self.assertFalse(self.all.accepts(raw('back',reason='')))
+
     def test_no_unknown_duplicate_or_trailing_content(self):
         good=raw('back')
         self.assertFalse(self.all.accepts(good[:-1]+',"shell":"id"}'))

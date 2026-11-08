@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build Android artifacts with cached JDK/SDK/NDK on macOS or Linux; no downloads."""
 from pathlib import Path
-import hashlib, json, os, subprocess, sys, shutil
+import hashlib, json, os, re, subprocess, sys, shutil
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tools'))
@@ -58,6 +58,17 @@ run([NDK/'aarch64-linux-android30-clang','-std=c11','-O2','-fPIE','-pie','-Wall'
     '-I'+str(ROOT/'native/vendor'),'-I'+str(ROOT/'native'),'-I'+str(OUT),ROOT/'native/probe-worker.c',
     '-L'+str(GENIEX),'-L'+str(GENIEX/'llama_cpp'),'-lgeniex','-lllama','-ldl','-lm',
     '-Wl,-rpath,$ORIGIN','-Wl,-rpath-link,'+str(GENIEX/'llama_cpp'),'-Wl,-z,max-page-size=16384','-o',OUT/'libhepta_local_runner.so'])
+# The baseline dispatcher must remain runnable without SHA2. Inspect the actual
+# unstripped Android ELF, not an inferred compiler configuration or host stub.
+disassembly=subprocess.check_output([str(NDK/'llvm-objdump'),'-d','--no-show-raw-insn',str(OUT/'libhepta_local_runner.so')],timeout=30).decode()
+(OUT/'native-sha256-disassembly.txt').write_text(disassembly)
+sha_owner=None;sha_owners={}
+for line in disassembly.splitlines():
+    symbol=re.search(r'<([^>]+)>:$',line)
+    if symbol:sha_owner=symbol.group(1)
+    if re.search(r'\bsha256(?:h2|h|su0|su1)\b',line):sha_owners[sha_owner]=sha_owners.get(sha_owner,0)+1
+if sum(sha_owners.values())<4 or any(not owner or not owner.startswith('hepta_sha256_armv8_blocks') for owner in sha_owners):
+    raise RuntimeError('SHA256 instructions escaped the HWCAP-gated target function')
 run([NDK/'llvm-strip',OUT/'libhepta_local_runner.so'])
 files = [OUT/'dex/classes.dex',OUT/'base.apk',OUT/'libhepta_local_runner.so']
 if source_inputs(ROOT)!=source_before:
@@ -72,6 +83,9 @@ receipt={'schema':'hepta.local-model.mac-build.v2','compile_sdk':34,'target_sdk'
     'compute_default':'npu','context_default':4096,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
     'worker_adapter':adapter_receipt,
+    'sha256_instruction_gate':{'verified_actual_android_elf':True,'global_crypto_flag':False,
+        'runtime_gate':'getauxval(AT_HWCAP) & HWCAP_SHA2','instruction_owners':sha_owners,
+        'disassembly_sha256':hashlib.sha256(disassembly.encode()).hexdigest()},
     'artifacts':[{ 'path':str(f),'bytes':f.stat().st_size,'sha256':hashlib.sha256(f.read_bytes()).hexdigest()} for f in files]}
 (OUT/'mac-build-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
 print(json.dumps(receipt,indent=2),flush=True)

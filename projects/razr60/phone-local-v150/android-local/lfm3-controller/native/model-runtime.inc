@@ -3,6 +3,9 @@ static int hepta_model_fd=-1;
 static struct stat hepta_model_stat;
 static char hepta_verified_model_sha[65],hepta_model_fd_path[64],hepta_architecture[64];
 static bool hepta_model_unchanged,hepta_model_verified;
+static const char *hepta_model_sha_backend;
+static uint64_t hepta_model_hashed_bytes,hepta_model_sha_hardware_blocks,hepta_model_sha_portable_blocks;
+static bool hepta_model_sha_hwcap;
 static struct llama_model *hepta_vocabulary_model;
 static llama_token *hepta_input_ids;
 static int32_t hepta_input_count;
@@ -20,6 +23,8 @@ static bool hepta_verify_model(const char *path){
        hepta_model_stat.st_uid!=getuid()||hepta_model_stat.st_nlink!=1||(hepta_model_stat.st_mode&0777)!=0600||
        hepta_model_stat.st_size<0||(uint64_t)hepta_model_stat.st_size!=hepta_model_profile->bytes)return false;
     Sha256 hash;sha_init(&hash);unsigned char block[65536];uint64_t count=0;
+    hepta_model_sha_backend=hepta_sha256_backend(&hash);
+    hepta_model_sha_hwcap=hash.hardware;
     for(;;){
         if(!fence(PH_CREATE))return false;
         ssize_t n=read(hepta_model_fd,block,sizeof(block));
@@ -30,6 +35,9 @@ static bool hepta_verify_model(const char *path){
         sha_update(&hash,block,(size_t)n);
     }
     sha_finish(&hash,hepta_verified_model_sha);
+    hepta_model_hashed_bytes=count;
+    hepta_model_sha_hardware_blocks=hash.hardware_blocks;
+    hepta_model_sha_portable_blocks=hash.portable_blocks;
     if(count!=hepta_model_profile->bytes||strcmp(hepta_verified_model_sha,hepta_model_profile->sha256)||
        !hepta_model_is_unchanged(path)||lseek(hepta_model_fd,0,SEEK_SET)<0)return false;
     if(snprintf(hepta_model_fd_path,sizeof(hepta_model_fd_path),"/proc/self/fd/%d",hepta_model_fd)>=(int)sizeof(hepta_model_fd_path))return false;
@@ -86,6 +94,11 @@ static void hepta_write_model_contract(FILE *file){
     fputs("\"model_profile\":",file);json_string(file,hepta_model_profile?hepta_model_profile->id:NULL);
     fputs(",\"model_sha256_verified\":",file);json_string(file,hepta_model_verified?hepta_verified_model_sha:NULL);
     fputs(",\"model_architecture\":",file);json_string(file,hepta_architecture);
+    fputs(",\"model_sha256_backend\":",file);json_string(file,hepta_model_sha_backend);
+    fprintf(file,",\"model_sha256_bytes_hashed\":%" PRIu64 ",\"model_sha256_hardware_blocks\":%" PRIu64
+        ",\"model_sha256_portable_blocks\":%" PRIu64 ",\"model_sha256_runtime_hwcap_sha2\":%s",
+        hepta_model_hashed_bytes,hepta_model_sha_hardware_blocks,hepta_model_sha_portable_blocks,
+        hepta_model_sha_hwcap?"true":"false");
     fprintf(file,",\"model_bytes_verified\":%" PRIu64 ",\"model_metadata_unchanged\":%s,"
         "\"chat_template_enable_thinking\":false,\"automatic_cpu_fallback\":false,",
         hepta_model_verified?hepta_model_profile->bytes:0,hepta_model_unchanged?"true":"false");

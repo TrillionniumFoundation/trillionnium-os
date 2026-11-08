@@ -11,7 +11,7 @@ import java.util.TreeSet;
 
 /** Fixed action schema bound to one real observation, never arbitrary caller GBNF. */
 public final class DecisionGrammar {
-    public static final String SCHEMA="hepta.observed-action-gbnf.v1";
+    public static final String SCHEMA="hepta.observed-action-gbnf.v2-reason-first";
     public final String observationId, currentPackage, text, sha256;
     public final List<String> actions;
 
@@ -59,13 +59,13 @@ public final class DecisionGrammar {
         }
         branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());
         branches.add("done");rule(rules,"done",prefix("done",observationId)+field("package",jsonValue(currentPackage))+comma()+field("status","status")+comma()+field("summary","summary-string")+ending());
-        rule(rules,"reason-part","("+comma()+field("reason","reason-string")+")?");
+        // A brief state assessment precedes action selection in the generated JSON.
         rule(rules,"direction",alternatives(new TreeSet<String>(java.util.Arrays.asList("forward","backward","up","down","left","right"))));
         rule(rules,"status",alternatives(new TreeSet<String>(java.util.Arrays.asList("success","partial","failure"))));
         rule(rules,"duration","[1-9] [0-9]{2} | "+literal("1")+" [0-9]{3} | "+literal("2000"));
         rule(rules,"app-offset",literal("0")+" | [1-9] [0-9]{0,2} | [1-3] [0-9]{3} | "+literal("40")+" [0-8] [0-9] | "+literal("409")+" [0-5]");
         rule(rules,"query-string",literal("\"")+" json-char{0,64} "+literal("\""));
-        rule(rules,"reason-string",literal("\"")+" json-char{0,256} "+literal("\""));
+        rule(rules,"reason-string",literal("\"")+" json-char{1,96} "+literal("\""));
         // At most 1024 Unicode scalar values imply at most 4096 decoded UTF-8 bytes.
         rule(rules,"text-string",literal("\"")+" json-char{0,1024} "+literal("\""));
         rule(rules,"summary-string",literal("\"")+" json-char{1,1024} "+literal("\""));
@@ -85,10 +85,10 @@ public final class DecisionGrammar {
         for(String value:values){if(value==null||!value.matches("n[0-9]{1,5}"))throw new IllegalArgumentException("invalid observed node id");result.add(value);}
         return result;
     }
-    private static String prefix(String action,String observation){return literal("{")+" ws "+field("action",jsonValue(action))+comma()+field("observation_id",jsonValue(observation))+comma();}
+    private static String prefix(String action,String observation){return literal("{")+" ws "+field("reason","reason-string")+comma()+field("action",jsonValue(action))+comma()+field("observation_id",jsonValue(observation))+comma();}
     private static String field(String key,String valueRule){return jsonValue(key)+" ws "+literal(":")+" ws "+valueRule;}
     private static String comma(){return " ws "+literal(",")+" ws ";}
-    private static String ending(){return " reason-part ws "+literal("}");}
+    private static String ending(){return " ws "+literal("}");}
     private static void rule(StringBuilder target,String name,String body){target.append(name).append(" ::= ").append(body).append('\n');}
     private static String alternatives(Iterable<String> values){List<String> parts=new ArrayList<String>();for(String value:values)parts.add(jsonValue(value));return join(parts," | ");}
     private static String join(Iterable<String> values,String separator){StringBuilder out=new StringBuilder();for(String value:values){if(out.length()>0)out.append(separator);out.append(value);}return out.toString();}
