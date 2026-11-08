@@ -1,0 +1,241 @@
+{
+  "schema": "hepta.android-local.public-source-projection.v1",
+  "source_commit": "cb4c87aedc3401db7e2f6e36666ccccd91253b5b",
+  "source_commit_scope": "local Android build repository; not an external Git base",
+  "source_archive_sha256": "3f0a327de30fec052edff63dc54bdcdd33efd5fd331bf5794c4dd83c83788b65",
+  "reference_apk_sha256": "55b753ba783e28dbe534a2645465b915dbb2a3432dae4e68da0e3956a3887535",
+  "version_code": 5,
+  "version_name": "0.2.2-local-control",
+  "qualification_status": "work_in_progress; full phone task qualification pending",
+  "original_files": [
+    {
+      "path": ".gitignore",
+      "bytes": 100,
+      "sha256": "b4bb038b6471f30fc52c6e7991b82a2ca64bf8412b0b6fc5c27b2fc736e75efe"
+    },
+    {
+      "path": "AndroidManifest.xml",
+      "bytes": 1869,
+      "sha256": "4ed0abad8739adf09e4360bbc98bdb9d44f4c14c171283244ef80e35b33ceb97"
+    },
+    {
+      "path": "CONTROL-INTEGRATION.md",
+      "bytes": 8154,
+      "sha256": "5da11a800fcefc43046fa3fec3c3d7299163d19b0378079b2a12624bfc212e83"
+    },
+    {
+      "path": "LOCAL-CONTROL.md",
+      "bytes": 6133,
+      "sha256": "3550bd4fb9ef4d8db6e650ca016f50893676c09ec5db19ce0bafeba9c39468fc"
+    },
+    {
+      "path": "PROBE-README.md",
+      "bytes": 4861,
+      "sha256": "608472a1e5a4ed8cd8bbdc61ee5e257f6b51b18fa8590f0d45b5a9e852c2c88e"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1355,
+      "sha256": "d248410f8e4644185fda4da645f33c6076fb19a2dbfa27fb44ab4d5e3c7fd481"
+    },
+    {
+      "path": "assemble_pocket4.py",
+      "bytes": 8208,
+      "sha256": "359425de57bf3eff9036bda5ee652eb3e35600d2e78aea083dd995167d88b778"
+    },
+    {
+      "path": "build_mac.py",
+      "bytes": 2677,
+      "sha256": "653b294ccdeded30524b4dab6bea448206fa563739553f74f42022b919e7080c"
+    },
+    {
+      "path": "control-tests/BudgetHostTest.java",
+      "bytes": 2223,
+      "sha256": "5a8d18db17cd4b2ff30ff479723e2f909d39f9c1179a6f5a83ecba699d3e3570"
+    },
+    {
+      "path": "control-tests/action-parser/ActionDecisionHostTest.java",
+      "bytes": 18103,
+      "sha256": "231a4a7c0d388b54e6441e7c52219bc3b6c1368c97827322afe9b209d3a885bb"
+    },
+    {
+      "path": "control-tests/action-parser/README.md",
+      "bytes": 2198,
+      "sha256": "3e6382c513b7c2b4a814f48560eb459515922eb0404b1c3c34210f23bbe0ece3"
+    },
+    {
+      "path": "control-tests/action-parser/run_host_tests.py",
+      "bytes": 3582,
+      "sha256": "1959f731f6a1e7ca70cd74da0bbe9951580a61c107a29bfbf1f1269acb34d9a8"
+    },
+    {
+      "path": "native/generate_adapter.py",
+      "bytes": 1671,
+      "sha256": "25220d85b4e41b7ade9d54274eb888659affa3e87574eefe799319ec62c451a0"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "bytes": 2784,
+      "sha256": "14fec553dd4eb0f651dee201381f242273a0cd49cc5a11029d91ad6c2cafed30"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "bytes": 2430,
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "bytes": 30066,
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "res/values/strings.xml",
+      "bytes": 336,
+      "sha256": "0e73a193a0b5a706153dcb3a9b91e41341dd9ee5b7a78c2e11c0b590f66d8d7f"
+    },
+    {
+      "path": "res/xml/hepta_accessibility_service.xml",
+      "bytes": 623,
+      "sha256": "570f99eff556668a5aa2d19c8723657640ea7f41a43e0eed07424a0132e9d5ce"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/ActionDecision.java",
+      "bytes": 17238,
+      "sha256": "e5ed93e866c28f54533b81d55ac4e33f28c087ec5c5d083166c02325425cfec6"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/ConservativeTokenBudget.java",
+      "bytes": 2777,
+      "sha256": "ff81f80ec3f8bb97723d5b9df026ae7b5a6d75b1feb93e2bad581af956e96452"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/EngineInferenceAdapter.java",
+      "bytes": 1380,
+      "sha256": "4e9fc7b8892923cdf466f48f52a131241e0de61ee0d53b0503f37c97dea71950"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/HeptaAccessibilityService.java",
+      "bytes": 31939,
+      "sha256": "360c0183fff0dc6c4b7a64ae92407ea88559e8930ea52ff760fd08bca76fd0b6"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/LocalInference.java",
+      "bytes": 719,
+      "sha256": "5229570243e233a9c56d6de1ce6fa0ced27090ef196a5a3c69b345d436fd25a1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/LocalModelEngine.java",
+      "bytes": 19503,
+      "sha256": "4c8da7e8a8f609cba617a2c63996213340b43321ae553b4a6e4cde4736a65940"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/LocalProbeApplication.java",
+      "bytes": 739,
+      "sha256": "b0ae236bca171d887e5857f48d7c641c9d080d94a9c15ca834a343ce70593476"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/LocalTaskController.java",
+      "bytes": 30517,
+      "sha256": "145462df725f43f1f94f8a2afeaa22b41928ef8bcddd984b13e9a5f89edad9d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/LocalTaskSession.java",
+      "bytes": 7265,
+      "sha256": "301c4665b96048099190c583c3c17adad9a7f45e4776af8f42c7993b59ad1724"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/MainActivity.java",
+      "bytes": 12265,
+      "sha256": "293333c825990d182a7f981293a6b2cab7c420fb1d29491c80792c77a1b92348"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/PhoneObservation.java",
+      "bytes": 4692,
+      "sha256": "8e47b11b0f75ffb2f9ce2715b3b7f05f57a6a40af0d93a14ddeed3c07ad30001"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/localprobe/PrivateDebugTask.java",
+      "bytes": 3595,
+      "sha256": "2637489bc82082dede5e0a302db72596b0398ca80f550eb47542a5c7b4afc653"
+    },
+    {
+      "path": "tools/create_debug_task.py",
+      "bytes": 1236,
+      "sha256": "db959a4382b4b4fc67504a9201311f0ea4a38a1c45dfcf093d68ed5a5b7583f2"
+    }
+  ],
+  "transformations": [
+    {
+      "path": "CONTROL-INTEGRATION.md",
+      "original_sha256": "5da11a800fcefc43046fa3fec3c3d7299163d19b0378079b2a12624bfc212e83",
+      "published_sha256": "420f39bc9d6304edd3c8e1be67674bfb90df2026656ff6c68d38717921dce5dc"
+    },
+    {
+      "path": "LOCAL-CONTROL.md",
+      "original_sha256": "3550bd4fb9ef4d8db6e650ca016f50893676c09ec5db19ce0bafeba9c39468fc",
+      "published_sha256": "2b21b20f6bd63aac603f42bd1e5a3f283c2d4e373dae767b08266e9b604384bf"
+    },
+    {
+      "path": "PROBE-README.md",
+      "original_sha256": "608472a1e5a4ed8cd8bbdc61ee5e257f6b51b18fa8590f0d45b5a9e852c2c88e",
+      "published_sha256": "0c3533c74a2391b9abd2a2c5cd4a0ac3968991fe69ecb3a3d18e2175d83a7aba"
+    },
+    {
+      "path": "README.md",
+      "original_sha256": "d248410f8e4644185fda4da645f33c6076fb19a2dbfa27fb44ab4d5e3c7fd481",
+      "published_sha256": "6977594e6cba04d623b95d31743ffb13039d8b48a557b2d9e7ca012b4f1d0194"
+    },
+    {
+      "path": "assemble_pocket4.py",
+      "original_sha256": "359425de57bf3eff9036bda5ee652eb3e35600d2e78aea083dd995167d88b778",
+      "published_sha256": "a759336b8f068507d03ba6d9c6b68c94079e9478956d0d613e91b4a87bbebc4d"
+    },
+    {
+      "path": "build_mac.py",
+      "original_sha256": "653b294ccdeded30524b4dab6bea448206fa563739553f74f42022b919e7080c",
+      "published_sha256": "64e681d3e61c6488994a8d407c491dd44a3ba3926c15d576eabbb9b67d33984d"
+    },
+    {
+      "path": "control-tests/action-parser/README.md",
+      "original_sha256": "3e6382c513b7c2b4a814f48560eb459515922eb0404b1c3c34210f23bbe0ece3",
+      "published_sha256": "069058a235038006f2018ed33284740f370ffd6d017ef1c3f8c42223c6be570b"
+    }
+  ],
+  "runtime_source_bytes_unchanged": true,
+  "test_source_bytes_unchanged": true,
+  "device_acceptance_inherited": false,
+  "excluded": [
+    "model weights",
+    "SDK binaries",
+    "signing keys",
+    "generated outputs",
+    "phone traces",
+    "private workspace bindings"
+  ],
+  "added_attribution": {
+    "upstream_repository": "qualcomm/GenieX",
+    "commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "license_git_blob": "74eadadcbcbd7754420fde09f261326df8cf2697",
+    "notice_git_blob": "41cbbc8ffb15baaeb8f93b085d1f62de7497cdf4"
+  },
+  "added_acceptance_driver": {
+    "source_sha256": "5c535901a80c155d40c5895380c8d2ba1b78a3304e0728f98fadd3a5b82439cc",
+    "source_bytes_unchanged": true,
+    "test_original_sha256": "51be78bb38ea6c128d9cec66dd99a05e6c67f6839a2d582fe1f49147face1cf9",
+    "test_projection": [
+      "generic module filename",
+      "synthetic ordinary UID fixture values"
+    ],
+    "device_or_model_runs_performed_by_publication": false
+  }
+}

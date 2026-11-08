@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.android-local.public-host-checks.v1",
+  "android_or_phone_tested_by_these_checks": false,
+  "external_model_used": false,
+  "source_scope": "public projection of frozen Android control source",
+  "parser": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "java_class_major": 52,
+    "accepted_cases": 41,
+    "rejected_cases": 548,
+    "assertions": 142,
+    "source_sha256": "e5ed93e866c28f54533b81d55ac4e33f28c087ec5c5d083166c02325425cfec6",
+    "test_source_sha256": "231a4a7c0d388b54e6441e7c52219bc3b6c1368c97827322afe9b209d3a885bb",
+    "runner_sha256": "1959f731f6a1e7ca70cd74da0bbe9951580a61c107a29bfbf1f1269acb34d9a8",
+    "evidence": "reference revision-5 Mac host build; exact published Java/test/runner bytes"
+  },
+  "budget": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "assertions": 11,
+    "is_exact_token_count": false,
+    "source_sha256": "ff81f80ec3f8bb97723d5b9df026ae7b5a6d75b1feb93e2bad581af956e96452",
+    "test_source_sha256": "5a8d18db17cd4b2ff30ff479723e2f909d39f9c1179a6f5a83ecba699d3e3570",
+    "evidence": "reference revision-5 Mac host build; exact published Java/test bytes"
+  },
+  "native_publication": {
+    "compile_exit": 0,
+    "run_exit": 0,
+    "scenarios": [
+      "fresh publication",
+      "no-clobber destination collision",
+      "symlink collision refusal",
+      "empty output",
+      "file-fsync failure"
+    ],
+    "source_sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3",
+    "reused_by_exact_source_sha256": true
+  },
+  "acceptance_driver": {
+    "tests": 18,
+    "passed": 18,
+    "exit_code": 0,
+    "phone_or_adb_contacted": false,
+    "fixture": "FakeAdb and synthetic XML/JSON",
+    "source_sha256": "5c535901a80c155d40c5895380c8d2ba1b78a3304e0728f98fadd3a5b82439cc",
+    "test_source_sha256": "91a4ddfa1f0d839d525a1c61a2ad0211eec4693528c89808ae0f528f91b841fd",
+    "reused_by_exact_source_sha256": true
+  },
+  "source_archive_sha256": "3f0a327de30fec052edff63dc54bdcdd33efd5fd331bf5794c4dd83c83788b65"
+}

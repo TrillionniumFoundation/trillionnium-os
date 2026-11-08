@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.trillionnium.hepta.localprobe" android:versionCode="5" android:versionName="0.2.2-local-control">
+    <uses-sdk android:minSdkVersion="30" android:targetSdkVersion="35" />
+    <queries><intent><action android:name="android.intent.action.MAIN" /><category android:name="android.intent.category.LAUNCHER" /></intent></queries>
+    <application android:name=".LocalProbeApplication" android:label="Hepta 本地" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:debuggable="true" android:allowBackup="false" android:extractNativeLibs="true" android:usesCleartextTraffic="false" android:supportsRtl="true">
+        <uses-native-library android:name="libadsprpc.so" android:required="false" />
+        <uses-native-library android:name="libcdsprpc.so" android:required="false" />
+        <uses-native-library android:name="libOpenCL.so" android:required="false" />
+        <service android:name=".HeptaAccessibilityService" android:label="Hepta 本地操作" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="true">
+            <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/hepta_accessibility_service" />
+        </service>
+        <activity android:name=".MainActivity" android:exported="true" android:launchMode="singleTask" android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

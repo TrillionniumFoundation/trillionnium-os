@@ -1,0 +1,202 @@
+{
+  "schema": "hepta.android-local.public-build-validation.v1",
+  "source_commit": "cb4c87aedc3401db7e2f6e36666ccccd91253b5b",
+  "source_archive_sha256": "3f0a327de30fec052edff63dc54bdcdd33efd5fd331bf5794c4dd83c83788b65",
+  "original_build_evidence_sha256": "71e12720f7b581f0bbec3747be27f1ca0dd2c2a731c0fd48f609d760c323ca02",
+  "scope": "reference source build and static APK checks; operator paths and private host details omitted",
+  "build_exit_code": 0,
+  "static_acceptance": {
+    "schema": "hepta.appuid-probe.static-acceptance.v1",
+    "apk_bytes": 75553753,
+    "apk_sha256": "55b753ba783e28dbe534a2645465b915dbb2a3432dae4e68da0e3956a3887535",
+    "package": "org.trillionnium.hepta.localprobe",
+    "permissions": [],
+    "abi": [
+      "arm64-v8a"
+    ],
+    "version_code": 5,
+    "debuggable": true,
+    "extract_native_libs": true,
+    "compile_sdk": 34,
+    "min_sdk": 30,
+    "target_sdk": 35,
+    "uses_native_libraries_optional": [
+      "libadsprpc.so",
+      "libcdsprpc.so",
+      "libOpenCL.so"
+    ],
+    "installed_on_phone": false,
+    "ordinary_app_uid_npu_qualified": false,
+    "phone_actions_supported": true,
+    "accessibility_service_guarded_by_bind_permission": true,
+    "task_trigger_private_nonce": true,
+    "application_shared_engine_and_session": true,
+    "process_wide_single_request": true,
+    "native_runner_is_installed_pie": true,
+    "model_in_apk": false,
+    "resources_arsc_uncompressed": true,
+    "resources_arsc_data_offset": 1840,
+    "resources_arsc_alignment": 4,
+    "apk_filename": "hepta-local-0.2.2.apk",
+    "libraries": [
+      {
+        "name": "libhepta_probe_runner.so",
+        "bytes": 30760,
+        "sha256": "fe2c34782f5a043621e72ea26f5a805b2629c98cc66b51a49bb0b10bf1247b5a"
+      },
+      {
+        "name": "libgeniex.so",
+        "bytes": 19781824,
+        "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
+      },
+      {
+        "name": "libgeniex-proc-vision.so",
+        "bytes": 1853776,
+        "sha256": "5517a4ca8e754e6df46859f914ce779dd30831e5a33bc457d40bec744d699be9"
+      },
+      {
+        "name": "libgeniex-proc.so",
+        "bytes": 19225824,
+        "sha256": "7a1a80346ddd7d1e775a00435b87303d7794c08d3c75251bcfc5d911fa82227d"
+      },
+      {
+        "name": "libgeniex_core.so",
+        "bytes": 3075168,
+        "sha256": "fb8a118c0e352eb74d4487cf490c671f8462ca8de26e5889fdded18ea04e5696"
+      },
+      {
+        "name": "libgeniex_plugin_qairt.so",
+        "bytes": 436576,
+        "sha256": "384eaaeaa1254126f4a07ef2a8e28bb5df9ee20d0b0bc54bc0d4874e02d9eab3"
+      },
+      {
+        "name": "libgeniex_vlm.so",
+        "bytes": 499896,
+        "sha256": "8afccd775a6a6a2cef0521d30aa30df824a85d3617d913fc3cf49fe32795cb87"
+      },
+      {
+        "name": "libCalculator_skel.so",
+        "bytes": 5656,
+        "sha256": "0883ddf51f73c163b45412c052ac4b3f37d2421fa56f991c083a935577976ade"
+      },
+      {
+        "name": "libPlatformValidatorShared.so",
+        "bytes": 18208552,
+        "sha256": "88f6014139cd82b4f06259d9af308de7440fdb6b93c2cbf3c24e300cde269ecd"
+      },
+      {
+        "name": "libQnnChrometraceProfilingReader.so",
+        "bytes": 648112,
+        "sha256": "8d66dbc262a4b4edda6a9ba4022726152b788f06df7c3c948d701de4d5876f73"
+      },
+      {
+        "name": "libQnnHta.so",
+        "bytes": 1046784,
+        "sha256": "82e97740bdbda65cf3c910a2475a91bc251ea8c792d7ee96bf2ec24780d7f9c7"
+      },
+      {
+        "name": "libQnnHtaNetRunExtensions.so",
+        "bytes": 428056,
+        "sha256": "58ba5424fc7669e670a450a879c8ba938cf39c4a90f8c4f30a6be67d54b31712"
+      },
+      {
+        "name": "libQnnHtp.so",
+        "bytes": 3979248,
+        "sha256": "d299323d79868adbb18997c8e99ae18f961005589ab137f56a51d27e67d6bf0f"
+      },
+      {
+        "name": "libQnnHtpNetRunExtensions.so",
+        "bytes": 1105096,
+        "sha256": "2923a52c9c3d4039ee181fc3978aff7546aa34ea970de939b0793954ae9c2345"
+      },
+      {
+        "name": "libQnnHtpOptraceProfilingReader.so",
+        "bytes": 4139968,
+        "sha256": "fd6af8230acb3cfb93116a35a30a8cf570b9055978491a5df19ff7e68ae2bf55"
+      },
+      {
+        "name": "libQnnHtpPrepare.so",
+        "bytes": 85047112,
+        "sha256": "c59eb2c24dbc797d86963f02180baab0ad09bc7e2177db895010f2fd5930db75"
+      },
+      {
+        "name": "libQnnHtpProfilingReader.so",
+        "bytes": 639120,
+        "sha256": "1596d567b0b544a8a8c7dbe4c8c0182cb0b57254c6aee96c58e8476998e8e923"
+      },
+      {
+        "name": "libQnnHtpV79.so",
+        "bytes": 12969720,
+        "sha256": "f07b3e9d3f4709d5fa4a9573e7368143f716b311ba722157fd03729544576764"
+      },
+      {
+        "name": "libQnnHtpV79CalculatorStub.so",
+        "bytes": 250872,
+        "sha256": "b32f6fa802b1b197083513dd5e9e0d6172cc39cc4704892e76a98aa48205b73c"
+      },
+      {
+        "name": "libQnnHtpV79Skel.so",
+        "bytes": 12563756,
+        "sha256": "53ad8cde08c1ca2c95bdde7f6f10ab8855f5423edb16e1e7fd6e724ffc27c32b"
+      },
+      {
+        "name": "libQnnHtpV79Stub.so",
+        "bytes": 791424,
+        "sha256": "166a3bb724c448e9425aa8f98f16b25aa1465eae6334553e408da7256d76fc99"
+      },
+      {
+        "name": "libQnnIr.so",
+        "bytes": 1955504,
+        "sha256": "1d53cc6532809f7b287b3d1a99a41d1d67a4d96150307873344bd56effcca8a0"
+      },
+      {
+        "name": "libQnnJsonProfilingReader.so",
+        "bytes": 690688,
+        "sha256": "776d5846bd2c116f30efff669b4b56c561c9227196f91297e623bb0249a95295"
+      },
+      {
+        "name": "libQnnModelDlc.so",
+        "bytes": 3352208,
+        "sha256": "19706fd25cc7a8228a0f5840b4fc9f70a79532fb000636953a327c753189edec"
+      },
+      {
+        "name": "libQnnNetRunDirectV79Skel.so",
+        "bytes": 2421100,
+        "sha256": "75f6cc403486a067b99cc2664d66d81f7702ad52f64add339f4cdc19e1367671"
+      },
+      {
+        "name": "libQnnNetRunDirectV79Stub.so",
+        "bytes": 1024184,
+        "sha256": "4cea506eef49e2d0a35af56fdac97a700b0a7fc697721d60b680962b29e3c8ef"
+      },
+      {
+        "name": "libQnnSaver.so",
+        "bytes": 809568,
+        "sha256": "14ad780a981fdc34a82f80648972720229f077379fa77700822351927c67a729"
+      },
+      {
+        "name": "libQnnSystem.so",
+        "bytes": 4068024,
+        "sha256": "b30bd9880dc48f6c5349185a7d45b326f8a064b10072e60094354fa23d9a2027"
+      },
+      {
+        "name": "libcalculator.so",
+        "bytes": 250304,
+        "sha256": "766a4c6ba03105c1b94577bb54369d4bfbde09f008a4e001566bc0e57ae8e690"
+      },
+      {
+        "name": "libhta_hexagon_runtime_qnn.so",
+        "bytes": 2450080,
+        "sha256": "a74731a15015b41a12b165aade3b497dbd1d681e1778689446a6b313fb2480fb"
+      },
+      {
+        "name": "libhta_hexagon_runtime_snpe.so",
+        "bytes": 2450080,
+        "sha256": "a74731a15015b41a12b165aade3b497dbd1d681e1778689446a6b313fb2480fb"
+      }
+    ]
+  },
+  "full_phone_task_qualification": "pending",
+  "public_path_rebuild_performed": false,
+  "apk_in_repository": false
+}
