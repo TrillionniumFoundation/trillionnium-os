@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.geniex.qairt-entrypoint-notes.v1",
+  "status": "source-verified preparation; model bundle not yet fully downloaded or phone-tested when written",
+  "fixed_sources": [
+    {
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/qairt/src/vlm.cpp",
+      "git_blob_sha": "47c553e8e6c0dbabf966cd89748dc08f031bc85e"
+    },
+    {
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/qairt/src/llm.cpp",
+      "git_blob_sha": "54718989ec00ea3698be26385a93d4a242cf0ede"
+    },
+    {
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/qairt/include/power_mode_utils.h",
+      "git_blob_sha": "9f6084e31c21da07d03f6f81ad5f56f1eb612211"
+    },
+    {
+      "url": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/plugins/qairt/include/qnn_runtime_utils.h",
+      "git_blob_sha": "0f93de9e7deb800426dcfdf2aac064df6efc1f24"
+    },
+    {
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/models/dispatch.h",
+      "git_blob_sha": "5ff03a2044cc447189e7a308ad5884b6d3f4fa9b"
+    },
+    {
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/core/src/llm/llm_spec_loader.cpp",
+      "git_blob_sha": "7ef34800bd0369e52b37e424e916131660462ce0"
+    },
+    {
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/core/src/llm/llm_model.cpp",
+      "git_blob_sha": "0cf276786431f9190b90c599bd57a893caebfae0"
+    },
+    {
+      "url": "https://github.com/qualcomm/geniex-qairt-plugin/blob/ab24abb1f66cb3d8fe624cb8649ec23bd36da41c/models/qwen3_vl/qwen3_vl.h",
+      "git_blob_sha": "bbac23136d31f2c235bcbd976d9ad986cc234582"
+    }
+  ],
+  "c_abi_entry": {
+    "model_path": "<complete-bundle>/genie_config.json",
+    "reason": "Both QAIRT create methods derive bundle directory from model_path.parent_path(). A bare directory without trailing slash resolves incorrectly. Use an existing entry file explicitly.",
+    "tokenizer_path": "<complete-bundle>/tokenizer.json",
+    "vision_encoder": "Resolved automatically as <complete-bundle>/vision_encoder.bin",
+    "mode": "vlm, including a text-only request without an image",
+    "mode_reason": "Fixed core makeLLMPipeline rejects multimodal bundles; makeVLMPipeline dispatches model_id prefix qwen3_vl_.",
+    "plugin_id": "qairt",
+    "compute": "npu",
+    "n_ctx": 0,
+    "n_gpu_layers": 0,
+    "vit_device": null,
+    "mmproj": null,
+    "context_zero_meaning": "Required API sentinel; actual capacity comes from loaded compiled graphs, not zero-length context."
+  },
+  "model_bundle_contract": {
+    "model_id": "qwen3_vl_4b_instruct",
+    "precision": "w4a16",
+    "soc_model": 69,
+    "htp_version": 79,
+    "bundle_name": "qwen3_vl_4b_instruct-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy",
+    "archive_bytes": 3029730149,
+    "expected_zip_members": 26,
+    "expected_regular_files": 24,
+    "compiled_context_lengths": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "default_config_context": 4096,
+    "actual_context_gate": "Parse INFO-level LLMModel initialized line; require loaded CL variants to include 4096. Account for image and prompt tokens in the same budget.",
+    "vision_compiled_input": [
+      512,
+      512
+    ],
+    "vision_image_tokens": 256,
+    "context_not_claimed": [
+      8192,
+      262144
+    ],
+    "cpu_work": "Tokenization, preprocessing, and the declared float32 embedding lookup remain CPU-side work; compiled heavy graphs use QnnHtp.",
+    "reference_device": "Galaxy SM8750-AC export; razr driver/runtime behavior requires actual verification."
+  },
+  "power": {
+    "requested_enum": 6,
+    "requested_name": "sustained_high_performance",
+    "bundle_config_profile": "burst",
+    "precedence": "QAIRT wrapper sets ModelConfig.perf_profile on both LLM and vision; core resolveHtpPerfConfig applies this override after parsing bundle HTP config.",
+    "measurement_limit": "Requested profile and source mapping do not measure watts or actual clock residency.",
+    "source_vote": "Fixed QnnApi.cpp applies public setPowerConfig after context creation; sustained maps powerMode=0x10 and voltage corner=0x80, while burst uses corner=0x90.",
+    "success_log_limit": "Fixed qnn-api/src/Log.hpp compiles QNN_INFO and QNN_WARN to no-ops. Successful power-vote logging is unavailable in this prebuilt source configuration; QNN_ERROR is retained.",
+    "error_gate": "The probe records and rejects observed setPowerConfig/createPowerConfigId/deviceGetInfrastructure failures, without claiming absence of an error log measures the physical power state."
+  },
+  "runtime_selection": {
+    "version": "v0.10.0",
+    "GENIEX_QAIRT_LIB": "<complete-v0.10.0-runtime>/lib/qairt/htp-files",
+    "observed_runtime_library_version": "2.50.40.260831140417",
+    "package_model_tool_version": "2.50.0.260828221209",
+    "ADSP_SEPARATOR": ";",
+    "no_mixed_releases": true,
+    "no_vendor_QNN_substitution": true
+  },
+  "test_gates": [
+    "Full download, full archive SHA256, every ZIP member CRC, safe extraction and per-file SHA manifest before pushing any model file.",
+    "Read-only device/permission inventory, exact complete runtime and worker SHA checks, adequate destination disk space.",
+    "New phone directory, full bundle copy, all phone-side file hashes match verified host manifest.",
+    "New isolated network namespace, empty routes, phone-local timeout plus kill grace; owner stop and keyguard remain unchanged.",
+    "VLM text-only 42, then two distinct blue-button positions, then two strict Hepta click JSON decisions with coordinates inside the matching blue box.",
+    "Require actual SDK completion, EOS, valid untruncated UTF-8, context/power parameter checks, and semantic result. Stop after first nonpass; no returned action is executed."
+  ],
+  "permissions_observed": {
+    "fastrpc_cdsp": "0664 system:system, u:object_r:vendor_qdsp_device:s0",
+    "fastrpc_secure": "0644 system:system, u:object_r:vendor_xdsp_device:s0",
+    "shell": "uid/gid 2000, u:r:shell:s0, supplementary groups did not include system/1000",
+    "native_worker_running_at_read": false,
+    "inference_permission_limit": "Root-isolated numerical tests do not prove the production unprivileged worker can open FastRPC. No device node was opened or permission changed during this inventory."
+  }
+}

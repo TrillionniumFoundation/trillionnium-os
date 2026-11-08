@@ -1,0 +1,154 @@
+{
+  "purpose": "fixed-length pure-text performance only; not semantic or UI acceptance",
+  "case": "bench-npu-pp128-tg64-r3",
+  "rc": 0,
+  "seconds": 8.40141749382019,
+  "argv": [
+    "/system/bin/timeout",
+    "-k",
+    "5",
+    "120",
+    "./bin/geniex-bench",
+    "--plugin",
+    "llama_cpp",
+    "--device",
+    "npu",
+    "-m",
+    "/data/local/tmp/hepta-phone-local-v150-r1/models/GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+    "-p",
+    "128",
+    "-n",
+    "64",
+    "-r",
+    "3",
+    "--no-warmup",
+    "-c",
+    "2048",
+    "-t",
+    "4",
+    "--seed",
+    "42",
+    "--temperature",
+    "0",
+    "--n-gpu-layers",
+    "999",
+    "--power-mode",
+    "sustained_high_performance",
+    "--log",
+    "warn",
+    "--output-json",
+    "/data/local/tmp/hepta-geniex-npu-v0100-20261108/bench-npu-pp128-tg64-r3.json"
+  ],
+  "isolation_asserted": true,
+  "GGML_HEXAGON_PROFILE": 0,
+  "GGML_HEXAGON_VERBOSE": 0,
+  "log_level": "warn",
+  "requested_prompt_tokens": 128,
+  "requested_generated_tokens": 64,
+  "requested_repetitions": 3,
+  "warmup_runs": 0,
+  "context": 2048,
+  "prompt_kind": "benchmark-generated random token IDs; not chat prompt",
+  "process_loads": 1,
+  "first_run": "no preliminary warmup; shared process/model with later repetitions",
+  "comparability": "same phone and model quantization as earlier CPU/OpenCL evidence, but GenieX and llama-bench are different harnesses; context/batch settings must be checked before any strict speedup claim",
+  "power_watts_measured": false,
+  "sdk_report": {
+    "schema_version": "7",
+    "cell_id": "cell",
+    "plugin": "llama_cpp",
+    "device": "npu",
+    "device_id": "HTP0",
+    "model_path": "/data/local/tmp/hepta-phone-local-v150-r1/models/GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+    "model_id": null,
+    "model_size_bytes": 1107410432,
+    "geniex_version": "v0.10.0",
+    "qairt_version": "2.50",
+    "llama_cpp_version": "19cce69",
+    "params": {
+      "warmup": 0,
+      "repetitions": 3,
+      "n_prompt": 128,
+      "n_gen": 64,
+      "temperature": 0.0,
+      "top_p": 0.0,
+      "seed": 42,
+      "n_ctx": 2048,
+      "n_threads": 4,
+      "n_ubatch": 0,
+      "n_gpu_layers": 999,
+      "power_mode": "sustained_high_performance"
+    },
+    "runs": [
+      {
+        "run_idx": 0,
+        "ttft_us": 105921,
+        "media_us": 0,
+        "prompt_time_us": 105235,
+        "decode_time_us": 1826338,
+        "prompt_tokens": 128,
+        "gen_tokens": 64,
+        "prefill_tps": 1216.325367,
+        "decode_tps": 35.042801,
+        "stop_reason": "length"
+      },
+      {
+        "run_idx": 1,
+        "ttft_us": 95639,
+        "media_us": 0,
+        "prompt_time_us": 94719,
+        "decode_time_us": 1816719,
+        "prompt_tokens": 128,
+        "gen_tokens": 64,
+        "prefill_tps": 1351.365618,
+        "decode_tps": 35.228343,
+        "stop_reason": "length"
+      },
+      {
+        "run_idx": 2,
+        "ttft_us": 95765,
+        "media_us": 0,
+        "prompt_time_us": 94668,
+        "decode_time_us": 1819034,
+        "prompt_tokens": 128,
+        "gen_tokens": 64,
+        "prefill_tps": 1352.093632,
+        "decode_tps": 35.183509,
+        "stop_reason": "length"
+      }
+    ],
+    "agg": {
+      "ttft_ms": {
+        "median": 95.765,
+        "min": 95.639,
+        "max": 105.921,
+        "mean": 99.108333,
+        "stdev": 5.900279
+      },
+      "prefill_tps": {
+        "median": 1351.365618,
+        "min": 1216.325367,
+        "max": 1352.093632,
+        "mean": 1306.594873,
+        "stdev": 78.176532
+      },
+      "decode_tps": {
+        "median": 35.183509,
+        "min": 35.042801,
+        "max": 35.228343,
+        "mean": 35.151551,
+        "stdev": 0.096811
+      },
+      "gen_tokens": {
+        "median": 64.0
+      },
+      "prompt_tokens": {
+        "median": 128.0
+      },
+      "media_ms": {
+        "median": 0.0
+      }
+    }
+  },
+  "actual_fixed_counts_pass": true
+}

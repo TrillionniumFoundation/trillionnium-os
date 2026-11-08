@@ -1,0 +1,1 @@
+当前截图ID为fixture_1。点击蓝色按钮。只输出要求的mobile_use JSON。

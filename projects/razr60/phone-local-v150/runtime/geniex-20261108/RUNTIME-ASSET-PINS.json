@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.geniex.android.runtime-pins.v1",
+  "status": "isolated candidate; not production deployment or end-to-end phone-control acceptance",
+  "official_asset": {
+    "tag": "v0.10.0",
+    "url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+    "release_asset_api": "https://api.github.com/repos/qualcomm/GenieX/releases/assets/683271197",
+    "api_accept": "application/octet-stream",
+    "bytes": 98545327,
+    "sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+    "observed_download_note": "Browser download endpoint returned HTTP 504; official release-asset API returned the exact digest verified archive. No alternate runtime was substituted."
+  },
+  "source_pins": {
+    "GenieX": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "llama_cpp": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "geniex_qairt": "ab24abb1f66cb3d8fe624cb8649ec23bd36da41c"
+  },
+  "package_files": {
+    "bin/geniex-bench": {
+      "bytes": 55696,
+      "sha256": "6af96c3e308d6b526427b9dd1b8d39767495c2b8b2218966ba16ec4dbd38c376"
+    },
+    "lib/libgeniex.so": {
+      "bytes": 19781824,
+      "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
+    },
+    "lib/llama_cpp/libggml-hexagon.so": {
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+    },
+    "lib/llama_cpp/libggml-htp-v79.so": {
+      "bytes": 858848,
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5"
+    }
+  },
+  "worker": {
+    "source_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+    "binary_sha256": "67d4e368da136f74a7ab1022013cf1def64f75ebb32d91962772e28a2363864f",
+    "binary_bytes": 28200,
+    "header_sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+  },
+  "observed_device": {
+    "soc": "SM8750",
+    "htp_architecture": "v79",
+    "soc_model": 69,
+    "physical_htp_count": 1,
+    "virtual_sessions_observed": [
+      "HTP0 phys=0 virt=0 domain=cdsp:3",
+      "HTP1 phys=0 virt=1 domain=cdsp:3"
+    ],
+    "power_mode": "sustained_high_performance"
+  },
+  "runtime_requirements": {
+    "plugins": "GENIEX_PLUGIN_PATH=<package>/lib",
+    "linker_order": "<package>/lib:<package>/lib/llama_cpp:<package>/lib/qairt:<package>/lib/qairt/htp-files:/system/lib64:/vendor/lib64",
+    "dsp_search": "<package>/lib/llama_cpp;<package>/lib/qairt/htp-files;/vendor/lib/rfsa/adsp",
+    "version_integrity": "Keep each release's full plugin and dependency set together; do not mix v0.9.3 and v0.10.0 libraries or headers.",
+    "root_network_isolation": "On this test phone, su -c '/system/bin/unshare -n /system/bin/sh <script>' created a namespace with no routes; this is a test configuration, not an app-distribution requirement.",
+    "deadlines": "Wrap each phone inference process in phone-local /system/bin/timeout with kill grace; host ADB timeout alone is insufficient."
+  },
+  "limitations": [
+    "Existing GUI-Owl Q4_K_M loads and gives the correct short text answer on HTP0; this does not qualify vision or app actions.",
+    "The pinned Hexagon backend supports K-quantized matrix multiplication and IMROPE, subject to tensor shape and layout restrictions.",
+    "The observed Qwen3-VL vision graph reports UPSCALE f32 as unsupported on HTP1, so CPU fallback is present.",
+    "One short debug run confirmed a v79 FastRPC session and HTP0 model/KV/compute buffers; DSP per-operation cycles were unavailable with a profiling warning 0x8000040e.",
+    "No claim that every operator executes on NPU, that two virtual sessions are two physical NPUs, or that 2048 context acceptance implies 8192 acceptance."
+  ]
+}

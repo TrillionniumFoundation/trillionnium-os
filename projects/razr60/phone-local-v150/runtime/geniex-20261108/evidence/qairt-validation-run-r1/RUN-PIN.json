@@ -1,0 +1,6 @@
+{
+  "script_sha256": "c4d0363fd694dab3e5e884a8ed1b3f6cfb7fae35886ae5d506c3c1d08d090008",
+  "ready_sha256": "cf61f13e2aa96daeb56e5eba48bcec45ef62fad7b7f90f0b6cc6b65e30c57031",
+  "output": "/home/alex/razr60-local-model-v150/offline-gpu-integration-20261108/qairt-acceptance-r1",
+  "phone_root": "/data/local/tmp/hepta-qwen3vl4b-qairt-r1-20261108"
+}

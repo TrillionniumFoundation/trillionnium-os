@@ -1,0 +1,54 @@
+{
+  "status": "isolated worker built; not yet phone-validated; no production receipt/cancellation claim",
+  "worker_sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e",
+  "header_sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40",
+  "geniex_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "geniex_runtime": "v0.10.0",
+  "linked_libgeniex_sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+  "source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "compiler_version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: aarch64-unknown-linux-android28\nThread model: posix\nInstalledDir: @NDK@/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+  "command": [
+    "@NDK@/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang",
+    "-std=c11",
+    "-O2",
+    "-fPIE",
+    "-pie",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "-Werror",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-Wl,--gc-sections",
+    "-Wl,-z,relro,-z,now",
+    "-isystem",
+    "@BUILD_ROOT@/source/vendor",
+    "@BUILD_ROOT@/source/worker.c",
+    "-L",
+    "@BUILD_ROOT@/sdk/lib",
+    "-lgeniex",
+    "-lm",
+    "-o",
+    "@BUILD_ROOT@/artifacts/hepta-geniex-once"
+  ],
+  "seconds": 0.4096798896789551,
+  "binary": {
+    "path": "artifacts/hepta-geniex-once",
+    "bytes": 28200,
+    "sha256": "67d4e368da136f74a7ab1022013cf1def64f75ebb32d91962772e28a2363864f",
+    "before_strip_sha256": "39c954a021d2c52ac8a6046c2d8f694906f51f1fa3022a9040709ba4d08f9c61"
+  },
+  "strip_command": [
+    "@NDK@/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+    "--strip-unneeded",
+    "@BUILD_ROOT@/artifacts/hepta-geniex-once"
+  ],
+  "public_path_placeholders": true,
+  "initial_build_failure": "The unchanged official header uses two old-style C prototypes. The successful build classifies the fixed vendor header as -isystem; all worker source warnings remain errors.",
+  "claims": {
+    "android_cross_compile_pass": true,
+    "production_runtime_deployed": false,
+    "phone_semantic_acceptance": false,
+    "full_phone_control_acceptance": false
+  }
+}

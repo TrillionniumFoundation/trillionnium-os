@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.phone-local-model-candidates.v1",
+  "as_of": "2026-11-08",
+  "target": {
+    "soc": "SM8750",
+    "qairt_soc_model": 69,
+    "htp_arch": "v79",
+    "gpu": "Adreno 830"
+  },
+  "selection_status": "No candidate is yet qualified for production Hepta app control. Hardware-targeted candidate selection is distinct from measured task success.",
+  "runtime": {
+    "name": "Qualcomm GenieX",
+    "version": "v0.10.0",
+    "source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "llama_cpp_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "asset_url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+    "github_asset_id": 683271197,
+    "asset_bytes": 98545327,
+    "asset_sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+    "asset_verified": true
+  },
+  "models": [
+    {
+      "id": "GUI-Owl-1.5-2B-Instruct",
+      "role": "Existing GUI-specialized candidate for immediate offline NPU verification",
+      "source": "https://huggingface.co/mPLUG/GUI-Owl-1.5-2B-Instruct",
+      "source_revision": "528ceaec795bbfbe6103bd79e03db849feadfb24",
+      "gguf_source": "https://huggingface.co/mradermacher/GUI-Owl-1.5-2B-Instruct-GGUF",
+      "gguf_revision": "a0592aa615540e507a918bc6281fdbfc1b441361",
+      "runtime": "llama_cpp",
+      "files": [
+        {
+          "name": "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+          "bytes": 1107410432,
+          "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5"
+        },
+        {
+          "name": "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+          "bytes": 445053216,
+          "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7"
+        }
+      ],
+      "qualified_for_phone_control": false
+    },
+    {
+      "id": "Qwen3-VL-4B-Instruct",
+      "role": "First hardware-targeted QAIRT candidate among inspected complete VLM bundles",
+      "source": "https://huggingface.co/qualcomm/Qwen3-VL-4B-Instruct",
+      "source_revision": "5d90e6c16a1a13b72391383f4cca3637dca3b045",
+      "runtime": "qairt",
+      "precision": "w4a16",
+      "qairt_compile_version": "2.50.0.260828221209",
+      "qairt_soc_model": 69,
+      "htp_arch": "v79",
+      "reference_chipset": "Snapdragon 8 Elite For Galaxy / SM8750-AC",
+      "archive_url": "https://qaihub-public-assets.s3.us-west-2.amazonaws.com/qai-hub-models/models/qwen3_vl_4b_instruct/releases/v0.66.0/qwen3_vl_4b_instruct-geniex_qairt-w4a16-qualcomm_snapdragon_8_elite_for_galaxy.zip?versionId=gk13RCiEy9D1WkYA1lm1oiE75ZR9DOWs",
+      "archive_bytes": 3029730149,
+      "extracted_bytes": 4356290162,
+      "official_archive_sha256": null,
+      "local_archive_sha256": "9053855d9b45d2dc1c41b8cc5d7d792887dd1549b8ebf3a7f3dfb0ef5b762599",
+      "full_download": true,
+      "full_crc_verified": true,
+      "zip_members_verified": 26,
+      "regular_files_verified": 24,
+      "compiled_contexts": [
+        512,
+        1024,
+        2048,
+        4096
+      ],
+      "sdk_create": {
+        "n_ctx": 0,
+        "n_gpu_layers": 0
+      },
+      "proposed_provider_budget": {
+        "total_tokens": 4096,
+        "input_tokens_including_image_and_template": 3584,
+        "max_output_tokens": 256,
+        "margin_tokens": 256,
+        "actual_tokenizer_validation": false
+      },
+      "vision": {
+        "input_size": [
+          512,
+          512
+        ],
+        "patch_size": 16,
+        "spatial_merge_size": 2,
+        "outputs": [
+          "image_features",
+          "deepstack_visual_embeds_0",
+          "deepstack_visual_embeds_1",
+          "deepstack_visual_embeds_2"
+        ],
+        "output_shape": [
+          256,
+          2560
+        ],
+        "output_type": "uint16"
+      },
+      "embedding_table": {
+        "bytes": 1555824640,
+        "type": "float32"
+      },
+      "qualified_for_phone_control": false,
+      "blocker": "Synthetic text/vision/revised action JSON passed. Production native-context access, full provider integration, real-screen and app-control acceptance remain pending; phone locked and owner stop present.",
+      "phone_inference_tested": true,
+      "synthetic_acceptance": {
+        "text42": "pass",
+        "image_position_cases": "2/2 pass",
+        "initial_nested_click": "failed JSON syntax; correct coordinate; second initial click not run",
+        "revised_nested_click_cases": "2/2 pass; raw native complete JSON; no repair",
+        "real_app_actions_executed": 0,
+        "production_qualified": false,
+        "revised_protocol_report_sha256": "d377fcc3e7bdff78caae85e2be45e6be4a72a708d98489b8b7834b6aadac8211",
+        "grammar_discriminator": "SIGABRT exit134; failed; grammar image cases not run",
+        "post_abort_recovery": "text42 pass; no residual worker process"
+      },
+      "qairt_grammar_enabled_for_provider": false
+    },
+    {
+      "id": "Qwen3.5-2B",
+      "source": "https://huggingface.co/qualcomm/Qwen3.5-2B",
+      "runtime": "llama_cpp",
+      "listed_precision": "q4_0",
+      "phone_tested_here": false,
+      "note": "Official inspected card exposes universal GGUF, not an inspected SM8750 QAIRT VLM package."
+    },
+    {
+      "id": "LFM3-VL-2B",
+      "source": "https://huggingface.co/LiquidAI/LFM3-VL-2B",
+      "runtime": "llama_cpp",
+      "phone_tested_here": false,
+      "note": "Recent edge VLM. Author warns against multi-turn conversations and complex reasoning; not selected as the entire multi-step phone agent. Weight transfer did not complete."
+    },
+    {
+      "id": "Gemma 4 E2B",
+      "source": "https://ai.google.dev/gemma/docs/core/model_card_4",
+      "phone_tested_here": false,
+      "note": "Edge multimodal alternative; an inspected, complete SM8750 QAIRT package was not established in this session."
+    }
+  ],
+  "promotion_requirements": [
+    "Correct image-dependent decisions on held-out screenshots",
+    "Verified phone-local accelerator execution, with CPU fallback explicitly reported",
+    "Offline execution with no external model dependency",
+    "Bounded prompt and actual context verified",
+    "Fresh original request identity and complete output validation",
+    "Backend-appropriate cancellation and real worker termination proof",
+    "Hepta APK-to-model-to-native-action end-to-end tests"
+  ]
+}

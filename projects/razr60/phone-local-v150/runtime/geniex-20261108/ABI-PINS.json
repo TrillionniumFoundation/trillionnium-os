@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.geniex-once.abi-pins.v1",
+  "sdk": "qualcomm/GenieX",
+  "tag": "v0.10.0",
+  "commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "upstream": {
+    "header": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/sdk/include/geniex.h",
+    "license": "https://github.com/qualcomm/GenieX/blob/071f609995470bdb0e0769ab964754adfaab7e47/LICENSE",
+    "android_release": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz"
+  },
+  "vendored_files": [
+    {
+      "path": "vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40",
+      "git_blob_sha1": "28beb998a4e5ffbb50f7af64043bd76cd98d7da4"
+    },
+    {
+      "path": "vendor/GENIEX-LICENSE",
+      "bytes": 1565,
+      "sha256": "3a1d5f5b391581a14dd06df9859a327ca26f07452a0aa2cfd2008f173d3acbba",
+      "git_blob_sha1": "74eadadcbcbd7754420fde09f261326df8cf2697"
+    }
+  ],
+  "runtime_library_pins": "Must be recorded from the exact official Android package in the per-build/per-run evidence; source pins and an SDK version string are insufficient.",
+  "production_receipt": false,
+  "phone_activation_authorized_by_this_artifact": false
+}

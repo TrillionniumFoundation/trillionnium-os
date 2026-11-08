@@ -1,0 +1,221 @@
+{
+  "schema": "hepta.phone-local-small-moe-research.v1",
+  "observed_date": "2026-11-08",
+  "scope": "Primary-source research for 8–15B total / <=3B active MoE, plus clearly labelled adjacent Granite candidate. No new model weights downloaded; no phone inference by this researcher.",
+  "device_context": {
+    "soc": "SM8750",
+    "htp": 79,
+    "ram_gb": 16
+  },
+  "recommendation": {
+    "primary_text_planner_research_candidate": "LiquidAI/LFM2.5-8B-A1B",
+    "phone_gui_primary_replacement": false,
+    "reason": "Verified small-MoE tool-use model, but text-only; needs separate screenshot perception or trusted UI observation. Current Qwen3-VL-4B QAIRT validation should continue.",
+    "measured_phone_status": "Neither small-MoE candidate tested on this razr."
+  },
+  "candidates": [
+    {
+      "model": "LiquidAI/LFM2.5-8B-A1B",
+      "release_date": "2026-05-28",
+      "total_parameters_published": "8.3B",
+      "active_parameters_published": "1.5B",
+      "modality": "text-only",
+      "native_vision": false,
+      "gui_grounding_benchmark_verified": false,
+      "languages_include_chinese": true,
+      "license_card": "lfm1.0",
+      "architecture": "24 layers: 18 double-gated short convolution + 6 GQA; sparse MoE",
+      "context_published": 128000,
+      "reasoning_only": true,
+      "tool_protocol": "Default Pythonic calls inside special tokens; official card permits prompting JSON calls. Hepta strict protocol adaptation and semantic tests still required.",
+      "official_gguf_repository": "LiquidAI/LFM2.5-8B-A1B-GGUF",
+      "repository_commit_observed": "49c14831707011e64d70b2ebd8462ba08d608434",
+      "files": [
+        {
+          "filename": "LFM2.5-8B-A1B-Q4_0.gguf",
+          "bytes": 4844678368,
+          "official_lfs_sha256": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715",
+          "pointer_url": "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-GGUF/raw/main/LFM2.5-8B-A1B-Q4_0.gguf",
+          "ref": "turn158view0"
+        },
+        {
+          "filename": "LFM2.5-8B-A1B-Q4_K_M.gguf",
+          "bytes": 5155564768,
+          "official_lfs_sha256": "4923ec14f06b968b74d663e5949867d2d9c3bf13a20b8be1a9f9af39989b2bb0",
+          "pointer_url": "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-GGUF/raw/main/LFM2.5-8B-A1B-Q4_K_M.gguf",
+          "ref": "turn158view1"
+        }
+      ],
+      "official_claims": {
+        "phone_decode": "about 30 tokens/s in publisher CPU-inference section",
+        "qualification": "Publisher benchmark, not this phone, not Hexagon/NPU evidence; CPU/GPU headline throughput and H100 server comparisons do not establish Android NPU performance.",
+        "reference": "turn155view6"
+      },
+      "sources": [
+        {
+          "url": "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B",
+          "refs": [
+            "turn153view0",
+            "turn154view3",
+            "turn154view5"
+          ]
+        },
+        {
+          "url": "https://www.liquid.ai/blog/lfm2-5-8b-a1b",
+          "refs": [
+            "turn154view2",
+            "turn155view0",
+            "turn155view6"
+          ]
+        },
+        {
+          "url": "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-GGUF/tree/main",
+          "refs": [
+            "turn153view1",
+            "turn154view8"
+          ]
+        },
+        {
+          "url": "https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-GGUF/commit/49c14831707011e64d70b2ebd8462ba08d608434",
+          "ref": "turn155view3"
+        }
+      ]
+    },
+    {
+      "model": "ibm-granite/granite-4.0-h-tiny",
+      "scope_note": "Adjacent comparator: 7B total, outside requested 8–15B interval.",
+      "release_date": "2025-10-02",
+      "total_parameters_published": "7B",
+      "active_parameters_published": "1B",
+      "modality": "text-only",
+      "native_vision": false,
+      "gui_grounding_benchmark_verified": false,
+      "languages_include_chinese": true,
+      "license_card": "apache-2.0",
+      "architecture": "4 attention + 36 Mamba2 layers, 64 experts with 6 active, shared experts, GQA, SwiGLU, RMSNorm",
+      "context_published": 128000,
+      "tool_protocol": "JSON function name/arguments within tool_call tags in official card example.",
+      "official_gguf_repository": "ibm-granite/granite-4.0-h-tiny-GGUF",
+      "repository_commit_observed": "08d5a8a9741dd5c1a95d2d39e25253226aa1464e",
+      "gguf_refresh": "Official repository workflow tag v4.0-language-refresh-20260423-01",
+      "files": [
+        {
+          "filename": "granite-4.0-h-tiny-Q4_K_M.gguf",
+          "bytes": 4230976352,
+          "official_lfs_sha256": "5a38b08c441ae1adbafb1d2b8a7167e0d48734d83af68b268cefea1eec553dcd",
+          "pointer_url": "https://huggingface.co/ibm-granite/granite-4.0-h-tiny-GGUF/raw/main/granite-4.0-h-tiny-Q4_K_M.gguf",
+          "ref": "turn159view0"
+        }
+      ],
+      "other_official_sizes_rounded_decimal_gb": {
+        "Q2_K": 2.59,
+        "Q3_K_M": 3.35,
+        "Q4_0": 3.96,
+        "Q6_K": 5.71,
+        "Q8_0": 7.39
+      },
+      "limitation": "Mamba2 SSM_SCAN absent from current fixed Hexagon opcode mapping; requires fallback for that operator. Whole-model scheduling, performance and numeric quality untested.",
+      "sources": [
+        {
+          "url": "https://huggingface.co/ibm-granite/granite-4.0-h-tiny",
+          "refs": [
+            "turn153view2",
+            "turn154view6",
+            "turn154view7"
+          ]
+        },
+        {
+          "url": "https://huggingface.co/ibm-granite/granite-4.0-h-tiny-GGUF/tree/main",
+          "refs": [
+            "turn154view1",
+            "turn155view5"
+          ]
+        },
+        {
+          "url": "https://huggingface.co/ibm-granite/granite-4.0-h-tiny-GGUF/commit/08d5a8a9741dd5c1a95d2d39e25253226aa1464e",
+          "ref": "turn156view2"
+        }
+      ]
+    }
+  ],
+  "excluded_or_superseded": [
+    {
+      "model": "LiquidAI/LFM2-8B-A1B",
+      "reason": "Official publisher labels deprecated and replaced by LFM2.5-8B-A1B.",
+      "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
+      "ref": "turn151search4"
+    },
+    {
+      "model": "LiquidAI/LFM3 family",
+      "reason": "Official 2026-10-27 first release describes six ~2B modality variants; no 8–15B-total small-active MoE visual model verified in this scoped search. This is not a proof that every future or unpublished variant is absent.",
+      "url": "https://www.liquid.ai/blog/lfm3",
+      "refs": [
+        "turn151search5",
+        "turn151search6",
+        "turn151search7"
+      ]
+    },
+    {
+      "model": "ibm-granite/granite-4.1-8b",
+      "reason": "Latest official 4.1 card explicitly describes dense decoder-only transformer. Not a <=3B-active MoE.",
+      "url": "https://huggingface.co/ibm-granite/granite-4.1-8b",
+      "ref": "turn155view4"
+    }
+  ],
+  "current_runtime_source_evidence": {
+    "GenieX_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+    "llama_cpp_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+    "files": [
+      {
+        "path": "ggml/src/ggml-hexagon/htp-kparams.cpp",
+        "git_blob_sha": "b8d1aee3d0e374d675d96110d8007a5453959780",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/ggml/src/ggml-hexagon/htp-kparams.cpp",
+        "facts": [
+          "MUL_MAT_ID supports Q1_0,Q2_0,Q2_K,Q3_K,Q4_K,Q5_K,Q6_K,Q4_0,Q4_1,Q8_0,IQ4_NL,MXFP4 subject to type/layout/block constraints.",
+          "SSM_CONV is mapped to HTP and has a solver; inputs, convolution weights and output must be F32; kernel length 1..32 and dimensional/stride/VTCM restrictions apply.",
+          "No GGML_OP_SSM_SCAN mapping in this complete source file."
+        ]
+      },
+      {
+        "path": "src/models/lfm2moe.cpp",
+        "git_blob_sha": "f8d47f9b85ae8c9ad8bb51f8a73f3dba9061f1df",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/src/models/lfm2moe.cpp",
+        "facts": [
+          "LFM2 MoE architecture loader present; identifies 24-layer 8B_A1B family."
+        ]
+      },
+      {
+        "path": "src/models/lfm-base.cpp",
+        "git_blob_sha": "5e722eca8c033d5efa5b459ba0f1296ad14af183",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/src/models/lfm-base.cpp",
+        "facts": [
+          "LFM short convolution graph calls ggml_ssm_conv."
+        ]
+      },
+      {
+        "path": "src/models/granite-hybrid.cpp",
+        "git_blob_sha": "a752a365cfd188b3386e171db02503f9306fcb17",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/src/models/granite-hybrid.cpp",
+        "facts": [
+          "Granite hybrid loader and graph present; recurrent layers call build_mamba2_layer."
+        ]
+      },
+      {
+        "path": "src/models/mamba-base.cpp",
+        "git_blob_sha": "370de0f0141dbed7453d153e1c3ed8b94a73d8cc",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/19cce6919992fdffd92e0ac152caaf1e2b8f254e/src/models/mamba-base.cpp",
+        "facts": [
+          "build_mamba2_layer calls ggml_ssm_conv and ggml_ssm_scan."
+        ]
+      }
+    ],
+    "interpretation": "Operator support increases plausibility of partial Hexagon acceleration, but is not full-model support, numeric accuracy, memory peak or speed evidence. Absence of SSM_SCAN mapping indicates non-HTP scheduling is required for the normal Granite Mamba2 scan graph.",
+    "memory_rule": "Active parameters reduce per-token selected computation. They do not shrink all resident experts to active parameter count. GGUF file bytes exclude KV/recurrent state, activation buffers, backend staging/repacking, vision model and Android/App working memory.",
+    "unknowns": [
+      "No candidate weights downloaded in this MoE study.",
+      "No SM8750 complete QAIRT bundle established for these two MoE models.",
+      "No phone benchmark or Hepta end-to-end task pass established.",
+      "No native screenshot grounding in either candidate."
+    ]
+  }
+}

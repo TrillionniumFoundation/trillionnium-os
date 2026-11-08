@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.qairt-public-baseline.v1",
+  "soc": "SM8750",
+  "htp_version": 79,
+  "mem_available_kib": 7537732,
+  "data_available_bytes": 57249189888,
+  "owner_emergency_stop_exists": true,
+  "owner_emergency_stop_sha256": "ff6401f96ef8d2206e61e9fdf6d75d1dd11fe25f5696d7f6996b6647023fdb07",
+  "keyguard_showing": true,
+  "screen_off": true,
+  "owner_root_matching_mount_observed_in_pid1_namespace": false,
+  "baseline_unix": 1794133928.2636945,
+  "keyguard_observation_run": "qairt-protocol-r2",
+  "ui_actions_executed": false
+}
