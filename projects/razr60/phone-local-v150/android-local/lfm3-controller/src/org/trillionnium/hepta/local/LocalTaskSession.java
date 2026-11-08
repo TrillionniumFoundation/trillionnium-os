@@ -205,8 +205,13 @@ public final class LocalTaskSession {
             android.system.Os.fsync(out);
         }finally{android.system.Os.close(out);}
         FileDescriptor directory=android.system.Os.open(latch.getParentFile().getPath(),android.system.OsConstants.O_RDONLY
-                |android.system.OsConstants.O_DIRECTORY|android.system.OsConstants.O_CLOEXEC,0);
-        try{android.system.Os.fsync(directory);}finally{android.system.Os.close(directory);}
+                |android.system.OsConstants.O_NOFOLLOW|android.system.OsConstants.O_CLOEXEC,0);
+        try{
+            android.system.StructStat parent=android.system.Os.fstat(directory);
+            if(!android.system.OsConstants.S_ISDIR(parent.st_mode)||parent.st_uid!=android.os.Process.myUid())
+                throw new IOException("interruption latch parent is not an owned directory");
+            android.system.Os.fsync(directory);
+        }finally{android.system.Os.close(directory);}
     }
 
     private static byte[] readSessionRecord(File file)throws Exception{

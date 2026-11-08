@@ -11,6 +11,6 @@ test_system_window_has_only_available_actions (__main__.GrammarTests.test_system
 test_unicode_string_and_control_bounds (__main__.GrammarTests.test_unicode_string_and_control_bounds) ... ok
 
 ----------------------------------------------------------------------
-Ran 11 tests in 0.024s
+Ran 11 tests in 0.021s
 
 OK

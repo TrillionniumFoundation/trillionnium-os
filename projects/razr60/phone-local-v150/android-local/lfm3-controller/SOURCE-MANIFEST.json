@@ -30,7 +30,7 @@
     {
       "path": "HOST-CHECKS.json",
       "bytes": 14702,
-      "sha256": "120439141a5ba2d3205997c13d3bc0ebd6b94e0efd9d20892cbdd3b1e3422616"
+      "sha256": "802f6197db5e5b57bd9e2fbe57b4ee8387523f68f254facb851dabb960cf17fb"
     },
     {
       "path": "LOCAL-CONTROL.md",
@@ -105,7 +105,7 @@
     {
       "path": "host-evidence/r3/grammar-recognition.stderr",
       "bytes": 1408,
-      "sha256": "07de4fc54dd9c4ddc44dd44c898af3f14c47f58b3a8e6c23a6640fea77cd7e84"
+      "sha256": "3523831581cf8deffe860abd2ee9ec9d406a9fe03ffd48662affe134db02e7dd"
     },
     {
       "path": "host-evidence/r3/parent_death_contract.stdout",
@@ -130,7 +130,7 @@
     {
       "path": "host-evidence/r3/python-tools.stderr",
       "bytes": 18448,
-      "sha256": "8fe65e6089591f12c406f68e12f4043798bc7e10206e1690256a008115fa99cf"
+      "sha256": "e438dc73a410464c9a9b2df3e0446111ebd40c0f7865dc86cedce5758b5d3613"
     },
     {
       "path": "native/generate_adapter.py",
@@ -269,8 +269,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "bytes": 17125,
-      "sha256": "bd454002bce1a176d6341ee62c9db910b3b435375f0bebcf291b4175fa0c94d2"
+      "bytes": 17432,
+      "sha256": "ebb057e591f5ad7a7605ca8dd342846cf181a32828b4c7cd1958f6a17c4ab6eb"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",

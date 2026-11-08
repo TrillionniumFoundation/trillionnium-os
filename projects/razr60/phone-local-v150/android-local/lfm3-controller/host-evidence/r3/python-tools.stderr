@@ -122,6 +122,6 @@ test_tar_link_cannot_supply_a_selected_regular_library (test_verify_runtime.Runt
 test_unknown_selected_member_is_rejected_even_when_a_cache_file_exists (test_verify_runtime.RuntimeArchiveTests.test_unknown_selected_member_is_rejected_even_when_a_cache_file_exists) ... ok
 
 ----------------------------------------------------------------------
-Ran 122 tests in 3.116s
+Ran 122 tests in 2.396s
 
 OK
