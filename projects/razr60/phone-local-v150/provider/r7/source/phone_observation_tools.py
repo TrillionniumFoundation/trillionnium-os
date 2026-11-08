@@ -39,6 +39,7 @@ SCREEN_FIELDS = {'schema', 'status', 'capture_id', 'serial', 'logical_display_id
     'original_width', 'original_height', 'encoded_width', 'encoded_height',
     'media_type', 'encoding', 'quality', 'data_base64', 'image_sha256',
     'source_png_sha256', 'source_png_bytes', 'encoded_bytes'}
+SCREEN_INPUTS = {'phone.tap', 'phone.swipe', 'phone.long_press', 'phone.back', 'phone.home'}
 
 
 def require(ok, reason):
@@ -194,9 +195,12 @@ class PhoneTools:
         self.binding = None
         self.calls, self.images = {}, {}
         self.encoded_bytes_used = 0
+        self.max_turn_image_bytes = MAX_TURN_IMAGE_BYTES
+        self.action_deadline = None
         self.latest = None
         self.round = 0
         self.verified_facts = {}
+        self.foreground_observations = {}
         self.last_result_call_id = None
         self.visual_read_constraints = []
 
@@ -220,6 +224,119 @@ class PhoneTools:
     def _wire_call(self, call_id, shell):
         return {'call_id': call_id, 'tool': 'adb.exec', 'argv': ['-s', SERIAL, 'shell', shell]}
 
+    def remember_foreground(self, call_id, page, viewport, result_sha256):
+        """Retain an original foreground observation; replaying history cannot refresh it."""
+        observed = page_state(page)
+        viewport_sha = validate_viewport(viewport)
+        value = {'call_id':call_id, 'turn':dict(self.binding), **observed,
+                 'page_state':page, 'page_state_sha256':sha(page.encode()),
+                 'viewport':viewport, 'viewport_sha256':viewport_sha,
+                 'original_result_sha256':result_sha256}
+        previous = self.foreground_observations.get(call_id)
+        if previous is not None:
+            require({k:v for k,v in previous.items() if k != 'received_monotonic'} == value,
+                    'retained foreground observation changed')
+            return previous
+        value['received_monotonic'] = time.monotonic()
+        self.foreground_observations[call_id] = value
+        return value
+
+    def current_foreground(self):
+        value = self.foreground_observations.get(self.last_result_call_id)
+        if (value is None or value['turn'] != self.binding
+                or not 0 <= time.monotonic() - value['received_monotonic'] <= 120):
+            return None
+        return value
+
+    def _current_screenshot(self, screenshot_id):
+        latest = self.latest
+        require(latest and latest['call_id'] == screenshot_id
+                and latest['attached_round'] == self.round
+                and latest['turn'] == self.binding,
+                'screen input requires this turn and round\'s current attached screenshot')
+        require(0 <= time.monotonic() - latest['received_monotonic'] <= 120,
+                'screen input screenshot expired; no input dispatched')
+        validate_viewport(latest['viewport'])
+        observed = page_state(latest['page_state'])
+        require(observed == latest['observed_page']
+                and sha(latest['page_state'].encode()) == latest['page_state_sha256']
+                and SHA256.fullmatch(latest['source_png_sha256'])
+                and SHA256.fullmatch(latest['image_sha256']),
+                'screen input screenshot page/provenance binding differs')
+        return latest
+
+    def _screen_input(self, tool, args, command, token):
+        """Map one closed input shape; the model never supplies executable text.
+
+        Every operation shares the same exact-image, focus, unlocked-page and
+        viewport checks as tap. Back/Home are fixed keycodes, not a generic key
+        capability. The receipt proves dispatch completed, not its UI outcome.
+        """
+        counts = {'phone.tap':3, 'phone.swipe':6, 'phone.long_press':4,
+                  'phone.back':1, 'phone.home':1}
+        require(tool in counts and command == '' and len(args) == counts[tool],
+                'screen input has unsupported command or argument shape')
+        require(tool == 'phone.tap' or not self.visual_read_constraints,
+                'one-shot visual contract does not admit alternate input actions')
+        latest = self._current_screenshot(args[0])
+        points, duration = [], None
+        if tool in {'phone.tap', 'phone.swipe', 'phone.long_press'}:
+            count = 4 if tool == 'phone.swipe' else 2
+            encoded = args[1:1+count]
+            require(all(isinstance(v, str) and re.fullmatch(r'0|[1-9][0-9]{0,4}', v)
+                        for v in encoded), 'screen input coordinates must be canonical integers')
+            width, height = latest['encoded_size']
+            require(type(width) is int and type(height) is int and 1 <= width <= 1600
+                    and 1 <= height <= 1600, 'screen input encoded size differs')
+            for index in range(0, count, 2):
+                x, y = map(int, encoded[index:index+2])
+                require(0 <= x < width and 0 <= y < height,
+                        'screen input point is outside the attached image')
+                original_x = (2 * x * ORIGINAL_SIZE[0] + width) // (2 * width)
+                original_y = (2 * y * ORIGINAL_SIZE[1] + height) // (2 * height)
+                require(0 <= original_x < ORIGINAL_SIZE[0] and 0 <= original_y < ORIGINAL_SIZE[1],
+                        'screen input mapped coordinate is outside the original display')
+                points.append(([x, y], [original_x, original_y]))
+        if tool in {'phone.swipe', 'phone.long_press'}:
+            require(isinstance(args[-1], str) and re.fullmatch(r'[1-9][0-9]{2,3}', args[-1]),
+                    'gesture duration must be a canonical integer')
+            duration = int(args[-1])
+            require((500 if tool == 'phone.long_press' else 100) <= duration <= 1500,
+                    'gesture duration is outside the bounded input interval')
+        if tool == 'phone.tap':
+            input_argv = ['tap'] + list(map(str, points[0][1]))
+        elif tool == 'phone.long_press':
+            input_argv = ['swipe'] + list(map(str, points[0][1] * 2)) + [str(duration)]
+        elif tool == 'phone.swipe':
+            require(points[0][1] != points[1][1], 'swipe endpoints coincide; use typed long_press')
+            input_argv = ['swipe'] + list(map(str, points[0][1] + points[1][1])) + [str(duration)]
+        else:
+            input_argv = ['keyevent', '4' if tool == 'phone.back' else '3']
+        shell = self._serial_guard() + '[ "$(dumpsys display | grep \'mViewports=\')" = ' + shlex.quote(latest['viewport']) + ' ] || exit 68; '
+        shell += page_equality_guard(latest['page_state'])
+        guard_path = '/data/local/tmp/hepta-input-guard-' + token + '.png'
+        shell += 'umask 077; test ! -e ' + shlex.quote(guard_path) + ' && test ! -L ' + shlex.quote(guard_path) + ' || exit 66; '
+        cleanup = 'hepta_guard_rc=$?; trap - 0; rm -f -- ' + shlex.quote(guard_path) + ' || exit 69; exit "$hepta_guard_rc"'
+        shell += 'trap ' + shlex.quote(cleanup) + ' 0; '
+        shell += 'screencap -d ' + PHYSICAL_DISPLAY + ' -p ' + shlex.quote(guard_path) + ' || exit 67; '
+        shell += '[ "$(sha256sum ' + shlex.quote(guard_path) + " | cut -d ' ' -f 1)\" = " + shlex.quote(latest['source_png_sha256']) + ' ] || exit 71; '
+        shell += page_equality_guard(latest['page_state'])
+        shell += '[ "$(dumpsys display | grep \'mViewports=\')" = ' + shlex.quote(latest['viewport']) + ' ] || exit 68; '
+        shell += 'input -d 0 ' + ' '.join(input_argv)
+        record = {'source_image_call_id':args[0], 'source_image_sha256':latest['image_sha256'],
+                  'page_state_sha256':latest['page_state_sha256'],
+                  'source_png_sha256':latest['source_png_sha256'],
+                  'exact_pixel_and_focus_guard':True, 'guard_png_path':guard_path,
+                  'package':latest['observed_page']['component'].split('/')[0]}
+        if tool in {'phone.tap', 'phone.long_press'}:
+            record.update(encoded_xy=points[0][0], original_xy=points[0][1])
+        elif tool == 'phone.swipe':
+            record.update(encoded_start_xy=points[0][0], original_start_xy=points[0][1],
+                          encoded_end_xy=points[1][0], original_end_xy=points[1][1])
+        if duration is not None:
+            record['duration_ms'] = duration
+        return shell, record
+
     def map(self, decision):
         call_id, tool = decision['call_id'], decision['tool']
         token = self._token(call_id)
@@ -229,7 +346,7 @@ class PhoneTools:
         if tool == 'phone.screenshot':
             require(command == '' and args == ['0'], 'screenshot requires empty command and argv[0]')
             require(SHA256.fullmatch(SCREEN_JAR_SHA256), 'screenshot codec artifact not qualified')
-            budget = min(MAX_IMAGE_BYTES, MAX_TURN_IMAGE_BYTES - self.encoded_bytes_used)
+            budget = min(MAX_IMAGE_BYTES, self.max_turn_image_bytes - self.encoded_bytes_used)
             require(budget >= MIN_IMAGE_BUDGET, 'turn screenshot byte budget exhausted; no capture dispatched')
             path = '/data/local/tmp/hepta-shot-' + token + '.png'
             shell = self._serial_guard() + 'umask 077; '
@@ -267,37 +384,9 @@ class PhoneTools:
             record.update(package=args[0], view_id=args[1], expected_text=args[2], requested_text=command,
                           requested_utf8_sha256=sha(command.encode()))
             self.invalidate()
-        elif tool == 'phone.tap':
-            require(command == '' and len(args) == 3 and self.latest
-                    and self.latest['call_id'] == args[0] and self.latest['attached_round'] == self.round,
-                    'phone.tap requires the current completion\'s latest valid screenshot')
-            require(time.monotonic() - self.latest['received_monotonic'] <= 120,
-                    'phone.tap screenshot expired; no input dispatched')
-            require(all(isinstance(v, str) and re.fullmatch(r'0|[1-9][0-9]{0,4}', v) for v in args[1:]),
-                    'phone.tap coordinates must be canonical nonnegative integers')
-            x, y = map(int, args[1:]); width, height = self.latest['encoded_size']
-            require(0 <= x < width and 0 <= y < height, 'phone.tap point is outside the attached image')
-            original_x = (2 * x * ORIGINAL_SIZE[0] + width) // (2 * width)
-            original_y = (2 * y * ORIGINAL_SIZE[1] + height) // (2 * height)
-            require(0 <= original_x < ORIGINAL_SIZE[0] and 0 <= original_y < ORIGINAL_SIZE[1],
-                    'phone.tap mapped coordinate is outside the original display')
-            shell = self._serial_guard() + '[ "$(dumpsys display | grep \'mViewports=\')" = ' + shlex.quote(self.latest['viewport']) + ' ] || exit 68; '
-            shell += page_equality_guard(self.latest['page_state'])
-            guard_path = '/data/local/tmp/hepta-tap-guard-' + token + '.png'
-            shell += 'umask 077; test ! -e ' + shlex.quote(guard_path) + ' && test ! -L ' + shlex.quote(guard_path) + ' || exit 66; '
-            cleanup = 'hepta_guard_rc=$?; trap - 0; rm -f -- ' + shlex.quote(guard_path) + ' || exit 69; exit "$hepta_guard_rc"'
-            shell += 'trap ' + shlex.quote(cleanup) + ' 0; '
-            shell += 'screencap -d ' + PHYSICAL_DISPLAY + ' -p ' + shlex.quote(guard_path) + ' || exit 67; '
-            shell += '[ "$(sha256sum ' + shlex.quote(guard_path) + " | cut -d ' ' -f 1)\" = " + shlex.quote(self.latest['source_png_sha256']) + ' ] || exit 71; '
-            shell += page_equality_guard(self.latest['page_state'])
-            shell += '[ "$(dumpsys display | grep \'mViewports=\')" = ' + shlex.quote(self.latest['viewport']) + ' ] || exit 68; '
-            shell += 'input -d 0 tap ' + str(original_x) + ' ' + str(original_y)
-            record.update(source_image_call_id=args[0], source_image_sha256=self.latest['image_sha256'],
-                          encoded_xy=[x, y], original_xy=[original_x, original_y],
-                          page_state_sha256=self.latest['page_state_sha256'],
-                          source_png_sha256=self.latest['source_png_sha256'],
-                          exact_pixel_and_focus_guard=True, guard_png_path=guard_path,
-                          package=self.latest['observed_page']['component'].split('/')[0])
+        elif tool in SCREEN_INPUTS:
+            shell, input_record = self._screen_input(tool, args, command, token)
+            record.update(input_record)
             self.invalidate()
         elif tool == 'phone.read_text':
             require(command == '' and 2 <= len(args) <= 6 and PACKAGE.fullmatch(args[0])
@@ -373,7 +462,7 @@ class PhoneTools:
                 'screenshot JPEG SOF dimensions differ from codec metadata')
         require(abs(size[0] * ORIGINAL_SIZE[1] - size[1] * ORIGINAL_SIZE[0]) <= max(ORIGINAL_SIZE),
                 'screenshot encoding changed the display aspect ratio')
-        require(self.encoded_bytes_used + len(image) <= MAX_TURN_IMAGE_BYTES,
+        require(self.encoded_bytes_used + len(image) <= self.max_turn_image_bytes,
                 'turn screenshot budget exceeded')
         path = self.run_dir / ('image-' + call['capture_id'] + '.jpg')
         fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -391,6 +480,7 @@ class PhoneTools:
                       turn_image_bytes_used=self.encoded_bytes_used)
         self.atomic_record(self.run_dir / ('capture-' + call['capture_id'] + '.json'), result)
         self.images[call_id] = result
+        self.remember_foreground(call_id, page_before, before, source_hash)
         if observed_page['component'] == HEPTA_FULL_COMPONENT:
             self.verified_facts[call_id] = {'kind': 'foreground_hepta', 'call_id': call_id,
                 'original_result_sha256': source_hash, 'component': observed_page['component'],
@@ -483,11 +573,13 @@ class PhoneTools:
                     'package': call['package'], 'view_id': call['view_id'], 'utf8_sha256': sha(readback),
                     'original_result_sha256': sha(original['content'].encode()),
                     'evidence_type': 'focused_unicode_helper_exact_readback'}
-            elif call['semantic_tool'] == 'phone.tap':
+            elif call['semantic_tool'] in SCREEN_INPUTS:
                 actual = strict_json(original['content'])
                 raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'))
-                require(raw == b'', 'qualified tap produced unexpected output')
-                self.verified_facts[call_id] = {'kind': 'visual_tap_executed', 'call_id': call_id,
+                require(raw == b'', 'qualified screen input produced unexpected output')
+                kind = 'visual_tap_executed' if call['semantic_tool'] == 'phone.tap' else 'screen_action_executed'
+                self.verified_facts[call_id] = {'kind': kind, 'call_id': call_id,
+                    'semantic_tool':call['semantic_tool'],
                     'package': call['package'], 'source_image_call_id': call['source_image_call_id'],
                     'source_image_sha256': call['source_image_sha256'],
                     'original_result_sha256': sha(original['content'].encode()),
@@ -496,9 +588,12 @@ class PhoneTools:
                 actual = strict_json(original['content'])
                 raw = native_streams(actual, call_id, call.get('wire_tool', 'adb.exec'))
                 require(len(raw) <= 400000, 'public text receipt exceeds transport bound')
-                observation, viewport = verify_public_text(strict_json(raw), call['capture_id'],
+                value = strict_json(raw)
+                observation, viewport = verify_public_text(value, call['capture_id'],
                                                             call['package'], call['view_ids'])
                 validate_viewport(viewport)
+                self.remember_foreground(call_id, decode_text(value['page_before_b64'], 'public text page'),
+                                         viewport, sha(original['content'].encode()))
                 fact = {'kind': 'public_text_observation', 'call_id': call_id,
                         'original_result_sha256': sha(original['content'].encode()),
                         **observation, 'evidence_type': 'focused_public_UI_XML_unique_view_readback'}
@@ -509,6 +604,8 @@ class PhoneTools:
                 value = strict_json(native_streams(actual, call_id, call.get('wire_tool', 'adb.exec')))
                 observed, viewport = verify_return(value, call['capture_id'])
                 validate_viewport(viewport)
+                self.remember_foreground(call_id, decode_text(value['page_b64'], 'return page'),
+                                         viewport, sha(original['content'].encode()))
                 fact = {'kind': 'foreground_hepta', 'call_id': call_id,
                         'original_result_sha256': sha(original['content'].encode()),
                         'component': observed['component'], 'display_id': 0,

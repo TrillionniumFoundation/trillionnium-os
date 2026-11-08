@@ -41,7 +41,11 @@ def private_directory(directory):
             'directory must be private and canonical')
 
 
-def private_json(path):
+def private_json(path, *, max_bytes=16384):
+    # Existing contracts/claims retain their 16 KiB limit. Callers reading a
+    # complete bounded wire receipt may explicitly select a larger fixed cap.
+    require(type(max_bytes) is int and 1 <= max_bytes <= 1024 * 1024,
+            'private JSON read bound differs')
     try:
         fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
     except FileNotFoundError:
@@ -49,9 +53,9 @@ def private_json(path):
     try:
         info = os.fstat(fd)
         require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and info.st_uid == os.getuid()
-                and stat.S_IMODE(info.st_mode) == 0o600 and 0 < info.st_size <= 16384,
+                and stat.S_IMODE(info.st_mode) == 0o600 and 0 < info.st_size <= max_bytes,
                 'file identity or size differs')
-        raw = os.read(fd, 16385)
+        raw = os.read(fd, max_bytes + 1)
         after, named = os.fstat(fd), path.lstat()
         fields = ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns', 'st_nlink')
         require(len(raw) == info.st_size and all(getattr(info, key) == getattr(after, key)

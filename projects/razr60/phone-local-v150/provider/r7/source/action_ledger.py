@@ -4,6 +4,7 @@ A new call_id is not new authority for the same recorded effect. Pending effects
 block later mutations until an original receipt is independently inspected.
 """
 import datetime
+import base64
 import contextlib
 import fcntl
 import threading
@@ -14,14 +15,16 @@ from pathlib import Path
 import re
 import stat
 
-from provider_openai_compatible import ProviderError
+from provider_openai_compatible import ProviderError, MAX_LINE
 from task_postconditions import private_directory, private_json, write_exclusive
 from retirement_recovery import (EXECUTOR_BINDING, ACTION_ID, RESOLUTION_STATE, PROOF_SHA256,
     VERIFIER_SHA256, ORIGINAL_EXECUTOR, validate_proof, retain_original_proof,
     validate_retired_resolution, require_r6_terminal)
 
-MUTATIONS = {'phone.open_app', 'phone.tap', 'phone.input_text', 'phone.return_hepta'}
-BUSINESS_MUTATIONS = {'phone.tap', 'phone.input_text'}
+MUTATIONS = {'phone.open_app', 'phone.tap', 'phone.input_text', 'phone.return_hepta',
+             'phone.swipe', 'phone.long_press', 'phone.back', 'phone.home'}
+BUSINESS_MUTATIONS = {'phone.tap', 'phone.input_text', 'phone.swipe', 'phone.long_press',
+                      'phone.back', 'phone.home'}
 
 
 def require(ok, message):
@@ -39,13 +42,28 @@ def fingerprint(record):
         detail = {'kind': kind, 'package': record['package'], 'view_id': record['view_id'],
                   'before_utf8_sha256': sha(record['expected_text'].encode()),
                   'requested_utf8_sha256': record['requested_utf8_sha256']}
-    elif kind == 'phone.tap':
+    elif kind in {'phone.tap', 'phone.swipe', 'phone.long_press', 'phone.back', 'phone.home'}:
         detail = {'kind': kind, 'package': record['package'],
                   'source_png_sha256': record['source_png_sha256'],
-                  'page_state_sha256': record['page_state_sha256'],
-                  'original_xy': record['original_xy']}
+                  'page_state_sha256': record['page_state_sha256']}
+        if kind in {'phone.tap', 'phone.long_press'}:
+            detail['original_xy'] = record['original_xy']
+        elif kind == 'phone.swipe':
+            detail.update(original_start_xy=record['original_start_xy'],
+                          original_end_xy=record['original_end_xy'])
+        if kind in {'phone.swipe', 'phone.long_press'}:
+            detail['duration_ms'] = record['duration_ms']
     elif kind == 'phone.open_app':
         detail = {'kind': kind, 'component': record['component']}
+        navigation = record.get('navigation_reentry')
+        if navigation is not None:
+            # A fresh call or screenshot ID alone does not create a new
+            # effect. This epoch advances only after the prior target launch
+            # has an independently validated native receipt and a departure.
+            detail.update(previous_verified_open_action_id=navigation['previous_action_id'],
+                          source_component=navigation['source_component'],
+                          source_page_state_sha256=navigation['source_page_state_sha256'],
+                          source_viewport_sha256=navigation['source_viewport_sha256'])
     elif kind == 'phone.return_hepta':
         detail = {'kind': kind, 'component': 'org.trillionnium.owneropen/.OwnerOpenShellActivity'}
     else:
@@ -137,14 +155,30 @@ class ActionLedger:
         token, effect_key = record['capture_id'], fingerprint(record)
         require(re.fullmatch('[0-9a-f]{32}', token), 'action identity malformed')
         turn_key = {key: identity[key] for key in ('session_id', 'profile_id', 'task_id', 'turn_id')}
-        for previous, _digest, resolution in self.intents():
+        rows = self.intents()
+        for previous, _digest, resolution in rows:
             require(resolution is not None,
                     'an original action is unresolved; inspect its sidecar receipt before a new mutation: ' + previous['action_id'])
             if previous['effect_fingerprint'] == effect_key:
                 same_turn = previous['semantic_identity'] == turn_key
-                require(not same_turn and (record['semantic_tool'] not in BUSINESS_MUTATIONS
-                        or resolution.get('state') == 'known_not_dispatched'),
+                independent = False
+                if not same_turn and record['semantic_tool'] in BUSINESS_MUTATIONS:
+                    independent = self._independent_request(previous, resolution, turn_key)
+                require(not same_turn and (record['semantic_tool'] not in BUSINESS_MUTATIONS or independent),
                         'recorded effect already attempted; new call_id/turn cannot replay the same bound effect')
+        navigation = record.get('navigation_reentry')
+        if navigation is not None:
+            require(record['semantic_tool'] == 'phone.open_app',
+                    'navigation context cannot authorize another input kind')
+            linked = [(value, resolution) for value, _digest, resolution in rows
+                      if value['action_id'] == navigation['previous_action_id']]
+            require(len(linked) == 1 and linked[0][0]['semantic_identity'] == turn_key
+                    and linked[0][0]['semantic_tool'] == 'phone.open_app'
+                    and linked[0][0]['call_id'] == navigation['previous_call_id']
+                    and linked[0][0]['effect_fingerprint'] == navigation['previous_effect_fingerprint']
+                    and linked[0][1] is not None
+                    and linked[0][1].get('state') == 'original_native_result_independently_validated',
+                    'new navigation requires the original validated launch, never an unknown or merely inspected effect')
         wire = record['wire_call']
         require(wire.get('tool') == 'shell.exec'
                 and wire.get('argv', [])[:3] == ['/usr/bin/python3', EXECUTOR_BINDING['client_path'], 'execute'],
@@ -164,7 +198,53 @@ class ActionLedger:
                  'run_dir': str(self.run_dir), 'state': 'reserved_before_native_dispatch_result_unknown',
                  'created_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                  'automatic_replay': False}
+        if navigation is not None:
+            value['navigation_reentry'] = dict(navigation)
         write_exclusive(self.directory/(token+'.intent.json'), value)
+
+    def _independent_request(self, previous, resolution, turn_key):
+        """New accepted owner turn authority; UI task IDs may span many turns."""
+        if (previous['semantic_identity']['turn_id'] == turn_key['turn_id']
+                or resolution.get('state') not in {'known_not_dispatched',
+                                                  'original_native_result_independently_validated'}):
+            return False
+        key = sha(json.dumps([turn_key[name] for name in
+                  ('session_id', 'profile_id', 'task_id', 'turn_id')], separators=(',', ':')).encode())
+        claimed = private_json(self.directory.parent/'claims'/key)
+        if claimed is None:
+            return False
+        claim, _digest = claimed
+        if (claim.get('state') != 'accepted_no_redispatch' or claim.get('run_dir') != str(self.run_dir)
+                or any(claim.get('identity', {}).get(name) != value for name, value in turn_key.items())
+                or re.fullmatch('[0-9a-f]{64}', claim.get('request_sha256', '')) is None):
+            return False
+        accepted = private_json(self.run_dir/'accepted-owner-request.json', max_bytes=MAX_LINE)
+        if accepted is None:
+            return False
+        owner, _digest = accepted
+        if (owner.get('schema') != 'hepta.accepted-owner-request.v150.1'
+                or owner.get('source') != 'accepted_turn_start_frame'
+                or owner.get('identity') != claim.get('identity')
+                or owner.get('request_sha256') != claim['request_sha256']):
+            return False
+        try:
+            request = base64.b64decode(owner.get('request_utf8_b64', ''), validate=True)
+            request.decode('utf-8', errors='strict')
+        except (TypeError, ValueError, UnicodeError):
+            return False
+        if (not 0 < len(request) <= MAX_LINE // 2 or b'\0' in request
+                or base64.b64encode(request).decode() != owner['request_utf8_b64']
+                or sha(request) != claim['request_sha256']):
+            return False
+        if resolution['state'] == 'original_native_result_independently_validated':
+            # Preserve and recheck the original receipt rather than treating a
+            # process-only inspect or a model's success claim as verification.
+            result = private_json(Path(previous['run_dir'])/('result-'+sha(previous['call_id'].encode())+'.json'),
+                                  max_bytes=MAX_LINE)
+            if (result is None or result[1] != resolution.get('native_result_sha256')
+                    or result[0].get('call_id') != previous['call_id']):
+                return False
+        return True
 
     @locked
     def mark_not_dispatched(self, action_id, reason):

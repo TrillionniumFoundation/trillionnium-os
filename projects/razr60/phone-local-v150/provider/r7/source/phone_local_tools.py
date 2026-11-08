@@ -10,13 +10,15 @@ import os
 from pathlib import Path
 import re
 import shlex
+import time
 import xml.etree.ElementTree as ET
 
 from provider_openai_compatible import ProviderError
 from retirement_recovery import EXECUTOR_BINDING
+from action_ledger import fingerprint
 from phone_observation_tools import (PhoneTools, SERIAL, PHYSICAL_DISPLAY,
                                     strict_json, native_streams, validate_viewport, sha)
-from phone_task_guards import (page_capture, b64_variable, page_state, component,
+from phone_task_guards import (page_capture, b64_variable, page_state, page_equality_guard, component,
                                decode_text, public_text_command, verify_public_text)
 
 COMPONENT_RE = re.compile(r'[A-Za-z][A-Za-z0-9_.$]*/(?:\.)?[A-Za-z][A-Za-z0-9_.$]*\Z')
@@ -86,11 +88,37 @@ class PhoneLocalTools(PhoneTools):
             return super()._wire_call(call_id, shell)
         validate_executor(self.executor)
         action_id = self._token(call_id)
+        timeout_ms = self.executor['timeout_ms']
+        if self.action_deadline is not None:
+            timeout_ms = min(timeout_ms, int((self.action_deadline - time.monotonic()) * 1000))
+            require(timeout_ms >= 1, 'task deadline expired before mapping a native action')
         argv = [self.executor['python'], self.executor['client_path'], 'execute',
                 '--action-id', action_id,
                 '--command-b64', base64.b64encode(shell.encode()).decode(),
-                '--timeout-ms', str(self.executor['timeout_ms'])]
+                '--timeout-ms', str(timeout_ms)]
         return {'call_id': call_id, 'tool': 'shell.exec', 'argv': argv}
+
+    def _open_navigation(self, target):
+        """A verified departure permits a new navigation, never an uncertain replay."""
+        target = component(target)
+        current = self.current_foreground()
+        if current is not None and current['component'] == target:
+            return False, None
+        prior = [call for call in self.calls.values()
+                 if call['semantic_tool'] == 'phone.open_app' and component(call['component']) == target]
+        if not prior:
+            return True, None
+        previous = prior[-1]
+        fact = self.local_observations.get(previous['call_id'])
+        order = list(self.calls)
+        if (current is None or fact is None or fact.get('kind') != 'app_open_verified'
+                or current['call_id'] not in self.calls
+                or order.index(current['call_id']) <= order.index(previous['call_id'])):
+            return False, None
+        return True, {'observation':current, 'previous':previous}
+
+    def open_app_allowed(self, target):
+        return self._open_navigation(target)[0]
 
     def map(self, decision):
         tool = decision['tool']
@@ -107,7 +135,23 @@ class PhoneLocalTools(PhoneTools):
             target = self.apps[args[0]]['component']
             require(target.split('/')[0] != 'org.trillionnium.owneropen',
                     'HEPTA return must use typed phone.return_hepta')
+            allowed, navigation = self._open_navigation(target)
+            require(allowed, 'app is already observed foreground or the prior launch has no verified departure; observe before navigating again')
             shell = self._serial_guard() + current_viewport_guard()
+            if navigation is not None:
+                observation, previous = navigation['observation'], navigation['previous']
+                # A new navigation is conditional on the fresh, different
+                # foreground actually remaining present at native dispatch.
+                shell += page_equality_guard(observation['page_state'])
+                shell += '[ "$(dumpsys display | grep \'mViewports=\')" = ' + shlex.quote(observation['viewport']) + ' ] || exit 68; '
+                record['navigation_reentry'] = {
+                    'previous_action_id':previous['capture_id'],
+                    'previous_call_id':previous['call_id'],
+                    'previous_effect_fingerprint':fingerprint(previous),
+                    'source_call_id':observation['call_id'],
+                    'source_component':observation['component'],
+                    'source_page_state_sha256':observation['page_state_sha256'],
+                    'source_viewport_sha256':observation['viewport_sha256']}
             shell += 'hepta_launch=$(am start --display 0 -W -n ' + shlex.quote(target) + ' 2>&1); hepta_launch_rc=$?; '
             shell += page_capture('hepta_open_page')
             shell += "hepta_open_viewport=$(dumpsys display | grep 'mViewports='); "
@@ -169,11 +213,16 @@ class PhoneLocalTools(PhoneTools):
                 observed = page_state(decode_text(value['page_b64'], 'app foreground'))
                 require(observed['component'] == component(call['component']), 'launched app is not actual foreground')
                 validate_viewport(decode_text(value['viewport_b64'], 'app viewport'))
+                self.remember_foreground(call_id, decode_text(value['page_b64'], 'app foreground'),
+                                         decode_text(value['viewport_b64'], 'app viewport'),
+                                         sha(original['content'].encode()))
                 fact = {'kind': 'app_open_verified', 'call_id': call_id, 'package': call['package'],
                         'component': observed['component'], 'display_id': 0}
             else:
                 observed, viewport = verify_public_text(value, token, call['package'], [])
                 validate_viewport(viewport)
+                self.remember_foreground(call_id, decode_text(value['page_before_b64'], 'public app page'),
+                                         viewport, sha(original['content'].encode()))
                 root = ET.fromstring(decode_text(value['xml_b64'], 'public UI hierarchy', 196608))
                 nodes = []
                 for node in root.iter('node'):

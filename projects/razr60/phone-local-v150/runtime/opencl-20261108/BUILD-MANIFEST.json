@@ -1,0 +1,129 @@
+{
+  "status": "build_complete_static_inspection_passed",
+  "scope": "isolated Android OpenCL candidate; no phone installation or execution",
+  "upstream_unmodified": true,
+  "hepta_cancel_receipt_patches_included": false,
+  "llama": {
+    "project": "llama.cpp",
+    "url": "https://github.com/ggml-org/llama.cpp.git",
+    "archive_url": "https://codeload.github.com/ggml-org/llama.cpp/tar.gz/d6be065572cdb7bf64014c8c5771e210c9570e44",
+    "commit": "d6be065572cdb7bf64014c8c5771e210c9570e44",
+    "archive_sha256": "2c9c3a5265e4180d0bbde672b2d6d8f177fcf360dd79127357ca00923a0483e7",
+    "archive_bytes": 39127760,
+    "files": 4479,
+    "unmodified_upstream_archive": true,
+    "download_host": "pocket4",
+    "transfer": "existing hepta-pocket4 SSH alias to Mac"
+  },
+  "OpenCL-Headers": {
+    "project": "OpenCL-Headers",
+    "url": "https://github.com/KhronosGroup/OpenCL-Headers.git",
+    "exit": 0,
+    "commit": "82f60316cc142e7b21dc1d8983b26de18858fbd9"
+  },
+  "ndk_path": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358",
+  "ndk_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "cmake_version": "cmake version 4.3.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).",
+  "target": "Android arm64-v8a API28",
+  "jobs": 4,
+  "link_only_phone_vendor_lib": {
+    "path": "/vendor/lib64/libOpenCL.so",
+    "bytes": 87504,
+    "sha256": "cd35cf1ecbfb2053e45566421aa605f819b69ceb5264706ed4feb15bed0942f9",
+    "redistributed": false
+  },
+  "configure_argv": [
+    "/opt/homebrew/bin/cmake",
+    "-S",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/llama.cpp",
+    "-B",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/build-opencl",
+    "-G",
+    "Unix Makefiles",
+    "-DCMAKE_MAKE_PROGRAM=/usr/bin/make",
+    "-DCMAKE_TOOLCHAIN_FILE=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake",
+    "-DANDROID_ABI=arm64-v8a",
+    "-DANDROID_PLATFORM=android-28",
+    "-DANDROID_STL=c++_static",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DBUILD_SHARED_LIBS=OFF",
+    "-DGGML_NATIVE=OFF",
+    "-DGGML_OPENMP=OFF",
+    "-DGGML_OPENCL=ON",
+    "-DGGML_OPENCL_USE_ADRENO_KERNELS=ON",
+    "-DGGML_OPENCL_EMBED_KERNELS=ON",
+    "-DGGML_OPENCL_USE_ADRENO_BIN_KERNELS=OFF",
+    "-DOpenCL_INCLUDE_DIR=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/OpenCL-Headers",
+    "-DOpenCL_LIBRARY=/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/vendor-link/libOpenCL.so",
+    "-DPython3_EXECUTABLE=/usr/bin/python3",
+    "-DLLAMA_OPENSSL=OFF",
+    "-DLLAMA_SUBPROCESS=OFF",
+    "-DLLAMA_BUILD_TESTS=OFF",
+    "-DLLAMA_BUILD_EXAMPLES=OFF",
+    "-DLLAMA_BUILD_TOOLS=ON",
+    "-DLLAMA_BUILD_SERVER=ON",
+    "-DLLAMA_BUILD_APP=OFF",
+    "-DLLAMA_BUILD_UI=OFF",
+    "-DLLAMA_USE_PREBUILT_UI=OFF",
+    "-DLLAMA_BUILD_COMMIT=d6be065572cdb7bf64014c8c5771e210c9570e44"
+  ],
+  "build_argv": [
+    "/opt/homebrew/bin/cmake",
+    "--build",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/build-opencl",
+    "--target",
+    "llama-server",
+    "llama-bench",
+    "llama-mtmd-cli",
+    "--parallel",
+    "4"
+  ],
+  "phone_validation": "not run; parent owns phone deployment and GPU verification",
+  "host_help_validation": "Android ELF cannot execute natively on macOS; --help must be executed on Android after isolated deployment",
+  "artifacts": [
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/artifacts/llama-server",
+      "bytes": 210725840,
+      "sha256": "7b2210438f28c912a8b701e12acc4600f25b05d44b6ecffebdcd593ea22b818c"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/artifacts/llama-bench",
+      "bytes": 152368312,
+      "sha256": "94fc1388a4066020790e3767f4dc166527c123700b009cadf2c497bf69f39ab9"
+    },
+    {
+      "path": "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/artifacts/llama-mtmd-cli",
+      "bytes": 170187328,
+      "sha256": "dcaef85ffd0378177ca81516f081f63380eb153c857b09c96a8a7117092d0cc9"
+    }
+  ],
+  "completed_unix": 1794126654.185697,
+  "source_tree_sha256_before": "c8390d3da1f25f74309f2c346b245017bff9545eaf56211aef6c99138de89608",
+  "source_tree_sha256_after": "c8390d3da1f25f74309f2c346b245017bff9545eaf56211aef6c99138de89608",
+  "deploy_artifacts": [
+    {
+      "file": "llama-server",
+      "bytes": 15799632,
+      "sha256": "ca923276bd04394ae80da52449cbf51f4dce2bcfc2ea15f4f065c2636faaa4ef"
+    },
+    {
+      "file": "llama-bench",
+      "bytes": 9731424,
+      "sha256": "e9d46974977f11089855b45426a54ad7b91315048aa81cc06a18b0fd36291265"
+    },
+    {
+      "file": "llama-mtmd-cli",
+      "bytes": 13179952,
+      "sha256": "fd38009f6ccad4f158688309470f1a292f2fed0e819c7f273fb6fed2f0f18d1b"
+    }
+  ],
+  "deploy_shared_libraries": [],
+  "deploy_phone_library_requirement": "uses existing /vendor/lib64/libOpenCL.so; vendor libraries are not copied",
+  "deploy_stripping": {
+    "tool": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+    "args": [
+      "--strip-unneeded"
+    ]
+  },
+  "host_phone_execution": "not performed"
+}

@@ -1,0 +1,19 @@
+{
+  "candidate_only": true,
+  "phone_execution": "not performed",
+  "source_commit": "d6be065572cdb7bf64014c8c5771e210c9570e44",
+  "build_argv": [
+    "/opt/homebrew/bin/cmake",
+    "--build",
+    "/Users/qianqi/Documents/Codex/2026-10-18/pocket4-razr60-ui/work/phone-offline-gpu-20261108/build-opencl",
+    "--target",
+    "llama-cli",
+    "--parallel",
+    "4"
+  ],
+  "shared_build_manifest_sha256": "ad5351457a11d3510963220934cec00b3f7e6163844fcc60e00fa6140f3fbdfd",
+  "file": "llama-cli",
+  "bytes": 15920848,
+  "sha256": "b632be32926ebae64ad104b154c235a31b80f3a219c5dcc6269a7bf1e3fdfe14",
+  "extra_shared_libraries": []
+}

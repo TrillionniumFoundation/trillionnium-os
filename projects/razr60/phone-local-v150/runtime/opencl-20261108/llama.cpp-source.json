@@ -1,0 +1,12 @@
+{
+  "project": "llama.cpp",
+  "url": "https://github.com/ggml-org/llama.cpp.git",
+  "archive_url": "https://codeload.github.com/ggml-org/llama.cpp/tar.gz/d6be065572cdb7bf64014c8c5771e210c9570e44",
+  "commit": "d6be065572cdb7bf64014c8c5771e210c9570e44",
+  "archive_sha256": "2c9c3a5265e4180d0bbde672b2d6d8f177fcf360dd79127357ca00923a0483e7",
+  "archive_bytes": 39127760,
+  "files": 4479,
+  "unmodified_upstream_archive": true,
+  "download_host": "pocket4",
+  "transfer": "existing hepta-pocket4 SSH alias to Mac"
+}

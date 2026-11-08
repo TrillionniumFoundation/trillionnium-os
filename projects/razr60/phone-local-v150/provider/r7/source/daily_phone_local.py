@@ -21,7 +21,21 @@ import threading
 import time
 import uuid
 
-PARENTS = {'action_ledger.py': '727c684fc9e1a0fde410396b1aa85b6ca212aa83bb2d601577fef2b0c7601c4e', 'health_contracts.py': '00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d', 'model_health.py': '105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80', 'phone_local_http_worker.py': 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d', 'phone_local_tools.py': 'dd0fb20af8f3de229d4ce8d8dee47db335eb551e6f5db136fa8f5881c0ca6871', 'phone_observation_tools.py': 'bcea6fbc5d5efa39a0164623ac61bafb27577e4812b5de0384d2155e3f2c6243', 'phone_task_guards.py': 'f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59', 'provider_codex_host.py': 'cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039', 'provider_openai_compatible.py': '337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc', 'provider_phone_local.py': '8f57e86ec66e4588e2e6f43ea761f17e9ae02361791995ff2f5831a16e46dbe6', 'retirement_recovery.py': 'c1f5a77e32264f5f638f62f005f57c66fffeb60cf288ad036848ac4fceb74827', 'task_postconditions.py': '6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4'}
+# Explicit source-candidate pins based on upstream 2d8ad42; never refreshed at runtime.
+PARENTS = {
+    'action_ledger.py': 'f02159cacff4b010276b9a62397e449ccf89040d2fde9a07a122715da342393e',
+    'health_contracts.py': '00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d',
+    'model_health.py': '105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80',
+    'phone_local_http_worker.py': 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d',
+    'phone_local_tools.py': 'e21f49b6e46066200b4e2849d671f04c12930ace1bd5543c63df0e18b8bd5aea',
+    'phone_observation_tools.py': '24ee4f67f2f2fc12f74512090915177b8ca035db80f0a5537120d69944aa78ca',
+    'phone_task_guards.py': 'f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59',
+    'provider_codex_host.py': 'cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039',
+    'provider_openai_compatible.py': '337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc',
+    'provider_phone_local.py': 'd11dfd1b1c477e83fac6fe05af3c4498ba7ded07c32432c942d24ad757695524',
+    'retirement_recovery.py': '0e5e5c965e3e111e92c5b45eacbbf141996cfa0de4122bf98ad3c8d5f65af774',
+    'task_postconditions.py': '25305e7f44f396edd2cd04b095701c6b91be9c66d9beae20bfe75b403f5df964',
+}
 WORKER_SHA = 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d'
 IDENTITY = ('session_id', 'profile_id', 'task_id', 'turn_id')
 
@@ -347,6 +361,9 @@ def serve(args):
                      'readiness_scope': 'transport_only',
                      'model_health_path': str(args.state/'model-health-phone-local.json'),
                      'backend': 'phone_local_http', 'config_sha256': args.local_config_sha256,
+                     'configured_operation_profile':args.local_config.get('operation_profile', 'fixed19-v150-r7'),
+                     'configured_context_tokens':args.local_config.get('context_tokens'),
+                     'max_prompt_bytes':args.local_config['max_prompt_bytes'],
                      'inference_location_operator_attestation': 'phone',
                      'service_manifest_sha256': args.local_config['service_manifest_sha256']})
         try:
