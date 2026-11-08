@@ -219,6 +219,10 @@ public final class LocalModelEngine implements AutoCloseable {
                 put(receipt,"grammar_observation_id",r.controllerGrammar.observationId);
                 put(receipt,"grammar_current_package",r.controllerGrammar.currentPackage);
                 put(receipt,"grammar_file",grammar.getPath());
+                ObservedTargetLabels targets=r.controllerGrammar.targets;
+                put(receipt,"target_label_contract",new JSONObject().put("schema",ObservedTargetLabels.SCHEMA)
+                        .put("encoding",ObservedTargetLabels.ENCODING).put("observation_id",targets.observationId)
+                        .put("package",targets.packageName).put("sha256",targets.sha256).put("pairs_count",targets.labels.size()));
             }
             File resultFile = new File(run, "native-result.json"), rawFile = new File(run, "raw-text.txt");
             File stdout = new File(run, "stdout.log"), stderr = new File(run, "stderr.log");

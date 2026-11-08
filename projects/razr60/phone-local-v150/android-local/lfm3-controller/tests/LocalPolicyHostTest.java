@@ -2,6 +2,7 @@ import org.trillionnium.hepta.local.ActionDecision;
 import org.trillionnium.hepta.local.ActionPolicy;
 import org.trillionnium.hepta.local.LocalRuntimeConfig;
 import org.trillionnium.hepta.local.ModelFileVerifier;
+import org.trillionnium.hepta.local.ObservedTargetLabels;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,8 +14,11 @@ public final class LocalPolicyHostTest {
     private static final Set<String> NODES=new HashSet<>(Arrays.asList("n1","n7"));
     private static void check(boolean value,String message){checks++;if(!value)throw new AssertionError(message);}
     private static void policy(String action,String pkg,String extras,String current,boolean accepted)throws Exception{
+        if(("click".equals(action)||"type".equals(action)||"scroll".equals(action))&&extras.contains("\"node_id\""))extras=",\"node_label\":\"\""+extras;
         ActionDecision value=ActionDecision.parse("{\"action\":\""+action+"\",\"observation_id\":\""+OBS+"\",\"package\":\""+pkg+"\""+extras+"}");
-        boolean allowed=true;try{ActionPolicy.validateTextDecision(value,current,APPS,NODES);}catch(ActionDecision.InvalidActionException rejected){allowed=false;}
+        java.util.Map<String,String> labels=new java.util.HashMap<String,String>();for(String node:NODES)labels.put(node,"");
+        ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,OBS,current,labels);
+        boolean allowed=true;try{ActionPolicy.validateTextDecision(value,current,APPS,targets);}catch(ActionDecision.InvalidActionException rejected){allowed=false;}
         check(allowed==accepted,action+" package="+pkg+" current="+current);
     }
     public static void main(String[] args)throws Exception{

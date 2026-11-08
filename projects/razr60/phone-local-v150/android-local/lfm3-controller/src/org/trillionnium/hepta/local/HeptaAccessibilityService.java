@@ -189,13 +189,19 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private void clearSnapshot(){if(currentGraph!=null)currentGraph.close();if(currentBitmap!=null)currentBitmap.recycle();current=null;currentGraph=null;currentBitmap=null;}
 
     public void perform(final String taskId,final PhoneObservation expected,final ActionDecision decision,
-                        final Cancellation cancel,final ActionCallback callback){
-        main.post(new Runnable(){public void run(){performOnMain(taskId,expected,decision,cancel,callback);}});
+                        final ObservedTargetLabels targets,final Cancellation cancel,final ActionCallback callback){
+        main.post(new Runnable(){public void run(){performOnMain(taskId,expected,decision,targets,cancel,callback);}});
     }
-    private String validate(String taskId,PhoneObservation expected,ActionDecision action,Cancellation cancel){
+    private String validate(String taskId,PhoneObservation expected,ActionDecision action,ObservedTargetLabels targets,Cancellation cancel){
         if(cancel.isCancelled()||!owns(taskId))return "任务已停止";
         if(locked())return "手机已锁定";
         if(expected!=current||currentGraph==null||!expected.id.equals(action.observationId))return "stale:观察标识已失效";
+        // Use the controller's immutable, exact prompt projection. Never resolve a
+        // label to an ID or reconstruct a different ordering from the live tree.
+        if(targets==null||!expected.id.equals(targets.observationId)||!expected.packageName.equals(targets.packageName))
+            return "目标标签投影不属于本次观察";
+        if(action.nodeId!=null&&!targets.matches(action.observationId,action.packageName,action.nodeId,action.nodeLabel))
+            return "节点文字与标识不是本次观察提供的原始配对";
         long age=SystemClock.elapsedRealtime()-expected.capturedElapsedMillis;
         if(age<0||age>MAX_OBSERVATION_AGE_MS)return "stale:观察已过期";
         if(!"open".equals(action.action)&&!expected.packageName.equals(action.packageName))return "stale:动作应用与观察不一致";
@@ -210,8 +216,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return null;
     }
     private void performOnMain(final String taskId,final PhoneObservation expected,final ActionDecision action,
-                               final Cancellation cancel,final ActionCallback callback){
-        String invalid=validate(taskId,expected,action,cancel);
+                               final ObservedTargetLabels targets,final Cancellation cancel,final ActionCallback callback){
+        String invalid=validate(taskId,expected,action,targets,cancel);
         if(invalid!=null){callback.onResult(new ActionOutcome(false,false,invalid.startsWith("stale:"),invalid));return;}
         try{
             if("wait".equals(action.action)){
@@ -240,7 +246,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 boolean accepted=performGlobalAction("back".equals(action.action)?GLOBAL_ACTION_BACK:GLOBAL_ACTION_HOME);
                 finishAfter(350,accepted,accepted?"系统导航已接受":"系统导航未接受",callback);return;
             }
-            if("click".equals(action.action)&&action.nodeId==null){coordinateClick(taskId,expected,action,cancel,callback);return;}
+            if("click".equals(action.action)&&action.nodeId==null){coordinateClick(taskId,expected,action,targets,cancel,callback);return;}
             NodeRef reference=currentGraph.refs.get(action.nodeId);
             if(reference==null)throw new IllegalArgumentException("节点不属于这次观察");
             AccessibilityNodeInfo node=reference.node;
@@ -285,7 +291,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         main.postDelayed(new Runnable(){public void run(){callback.onResult(new ActionOutcome(accepted,accepted,false,detail));}},delay);
     }
     private void coordinateClick(final String taskId,final PhoneObservation expected,final ActionDecision action,
-                                 final Cancellation cancel,final ActionCallback callback){
+                                 final ObservedTargetLabels targets,final Cancellation cancel,final ActionCallback callback){
         if(capturePending){callback.onResult(new ActionOutcome(false,false,true,"stale:截图正在更新"));return;}
         final int x=Math.min(expected.width-1,(int)Math.round(action.x*(expected.width-1)/1000.0));
         final int y=Math.min(expected.height-1,(int)Math.round(action.y*(expected.height-1)/1000.0));
@@ -302,7 +308,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 if(captureSerial!=token){result.getHardwareBuffer().close();return;}
                 capturePending=false;captureSerial++;Bitmap fresh=null;
                 try{
-                    fresh=copyScreenshot(result);String invalid=validate(taskId,expected,action,cancel);
+                    fresh=copyScreenshot(result);String invalid=validate(taskId,expected,action,targets,cancel);
                     if(invalid!=null){callback.onResult(new ActionOutcome(false,false,invalid.startsWith("stale:"),invalid));return;}
                     if(fresh.getWidth()!=expected.width||fresh.getHeight()!=expected.height||!samePatch(currentBitmap,fresh,x,y)){
                         callback.onResult(new ActionOutcome(false,false,true,"stale:点击目标像素已变化"));return;

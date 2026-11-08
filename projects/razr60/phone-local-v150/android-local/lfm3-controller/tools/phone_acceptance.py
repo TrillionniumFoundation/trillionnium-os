@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 import secrets
 import shlex
+import struct
 import subprocess
 import sys
 import time
@@ -30,7 +31,11 @@ TERMINAL = {"model_reported_done", "partial", "failed", "cancelled", "blocked"}
 CONTROLLER_GRAMMAR_SCHEMAS = frozenset({
     "hepta.observed-action-gbnf.v1",
     "hepta.observed-action-gbnf.v2-reason-first",
+    "hepta.observed-action-gbnf.v3-label-first",
 })
+LABEL_ACTION_SCHEMA = "hepta.observed-action-gbnf.v3-label-first"
+LABEL_SCHEMA = "hepta.observed-target-labels.v1"
+LABEL_ENCODING = "utf8-length-prefixed-be32-sorted-node-id.v1"
 
 
 class DriverError(Exception):
@@ -306,7 +311,78 @@ def accelerator_log_evidence(log, compute):
         "full_operator_coverage_proven": False}
 
 
-def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation_packages):
+def target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes):
+    """Recompute the immutable pair receipt from the exact native prompt.
+
+    Labels are compared as decoded strings, with no normalization, truncation,
+    label lookup, or reasoning-based target substitution in this verifier.
+    """
+    if not isinstance(prompt_bytes, bytes) or not isinstance(raw_bytes, bytes):
+        return False
+    try:
+        inputs = native.get("input_sha256")
+        if (not isinstance(inputs, dict) or inputs.get("prompt") != digest(prompt_bytes)
+                or receipt.get("prompt_sha256") != digest(prompt_bytes)):
+            return False
+        text = prompt_bytes.decode("utf-8")
+        if not text.startswith("UNTRUSTED_DATA\n") or "\nOWNER\n" not in text:
+            return False
+        data = strict_json(text[len("UNTRUSTED_DATA\n"):].split("\nOWNER\n", 1)[0].encode("utf-8"))
+        screen = data.get("screen")
+        if not isinstance(screen, dict):
+            return False
+        observation, package = screen.get("observation_id"), screen.get("package")
+        if (observation != receipt.get("grammar_observation_id")
+                or package != receipt.get("grammar_current_package")):
+            return False
+        nodes = screen.get("nodes")
+        if not isinstance(nodes, list) or len(nodes) > 200:
+            return False
+        labels = {}
+        for row in nodes:
+            if not isinstance(row, list) or len(row) != 4:
+                return False
+            node_id, label = row[:2]
+            if (not isinstance(node_id, str) or re.fullmatch(r"n[0-9]{1,5}", node_id) is None
+                    or node_id in labels or not isinstance(label, str)
+                    or len(label.encode("utf-16-be")) // 2 > 37):
+                return False
+            # UTF-8 encoding also rejects isolated surrogate code points.
+            label.encode("utf-8")
+            labels[node_id] = label
+        payload = bytearray()
+        def field(value):
+            encoded = value.encode("utf-8")
+            payload.extend(struct.pack(">I", len(encoded)))
+            payload.extend(encoded)
+        for value in (LABEL_SCHEMA, LABEL_ENCODING, observation, package):
+            field(value)
+        payload.extend(struct.pack(">I", len(labels)))
+        for node_id, label in sorted(labels.items()):
+            field(node_id); field(label)
+        expected = {"schema": LABEL_SCHEMA, "encoding": LABEL_ENCODING,
+            "observation_id": observation, "package": package,
+            "sha256": digest(payload), "pairs_count": len(labels)}
+        contract = receipt.get("target_label_contract")
+        if (not isinstance(contract, dict) or contract != expected
+                or type(contract.get("pairs_count")) is not int):
+            return False
+        action = strict_json(raw_bytes)
+        if not isinstance(action, dict):
+            return False
+        if action.get("action") in {"click", "type", "scroll"}:
+            node_id, label = action.get("node_id"), action.get("node_label")
+            keys = list(action)
+            return (isinstance(node_id, str) and isinstance(label, str) and node_id in labels
+                    and labels[node_id] == label and action.get("observation_id") == observation
+                    and action.get("package") == package and keys.index("node_label") < keys.index("node_id"))
+        return "node_id" not in action and "node_label" not in action
+    except (ValueError, TypeError, KeyError, AttributeError, UnicodeError, DriverError):
+        return False
+
+
+def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation_packages,
+        prompt_bytes=None, raw_bytes=None):
     """Known grammar schema plus the same native bytes and observed window identity.
 
     observation_packages is built only from real step-before/after observations,
@@ -326,8 +402,10 @@ def controller_grammar_binding_valid(receipt, native, grammar_bytes, observation
         return False
     input_hashes = native.get("input_sha256")
     grammar_sha = digest(grammar_bytes)
-    return (isinstance(input_hashes, dict) and receipt.get("grammar_sha256") == grammar_sha
-            and input_hashes.get("grammar") == grammar_sha)
+    if not (isinstance(input_hashes, dict) and receipt.get("grammar_sha256") == grammar_sha
+            and input_hashes.get("grammar") == grammar_sha):
+        return False
+    return schema != LABEL_ACTION_SCHEMA or target_label_binding_valid(receipt, native, prompt_bytes, raw_bytes)
 
 
 def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screenshots, expected_uid,
@@ -430,9 +508,11 @@ def collect_evidence(adb, directory, task_id, instruction, baseline_runs, screen
                 row["accelerator_offload_observed"] = log_evidence["accelerator_offload_observed"]
                 row["accelerator_log_evidence"] = log_evidence
                 grammar_file=directory / "runs" / run_id / "grammar.gbnf"
+                prompt_file=directory / "runs" / run_id / "prompt.txt"
                 if grammar_file.is_file() and app_file.exists():
                     row["controller_grammar_binding_valid"] = controller_grammar_binding_valid(
-                        receipt, native, grammar_file.read_bytes(), observation_packages)
+                        receipt, native, grammar_file.read_bytes(), observation_packages,
+                        prompt_file.read_bytes() if prompt_file.is_file() else None,raw)
                 row["runtime_evidence"] = {k: native.get(k) for k in ("mode", "runtime", "compute_requested", "device_resolved", "device_warning", "n_ctx_create", "n_gpu_layers_create", "prompt_budget", "profile")}
         except Exception as error:
             report["errors"].append("collect " + run_id + ": " + str(error))

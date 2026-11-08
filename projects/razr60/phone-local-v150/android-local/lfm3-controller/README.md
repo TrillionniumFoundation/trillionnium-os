@@ -1,3 +1,7 @@
+# Code10: exact visible label and node-ID pairs
+
+The current candidate is version 10 / `0.10.0-local-labels`. See [CODE10-LABELS.md](CODE10-LABELS.md) for the narrowly scoped label-first protocol. Device functionality remains subject to independent acceptance.
+
 # Hepta — local phone controller
 
 Independent package `org.trillionnium.hepta.local`, version 0.9.0 / code 9, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.

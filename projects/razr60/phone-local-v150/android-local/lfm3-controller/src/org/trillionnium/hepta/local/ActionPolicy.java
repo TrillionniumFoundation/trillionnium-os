@@ -7,7 +7,9 @@ public final class ActionPolicy {
     private ActionPolicy() {}
 
     public static void validateTextDecision(ActionDecision action, String currentPackage,
-            Set<String> shownApps, Set<String> shownNodes) throws ActionDecision.InvalidActionException {
+            Set<String> shownApps, ObservedTargetLabels targets) throws ActionDecision.InvalidActionException {
+        if (targets == null || !currentPackage.equals(targets.packageName))
+            throw new ActionDecision.InvalidActionException("target-label projection belongs to a different package");
         if ("open".equals(action.action)) {
             if (!shownApps.contains(action.packageName))
                 throw new ActionDecision.InvalidActionException("open package is not in the supplied launcher apps");
@@ -20,8 +22,8 @@ public final class ActionPolicy {
         // not grant open permission: the next decision must still name a package
         // actually supplied in that next prompt's app projection.
         if (isReadOnlyDiscovery(action)) return;
-        if (action.nodeId != null && !shownNodes.contains(action.nodeId))
-            throw new ActionDecision.InvalidActionException("node_id was not supplied in this observation");
+        if (action.nodeId != null && !targets.matches(action.observationId, action.packageName, action.nodeId, action.nodeLabel))
+            throw new ActionDecision.InvalidActionException("node_label and node_id must be the exact supplied pair for this observation");
         if ("click".equals(action.action) && action.nodeId == null)
             throw new ActionDecision.InvalidActionException("text-only controller must click an observed node_id, not coordinates");
     }

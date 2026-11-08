@@ -2,6 +2,7 @@ import org.trillionnium.hepta.local.ActionDecision;
 import org.trillionnium.hepta.local.ActionPolicy;
 import org.trillionnium.hepta.local.AppCatalogueRanker;
 import org.trillionnium.hepta.local.DecisionGrammar;
+import org.trillionnium.hepta.local.ObservedTargetLabels;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -120,7 +121,7 @@ public final class AppCatalogueHostTest {
         Set<String> initial=names(ranker.search("",0)),nodes=Collections.emptySet();
         ActionDecision open=ActionDecision.parse(json("open",TARGET,""));
         check(!allowed(open,initial,nodes),"unseen installed app cannot be opened before discovery");
-        DecisionGrammar before=DecisionGrammar.create(OBS,CURRENT,initial,nodes,nodes,nodes);
+        DecisionGrammar before=DecisionGrammar.create(OBS,CURRENT,initial,nodes,nodes,nodes,labels(nodes));
         Files.write(grammarOut.resolve("discovery-before.gbnf"),before.text.getBytes(StandardCharsets.UTF_8));
         String raw=json("find_app",CURRENT,",\"query\":\"calculator\",\"offset\":0");
         ActionDecision modelSearch=ActionDecision.parse(raw);
@@ -133,14 +134,18 @@ public final class AppCatalogueHostTest {
         AppCatalogueRanker.Page more=ranker.search("",6);
         Set<String> one=Collections.singleton(more.apps.get(0).packageName);
         check(!allowed(ActionDecision.parse(json("open",more.apps.get(1).packageName,"")),one,nodes),"returned but prompt-omitted apps remain unauthorized");
-        DecisionGrammar after=DecisionGrammar.create(OBS,CURRENT,supplied,nodes,nodes,nodes);
+        DecisionGrammar after=DecisionGrammar.create(OBS,CURRENT,supplied,nodes,nodes,nodes,labels(nodes));
         Files.write(grammarOut.resolve("discovery-after.gbnf"),after.text.getBytes(StandardCharsets.UTF_8));
         check(!before.sha256.equals(after.sha256),"discovered package produces a distinct bound grammar");
     }
 
     private static boolean allowed(ActionDecision action,Set<String> apps,Set<String> nodes) throws Exception {
-        try{ActionPolicy.validateTextDecision(action,CURRENT,apps,nodes);return true;}
+        try{ActionPolicy.validateTextDecision(action,CURRENT,apps,labels(nodes));return true;}
         catch(ActionDecision.InvalidActionException denied){return false;}
+    }
+    private static ObservedTargetLabels labels(Set<String> nodes){
+        Map<String,String> values=new LinkedHashMap<String,String>();for(String node:nodes)values.put(node,"");
+        return ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,OBS,CURRENT,values);
     }
     private static String json(String action,String pkg,String fields){return "{\"action\":\""+action+"\",\"observation_id\":\""+OBS+"\",\"package\":\""+pkg+"\""+fields+"}";}
     private static String first(AppCatalogueRanker.Page page){return page.apps.get(0).packageName;}

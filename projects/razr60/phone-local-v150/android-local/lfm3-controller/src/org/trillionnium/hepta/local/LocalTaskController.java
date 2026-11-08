@@ -50,8 +50,8 @@ public final class LocalTaskController implements AutoCloseable {
             "先用 reason 简述当前页面、尚未完成的目标和下一步（1句，最多96字），再给出 action。不要只复述任务；打开应用只是一种导航动作，应用内任务还需要点击、输入、返回或滚动。\n" +
             "先核对 recent 中 dispatched=true 的动作，再选择下一步。若打开应用后出现搜索页或其它子页，利用可见返回按钮或 back 返回上级；再次 open 通常仍恢复原页面。包名不同也可能是同一应用的关联页面，请看可见内容。不可为了重试而打开无关应用。\n" +
             "screen.ime_visible 表示输入法窗口：true=可见，false=已确认不可见，null=未知。back 可能先关闭输入法，仍需观察页面并决定是否继续返回；未知不是关闭的证据。\n" +
-            "只输出一个 JSON，字段顺序是 reason,action,observation_id,package，然后是动作参数。observation_id 复制 screen.observation_id；open 的 package 必须来自 apps，其它动作复制 screen.package。节点格式是 [id,文字,边界,能力]，c=点击、t=输入、s=滚动；node_id 逐字复制。看不到图片，不猜坐标。\n" +
-            "工具：open 打开应用（不能重开当前应用）；click(node_id) 点击；type(node_id,text) 替换全部文字；scroll(node_id,direction) 滚动，direction=forward/backward/up/down/left/right；back 返回上级；home 到桌面；wait(duration_ms) 仅在页面仍在加载时等待100..2000毫秒；done(status,summary) 结束本次任务，status=success/partial/failure。\n" +
+            "只输出一个 JSON，字段顺序是 reason,action,observation_id,package，然后是动作参数。observation_id 复制 screen.observation_id；open 的 package 必须来自 apps，其它动作复制 screen.package。节点格式是 [id,文字,边界,能力]，c=点击、t=输入、s=滚动。节点动作先输出 node_label，逐字复制目标行的文字，再输出该行的 node_id；重复或空文字仍要同时复制该行的原始 id，不可省略或改写文字。reason 不用于指定或修正目标。看不到图片，不猜坐标。\n" +
+            "工具：open 打开应用（不能重开当前应用）；click(node_label,node_id) 点击；type(node_label,node_id,text) 替换全部文字；scroll(node_label,node_id,direction) 滚动，direction=forward/backward/up/down/left/right；back 返回上级；home 到桌面；wait(duration_ms) 仅在页面仍在加载时等待100..2000毫秒；done(status,summary) 结束本次任务，status=success/partial/failure。\n" +
             "find_app(query,offset) 只读查询本机应用，query为空则浏览；首次offset=0，续页用app_search.next_offset。找不到目标应用时查询，不打开无关应用。blocked_action 已被排除。\n" +
             "所有任务步骤按原顺序完成且有可见证据后，才输出 done，附status=success、summary；不能完成则status=partial或failure。应用启动成功不代表任务全部完成。不要改成计算答案代替操作应用。除了上述字段禁止其它字段，不输入密码，不执行网络或代码命令。\n" +
             "结束任务也必须调用工具：所有目标已经实现时，输出action=\"done\",status=\"success\"，summary说明已经实现的目标；无法完成时也用action=\"done\"并给partial或failure。done必须同时包含status和summary。action必须是工具名字符串，不能为null。wait只表示暂时等待加载，不能表示完成或停留。\n";
@@ -140,8 +140,8 @@ public final class LocalTaskController implements AutoCloseable {
                                     .put("original_instruction_sha256",HeptaAccessibilityService.sha(instruction.getBytes(StandardCharsets.UTF_8))));
                     checkActive(deadline);
                     try{
-                        action=ActionDecision.parse(answer.text);
-                        ActionPolicy.validateTextDecision(action,before.packageName,frame.appPackages,frame.nodeIds);
+                        action=ActionDecision.parse(answer.text,DecisionGrammar.SCHEMA);
+                        ActionPolicy.validateTextDecision(action,before.packageName,frame.appPackages,frame.targets);
                         decisionRunId=answer.runId;
                         break;
                     }
@@ -168,7 +168,7 @@ public final class LocalTaskController implements AutoCloseable {
                 if(repeatGuard.rejects(action,before.state))
                     throw new IllegalStateException("上次操作后画面没有可确认变化，停止重复执行同一动作");
                 emit("正在执行第 "+steps+" 步："+chineseAction(action.action));
-                HeptaAccessibilityService.ActionOutcome outcome=awaitAction(taskId,before,action,deadline);
+                HeptaAccessibilityService.ActionOutcome outcome=awaitAction(taskId,before,action,frame.targets,deadline);
                 JSONObject actionReceipt=new JSONObject().put("action",new JSONObject(answerJson(action))).put("accepted",outcome.accepted)
                         .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("detail",outcome.detail)
                         .put("model_run_id",decisionRunId).put("model_issued",true);
@@ -198,10 +198,7 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("ime_visible_after",observation.state.imeVisibility.value()==null?JSONObject.NULL:observation.state.imeVisibility.value());
                 if("open".equals(action.action))row.put("exact_package_match",action.packageName.equals(observation.packageName));
                 if(action.nodeId!=null){
-                    row.put("node_id",action.nodeId);
-                    for(PhoneObservation.Node node:before.nodes)if(action.nodeId.equals(node.id)){
-                        row.put("node_label",HeptaAccessibilityService.limited(node.label(),36));break;
-                    }
+                    row.put("node_label",action.nodeLabel).put("node_id",action.nodeId);
                 }
                 if("type".equals(action.action))row.put("type_text",action.text);
                 if(ActionPolicy.isReadOnlyDiscovery(action))row.put("query",action.query).put("offset",action.offset).put("read_only",true).put("dispatched",false);
@@ -267,9 +264,9 @@ public final class LocalTaskController implements AutoCloseable {
         if(!ready.await(10000,TimeUnit.MILLISECONDS))throw new IllegalStateException("系统屏幕观察超时");
         checkActive(deadline);if(error.get()!=null)throw new IllegalStateException(error.get());PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");return result;
     }
-    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,long deadline)throws Exception{
+    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,long deadline)throws Exception{
         checkActive(deadline);final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> value=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
-        service.perform(id,observed,action,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
+        service.perform(id,observed,action,targets,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
                 new HeptaAccessibilityService.ActionCallback(){public void onResult(HeptaAccessibilityService.ActionOutcome result){value.set(result);ready.countDown();}});
         if(!ready.await(8000,TimeUnit.MILLISECONDS)){cancelled.set(true);throw new CleanupUnknown("动作回执超时，可能已有操作发生；已停止后续任务");}
         HeptaAccessibilityService.ActionOutcome result=value.get();if(result==null)throw new IllegalStateException("动作未返回结果");return result;
@@ -280,10 +277,13 @@ public final class LocalTaskController implements AutoCloseable {
     private static final class PromptFrame {
         final String text;final java.util.Set<String> nodeIds,appPackages;final ConservativeTokenBudget budget;
         final DecisionGrammar grammar;
+        final ObservedTargetLabels targets;
         final AppCatalogueRanker.Page catalogue;
         final int nodesShown,nodesObserved,appsShown,historyShown;
         PromptFrame(String text,java.util.Set<String> ids,java.util.Set<String> packages,ConservativeTokenBudget budget,DecisionGrammar grammar,int shown,int observed,int apps,int history,AppCatalogueRanker.Page catalogue){
-            this.text=text;nodeIds=ids;appPackages=packages;this.budget=budget;this.grammar=grammar;nodesShown=shown;nodesObserved=observed;appsShown=apps;historyShown=history;this.catalogue=catalogue;
+            this.text=text;nodeIds=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(ids));
+            appPackages=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(packages));
+            this.budget=budget;this.grammar=grammar;targets=grammar.targets;nodesShown=shown;nodesObserved=observed;appsShown=apps;historyShown=history;this.catalogue=catalogue;
         }
         JSONObject budgetJson()throws Exception{return new JSONObject().put("schema","hepta.local-prompt-budget.v2")
                 .put("method",budget.method).put("is_exact_token_count",false).put("is_proven_upper_bound",budget.provenUpperBound)
@@ -298,6 +298,7 @@ public final class LocalTaskController implements AutoCloseable {
                 .put("context_tokens",budget.contextTokens).put("admitted",budget.admitted).put("nodes_shown",nodesShown)
                 .put("grammar_schema",DecisionGrammar.SCHEMA).put("grammar_sha256",grammar.sha256)
                 .put("grammar_observation_id",grammar.observationId).put("grammar_actions",new JSONArray(grammar.actions))
+                .put("target_label_schema",ObservedTargetLabels.SCHEMA).put("target_label_sha256",targets.sha256)
                 .put("nodes_observed",nodesObserved).put("apps_shown",appsShown).put("history_shown",historyShown)
                 .put("app_catalogue_sha256",catalogue.catalogueSha256).put("app_search",searchMetadata(catalogue,appsShown))
                 .put("original_instruction_unchanged",true);}
@@ -315,11 +316,14 @@ public final class LocalTaskController implements AutoCloseable {
                     .put("size",new JSONArray(new int[]{observation.width,observation.height}))
                     .put("ime_visible",observation.state.imeVisibility.value()==null?JSONObject.NULL:observation.state.imeVisibility.value());
             JSONArray projectedNodes=new JSONArray();java.util.Set<String> ids=new java.util.HashSet<String>();
+            java.util.Map<String,String> projectedLabels=new java.util.HashMap<String,String>();
             for(int i=0;i<nodeCount;i++){
-                PhoneObservation.Node node=nodes.get(i);ids.add(node.id);
-                String label=node.label();
+                PhoneObservation.Node node=nodes.get(i);
+                if(!ids.add(node.id))throw new IllegalStateException("观察包含重复节点标识");
+                String label=ObservedTargetLabels.project(node.label());
+                projectedLabels.put(node.id,label);
                 String actions=(node.clickable?"c":"")+(node.editable?"t":"")+(node.scrollable?"s":"");
-                projectedNodes.put(new JSONArray().put(node.id).put(HeptaAccessibilityService.limited(label,36))
+                projectedNodes.put(new JSONArray().put(node.id).put(label)
                         .put(new JSONArray(new int[]{node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom})).put(actions));
             }
             screen.put("nodes",projectedNodes).put("nodes_omitted",observation.nodes.size()-nodeCount+(observation.nodesTruncated?1:0));
@@ -369,7 +373,8 @@ public final class LocalTaskController implements AutoCloseable {
                     if(!node.enabled||node.password||!observation.packageName.equals(node.packageName))continue;
                     if(node.clickable)clicks.add(node.id);if(node.editable)edits.add(node.id);if(node.scrollable)scrolls.add(node.id);
                 }
-                DecisionGrammar grammar=DecisionGrammar.create(observation.id,observation.packageName,packages,clicks,edits,scrolls);
+                ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observation.id,observation.packageName,projectedLabels);
+                DecisionGrammar grammar=DecisionGrammar.create(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,historyCount,catalogue);
             }
             if(nodeCount>4){nodeCount--;continue;}
@@ -401,7 +406,7 @@ public final class LocalTaskController implements AutoCloseable {
     }
     private static String answerJson(ActionDecision a)throws Exception{
         JSONObject value=new JSONObject().put("action",a.action).put("observation_id",a.observationId).put("package",a.packageName);
-        if(a.nodeId!=null)value.put("node_id",a.nodeId);if(a.x>=0){value.put("x",a.x);value.put("y",a.y);}
+        if(a.nodeId!=null)value.put("node_label",a.nodeLabel).put("node_id",a.nodeId);if(a.x>=0){value.put("x",a.x);value.put("y",a.y);}
         if(a.text!=null)value.put("text",a.text);if(a.direction!=null)value.put("direction",a.direction);if(a.durationMs>=0)value.put("duration_ms",a.durationMs);
         if(a.query!=null)value.put("query",a.query);if(a.offset>=0)value.put("offset",a.offset);
         if(a.status!=null)value.put("status",a.status);if(a.summary!=null)value.put("summary",a.summary);if(!a.reason.isEmpty())value.put("reason",a.reason);return value.toString();

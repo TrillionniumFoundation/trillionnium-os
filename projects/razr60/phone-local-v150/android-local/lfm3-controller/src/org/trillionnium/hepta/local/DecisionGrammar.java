@@ -11,12 +11,13 @@ import java.util.TreeSet;
 
 /** Fixed action schema bound to one real observation, never arbitrary caller GBNF. */
 public final class DecisionGrammar {
-    public static final String SCHEMA="hepta.observed-action-gbnf.v2-reason-first";
+    public static final String SCHEMA=ObservedTargetLabels.ACTION_SCHEMA;
     public final String observationId, currentPackage, text, sha256;
     public final List<String> actions;
+    public final ObservedTargetLabels targets;
 
-    private DecisionGrammar(String observationId,String currentPackage,String text,List<String> actions){
-        this.observationId=observationId;this.currentPackage=currentPackage;this.text=text;
+    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions){
+        this.targets=targets;this.observationId=targets.observationId;this.currentPackage=targets.packageName;this.text=text;
         this.actions=Collections.unmodifiableList(new ArrayList<String>(actions));
         byte[] bytes=text.getBytes(StandardCharsets.UTF_8);
         if(bytes.length>65536)throw new IllegalArgumentException("observed action grammar exceeds bound");
@@ -28,9 +29,11 @@ public final class DecisionGrammar {
     }
 
     public static DecisionGrammar create(String observationId,String currentPackage,Set<String> shownApps,
-            Set<String> clickableNodes,Set<String> editableNodes,Set<String> scrollableNodes){
+            Set<String> clickableNodes,Set<String> editableNodes,Set<String> scrollableNodes,ObservedTargetLabels targets){
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
+        if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
+            throw new IllegalArgumentException("observed label projection belongs to a different window");
         if(shownApps==null||shownApps.size()>40)throw new IllegalArgumentException("invalid application projection");
         TreeSet<String> apps=new TreeSet<String>();
         for(String name:shownApps){checkPackage(name);if(!currentPackage.equals(name)&&!"android".equals(name))apps.add(name);}
@@ -43,16 +46,16 @@ public final class DecisionGrammar {
             rule(rules,"open-package",alternatives(apps));
         }
         if(!clicks.isEmpty()){
-            branches.add("click");rule(rules,"click",prefix("click",observationId)+field("package",jsonValue(currentPackage))+comma()+field("node_id","click-node")+ending());
-            rule(rules,"click-node",alternatives(clicks));
+            branches.add("click");rule(rules,"click",prefix("click",observationId)+field("package",jsonValue(currentPackage))+comma()+"click-target"+ending());
+            rule(rules,"click-target",targetPairs(clicks,targets));
         }
         if(!edits.isEmpty()){
-            branches.add("type");rule(rules,"type",prefix("type",observationId)+field("package",jsonValue(currentPackage))+comma()+field("node_id","type-node")+comma()+field("text","text-string")+ending());
-            rule(rules,"type-node",alternatives(edits));
+            branches.add("type");rule(rules,"type",prefix("type",observationId)+field("package",jsonValue(currentPackage))+comma()+"type-target"+comma()+field("text","text-string")+ending());
+            rule(rules,"type-target",targetPairs(edits,targets));
         }
         if(!scrolls.isEmpty()){
-            branches.add("scroll");rule(rules,"scroll",prefix("scroll",observationId)+field("package",jsonValue(currentPackage))+comma()+field("node_id","scroll-node")+comma()+field("direction","direction")+ending());
-            rule(rules,"scroll-node",alternatives(scrolls));
+            branches.add("scroll");rule(rules,"scroll",prefix("scroll",observationId)+field("package",jsonValue(currentPackage))+comma()+"scroll-target"+comma()+field("direction","direction")+ending());
+            rule(rules,"scroll-target",targetPairs(scrolls,targets));
         }
         for(String name:new String[]{"back","home"}){
             branches.add(name);rule(rules,name,prefix(name,observationId)+field("package",jsonValue(currentPackage))+ending());
@@ -72,7 +75,7 @@ public final class DecisionGrammar {
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
         rule(rules,"ws","[ \\t\\n\\r]{0,8}");
         List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-'));
-        return new DecisionGrammar(observationId,currentPackage,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches);
+        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches);
     }
 
     private static void checkPackage(String value){
@@ -91,7 +94,27 @@ public final class DecisionGrammar {
     private static String ending(){return " ws "+literal("}");}
     private static void rule(StringBuilder target,String name,String body){target.append(name).append(" ::= ").append(body).append('\n');}
     private static String alternatives(Iterable<String> values){List<String> parts=new ArrayList<String>();for(String value:values)parts.add(jsonValue(value));return join(parts," | ");}
+    private static String targetPairs(Iterable<String> ids,ObservedTargetLabels targets){
+        List<String> pairs=new ArrayList<String>();
+        for(String id:ids){
+            if(!targets.labels.containsKey(id))throw new IllegalArgumentException("action node was absent from the supplied label projection");
+            pairs.add("("+field("node_label",jsonValue(targets.labels.get(id)))+comma()+field("node_id",jsonValue(id))+")");
+        }
+        return join(pairs," | ");
+    }
     private static String join(Iterable<String> values,String separator){StringBuilder out=new StringBuilder();for(String value:values){if(out.length()>0)out.append(separator);out.append(value);}return out.toString();}
-    private static String jsonValue(String ascii){return literal("\""+ascii+"\"");}
+    private static String jsonValue(String value){
+        StringBuilder out=new StringBuilder("\"");
+        for(int i=0;i<value.length();i++){
+            char c=value.charAt(i);
+            switch(c){
+                case '\"':out.append("\\\"");break;case '\\':out.append("\\\\");break;
+                case '\b':out.append("\\b");break;case '\f':out.append("\\f");break;
+                case '\n':out.append("\\n");break;case '\r':out.append("\\r");break;case '\t':out.append("\\t");break;
+                default:if(c<32||c=='\u2028'||c=='\u2029')out.append(String.format(Locale.ROOT,"\\u%04x",(int)c));else out.append(c);
+            }
+        }
+        return literal(out.append('\"').toString());
+    }
     private static String literal(String text){return "\""+text.replace("\\","\\\\").replace("\"","\\\"").replace("\n","\\n").replace("\r","\\r").replace("\t","\\t")+"\"";}
 }

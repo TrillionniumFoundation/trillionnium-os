@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=["ActionDecision", "ActionPolicy", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
+PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
               "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
               "AppCatalogueRanker", "SessionRecovery"]
 

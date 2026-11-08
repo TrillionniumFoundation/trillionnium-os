@@ -1,6 +1,7 @@
 import org.trillionnium.hepta.local.ActionDecision;
 import org.trillionnium.hepta.local.ActionPolicy;
 import org.trillionnium.hepta.local.DecisionGrammar;
+import org.trillionnium.hepta.local.ObservedTargetLabels;
 import org.trillionnium.hepta.local.RepeatActionGuard;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -78,14 +79,21 @@ public final class RepeatActionGuardHostTest {
 
     private static void emit(Path out,String name,RepeatActionGuard guard,Set<String> catalogue,String tree)throws Exception {
         Set<String> allowed=guard.allowedOpenPackages(catalogue,tree);
-        DecisionGrammar grammar=DecisionGrammar.create(OBS,CURRENT,allowed,set("n1"),set(),set());
+        DecisionGrammar grammar=DecisionGrammar.create(OBS,CURRENT,allowed,set("n1"),set(),set(),labels(set("n1")));
         Files.write(out.resolve(name),grammar.text.getBytes(StandardCharsets.UTF_8));
     }
     private static boolean policy(ActionDecision action,Set<String> apps,Set<String> nodes)throws Exception {
-        try{ActionPolicy.validateTextDecision(action,CURRENT,apps,nodes);return true;}
+        try{ActionPolicy.validateTextDecision(action,CURRENT,apps,labels(nodes));return true;}
         catch(ActionDecision.InvalidActionException expected){return false;}
     }
-    private static String json(String name,String pkg,String extra){return "{\"action\":\""+name+"\",\"observation_id\":\""+OBS+"\",\"package\":\""+pkg+"\""+extra+"}";}
+    private static String json(String name,String pkg,String extra){
+        if(("click".equals(name)||"type".equals(name)||"scroll".equals(name))&&extra.contains("\"node_id\""))extra=",\"node_label\":\"\""+extra;
+        return "{\"action\":\""+name+"\",\"observation_id\":\""+OBS+"\",\"package\":\""+pkg+"\""+extra+"}";
+    }
+    private static ObservedTargetLabels labels(Set<String> nodes){
+        java.util.Map<String,String> values=new java.util.HashMap<String,String>();for(String node:nodes)values.put(node,"");
+        return ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,OBS,CURRENT,values);
+    }
     private static ActionDecision action(String name,String pkg,String extra)throws Exception{return ActionDecision.parse(json(name,pkg,extra));}
     private static Set<String> set(String... values){return new HashSet<String>(Arrays.asList(values));}
     private static void check(boolean value,String detail){checks++;if(!value)throw new AssertionError(detail);}

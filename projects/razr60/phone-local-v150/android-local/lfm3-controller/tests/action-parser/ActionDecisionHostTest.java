@@ -259,6 +259,7 @@ public final class ActionDecisionHostTest {
     private static void unused(ActionDecision d, boolean node, boolean text, boolean direction,
                                boolean status, boolean summary, boolean x, boolean y, boolean duration) {
         if (node) check(d.nodeId == null, "Unused node null");
+        if (node) check(d.nodeLabel == null, "Unused node label null");
         if (text) check(d.text == null, "Unused text null");
         if (direction) check(d.direction == null, "Unused direction null");
         if (status) check(d.status == null, "Unused status null");
@@ -278,6 +279,10 @@ public final class ActionDecisionHostTest {
     }
 
     private static String base(String action, String extra) {
+        // Existing parser fixtures supply an explicit empty observed label. The
+        // separate label contract tests intentionally omit or corrupt this field.
+        if (("click".equals(action) || "type".equals(action) || "scroll".equals(action))
+                && extra.contains("\"node_id\"")) extra = "\"node_label\":\"\"," + extra;
         return "{\"action\":" + quote(action) + ",\"observation_id\":\"" + OBS
                 + "\",\"package\":\"" + PKG + "\"" + (extra.isEmpty() ? "" : "," + extra) + "}";
     }

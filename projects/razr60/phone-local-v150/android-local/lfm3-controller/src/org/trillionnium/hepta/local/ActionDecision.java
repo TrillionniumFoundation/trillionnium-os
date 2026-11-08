@@ -23,6 +23,7 @@ public final class ActionDecision {
     public final String observationId;
     public final String packageName;
     public final String nodeId;
+    public final String nodeLabel;
     public final String text;
     public final String direction;
     public final String status;
@@ -35,12 +36,13 @@ public final class ActionDecision {
     public final int offset;
 
     private ActionDecision(String action, String observationId, String packageName,
-                           String nodeId, String text, String direction, String status,
+                           String nodeId, String nodeLabel, String text, String direction, String status,
                            String summary, String reason, int x, int y, int durationMs, String query, int offset) {
         this.action = action;
         this.observationId = observationId;
         this.packageName = packageName;
         this.nodeId = nodeId;
+        this.nodeLabel = nodeLabel;
         this.text = text;
         this.direction = direction;
         this.status = status;
@@ -63,6 +65,12 @@ public final class ActionDecision {
 
     /** Accepts exactly one flat JSON object; no recovery or substring extraction. */
     public static ActionDecision parse(String raw) throws InvalidActionException {
+        return parse(raw, ObservedTargetLabels.ACTION_SCHEMA);
+    }
+
+    /** The caller selects an explicit protocol; older or unknown node schemas are not inferred. */
+    public static ActionDecision parse(String raw, String schema) throws InvalidActionException {
+        require(ObservedTargetLabels.ACTION_SCHEMA.equals(schema), "Unknown action schema");
         require(raw != null && !raw.isEmpty(), "Empty model output");
         require(raw.length() <= MAX_JSON_UTF8_BYTES, "Model output exceeds size bound");
         validateUnicode(raw);
@@ -77,6 +85,7 @@ public final class ActionDecision {
         require(codePoints(reason) <= 256, "reason exceeds 256 characters");
 
         String nodeId = null;
+        String nodeLabel = null;
         String text = null;
         String direction = null;
         String status = null;
@@ -100,7 +109,8 @@ public final class ActionDecision {
                 break;
             case "click":
                 if (fields.containsKey("node_id")) {
-                    requireFields(fields, "package", "node_id");
+                    requireFields(fields, "package", "node_label", "node_id");
+                    nodeLabel = nodeLabel(fields);
                     nodeId = node(fields);
                 } else {
                     requireFields(fields, "package", "x", "y");
@@ -109,14 +119,16 @@ public final class ActionDecision {
                 }
                 break;
             case "type":
-                requireFields(fields, "package", "node_id", "text");
+                requireFields(fields, "package", "node_label", "node_id", "text");
+                nodeLabel = nodeLabel(fields);
                 nodeId = node(fields);
                 text = string(fields, "text");
                 require(text.indexOf('\0') < 0, "text contains NUL");
                 require(utf8Bytes(text) <= MAX_TEXT_UTF8_BYTES, "text exceeds 4096 UTF-8 bytes");
                 break;
             case "scroll":
-                requireFields(fields, "package", "node_id", "direction");
+                requireFields(fields, "package", "node_label", "node_id", "direction");
+                nodeLabel = nodeLabel(fields);
                 nodeId = node(fields);
                 direction = string(fields, "direction");
                 require(oneOf(direction, "forward", "backward", "up", "down", "left", "right"),
@@ -141,7 +153,7 @@ public final class ActionDecision {
             default:
                 throw new InvalidActionException("Unsupported action");
         }
-        return new ActionDecision(action, observationId, packageName, nodeId, text,
+        return new ActionDecision(action, observationId, packageName, nodeId, nodeLabel, text,
                 direction, status, summary, reason, x, y, durationMs, query, offset);
     }
 
@@ -153,12 +165,14 @@ public final class ActionDecision {
                 + "Allowed actions and additional fields: "
                 + "open: no additional fields; "
                 + "find_app: query,offset (read-only installed launcher search, not an app launch); "
-                + "click: either node_id or both x,y, never both forms; "
-                + "type: node_id,text; "
-                + "scroll: node_id,direction; "
+                + "click: either node_label,node_id or both x,y, never both forms; "
+                + "type: node_label,node_id,text; "
+                + "scroll: node_label,node_id,direction; "
                 + "back: no additional fields; home: no additional fields; "
                 + "wait: duration_ms; done: status,summary. "
                 + "node_id is n followed by 1..5 ASCII digits. "
+                + "node_label must precede node_id and copy its exact supplied label, including empty or duplicate labels. "
+                + "The label and ID are a pair from this observation; reason never identifies or changes the target. "
                 + "x,y are canonical integers 0..1000 from the current observation. "
                 + "duration_ms is a canonical integer 100..2000. "
                 + "query has 0..64 Unicode characters, no NUL; empty query browses apps. "
@@ -196,6 +210,17 @@ public final class ActionDecision {
         String value = string(fields, "node_id");
         require(NODE_ID.matcher(value).matches(), "Invalid node_id");
         return value;
+    }
+
+    private static String nodeLabel(Map<String, Object> fields) throws InvalidActionException {
+        String label = string(fields, "node_label");
+        try { ObservedTargetLabels.requireProjectedLabel(label); }
+        catch (IllegalArgumentException error) { throw new InvalidActionException(error.getMessage()); }
+        for (String key : fields.keySet()) {
+            if ("node_label".equals(key)) return label;
+            require(!"node_id".equals(key), "node_label must precede node_id");
+        }
+        throw new InvalidActionException("Missing node_label");
     }
 
     private static int integer(Map<String, Object> fields, String name, int minimum, int maximum)
