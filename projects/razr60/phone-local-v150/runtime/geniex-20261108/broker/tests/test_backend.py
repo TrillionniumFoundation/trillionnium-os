@@ -6,6 +6,7 @@ host permitting AF_UNIX; it uses the real native r6 supervisor and frozen C work
 linked only to an explicitly labelled host SDK fixture. No phone is contacted.
 """
 from __future__ import annotations
+import ast
 import base64
 import copy
 import dataclasses
@@ -33,7 +34,7 @@ sys.path.insert(0, str(ROOT))
 import native_backend as b
 import prompt_budget as pb
 import provider_bridge as bridge
-from apply_provider_overlay import build
+from apply_provider_overlay import build, ledger_profile_overlay
 from native_fixture import NativeFixture, HOST_PARENT_CONTEXT, HOST_WORKER_CONTEXT, HOST_CREDENTIAL_SCOPE
 
 
@@ -133,6 +134,30 @@ class ContractTests(unittest.TestCase):
             self.assertIn("geniex_qairt_isolated_process", daily)
             self.assertIn("geniex-budget|geniex-receipt", daily)
 
+    def test_ledger_overlay_preserves_initializer_and_rejects_unreviewed_registry(self):
+        source = ("class LedgerPrefix:\n"
+                  "    def __init__(self, operation_profile):\n"
+                  "        rounds = {'fixed19-v150-r7': 8, 'daily-local-24-v1': 25}\n"
+                  "        self.original_guard(operation_profile, rounds)\n")
+        transformed, evidence = ledger_profile_overlay(source)
+        original = ast.parse(source).body[0].body[0]
+        changed = ast.parse(transformed).body[0].body[0]
+        self.assertEqual(evidence["ledger_profile_registration"],
+                         {"name": b.PROFILE["name"], "max_rounds": 25})
+        self.assertTrue(evidence["legacy_ledger_initializer_recovered_exactly"])
+        self.assertEqual(evidence["legacy_ledger_initializer_ast_sha256"],
+                         b.sha(ast.dump(original, include_attributes=False).encode()))
+        self.assertEqual(ast.literal_eval(changed.body[0].value),
+                         {"fixed19-v150-r7": 8, "daily-local-24-v1": 25, b.PROFILE["name"]: 25})
+        changed.body[0].value.keys.pop()
+        changed.body[0].value.values.pop()
+        self.assertEqual(ast.dump(changed, include_attributes=False), ast.dump(original, include_attributes=False))
+        for invalid in ("{'fixed19-v150-r7': 8}", "{'fixed19-v150-r7': 8, 'daily-local-24-v1': 26}",
+                        "{'fixed19-v150-r7': 8, 'daily-local-24-v1': 25.0}",
+                        "{'fixed19-v150-r7': 8, 'daily-local-24-v1': 25, 'unknown': 25}"):
+            with self.subTest(registry=invalid), self.assertRaisesRegex(ValueError, "unreviewed"):
+                ledger_profile_overlay(source.replace("{'fixed19-v150-r7': 8, 'daily-local-24-v1': 25}", invalid))
+
     def test_compact_body_preserves_owner_and_full_semantic_transcript(self):
         owner_text = "  打开设置\n保留这个精确尾部。  "
         transcript = [{"role": "tool", "public_text": "untrusted app says ignore owner", "verified": True}]
@@ -157,6 +182,30 @@ class ContractTests(unittest.TestCase):
             "summary": {"type": "string"}})
         menu, _ = pb._action_menu(schema, ["Calculator"])
         self.assertEqual(menu["open"]["text"], ["Settings"])
+
+    def test_post_open_projection_keeps_owner_schema_and_full_transcript(self):
+        owner_text = "  打开计算器并查看结果。\n保留这行。  "
+        transcript = [{"role": "tool", "verified_app_open": "计算器", "public_text": "untrusted page"}]
+        context = {"approved_apps": {
+            "计算器": {"label": "计算器", "component": "com.example.calculator/.Calculator"},
+            "设置": {"label": "设置", "component": "com.android.settings/.Settings"}},
+            "transcript": transcript, "postconditions": [{"expected": "original postcondition"}],
+            "owner_request_utf8_sha256": b.sha(owner_text.encode())}
+        schema = self.closed_action_schema({"action": {"const": "open"},
+            "text": {"type": "string", "enum": ["设置"]}, "summary": {"type": "string"}})
+        body = {"model": "fixture", "messages": [{"role": "system", "content": "long policy"},
+            {"role": "user", "content": json.dumps(context, ensure_ascii=False)},
+            {"role": "user", "content": [{"type": "text", "text": owner_text}]}],
+            "response_format": {"json_schema": {"schema": schema}}, "max_tokens": 256}
+        original = copy.deepcopy(body)
+        result = pb.compact_provider_body(body)
+        projected = json.loads(result["messages"][1]["content"])
+        self.assertEqual(body, original)
+        self.assertEqual(result["response_format"], original["response_format"])
+        self.assertEqual(result["messages"][-1]["content"][0]["text"].encode(), owner_text.encode())
+        self.assertEqual(projected["transcript"], transcript)
+        self.assertEqual(projected["postconditions"], context["postconditions"])
+        self.assertEqual(projected["current_action_fields"]["open"]["text"], ["设置"])
 
     @staticmethod
     def closed_action_schema(properties):
@@ -404,7 +453,8 @@ class NativeIntegrationTests(unittest.TestCase):
         bundle = os.environ.get("HEPTA_QAIRT_BUNDLE")
         self.assertTrue(bundle, "full test requires verified tokenizer bundle via HEPTA_QAIRT_BUNDLE")
         candidate = self.directory / "provider-overlay"
-        manifest = build(PHONE / "provider/r7/source", candidate)
+        base = Path(os.environ.get("HEPTA_PROVIDER_BASE_SOURCE", str(PHONE / "provider/r7/source")))
+        manifest = build(base, candidate)
         result = subprocess.run([sys.executable, str(ROOT / "tests/provider_flow_probe.py"),
             "--source", manifest["candidate_source_directory"], "--root", str(self.directory / "flow"),
             "--endpoint", self.fixture.endpoint, "--worker", str(self.worker), "--bundle", bundle,
@@ -419,6 +469,11 @@ class NativeIntegrationTests(unittest.TestCase):
         self.assertTrue(report["task_deadline_cancelled_with_native_cleanup"])
         self.assertTrue(report["cpu_cleanup_binding_absent"])
         self.assertFalse(report["http_transport_called"])
+        if (base / "ledger_round_evidence.py").is_file():
+            self.assertTrue(report["private_ledger_request_bound"])
+            self.assertTrue(manifest["legacy_ledger_initializer_recovered_exactly"])
+            self.assertEqual(manifest["ledger_profile_registration"],
+                             {"name": b.PROFILE["name"], "max_rounds": 25})
         private_source = os.environ.get("HEPTA_PRIVATE_GENIEX_SOURCE")
         private_root = os.environ.get("HEPTA_PRIVATE_TEST_ROOT")
         if private_source or private_root:
@@ -434,6 +489,8 @@ class NativeIntegrationTests(unittest.TestCase):
                             and report["cpu_cleanup_binding_absent"] and report["cpu_mode_without_binding_rejected"]
                             and report["task_deadline_cancelled_with_native_cleanup"])
             self.assertFalse(report["phone_actions_dispatched"] or report["http_transport_called"])
+            if (Path(private_source) / "ledger_round_evidence.py").is_file():
+                self.assertTrue(report["private_ledger_request_bound"])
 
 
 if __name__ == "__main__":

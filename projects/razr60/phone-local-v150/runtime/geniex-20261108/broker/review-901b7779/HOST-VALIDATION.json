@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.native-public-rebase-host-validation-public.v1",
+  "base_commit": "9383657347fbcd65bf289dc91474fdf28778c6ff",
+  "source_files": 43,
+  "source_closure_sha256": "5c5ea4a1e620b4c6cf3a6e806dc1aa4356cc1430c5cf0b4685a1820fa7c330c5",
+  "changed_files": [
+    "projects/razr60/phone-local-v150/provider/r7/tests/test_offline_phone_actions.py",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/README.md",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/apply_provider_overlay.py",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/provider_flow_probe.py",
+    "projects/razr60/phone-local-v150/runtime/geniex-20261108/broker/tests/test_backend.py"
+  ],
+  "all_pass": true,
+  "test_environment": "host_fixture",
+  "device_or_real_model_qualification": false,
+  "test_invocations": 126,
+  "passed": 124,
+  "skipped": 2,
+  "suites": [
+    {
+      "name": "backend-public",
+      "exit_code": 0,
+      "timeout": false,
+      "tests": 23,
+      "passed": 23,
+      "skipped": 0
+    },
+    {
+      "name": "backend-private-r9",
+      "exit_code": 0,
+      "timeout": false,
+      "tests": 23,
+      "passed": 23,
+      "skipped": 0
+    },
+    {
+      "name": "token-counter-umask077",
+      "exit_code": 0,
+      "timeout": false,
+      "tests": 20,
+      "passed": 20,
+      "skipped": 0
+    },
+    {
+      "name": "provider-public",
+      "exit_code": 0,
+      "timeout": false,
+      "tests": 30,
+      "passed": 28,
+      "skipped": 2
+    },
+    {
+      "name": "provider-private-r9",
+      "exit_code": 0,
+      "timeout": false,
+      "tests": 30,
+      "passed": 30,
+      "skipped": 0
+    }
+  ],
+  "skip_explanation": "Public r7 predates request-prefix binding and stable-open v2. Both corresponding guard cases pass against the private r9 snapshot.",
+  "rebased_patch_sha256": "0990e054332dab33f7cc1808fff3c9c7743a47a4bb617f13a9946cdd907f0a19",
+  "source_evidence_scope": "43 selected source files matched the current Git base or the five reviewed changes. Full runtime, device permissions and app goal completion require separate qualification."
+}

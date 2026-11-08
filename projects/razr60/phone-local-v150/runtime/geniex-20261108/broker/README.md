@@ -140,6 +140,27 @@ the earlier lockscreen observation is not a current deployment blocker.
 
 ## Tests
 
+The independent review was reconciled with source commit
+`9383657347fbcd65bf289dc91474fdf28778c6ff`, which already registered the frozen
+QAIRT ledger profile, retained legitimate cross-app `open` choices after the
+owner-matched app was opened, and corrected the umask and parser fixture seams.
+Those fixes and the newer exact required-field projection remain intact.
+
+The overlay now also proves that removing only its one added ledger-profile
+entry restores the complete original initializer AST, records that proof in its
+manifest, and rejects changed registry values or types. An optional
+`HEPTA_PROVIDER_BASE_SOURCE=/absolute/private/provider/source` runs the ordinary
+selector/native/parser test against a freshly built private-source overlay.
+That run checks the actual baseline, rejected unknown profiles and round
+budgets, and the committed request binding for success, malformed JSON and
+cancellation. Existing prebuilt-private-overlay test variables remain supported.
+
+The r7 mapping fixtures explicitly supply r9 request-prefix evidence when that
+contract is present and choose the documented v2 stable-open receipt for r9.
+Separate negative cases still reject an unbound action, old receipt, wrong
+launch flags and unstable observations. No production gate is mocked away to
+make those fixture revisions pass.
+
 ```sh
 python broker/tests/test_backend.py --unit-only
 HEPTA_QAIRT_BUNDLE=/absolute/verified/bundle python broker/tests/test_backend.py

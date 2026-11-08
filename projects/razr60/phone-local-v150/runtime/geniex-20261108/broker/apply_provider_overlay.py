@@ -130,16 +130,28 @@ def daily_overlay(source, file_hashes):
 
 
 def ledger_profile_overlay(source):
-    """Add one named budget; retain every original ledger/proof operation."""
+    """Register the frozen budget and prove every old initializer node survives."""
     tree = ast.parse(source)
     init = function(tree, "LedgerPrefix", "__init__")
+    original_init = copy.deepcopy(init)
     rounds = one(init.body, lambda node: target_assignment(node, "rounds"), "private ledger round profiles")
     original = ast.literal_eval(rounds.value)
-    if original != {"fixed19-v150-r7": 8, "daily-local-24-v1": 25}:
+    if (original != {"fixed19-v150-r7": 8, "daily-local-24-v1": 25}
+            or any(type(value) is not int for value in original.values())):
         raise ValueError("unreviewed private ledger budget profile map")
-    rounds.value = ast.parse(repr({**original, "daily-qairt-4096-process60-v1": 25}), mode="eval").body
+    rounds.value.keys.append(ast.Constant("daily-qairt-4096-process60-v1"))
+    rounds.value.values.append(ast.Constant(25))
+    reduced = copy.deepcopy(init)
+    restored = one(reduced.body, lambda node: target_assignment(node, "rounds"), "restored ledger profile map")
+    restored.value.keys.pop()
+    restored.value.values.pop()
+    if ast.dump(reduced, include_attributes=False) != ast.dump(original_init, include_attributes=False):
+        raise ValueError("private ledger initializer changed outside the new registration")
     ast.fix_missing_locations(tree)
-    return ast.unparse(tree) + "\n"
+    return ast.unparse(tree) + "\n", {
+        "ledger_profile_registration": {"name": "daily-qairt-4096-process60-v1", "max_rounds": 25},
+        "legacy_ledger_initializer_ast_sha256": digest(ast.dump(original_init, include_attributes=False).encode()),
+        "legacy_ledger_initializer_recovered_exactly": True}
 
 
 def build(base: Path, out: Path):
@@ -160,8 +172,10 @@ def build(base: Path, out: Path):
     new_provider, evidence = provider_overlay((base / "provider_phone_local.py").read_text())
     (source / "provider_phone_local.py").write_text(new_provider)
     changed = ["native_backend.py", "prompt_budget.py", "provider_bridge.py", "provider_phone_local.py"]
+    ledger_evidence = {"ledger_profile_registration": None}
     if (base / "ledger_round_evidence.py").is_file():
-        (source / "ledger_round_evidence.py").write_text(ledger_profile_overlay((base / "ledger_round_evidence.py").read_text()))
+        new_ledger, ledger_evidence = ledger_profile_overlay((base / "ledger_round_evidence.py").read_text())
+        (source / "ledger_round_evidence.py").write_text(new_ledger)
         changed.append("ledger_round_evidence.py")
     pins = {name: digest((source / name).read_bytes()) for name in changed}
     new_daily = daily_overlay((base / "daily_phone_local.py").read_text(), pins)
@@ -173,7 +187,7 @@ def build(base: Path, out: Path):
                 "candidate_source_directory": str(source), "base_sha256": before, "candidate_sha256": after,
                 "selection": "daily_phone_local.py --geniex-config <private reviewed config>",
                 "candidate_only": True, "deployed": False, "old_cpu_receipt_branch_modified": False,
-                "old_claims_modified": False, **evidence}
+                "old_claims_modified": False, **evidence, **ledger_evidence}
     (out / "OVERLAY-MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return manifest
 

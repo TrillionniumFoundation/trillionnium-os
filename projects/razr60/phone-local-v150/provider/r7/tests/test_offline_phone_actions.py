@@ -33,6 +33,7 @@ from provider_phone_local import (PhoneLocalAdapter, business_decision_schema,
     mobile_use_schema, normalize_mobile_use, mobile_use_policy, compact_transcript,
     operation_profile, LEGACY_PROFILE, ORDINARY_PROFILE, load_local_config, inspect_single_slot)
 from retirement_recovery import EXECUTOR_BINDING
+import phone_task_guards
 from task_postconditions import evaluate, terminal_fields
 
 
@@ -114,6 +115,7 @@ class ProviderFixture(unittest.TestCase):
         (self.evidence / 'claims').mkdir(mode=0o700)
         self.counter = 0
         self.adapters = []
+        self.owner_requests = {}
         # Only the external file-location check is injected. Mapping, command
         # generation, durable ledger, receive/emit and result parsing are real.
         self.file_pin = mock.patch('phone_local_tools.validate_executor', side_effect=lambda value, **_: value)
@@ -141,6 +143,7 @@ class ProviderFixture(unittest.TestCase):
         args = types.SimpleNamespace(evidence=self.evidence, contracts=None, timeout=120, local_config=config)
         adapter = PhoneLocalAdapter(args, source, sink, run)
         self.adapters.append((adapter, write_fd))
+        self.owner_requests[id(adapter)] = request
         if identity is None:
             identity = {'session_id': 'fixture-session', 'profile_id': 'fixture-profile',
                         'task_id': 'task-' + str(self.counter), 'turn_id': 'turn-' + str(self.counter),
@@ -163,7 +166,48 @@ class ProviderFixture(unittest.TestCase):
         schema = business_decision_schema(call_id, adapter.round, adapter.phone_tools, APPS, adapter.operation_profile)
         decision = normalize_mobile_use(mobile(action, **fields), schema, call_id)
         adapter._decision(decision, call_id)
+        self.bind_host_request(adapter, call_id, schema)
         return adapter.phone_tools.calls[call_id]
+
+    def bind_host_request(self, adapter, call_id, schema):
+        """Commit real r9 request bindings for this direct-mapper host fixture.
+
+        No model is invoked by these mapping tests. The fixture supplies the
+        explicitly labelled request files that production completion() writes
+        before a model call; the real LedgerPrefix and original reserve/emit
+        gates remain in use. Full completion ordering is tested separately by
+        the native selector/bridge suite.
+        """
+        prefix = getattr(adapter, 'ledger_prefix', None)
+        if prefix is None:
+            return  # The public r7 source predates the request-prefix contract.
+        number = int(call_id[1:3])
+        if prefix.bindings and prefix.bindings[-1]['value']['allowed_call_id'] == call_id:
+            return
+        self.assertGreater(number, len(prefix.bindings), 'host fixture must advance model round for a new request')
+        for current in range(len(prefix.bindings) + 1, number + 1):
+            allowed = call_id if current == number else (
+                IMAGE if current == 1 else 'r%02d_%016x' % (current, current))
+            request_id = allowed[4:] + '0' * 16
+            _rows, boundary_sha = prefix.before_request(current, request_id, allowed)
+            path = adapter.run_dir / ('local-%02d' % current)
+            adapter.atomic_record(path.with_suffix('.open-replay-exclusions.json'), {
+                'schema': 'hepta.open-replay-schema-context.v150.1', 'request_id': request_id,
+                'round': current, 'ledger_boundary_sha256': boundary_sha, 'excluded': [],
+                'authorizes_dispatch': False, 'host_fixture': True})
+            adapter.atomic_record(path.with_suffix('.request.json'), {
+                'model': 'host-fixture-no-model-invocation', 'host_fixture': True,
+                'allowed_call_id': allowed, 'messages': [{'role': 'user',
+                    'content': self.owner_requests[id(adapter)]}],
+                'response_format': {'type': 'json_schema', 'json_schema': {
+                    'schema': mobile_use_schema(schema), 'strict': True}}})
+            now = time.monotonic()
+            adapter.atomic_record(path.with_suffix('.schema-clock.json'), {
+                'schema': 'hepta.business-schema-clock.v150.1', 'request_id': request_id,
+                'round': current, 'clock': 'CLOCK_MONOTONIC', 'before': now, 'after': now,
+                'latest_image_call_id': IMAGE if current > 1 else None,
+                'latest_received_monotonic': None, 'host_fixture': True})
+            prefix.bind_request(path)
 
     def shell(self, record):
         argv = record['wire_call']['argv']
@@ -175,17 +219,29 @@ class ProviderFixture(unittest.TestCase):
         projected, _paths = adapter.phone_tools.prepare(messages, messages, adapter.round + 1)
         return reply, projected
 
+    def app_open_receipt(self, record, component, page):
+        """Native receipt fixture for the pinned source's declared revision."""
+        receipt = {'schema': 'hepta.local-app-open.v150.1', 'operation_id': record['capture_id'],
+                   'launch_exit_code': 0,
+                   'launch_b64': base64.b64encode(('Status: ok\nActivity: ' + component + '\n').encode()).decode(),
+                   'page_b64': base64.b64encode(page.encode()).decode(),
+                   'viewport_b64': base64.b64encode(VIEWPORT.encode()).decode()}
+        if hasattr(phone_task_guards, 'APP_OPEN_MAX_OBSERVATIONS'):
+            # r9 strengthened app-open proof. Its controlled host fixture must
+            # state two stable observations and the fixed launch flags; a v1
+            # receipt is deliberately rejected by the production validator.
+            receipt.update(schema='hepta.local-app-open.v150.2',
+                           launch_flags='NEW_TASK|CLEAR_TOP', observation_attempts=2,
+                           observation_stable=True)
+        return receipt
+
     def opened(self, adapter, alias, call_id, round_number):
         adapter.round = round_number
         record = self.choose(adapter, 'open', call_id=call_id, text=alias)
         adapter.emit('tool.call', call=record['wire_call'])
         component = APPS[alias]['component']
         page = PAGE.replace('com.example.calculator/.Calculator', component)
-        receipt = {'schema':'hepta.local-app-open.v150.1', 'operation_id':record['capture_id'],
-            'launch_exit_code':0,
-            'launch_b64':base64.b64encode(('Status: ok\nActivity: ' + component + '\n').encode()).decode(),
-            'page_b64':base64.b64encode(page.encode()).decode(),
-            'viewport_b64':base64.b64encode(VIEWPORT.encode()).decode()}
+        receipt = self.app_open_receipt(record, component, page)
         result = native_result(call_id, json.dumps(receipt).encode())
         result['seq'] = adapter.in_seq
         self.send(adapter, result)
@@ -211,6 +267,22 @@ class ProviderFixture(unittest.TestCase):
 
 
 class OpenAndRequestTests(ProviderFixture):
+    def test_private_app_open_rejects_old_or_unstable_receipts(self):
+        if not hasattr(phone_task_guards, 'APP_OPEN_MAX_OBSERVATIONS'):
+            self.skipTest('public r7 source predates stable app-open v2')
+        token = 'a' * 32
+        component = 'com.example.calculator/.Calculator'
+        valid = self.app_open_receipt({'capture_id': token}, component, PAGE)
+        phone_task_guards.verify_app_open(valid, token, component)
+        variants = [dict(valid, observation_attempts=1), dict(valid, observation_stable=False),
+                    dict(valid, launch_flags='NEW_TASK')]
+        old = {k: v for k, v in valid.items()
+               if k not in {'observation_attempts', 'observation_stable', 'launch_flags'}}
+        old['schema'] = 'hepta.local-app-open.v150.1'
+        for value in variants + [old]:
+            with self.subTest(receipt=value), self.assertRaisesRegex(ProviderError, 'identity or stability differs'):
+                phone_task_guards.verify_app_open(value, token, component)
+
     def test_verified_cross_app_departure_allows_guarded_return_not_permanent_mask(self):
         adapter = self.adapter()
         first = self.opened(adapter, 'Calculator', 'r01_1111111111111111', 1)
@@ -254,11 +326,7 @@ class OpenAndRequestTests(ProviderFixture):
         adapter.round = 1
         record = self.choose(adapter, 'open', call_id=IMAGE, text='Calculator')
         adapter.emit('tool.call', call=record['wire_call'])
-        receipt = {'schema': 'hepta.local-app-open.v150.1', 'operation_id': record['capture_id'],
-                   'launch_exit_code': 0,
-                   'launch_b64': base64.b64encode(b'Status: ok\nActivity: com.example.calculator/.Calculator\n').decode(),
-                   'page_b64': base64.b64encode(PAGE.encode()).decode(),
-                   'viewport_b64': base64.b64encode(VIEWPORT.encode()).decode()}
+        receipt = self.app_open_receipt(record, 'com.example.calculator/.Calculator', PAGE)
         reply = native_result(IMAGE, json.dumps(receipt).encode())
         self.send(adapter, reply)
         original = adapter.receive('tool.result', timeout=0)
@@ -325,13 +393,30 @@ class OpenAndRequestTests(ProviderFixture):
         self.assertEqual('', second.sink.getvalue())
         # A fresh read-only request remains distinguishable and can observe;
         # accepting it neither clears uncertainty nor retries the old input.
-        shot = self.choose(second, 'screenshot', call_id='r01_aaaaaaaaaaaaaaaa', display_id=0)
+        # A second model decision is a new round even though the preceding
+        # mutation was denied before dispatch by the unresolved-action gate.
+        second.round = 2
+        shot = self.choose(second, 'screenshot', call_id='r02_aaaaaaaaaaaaaaaa', display_id=0)
         second.emit('tool.call', call=shot['wire_call'])
         self.assertEqual(1, len(second.sink.getvalue().splitlines()))
         self.assertEqual(old_bytes, old_path.read_bytes())
 
 
 class ActionSchemaTests(ProviderFixture):
+    def test_private_request_binding_gate_rejects_an_unbound_direct_action(self):
+        adapter = self.adapter()
+        if getattr(adapter, 'ledger_prefix', None) is None:
+            self.skipTest('public r7 source has no ledger-prefix request binding')
+        self.screen(adapter)
+        schema = business_decision_schema(CALL, adapter.round, adapter.phone_tools, APPS, adapter.operation_profile)
+        decision = normalize_mobile_use(mobile('back', screenshot_id=IMAGE), schema, CALL)
+        adapter._decision(decision, CALL)
+        record = adapter.phone_tools.calls[CALL]
+        with self.assertRaisesRegex(ProviderError, 'no committed request binding'):
+            adapter.emit('tool.call', call=record['wire_call'])
+        self.assertEqual('', adapter.sink.getvalue())
+        self.assertEqual([], adapter.action_ledger.intents())
+
     def test_only_current_image_offers_new_inputs_and_visual_contract_stays_closed(self):
         adapter = self.adapter()
         for changes in ({}, {'attached_round': 1}, {'received_monotonic': time.monotonic() - 121},
@@ -515,7 +600,13 @@ class GeneratedGuardTests(ProviderFixture):
         result, calls = self.execute_guard(record, 'stable', 'com.android.settings/.Settings')
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual(1, len(calls))
-        self.assertEqual(['am', 'start', '--display', '0', '-W', '-n', APPS['Calculator']['component']], calls[0])
+        expected_launch = ['am', 'start', '--display', '0']
+        if hasattr(phone_task_guards, 'APP_OPEN_MAX_OBSERVATIONS'):
+            # The r9 v2 contract freezes NEW_TASK|CLEAR_TOP. Keep exact argv
+            # validation; do not infer expected flags from generated output.
+            expected_launch += ['-f', '0x14000000']
+        expected_launch += ['-W', '-n', APPS['Calculator']['component']]
+        self.assertEqual(expected_launch, calls[0])
         self.assertEqual(0, json.loads(result.stdout)['launch_exit_code'])
         blocked, calls = self.execute_guard(record, 'return_to_target', 'com.android.settings/.Settings')
         self.assertEqual(70, blocked.returncode)
@@ -806,7 +897,7 @@ class RuntimeBoundaryTests(unittest.TestCase):
     def test_model_claim_alone_never_passes_a_real_postcondition_contract(self):
         no_contract = evaluate(None, [], None, 'completed', 'turn.complete')
         self.assertFalse(no_contract['business_verified'])
-        contract = {'contract': {'coverage': 'entire_request', 'postconditions':
+        contract = {'contract': {'schema': 'hepta.task-contract.v149.1', 'coverage': 'entire_request', 'postconditions':
                     [{'id': 'return', 'kind': 'foreground_hepta'}]}, 'source_sha256': 'a' * 64}
         outcome = evaluate(contract, [], None, 'completed', 'turn.complete')
         kind, _ = terminal_fields('turn.complete', {'summary': 'Done'}, outcome, True)

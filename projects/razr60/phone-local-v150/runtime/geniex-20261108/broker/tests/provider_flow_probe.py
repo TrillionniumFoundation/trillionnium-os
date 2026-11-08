@@ -151,6 +151,19 @@ def main():
             accepted = adapter.receive("turn.start", timeout=0)
             assert accepted is not None and adapter.accepted_identity == identity
             assert adapter.operation_profile["max_inference_seconds"] == 55
+            ledger = getattr(adapter, "ledger_prefix", None)
+            if ledger is not None:
+                baseline = b.strict_json((run / "ledger-prefix/baseline.json").read_bytes())
+                assert baseline["operation_profile"] == {"name": b.PROFILE["name"], "max_rounds": 25}
+                from ledger_round_evidence import LedgerPrefix
+                for invalid in ({"name": "unreviewed-profile", "max_rounds": 25},
+                                {"name": b.PROFILE["name"], "max_rounds": 26}):
+                    try:
+                        LedgerPrefix(None, run, identity, owner_text, operation_profile=invalid)
+                    except ProviderError as error:
+                        assert "operation profile round bound differs" in str(error)
+                    else:
+                        raise AssertionError("unregistered ledger profile admitted")
             assert 0 < adapter.remaining_inference_seconds() <= 55
             messages = [{"role": "user", "content": owner_text}]
             rejected = False
@@ -203,7 +216,11 @@ def main():
                 assert deadline_cancelled and receipt["state"] == "cancelled"
                 assert receipt["cleanup_confirmed"] and not adapter.phone_tools.calls
             assert "tool.call" not in sink.getvalue() and not adapter.dispatched_calls
+            if ledger is not None:
+                assert len(ledger.bindings) == 1
+                assert ledger.bindings[0]["value"]["request_id"] == adapter.last_request_id
             rows.append({"rejected": rejected, "deadline_cancelled": deadline_cancelled,
+                         "private_ledger_request_bound": ledger is not None and len(ledger.bindings) == 1,
                          "receipt_state": receipt["state"], "owner_sha256": b.sha(owner_text.encode())})
         finally:
             adapter.frames.close(); adapter.inputs.close(); source.close(); os.close(write_fd)
@@ -214,7 +231,8 @@ def main():
         "cpu_cleanup_binding_absent": not getattr(args, "slot_cleanup_binding", None),
         "cpu_mode_without_binding_rejected": cpu_gate_checked,
         "http_transport_called": False,
-        "proof_environment": "host_fixture", "cases": rows}))
+        "proof_environment": "host_fixture", "cases": rows,
+        "private_ledger_request_bound": all(row["private_ledger_request_bound"] for row in rows)}))
 
 
 if __name__ == "__main__":
