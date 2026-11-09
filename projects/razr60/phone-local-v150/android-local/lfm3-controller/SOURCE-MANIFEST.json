@@ -16,7 +16,7 @@
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "public_code25_source_frozen_fresh_host_android_phone_qualification_pending",
+  "candidate_status": "code25_validation_source_frozen_fresh_host_and_phone_validation_pending",
   "merge_parents": {
     "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
     "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
@@ -44,7 +44,7 @@
     }
   },
   "fresh_default_preserved_from_actual_external18": true,
-  "git_ancestry_parent": "9f8b7d1c0db68c13bf06876661dddcc8b8dba1f4",
+  "git_ancestry_parent": "663959ff7dfa655cc6985b80a1d2749de612b028",
   "derived_from_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
   "recovery_process_inventory_scope": "app_visible_procfs_same_uid",
   "old_native_cleanup_claim": "unknown",
@@ -5457,14 +5457,34 @@
       "sha256": "b7c97e4391984c85630fc15f66e71540d781c4bf7f8a458587714b61294a0664"
     },
     {
+      "path": "tools/fixtures/accelerator-logs/bolt-apps-v25.json",
+      "bytes": 1619,
+      "sha256": "00a5843e943a13690dd4b23814dde399bf289de8ede2cf0d3541fb9c30b8dce2"
+    },
+    {
+      "path": "tools/fixtures/accelerator-logs/bolt-calculator-v25.json",
+      "bytes": 1624,
+      "sha256": "1bc13be60c547629c1232314d4d70bb013b0d8a1b71ad5f274ca5244c2e43bee"
+    },
+    {
+      "path": "tools/fixtures/accelerator-logs/bolt-gpu-historical.json",
+      "bytes": 1415,
+      "sha256": "b4d3111e36c4db076fbfaacdf6392864e09748630be769006e2ffe38d7c65fc1"
+    },
+    {
+      "path": "tools/fixtures/accelerator-logs/bolt-npu-historical.json",
+      "bytes": 1405,
+      "sha256": "71c5e03d592d8a63f8e9ca71219e0a9a2e6b34276abdfb0d3fa4b42455d07c4e"
+    },
+    {
       "path": "tools/model_profiles.py",
       "bytes": 2076,
       "sha256": "b3dd8b6062d988115e7e260cd75560621f8d81a7e1828134c8485d7d131484c2"
     },
     {
       "path": "tools/phone_acceptance.py",
-      "bytes": 44685,
-      "sha256": "705f10b732546c1d85fb41d545615c949b51012d68e9270cd161b35f93177922"
+      "bytes": 45878,
+      "sha256": "78dda5387a474480e262f1c2f7a2ab54ed9127119f5a142174d7a87565937a29"
     },
     {
       "path": "tools/phone_inventory.py",
@@ -5513,8 +5533,8 @@
     },
     {
       "path": "tools/test_phone_acceptance.py",
-      "bytes": 17976,
-      "sha256": "484c7ae66ad16e2eb9e32df31d5c750b78c3ef39866d890074162cddf0a51f4f"
+      "bytes": 25183,
+      "sha256": "6fbeb39692e7d48f5ae9c67f9d62564661271341839bb1018577d539b99af2d3"
     },
     {
       "path": "tools/test_phone_inventory.py",
@@ -5656,5 +5676,33 @@
     "cache_speedup_claimed": false,
     "historical_host_receipts_preserved": true,
     "independent_goal_assertions_relaxed": false
+  },
+  "derived_from_public_code25_manifest_sha256": "3c199ac5813b11c62ca1a755feaf57b5a3db78e2c3878ff0772ecafb00a09101",
+  "validation_derivation": {
+    "schema": "hepta.validation-source-derivation.v1",
+    "base_public_git_head": "663959ff7dfa655cc6985b80a1d2749de612b028",
+    "base_public_source_manifest_sha256": "3c199ac5813b11c62ca1a755feaf57b5a3db78e2c3878ff0772ecafb00a09101",
+    "reviewed_patch_sha256": "de8ad1cbc3e5060464333e88b339069ba9491965ef708888c21fb89192fbe36f",
+    "modified_existing_members": [
+      "tools/phone_acceptance.py",
+      "tools/test_phone_acceptance.py"
+    ],
+    "added_fixture_members": [
+      "tools/fixtures/accelerator-logs/bolt-apps-v25.json",
+      "tools/fixtures/accelerator-logs/bolt-calculator-v25.json",
+      "tools/fixtures/accelerator-logs/bolt-gpu-historical.json",
+      "tools/fixtures/accelerator-logs/bolt-npu-historical.json"
+    ],
+    "application_version_unchanged": true,
+    "java_native_resources_android_manifest_bytes_unchanged": true,
+    "original_runner_and_existing_functional_assertions_unchanged": true,
+    "native_requested_resolved_device_gates_unchanged": true,
+    "apk_rebuilt": false,
+    "public_worktree_modified": false,
+    "commit_created_at_freeze": false,
+    "phone_actions": false,
+    "host_status_at_freeze": "pending_full_unchanged_runner",
+    "scope": "Correct pinned OpenCL model-buffer log identity while retaining positive layer/buffer evidence and all surrounding native and goal gates; bounded provenance fixtures only.",
+    "phone_task_success_claimed": false
   }
 }

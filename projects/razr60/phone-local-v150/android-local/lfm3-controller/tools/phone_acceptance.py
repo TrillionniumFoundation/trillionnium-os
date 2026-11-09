@@ -301,12 +301,37 @@ def accelerator_log_evidence(log, compute):
     # This establishes positive tensor offload, not 100% operator coverage,
     # watts, or utilization. CPU fallback lines remain visible in the report.
     device = "HTP0" if compute == "npu" else "GPUOpenCL"
-    offloaded = [int(n) for n in re.findall(r"offloaded\s+(\d+)(?:/\d+)?\s+layers", log, re.I)]
-    buffer_lines = [line for line in log.splitlines() if device in line and "model buffer" in line.lower()]
-    positive_buffer = any(re.search(r"(?:size\s*=|buffer[^0-9]*)([0-9]+(?:\.[0-9]+)?)\s*(?:MiB|MB|GiB|bytes)", line, re.I)
-        and any(float(n) > 0 for n in re.findall(r"([0-9]+(?:\.[0-9]+)?)\s*(?:MiB|MB|GiB|bytes)", line, re.I)) for line in buffer_lines)
+    # The pinned OpenCL backend's buffer label differs from the resolved device.
+    buffer_device = "HTP0" if compute == "npu" else "OpenCL"
+    # Accept complete native loader records, with the pinned GenieX log wrapper
+    # when present. Quoted diagnostics or other text mentioning these words are
+    # not loader evidence. Only SGR color escapes are removed for matching.
+    prefix = (r"[ \t]*(?:\[(?:DEBUG| INFO)\][ \t]+"
+        r"\[plugins/llama_cpp/src/plugin\.cpp:[0-9]+:ggml_to_geniex_log\][ \t]+)?"
+        r"(?:load_tensors|llama_model_load):[ \t]*")
+    layer_pattern = re.compile(prefix + r"offloaded[ \t]+([0-9]{1,9})(?:/([0-9]{1,9}))?"
+        r"[ \t]+layers[ \t]+to[ \t]+GPU[ \t]*")
+    buffer_pattern = re.compile(prefix + re.escape(buffer_device)
+        + r"[ \t]+model[ \t]+buffer[ \t]+size[ \t]*=[ \t]*([0-9]+(?:\.[0-9]+)?)"
+        r"[ \t]*(?:MiB|MB|GiB|bytes)[ \t]*")
+    offloaded, buffer_lines, positive_buffer = [], [], False
+    for original in log.split("\n"):
+        line = re.sub(r"\x1b\[[0-9;]*m", "", original.removesuffix("\r"))
+        if not line.isascii():
+            continue
+        match = layer_pattern.fullmatch(line)
+        if match:
+            count = int(match[1])
+            if match[2] is None or 0 <= count <= int(match[2]) and int(match[2]) > 0:
+                offloaded.append(count)
+        match = buffer_pattern.fullmatch(line)
+        if match:
+            buffer_lines.append(original)
+            # This is the captured buffer size, never another number on the line.
+            positive_buffer |= any(digit in "123456789" for digit in match[1])
     return {"accelerator_offload_observed": bool(offloaded and max(offloaded) > 0 and positive_buffer),
-        "device": device, "offloaded_layers_observed": max(offloaded, default=0), "model_buffer_lines": buffer_lines,
+        "device": device, "model_buffer_device": buffer_device,
+        "offloaded_layers_observed": max(offloaded, default=0), "model_buffer_lines": buffer_lines,
         "fallback_lines": [line for line in log.splitlines() if "fallback" in line.lower() or "unsupported" in line.lower()],
         "full_operator_coverage_proven": False}
 
