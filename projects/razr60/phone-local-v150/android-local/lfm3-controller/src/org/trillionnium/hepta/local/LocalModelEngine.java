@@ -388,6 +388,19 @@ public final class LocalModelEngine implements AutoCloseable {
             // llama_cpp resolves its backend/DSP libraries from this directory.
             // The native adapter registers the renamed plugin explicitly.
             env.put("GENIEX_PLUGIN_PATH", nativeDir.getPath());
+            if ("gpu".equals(config.compute)) {
+                File cacheRoot = context.getCacheDir();
+                if (cacheRoot == null) throw new IOException("app cache directory unavailable");
+                cacheRoot = cacheRoot.getCanonicalFile();
+                File kernelCache = new File(cacheRoot, "hepta-opencl-kernels");
+                if (!cacheRoot.equals(kernelCache.getCanonicalFile().getParentFile()))
+                    throw new IOException("OpenCL kernel cache must stay inside app cache");
+                MobiMindPrivateFiles.directory(kernelCache, false);
+                if (!kernelCache.equals(kernelCache.getCanonicalFile()))
+                    throw new IOException("OpenCL kernel cache path changed");
+                env.put("GGML_OPENCL_KERNEL_CACHE_DIR", kernelCache.getPath());
+                put(receipt, "opencl_kernel_cache_directory", kernelCache.getPath());
+            }
             process = builder.start(); h.child.set(process);
             put(receipt, "process_started", true);
             status = "running";
