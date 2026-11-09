@@ -1,0 +1,14 @@
+--- actual-captured/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java
++++ owned-final/packages/services/Telephony/src/com/android/phone/PhoneInterfaceManager.java
+@@ -3093,6 +3093,11 @@
+         enforceTelephonyFeatureWithException(getCurrentPackageName(),
+                 PackageManager.FEATURE_TELEPHONY_RADIO_ACCESS, "handleUssdRequest");
+ 
++        if (!TelephonyPermissions.checkSubscriptionAssociatedWithUser(
++                mApp, subId, Binder.getCallingUserHandle())) {
++            throw new SecurityException(
++                    "The subscription " + subId + " is not associated " + "with the calling user");
++        }
+         final long identity = Binder.clearCallingIdentity();
+         try {
+             if (!SubscriptionManager.isValidSubscriptionId(subId)) {

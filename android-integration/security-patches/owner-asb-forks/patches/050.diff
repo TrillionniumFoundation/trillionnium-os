@@ -1,0 +1,18 @@
+--- actual-captured/kernel/motorola/sm6375/net/nfc/llcp_core.c
++++ owned-final/kernel/motorola/sm6375/net/nfc/llcp_core.c
+@@ -1096,6 +1096,7 @@
+ 	if (sk->sk_state == LLCP_CLOSED) {
+ 		release_sock(sk);
+ 		nfc_llcp_sock_put(llcp_sock);
++		return;
+ 	}
+ 
+ 	/* Pass the payload upstream */
+@@ -1187,6 +1188,7 @@
+ 	if (sk->sk_state == LLCP_CLOSED) {
+ 		release_sock(sk);
+ 		nfc_llcp_sock_put(llcp_sock);
++		return;
+ 	}
+ 
+ 	if (sk->sk_state == LLCP_CONNECTED) {

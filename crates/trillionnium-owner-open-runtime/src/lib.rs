@@ -8,6 +8,7 @@
 
 mod process;
 mod raw_adb;
+mod resources;
 mod types;
 mod validate;
 
@@ -15,6 +16,10 @@ use std::time::Instant;
 
 pub use raw_adb::{
     DEFAULT_ADB_EXECUTABLE, executable_configured, unconfigured_request as unconfigured_adb_request,
+};
+pub use resources::{
+    ExecutionCapacity, MAX_RUNTIME_ACTIVE_BUFFER_BYTES, MAX_RUNTIME_ACTIVE_PROCESSES,
+    MAX_RUNTIME_INHERITED_ENV_BYTES, MAX_RUNTIME_OWNED_BUFFER_BYTES,
 };
 pub use types::{
     AdbExecRequest, CancellationToken, EnvironmentDelta, ExecutionEvent, ExecutionEventKind,
@@ -27,6 +32,25 @@ pub use types::{
     MechanicalLimits, PtySize, Result, RuntimeError, ShellExecRequest, ShellInvocation, StreamKind,
     TerminalKind, ToolKind,
 };
+
+/// Reserve shared process/buffer capacity before registry or durable admission.
+/// The token has no Clone constructor and returns capacity on every Drop path.
+pub fn reserve_shell_capacity(
+    request: &ShellExecRequest,
+    limits: &MechanicalLimits,
+) -> Result<ExecutionCapacity> {
+    validate::validate_shell_request(request, limits)?;
+    resources::ExecutionCapacity::acquire(resources::shell_owned(request, limits)?)
+}
+
+/// Reserve an exact raw ADB operation under the same shared process budget.
+pub fn reserve_adb_capacity(
+    request: &AdbExecRequest,
+    limits: &MechanicalLimits,
+) -> Result<ExecutionCapacity> {
+    validate::validate_adb_request(request, limits)?;
+    resources::ExecutionCapacity::acquire(resources::adb_owned(request, limits)?)
+}
 
 /// Publish the accepted observation synchronously after all mechanical request
 /// validation and before entering any process preparation or spawn path.
@@ -105,7 +129,24 @@ pub fn execute_shell<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    let capacity = reserve_shell_capacity(&request, limits)?;
+    execute_shell_with_capacity(request, limits, cancellation, capacity, sink)
+}
+
+/// Execute with an already-owned admission lease; validates actual capacity
+/// again before Accepted and retains the token through process cleanup.
+pub fn execute_shell_with_capacity<F>(
+    request: ShellExecRequest,
+    limits: &MechanicalLimits,
+    cancellation: &CancellationToken,
+    capacity: ExecutionCapacity,
+    sink: F,
+) -> Result<ExecutionTerminal>
+where
+    F: FnMut(ExecutionEvent),
+{
     validate::validate_shell_request(&request, limits)?;
+    capacity.ensure(resources::shell_owned(&request, limits)?)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -114,7 +155,9 @@ where
         ToolKind::ShellExec,
         cancellation,
         sink,
-        |forward| process::execute_shell(request, limits, cancellation, forward),
+        |forward| {
+            process::execute_shell(request, limits, cancellation, capacity.inherited(), forward)
+        },
     )
 }
 
@@ -130,8 +173,26 @@ pub fn execute_shell_pty<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    let capacity = reserve_shell_capacity(&request, limits)?;
+    execute_shell_pty_with_capacity(request, size, limits, cancellation, capacity, sink)
+}
+
+/// Execute with an already-owned admission lease; validates actual capacity
+/// again before Accepted and retains the token through process cleanup.
+pub fn execute_shell_pty_with_capacity<F>(
+    request: ShellExecRequest,
+    size: PtySize,
+    limits: &MechanicalLimits,
+    cancellation: &CancellationToken,
+    capacity: ExecutionCapacity,
+    sink: F,
+) -> Result<ExecutionTerminal>
+where
+    F: FnMut(ExecutionEvent),
+{
     size.validate()?;
     validate::validate_shell_request(&request, limits)?;
+    capacity.ensure(resources::shell_owned(&request, limits)?)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -140,7 +201,16 @@ where
         ToolKind::ShellExec,
         cancellation,
         sink,
-        |forward| process::execute_shell_pty(request, size, limits, cancellation, forward),
+        |forward| {
+            process::execute_shell_pty(
+                request,
+                size,
+                limits,
+                cancellation,
+                capacity.inherited(),
+                forward,
+            )
+        },
     )
 }
 
@@ -159,7 +229,24 @@ pub fn execute_adb<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    let capacity = reserve_adb_capacity(&request, limits)?;
+    execute_adb_with_capacity(request, limits, cancellation, capacity, sink)
+}
+
+/// Execute with an already-owned admission lease; validates actual capacity
+/// again before Accepted and retains the token through process cleanup.
+pub fn execute_adb_with_capacity<F>(
+    request: AdbExecRequest,
+    limits: &MechanicalLimits,
+    cancellation: &CancellationToken,
+    capacity: ExecutionCapacity,
+    sink: F,
+) -> Result<ExecutionTerminal>
+where
+    F: FnMut(ExecutionEvent),
+{
     validate::validate_adb_request(&request, limits)?;
+    capacity.ensure(resources::adb_owned(&request, limits)?)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -168,7 +255,7 @@ where
         ToolKind::AdbExec,
         cancellation,
         sink,
-        |forward| raw_adb::execute(request, limits, cancellation, forward),
+        |forward| raw_adb::execute(request, limits, cancellation, capacity.inherited(), forward),
     )
 }
 
@@ -183,8 +270,26 @@ pub fn execute_adb_pty<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    let capacity = reserve_adb_capacity(&request, limits)?;
+    execute_adb_pty_with_capacity(request, size, limits, cancellation, capacity, sink)
+}
+
+/// Execute with an already-owned admission lease; validates actual capacity
+/// again before Accepted and retains the token through process cleanup.
+pub fn execute_adb_pty_with_capacity<F>(
+    request: AdbExecRequest,
+    size: PtySize,
+    limits: &MechanicalLimits,
+    cancellation: &CancellationToken,
+    capacity: ExecutionCapacity,
+    sink: F,
+) -> Result<ExecutionTerminal>
+where
+    F: FnMut(ExecutionEvent),
+{
     size.validate()?;
     validate::validate_adb_request(&request, limits)?;
+    capacity.ensure(resources::adb_owned(&request, limits)?)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -193,7 +298,16 @@ where
         ToolKind::AdbExec,
         cancellation,
         sink,
-        |forward| raw_adb::execute_pty(request, size, limits, cancellation, forward),
+        |forward| {
+            raw_adb::execute_pty(
+                request,
+                size,
+                limits,
+                cancellation,
+                capacity.inherited(),
+                forward,
+            )
+        },
     )
 }
 

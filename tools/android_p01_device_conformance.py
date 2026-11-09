@@ -9,12 +9,14 @@ restart a service, reboot a device, or change adbd privilege.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import datetime as _datetime
 import hashlib
 import json
 import os
 import re
 import selectors
+import shlex
 import shutil
 import signal
 import stat as stat_module
@@ -24,6 +26,16 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
+
+_PROCESS_SPEC = importlib.util.spec_from_file_location(
+    "owner_open_bounded_process", Path(__file__).with_name("owner_open_bounded_process.py")
+)
+assert _PROCESS_SPEC is not None and _PROCESS_SPEC.loader is not None
+_OWNED_PROCESS = importlib.util.module_from_spec(_PROCESS_SPEC)
+_PROCESS_SPEC.loader.exec_module(_OWNED_PROCESS)
+BoundedProcessError = _OWNED_PROCESS.BoundedProcessError
+_run_owned_bounded = _OWNED_PROCESS.run_bounded
+
 
 
 SCHEMA = "org.trillionnium.android-p01-device-conformance-evidence.v1"
@@ -287,84 +299,19 @@ def measure_regular_file(
     }
 
 
-def _kill_process_group(process: subprocess.Popen[bytes]) -> None:
-    if process.poll() is not None:
-        return
-    try:
-        os.killpg(process.pid, signal.SIGKILL)
-    except ProcessLookupError:
-        return
-    except OSError:
-        process.kill()
-
-
 def run_bounded(
     argv: Sequence[str],
     *,
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
     maximum_output: int = MAX_COMMAND_OUTPUT,
 ) -> tuple[int, bytes, bytes]:
-    if not argv or any(not isinstance(item, str) or "\x00" in item for item in argv):
-        raise ConformanceError("invalid subprocess argv")
-    if timeout_seconds <= 0 or maximum_output <= 0:
-        raise ConformanceError("invalid subprocess bound")
-    process = subprocess.Popen(
-        list(argv),
-        shell=False,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        close_fds=True,
-        start_new_session=True,
-    )
-    assert process.stdout is not None
-    assert process.stderr is not None
-    selector = selectors.DefaultSelector()
-    streams: dict[int, bytearray] = {
-        process.stdout.fileno(): bytearray(),
-        process.stderr.fileno(): bytearray(),
-    }
-    for stream in (process.stdout, process.stderr):
-        os.set_blocking(stream.fileno(), False)
-        selector.register(stream, selectors.EVENT_READ)
-    deadline = time.monotonic() + timeout_seconds
     try:
-        while selector.get_map():
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                _kill_process_group(process)
-                raise ConformanceError("subprocess timed out")
-            events = selector.select(min(remaining, 0.1))
-            if not events and process.poll() is not None:
-                events = [(key, selectors.EVENT_READ) for key in selector.get_map().values()]
-            for key, _ in events:
-                try:
-                    chunk = os.read(key.fd, 65536)
-                except BlockingIOError:
-                    continue
-                if not chunk:
-                    selector.unregister(key.fileobj)
-                    continue
-                streams[key.fd].extend(chunk)
-                total = sum(len(value) for value in streams.values())
-                if total > maximum_output:
-                    _kill_process_group(process)
-                    raise ConformanceError("subprocess output exceeded bound")
-        return_code = process.wait(timeout=max(0.1, deadline - time.monotonic()))
-    except BaseException:
-        _kill_process_group(process)
-        try:
-            process.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            pass
-        raise
-    finally:
-        selector.close()
-        process.stdout.close()
-        process.stderr.close()
-    return return_code, bytes(streams[process.stdout.fileno()]), bytes(
-        streams[process.stderr.fileno()]
-    )
+        result = _run_owned_bounded(
+            argv, timeout_seconds=timeout_seconds, maximum_output=maximum_output,
+        )
+    except BoundedProcessError as error:
+        raise ConformanceError(str(error)) from error
+    return result.returncode, result.stdout, result.stderr
 
 
 def _validate_serial(serial: str) -> str:
@@ -486,7 +433,9 @@ class AdbClient:
         format_string = "%F|%s|%a|%u|%g|%d|%i|%h|%C"
         output = self._run(
             f"stat:{path}",
-            ["shell", "stat", "-c", format_string, path],
+            # adb shell joins arguments for its remote shell parser; quote
+            # the literal separators so they cannot become pipelines.
+            ["shell", "stat", "-c", shlex.quote(format_string), path],
             maximum=16384,
         ).decode("utf-8", "strict").strip()
         fields = output.split("|", 8)

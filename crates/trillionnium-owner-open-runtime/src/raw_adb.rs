@@ -40,12 +40,19 @@ pub fn execute<F>(
     request: AdbExecRequest,
     limits: &MechanicalLimits,
     cancellation: &CancellationToken,
+    inherited_environment: &[(std::ffi::OsString, std::ffi::OsString)],
     sink: F,
 ) -> Result<ExecutionTerminal>
 where
     F: FnMut(ExecutionEvent),
 {
-    execute_process(adb_spec(request, limits)?, limits, cancellation, sink)
+    execute_process(
+        adb_spec(request, limits)?,
+        limits,
+        cancellation,
+        inherited_environment,
+        sink,
+    )
 }
 
 /// Execute raw ADB argv through a real PTY. PTY output is a merged terminal
@@ -55,6 +62,7 @@ pub fn execute_pty<F>(
     size: PtySize,
     limits: &MechanicalLimits,
     cancellation: &CancellationToken,
+    inherited_environment: &[(std::ffi::OsString, std::ffi::OsString)],
     sink: F,
 ) -> Result<ExecutionTerminal>
 where
@@ -63,5 +71,5 @@ where
     size.validate()?;
     let mut spec = adb_spec(request, limits)?;
     spec.io_mode = crate::types::ProcessIoMode::Pty(size);
-    execute_process(spec, limits, cancellation, sink)
+    execute_process(spec, limits, cancellation, inherited_environment, sink)
 }

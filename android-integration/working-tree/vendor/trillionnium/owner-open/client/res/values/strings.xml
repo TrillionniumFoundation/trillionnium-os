@@ -4,5 +4,6 @@
     <string name="send">Send</string>
     <string name="cancel">Cancel</string>
     <string name="inspect">Inspect</string>
+    <string name="recover_output">Recover output</string>
     <string name="reconnect">Reconnect</string>
 </resources>

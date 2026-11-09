@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import base64
+import ctypes
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
@@ -17,6 +18,7 @@ import math
 import os
 from pathlib import Path
 import platform
+import re
 import selectors
 import shlex
 import shutil
@@ -41,9 +43,22 @@ GATE_POLICY_SCHEMA = "org.trillionnium.product-host-baseline-gate-policy.v1"
 GATE_POLICY_VERSION = "2026-09-09-v1"
 IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.product-host-baseline-implementation.v1"
 GATE_METRICS = ("latency_p50_ms", "latency_p95_ms")
+BROKER_SOURCE_PATHS = (
+    "tools/owner-open/owner_open_connection_broker.py",
+    "tools/owner-open/owner_open_connection_broker_v2.py",
+    "tools/owner-open/owner_open_broker_admission_v2.py",
+    "tools/owner-open/owner_open_broker_audit.py",
+    "tools/owner-open/owner_open_broker_base_v2.py",
+    "tools/owner-open/owner_open_broker_common.py",
+    "tools/owner-open/owner_open_broker_connections.py",
+    "tools/owner-open/owner_open_broker_convergence_v2.py",
+    "tools/owner-open/owner_open_broker_mux.py",
+    "tools/owner-open/owner_open_broker_runtime.py",
+    "tools/owner-open/owner_open_broker_server_v2.py",
+)
 IMPLEMENTATION_PATHS = (
     "tools/owner-open/authenticated_python_bootstrap.py",
-    "tools/owner-open/owner_open_connection_broker.py",
+    *BROKER_SOURCE_PATHS,
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
     "tools/perf/_run_product_baseline_core.py",
     "tools/perf/_run_product_baseline_facade.py",
@@ -76,6 +91,10 @@ OPEN_ADMITTED_FILE: Any = None
 REOPEN_ADMITTED_IDENTITY: Any = None
 SAME_ADMITTED_OBJECT: Any = None
 MAX_PINNED_EXECUTABLE_BYTES = 512 * 1024 * 1024
+STORAGE_IDENTITY_SCHEMA = "org.trillionnium.product-host-storage-identity.v1"
+STORAGE_IDENTITY_SCOPE = "same-boot-observed-mount-filesystem-only"
+EXECUTION_CUSTODY = "verified-private-single-link-copies-v1"
+PINNED_EXECUTABLE_CUSTODY = "descriptor-rooted-private-single-link-copy-v2"
 
 
 class BenchmarkError(ValueError):
@@ -276,6 +295,50 @@ def _write_pinned_source(
     return target
 
 
+def _assert_broker_custody(directory: Path) -> None:
+    require(PINNED_IMPLEMENTATION_FILES is not None,
+            "broker source identities are not snapshot-bound")
+    directory_value = directory.stat(follow_symlinks=False)
+    require(stat.S_ISDIR(directory_value.st_mode) and
+            directory_value.st_uid == os.geteuid() and
+            directory_value.st_mode & 0o077 == 0,
+            "broker custody directory is not private")
+    expected_names = {Path(relative).name for relative in BROKER_SOURCE_PATHS}
+    require({path.name for path in directory.iterdir()} == expected_names,
+            "broker custody inventory differs from the closed implementation")
+    for relative in BROKER_SOURCE_PATHS:
+        path = directory / Path(relative).name
+        _, actual, internal = OPEN_ADMITTED_FILE(
+            path, relative, maximum=8 * 1024 * 1024, executable=False
+        )
+        expected = PINNED_IMPLEMENTATION_FILES[relative]
+        value = path.stat(follow_symlinks=False)
+        require(value.st_nlink == 1 and value.st_uid == os.geteuid() and
+                value.st_mode & 0o077 == 0 and
+                (value.st_dev, value.st_ino) == (internal["device"], internal["inode"]),
+                f"broker source custody is not private and single-link: {relative}")
+        require(actual == expected,
+                f"broker custody bytes differ from the admitted snapshot: {relative}")
+
+
+def _write_broker_custody(parent: Path) -> Path:
+    require(PINNED_IMPLEMENTATION_FILES is not None and
+            PINNED_IMPLEMENTATION_SOURCES is not None and
+            set(PINNED_IMPLEMENTATION_FILES) == set(IMPLEMENTATION_PATHS) and
+            set(PINNED_IMPLEMENTATION_SOURCES) == set(IMPLEMENTATION_PATHS),
+            "broker implementation snapshot is incomplete")
+    directory = parent / "broker-python"
+    directory.mkdir(mode=0o700)
+    for relative in BROKER_SOURCE_PATHS:
+        _write_pinned_source(
+            directory, Path(relative).name,
+            PINNED_IMPLEMENTATION_SOURCES[relative],
+            PINNED_IMPLEMENTATION_FILES[relative],
+        )
+    _assert_broker_custody(directory)
+    return directory / Path(BROKER_SOURCE_PATHS[0]).name
+
+
 def _live_repository_file_identity(relative: str) -> dict[str, Any]:
     require(relative in IMPLEMENTATION_PATHS,
             f"unregistered implementation path: {relative}")
@@ -423,6 +486,251 @@ def finite_env() -> dict[str, str]:
             "HOME": "/nonexistent", "PYTHONDONTWRITEBYTECODE": "1"}
 
 
+def _read_storage_proc(path: Path, maximum: int) -> bytes:
+    with path.open("rb") as stream:
+        raw = stream.read(maximum + 1)
+    require(0 < len(raw) <= maximum, "storage metadata capture exceeded bound")
+    return raw
+
+
+def _storage_mount_id(raw: bytes) -> int:
+    values = [line.split(b":", 1)[1].strip() for line in raw.splitlines()
+              if line.startswith(b"mnt_id:")]
+    require(len(values) == 1 and values[0].isdigit() and len(values[0]) <= 20,
+            "storage descriptor mount identity is unavailable")
+    result = int(values[0])
+    require(0 < result < 2**64, "storage descriptor mount identity is invalid")
+    return result
+
+
+def _storage_mount_record(raw: bytes, mount_id: int, device: int) -> dict[str, Any]:
+    lines = raw.splitlines()
+    require(len(lines) <= 4096, "storage mount inventory exceeded bound")
+    records = []
+    seen = set()
+    for line in lines:
+        require(len(line) <= 16384, "storage mount record exceeded bound")
+        fields = line.split(b" ")
+        require(len(fields) >= 10 and fields[0].isdigit() and len(fields[0]) <= 20,
+                "storage mount record is malformed")
+        identity = int(fields[0])
+        require(0 < identity < 2**64 and identity not in seen,
+                "storage mount inventory has ambiguous identities")
+        seen.add(identity)
+        if identity == mount_id:
+            records.append((line, fields))
+    require(len(records) == 1, "storage descriptor mount is absent or ambiguous")
+    line, fields = records[0]
+    require(fields.count(b"-") == 1, "storage mount separator is ambiguous")
+    separator = fields.index(b"-")
+    require(separator >= 6 and len(fields) == separator + 4,
+            "storage mount fields are incomplete")
+    require(fields[1].isdigit() and len(fields[1]) <= 20 and
+            0 < int(fields[1]) < 2**64 and
+            all(field and not any(byte <= 32 or byte == 127 for byte in field)
+                for field in fields), "storage mount fields are malformed")
+    for encoded in fields[3:5]:
+        require(encoded.startswith(b"/"), "storage mount path is not absolute")
+        remainder = re.sub(rb"\\(?:040|011|012|134)", b"", encoded)
+        require(b"\\" not in remainder, "storage mount path escape is malformed")
+    major_minor = fields[2].split(b":")
+    require(len(major_minor) == 2 and all(value.isdigit() and len(value) <= 20
+                                        for value in major_minor),
+            "storage mount device is malformed")
+    require(tuple(map(int, major_minor)) == (os.major(device), os.minor(device)),
+            "storage descriptor and mount device disagree")
+    fs_type = fields[separator + 1]
+    require(re.fullmatch(rb"[A-Za-z0-9_.-]{1,128}", fs_type) is not None,
+            "storage filesystem type is malformed")
+    # Hash the complete kernel record, including root, source, mount options,
+    # superoptions and overlay backing paths. Do not expose those paths or
+    # potential mount-source credentials in the public artifact.
+    return {"filesystem_type": fs_type.decode("ascii"),
+            "mountinfo_record_sha256": digest(line)}
+
+
+def _storage_statfs(descriptor: int) -> dict[str, Any]:
+    # Linux LP64 statfs: seven native-word fields, two 32-bit fsid words,
+    # three native-word fields and four spare words, total 120 bytes. Never
+    # call the native function with a guessed layout on another ABI.
+    require(sys.platform == "linux" and platform.machine().lower() in
+            {"x86_64", "amd64", "aarch64", "arm64"} and
+            ctypes.sizeof(ctypes.c_void_p) == ctypes.sizeof(ctypes.c_long) == 8 and
+            ctypes.sizeof(ctypes.c_int) == 4,
+            "storage statfs ABI is unsupported")
+
+    class StatFs(ctypes.Structure):
+        _fields_ = [("kind", ctypes.c_long), ("block_size", ctypes.c_long),
+                    ("blocks", ctypes.c_ulong), ("free", ctypes.c_ulong),
+                    ("available", ctypes.c_ulong), ("files", ctypes.c_ulong),
+                    ("free_files", ctypes.c_ulong), ("fsid", ctypes.c_int * 2),
+                    ("name_length", ctypes.c_long), ("fragment_size", ctypes.c_long),
+                    ("flags", ctypes.c_long), ("spare", ctypes.c_long * 4)]
+
+    require(ctypes.sizeof(StatFs) == 120, "storage statfs layout differs")
+    function = ctypes.CDLL(None, use_errno=True).fstatfs
+    function.argtypes = [ctypes.c_int, ctypes.POINTER(StatFs)]
+    function.restype = ctypes.c_int
+    result = StatFs()
+    require(function(descriptor, ctypes.byref(result)) == 0,
+            "storage statfs probe failed")
+    fsid = [int(word) & 0xffffffff for word in result.fsid]
+    require(any(fsid) and result.block_size > 0,
+            "storage filesystem identity is unavailable")
+    return {"type_magic": int(result.kind) & 0xffffffffffffffff,
+            "fsid": fsid, "block_size": int(result.block_size),
+            "flags": int(result.flags) & 0xffffffffffffffff}
+
+
+def scratch_storage_identity(directory: Path) -> dict[str, Any]:
+    base = {"schema": STORAGE_IDENTITY_SCHEMA, "scope": STORAGE_IDENTITY_SCOPE}
+    descriptor = None
+    try:
+        descriptor = os.open(directory, os.O_RDONLY | os.O_CLOEXEC |
+                             os.O_DIRECTORY | os.O_NOFOLLOW)
+        before = os.fstat(descriptor)
+        namespace = Path("/proc/thread-self/ns/mnt").stat()
+        boot = _read_storage_proc(Path("/proc/sys/kernel/random/boot_id"), 128).strip()
+        require(re.fullmatch(rb"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", boot)
+                is not None, "storage boot identity is invalid")
+        fdinfo = Path(f"/proc/thread-self/fdinfo/{descriptor}")
+        mount_id = _storage_mount_id(_read_storage_proc(fdinfo, 4096))
+        mountinfo = Path("/proc/thread-self/mountinfo")
+        mount = _storage_mount_record(_read_storage_proc(mountinfo, 1024 * 1024),
+                                      mount_id, before.st_dev)
+        filesystem = _storage_statfs(descriptor)
+        after_namespace = Path("/proc/thread-self/ns/mnt").stat()
+        after = os.fstat(descriptor)
+        require((before.st_dev, before.st_ino) == (after.st_dev, after.st_ino) and
+                (namespace.st_dev, namespace.st_ino) ==
+                (after_namespace.st_dev, after_namespace.st_ino) and
+                _storage_mount_id(_read_storage_proc(fdinfo, 4096)) == mount_id and
+                _storage_mount_record(_read_storage_proc(mountinfo, 1024 * 1024),
+                                      mount_id, after.st_dev) == mount and
+                _storage_statfs(descriptor) == filesystem and
+                _read_storage_proc(Path("/proc/sys/kernel/random/boot_id"), 128).strip() == boot,
+                "storage identity changed during capture")
+        return {**base, "status": "known", "boot_id_sha256": digest(boot),
+                "mount_namespace": {"device": namespace.st_dev, "inode": namespace.st_ino},
+                "mount_id": mount_id,
+                "device": {"major": os.major(before.st_dev), "minor": os.minor(before.st_dev)},
+                "filesystem": filesystem, **mount}
+    except (BenchmarkError, OSError, ValueError, AttributeError):
+        return {**base, "status": "unavailable", "reason": "storage_probe_unavailable"}
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+
+
+def validate_storage_projection(artifact: dict[str, Any], *, known: bool = False) -> None:
+    environment = artifact.get("environment")
+    comparison = artifact.get("comparison_identity")
+    require(isinstance(environment, dict) and isinstance(comparison, dict) and
+            comparison.get("environment") == environment,
+            "storage comparison environment projection differs")
+    value = environment.get("scratch_storage_identity")
+    require(isinstance(value, dict) and value.get("schema") == STORAGE_IDENTITY_SCHEMA and
+            value.get("scope") == STORAGE_IDENTITY_SCOPE,
+            "storage identity is missing or has a different schema")
+    if value.get("status") == "unavailable":
+        require(set(value) == {"schema", "scope", "status", "reason"} and
+                value["reason"] == "storage_probe_unavailable" and
+                environment.get("scratch_filesystem") == "unavailable" and not known,
+                "storage identity is unavailable for comparison")
+        return
+    require(value.get("status") == "known" and set(value) ==
+            {"schema", "scope", "status", "boot_id_sha256", "mount_namespace", "mount_id",
+             "device", "filesystem", "filesystem_type", "mountinfo_record_sha256"},
+            "storage known identity fields differ")
+    for field in ("boot_id_sha256", "mountinfo_record_sha256"):
+        require(isinstance(value[field], str) and
+                re.fullmatch(r"[0-9a-f]{64}", value[field]) is not None,
+                "storage identity digest is invalid")
+    require(type(value["mount_id"]) is int and 0 < value["mount_id"] < 2**64,
+            "storage mount identity is invalid")
+    for field, members, minimum in (("mount_namespace", {"device", "inode"}, 1),
+                                     ("device", {"major", "minor"}, 0)):
+        item = value[field]
+        require(isinstance(item, dict) and set(item) == members and
+                all(type(number) is int and minimum <= number < 2**64
+                    for number in item.values()), "storage numeric identity is invalid")
+    fs = value["filesystem"]
+    require(isinstance(fs, dict) and set(fs) == {"type_magic", "fsid", "block_size", "flags"} and
+            all(type(fs[field]) is int and 0 <= fs[field] < 2**64
+                for field in ("type_magic", "block_size", "flags")) and fs["block_size"] > 0 and
+            isinstance(fs["fsid"], list) and len(fs["fsid"]) == 2 and
+            all(type(word) is int and 0 <= word < 2**32 for word in fs["fsid"]) and any(fs["fsid"]),
+            "storage filesystem identity is invalid")
+    require(isinstance(value["filesystem_type"], str) and
+            re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", value["filesystem_type"]) is not None and
+            environment.get("scratch_filesystem") == value["filesystem_type"],
+            "storage filesystem type is invalid")
+
+
+def validate_comparison_projection(artifact: dict[str, Any], *, known_storage: bool = False) -> None:
+    validate_storage_projection(artifact, known=known_storage)
+    configuration = artifact.get("configuration")
+    require(isinstance(configuration, dict) and set(configuration) ==
+            {"workloads", "build_profile", "concurrency", "output_bytes", "slow_read_ms",
+             "timeout_seconds", "max_regression_percent", "gate_policy_version", "repetitions", "warmup"},
+            "comparison configuration fields differ")
+    workloads = configuration["workloads"]
+    require(isinstance(workloads, list) and workloads and
+            all(isinstance(name, str) and name in WORKLOADS for name in workloads) and
+            len(set(workloads)) == len(workloads) and
+            type(configuration["repetitions"]) is int and 1 <= configuration["repetitions"] <= 100 and
+            type(configuration["warmup"]) is int and 0 <= configuration["warmup"] <= 10,
+            "comparison sampling configuration is invalid")
+    require(isinstance(configuration["build_profile"], str) and
+            configuration["build_profile"] in {"debug", "release", "custom"} and
+            type(configuration["concurrency"]) is int and 1 <= configuration["concurrency"] <= 16 and
+            type(configuration["output_bytes"]) is int and 65536 <= configuration["output_bytes"] <= 1048576,
+            "comparison configuration values are invalid")
+    for field, low, high in (("slow_read_ms", .1, 10), ("timeout_seconds", 1, 60)):
+        number = configuration[field]
+        require(type(number) in {int, float} and math.isfinite(number) and low <= number <= high,
+                "comparison numeric configuration is invalid")
+    manifest = validate_implementation_manifest(artifact.get("implementation_manifest"))
+    bootstrap = validate_bootstrap_attestation(artifact.get("bootstrap_attestation"), manifest)
+    policy = validate_gate_policy(artifact.get("gate_policy"))
+    require(configuration["max_regression_percent"] == policy["max_regression_percent"] and
+            configuration["gate_policy_version"] == policy["version"],
+            "comparison configuration does not bind gate policy")
+    executables = artifact.get("executables")
+    require(isinstance(executables, dict) and set(executables) == {"host", "core", "python", "shell", "harness"},
+            "comparison executable fields differ")
+    for name in ("host", "core", "python", "shell"):
+        item = executables[name]
+        require(isinstance(item, dict) and set(item) ==
+                {"path", "requested_path", "size", "sha256", "execution_custody"} and
+                isinstance(item["path"], str) and Path(item["path"]).is_absolute() and
+                isinstance(item["requested_path"], str) and Path(item["requested_path"]).is_absolute() and
+                type(item["size"]) is int and 0 < item["size"] <= MAX_PINNED_EXECUTABLE_BYTES and
+                isinstance(item["sha256"], str) and re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) is not None and
+                item["execution_custody"] == PINNED_EXECUTABLE_CUSTODY,
+                "comparison executable identity is invalid")
+    harness = next(item for item in manifest["files"]
+                   if item["path"] == "tools/perf/run_product_baseline.py")
+    require(executables["harness"] == harness, "comparison harness differs from implementation manifest")
+    environment = artifact["environment"]
+    require(environment.get("execution_custody") == EXECUTION_CUSTODY,
+            "comparison environment execution custody differs")
+    expected = {
+        "environment": environment,
+        "configuration": {key: value for key, value in configuration.items()
+                          if key not in {"repetitions", "warmup"}},
+        "python_sha256": executables["python"]["sha256"],
+        "shell_sha256": executables["shell"]["sha256"],
+        "harness_sha256": harness["sha256"],
+        "implementation_manifest_sha256": manifest["manifest_sha256"],
+        "bootstrap_attestation_sha256": digest(canonical(bootstrap)),
+        "gate_policy_sha256": digest(canonical(policy)),
+        "execution_custody": EXECUTION_CUSTODY,
+    }
+    require(artifact["comparison_identity"] == expected,
+            "comparison identity does not project the declared environment, configuration and executables")
+
+
 def _execution_path(name: str, fallback: Path | str) -> str:
     value = EXECUTION_PATHS.get(name, str(fallback))
     require(isinstance(value, str) and value.startswith("/") and "\n" not in value,
@@ -430,24 +738,138 @@ def _execution_path(name: str, fallback: Path | str) -> str:
     return value
 
 
-def stop(process: subprocess.Popen[bytes]) -> None:
-    if process.poll() is None:
-        process.terminate()
+def _require_owned_process_environment() -> None:
+    require(platform.system() == "Linux" and hasattr(os, "WNOWAIT") and hasattr(os, "waitid") and
+            signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL,
+            "product process ownership requires Linux WNOWAIT and default SIGCHLD")
+
+
+def _leader_exit_unreaped(process: subprocess.Popen[bytes]) -> Any:
+    # Reaping releases the numeric PID/PGID for reuse. Every caller creates a
+    # new session and must retain its leader until all possible group signals
+    # have finished, including when that leader already exited successfully.
+    require(process.returncode is None, "product process leader was already reaped")
+    require(os.getpgid(process.pid) == process.pid and os.getsid(process.pid) == process.pid,
+            "product process group is not the owned session")
+    status = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    require(status is None or status.si_code in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED),
+            "unexpected product process wait status")
+    return status
+
+
+class _ProcessObservationDeadline(BenchmarkError):
+    pass
+
+
+def _group_live_members(process: subprocess.Popen[bytes], deadline: float) -> list[int]:
+    members = []
+    anchor_seen = False
+    with os.scandir("/proc") as entries:
+        for count, entry in enumerate(entries, 1):
+            require(count <= 131072, "product process membership exceeds finite bound")
+            if time.monotonic() >= deadline:
+                raise _ProcessObservationDeadline("product process membership deadline exceeded")
+            if not entry.name.isdecimal():
+                continue
+            try:
+                with open(Path(entry.path) / "stat", "rb") as stream:
+                    raw = stream.read(4097)
+                require(len(raw) <= 4096, "product process stat exceeds finite bound")
+                fields = raw.rsplit(b") ", 1)[1].split()
+                if int(entry.name) == process.pid:
+                    require(int(fields[2]) == process.pid and int(fields[3]) == process.pid,
+                            "product process anchor identity changed")
+                    anchor_seen = True
+                if int(fields[2]) == process.pid:
+                    require(int(fields[3]) == process.pid, "product process group session changed")
+                    if fields[0] not in {b"Z", b"X"}:
+                        members.append(int(entry.name))
+            except (FileNotFoundError, ProcessLookupError):
+                continue
+    require(anchor_seen, "product process anchor is not observable")
+    if time.monotonic() >= deadline:
+        raise _ProcessObservationDeadline("product process membership deadline exceeded")
+    return members
+
+
+def _group_terminal(process: subprocess.Popen[bytes], deadline: float) -> Any:
+    quiet_once = False
+    while True:
+        if time.monotonic() >= deadline:
+            return None
+        exited = _leader_exit_unreaped(process)
         try:
-            process.wait(timeout=3)
-        except subprocess.TimeoutExpired:
-            # The still-owned leader has not been reaped; only its created group.
-            os.killpg(process.pid, signal.SIGKILL)
-            process.wait(timeout=3)
-    for pipe in (process.stdin, process.stdout, process.stderr):
-        if pipe:
-            pipe.close()
+            quiet = exited is not None and not _group_live_members(process, deadline)
+        except _ProcessObservationDeadline:
+            # A partial scan supplies no terminal proof. The caller escalates
+            # or rejects at its existing deadline; it never accepts a partial
+            # empty membership set as successful cleanup.
+            return None
+        if quiet and quiet_once:
+            return exited
+        quiet_once = quiet
+        if time.monotonic() >= deadline:
+            return None
+        time.sleep(min(.01, max(0, deadline - time.monotonic())))
+
+
+def _signal_owned_group(process: subprocess.Popen[bytes], selected: int) -> None:
+    _leader_exit_unreaped(process)
+    try:
+        os.killpg(process.pid, selected)
+    except ProcessLookupError:
+        pass
+
+
+def _reap_process_anchor(process: subprocess.Popen[bytes]) -> None:
+    # The authenticated facade supplies the only trusted replacement. Its
+    # OwnedSessionPopen.wait observes without reaping; direct core fixtures use
+    # ordinary Popen.wait. Neither runs until the last group signal is done.
+    reaper = globals().get("REAP_PROCESS_ANCHOR")
+    if reaper is None:
+        process.wait(timeout=1)
+    else:
+        reaper(process)
+
+
+def stop(process: subprocess.Popen[bytes]) -> None:
+    terminal = False
+    try:
+        _signal_owned_group(process, signal.SIGTERM)
+        terminal = _group_terminal(process, time.monotonic() + 1) is not None
+        if not terminal:
+            _signal_owned_group(process, signal.SIGKILL)
+            terminal = _group_terminal(process, time.monotonic() + 3) is not None
+        require(terminal, "product process group cleanup did not reach terminal state")
+    except (BenchmarkError, OSError, ValueError, IndexError):
+        # Even observation/setup failures must stop this still-anchored group.
+        # Failure to inspect its members remains an error; it never becomes a
+        # successful cleanup or product sample. No already-reaped PID is used.
+        _signal_owned_group(process, signal.SIGKILL)
+        deadline = time.monotonic() + 3
+        while _leader_exit_unreaped(process) is None and time.monotonic() < deadline:
+            time.sleep(.01)
+        if _leader_exit_unreaped(process) is not None:
+            _reap_process_anchor(process)
+        raise
+    finally:
+        try:
+            if terminal:
+                _reap_process_anchor(process)
+        finally:
+            for pipe in (process.stdin, process.stdout, process.stderr):
+                if pipe:
+                    try:
+                        pipe.close()
+                    except OSError:
+                        pass
 
 
 def collect(command: list[str], frames: list[dict], timeout: float,
             read_delay_ms: float = 0) -> tuple[list[dict], dict]:
     payload = b"".join(canonical(frame) + b"\n" for frame in frames)
     require(len(payload) <= 16 * 1024, "benchmark input exceeded fixed bound")
+    _require_owned_process_environment()
     started = time.perf_counter_ns()
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, env=finite_env(), start_new_session=True)
@@ -457,9 +879,13 @@ def collect(command: list[str], frames: list[dict], timeout: float,
     next_read = 0.0
     try:
         assert process.stdin and process.stdout and process.stderr
-        process.stdin.write(payload)
-        process.stdin.close()
+        os.set_blocking(process.stdin.fileno(), False)
+        input_offset = 0
         with selectors.DefaultSelector() as selector:
+            if payload:
+                selector.register(process.stdin, selectors.EVENT_WRITE, "stdin")
+            else:
+                process.stdin.close()
             for name, pipe in (("stdout", process.stdout), ("stderr", process.stderr)):
                 os.set_blocking(pipe.fileno(), False)
                 selector.register(pipe, selectors.EVENT_READ, name)
@@ -469,6 +895,17 @@ def collect(command: list[str], frames: list[dict], timeout: float,
                     time.sleep(min(0.01, next_read - time.monotonic()))
                 for key, _ in selector.select(timeout=0.01):
                     name = key.data
+                    if name == "stdin":
+                        try:
+                            written = os.write(key.fileobj.fileno(), payload[input_offset:])
+                        except BlockingIOError:
+                            continue
+                        require(written > 0, "product stdin made no progress")
+                        input_offset += written
+                        if input_offset == len(payload):
+                            selector.unregister(key.fileobj)
+                            process.stdin.close()
+                        continue
                     if name == "stdout" and time.monotonic() < next_read:
                         continue
                     data = os.read(key.fileobj.fileno(), 4096 if read_delay_ms else 65536)
@@ -489,7 +926,9 @@ def collect(command: list[str], frames: list[dict], timeout: float,
                                              "kind": value["kind"], "frame_sha256": digest(line)})
         remaining = timeout - (time.perf_counter_ns() - started) / 1e9
         require(remaining > 0, "product process exceeded deadline")
-        code = process.wait(timeout=remaining)
+        exited = _group_terminal(process, time.monotonic() + remaining)
+        require(exited is not None, "product process group exceeded deadline")
+        code = exited.si_status if exited.si_code == os.CLD_EXITED else -exited.si_status
         require(code == 0, f"product exit {code}: {bytes(output['stderr'])[:2048]!r}")
         require(not pending, "incomplete host JSONL frame")
         decoded = [strict_json(line) for line in output["stdout"].splitlines()]
@@ -627,23 +1066,28 @@ def run_broker_sample(host: Path, core: Path, root: Path, clients: int, timeout:
     upstream = root / "host"
     shutil.copyfile(host, upstream)
     upstream.chmod(0o700)
+    broker = (Path(EXECUTION_PATHS["broker"]) if "broker" in EXECUTION_PATHS
+              else _write_broker_custody(root))
+    _assert_broker_custody(broker.parent)
     command = [_execution_path("python", Path(sys.executable).resolve()),
-               _execution_path("broker", ROOT / "tools/owner-open/owner_open_connection_broker.py"),
+               str(broker),
                "--socket", str(root / "socket"), "--descriptor", str(root / "descriptor.json"),
                "--token-file", str(root / "token"), "--broker-id", "product-benchmark",
                "--upstream", str(upstream), "--max-clients", str(clients),
                "--max-inflight-requests", str(clients)]
-    # The broker imports sibling source modules under a finite clean environment.
+    # Sibling imports resolve only from this exact private snapshot closure.
+    # There is no mutable repository path or PYTHONPATH fallback.
     for arg in host_command(upstream, core, root, provider)[1:]:
         command.append("--upstream-arg=" + arg)
     with tempfile.TemporaryFile() as diagnostic:
+        _require_owned_process_environment()
         process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=diagnostic, stderr=diagnostic,
                                    env=finite_env(), start_new_session=True)
         try:
             deadline = time.monotonic() + timeout
             descriptor = root / "descriptor.json"
             while not descriptor.exists():
-                require(process.poll() is None, "broker exited during startup")
+                require(_leader_exit_unreaped(process) is None, "broker exited during startup")
                 require(time.monotonic() < deadline, "broker startup timed out")
                 time.sleep(0.01)
             identity = strict_json(descriptor.read_bytes())
@@ -728,6 +1172,7 @@ def validate_artifact(value: Any) -> dict:
     policy = validate_gate_policy(value.get("gate_policy"))
     identity = value.get("comparison_identity")
     require(isinstance(identity, dict), "missing comparison identity")
+    validate_comparison_projection(value)
     require(identity.get("implementation_manifest_sha256") == manifest["manifest_sha256"],
             "comparison identity does not bind implementation manifest")
     require(identity.get("bootstrap_attestation_sha256") == digest(canonical(bootstrap)),
@@ -777,6 +1222,8 @@ def regression_gate(current: dict, previous: dict | None,
         return {"status": "FAIL_CORRECTNESS", "passed": False, "regressions": []}
     if previous is None:
         return {"status": "BASELINE_RECORDED_NO_COMPARISON", "passed": False, "regressions": []}
+    validate_comparison_projection(current, known_storage=True)
+    validate_comparison_projection(previous, known_storage=True)
     previous_policy = validate_gate_policy(previous.get("gate_policy"))
     require(policy == previous_policy, "baseline gate policy differs")
     require(current["comparison_identity"] == previous["comparison_identity"], "incompatible environment or workload configuration")
@@ -940,12 +1387,9 @@ def _run_with_custody(
         prefix="tos-perf-work-", dir=args.scratch_parent
     ) as temporary:
         root = Path(temporary)
-        filesystem = subprocess.check_output(
-            ["stat", "-f", "-c", "%T", str(root)],
-            env=finite_env(),
-            timeout=5,
-        ).decode().strip()
-        artifact["environment"]["scratch_filesystem"] = filesystem
+        storage = scratch_storage_identity(root)
+        artifact["environment"]["scratch_filesystem"] = storage.get("filesystem_type", "unavailable")
+        artifact["environment"]["scratch_storage_identity"] = storage
         for name in args.workloads:
             for index in range(args.warmup + args.repetitions):
                 warmup = index < args.warmup
@@ -1025,6 +1469,8 @@ def _run_with_custody(
                 finally:
                     if sample_root.exists():
                         shutil.rmtree(sample_root)
+        if scratch_storage_identity(root) != artifact["environment"]["scratch_storage_identity"]:
+            artifact["failures"].append({"error": "scratch storage identity changed during benchmark"})
     artifact["source_after"] = source_identity()
     if artifact["source_after"] != source:
         artifact["failures"].append({"error": "source changed during benchmark"})
@@ -1080,13 +1526,7 @@ def run(args: argparse.Namespace) -> dict:
         require(PINNED_IMPLEMENTATION_FILES is not None and
                 PINNED_IMPLEMENTATION_SOURCES is not None,
                 "performance Python implementation is not snapshot-bound")
-        broker_relative = "tools/owner-open/owner_open_connection_broker.py"
-        broker = _write_pinned_source(
-            custody_root,
-            "owner_open_connection_broker.py",
-            PINNED_IMPLEMENTATION_SOURCES[broker_relative],
-            PINNED_IMPLEMENTATION_FILES[broker_relative],
-        )
+        broker = _write_broker_custody(custody_root)
         prior_paths, prior_fds = EXECUTION_PATHS, EXECUTION_PASS_FDS
         EXECUTION_PATHS = {
             name: str(pin.execution_path) for name, pin in pins.items()
@@ -1094,7 +1534,9 @@ def run(args: argparse.Namespace) -> dict:
         EXECUTION_PATHS["broker"] = str(broker)
         EXECUTION_PASS_FDS = ()
         try:
-            return _run_with_custody(args, pins, custody_root)
+            result = _run_with_custody(args, pins, custody_root)
+            _assert_broker_custody(broker.parent)
+            return result
         finally:
             EXECUTION_PATHS = prior_paths
             EXECUTION_PASS_FDS = prior_fds

@@ -179,9 +179,8 @@ fn decode_job_start(frame: &RunTurnFrame, shell: &Path) -> Result<DecodedJobStar
         }
         (None, Some(argv))
             if !argv.is_empty()
-                && argv
-                    .iter()
-                    .all(|item| !item.is_empty() && !item.as_bytes().contains(&0)) =>
+                && !argv[0].is_empty()
+                && argv.iter().all(|item| !item.as_bytes().contains(&0)) =>
         {
             JobInvocation::Argv { argv: argv.clone() }
         }
@@ -288,7 +287,10 @@ fn decode_job_control(frame: &RunTurnFrame) -> Result<DecodedJobControl, String>
     if let Some(attachment_id) = &wire.attachment_id {
         validate_id(attachment_id, "attachment_id")?;
     }
-    if wire.limit.is_some_and(|value| value == 0 || value > MAX_JOB_INSPECT_LIMIT) {
+    if wire
+        .limit
+        .is_some_and(|value| value == 0 || value > MAX_JOB_INSPECT_LIMIT)
+    {
         return Err(format!(
             "job inspect limit must be between 1 and {MAX_JOB_INSPECT_LIMIT}"
         ));
@@ -474,7 +476,11 @@ fn job_request_sha256(wire: &JobStartWire, stdin: &[u8]) -> Result<String, Strin
 
 fn job_binding_fingerprint(wire: &JobStartWire, shell: &Path) -> String {
     let mut hasher = Sha256::new();
-    hash_field(&mut hasher, b"schema", b"trillionnium.owner-open.job-binding.v1");
+    hash_field(
+        &mut hasher,
+        b"schema",
+        b"trillionnium.owner-open.job-binding.v1",
+    );
     hash_field(&mut hasher, b"tool", wire.tool.as_bytes());
     hash_field(&mut hasher, b"mode", wire.mode.as_bytes());
     hash_field(&mut hasher, b"shell", shell.as_os_str().as_bytes());
@@ -696,11 +702,7 @@ fn job_resync_payload(inspection: &JobInspection) -> Value {
     })
 }
 
-fn job_resync_frame(
-    context: &JobContext,
-    seq: u64,
-    inspection: &JobInspection,
-) -> RunTurnFrame {
+fn job_resync_frame(context: &JobContext, seq: u64, inspection: &JobInspection) -> RunTurnFrame {
     let discriminator = inspection
         .gap
         .as_ref()
@@ -758,6 +760,36 @@ mod wire_tests {
             key,
             request_sha256: Some("request-digest".to_string()),
         }
+    }
+
+    #[test]
+    fn job_start_accepts_empty_arguments_but_rejects_an_empty_executable_or_nul() {
+        let mut context = context();
+        context.request_sha256 = None;
+        let mut frame = build_job_frame(
+            &context,
+            FRAME_JOB_START,
+            0,
+            "start",
+            json!({
+                "session_id": "session", "profile_id": "profile", "task_id": "task",
+                "turn_id": "turn", "turn_stream_id": "stream", "job_id": "job",
+                "operation_id": "start", "tool": "shell.job", "mode": "pipe",
+                "argv": ["/bin/printf", "<%s>", ""]
+            }),
+        );
+        let decoded =
+            decode_job_start(&frame, Path::new("/bin/sh")).expect("empty argument is valid");
+        assert_eq!(
+            decoded.request.invocation,
+            JobInvocation::Argv {
+                argv: vec!["/bin/printf".to_string(), "<%s>".to_string(), String::new()]
+            }
+        );
+        frame.payload["argv"] = json!(["", "argument"]);
+        assert!(decode_job_start(&frame, Path::new("/bin/sh")).is_err());
+        frame.payload["argv"] = json!(["/bin/printf", "x\0y"]);
+        assert!(decode_job_start(&frame, Path::new("/bin/sh")).is_err());
     }
 
     fn inspection() -> JobInspection {
@@ -834,8 +866,14 @@ mod wire_tests {
             1024 * 1024,
         )
         .expect("bounded inspection should encode");
-        assert_eq!(frame.payload["runtime_cursor_domain"], RUNTIME_CURSOR_DOMAIN);
-        assert_eq!(frame.payload["durable_cursor_domain"], DURABLE_CURSOR_DOMAIN);
+        assert_eq!(
+            frame.payload["runtime_cursor_domain"],
+            RUNTIME_CURSOR_DOMAIN
+        );
+        assert_eq!(
+            frame.payload["durable_cursor_domain"],
+            DURABLE_CURSOR_DOMAIN
+        );
         assert_eq!(frame.payload["durable_inclusive_cursor"], 2);
         assert_eq!(frame.payload["durable_next_cursor"], 3);
         assert_eq!(frame.payload["durable_records"][0]["record"], 2);
@@ -961,9 +999,11 @@ mod wire_tests {
             &MechanicalLimits::default(),
         )
         .expect("mechanical timeout frame");
-        assert!(decode_job_wait(&timeout)
-            .expect_err("timeout ceiling must be enforced")
-            .contains("timeout_ms"));
+        assert!(
+            decode_job_wait(&timeout)
+                .expect_err("timeout ceiling must be enforced")
+                .contains("timeout_ms")
+        );
 
         let mut poll = base;
         poll["payload"]["poll_interval_ms"] = json!(0);
@@ -972,8 +1012,10 @@ mod wire_tests {
             &MechanicalLimits::default(),
         )
         .expect("mechanical poll frame");
-        assert!(decode_job_wait(&poll)
-            .expect_err("zero poll interval must be rejected")
-            .contains("poll_interval_ms"));
+        assert!(
+            decode_job_wait(&poll)
+                .expect_err("zero poll interval must be rejected")
+                .contains("poll_interval_ms")
+        );
     }
 }

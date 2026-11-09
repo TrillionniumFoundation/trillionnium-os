@@ -11,7 +11,7 @@ image, a signature, a release, or an L2-or-higher lane.
 
 ## Prerequisites
 
-- Linux with an ELF-capable C linker, `ar`, Git, and Python 3.10 or newer.
+- Linux with an installed GNU GCC helper hierarchy, `ar`, Git, and Python 3.10 or newer.
 - Existing native Rust 1.93.0 compiler and Cargo executables. Pass their actual
   toolchain paths; a rustup proxy is not the compiler input to this recipe.
 - An existing Cargo dependency cache containing every locked dependency. The
@@ -38,7 +38,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOAD
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   /work/reviewed-checkout/tools/build/verify_host_reproducibility.py \
   tools/build/verify_host_reproducibility.py \
-  437a0e8bcff3b2c7cff7b2a4fac3e8824a3c1a36246d0b247d7c3a49fec82539 \
+  6347b4ba541b25c5fe6a64918ccb6fa467e64eb4a4f922aa7c9a67a88a695724 \
   -- \
   --repo-root /work/reviewed-checkout \
   --expected-commit FULL_REVIEWED_COMMIT_SHA \
@@ -99,20 +99,39 @@ can receive ordinary Cargo cache metadata writes.
 
 The JSON report includes the source commit/tree, commit timestamp, lockfile and
 manifest identities, direct tool hashes and versions, platform and Rust sysroot,
-verifier identity, a closed implementation manifest covering the minimal build
+verifier identity, a closed implementation manifest including the full broker
+module closure admitted by the nested performance cleanup harness and the minimal build
 launcher, authenticated build facade, private recipe core, minimal performance
 launcher, authenticated cleanup facade/private core and Root Linux supervisor,
 complete build commands and environments, elapsed times, raw-log identities, and
 both binary identities.
 
-Every behavior-bearing Python dependency is read, hashed, compiled and executed
-from one admitted source snapshot. The inline loader authenticates the bootstrap, and the bootstrap authenticates
-each launcher before any launcher code executes. Each launcher then authenticates
-its facade bytes before compilation. Every Python and tool path is opened component by
-component with descriptor-relative `O_NOFOLLOW` lookups. Cargo, rustc, cc and ar
+Python code executed by the verifier and nested cleanup runs from admitted
+source snapshots. The nested performance harness also admits the full broker
+module inventory; those modules run from private copies when broker samples are
+requested. The inline loader authenticates the bootstrap, and the bootstrap
+then authenticates each launcher before launcher code executes. Each launcher
+authenticates its facade bytes before compilation. Registered project Python
+sources and selected tool paths use component-wise, descriptor-relative
+`O_NOFOLLOW` opens. System Python libraries remain outside this project-source
+custody closure. Cargo, rustc, cc and ar
 are each copied from the opened descriptor into a Linux memfd, write/grow/shrink
 sealing is applied, and a private basename-preserving link is used for all version
-probes and both builds. The sealed descriptors are explicitly inherited by Cargo and its child
+probes and both builds. The actual SDK `lib` directory must contain one ordinary
+`librustc_driver-*.so` ELF and one ordinary `libLLVM.so.*` ELF. Their admitted
+bytes are also write-sealed, with a combined 768 MiB bound. A finite
+`LD_LIBRARY_PATH` names only their private custody directory; ambient loader
+variables are discarded. The original SDK sysroot is explicit in every compiler
+sysroot probe and both build flag sets because relocating the sealed driver can
+change Rust's automatic sysroot discovery. Runtime file hashes, custody paths,
+and the selected sysroot are recorded and rechecked around both builds.
+GCC helper discovery runs the sealed compiler with its selected original
+`argv[0]`, using an explicit subprocess executable override. The canonical
+installed target/version directory supplies a recorded `GCC_EXEC_PREFIX` for
+both builds. This finite setting also affects GCC's CRT and header search; it
+is part of the recipe and never inherited from the shell. Helper paths are
+recorded, while their executable/library trees remain outside recursive custody.
+The sealed descriptors are explicitly inherited by Cargo and its child
 tool processes. A swap or in-place rewrite of the original tool path therefore
 cannot change executed bytes; source-path movement is still detected and fails
 the report. Any implementation member changing during the two builds also fails
@@ -126,6 +145,12 @@ combined Cargo output in `cargo-a.log` and `cargo-b.log`. Each log is bounded to
 partial raw log remains available for diagnosis. A missing cache dependency,
 failed build, source/tool identity drift, missing/non-ELF artifact, or preflight
 failure cannot produce a passing gate. No previous successful build is reused.
+Identity queries read stdout and stderr separately under one shared 1 MiB
+streaming bound and a 20-second deadline, with stdin closed through `/dev/null`.
+Nonzero status, invalid UTF-8, excess output or timeout fails verification
+without including captured stderr in the error. The retained session anchor
+lets cleanup stop descendants even after the query leader exits; successful
+queries also clean up descendants before returning their identity text.
 
 | Exit | Gate | Meaning |
 | --- | --- | --- |
@@ -139,7 +164,8 @@ without replacing it. Argument parsing failures also exit `2`.
 ## Scope of the evidence
 
 This is a same-host source build check with a shared offline dependency cache.
-The report records direct compiler/Cargo/linker/archiver bytes, not recursive
+The report records direct compiler/Cargo/linker/archiver bytes and the two
+selected Rust runtime ELFs, not recursive
 identities of the entire Rust sysroot, system linker dependencies, runtime
 libraries, or dependency cache trees. Matching binaries and path remapping do
 not establish a hermetic build, trusted dependencies, independent-builder

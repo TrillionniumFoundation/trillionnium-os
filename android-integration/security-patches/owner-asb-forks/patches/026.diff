@@ -1,0 +1,11 @@
+--- actual-captured/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
++++ owned-final/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java
+@@ -19861,7 +19861,7 @@
+ 
+         String targetPackage = intent.getComponent() != null
+                 ? intent.getComponent().getPackageName()
+-                : intent.getPackage();
++                : null;
+         final boolean isCreatorSameAsTarget = creatorPackage != null && creatorPackage.equals(
+                 targetPackage);
+         final boolean noExtraIntentKeys =

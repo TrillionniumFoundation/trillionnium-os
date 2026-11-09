@@ -29,7 +29,7 @@ from typing import Any as __LauncherAny, Callable as __LauncherCallable
 __LAUNCHER_LOGICAL_PATH = 'tools/build/verify_host_reproducibility.py'
 __FACADE_LOGICAL_PATH = 'tools/build/_verify_host_reproducibility_facade.py'
 __FACADE_FILENAME = '_verify_host_reproducibility_facade.py'
-__EXPECTED_FACADE_SHA256 = 'a83a174d15c4fb354e44e0c7d3cbf35767d53b9a169c50765877b745e16ce500'
+__EXPECTED_FACADE_SHA256 = '471bf049b6d9a54a703d9bb98f66b4b787da7e67ac53682c577bb018f10fda34'
 __BOOTSTRAP_LOGICAL_PATH = 'tools/owner-open/authenticated_python_bootstrap.py'
 __EXPECTED_BOOTSTRAP_SHA256 = 'cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96'
 __BOOTSTRAP_SCHEMA = 'org.trillionnium.authenticated-python-bootstrap.v1'

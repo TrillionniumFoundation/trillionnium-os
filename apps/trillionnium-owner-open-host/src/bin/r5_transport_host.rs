@@ -12,7 +12,16 @@ mod transport {
 }
 
 fn main() {
-    if let Err(error) = transport::run() {
+    if let Err(error) = trillionnium_owner_open_trace::configure_from_env("transport") {
+        eprintln!("trace configuration refused: {error}");
+        std::process::exit(2);
+    }
+    let result = transport::run();
+    if let Err(error) = trillionnium_owner_open_trace::export_from_env() {
+        eprintln!("trace export unavailable: {error}");
+        std::process::exit(2);
+    }
+    if let Err(error) = result {
         eprintln!("trillionnium-owner-open-r5-host: {error}");
         std::process::exit(2);
     }

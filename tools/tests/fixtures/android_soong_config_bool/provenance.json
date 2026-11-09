@@ -1,0 +1,36 @@
+{
+  "schema": "org.trillionnium.fixture.android-soong-config-bool.v1",
+  "project": "build/make",
+  "source_commit": "246a9f2ae5188e76d8f94077c8d4bb91485c0c46",
+  "source_tree": "3253955f75469f160cea12b13999679e0b628791",
+  "source_path": "core/config.mk",
+  "source_file_sha256": "b08775c19dd8c224fa34f4e827b478a473e92ce694cbcb8765b5c4de2b23b5df",
+  "source_definitions": [
+    "soong_config_define_internal",
+    "soong_config_set",
+    "soong_config_set_bool"
+  ],
+  "source_line_ranges": [
+    "309-312",
+    "318-321",
+    "330-334"
+  ],
+  "fragment_sha256": "063b3d07568ce5482dbab2f0706bdeb1d2940fa053067937b649b658e9784617",
+  "fixture_sha256": "4c0d7fc04a4b49691a916513a407485ef59990b9716796f2810085d45daba279",
+  "license": "Apache-2.0",
+  "license_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+  "license_source_path": "build/soong/licenses/LICENSE",
+  "license_package_selection": {
+    "path": "build/make/Android.bp",
+    "sha256": "2e86d3e85d803d69438cf159fa39b911be0b95d49a1ee4dc2092390b94b4d6cc",
+    "default_applicable_licenses": [
+      "Android-Apache-2.0"
+    ]
+  },
+  "license_module_definition": {
+    "path": "build/soong/licenses/Android.bp",
+    "sha256": "2be7f3c8b1dc99f63f71b1c74c0046a3c7d5c1db0ed1ecfc67036512d1981c08",
+    "name": "Android-Apache-2.0"
+  },
+  "changes": "SPDX and source-attribution header added; three macro definition bodies preserved verbatim. This tests GNU Make macro export, not Kati or a full Soong graph."
+}

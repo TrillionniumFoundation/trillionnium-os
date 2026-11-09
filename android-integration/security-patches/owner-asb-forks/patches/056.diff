@@ -1,0 +1,65 @@
+--- actual-captured/packages/apps/Settings/src/com/android/settings/password/ConfirmDeviceCredentialActivity.java
++++ owned-final/packages/apps/Settings/src/com/android/settings/password/ConfirmDeviceCredentialActivity.java
+@@ -74,6 +74,9 @@
+ 
+     private static final String TAG_BIOMETRIC_FRAGMENT = "fragment";
+ 
++    private static final String CONFIRM_REMOTE_DEVICE_CREDENTIAL_ACTIVITY_ALIAS =
++            "com.android.settings.ConfirmRemoteDeviceCredentialActivity";
++
+     /** Use this extra value to provide a custom logo for the biometric prompt. **/
+     public static final String CUSTOM_BIOMETRIC_PROMPT_LOGO_RES_ID_KEY = "custom_logo_res_id";
+     /** Use this extra value to provide a custom logo description for the biometric prompt. **/
+@@ -84,7 +87,6 @@
+             "biometric_prompt_negative_button_text";
+     public static final String BIOMETRIC_PROMPT_HIDE_BACKGROUND =
+             "biometric_prompt_hide_background";
+-    public static final String EXTRA_DATA = "extra_data";
+     public static final int BIOMETRIC_LOCKOUT_ERROR_RESULT = 100;
+ 
+     public static class InternalActivity extends ConfirmDeviceCredentialActivity {
+@@ -109,7 +111,6 @@
+     private boolean mGoingToBackground;
+     private boolean mWaitingForBiometricCallback;
+     private int mBiometricsAuthenticators;
+-    private Intent mIntentData;
+ 
+     private Executor mExecutor = (runnable -> {
+         mHandler.post(runnable);
+@@ -160,7 +161,7 @@
+                         ConfirmDeviceCredentialActivity.this);
+             }
+ 
+-            setResult(Activity.RESULT_OK, mIntentData);
++            setResult(Activity.RESULT_OK);
+             finish();
+         }
+ 
+@@ -209,7 +210,6 @@
+         mBiometricsAuthenticators = intent.getIntExtra(BIOMETRIC_PROMPT_AUTHENTICATORS,
+                 BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                         | BiometricManager.Authenticators.BIOMETRIC_WEAK);
+-        mIntentData = intent.getParcelableExtra(EXTRA_DATA, Intent.class);
+         final String negativeButtonText = intent.getStringExtra(
+                 BIOMETRIC_PROMPT_NEGATIVE_BUTTON_TEXT);
+         final boolean frp =
+@@ -219,6 +219,19 @@
+                         .equals(intent.getAction());
+         final boolean remoteValidation =
+                 KeyguardManager.ACTION_CONFIRM_REMOTE_DEVICE_CREDENTIAL.equals(intent.getAction());
++
++        // Remote validation must use the alias to avoid bypassing permission checks
++        if (remoteValidation) {
++            final ComponentName componentName = intent.getComponent();
++            if (componentName == null || !CONFIRM_REMOTE_DEVICE_CREDENTIAL_ACTIVITY_ALIAS
++                    .equals(componentName.getClassName())) {
++                Log.w(TAG, "Caller bypassing alias for action: "
++                        + KeyguardManager.ACTION_CONFIRM_REMOTE_DEVICE_CREDENTIAL);
++                finish();
++                return;
++            }
++        }
++
+         mTaskOverlay = isInternalActivity()
+                 && intent.getBooleanExtra(KeyguardManager.EXTRA_FORCE_TASK_OVERLAY, false);
+         final boolean prepareRepairMode =

@@ -7,14 +7,34 @@ use std::time::Duration;
 
 use serde_json::{Value, json};
 use trillionnium_owner_open_event_store::{
-    DurableEventStore, EventInput, EventStoreError, EventStoreLimits, RecoveryPolicy,
-    SegmentedEventStore, SegmentedEventStoreConfig, SyncPolicy, TurnScope,
+    DurableEventStore, EventInput, EventStoreError, EventStoreLimits, MAX_EVENT_SEGMENTS,
+    RecoveryPolicy, SegmentedEventStore, SegmentedEventStoreConfig, SyncPolicy, TurnScope,
 };
 
-fn secure_tempdir() -> tempfile::TempDir {
+// Independent test owners share the real module descriptor budget. Reserve
+// this fixture's lifetime so unrelated tests cannot legitimately exhaust it;
+// concurrency within one store remains exercised by its dedicated test.
+static FIXTURE_OWNER: std::sync::Mutex<()> = std::sync::Mutex::new(());
+struct SecureDirectory {
+    directory: tempfile::TempDir,
+    _owner: std::sync::MutexGuard<'static, ()>,
+}
+impl std::ops::Deref for SecureDirectory {
+    type Target = tempfile::TempDir;
+    fn deref(&self) -> &Self::Target {
+        &self.directory
+    }
+}
+fn secure_tempdir() -> SecureDirectory {
+    let owner = FIXTURE_OWNER
+        .lock()
+        .unwrap_or_else(|error| error.into_inner());
     let directory = tempfile::tempdir().unwrap();
     fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700)).unwrap();
-    directory
+    SecureDirectory {
+        directory,
+        _owner: owner,
+    }
 }
 
 fn scope(turn: &str) -> TurnScope {
@@ -52,6 +72,177 @@ fn config() -> SegmentedEventStoreConfig {
         sync_policy: SyncPolicy::Data,
         recovery: RecoveryPolicy::Strict,
     }
+}
+
+#[test]
+fn descriptor_capacity_rejects_new_segments_but_retains_replay_and_exact_duplicates() {
+    let output = std::process::Command::new(std::env::current_exe().unwrap())
+        .args(["--exact", "descriptor_capacity_fixture", "--ignored"])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
+#[ignore = "full process descriptor-budget subprocess fixture"]
+fn descriptor_capacity_fixture() {
+    let directory = secure_tempdir();
+    let root = directory.path().join("fd-budget");
+    let mut config = config();
+    config.max_segment_records = 1;
+    config.max_segment_bytes = 4096;
+    let store = SegmentedEventStore::open(&root, config.clone()).unwrap();
+    for index in 0..MAX_EVENT_SEGMENTS {
+        store
+            .append(input("fd-budget", &format!("event-{index}"), index as i64))
+            .unwrap();
+    }
+    let before = store.snapshot().unwrap();
+    assert_eq!(before.segment_count, MAX_EVENT_SEGMENTS);
+    assert!(matches!(
+        store.append(input("fd-budget", "over-capacity", -1)),
+        Err(EventStoreError::CapacityExhausted)
+    ));
+    assert_eq!(store.snapshot().unwrap().record_count, before.record_count);
+    assert!(store.append(input("fd-budget", "event-0", 0)).is_ok());
+    store.flush().unwrap();
+    assert_eq!(
+        store.replay(&scope("fd-budget"), 0).unwrap().len(),
+        MAX_EVENT_SEGMENTS
+    );
+    drop(store);
+    let reopened = SegmentedEventStore::open(&root, config).unwrap();
+    assert_eq!(
+        reopened.snapshot().unwrap().segment_count,
+        MAX_EVENT_SEGMENTS
+    );
+    assert!(reopened.append(input("fd-budget", "event-0", 0)).is_ok());
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+#[test]
+fn concurrent_segment_reads_at_descriptor_capacity_open_no_extra_descriptors() {
+    let output = std::process::Command::new(std::env::current_exe().unwrap())
+        .args(["--exact", "concurrent_positioned_read_fixture", "--ignored"])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+#[test]
+#[ignore = "full descriptor-budget concurrent-read subprocess fixture"]
+fn concurrent_positioned_read_fixture() {
+    use std::sync::Barrier;
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+
+    fn open_descriptors() -> usize {
+        // The directory iterator itself owns one descriptor in every sample.
+        fs::read_dir("/proc/self/fd").unwrap().count()
+    }
+
+    let directory = secure_tempdir();
+    let root = directory.path().join("concurrent-fd-budget");
+    let mut config = config();
+    config.limits.max_store_bytes = 16 * 1024 * 1024;
+    config.limits.max_record_bytes = 64 * 1024;
+    config.max_segment_records = 1;
+    config.max_segment_bytes = 64 * 1024;
+    config.group_commit_records = 4096;
+    let store = Arc::new(SegmentedEventStore::open(&root, config.clone()).unwrap());
+    for index in 0..MAX_EVENT_SEGMENTS {
+        let mut event = input(
+            "concurrent-fd-budget",
+            &format!("event-{index}"),
+            index as i64,
+        );
+        event.payload["padding"] = json!("x".repeat(16 * 1024));
+        store.append(event).unwrap();
+    }
+    store.flush().unwrap();
+    assert_eq!(store.snapshot().unwrap().segment_count, MAX_EVENT_SEGMENTS);
+    assert!(matches!(
+        store.append(input("concurrent-fd-budget", "over-capacity", -1)),
+        Err(EventStoreError::CapacityExhausted)
+    ));
+
+    let baseline = open_descriptors();
+    let peak = Arc::new(AtomicUsize::new(baseline));
+    let samples = Arc::new(AtomicUsize::new(0));
+    let stopped = Arc::new(AtomicBool::new(false));
+    let monitor_ready = Arc::new(Barrier::new(2));
+    let monitor = {
+        let peak = Arc::clone(&peak);
+        let samples = Arc::clone(&samples);
+        let stopped = Arc::clone(&stopped);
+        let ready = Arc::clone(&monitor_ready);
+        thread::spawn(move || {
+            ready.wait();
+            while !stopped.load(Ordering::Acquire) {
+                peak.fetch_max(open_descriptors(), Ordering::AcqRel);
+                samples.fetch_add(1, Ordering::Relaxed);
+                thread::yield_now();
+            }
+        })
+    };
+    const READERS: usize = 48;
+    let begin = Arc::new(Barrier::new(READERS + 1));
+    let readers = (0..READERS)
+        .map(|reader| {
+            let store = Arc::clone(&store);
+            let begin = Arc::clone(&begin);
+            thread::spawn(move || {
+                let scope = scope("concurrent-fd-budget");
+                let event_id = format!("event-{reader}");
+                begin.wait();
+                for _ in 0..128 {
+                    let record = store.get(&scope, &event_id).unwrap().unwrap();
+                    assert_eq!(record.payload["value"], json!(reader));
+                    assert_eq!(record.payload["padding"].as_str().unwrap().len(), 16 * 1024);
+                }
+            })
+        })
+        .collect::<Vec<_>>();
+    monitor_ready.wait();
+    begin.wait();
+    for reader in readers {
+        reader.join().unwrap();
+    }
+    stopped.store(true, Ordering::Release);
+    monitor.join().unwrap();
+    assert!(samples.load(Ordering::Acquire) > 0);
+    assert_eq!(
+        peak.load(Ordering::Acquire),
+        baseline,
+        "parallel reads opened descriptors beyond the pinned segment set"
+    );
+    assert_eq!(open_descriptors(), baseline);
+    // Capacity refusal and parallel reads must not poison the existing owner.
+    let mut duplicate = input("concurrent-fd-budget", "event-0", 0);
+    duplicate.payload["padding"] = json!("x".repeat(16 * 1024));
+    assert!(store.append(duplicate).is_ok());
+    assert_eq!(
+        store
+            .replay(&scope("concurrent-fd-budget"), 0)
+            .unwrap()
+            .len(),
+        MAX_EVENT_SEGMENTS
+    );
+    drop(store);
+    let reopened = SegmentedEventStore::open(&root, config).unwrap();
+    assert_eq!(
+        reopened.snapshot().unwrap().record_count,
+        MAX_EVENT_SEGMENTS
+    );
 }
 
 fn rewrite_json(path: &std::path::Path, mutate: impl FnOnce(&mut Value)) {

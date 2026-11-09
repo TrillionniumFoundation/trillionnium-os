@@ -366,6 +366,16 @@ class G1EvidenceTest(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "requires installed_rootlinux"):
             validate_package(package, self.gaps, now=NOW)
 
+    def test_installed_performance_cannot_close_physical_or_destructive_workloads(self) -> None:
+        package = self.l2_package()
+        package["gaps"] = ["GAP-PERF-L2-BASELINE-001"]
+        self.resign(package)
+        self.assertEqual(validate_package(package, self.gaps, now=NOW).level, "L2")
+        package["gaps"] = ["GAP-PERF-SYSTEM-BASELINE-001"]
+        self.resign(package)
+        with self.assertRaisesRegex(EvidenceError, "requires destructive_fault"):
+            validate_package(package, self.gaps, now=NOW)
+
     def test_expired_package_remains_valid_but_is_not_promotable(self) -> None:
         assessment = validate_package(
             deepcopy(self.base),
@@ -422,7 +432,8 @@ class G1EvidenceTest(unittest.TestCase):
                 report["promotable_gaps"]["GAP-INSTALLED-CODEX-001"],
                 l2["package_id"],
             )
-            self.assertNotIn("GAP-JOB-ADMISSION-001", report["unresolved_gaps"])
+            # The register's historical CLOSED label has no current receipt.
+            self.assertIn("GAP-JOB-ADMISSION-001", report["unresolved_gaps"])
 
     def test_promotion_plan_never_enables_release_without_complete_chain(self) -> None:
         with evidence_fixture_directory() as temp:

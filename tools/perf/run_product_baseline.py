@@ -29,7 +29,7 @@ from typing import Any as __LauncherAny, Callable as __LauncherCallable
 __LAUNCHER_LOGICAL_PATH = 'tools/perf/run_product_baseline.py'
 __FACADE_LOGICAL_PATH = 'tools/perf/_run_product_baseline_facade.py'
 __FACADE_FILENAME = '_run_product_baseline_facade.py'
-__EXPECTED_FACADE_SHA256 = '11fe4223a29d972ad9a41657629d45c32b3e1ad5d5f8c33b06fc04479b1a0eaa'
+__EXPECTED_FACADE_SHA256 = '63122afe618a2d4d402332b47597309b7ed3b982270ec1e28f7327317c3d5cc2'
 __BOOTSTRAP_LOGICAL_PATH = 'tools/owner-open/authenticated_python_bootstrap.py'
 __EXPECTED_BOOTSTRAP_SHA256 = 'cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96'
 __BOOTSTRAP_SCHEMA = 'org.trillionnium.authenticated-python-bootstrap.v1'

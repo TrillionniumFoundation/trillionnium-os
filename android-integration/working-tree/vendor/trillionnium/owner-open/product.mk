@@ -1,7 +1,7 @@
 # Trillionnium owner-open Android product cut.
-# This file is intentionally applied after vendor/trillionnium/config/common.mk.
-# It removes every sealed Authority/lease/P01/egress/old-shell/typed-ADB node
-# before adding the independently reviewed owner-open source modules.
+# This node inherits alongside common_owner_open_base.mk, which contains no
+# sealed runtime package selections. These filters affect local declarations
+# only; they cannot remove packages from a deferred inherit-product sibling.
 
 _TRILLIONNIUM_OWNER_OPEN_FORBIDDEN_PACKAGES := \
     TrillionniumAiAuthority \
@@ -56,6 +56,9 @@ SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += \
     vendor/trillionnium/owner-open/sepolicy/adbroot
 endif
 endif
+
+# Select ordinary SDK source/resources at build time; sealed defaults are unchanged.
+$(call soong_config_set_bool,trillionnium_owner_open,enabled,true)
 
 PRODUCT_SYSTEM_EXT_PROPERTIES += \
     ro.trillionnium.owner_open.enabled=true

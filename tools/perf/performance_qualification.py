@@ -31,7 +31,7 @@ _OS_LINK_SUPPORTS_FOLLOW_SYMLINKS = os.link in os.supports_follow_symlinks
 
 BATCH_SCHEMA = "org.trillionnium.product-performance-batch.v1"
 REPORT_SCHEMA = "org.trillionnium.performance-qualification-report.v1"
-POLICY_SCHEMA = "org.trillionnium.performance-qualification-policy.v2"
+POLICY_SCHEMA = "org.trillionnium.performance-qualification-policy.v3"
 POLICY_REGISTRY_SCHEMA = "org.trillionnium.performance-qualification-policy-registry.v1"
 POLICY_REGISTRY_PATH = Path(__file__).with_name("performance_qualification_policy_registry.v1.json")
 POLICY_REGISTRY_MAX_BYTES = 64 * 1024
@@ -56,6 +56,8 @@ MAX_REGRESSION_PERCENT = 25.0
 MAX_UNKNOWN_RATE_INCREASE = 0.0
 MAX_FAIRNESS_DROP = 0.05
 MAX_SAMPLE_ELAPSED_NS = 3_600 * 1_000_000_000
+MAX_RAW_COUNTER_VALUE = (1 << 64) - 1
+RAW_COUNTER_UNITS = frozenset({"ns", "usec", "bytes", "count"})
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 GIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:/@+-]{0,255}$")
@@ -143,6 +145,7 @@ POLICY_KEYS = {
     "statistics", "raw_samples_preserved", "outlier_deletion",
     "unknown_rate_source", "l2_unknown_outcomes_allowed",
     "same_work_contract_required", "automatic_redispatch", "public_release",
+    "raw_counter_units", "raw_counter_value_type", "max_raw_counter_value",
 }
 SOURCE_KEYS = {
     "repository", "commit", "tree", "host_sha256", "core_sha256",
@@ -379,6 +382,13 @@ def _load_policy_registry() -> tuple[bytes, dict[str, Any], dict[str, Any]]:
     _require(policy["max_unknown_rate_increase"] == MAX_UNKNOWN_RATE_INCREASE, "policy unknown threshold differs")
     _require(policy["max_fairness_drop"] == MAX_FAIRNESS_DROP, "policy fairness threshold differs")
     _require(policy["max_sample_elapsed_ns"] == MAX_SAMPLE_ELAPSED_NS, "policy elapsed bound differs")
+    _require(policy["raw_counter_units"] == sorted(RAW_COUNTER_UNITS), "policy raw counter units differ")
+    _require(set(REQUIRED_RESOURCE_UNITS.values()) == RAW_COUNTER_UNITS | {"ratio"},
+             "resource unit matrix differs from numeric policy")
+    _require(policy["raw_counter_value_type"] == "U64_INTEGER", "policy raw counter value type differs")
+    _require(type(policy["max_raw_counter_value"]) is int
+             and policy["max_raw_counter_value"] == MAX_RAW_COUNTER_VALUE,
+             "policy raw counter uint64 bound differs")
     _require(policy["workloads"] == list(SOURCE_WORKLOADS), "policy workload registry differs")
     _require(policy["phases"] == list(PHASES), "policy phase registry differs")
     _require(policy["statistics"] == list(STATISTIC_NAMES), "policy statistics differ")
@@ -498,9 +508,16 @@ def _validate_resource_observation(value: Any, *, name: str, level: str) -> None
     _require(observation["unit"] == REQUIRED_RESOURCE_UNITS[name], f"resource {name} unit differs")
     if status == "observed":
         _require(observation["reason"] is None, f"observed resource {name} must not carry a reason")
-        number = _nonnegative_number(observation["value"], f"resource {name}.value")
         if observation["unit"] == "ratio":
+            number = _nonnegative_number(observation["value"], f"resource {name}.value")
             _require(float(number) <= 1.0, f"resource {name} ratio exceeds 1")
+        else:
+            number = observation["value"]
+            _require(observation["unit"] in _AUTHORITATIVE_POLICY["raw_counter_units"],
+                     f"resource {name} has no reviewed raw counter domain")
+            _require(type(number) is int
+                     and 0 <= number <= _AUTHORITATIVE_POLICY["max_raw_counter_value"],
+                     f"resource {name}.value must be a uint64 integer")
     else:
         _require(observation["value"] is None, f"unavailable resource {name} must have null value")
         _string(observation["reason"], f"resource {name}.reason", 512)

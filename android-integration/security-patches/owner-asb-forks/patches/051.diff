@@ -1,0 +1,15 @@
+--- actual-captured/kernel/motorola/sm6375/net/tipc/msg.c
++++ owned-final/kernel/motorola/sm6375/net/tipc/msg.c
+@@ -175,8 +175,11 @@
+ 
+ 	if (fragid == LAST_FRAGMENT) {
+ 		TIPC_SKB_CB(head)->validated = false;
+-		if (unlikely(!tipc_msg_validate(&head)))
++		if (unlikely(!tipc_msg_validate(&head))) {
++			if (head != *headbuf)
++				*headbuf = head;
+ 			goto err;
++		}
+ 		*buf = head;
+ 		TIPC_SKB_CB(head)->tail = NULL;
+ 		*headbuf = NULL;

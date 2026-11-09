@@ -75,6 +75,13 @@ source navigation alone does not prove wire compatibility.
 
 `StreamControl` has WindowUpdate, Pause, Resume and Close. `apply_control` returns Applied or Existing and rejects stale, gapped or conflicting control sequences. `try_reserve` returns Granted or a typed Blocked reason without waiting under the state mutex.
 
+The selected direct Host recovers delivery gaps through the separately
+advertised `scoped_cursor_v1` extension described in
+[MOD-TRANSPORT](MOD-TRANSPORT.md). Each turn/job cursor domain must be inspected
+and acknowledged independently. Credit, bare numeric resume and an inspected
+suffix with a retained-prefix gap cannot clear missing observations. Normal
+pause/credit/resume controls remain available when no delivery gap exists.
+
 ## 6. State model and ownership
 
 - State schema: `org.trillionnium.mod_stream.state.v1`

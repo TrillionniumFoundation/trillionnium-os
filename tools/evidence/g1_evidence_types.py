@@ -353,9 +353,12 @@ def load_gap_specs(path: Path) -> dict[str, GapSpec]:
         _require(exit_level in LEVEL_ORDER, f"{gap_id}.exit_level is unsupported")
         evidence_class = GAP_EVIDENCE_CLASS.get(gap_id)
         _require(evidence_class is not None, f"no evidence class is registered for {gap_id}")
+        status = _string(gap.get("status"), f"{gap_id}.status")
+        _require(status in {"OPEN", "SOURCE_CLOSED_PENDING_EVIDENCE", "EXTERNAL_HOLD", "CLOSED"},
+                 f"{gap_id}.status is unsupported")
         result[gap_id] = GapSpec(
             gap_id=gap_id,
-            status=_string(gap.get("status"), f"{gap_id}.status"),
+            status=status,
             exit_level=exit_level,
             evidence_class=evidence_class,
         )

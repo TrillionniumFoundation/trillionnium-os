@@ -63,7 +63,8 @@ impl<'de> Visitor<'de> for UniqueJsonVisitor {
         Ok(UniqueJson(Value::String(value.to_string())))
     }
 
-    fn visit_string<E>(self, value: String) -> Result<Self::Value, E> {
+    fn visit_string<E>(self, mut value: String) -> Result<Self::Value, E> {
+        value.shrink_to_fit();
         Ok(UniqueJson(Value::String(value)))
     }
 
@@ -75,6 +76,9 @@ impl<'de> Visitor<'de> for UniqueJsonVisitor {
         while let Some(value) = sequence.next_element::<UniqueJson>()? {
             output.push(value.0);
         }
+        // Persistent reservations must agree between append and restart:
+        // retain actual elements, not parser growth capacity.
+        output.shrink_to_fit();
         Ok(UniqueJson(Value::Array(output)))
     }
 
@@ -83,7 +87,8 @@ impl<'de> Visitor<'de> for UniqueJsonVisitor {
         A: MapAccess<'de>,
     {
         let mut output = serde_json::Map::new();
-        while let Some(key) = map.next_key::<String>()? {
+        while let Some(mut key) = map.next_key::<String>()? {
+            key.shrink_to_fit();
             if output.contains_key(&key) {
                 return Err(de::Error::custom(format!("duplicate key {key}")));
             }

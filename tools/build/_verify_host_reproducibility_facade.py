@@ -219,19 +219,20 @@ if not isinstance(cleanup_files, dict):
     raise RuntimeError("cleanup implementation is not snapshot-bound")
 if cleanup_files.get("tools/perf/run_product_baseline.py") != _CLEANUP_IDENTITY:
     raise RuntimeError("cleanup launcher executed bytes differ from its nested identity")
+_BUILD_ONLY_PATHS = {
+    "tools/build/_verify_host_reproducibility_core.py",
+    "tools/build/_verify_host_reproducibility_facade.py",
+    "tools/build/verify_host_reproducibility.py",
+}
+if set(cleanup_files) != set(CORE.IMPLEMENTATION_PATHS) - _BUILD_ONLY_PATHS:
+    raise RuntimeError("cleanup implementation transitive snapshot is incomplete")
+if cleanup_files.get("tools/owner-open/authenticated_python_bootstrap.py") != _BOOTSTRAP_IDENTITY:
+    raise RuntimeError("cleanup bootstrap identity differs from the outer bootstrap")
 PINNED_IMPLEMENTATION_FILES = {
-    "tools/owner-open/authenticated_python_bootstrap.py": _BOOTSTRAP_IDENTITY,
+    **cleanup_files,
     "tools/build/_verify_host_reproducibility_core.py": _CORE_IDENTITY,
     "tools/build/_verify_host_reproducibility_facade.py": _FACADE_IDENTITY,
     "tools/build/verify_host_reproducibility.py": _LAUNCHER_IDENTITY,
-    "tools/owner-open/owner_open_rootlinux_supervisor.py": cleanup_files[
-        "tools/owner-open/owner_open_rootlinux_supervisor.py"],
-    "tools/perf/_run_product_baseline_core.py": cleanup_files[
-        "tools/perf/_run_product_baseline_core.py"],
-    "tools/perf/_run_product_baseline_facade.py": cleanup_files[
-        "tools/perf/_run_product_baseline_facade.py"],
-    "tools/perf/run_product_baseline.py": cleanup_files[
-        "tools/perf/run_product_baseline.py"],
 }
 if set(PINNED_IMPLEMENTATION_FILES) != set(CORE.IMPLEMENTATION_PATHS):
     raise RuntimeError("reproducibility implementation snapshot is incomplete")
@@ -243,6 +244,79 @@ CORE.OPEN_ADMITTED_FILE = _opened_identity
 CORE.REOPEN_ADMITTED_IDENTITY = _reopen_identity
 CORE.SAME_ADMITTED_OBJECT = _same_opened_object
 CORE.EXECUTION_PASS_FDS = ()
+CORE.MAX_QUERY_OUTPUT_BYTES = 1024 * 1024
+CORE.QUERY_TIMEOUT_SECONDS = 20
+
+
+def query(
+    command: list[str],
+    cwd: Path,
+    *,
+    pass_fds: tuple[int, ...] = (),
+    runtime: Any = None,
+    executable: Path | None = None,
+) -> str:
+    """Read bounded identity output and retain the complete session for cleanup."""
+    environment = {"PATH": "/usr/bin:/bin", "LC_ALL": "C"}
+    if runtime is not None:
+        environment.update(runtime.environment())
+    started = time.monotonic()
+    deadline = started + CORE.QUERY_TIMEOUT_SECONDS
+    process = CLEANUP.OwnedSessionPopen(
+        command, cwd=cwd, env=environment, stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, start_new_session=True,
+        pass_fds=pass_fds,
+        executable=executable,
+    )
+    captured = {"stdout": bytearray(), "stderr": bytearray()}
+    count = 0
+    primary_error: BaseException | None = None
+    try:
+        with selectors.DefaultSelector() as selector:
+            for name, pipe in (("stdout", process.stdout), ("stderr", process.stderr)):
+                CORE.require(pipe is not None, "identity query pipe is unavailable")
+                os.set_blocking(pipe.fileno(), False)
+                selector.register(pipe, selectors.EVENT_READ, name)
+            while selector.get_map():
+                remaining = deadline - time.monotonic()
+                CORE.require(remaining > 0, "identity query exceeded timeout")
+                for key, _ in selector.select(min(0.1, remaining)):
+                    # Read at most one byte beyond the shared allowance, so
+                    # excess output is rejected before unbounded allocation.
+                    allowance = CORE.MAX_QUERY_OUTPUT_BYTES - count
+                    block = os.read(key.fileobj.fileno(), min(65536, allowance + 1))
+                    if not block:
+                        selector.unregister(key.fileobj)
+                        continue
+                    count += len(block)
+                    CORE.require(count <= CORE.MAX_QUERY_OUTPUT_BYTES,
+                                 "identity query exceeded combined output bound")
+                    captured[key.data].extend(block)
+        remaining = deadline - time.monotonic()
+        CORE.require(remaining > 0, "identity query exceeded timeout")
+        try:
+            code = process.wait(timeout=remaining)
+        except subprocess.TimeoutExpired:
+            raise CORE.VerificationError("identity query exceeded timeout") from None
+        CORE.require(code == 0, f"identity query exited with status {code}")
+        try:
+            stdout = captured["stdout"].decode("utf-8", errors="strict")
+            captured["stderr"].decode("utf-8", errors="strict")
+        except UnicodeDecodeError:
+            raise CORE.VerificationError("identity query output is not strict UTF-8") from None
+        return stdout.strip()
+    except BaseException as error:
+        primary_error = error
+        raise
+    finally:
+        try:
+            CLEANUP.stop(process)
+        except BaseException as cleanup_error:
+            if primary_error is None:
+                raise CORE.VerificationError("identity query process-group cleanup failed") from cleanup_error
+            raise CORE.VerificationError(
+                f"{primary_error}; identity query process-group cleanup failed"
+            ) from primary_error
 
 def run_build(
     command: list[str],
@@ -317,6 +391,7 @@ def run_build(
 
 
 CORE.run_build = run_build
+CORE.query = query
 
 for _name in dir(CORE):
     if not _name.startswith("__") and _name != "run_build":

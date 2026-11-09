@@ -139,8 +139,7 @@ pub(crate) fn run() -> Result<(), String> {
     spawn_core_reader(core_stdout, sender.clone(), limits.max_frame_bytes)?;
     spawn_core_waiter(child, sender)?;
 
-    let stdout = io::stdout();
-    let mut delivery = ClientDelivery::new(stdout.lock(), limits.max_frame_bytes);
+    let mut delivery = ClientDelivery::new(trillionnium_owner_open_trace::caller_stdout(), limits.max_frame_bytes);
     let mut output = TransportOutput::new();
     let mut flow = StreamDelivery::new(&options);
     let mut journal = TransportJournal::open(options.event_store.as_deref());
@@ -166,6 +165,9 @@ pub(crate) fn run() -> Result<(), String> {
     let mut client_priority_streak = 0usize;
 
     while core_reader_open || core_wait_open {
+        // The preceding frame helper returned; its queue/journal guards are
+        // released. Streaming stdout has no retained guard at this boundary.
+        trillionnium_owner_open_trace::drain_stream_at_caller_boundary();
         if !core_input_open || handshake.failed() || !client_open {
             discard_queued_client_messages(&mut pending_messages);
         }
@@ -183,7 +185,11 @@ pub(crate) fn run() -> Result<(), String> {
                     // not produce a secondary error for the upstream peer.
                     continue;
                 }
-                let frame = match RunTurnFrame::decode(&encoded, &limits) {
+                let frame = match trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::HostDecode,
+                    "transport.frame",
+                    || RunTurnFrame::decode(&encoded, &limits),
+                ) {
                     Ok(frame) => frame,
                     Err(error) => {
                         // Even an undecodable first line consumes the
@@ -535,7 +541,11 @@ pub(crate) fn run() -> Result<(), String> {
                     // from a draining core cannot be admitted as effects.
                     continue;
                 }
-                let mut frame = match RunTurnFrame::decode(&encoded, &limits) {
+                let mut frame = match trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::HostDecode,
+                    "transport.frame",
+                    || RunTurnFrame::decode(&encoded, &limits),
+                ) {
                     Ok(frame) => frame,
                     Err(error) => {
                         if handshake.late_turn_core_is_quarantined() {
@@ -1155,6 +1165,7 @@ fn process_core_frame_body<W: Write>(
     journal: &mut TransportJournal,
     handshake: &mut TransportHandshake,
 ) -> Result<(), String> {
+    flow.observe_inspection(&frame);
     update_durable_ready(&frame, durable_ready);
 
     if frame_reports_unavailable(&frame) && flow.is_active() {
@@ -1196,7 +1207,7 @@ fn process_core_frame_body<W: Write>(
         let resync_already_announced = flow.gap.is_some();
         if let Some(gap) = flow.terminal_gap() {
             if !resync_already_announced {
-                write_resync_required(delivery, output, active.as_ref(), &gap)?;
+                write_resync_required(delivery, output, active.as_ref(), &gap, flow.snapshot().map(|snapshot| snapshot.next_control_seq))?;
             }
             attach_gap_to_payload(&mut frame.payload, &gap);
         }
@@ -1244,7 +1255,7 @@ fn process_core_frame_body<W: Write>(
         Ok(SubmitResult::Deliver(frame)) => delivery.send(&frame)?,
         Ok(SubmitResult::Queued | SubmitResult::Suppressed) => {}
         Ok(SubmitResult::GapStarted(gap)) => {
-            write_resync_required(delivery, output, active.as_ref(), &gap)?;
+            write_resync_required(delivery, output, active.as_ref(), &gap, flow.snapshot().map(|snapshot| snapshot.next_control_seq))?;
         }
         Err(error) => {
             let released = flow.disable_and_release();
@@ -1291,8 +1302,12 @@ fn release_handshake_queues<W: Write>(
         while let Some(action) = actions.pop_front() {
             match action {
                 DeferredHandshakeAction::Core(encoded) => {
-                    let frame = RunTurnFrame::decode(&encoded, limits)
-                        .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
+                    let frame = trillionnium_owner_open_trace::measure(
+                        trillionnium_owner_open_trace::Stage::HostDecode,
+                        "transport.frame",
+                        || RunTurnFrame::decode(&encoded, limits),
+                    )
+                    .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
                     if turn_gate_resolution(&frame) || frame.kind == FRAME_TURN_ACCEPTED {
                         // A resolver is meaningful only for the currently
                         // admitted turn.  Do not let a delayed error or
@@ -1466,8 +1481,12 @@ fn release_handshake_queues<W: Write>(
                 }
             }
             DeferredHandshakeAction::Core(encoded) => {
-                let frame = RunTurnFrame::decode(&encoded, limits)
-                    .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
+                let frame = trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::HostDecode,
+                    "transport.frame",
+                    || RunTurnFrame::decode(&encoded, limits),
+                )
+                .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
                 let frame = output.rewrite_core_with_context(frame, active.as_ref());
                 process_core_frame_body(
                     frame,
@@ -1512,6 +1531,9 @@ fn handle_flow_control<W: Write>(
     let (disposition, snapshot) = match flow.apply_control(&parsed) {
         Ok(result) => result,
         Err(error) => {
+            if let Some(gap) = flow.gap.as_ref() {
+                write_resync_required(delivery, output, Some(context), gap, flow.snapshot().map(|snapshot| snapshot.next_control_seq))?;
+            }
             return write_local_error_or_defer(
                 delivery,
                 output,
@@ -1534,6 +1556,8 @@ fn handle_flow_control<W: Write>(
         "buffered_frames": flow.queue.len(),
         "buffered_bytes": flow.queued_bytes,
         "resync_required": flow.gap.is_some(),
+        "stream_gap": flow.gap.as_ref().map(ResyncGap::payload),
+        "resync_protocol": SCOPED_RESYNC_PROTOCOL,
         "persist_before_flow": true,
         "automatic_redispatch": false
     });

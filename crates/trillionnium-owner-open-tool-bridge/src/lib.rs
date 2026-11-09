@@ -22,10 +22,13 @@ use trillionnium_owner_open_call_registry::{
 };
 use trillionnium_owner_open_runtime::{
     AdbExecRequest, CancellationToken as RuntimeCancellationToken, ExecutionEvent,
-    ExecutionEventKind, ExecutionTerminal, MechanicalLimits, PtySize, ShellExecRequest,
-    ShellInvocation, StreamKind, TerminalKind, ToolKind, execute_adb, execute_adb_pty,
-    execute_shell, execute_shell_pty,
+    ExecutionEventKind, ExecutionTerminal, MAX_RUNTIME_REQUEST_TIMEOUT, MechanicalLimits, PtySize,
+    ShellExecRequest, ShellInvocation, StreamKind, TerminalKind, ToolKind,
+    execute_adb_pty_with_capacity, execute_adb_with_capacity, execute_shell_pty_with_capacity,
+    execute_shell_with_capacity, reserve_adb_capacity, reserve_shell_capacity,
 };
+
+pub const MAX_BRIDGE_CANCELLATION_FLAGS: usize = 64;
 
 #[derive(Debug)]
 pub enum BridgeError {
@@ -460,6 +463,10 @@ impl DirectToolBridge {
         E: Display,
         I: IntoIterator<Item = Arc<AtomicBool>>,
     {
+        let admission_trace = trillionnium_owner_open_trace::span(
+            trillionnium_owner_open_trace::Stage::CallbackAdmission,
+            &call.request_sha256,
+        );
         limits.validate()?;
         call.validate()?;
         let runtime_limits = limits.effective_runtime();
@@ -469,8 +476,52 @@ impl DirectToolBridge {
         // enclosing cancellation into the registry before spawn admission.
         // Without that step an already-cancelled turn could still win the
         // claim race and appear uncancelled in registry history.
-        let external_flags = external_flags.into_iter().collect::<Vec<_>>();
+        let external_flags = external_flags
+            .into_iter()
+            .take(MAX_BRIDGE_CANCELLATION_FLAGS + 1)
+            .collect::<Vec<_>>();
+        if external_flags.len() > MAX_BRIDGE_CANCELLATION_FLAGS {
+            return Err(invalid("too many enclosing cancellation flags"));
+        }
         let registry_request = call.registry_request();
+        // A terminal/live/unknown duplicate consumes no new process capacity.
+        // Preserve its full conflict check and enclosing cancellation even when
+        // the shared budget cannot admit any new effect.
+        match self.registry.snapshot(&call.key) {
+            Ok(mut snapshot) => {
+                if snapshot.request != registry_request {
+                    return Err(BridgeError::Registry(RegistryError::CallIdConflict));
+                }
+                if !matches!(
+                    snapshot.state,
+                    trillionnium_owner_open_call_registry::EffectiveState::Accepted
+                ) {
+                    if external_flags
+                        .iter()
+                        .any(|flag| flag.load(Ordering::SeqCst))
+                        && !matches!(
+                            snapshot.state,
+                            trillionnium_owner_open_call_registry::EffectiveState::Terminal { .. }
+                        )
+                    {
+                        self.registry.request_cancel(&call.key)?;
+                        snapshot = self.registry.snapshot(&call.key)?;
+                    }
+                    return Ok(match snapshot.state {
+                        trillionnium_owner_open_call_registry::EffectiveState::CancelledBeforeSpawn
+                        | trillionnium_owner_open_call_registry::EffectiveState::ProvenNotStartedAfterDisconnect => DispatchResult::Inhibited(snapshot),
+                        _ => DispatchResult::Existing(snapshot),
+                    });
+                }
+            }
+            Err(RegistryError::NotFound) => {}
+            Err(error) => return Err(BridgeError::Registry(error)),
+        }
+        let capacity = match &call.request {
+            DirectToolRequest::Shell(request) => reserve_shell_capacity(request, &runtime_limits),
+            DirectToolRequest::Adb(request) => reserve_adb_capacity(request, &runtime_limits),
+        }
+        .map_err(|error| invalid(error.to_string()))?;
         let begin = self
             .registry
             .begin(call.key.clone(), registry_request.clone())?;
@@ -578,31 +629,39 @@ impl DirectToolBridge {
             }
         };
 
-        let runtime_result = match (call.request.clone(), call.pty) {
-            (DirectToolRequest::Shell(request), Some(size)) => execute_shell_pty(
+        admission_trace.finish();
+        let tool_kind = call.request.tool_kind();
+        // Move the exact request into the runtime. Keeping a clone here would
+        // retain a second stdin/environment/argv allocation for the whole call.
+        let runtime_result = match (call.request, call.pty) {
+            (DirectToolRequest::Shell(request), Some(size)) => execute_shell_pty_with_capacity(
                 request,
                 size,
                 &runtime_limits,
                 &runtime_cancellation,
+                capacity,
                 &mut observe,
             ),
-            (DirectToolRequest::Adb(request), Some(size)) => execute_adb_pty(
+            (DirectToolRequest::Adb(request), Some(size)) => execute_adb_pty_with_capacity(
                 request,
                 size,
                 &runtime_limits,
                 &runtime_cancellation,
+                capacity,
                 &mut observe,
             ),
-            (DirectToolRequest::Shell(request), None) => execute_shell(
+            (DirectToolRequest::Shell(request), None) => execute_shell_with_capacity(
                 request,
                 &runtime_limits,
                 &runtime_cancellation,
+                capacity,
                 &mut observe,
             ),
-            (DirectToolRequest::Adb(request), None) => execute_adb(
+            (DirectToolRequest::Adb(request), None) => execute_adb_with_capacity(
                 request,
                 &runtime_limits,
                 &runtime_cancellation,
+                capacity,
                 &mut observe,
             ),
         };
@@ -615,7 +674,13 @@ impl DirectToolBridge {
                     TerminalKind::IoError,
                     format!("preflight_runtime_drift: {message}"),
                 );
-                emit_synthetic_terminal(&call, &terminal, &mut observe);
+                emit_synthetic_terminal(
+                    &call.key,
+                    call.target_id.as_ref(),
+                    tool_kind,
+                    &terminal,
+                    &mut observe,
+                );
                 (terminal, Some(message))
             }
         };
@@ -770,22 +835,24 @@ impl ObservationDigest {
 }
 
 fn emit_synthetic_terminal(
-    call: &BoundToolCall,
+    key: &CallKey,
+    target_id: Option<&String>,
+    tool: ToolKind,
     terminal: &ExecutionTerminal,
     observe: &mut dyn FnMut(ExecutionEvent),
 ) {
     observe(ExecutionEvent {
-        call_id: call.key.call_id.clone(),
-        target_id: call.target_id.clone(),
-        tool: call.request.tool_kind(),
+        call_id: key.call_id.clone(),
+        target_id: target_id.cloned(),
+        tool,
         seq: 0,
         elapsed_ms: 0,
         kind: ExecutionEventKind::Accepted,
     });
     observe(ExecutionEvent {
-        call_id: call.key.call_id.clone(),
-        target_id: call.target_id.clone(),
-        tool: call.request.tool_kind(),
+        call_id: key.call_id.clone(),
+        target_id: target_id.cloned(),
+        tool,
         seq: 1,
         elapsed_ms: terminal.elapsed_ms,
         kind: ExecutionEventKind::Terminal(terminal.clone()),
@@ -830,6 +897,7 @@ fn validate_runtime_request(
         .map_err(|error| invalid(error.to_string()))?;
     match request {
         DirectToolRequest::Shell(request) => {
+            validate_timeout(request.timeout)?;
             validate_common(
                 &request.call_id,
                 request.target_id.as_deref(),
@@ -857,6 +925,7 @@ fn validate_runtime_request(
             }
         }
         DirectToolRequest::Adb(request) => {
+            validate_timeout(request.timeout)?;
             validate_common(
                 &request.call_id,
                 request.target_id.as_deref(),
@@ -876,6 +945,15 @@ fn validate_runtime_request(
     }
     if pty.is_some_and(|size| size.rows == 0 || size.cols == 0) {
         return Err(invalid("PTY rows and cols must be non-zero"));
+    }
+    Ok(())
+}
+
+fn validate_timeout(timeout: Option<Duration>) -> Result<()> {
+    if timeout.is_some_and(|timeout| timeout > MAX_RUNTIME_REQUEST_TIMEOUT) {
+        return Err(invalid(format!(
+            "request timeout exceeds hard bound {MAX_RUNTIME_REQUEST_TIMEOUT:?}"
+        )));
     }
     Ok(())
 }

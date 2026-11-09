@@ -4,18 +4,36 @@
   "breaking_change_review": "REQUIRED_FOR_REQUIRED_TYPE_ENUM_DEFAULT_IDENTITY_ORDERING_STATE_OR_ERROR_CHANGE",
   "change_review": {
     "approval_asserted": false,
-    "base_catalog_sha256": null,
-    "base_contract_sha256": {},
-    "class": "NO_CHANGE",
-    "contracts": [],
-    "families": [],
+    "base_catalog_sha256": "448f6edcf7d7d11647a082aed0264064a8bb2f80e6b37348be0ca86ef98cd7a6",
+    "base_contract_sha256": {
+      "api": "6328c6a0f08a315ed295fa9f3d47595cc48948f67628f3cea4aa15a38eb89469",
+      "errors": "1757e66e18dc37cd5eef6256f27c84612fc551356e199a8d4f183573a82d6949",
+      "state": "5fd5e4b4cf3710329d06024fd44a01734284f21d235b4c623d3a2f0af81a96b2"
+    },
+    "class": "BREAKING_MIGRATION",
+    "contracts": [
+      "api",
+      "errors",
+      "state"
+    ],
+    "families": [
+      "error",
+      "identity",
+      "ordering",
+      "other",
+      "state"
+    ],
     "migration_review_sha256": "32b71694a9459ffab112fd2dd06c750e7e56eb4d597966f1e3e1ddd01c19f733",
-    "review_authority": null,
-    "review_packet": null,
-    "review_packet_sha256": null,
-    "reviewer": null,
+    "review_authority": "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED",
+    "review_packet": "docs/reviews/module-contracts/a5abf4cf5c48b9443a4b166600d2fa154dd25642f2fa57e40f3e9c38842e5b29.json",
+    "review_packet_sha256": "a5abf4cf5c48b9443a4b166600d2fa154dd25642f2fa57e40f3e9c38842e5b29",
+    "reviewer": "Tomasrgbsf",
     "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
-    "target_contract_sha256": {}
+    "target_contract_sha256": {
+      "api": "f0e8b0a2da10def22ecd3c40d076874b67f391ede27dafea5a921a7ed233fe47",
+      "errors": "2e7d83678d6c8b330f133ea47c0a8d92255a268ffb1c9cb296afcbabd3e7b6dc",
+      "state": "0fb8c228f444ea858c9a215aa9bdd53ac7c7d077cbb112b290822d4cc6662497"
+    }
   },
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
   "contract_tests": [
@@ -31,8 +49,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-      "size": 25928
+      "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+      "size": 27954
     }
   ],
   "contracts": {
@@ -77,24 +95,99 @@
   "field_aliases_allowed": false,
   "implementation_sources": [
     {
+      "path": "android-integration/owner-open-profile/profile-v2.json",
+      "sha256": "7ea0dee2bd88910ce3c5c0da8068cdd9f389b6696225e0299fe373a620d1dcdb",
+      "size": 24760
+    },
+    {
+      "path": "android-integration/security-patches/manifest.v1.json",
+      "sha256": "32ea9c909e7eb38ee030420324504a305423fb4371afe525c57582aa0123acbf",
+      "size": 3950
+    },
+    {
+      "path": "android-integration/security-patches/owner-asb-fork-catalog.v1.json",
+      "sha256": "c4436eb8f68adc50235e4b549e74a4337d17b4ce8f99b216e3aa189030263f3c",
+      "size": 92415
+    },
+    {
+      "path": "android-integration/security-patches/owner-asb-forks/evidence/000.json",
+      "sha256": "0c411d0c8563a81f3303b54227c86b0a69c48d72121f919a568cf42dea374a26",
+      "size": 397693
+    },
+    {
+      "path": "android-integration/security-patches/owner-asb-forks/evidence/001.json",
+      "sha256": "7d972b09ac1f92a071f262f6bdc94482701bacf904da7d6392a01d88258df5d8",
+      "size": 37377
+    },
+    {
+      "path": "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
+      "sha256": "c3df02e4a2ac4f8997204019e995c8965f87988761d493eb68fe0507a0794cea",
+      "size": 3786
+    },
+    {
+      "path": "android-integration/working-tree/trillionnium-sdk/Android.bp",
+      "sha256": "1a05c65187ba3ec476fa070b7688da332e1af91c621d081ab7382a3cfaf79896",
+      "size": 70177
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk",
+      "sha256": "4832c01e08517f2bb697bb527090a0e5fdbfecae43d47d926c23fdaf8cf9d6f9",
+      "size": 294
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk",
+      "sha256": "edfb5cffbef72a74c813e43cb71f17407cc9251c5c10f3fb20d819682b5e7226",
+      "size": 1949
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk",
+      "sha256": "69a6dcd1f46c0c9011655962facdeb947bdb1919c7888ac87075b02221ccd6d9",
+      "size": 864
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk",
+      "sha256": "e4681ea75489c8218cd614bc47202ab2a42a2cc81ea5c8dcc599d1c9764c14b1",
+      "size": 490
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk",
+      "sha256": "04c220994f0627accb0aa2438fb097beab0a1ebb3b842f6fc46d541a8bd15ee5",
+      "size": 8872
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_full_phone.mk",
+      "sha256": "0bdc4e01db5a8c531971eb70892db4e4c426890547155f56434a19b43947550a",
+      "size": 305
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile.mk",
+      "sha256": "4fc9f1e1d62a9735c66b2bff35ce043743bfb5c9d3c765cd25f78c4f467b568d",
+      "size": 1960
+    },
+    {
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile_full.mk",
+      "sha256": "7cccb730e9c549a8f5b4f50c46bb6ba7828bc99fc0fa03af94efa9be54206eea",
+      "size": 875
+    },
+    {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/Android.bp",
       "sha256": "40a128c8bf2822b1dcf7804c7106808119c88dcb41cbd827d390b8d79b0838e7",
       "size": 3929
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClient.java",
-      "sha256": "29c1b5fc2849aecb807aed69a26dcdb35e285e5a623f40c4e1ffb1f32b34fad4",
-      "size": 7275
+      "sha256": "e18a8ccba314b47e5c5559ad1ad03df76a1506702462c1eea018fc474e9e2e6c",
+      "size": 8710
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
-      "sha256": "b5d8b4d89582363fb77647881183f4db8b159111adfeb1f1cf46f883228c25b6",
-      "size": 9834
+      "sha256": "80fae64b4c9880db7b4b56498091ed4d59479948c0ce96f7de21efb41e73133a",
+      "size": 23744
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
-      "sha256": "8e0c42ce70c68b6507728a9e664cf2bacef0b912f6524ddbbb650c318e0de074",
-      "size": 5890
+      "sha256": "b0de3335920c7f0788087b84d509281c7167d6588f48b9de1512f9bc32da8ec9",
+      "size": 21230
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json",
@@ -103,8 +196,8 @@
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_bootstrap.cpp",
-      "sha256": "abc3326b642dad91a23d8d9f7f80b671d14e56811f7ab816e4895dbbc3b06bd4",
-      "size": 35051
+      "sha256": "adf506b5fe5f153b3c8d89b4ea2fc37e88cb5036384a9c2d70b4111b52d54b95",
+      "size": 40819
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_emergency_stop.cpp",
@@ -113,13 +206,13 @@
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_ingress_proxy.cpp",
-      "sha256": "d10716008a26558910b22001816e7fa22ef38f89aa8962d5ff4ce557c9186501",
-      "size": 18361
+      "sha256": "10469c60aa516c3924b6bc19ad6cb4d16004cffb96ded64c414af9f43ea28631",
+      "size": 19671
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/product.mk",
-      "sha256": "42f3527122be592aebd2a6462c017530867db17dcb539853d17e4c496bcb0f30",
-      "size": 2991
+      "sha256": "433f6b277b7aba7dd358254bad3fca261a3a1f3e0bab49f075ae4e4003317246",
+      "size": 3145
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/adbd.te",
@@ -158,8 +251,43 @@
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/tools/verify_owner_open_materialized_payload.py",
-      "sha256": "3fe86e3598dc7191129eaa980e5e3d1c7b2f89f2e93277153918ce663fa8eb18",
-      "size": 17242
+      "sha256": "97f594e705c993075087d36a74f161fec87844a6deb2c4999de722e265e56bff",
+      "size": 20837
+    },
+    {
+      "path": "tools/generate-owner-open-common-base.py",
+      "sha256": "8299a29e3b9166394bb87e740e33f26e8e8ae65c767e53e09a9a0a76077cf191",
+      "size": 10746
+    },
+    {
+      "path": "tools/generate-owner-open-phone-config.py",
+      "sha256": "422d922bb24ac75f3a0bc5e50190f40cd173c9f4a65628f98f4f23d002905974",
+      "size": 11569
+    },
+    {
+      "path": "tools/owner-open-phone-chain.v1.json",
+      "sha256": "ba2693dd794a142d8e836a9fb8c1bce87f07e800b76e55c653af1a9e66e10a2b",
+      "size": 3967
+    },
+    {
+      "path": "tools/verify-owner-open-android-source-closure-v2.py",
+      "sha256": "9183e5bd2c46d55ccb906fb19db268ebdb61db7c009da25679d6583fd019b826",
+      "size": 5719
+    },
+    {
+      "path": "tools/verify-owner-open-android-source-closure.py",
+      "sha256": "003a8c6e6097d83e900b15429afb497dfbadb1171c76d2abfc7152b0d6671d17",
+      "size": 37356
+    },
+    {
+      "path": "tools/verify-owner-open-sdk-selection.py",
+      "sha256": "159eaff813ab1ffdb34e50477d0b339bd7b0d12a1a92fee8f40ac30939fabf7e",
+      "size": 18281
+    },
+    {
+      "path": "tools/verify_owner_target_files_binding.py",
+      "sha256": "d0b3a4991b8c744abbf4b439ea58dab6d3d892dda0fcd02ec32b3a7826eb3b0e",
+      "size": 18538
     }
   ],
   "introduction_review_class": "INITIAL_V1",
@@ -195,8 +323,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-        "size": 25928
+        "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+        "size": 27954
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -215,8 +343,8 @@
   "test_sources": [
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-      "size": 37209
+      "sha256": "6419413c1a48bb966b26ed48ee04c6b05ba8008ccb131dcad7ea1c2264b83334",
+      "size": 49445
     }
   ],
   "unknown_fields": "REJECT"
