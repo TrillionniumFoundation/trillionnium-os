@@ -1,0 +1,81 @@
+{
+  "approved_original_files": 9,
+  "candidate_sources_included": false,
+  "files": [
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 26863,
+      "path": "litert-lm-v0191/ADDENDUM.md",
+      "sha256": "a588a14f8b8c5f1c1fe41d2751f808adbe13f26e3a5d2130a91082324d406a03"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 29852,
+      "path": "litert-lm-v0191/SOURCE-INDEX.json",
+      "sha256": "90ff91e8814206007069cde2dfd91c6adc96eec64dbbe40cb15de577d1add594"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 4910,
+      "path": "litert-lm-v0191/UPSTREAM-IDENTITIES.json",
+      "sha256": "c6bd5de0dd186eddfcfb226389db294850ce0e289eb92c8d83344939535da041"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 4652,
+      "path": "navigation-causal-audit/PUBLIC-SUMMARY.json",
+      "sha256": "290f48f61a1e3116b976b262a8e3b2d9234ae027682eed8087e10aecf7f12ac9"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 3216,
+      "path": "navigation-causal-audit/PUBLIC-SUMMARY.md",
+      "sha256": "2620dbca5c52165dbac902bbfb022b3bc1c29557f656a01cacff269223260676"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 3423,
+      "path": "stop-low-memory/PUBLIC-SUMMARY.json",
+      "sha256": "3c560b030cd0d61948a59d20c7d106f6e507ac03ecd88f718d4cdf65f2cee98d"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 2409,
+      "path": "stop-low-memory/PUBLIC-SUMMARY.md",
+      "sha256": "dc86bdc024de2764ddc916362e07bae6127c575586f8ea5c355aa564823402ac"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 15231,
+      "path": "remaining-seven/PUBLIC-SUMMARY.json",
+      "sha256": "63e57690df46b43d974e268b98602f4643c8f704d788f6fa503b73dc845f2026"
+    },
+    {
+      "approved_original_copied_byte_for_byte": true,
+      "bytes": 9838,
+      "path": "remaining-seven/PUBLIC-SUMMARY.md",
+      "sha256": "33bac94c95ad3047f3c37421053755565f376accbe98b684ee635b61b865e270"
+    },
+    {
+      "bytes": 4107,
+      "new_index": true,
+      "path": "README.md",
+      "sha256": "d15efffd4fd00a76e09d8b9f518bdd0a2a8523cedd0d2456e14a2c02e4c9d6cb"
+    }
+  ],
+  "new_model_or_runtime_execution": false,
+  "parent_head_sha": "64c0612017eb019984e1e16872c0d60015f04da2",
+  "parent_tree_sha": "bc89aff8475aaaba9bbd28f4046c07e8f1032007",
+  "phone_qualification_claimed": false,
+  "previous_publication_files_unchanged": 40,
+  "remaining_seven_case_results": {
+    "fail": 4,
+    "pass": 3
+  },
+  "remaining_seven_final_evidence_qualified": false,
+  "research_v5_unchanged": true,
+  "schema": "hepta.publication-approved-append.v1",
+  "source_changed": false,
+  "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+  "source_members": 866
+}
