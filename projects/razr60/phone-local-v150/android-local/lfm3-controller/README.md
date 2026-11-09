@@ -1,6 +1,6 @@
-# Code25: private GPU kernel cache and observed navigation
+# Code26: observed transitions and an explicit 9B candidate
 
-The current candidate is versionCode 25 (`0.25.0-local-gpu-cache-verified-navigation`). It gives explicit GPU requests a canonical app-private OpenCL kernel-cache directory and records that directory in the request receipt. A general instruction requires a fresh observation after entering a page from search results. Code24's readable action history and consistent eligible action domain are retained. Cache hits, speedups and completed phone tasks require actual device evidence. See `docs/CODE25-QUALIFICATION.md` for the change and qualification boundary.
+The current candidate is versionCode 26 (`0.26.0-local-observed-transitions`). It places the current screen after the complete recorded action history and adds the last step's actual before/after editable text, window title and IME observations. Those facts do not infer causality or task completion. An independently pinned Qwen3.5-9B Q4_0 text profile is available for qualification; it does not replace the configured or default model. Existing action permissions, freshness, recovery and local-only inference gates remain. See `docs/CODE26-QUALIFICATION.md` for the change and qualification boundary.
 
 The prior exact Code24 source passed 70 host checks and Android compilation; Code24 was not installed for phone testing. Those artifacts remain separate from Code25 qualification.
 

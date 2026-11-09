@@ -18,7 +18,8 @@ static const HeptaModelProfile hepta_profiles[]={
     {"gemma4-e2b-qat-q4_0","gemma-4-E2B_q4_0-it.gguf","fa401b55b07ee70a54c6dae3903c783a6e65064312529ea57175cb5f8dec6634","gemma4",UINT64_C(3349516256),true},
     {"nemotron-3.5-bolt-e4b-q4_k_m","Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf","c8af2b8aea10a690a1d9491db744a9446660173cb38fc489612b556615a69612","gemma4",UINT64_C(6180446208),true},
     {"lfm2.5-8b-a1b-q4_0","LFM2.5-8B-A1B-Q4_0.gguf","48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715","lfm2moe",UINT64_C(4844678368),true},
-    {"qwen3.5-4b-q4_0","Qwen3.5-4B-Q4_0.gguf","298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb","qwen35",UINT64_C(2583221408),true}
+    {"qwen3.5-4b-q4_0","Qwen3.5-4B-Q4_0.gguf","298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb","qwen35",UINT64_C(2583221408),true},
+    {"qwen3.5-9b-q4_0","Qwen3.5-9B-Q4_0.gguf","17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24","qwen35",UINT64_C(5379417312),true}
 };
 static const HeptaModelProfile *hepta_model_profile;
 static const HeptaModelProfile *hepta_find_profile(const char *id){

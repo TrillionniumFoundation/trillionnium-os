@@ -65,11 +65,27 @@ public final class Qwen35ProfileHostTest {
         bad=configuration("npu",8192);bad.put("model_sha256",p.sha256);rejected=false;
         try{LocalRuntimeConfig.fromFields(bad);}catch(IllegalArgumentException expected){rejected=true;}
         check(rejected,"caller cannot override closed artifact identity");
-        for(String unknown:new String[]{"qwen35","Qwen3.5-4B","qwen3.5-9b-q4_0","../Qwen3.5-4B-Q4_0.gguf"}){
+        for(String unknown:new String[]{"qwen35","Qwen3.5-4B","qwen3.5-14b-q4_0","../Qwen3.5-4B-Q4_0.gguf"}){
             boolean denied=false;try{ModelProfile.named(unknown);}catch(IllegalArgumentException expected){denied=true;}
             check(denied,"family, other size and paths do not select the model");
         }
+        ModelProfile p9=ModelProfile.named("qwen3.5-9b-q4_0");
+        check(p9==ModelProfile.QWEN35_9B&&p9!=p,"9B is a separate closed identity");
+        check(p9.bytes==5379417312L&&p9.bytes>0xffffffffL,"9B size is not truncated to unsigned int32");
+        check("17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24".equals(p9.sha256),"9B whole-file identity");
+        check("Qwen3.5-9B-Q4_0.gguf".equals(p9.fileName)&&"qwen35".equals(p9.architecture),"9B filename and existing architecture");
+        check("unsloth/Qwen3.5-9B-GGUF".equals(p9.repository)&&"3885219b6810b007914f3a7950a8d1b469d598a5".equals(p9.revision),"9B fixed upstream revision");
+        check(p9.exactTokenizationRequired&&p9.minimumAvailableBytes==(8L<<30)&&p9.minimumAvailableBytes>p9.bytes,"9B exact input admission and headroom");
+        for(String compute:new String[]{"npu","gpu"}){
+            Map<String,Object> fields=configuration(compute,8192);fields.put("model_profile",p9.id);
+            LocalRuntimeConfig config9=LocalRuntimeConfig.fromFields(fields);
+            check(config9.profile==p9&&config9.matchesResolvedDevice("npu".equals(compute)?"HTP0":"GPUOpenCL",false,-1),"9B explicit requested device retained");
+            check(NativeBudgetVerifier.valid(proof(p9,8192),config9,256,7680),"9B exact input proof accepted");
+            check(!NativeBudgetVerifier.valid(proof(p,8192),config9,256,7680),"same-architecture 4B proof cannot authorize 9B");
+            LocalRuntimeConfig config4=LocalRuntimeConfig.fromFields(configuration(compute,8192));
+            check(!NativeBudgetVerifier.valid(proof(p9,8192),config4,256,7680),"same-architecture 9B proof cannot authorize 4B");
+        }
         check(LocalRuntimeConfig.defaults().profile==ModelProfile.LFM3&&LocalRuntimeConfig.defaults().contextTokens==8192,"default model and context unchanged");
-        System.out.println("PASS "+checks+" Qwen3.5 4B closed-profile/exact-receipt contracts; phone_tested=false; inference=false");
+        System.out.println("PASS "+checks+" Qwen3.5 4B/9B closed-profile/exact-receipt contracts; phone_tested=false; inference=false");
     }
 }

@@ -51,6 +51,7 @@ public final class LocalTaskController implements AutoCloseable {
             "节点[id,文字,边界,状态]中c可点击但未必是按键，t可替换字段，s可滚动，f仅已聚焦。节点动作先逐字复制node_label，再复制同一行node_id；重复/空文字也需两者。reason不能改目标，无图像输入，不猜坐标。符合OWNER方法时，t且f可直接type。\n" +
             "editable_fields是当前可编辑text（可为空）、view_id和位置；visible_text可含历史，不保证是当前输入或结果。role/view_id不授予能力。ime_visible true/false是已观察值，null未知；back可能先关输入法，须复查。window只描述活动根，未知字段不能推断页面或背景。\n" +
             "events按step顺序列出全部已记录动作、参数和前后包名；accepted是策略接受，dispatched是已交给执行器，stale是观察已失效，均不证明目标完成。缺字段是未记录，null是未知。历史node_id/node_label只属于当时画面，不能当成当前可操作目标。\n" +
+            "last_transition是对应step前后实际观察的字段、窗口标题和输入法状态；执行或拒绝状态见events，不证明因果或完成。before是过去，after对应末尾screen。判断当前输入以screen.editable_fields.text为准，不能把历史项或OWNER文字当作已输入。\n" +
             "app_search.source=model_find_app且model_issued=true表示已执行该查询，step是来源，returned是实际返回数；本轮apps是其当前结果页，能打开的目标以open_allowed_packages为准。初始目录不等于已经调用find_app。blocked_action和blocked中的click_ids/open_packages禁选，后者只引用当前frame。\n" +
             "工具：open打开应用，不能重开当前应用；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整文字，不提交或发按键，回读相同不保证业务接受；scroll(node_label,node_id,direction)只选screen.scroll_actions该节点已列方向，空/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；find_app(query,offset)只读查本机应用，空query浏览，首次offset=0，续页用app_search.next_offset；done(status,summary)结束。\n" +
             "页面内搜索词或搜索结果与目标同名，不表示已进入目标页；任务要求进入时，点击对应结果后重新观察。\n" +
@@ -114,6 +115,7 @@ public final class LocalTaskController implements AutoCloseable {
         long deadline=SystemClock.elapsedRealtime()+MAX_TASK_MS;
         JSONArray history=new JSONArray();RepeatActionGuard repeatGuard=new RepeatActionGuard();
         SameStateNoEffectGuard noEffectGuard=new SameStateNoEffectGuard();
+        ObservedTransitionProjection.Transition lastTransition=null;
         try{
             File root=new File(service.getFilesDir(),"control-tasks");privateDirectory(root);
             evidence=new File(root,taskId);if(!evidence.mkdir())throw new IllegalStateException("无法创建独立任务目录");privateDirectory(evidence);
@@ -129,7 +131,7 @@ public final class LocalTaskController implements AutoCloseable {
                 checkActive(deadline);steps++;
                 final PhoneObservation before=observation;
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-before.json",steps),before.toJson());
-                PromptFrame frame=prompt(instruction,apps,before,history,null,config,repeatGuard,noEffectGuard);
+                PromptFrame frame=prompt(instruction,apps,before,history,lastTransition,null,config,repeatGuard,noEffectGuard);
                 String prompt=frame.text;
                 ActionDecision action=null;String decisionRunId=null;
                 for(int attempt=0;attempt<2;attempt++){
@@ -155,7 +157,7 @@ public final class LocalTaskController implements AutoCloseable {
                                 .put("validator_error",HeptaAccessibilityService.limited(error.getMessage(),96))
                                 .put("rejected_output",HeptaAccessibilityService.limited(answer.text,220))
                                 .put("excerpt",answer.text.length()>220);
-                        frame=prompt(instruction,apps,before,history,correction,config,repeatGuard,noEffectGuard);
+                        frame=prompt(instruction,apps,before,history,lastTransition,correction,config,repeatGuard,noEffectGuard);
                         prompt=frame.text;
                     }
                 }
@@ -168,7 +170,8 @@ public final class LocalTaskController implements AutoCloseable {
                     history.put(new JSONObject().put("step",steps).put("action",action.action).put("target_package",action.packageName)
                             .put("before_package",before.packageName).put("model_issued",true).put("accepted",false)
                             .put("dispatched",false).put("stale",true).put("action_rejected","observation_id mismatch; nothing dispatched"));
-                    observation=awaitObservation(taskId,evidence,deadline);continue;
+                    observation=awaitObservation(taskId,evidence,deadline);
+                    lastTransition=observedTransition(steps,before,observation);continue;
                 }
                 if(repeatGuard.rejects(action,before.state)||noEffectGuard.rejects(action,before.packageName,before.state))
                     throw new IllegalStateException("上次操作后画面没有可确认变化，停止重复执行同一动作");
@@ -184,7 +187,8 @@ public final class LocalTaskController implements AutoCloseable {
                     history.put(new JSONObject().put("step",steps).put("action",action.action).put("target_package",action.packageName)
                             .put("before_package",before.packageName).put("model_issued",true).put("accepted",outcome.accepted)
                             .put("dispatched",outcome.dispatched).put("stale",outcome.stale).put("action_rejected",outcome.detail));
-                    emit("画面发生变化，正在重新观察…");observation=awaitObservation(taskId,evidence,deadline);continue;
+                    emit("画面发生变化，正在重新观察…");observation=awaitObservation(taskId,evidence,deadline);
+                    lastTransition=observedTransition(steps,before,observation);continue;
                 }
                 if(!outcome.accepted)throw new IllegalStateException(outcome.detail);
                 if(ActionPolicy.isReadOnlyDiscovery(action)){
@@ -214,6 +218,7 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("find_returned",outcome.appCatalogue.apps.size()).put("find_matches",outcome.appCatalogue.matchingApps)
                         .put("find_catalogue_sha256",outcome.appCatalogue.catalogueSha256);
                 history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
+                lastTransition=observedTransition(steps,before,observation);
                 if("done".equals(action.action)){
                     if(!before.packageName.equals(observation.packageName)||before.windowId!=observation.windowId
                             ||before.rotation!=observation.rotation||!before.treeSha256.equals(observation.treeSha256))
@@ -355,7 +360,7 @@ public final class LocalTaskController implements AutoCloseable {
                 .put("event_history_detail_omitted_steps",new JSONArray())
                 .put("original_instruction_unchanged",true);}
     }
-    private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard)throws Exception{
+    private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,ObservedTransitionProjection.Transition lastTransition,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard)throws Exception{
         java.util.List<AppCatalogueRanker.Entry> allApps=catalogue.apps;
         java.util.List<PhoneObservation.Node> nodes=new java.util.ArrayList<PhoneObservation.Node>(observation.nodes);
         final java.util.Set<String> requiredIds=new java.util.HashSet<String>();
@@ -440,7 +445,6 @@ public final class LocalTaskController implements AutoCloseable {
             JSONObject appSearch=searchMetadata(catalogue,appCount,historyRows);
             JSONObject data=new JSONObject().put("apps",apps)
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
-                    .put("screen",screen).put("events",eventJson)
                     .put("apps_omitted",catalogue.matchingApps-appCount).put("app_search",appSearch);
             if(blockedOpen!=null&&!noEffects.blockedOpenPackages.contains(blockedOpen))data.put("blocked_action",new JSONObject().put("action","open").put("package",blockedOpen)
                     .put("reason_code","repeat_action_unchanged_screen")
@@ -455,9 +459,12 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("observed",blocked.observed).put("omitted",blocked.omitted));
             }
             if(repair!=null)data.put("format_correction",repair);
+            data.put("events",eventJson);
+            if(lastTransition!=null)data.put("last_transition",new JSONObject(lastTransition.forCurrent(observation.id,observation.packageName)));
+            data.put("screen",screen);
             // Escape markup only in untrusted JSON. Owner text is unchanged.
             // Screenshots remain private action-verification evidence, never model input.
-            String text="UNTRUSTED_DATA\n"+data.toString().replace("<","\\u003c")+"\nOWNER\n"+owner;
+            String text="UNTRUSTED_DATA\n"+promptSections(data).replace("<","\\u003c")+"\nOWNER\n"+owner;
             ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(SYSTEM,text,config);
             if(budget.admitted){
                 PromptActionDomain.requireComplete(requiredIds,ids);
@@ -472,6 +479,33 @@ public final class LocalTaskController implements AutoCloseable {
             if(nodeCount>requiredIds.size()){nodeCount--;continue;}
             throw new IllegalStateException("完整任务事实与当前可操作目标超过本地上下文上限，请拆分任务");
         }
+    }
+    /** One JSON object with readable top-level boundaries; the current screen is last. */
+    private static String promptSections(JSONObject data)throws Exception{
+        StringBuilder out=new StringBuilder("{\n");int included=0;
+        for(String key:new String[]{"apps","open_allowed_packages","apps_omitted","app_search",
+                "blocked_action","blocked","format_correction","events","last_transition","screen"}){
+            if(!data.has(key))continue;
+            if(included++>0)out.append(",\n");
+            String section=new JSONObject().put(key,data.get(key)).toString();
+            out.append(section,1,section.length()-1);
+        }
+        if(included!=data.length())throw new IllegalStateException("unrecognized prompt section");
+        return out.append("\n}").toString();
+    }
+    private static ObservedTransitionProjection.Transition observedTransition(int step,PhoneObservation before,PhoneObservation after){
+        return ObservedTransitionProjection.between(step,transitionSnapshot(before),transitionSnapshot(after));
+    }
+    private static ObservedTransitionProjection.Snapshot transitionSnapshot(PhoneObservation observation){
+        java.util.List<ObservedTransitionProjection.Field> fields=new java.util.ArrayList<ObservedTransitionProjection.Field>();
+        for(PhoneObservation.Node node:observation.nodes){
+            ObservedTransitionProjection.Field field=ObservedTransitionProjection.field(observation.packageName,node.packageName,
+                    node.id,node.viewId,node.text,node.editable,node.password);
+            if(field!=null)fields.add(field);
+        }
+        return ObservedTransitionProjection.snapshot(observation.id,observation.packageName,observation.nodesTruncated,
+                observation.windowMetadata.promptTitle(),observation.windowMetadata.promptTitleTruncated(),
+                observation.state.imeVisibility.value(),fields);
     }
     private static java.util.Map<String,Object> historyFields(JSONObject entry)throws Exception{
         java.util.Map<String,Object> fields=new java.util.LinkedHashMap<String,Object>();

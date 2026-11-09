@@ -18,6 +18,8 @@ PROFILES = {
         "sha256": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715", "architecture": "lfm2moe", "exact": True},
     "qwen3.5-4b-q4_0": {"file": "Qwen3.5-4B-Q4_0.gguf", "bytes": 2583221408,
         "sha256": "298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb", "architecture": "qwen35", "exact": True},
+    "qwen3.5-9b-q4_0": {"file": "Qwen3.5-9B-Q4_0.gguf", "bytes": 5379417312,
+        "sha256": "17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24", "architecture": "qwen35", "exact": True},
 }
 
 def profile(name=DEFAULT_PROFILE):

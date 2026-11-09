@@ -35,6 +35,11 @@ public final class ModelProfile {
     public static final ModelProfile QWEN35_4B=new ModelProfile("qwen3.5-4b-q4_0","Qwen 3.5 4B（实验）",
             "unsloth/Qwen3.5-4B-GGUF","e87f176479d0855a907a41277aca2f8ee7a09523","Qwen3.5-4B-Q4_0.gguf",2583221408L,
             "298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb","qwen35",true,5L<<30);
+    // Experimental 9B text-only candidate. This 8 GiB admission threshold is
+    // qualification headroom, not measured peak RAM. Vision is not admitted.
+    public static final ModelProfile QWEN35_9B=new ModelProfile("qwen3.5-9b-q4_0","Qwen 3.5 9B（实验）",
+            "unsloth/Qwen3.5-9B-GGUF","3885219b6810b007914f3a7950a8d1b469d598a5","Qwen3.5-9B-Q4_0.gguf",5379417312L,
+            "17670346b4260ddcb0173965145155885024f3c9a4a24389a3370751edbcde24","qwen35",true,8L<<30);
     public final String id,displayName,repository,revision,fileName,sha256,architecture;
     public final long bytes,minimumAvailableBytes;
     public final boolean exactTokenizationRequired;
@@ -53,6 +58,7 @@ public final class ModelProfile {
         if(GEMMA4_E2B.id.equals(id))return GEMMA4_E2B;
         if(BOLT_E4B.id.equals(id))return BOLT_E4B;
         if(QWEN35_4B.id.equals(id))return QWEN35_4B;
+        if(QWEN35_9B.id.equals(id))return QWEN35_9B;
         throw new IllegalArgumentException("unknown pinned model_profile");
     }
 }
