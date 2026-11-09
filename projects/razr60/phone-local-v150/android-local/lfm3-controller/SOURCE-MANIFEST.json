@@ -1,11 +1,11 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 24,
-  "version_name": "0.24.0-local-readable-actions",
+  "version_code": 25,
+  "version_name": "0.25.0-local-gpu-cache-verified-navigation",
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
   "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
   "phone_qualified": false,
-  "functional_scope": "Readable chronological recorded action objects and prompt capabilities from the same currently eligible action domain as the constrained grammar; pinned optional LFM2.5/Qwen3.5 profiles; preserve configured model, action-policy, native integrity, ownership, freshness and owner recovery; no external-model path or automatic visual action dispatch.",
+  "functional_scope": "App-private OpenCL kernel-cache environment for explicit GPU requests and a general page-search navigation observation instruction; retain Code24 readable recorded history and consistent eligible action domain, configured local model, native integrity, ownership, freshness and recovery; no external-model path or automatic visual action dispatch.",
   "ui_venus_native_host_build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
   "ui_venus_phone_action_dispatch_connected": false,
   "ui_venus_ordinary_app_runtime_qualified": false,
@@ -16,7 +16,7 @@
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "public_code24_source_frozen_fresh_host_android_phone_qualification_pending",
+  "candidate_status": "public_code25_source_frozen_fresh_host_android_phone_qualification_pending",
   "merge_parents": {
     "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
     "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
@@ -44,7 +44,7 @@
     }
   },
   "fresh_default_preserved_from_actual_external18": true,
-  "git_ancestry_parent": "9229d5dacae4c8400ed99ddf9a1a231f2f042724",
+  "git_ancestry_parent": "9f8b7d1c0db68c13bf06876661dddcc8b8dba1f4",
   "derived_from_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
   "recovery_process_inventory_scope": "app_visible_procfs_same_uid",
   "old_native_cleanup_claim": "unknown",
@@ -63,8 +63,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1868,
-      "sha256": "c9063299fe44748e9ca752d83d1723ff49bb106e98bd4d6024f0113ddd7fff92"
+      "bytes": 1881,
+      "sha256": "4694ee87fb05b284f9e270fa6e33488536f0cb521e5e2cd4343f59ecfe415b97"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -133,13 +133,13 @@
     },
     {
       "path": "PUBLIC-BUILD.md",
-      "bytes": 7457,
-      "sha256": "13222df81ab9fe9a3931d8d2e66a657407209645c19978475b048749546ddf20"
+      "bytes": 7710,
+      "sha256": "9528e1e1c5f80a63b22b2d445ec14b622b1b12cdab33aee8d350e3123e20934d"
     },
     {
       "path": "README.md",
-      "bytes": 9447,
-      "sha256": "acbc631b6e157fabc423134818d3e9a8cae0bfa2d8add6a302a6ca7f0998710a"
+      "bytes": 9598,
+      "sha256": "deedf7a256b6ade4e1c81bc2521bfd80b50b70a25a627a8eb224cca63467bdd7"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -210,6 +210,11 @@
       "path": "docs/CODE24-QUALIFICATION.md",
       "bytes": 2339,
       "sha256": "e93a94b95e1841edc029d27c3628aa21fa2105b37549972528ade86dde9d3a3c"
+    },
+    {
+      "path": "docs/CODE25-QUALIFICATION.md",
+      "bytes": 3065,
+      "sha256": "35797bbae0cc8bfbd1eeb8de0d86c383c8f7a037a61dd24558e6e7876b914e67"
     },
     {
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
@@ -1927,6 +1932,16 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "bytes": 1696,
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "bytes": 3187,
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -1965,16 +1980,6 @@
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "bytes": 1882,
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "bytes": 1696,
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "path": "host-evidence/code5-r1/java-compile.stderr",
@@ -4342,6 +4347,11 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "bytes": 3066,
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
+    },
+    {
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "bytes": 1257,
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -4450,11 +4460,6 @@
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "bytes": 3372,
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
-    },
-    {
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "bytes": 3066,
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "path": "provenance/ui-venus-app-r1/BASELINE.json",
@@ -4808,8 +4813,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "bytes": 36846,
-      "sha256": "553718095dac3cf95f8d383f869e9f674ff8f5f9409e971341603bf985a1281a"
+      "bytes": 37765,
+      "sha256": "4341713a27daa27719f47ec44228daea291cfd5282828bbcac4792198ece27d7"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
@@ -4823,8 +4828,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 47842,
-      "sha256": "43d3a32e2e20723c09c4b6c6633c4de15b56a085a76304b700aed71b0ef5f2c4"
+      "bytes": 48002,
+      "sha256": "bc0feffb1d008304c8a015ac1099f19529ff6c9ce97cfa4ab3dadc91972d34ac"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -5619,7 +5624,8 @@
     "public_code21_base_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
     "compiled_java_and_native_code_bytes_unchanged": false,
     "cleartext_identifier_guard_preserved": true,
-    "retained_phone_evidence_reused_as_new_qualification": false
+    "retained_phone_evidence_reused_as_new_qualification": false,
+    "public_code24_parent_manifest_sha256": "0d751e4fa5d207168c98526c76ce5bca812ed62fbb87d3eda6d70fa80458ff13"
   },
   "derived_from_public_profile_manifest_sha256": "2b3a358de4655b8fa73dc97b4fda64eaf9e0c8fc4957c0a569008fc72645cc03",
   "code24_change_inputs_sha256": "41149f60f085b31b8ec1dda9749e0c5b001268e506e297c0ea518df7577b1f00",
@@ -5629,6 +5635,25 @@
     "host": "pending_exact_source_run",
     "android": "pending_exact_source_build",
     "phone": "pending_exact_installed_apk_run",
+    "historical_host_receipts_preserved": true,
+    "independent_goal_assertions_relaxed": false
+  },
+  "derived_from_public_code24_manifest_sha256": "0d751e4fa5d207168c98526c76ce5bca812ed62fbb87d3eda6d70fa80458ff13",
+  "code25_change_patch_sha256": "d57664792da0782e703f844a90d1ca0913840a365133c975c045242c2eb9b6a7",
+  "native_source_unchanged_from_code24": true,
+  "retained_code24_external_outcome": {
+    "source_manifest_sha256": "0d751e4fa5d207168c98526c76ce5bca812ed62fbb87d3eda6d70fa80458ff13",
+    "host": "70_checks_passed",
+    "android": "compilation_completed",
+    "phone": "not_installed_not_qualified",
+    "qualifies_code25": false
+  },
+  "code25_qualification": {
+    "host": "pending_exact_source_run",
+    "android": "pending_exact_source_build",
+    "phone": "pending_exact_installed_apk_run",
+    "gpu_cache_hit": "pending_second_real_gpu_request",
+    "cache_speedup_claimed": false,
     "historical_host_receipts_preserved": true,
     "independent_goal_assertions_relaxed": false
   }

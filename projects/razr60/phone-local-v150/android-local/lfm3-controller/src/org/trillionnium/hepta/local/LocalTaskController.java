@@ -53,6 +53,7 @@ public final class LocalTaskController implements AutoCloseable {
             "events按step顺序列出全部已记录动作、参数和前后包名；accepted是策略接受，dispatched是已交给执行器，stale是观察已失效，均不证明目标完成。缺字段是未记录，null是未知。历史node_id/node_label只属于当时画面，不能当成当前可操作目标。\n" +
             "app_search.source=model_find_app且model_issued=true表示已执行该查询，step是来源，returned是实际返回数；本轮apps是其当前结果页，能打开的目标以open_allowed_packages为准。初始目录不等于已经调用find_app。blocked_action和blocked中的click_ids/open_packages禁选，后者只引用当前frame。\n" +
             "工具：open打开应用，不能重开当前应用；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整文字，不提交或发按键，回读相同不保证业务接受；scroll(node_label,node_id,direction)只选screen.scroll_actions该节点已列方向，空/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；find_app(query,offset)只读查本机应用，空query浏览，首次offset=0，续页用app_search.next_offset；done(status,summary)结束。\n" +
+            "页面内搜索词或搜索结果与目标同名，不表示已进入目标页；任务要求进入时，点击对应结果后重新观察。\n" +
             "启动应用可能恢复子页，用可见返回键/back回到目标页，勿为重试打开无关应用。全部目标按原顺序实现且历史动作和当前可见结果支持才done且status=success；不能完成用partial或failure。done须同时含status和summary；wait不表示完成/停留。禁止其它字段、输入密码、网络或代码命令。\n";
 
 
