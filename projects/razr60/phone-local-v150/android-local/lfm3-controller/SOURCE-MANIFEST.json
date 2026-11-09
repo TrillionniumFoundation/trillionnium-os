@@ -1,7 +1,7 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 14,
-  "version_name": "0.14.0-local-window-bolt",
+  "version_code": 15,
+  "version_name": "0.15.0-local-mnn-loader",
   "derived_from_code13_source_manifest_sha256": "e48ddbd38cffe0ed3218606d47b0bcd126827d081cb5647c50bebb8c56f445a2",
   "android_build": "separate build receipt",
   "phone_qualified": false,
@@ -21,8 +21,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1863,
-      "sha256": "cbc593f8e80816829db81132044b7fd503ef02782af0c550c0d4914a1c090896"
+      "bytes": 1862,
+      "sha256": "b11b7a4efae48850e0bb3d27f756bfacd69debbb9b4149b25d041f5de47712b7"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -71,8 +71,8 @@
     },
     {
       "path": "HOST-CHECKS.json",
-      "bytes": 30030,
-      "sha256": "52c0f9c611aa673dd907206e8aec5cb3ad50b8451088c9d079707a5fa34bff26"
+      "bytes": 30033,
+      "sha256": "e91778cffddf6e5ed979e71942b77c45b12906f901079263962b4d5768d15f15"
     },
     {
       "path": "LOCAL-CONTROL.md",
@@ -86,13 +86,13 @@
     },
     {
       "path": "PUBLIC-BUILD.md",
-      "bytes": 6684,
-      "sha256": "ca39bbe2f6bd116d62425fdab0dc75e1547b521b5c628d451ca377d17e166d2d"
+      "bytes": 6685,
+      "sha256": "908967833fe4bb75489a41f4a2470a3bd009b583fbeb5c4cd5314cae06418e18"
     },
     {
       "path": "README.md",
-      "bytes": 6527,
-      "sha256": "cdf71cfcd7b28de52af3b452938c79631d7c334c374dc3c84cbbb3ff50e04775"
+      "bytes": 6857,
+      "sha256": "5ecb5c17c7b61dabaf52ac6e2ee9837a91901861da3c52d77bc694d856109a68"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -118,6 +118,11 @@
       "path": "docs/CODE14-WINDOWS.md",
       "bytes": 7437,
       "sha256": "225184467262114e190d1afe6541dc2993a131166e78cf804e3668805fba7c9d"
+    },
+    {
+      "path": "docs/CODE15-MNN-LOADER.md",
+      "bytes": 2147,
+      "sha256": "b2ecf8778b5125d8faea61673e977b9ef774a316cbf5906c49081ba7aa5527ca"
     },
     {
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
@@ -3941,8 +3946,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
-      "bytes": 21955,
-      "sha256": "e92fe815fcdbfcc052ea4574cb10a6dde50c3f23171d4d61a8d4a4a4e3072513"
+      "bytes": 22091,
+      "sha256": "02e46c81935d0a1c027513d7a9994c4b79a34a33ca1ec3738718773cf5dbf434"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
@@ -4259,5 +4264,8 @@
       "bytes": 1771,
       "sha256": "b8db2eb7b0ca64a54ed18f202abdf424d7c3424dadaf5e19ced2157d0f9a42bb"
     }
-  ]
+  ],
+  "derived_from_code14_source_manifest_sha256": "ae815ddf677ab3591f9d588cae19d9067fe86d04445d562b9f2583a9147f7edf",
+  "code15_functional_scope": "MobiMindModelEngine system-first diagnostic loader only",
+  "ordinary_app_gpu_qualified": false
 }

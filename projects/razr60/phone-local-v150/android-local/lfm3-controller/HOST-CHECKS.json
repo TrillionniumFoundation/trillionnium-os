@@ -6,278 +6,278 @@
   "phone_tested": false,
   "native_grammar_model_tested": false,
   "external_model_used": false,
-  "started_host_wall_ms": 1794179124838,
+  "started_host_wall_ms": 1794185096128,
   "checks": [
     {
       "name": "java-compile",
       "exit_code": 0,
-      "elapsed_s": 1.732076517000678,
+      "elapsed_s": 1.902516905000084,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ActionFreshnessHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.06506412799353711,
+      "elapsed_s": 0.06443943599879276,
       "stdout_sha256": "3113abbad4e9c7c60cc84e78860cba766af52654b938d4eb0b71ecbdf69b896f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "AppCatalogueHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.2034904950123746,
+      "elapsed_s": 0.29575447700335644,
       "stdout_sha256": "62857df360fcb7fb759ab8a7c532ae591436f3fef488eb8ab629e091f54cf466",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "BudgetHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.0412264869955834,
+      "elapsed_s": 0.06788178000715561,
       "stdout_sha256": "624058253b558d50dbd60045ed55d5d7b11a346ab9f69d9db682bd065f43ffe5",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "Gemma4ProfileHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.05502747598802671,
+      "elapsed_s": 0.042506682002567686,
       "stdout_sha256": "39233d7cae167afdb93cd98f7213e3775213e3e216ab9c04d5d296ebea5ec99a",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ImeObservationHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.04110240399313625,
+      "elapsed_s": 0.04035556501185056,
       "stdout_sha256": "1388ed89a212aa21af6683bc9b42f9ccb85235b3a9778f870b6e3cd43f3fce35",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "LocalPolicyHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.1073871350090485,
+      "elapsed_s": 0.10441500300657935,
       "stdout_sha256": "a5951199cbf4f1423d72661f1b8c358583c9778b225957b1b9e499e4cd14f27e",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "MemoryAvailabilityHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.046126158005790785,
+      "elapsed_s": 0.042829739992157556,
       "stdout_sha256": "5b5bb21f651b68576a420f8de7fb4e3e961db1e06694a867f92ed648c18f4860",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "MobiMindContractHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.18457570900500286,
+      "elapsed_s": 0.1383785849902779,
       "stdout_sha256": "b00f07220bfe2b10ce56e2cbfb1905ee22e8f5691bd6004e1fbe562d87e406d2",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "MobiMindSessionContractHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.07144776899076533,
+      "elapsed_s": 0.057025873989914544,
       "stdout_sha256": "35ebf6a777946372d0db516856aeb68c3f97e744a09124326ca3f7f202bcfa4d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ModelProfileHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.0468216179870069,
+      "elapsed_s": 0.04066741299175192,
       "stdout_sha256": "d296131b967beef0da07316768c3553240a4138dd82e5c42bb1ff6e72814b5b9",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ObservedChildTextHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.08368056500330567,
+      "elapsed_s": 0.10422518500126898,
       "stdout_sha256": "55973ae1ef57215be08beeb92f7499c947432317e60bf66e44dbfbb9b64e4703",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ObservedTargetLabelsHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.10866487199382391,
+      "elapsed_s": 0.09857739400467835,
       "stdout_sha256": "bb50d43ff8be73d0fae72225b6bfb50e852060f67fbc60f0539c16a7bb94331e",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ObservedWindowMetadataHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.05994645299506374,
+      "elapsed_s": 0.058187331989756785,
       "stdout_sha256": "b17ffe70e5a3c444a421acbfc92367b21bff0ff1b53faacc32eca7041adcca1d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "PersistentActionPolicyHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.05783776199677959,
+      "elapsed_s": 0.08130222099134699,
       "stdout_sha256": "5141536252f708cc14b01e355f9cdc345e4722617bffecf00ce6b4936f48e4d9",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "RepeatActionGuardHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.09129240800393745,
+      "elapsed_s": 0.2079442440008279,
       "stdout_sha256": "e8d395211f8bd74419d966fcf45379d11a85e1421ce997a0a5d3e7a1ad2e6664",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "RepeatClickProjectionHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.04049789199780207,
+      "elapsed_s": 0.04193661799945403,
       "stdout_sha256": "69f4d6f8a64c350f09d7f210ed7cc726241c295215ce9716d3594eb32bf6d445",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "SessionRecoveryHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.04428131598979235,
+      "elapsed_s": 0.04867954600194935,
       "stdout_sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ActionDecisionHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.12283641699468717,
+      "elapsed_s": 0.11458801900153048,
       "stdout_sha256": "ad2fbd8e35c1114be45bc029eb51edb89840c946e9567b8bf7d06a0221e6f871",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "DecisionGrammarHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.11304751300485805,
+      "elapsed_s": 0.11384311800065916,
       "stdout_sha256": "464b3c3a42aa1a1cd6f68a1f5354f806f245af705bb74ae57c9a794647a09e0b",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "grammar-recognition",
       "exit_code": 0,
-      "elapsed_s": 0.09784823498921469,
+      "elapsed_s": 0.09006556999520399,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "118ab5f7bd1b9dfeb81843d3edc6e726510336c976ff9cfa8da82242eee0cd91"
+      "stderr_sha256": "0ef7f1e1582d9f60defd691773719578ed2d57b259234cb4f25e51be04283bf2"
     },
     {
       "name": "completion-protocol",
       "exit_code": 0,
-      "elapsed_s": 0.031527143000857905,
+      "elapsed_s": 0.030267608002759516,
       "stdout_sha256": "4da7a3cf760b2f930365d91d615792d31657a91c5665cd4a287f314471755ae1",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "python-tools",
       "exit_code": 0,
-      "elapsed_s": 2.5313913489953848,
+      "elapsed_s": 2.6158187139953952,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "3a5a410cd03ba07fdb0f2595e23d6a15409ddd3bc9832042ef1a864f53db8b2e"
+      "stderr_sha256": "225d376b93800e68dbf290a7883ac1c9cf6793e7725da5eec6fb93aa8c74a98e"
     },
     {
       "name": "mobimind-private-staging",
       "exit_code": 0,
-      "elapsed_s": 0.06285526599094737,
+      "elapsed_s": 0.06825545500032604,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e981df486a063979f250c6c78cf8014bec102bfdf452f55b206ac1c6f8cc0621"
     },
     {
       "name": "model_profile_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.05983548100630287,
+      "elapsed_s": 0.0703318220039364,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "model_profile_contract",
       "exit_code": 0,
-      "elapsed_s": 0.0009496929997112602,
+      "elapsed_s": 0.000982165991445072,
       "stdout_sha256": "bc9b99969b373d72ec83464d72b513fd5e74e5715c2b033f64a3f4af366d06a2",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "parent_death_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.1229690570035018,
+      "elapsed_s": 0.1344794320029905,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "parent_death_contract",
       "exit_code": 0,
-      "elapsed_s": 0.04240652699081693,
+      "elapsed_s": 0.04248902299150359,
       "stdout_sha256": "3b78bb55324e37b41ebd8b91ef5928bf8bedc2349cc2f964e827bfe1107af360",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "phase_timing_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.08534740899631288,
+      "elapsed_s": 0.07966379199933726,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "phase_timing_contract",
       "exit_code": 0,
-      "elapsed_s": 0.0011613419919740409,
+      "elapsed_s": 0.0011795440077548847,
       "stdout_sha256": "f95229894848bdfe84b59efdf63c18ca140edcc526bb84f2dcaa48cc85ed3887",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "prompt_budget_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.047200127999531105,
+      "elapsed_s": 0.05275632000120822,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "prompt_budget_contract",
       "exit_code": 0,
-      "elapsed_s": 0.0010425829968880862,
+      "elapsed_s": 0.001013293003779836,
       "stdout_sha256": "6c4810c55d6d7e97b50ca7215cd9b1de00140c4dcb22095ba4a752d82fe2fb66",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "publish_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.08453968999674544,
+      "elapsed_s": 0.08272145299997646,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "publish_contract",
       "exit_code": 0,
-      "elapsed_s": 0.003701294001075439,
+      "elapsed_s": 0.004012685996713117,
       "stdout_sha256": "01c5c6781c6c3303246dbe138b3e6f6b7a23baebd4f6756b00f2082f18a6b81f",
       "stderr_sha256": "0e1ee1829a099dcbcf1a0b85600b0ee89f8a0f672d86c1b2984d2727052cf6ea"
     },
     {
       "name": "sha256_probe-compile",
       "exit_code": 0,
-      "elapsed_s": 0.2083810690091923,
+      "elapsed_s": 0.16459198400843889,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "sha256_probe",
       "exit_code": 0,
-      "elapsed_s": 0.0882386610028334,
+      "elapsed_s": 0.10381418801262043,
       "stdout_sha256": "cf4e1dc1c076bcd93550a61b6c766a3ba425299a21a0fde818915d0e9f9937ac",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "sha256-hashlib-differential",
       "exit_code": 0,
-      "elapsed_s": 3.285830609005643,
+      "elapsed_s": 3.278607728003408,
       "stdout_sha256": "7e874f33e133453e8c0d174975d446891f8af6d317663f959ebf5f4b33630c73",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "native-adapter-syntax",
       "exit_code": 0,
-      "elapsed_s": 0.05399766999471467,
+      "elapsed_s": 0.0788457619928522,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "private-prompt-evidence",
       "exit_code": 0,
-      "elapsed_s": 0.3243069370073499,
+      "elapsed_s": 0.32780401399941184,
       "stdout_sha256": "8c0b45d132c7bd5d06ad705b049243e6983f38541079700e535a549c0ddb28a6",
       "stderr_sha256": "47b7630c4181961731722083771a47078e1a8acc388e66fa7b6f96cce3340d83"
     }
@@ -473,7 +473,7 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
-      "sha256": "e92fe815fcdbfcc052ea4574cb10a6dde50c3f23171d4d61a8d4a4a4e3072513"
+      "sha256": "02e46c81935d0a1c027513d7a9994c4b79a34a33ca1ec3738718773cf5dbf434"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
@@ -758,5 +758,5 @@
     "controller_grammar": "optional fixed-schema per-observation GBNF; same private request directory and native SHA binding",
     "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
   },
-  "finished_host_wall_ms": 1794179135319
+  "finished_host_wall_ms": 1794185107050
 }

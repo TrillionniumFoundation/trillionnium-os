@@ -1,6 +1,12 @@
-# Hepta local qualification candidate 14
+# Hepta local qualification candidate 15
 
-The current candidate is version 14 / `0.14.0-local-window-bolt`. It exposes
+Version 15 / `0.15.0-local-mnn-loader` changes only the separate MNN diagnostic
+child environment to a fixed system-first library search path. It keeps the
+three MNN ELF files, all GenieX files, text planner, models, and execution guards
+unchanged. Ordinary-App GPU execution still requires a fresh device test. See
+[CODE15-MNN-LOADER.md](docs/CODE15-MNN-LOADER.md).
+
+The retained code14 controller exposes
 bounded actual active-window metadata and node focus, binds them to exact
 observation freshness, and removes a repeated click from the next candidate set
 only when the existing repeat guard already rejects it. The protocol treats all

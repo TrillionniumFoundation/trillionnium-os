@@ -133,14 +133,16 @@ public final class MobiMindModelEngine implements AutoCloseable {
             app.put("argv",argv);app.put("prompt_wrapped_again",false);
             cancelled(lease);publishSession(request,"launching",false,true,false,false,null,false,false);
             ProcessBuilder builder=new ProcessBuilder(argv);builder.directory(run);builder.redirectOutput(stdout);builder.redirectError(stderr);
-            // The pinned PIE already has non-transitive DT_RUNPATH=$ORIGIN and
-            // directly needs both libMNN and libc++_shared. Do not globally put
-            // vendor/native directories ahead of system dependency resolution.
-            Map<String,String> environment=builder.environment();environment.remove("LD_LIBRARY_PATH");
+            // The pinned PIE keeps non-transitive DT_RUNPATH=$ORIGIN for its
+            // private MNN/C++ dependencies. Search platform libraries before
+            // vendor libraries; never prepend the mixed GenieX native directory.
+            Map<String,String> environment=builder.environment();
+            environment.put("LD_LIBRARY_PATH","/system/lib64:/system_ext/lib64:/vendor/lib64");
             environment.put("TMPDIR",run.getPath());environment.remove("LD_PRELOAD");environment.remove("LD_AUDIT");
             environment.remove("GENIEX_PLUGIN_PATH");environment.remove("GENIEX_QAIRT_LIB");environment.remove("HEPTA_LOCAL_NATIVE_LIB_DIR");environment.remove("ADSP_LIBRARY_PATH");
-            app.put("linker_policy","origin-runpath-platform-defaults.v1");
+            app.put("linker_policy","origin-runpath-system-first.v1");
             app.put("ld_library_path_present",environment.containsKey("LD_LIBRARY_PATH"));
+            app.put("configured_ld_library_path",environment.get("LD_LIBRARY_PATH"));
             app.put("configured_linker_environment_is_not_runtime_maps_proof",true);
             process=builder.start();lease.attach(process);long terminationAt=0;
             publishSession(request,"running",false,true,true,false,null,false,false);
