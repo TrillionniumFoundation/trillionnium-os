@@ -108,3 +108,22 @@ No driver selects a model, imports weights or changes runtime configuration itse
 Spark remains an optional candidate: source architecture support is verified;
 actual file import, accelerator load, exact prompt count and successful phone tasks
 remain separate gates. A matching model name alone establishes none of them.
+
+## Code14 experimental Bolt qualification profile
+
+`nemotron-3.5-bolt-e4b-q4_k_m` selects only the official
+`Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf`, 6,180,446,208 bytes, SHA-256
+`c8af2b8aea10a690a1d9491db744a9446660173cb38fc489612b556615a69612`,
+from `nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB` revision
+`1db54d5b12533ff1bcaa8e42cf4c667988a1f1be`. It is an explicit experimental
+`gemma4` text candidate and must use the same full-file verification and exact
+native input-ID accounting. It does not select a different artifact or inference
+backend automatically, and does not authorize a vision projector.
+
+Its available-RAM admission threshold is **8 GiB**, an engineering qualification
+gate rather than a measured peak or RSS claim. Initial qualification plans use
+**context 4096** only. E4B QAT remains at 7 GiB; the source's legacy default is
+still LFM3. Installing this candidate does not rewrite a saved model configuration.
+The official card specifies OpenMDW 1.1; no base-model license is inferred from
+the architecture. See `docs/CODE14-WINDOWS.md` for the pinned source,
+qualification boundaries and the independent controller changes.

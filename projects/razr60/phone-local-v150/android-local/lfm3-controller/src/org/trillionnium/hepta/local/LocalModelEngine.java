@@ -77,7 +77,9 @@ public final class LocalModelEngine implements AutoCloseable {
     }
 
     public static final class RunHandle {
-        public final String runId = UUID.randomUUID().toString().replace("-", "");
+        public final String runId;
+        private RunHandle(){this(UUID.randomUUID().toString().replace("-", ""));}
+        private RunHandle(String runId){this.runId=runId;}
         private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
         private final AtomicReference<Process> child = new AtomicReference<>();
         public void cancel() {
@@ -86,6 +88,35 @@ public final class LocalModelEngine implements AutoCloseable {
             if (p != null && p.isAlive()) p.destroy();
         }
         public boolean isCancellationRequested() { return cancelRequested.get(); }
+    }
+
+    /** Shares the existing single-model slot and visible Stop with a model-only native worker.
+     * The caller must durably reserve its own diagnostic session before attaching a child,
+     * and may release only after owned exit (or no start) and durable terminal publication.
+     */
+    public final class ExternalRunLease {
+        private final RunHandle handle;private boolean released;
+        private ExternalRunLease(RunHandle handle){this.handle=handle;}
+        public String requestId(){return handle.runId;}
+        public boolean isCancellationRequested(){return handle.isCancellationRequested();}
+        public void cancel(){handle.cancel();}
+        public synchronized void attach(Process process){
+            if(released||process==null||!handle.child.compareAndSet(null,process))throw new IllegalStateException("invalid external child ownership");
+            if(handle.isCancellationRequested()&&process.isAlive())process.destroy();
+        }
+        public synchronized void releaseAfterTerminalPublication(boolean cleanupKnown){
+            if(!cleanupKnown)return;
+            Process process=handle.child.get();if(process!=null&&process.isAlive())throw new IllegalStateException("external child still alive");
+            if(released)return;released=true;handle.child.set(null);
+            active.compareAndSet(handle,null);PROCESS_ACTIVE.compareAndSet(handle,null);
+        }
+    }
+    public ExternalRunLease reserveExternal(String requestId){
+        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())throw new IllegalStateException("external reservation must run on main thread");
+        if(closed.get()||requestId==null||!requestId.matches("[0-9a-f]{32}"))throw new IllegalStateException("invalid external reservation");
+        RunHandle handle=new RunHandle(requestId);
+        if(!PROCESS_ACTIVE.compareAndSet(null,handle))throw new IllegalStateException("another local model owns the process slot");
+        active.set(handle);return new ExternalRunLease(handle);
     }
 
     public RunHandle start(final Request request, final Listener listener) {

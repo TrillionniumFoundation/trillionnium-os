@@ -1,7 +1,7 @@
 # Build the independent local controller
 
-The source is an ordinary Android app candidate, versionCode **8**, versionName
-**0.8.0-local-protocol**. A successful build is not device acceptance or adoption into
+The source is an ordinary Android app candidate, versionCode **14**, versionName
+**0.14.0-local-window-bolt**. A successful build is not device acceptance or adoption into
 the protected owner-open implementation. Read `CONTROL-INTEGRATION.md` first.
 
 ## Source and host verification
@@ -20,12 +20,16 @@ Synthetic phone fixtures remain explicitly separate from device tests.
 ## Android compilation
 
 `build_mac.py` supports macOS and Linux despite its retained legacy filename.
-It requires JDK 17, Android platform 34, build-tools 34.0.0, and NDK 28.2.13676358.
+It requires JDK 17, Android platform 34 and build-tools 34.0.0. The retained
+Mac toolchain is actually NDK **28.1.13356709 (r28b)** according to its
+`source.properties`; its local cache directory is misleadingly named
+`28.2.13676358`. A directory name is not proof of the installed revision.
 It uses dependencies already present on the build host:
 
 ```sh
 export JAVA_HOME=/absolute/path/to/jdk-17
 export ANDROID_SDK_ROOT=/absolute/path/to/android-sdk
+export ANDROID_NDK_ROOT=/absolute/path/to/verified-ndk-r28b
 export GENIEX_ANDROID_LIB_DIR=/absolute/path/to/geniex-v0.10.0/lib
 export HEPTA_BUILD_OUT=/absolute/new/android-build
 python3 -B build_mac.py
@@ -59,13 +63,35 @@ of an existing installation, retain its original private signing key:
 ```sh
 export HEPTA_SIGNING_KEY_PATH=/private/path/to/original/hepta-local-debug.jks
 export HEPTA_REQUIRE_EXISTING_KEY=1
+export MOBIMIND_ANDROID_RUNTIME_DIR=/absolute/path/to/verified-mobimind-r4-runtime
 python3 -B assemble_pocket4.py
 ```
 
 The assembler refuses stale build inputs, changed artifacts, mismatched actual
 APK identity/version, missing runtime libraries and unexpected dependencies.
 It checks the manifest, service guard, ABI, signature, resource alignment and
-packaged library hashes. It outputs `hepta-local-0.8.0.apk` under the build output.
+packaged library hashes. It outputs `hepta-local-0.14.0.apk` under the build output
+and `control-v14-static/STATIC-ACCEPTANCE.json` as its static packaging receipt.
+
+The separate `MOBIMIND_ANDROID_RUNTIME_DIR` must contain the unchanged r4
+`hepta-mobimind-probe`, `libMNN.so`, `libc++_shared.so` and their original
+`BUILD-RECEIPT.json`. Their exact byte counts, hashes and dependencies are in
+`native/mobimind-runtime-pins.json`; the retained source and build provenance are
+under `provenance/mobimind-worker-r4/` and
+`provenance/mobimind-worker-r4-build.json`. These are not GenieX release members.
+The assembler checks both groups independently and refuses a same-name
+replacement. It additionally verifies the MNN PIE's sole `$ORIGIN` RUNPATH and
+direct MNN/C++ dependencies, required for the child environment described in
+`CODE13-QUALIFICATION.md`.
+
+The exact three compiled MNN members currently come from the separately retained
+and verified Android r4 build. This source bundle contains their identities and
+rebuild sources, not their binary payloads or a public binary download endpoint.
+The worker's retained README describes the fixed MNN checkout and two-stage
+NDK build. A new build must be checked for byte identity; if it differs, its new
+pins require a new candidate and fresh qualification rather than an override.
+A CI job without these verified runtime inputs cannot claim full code14 APK
+assembly merely from a successful Java/native compilation stage.
 
 A fresh development checkout may omit both signing variables to create a local
 development key. CI uses that mode only for static packaging checks. Its key is
@@ -75,12 +101,15 @@ APK, enables Accessibility, changes a model, or starts a phone task.
 
 ## Native runtime and subsequent device gates
 
-The runtime is GenieX 0.10.0 `llama_cpp`, pinned to its Android arm64 release.
+The text runtime is GenieX 0.10.0 `llama_cpp`, pinned to its Android arm64 release.
 The assembler includes its same-version llama/OpenCL/Hexagon dependency group
 and only the HTP v79 DSP library. It declares optional vendor FastRPC/OpenCL
 libraries and derives plugin/DSP lookup paths from the installed native library
 directory. NPU/GPU selection must fail if the requested device is unavailable;
-there is no automatic CPU fallback.
+there is no automatic CPU fallback. Gemma E4B/E2B and experimental Bolt are explicit text profiles;
+weights and projectors are not bundled in the APK. The separate MNN endpoint
+remains a private model-only diagnostic: its raw output does not dispatch phone
+actions. It requires its own ordinary-App GPU and cleanup qualification.
 
 After a normal same-signer package update, preserve the app-private model and
 Accessibility configuration. Verify actual installed APK bytes and version,

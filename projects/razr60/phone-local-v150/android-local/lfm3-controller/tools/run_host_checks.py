@@ -14,9 +14,9 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
+PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedWindowMetadata", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
               "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
-              "AppCatalogueRanker", "SessionRecovery"]
+              "AppCatalogueRanker", "SessionRecovery", "MobiMindPins", "MobiMindContract", "MobiMindSessionContract"]
 
 
 def main():
@@ -70,6 +70,8 @@ def main():
         run("grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_decision_grammar.py",fixtures])
         run("completion-protocol",[sys.executable,ROOT/"tests/action-grammar/test_completion_protocol.py",fixtures])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
+        run("mobimind-private-staging",[sys.executable,"-m","unittest","discover","-s",
+            ROOT/"provenance/mobimind-app-only-r1/tests","-p","test_*.py","-v"])
         for source in sorted((ROOT/"native/tests").glob("*.c")):
             binary=out/source.stem
             run(source.stem+"-compile",[cc,"-std=c11","-Wall","-Wextra","-Werror","-O2","-I"+str(ROOT/"native"),source,"-o",binary])

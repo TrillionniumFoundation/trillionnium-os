@@ -10,6 +10,7 @@ sys.path.insert(0,str(ROOT/'tools'))
 from build_identity import verify_source_inputs
 from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 from verify_runtime import verify_runtime_archive
+from verify_mobimind_runtime import verify_mobimind_runtime,verify_worker_linker_policy
 OUT=Path(os.environ.get('HEPTA_BUILD_OUT', str(ROOT/'out'))).expanduser().resolve()
 KEYS=ROOT/'keys'
 sdk_directory=os.environ.get('GENIEX_ANDROID_LIB_DIR')
@@ -59,6 +60,13 @@ if any('qairt' in name.lower() or 'qnn' in name.lower() for name in libraries):
 runtime_archive=Path(os.environ.get('GENIEX_ANDROID_ARCHIVE',str(SDK.parent/'geniex-android-v0.10.0.tar.gz'))).expanduser().resolve()
 runtime_relative={name:str(path.relative_to(SDK)) for name,path in libraries.items() if name!='libhepta_local_runner.so'}
 runtime_expected=verify_runtime_archive(runtime_archive,SDK,runtime_relative.values())
+mobi_directory=os.environ.get('MOBIMIND_ANDROID_RUNTIME_DIR')
+if not mobi_directory:
+    raise RuntimeError('Set MOBIMIND_ANDROID_RUNTIME_DIR to the separately pinned r4 Android worker/runtime')
+mobimind_expected=verify_mobimind_runtime(ROOT,Path(mobi_directory).expanduser().resolve(strict=True))
+if set(mobimind_expected)&set(libraries):
+    raise RuntimeError('MNN members must not replace any original GenieX runtime member')
+libraries.update({name:item['path'] for name,item in mobimind_expected.items()})
 build=json.loads((OUT/'mac-build-receipt.json').read_text())
 verify_source_inputs(ROOT,build)
 expected_outputs={'classes.dex':OUT/'dex/classes.dex','base.apk':OUT/'base.apk','libhepta_local_runner.so':OUT/'libhepta_local_runner.so'}
@@ -77,6 +85,7 @@ if seen!=set(expected_outputs) or build.get('runtime')!='llama_cpp':
 platform_libraries={'libc.so','libm.so','libdl.so','liblog.so','libandroid.so',
     'libOpenCL.so','libcdsprpc.so','libadsprpc.so','libz.so'}
 dependencies={}
+mobimind_linker_policy=None
 for name,path in libraries.items():
     with path.open('rb') as binary: header=binary.read(20)
     if header[:4]!=b'\x7fELF' or len(header)<20 or header[5]!=1: raise RuntimeError('Not a little-endian ELF library: '+name)
@@ -87,9 +96,15 @@ for name,path in libraries.items():
     if machine!=183 or header[4]!=2: raise RuntimeError('Android host library is not ELF64 AArch64: '+name)
     dynamic=subprocess.run([READELF,'-d',str(path)],check=True,capture_output=True,text=True,timeout=30).stdout
     needed=re.findall(r'\(NEEDED\).*?\[([^]]+)\]',dynamic)
+    if name in mobimind_expected and needed!=mobimind_expected[name]['needed']:
+        raise RuntimeError('Actual MNN ELF dependencies differ from the pinned Android build: '+name)
+    if name=='libhepta_mobimind_runner.so':
+        mobimind_linker_policy=verify_worker_linker_policy(dynamic)
     unresolved=set(needed)-set(libraries)-platform_libraries
     if unresolved: raise RuntimeError('Unresolved Android library dependencies for '+name+': '+str(sorted(unresolved)))
     dependencies[name]=needed
+if mobimind_linker_policy is None:
+    raise RuntimeError('Pinned MNN worker linker policy was not verified')
 
 with zipfile.ZipFile(OUT/'base.apk') as base, zipfile.ZipFile(UNSIGNED,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
     for info in base.infolist():
@@ -156,7 +171,12 @@ if control:
 elf=run([READELF,'-h','-l','-d',OUT/'libhepta_local_runner.so'])
 if 'DYN (Position-Independent Executable file)' not in elf: raise RuntimeError('runner must be PIE')
 (REPORT/'runner-elf.txt').write_text(elf)
+mobi_elf=run([READELF,'-h','-l','-d',libraries['libhepta_mobimind_runner.so']])
+if 'DYN (Position-Independent Executable file)' not in mobi_elf or '/system/bin/linker64' not in mobi_elf:
+    raise RuntimeError('MobiMind runner must be the unchanged Android PIE executable')
+(REPORT/'mobimind-runner-elf.txt').write_text(mobi_elf)
 with zipfile.ZipFile(APK) as z:
+    if len(z.namelist())!=len(set(z.namelist())): raise RuntimeError('Duplicate APK member')
     resource=z.getinfo('resources.arsc')
     with APK.open('rb') as raw_apk:
         raw_apk.seek(resource.header_offset)
@@ -169,10 +189,17 @@ with zipfile.ZipFile(APK) as z:
     if set(packaged)!=set(libraries): raise RuntimeError('unexpected packaged library list')
     lib_receipts=[]
     for name,path in libraries.items():
-        payload=z.read(packaged[name]); expected=(expected_artifact_sha[name] if name=='libhepta_local_runner.so' else runtime_expected[runtime_relative[name]]['sha256'])
+        payload=z.read(packaged[name])
+        if name=='libhepta_local_runner.so':
+            expected=expected_artifact_sha[name]; provenance='fresh_frozen_source_android_build'
+        elif name in mobimind_expected:
+            expected=mobimind_expected[name]['sha256']; provenance=mobimind_expected[name]['provenance']
+            if len(payload)!=mobimind_expected[name]['bytes']: raise RuntimeError('MNN packaged member size differs: '+name)
+        else:
+            expected=runtime_expected[runtime_relative[name]]['sha256']; provenance='pinned_geniex_release_archive'
         if hashlib.sha256(payload).hexdigest()!=expected: raise RuntimeError('library hash mismatch: '+name)
-        lib_receipts.append({'name':name,'bytes':len(payload),'sha256':expected,'source':str(path)})
-receipt={'schema':'hepta.local-model.static-acceptance.v2','apk':str(APK),'apk_bytes':APK.stat().st_size,'apk_sha256':sha(APK),
+        lib_receipts.append({'name':name,'bytes':len(payload),'sha256':expected,'source':str(path),'provenance':provenance})
+receipt={'schema':'hepta.local-model.static-acceptance.v3','apk':str(APK),'apk_bytes':APK.stat().st_size,'apk_sha256':sha(APK),
     'new_development_signing_key_created':created_signing_key,'existing_installation_signer_match_proven':False,
     'package':'org.trillionnium.hepta.local','permissions':[],'abi':['arm64-v8a'],
     'version_code':version_code,
@@ -180,13 +207,20 @@ receipt={'schema':'hepta.local-model.static-acceptance.v2','apk':str(APK),'apk_b
     'uses_native_libraries_optional':['libadsprpc.so','libcdsprpc.so','libOpenCL.so'],
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','default_compute':'npu','default_context':4096,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
-    'all_packaged_runtime_libraries_bound_to_pinned_archive':True,
+    'all_packaged_runtime_libraries_bound_to_pinned_archive':False,
+    'all_packaged_geniex_libraries_bound_to_pinned_archive':True,
+    'all_packaged_runtime_libraries_bound_to_independent_pins':True,
+    'mobimind_runtime':{'version':'r4','libraries':[{k:v for k,v in item.items() if k!='path'} for item in mobimind_expected.values()],
+        'three_unchanged_pinned_elf_members':True,'elf_dependencies_match_prior_android_build':True,
+        'linker_policy':mobimind_linker_policy,
+        'installed_runner_is_pie':True,'shared_model_slot':True,'private_one_use_request':True,
+        'ordinary_app_runtime_qualified':False,'phone_action_dispatch_connected':False,'model_in_apk':False},
     'fallback_allowed':False,'dsp_arch':'v79','host_library_dependencies':dependencies,
     'installed_on_phone':False,'ordinary_app_uid_accelerator_qualified':False,'phone_actions_supported':control,
     'accessibility_service_guarded_by_bind_permission':control,'task_trigger_private_nonce':control,
     'application_shared_engine_and_session':True,'process_wide_single_request':True,
     'native_runner_is_installed_pie':True,'model_in_apk':False,'libraries':lib_receipts,
     'resources_arsc_uncompressed':True,'resources_arsc_data_offset':resource_data_offset,'resources_arsc_alignment':4,
-    'artifacts':{'badging':'apk-badging.txt','permissions':'apk-permissions.txt','manifest':'apk-manifest.txt','signature':'apk-signature.txt','runner_elf':'runner-elf.txt'}}
+    'artifacts':{'badging':'apk-badging.txt','permissions':'apk-permissions.txt','manifest':'apk-manifest.txt','signature':'apk-signature.txt','runner_elf':'runner-elf.txt','mobimind_runner_elf':'mobimind-runner-elf.txt'}}
 (REPORT/'STATIC-ACCEPTANCE.json').write_text(json.dumps(receipt,indent=2)+'\n')
 print(json.dumps({k:v for k,v in receipt.items() if k!='libraries'},indent=2),flush=True)

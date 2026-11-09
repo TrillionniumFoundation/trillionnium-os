@@ -27,6 +27,13 @@ public final class ModelProfileHostTest {
         LocalRuntimeConfig chosen=LocalRuntimeConfig.fromFields(config());
         check(chosen.profile==ModelProfile.MINICPM5&&chosen.matchesResolvedDevice("HTP0",false,-1),"explicit MiniCPM NPU profile");
         check(ModelProfile.named(ModelProfile.SPARK.id)==ModelProfile.SPARK,"Spark closed allowlist entry");
+        check(ModelProfile.named(ModelProfile.BOLT_E4B.id)==ModelProfile.BOLT_E4B
+                &&ModelProfile.BOLT_E4B.bytes==6180446208L&&ModelProfile.BOLT_E4B.bytes>0xffffffffL
+                &&ModelProfile.BOLT_E4B.minimumAvailableBytes==(8L<<30)
+                &&ModelProfile.BOLT_E4B.exactTokenizationRequired
+                &&ModelProfile.BOLT_E4B.architecture.equals("gemma4"),"experimental Bolt artifact, 64-bit size and admission threshold");
+        check(ModelProfile.GEMMA4_E4B.minimumAvailableBytes==(7L<<30)
+                &&LocalRuntimeConfig.defaults().profile==ModelProfile.LFM3,"Bolt does not alter E4B admission or default profile");
         Map<String,Object> old=config();old.put("schema","hepta.local-runtime.v1");old.remove("model_profile");
         check(LocalRuntimeConfig.fromFields(old).profile==ModelProfile.LFM3,"legacy config stays LFM3");
         for(String key:new String[]{"model_profile","compute","context_tokens","threads","schema"}){

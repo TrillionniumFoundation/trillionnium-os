@@ -56,6 +56,20 @@ public final class RepeatActionGuard {
         return allowed;
     }
 
+    /** Expose only the same node click that the existing dispatch predicate already rejects. */
+    public String blockedClickNodeId(ObservationState current) {
+        return previousEffect!=null&&"click".equals(previousEffect.action)&&previousEffect.nodeId!=null
+                &&rejects(previousEffect,current)?previousEffect.nodeId:null;
+    }
+
+    /** Keep visible nodes intact; remove only an already-rejected click capability. */
+    public Set<String> allowedClicks(Set<String> supplied,ObservationState current) {
+        Set<String> allowed=new HashSet<String>(supplied);
+        String blocked=blockedClickNodeId(current);
+        if(blocked!=null)allowed.remove(blocked);
+        return allowed;
+    }
+
     // Exact code4 equality: observation id, reason, status and duration are not
     // part of the effect identity. Do not infer package families or app success.
     private static String key(ActionDecision a) {

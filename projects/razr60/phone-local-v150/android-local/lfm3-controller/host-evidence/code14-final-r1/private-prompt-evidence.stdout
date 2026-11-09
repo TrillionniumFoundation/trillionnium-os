@@ -1,0 +1,1 @@
+PASS: full generated C syntax; exact bytes/IDs; no overwrite; symlink rejection; bad prompt/token hashes; original LFM semantics; duplicate adapter rejection

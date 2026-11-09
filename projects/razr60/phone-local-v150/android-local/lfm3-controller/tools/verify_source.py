@@ -27,7 +27,7 @@ def verify(root=ROOT):
     actual={str(p.relative_to(root)) for p in root.rglob("*") if p.is_file()
             and p.relative_to(root).parts[0] not in ("out",".git","keys")
             and not ("__pycache__" in p.relative_to(root).parts and p.suffix==".pyc")
-            and p.name!="SOURCE-MANIFEST.json"}
+            and p!=root/"SOURCE-MANIFEST.json"}
     if actual!=expected:raise RuntimeError("unlisted or missing source members: "+repr(sorted(actual^expected)))
     return {"source_manifest_verified":True,"members":len(expected),"phone_qualified":False}
 

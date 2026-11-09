@@ -1,10 +1,25 @@
-# Code10: exact visible label and node-ID pairs
+# Hepta local qualification candidate 14
 
-The current candidate is version 10 / `0.10.0-local-labels`. See [CODE10-LABELS.md](CODE10-LABELS.md) for the narrowly scoped label-first protocol. Device functionality remains subject to independent acceptance.
+The current candidate is version 14 / `0.14.0-local-window-bolt`. It exposes
+bounded actual active-window metadata and node focus, binds them to exact
+observation freshness, and removes a repeated click from the next candidate set
+only when the existing repeat guard already rejects it. The protocol treats all
+rounds as the same owner task and retains the ordered completion requirement.
+See [CODE14-WINDOWS.md](docs/CODE14-WINDOWS.md) for exact changes and limits.
 
-# Hepta — local phone controller
+A separate explicit experimental Nemotron 3.5 Bolt E4B Q4_K_M text profile is
+pinned to its official artifact. Initial qualification uses context 4096 and an
+8 GiB available-RAM admission threshold, not a measured peak-memory guarantee.
+No profile is selected automatically. Existing runtime configuration is not
+rewritten by installation, and the source default remains LFM3.
 
-Independent package `org.trillionnium.hepta.local`, version 0.9.0 / code 9, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
+The complete code13 GenieX and MobiMind runtime pins are preserved. The separate
+MobiMind endpoint remains model-only; visual output does not dispatch actions.
+Its ordinary-App GPU execution is not qualified by this source build.
+
+## Existing local phone controller
+
+Independent package `org.trillionnium.hepta.local`, label **Hepta**. It does not update or replace `org.trillionnium.hepta.localprobe`.
 
 Code 9 exposes actual bounded descendant labels for otherwise blank clickable
 parents and binds their sources to target/whole-window freshness. It rejects
@@ -30,8 +45,8 @@ the existing unchanged-screen repeat guard would already reject that exact actio
 The dispatch-time guard remains active. See [CODE5-PROGRESS.md](CODE5-PROGRESS.md)
 for the preserved transition semantics and host/phone validation boundary.
 
-This candidate preserves the original default LFM3 profile and adds explicit,
-SHA-pinned MiniCPM5 and optional Spark profiles. New models require exact native
+This candidate preserves the original default LFM3 profile and includes explicit,
+SHA-pinned MiniCPM5, Spark, Gemma 4 and experimental Bolt profiles. New models require exact native
 tokenization and same-input-ID budget proof. See [MODEL-PROFILES.md](MODEL-PROFILES.md)
 for configuration, identity binding and remaining phone-validation gates.
 

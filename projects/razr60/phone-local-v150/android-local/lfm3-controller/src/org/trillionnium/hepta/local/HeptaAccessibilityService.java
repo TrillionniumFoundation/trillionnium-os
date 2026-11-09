@@ -168,7 +168,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     path.setReadable(false,false);path.setReadable(true,true);path.setWritable(false,false);path.setWritable(true,true);
                     String digest=fileSha256(path);
                     PhoneObservation observation=new PhoneObservation(id,graph.packageName,SystemClock.elapsedRealtime(),
-                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.truncated,graph.rows);
+                            bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows);
                     clearSnapshot();current=observation;currentGraph=graph;currentBitmap=bitmap;bitmap=null;
                     callback.onObservation(observation);
                 }catch(Exception e){graph.close();if(after!=null)after.close();if(bitmap!=null)bitmap.recycle();callback.onError("观察失败："+message(e));}
@@ -353,6 +353,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private static final class Graph {
         String packageName,digest;int windowId,rotation;Rect bounds;boolean truncated;
         ObservationState state;
+        ObservedWindowMetadata windowMetadata;
         final List<PhoneObservation.Node> rows=new ArrayList<PhoneObservation.Node>();
         final Map<String,NodeRef> refs=new HashMap<String,NodeRef>();
         boolean sameWindow(Graph other){return windowId==other.windowId&&rotation==other.rotation&&packageName.equals(other.packageName)&&bounds.equals(other.bounds);}
@@ -385,11 +386,33 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             try{window.recycle();}catch(RuntimeException ignored){/* No visibility conclusion from cleanup. */}
         }}
     }
+    /** Read only the selected root's window metadata; never traverse another/IME window. */
+    private ObservedWindowMetadata readWindowMetadata(AccessibilityNodeInfo root,Rect rootBounds,int windowId){
+        int[] bounds=new int[]{rootBounds.left,rootBounds.top,rootBounds.right,rootBounds.bottom};
+        String rootClass=null;
+        AccessibilityWindowInfo window=null;
+        try{
+            CharSequence actualClass=root.getClassName();rootClass=actualClass==null?null:actualClass.toString();
+            window=root.getWindow();
+            if(window==null||window.getId()!=windowId||window.getDisplayId()!=Display.DEFAULT_DISPLAY)
+                return ObservedWindowMetadata.unknown(bounds,rootClass);
+            Rect actualBounds=new Rect();window.getBoundsInScreen(actualBounds);
+            int type=window.getType();
+            // An input-method window is never a source of title/input text here.
+            CharSequence actualTitle=type==AccessibilityWindowInfo.TYPE_INPUT_METHOD?null:window.getTitle();
+            return ObservedWindowMetadata.observed(bounds,rootClass,type,window.getDisplayId(),
+                    new int[]{actualBounds.left,actualBounds.top,actualBounds.right,actualBounds.bottom},
+                    actualTitle==null?null:actualTitle.toString());
+        }catch(RuntimeException unavailable){return ObservedWindowMetadata.unknown(bounds,rootClass);}
+        finally{if(window!=null)try{window.recycle();}catch(RuntimeException ignored){/* Cleanup supplies no metadata. */}}
+    }
     private Graph readGraph(){
         AccessibilityNodeInfo root=getRootInActiveWindow();if(root==null)throw new IllegalStateException("没有活动窗口");
         Graph graph=new Graph();graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation();graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
         if(graph.packageName.isEmpty()||graph.bounds.isEmpty()){root.recycle();throw new IllegalStateException("活动窗口身份不可用");}
-        ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);StringBuilder signatures=new StringBuilder();int visited=0,characters=0;
+        graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId);
+        ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);
+        StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder();int visited=0,characters=0;
         try{
             while(!queue.isEmpty()&&visited<MAX_VISITED){
                 AccessibilityNodeInfo node=queue.removeFirst();visited++;
@@ -402,7 +425,8 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                         ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node):ObservedChildText.notApplicable();
                         if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<2400){
                             String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText);graph.refs.put(id,reference);signatures.append(reference.signature).append('\n');
-                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),node.isFocused(),node.isPassword(),childText));
+                            boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('\n');
+                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText));
                             characters+=text.length()+description.length()+childText.text.length();
                         }else graph.truncated=true;
                     }
@@ -414,7 +438,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             if(!queue.isEmpty())graph.truncated=true;
             String appTree=sha((graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
             graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId));
-            graph.digest=sha(graph.state.fingerprintInput().getBytes(StandardCharsets.UTF_8));return graph;
+            // Focus is newly model-visible evidence, not an expansion of the old progress predicate.
+            graph.digest=sha(graph.windowMetadata.bindFreshness(graph.state.fingerprintInput()+"\nnode_focus="+focusStates)
+                    .getBytes(StandardCharsets.UTF_8));return graph;
         }catch(RuntimeException e){graph.close();throw e;}
         finally{while(!queue.isEmpty())queue.removeFirst().recycle();}
     }

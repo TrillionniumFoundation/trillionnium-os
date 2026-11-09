@@ -1,7 +1,7 @@
 # Standalone local Android controller contract
 
 This subtree is a source-only candidate for `org.trillionnium.hepta.local`,
-versionCode 3 / 0.3.2-lfm3-local. It is outside the active Cargo/G1 delivery graph.
+versionCode 13 / 0.13.0-local-gemma4. It is outside the active Cargo/G1 delivery graph.
 It changes no owner-open protocol, protected package, ingress, claims, SELinux
 policy or existing machine authority. Adoption requires independent review and
 exact-build phone evidence; publication of this subtree does not grant adoption.
@@ -51,16 +51,19 @@ screens, insufficient memory and malformed output fail explicitly.
 
 ## Model and resource bounds
 
-Only the SHA-bound LFM3-1.7B QAD-Q4_0 file in the app's model directory is accepted.
-The default is GenieX 0.10.0 / llama_cpp / HTP NPU, 4096 context, four support
+Only a file from the explicit Java/native/host SHA-pinned profile allowlist in
+the app's model directory is accepted. The original default remains LFM3 with
+GenieX 0.10.0 / llama_cpp / HTP NPU, 4096 context, four support
 threads. Explicit app-private configuration permits GPUOpenCL, context 8192 or
 1..8 support threads. It is read once per app process and never falls back to CPU.
 
-`TOKEN-BUDGET.md` documents the LFM3-specific conservative byte/token bound and
-the final native check after applying the actual chat template. No old Qwen
-tokenizer, image allowance or generic-model assumption applies to this build.
-Valid kernel MemAvailable is preferred for the unchanged 3 GiB admission gate;
-ActivityManager is a recorded fallback, and Android lowMemory always refuses.
+`TOKEN-BUDGET.md` documents the LFM3-specific conservative byte/token bound;
+other profiles require the exact native token IDs, actual chat template and
+profile-bound budget proof described in `MODEL-PROFILES.md` and
+`CODE13-QUALIFICATION.md`. Image input is not admitted by a text profile.
+Valid kernel MemAvailable is preferred for each explicit profile's admission
+threshold. ActivityManager is a recorded fallback, and Android lowMemory always
+refuses. An admission threshold is not measured peak-memory qualification.
 The app admits at most 4096 installed launcher packages and exposes bounded
 search pages. `APP-DISCOVERY.md` defines search and prompt pagination semantics.
 

@@ -6,215 +6,278 @@
   "phone_tested": false,
   "native_grammar_model_tested": false,
   "external_model_used": false,
-  "started_host_wall_ms": 1794166432908,
+  "started_host_wall_ms": 1794179124838,
   "checks": [
     {
       "name": "java-compile",
       "exit_code": 0,
-      "elapsed_s": 1.4367172549973475,
+      "elapsed_s": 1.732076517000678,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ActionFreshnessHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.03708093200111762,
+      "elapsed_s": 0.06506412799353711,
       "stdout_sha256": "3113abbad4e9c7c60cc84e78860cba766af52654b938d4eb0b71ecbdf69b896f",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "AppCatalogueHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.20408268699247856,
+      "elapsed_s": 0.2034904950123746,
       "stdout_sha256": "62857df360fcb7fb759ab8a7c532ae591436f3fef488eb8ab629e091f54cf466",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "BudgetHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.03771189600229263,
+      "elapsed_s": 0.0412264869955834,
       "stdout_sha256": "624058253b558d50dbd60045ed55d5d7b11a346ab9f69d9db682bd065f43ffe5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "Gemma4ProfileHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.05502747598802671,
+      "stdout_sha256": "39233d7cae167afdb93cd98f7213e3775213e3e216ab9c04d5d296ebea5ec99a",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ImeObservationHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.03865874599432573,
+      "elapsed_s": 0.04110240399313625,
       "stdout_sha256": "1388ed89a212aa21af6683bc9b42f9ccb85235b3a9778f870b6e3cd43f3fce35",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "LocalPolicyHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.06046745300409384,
+      "elapsed_s": 0.1073871350090485,
       "stdout_sha256": "a5951199cbf4f1423d72661f1b8c358583c9778b225957b1b9e499e4cd14f27e",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "MemoryAvailabilityHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.04287766599736642,
+      "elapsed_s": 0.046126158005790785,
       "stdout_sha256": "5b5bb21f651b68576a420f8de7fb4e3e961db1e06694a867f92ed648c18f4860",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "MobiMindContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.18457570900500286,
+      "stdout_sha256": "b00f07220bfe2b10ce56e2cbfb1905ee22e8f5691bd6004e1fbe562d87e406d2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "MobiMindSessionContractHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.07144776899076533,
+      "stdout_sha256": "35ebf6a777946372d0db516856aeb68c3f97e744a09124326ca3f7f202bcfa4d",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ModelProfileHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.0484902360039996,
-      "stdout_sha256": "65d8b4bd17d59155ef8adbf4f077cb6852a49f16a8d0733dbd67b3dbd360cf53",
+      "elapsed_s": 0.0468216179870069,
+      "stdout_sha256": "d296131b967beef0da07316768c3553240a4138dd82e5c42bb1ff6e72814b5b9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedChildTextHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.08368056500330567,
+      "stdout_sha256": "55973ae1ef57215be08beeb92f7499c947432317e60bf66e44dbfbb9b64e4703",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedTargetLabelsHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.10866487199382391,
+      "stdout_sha256": "bb50d43ff8be73d0fae72225b6bfb50e852060f67fbc60f0539c16a7bb94331e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "ObservedWindowMetadataHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.05994645299506374,
+      "stdout_sha256": "b17ffe70e5a3c444a421acbfc92367b21bff0ff1b53faacc32eca7041adcca1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "PersistentActionPolicyHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.05783776199677959,
+      "stdout_sha256": "5141536252f708cc14b01e355f9cdc345e4722617bffecf00ce6b4936f48e4d9",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "RepeatActionGuardHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.09140945499530062,
+      "elapsed_s": 0.09129240800393745,
       "stdout_sha256": "e8d395211f8bd74419d966fcf45379d11a85e1421ce997a0a5d3e7a1ad2e6664",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "RepeatClickProjectionHostTest",
+      "exit_code": 0,
+      "elapsed_s": 0.04049789199780207,
+      "stdout_sha256": "69f4d6f8a64c350f09d7f210ed7cc726241c295215ce9716d3594eb32bf6d445",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "SessionRecoveryHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.04184438999800477,
+      "elapsed_s": 0.04428131598979235,
       "stdout_sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "ActionDecisionHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.08188099700782914,
-      "stdout_sha256": "b01898fef4bdd9dbc0d6c090370599c82db677e12fc798c9a7d907a267e619e3",
+      "elapsed_s": 0.12283641699468717,
+      "stdout_sha256": "ad2fbd8e35c1114be45bc029eb51edb89840c946e9567b8bf7d06a0221e6f871",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "DecisionGrammarHostTest",
       "exit_code": 0,
-      "elapsed_s": 0.08347354400029872,
-      "stdout_sha256": "b35fef67c52462adb0185c7d9be33f4cc41a8c7a81d45cf4911576e8864c3126",
+      "elapsed_s": 0.11304751300485805,
+      "stdout_sha256": "464b3c3a42aa1a1cd6f68a1f5354f806f245af705bb74ae57c9a794647a09e0b",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "grammar-recognition",
       "exit_code": 0,
-      "elapsed_s": 0.09156655198603403,
+      "elapsed_s": 0.09784823498921469,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "95ce488b879baeb3add30c50de1004efc2f84f8d7c7c95fc7c20a1c780ea349e"
+      "stderr_sha256": "118ab5f7bd1b9dfeb81843d3edc6e726510336c976ff9cfa8da82242eee0cd91"
     },
     {
       "name": "completion-protocol",
       "exit_code": 0,
-      "elapsed_s": 0.03552756499266252,
+      "elapsed_s": 0.031527143000857905,
       "stdout_sha256": "4da7a3cf760b2f930365d91d615792d31657a91c5665cd4a287f314471755ae1",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "python-tools",
       "exit_code": 0,
-      "elapsed_s": 2.6231172700063325,
+      "elapsed_s": 2.5313913489953848,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stderr_sha256": "a7d78133ae1b0f6cc75b1b630171015ced8151b7de0b85811263620decd4e85c"
+      "stderr_sha256": "3a5a410cd03ba07fdb0f2595e23d6a15409ddd3bc9832042ef1a864f53db8b2e"
+    },
+    {
+      "name": "mobimind-private-staging",
+      "exit_code": 0,
+      "elapsed_s": 0.06285526599094737,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e981df486a063979f250c6c78cf8014bec102bfdf452f55b206ac1c6f8cc0621"
     },
     {
       "name": "model_profile_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.08158848500170279,
+      "elapsed_s": 0.05983548100630287,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "model_profile_contract",
       "exit_code": 0,
-      "elapsed_s": 0.001049464990501292,
+      "elapsed_s": 0.0009496929997112602,
       "stdout_sha256": "bc9b99969b373d72ec83464d72b513fd5e74e5715c2b033f64a3f4af366d06a2",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "parent_death_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.13872438500402495,
+      "elapsed_s": 0.1229690570035018,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "parent_death_contract",
       "exit_code": 0,
-      "elapsed_s": 0.04236297799798194,
+      "elapsed_s": 0.04240652699081693,
       "stdout_sha256": "3b78bb55324e37b41ebd8b91ef5928bf8bedc2349cc2f964e827bfe1107af360",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "phase_timing_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.0879323499975726,
+      "elapsed_s": 0.08534740899631288,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "phase_timing_contract",
       "exit_code": 0,
-      "elapsed_s": 0.0011053399939555675,
+      "elapsed_s": 0.0011613419919740409,
       "stdout_sha256": "f95229894848bdfe84b59efdf63c18ca140edcc526bb84f2dcaa48cc85ed3887",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "prompt_budget_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.04945014099939726,
+      "elapsed_s": 0.047200127999531105,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "prompt_budget_contract",
       "exit_code": 0,
-      "elapsed_s": 0.000983816004008986,
+      "elapsed_s": 0.0010425829968880862,
       "stdout_sha256": "6c4810c55d6d7e97b50ca7215cd9b1de00140c4dcb22095ba4a752d82fe2fb66",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "publish_contract-compile",
       "exit_code": 0,
-      "elapsed_s": 0.08525726301013492,
+      "elapsed_s": 0.08453968999674544,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "publish_contract",
       "exit_code": 0,
-      "elapsed_s": 0.004131412002607249,
+      "elapsed_s": 0.003701294001075439,
       "stdout_sha256": "01c5c6781c6c3303246dbe138b3e6f6b7a23baebd4f6756b00f2082f18a6b81f",
       "stderr_sha256": "0e1ee1829a099dcbcf1a0b85600b0ee89f8a0f672d86c1b2984d2727052cf6ea"
     },
     {
       "name": "sha256_probe-compile",
       "exit_code": 0,
-      "elapsed_s": 0.24825045200122986,
+      "elapsed_s": 0.2083810690091923,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "sha256_probe",
       "exit_code": 0,
-      "elapsed_s": 0.10173771000700071,
+      "elapsed_s": 0.0882386610028334,
       "stdout_sha256": "cf4e1dc1c076bcd93550a61b6c766a3ba425299a21a0fde818915d0e9f9937ac",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "sha256-hashlib-differential",
       "exit_code": 0,
-      "elapsed_s": 3.386179703986272,
+      "elapsed_s": 3.285830609005643,
       "stdout_sha256": "7e874f33e133453e8c0d174975d446891f8af6d317663f959ebf5f4b33630c73",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "native-adapter-syntax",
       "exit_code": 0,
-      "elapsed_s": 0.06507644000521395,
+      "elapsed_s": 0.05399766999471467,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "name": "private-prompt-evidence",
       "exit_code": 0,
-      "elapsed_s": 0.3185394429892767,
+      "elapsed_s": 0.3243069370073499,
       "stdout_sha256": "8c0b45d132c7bd5d06ad705b049243e6983f38541079700e535a549c0ddb28a6",
       "stderr_sha256": "47b7630c4181961731722083771a47078e1a8acc388e66fa7b6f96cce3340d83"
     }
@@ -222,7 +285,7 @@
   "source_inputs": [
     {
       "path": "assemble_pocket4.py",
-      "sha256": "a04ca89c0663646afcd0f5f3fc0951d728bb948a887bb815f2a54d5f97b8eca2"
+      "sha256": "1ddb7006a0ccacb8077f3eb15fb76ba2a0d100062b4e9386b9d43978bd144f81"
     },
     {
       "path": "build_mac.py",
@@ -234,7 +297,7 @@
     },
     {
       "path": "native/model-profile.h",
-      "sha256": "ee62a9b8be9c490401cc6965876241ca6eba68b791b2f9047486468967dc1ee4"
+      "sha256": "16cdf95997a69dcbfdab4b3325dda0ee3adcbd97ee202b17fe290ef6adad0cda"
     },
     {
       "path": "native/model-runtime.inc",
@@ -274,7 +337,7 @@
     },
     {
       "path": "native/tests/model_profile_contract.c",
-      "sha256": "81db054ea7b8b2fb35bf8fc543064f560ea7682a37fb6cd58e464b123c2c2eb8"
+      "sha256": "c045929ef885803050275d3f206d25552121bd13a059dd4a7b2005105f7f1229"
     },
     {
       "path": "native/tests/parent_death_contract.c",
@@ -342,11 +405,11 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
-      "sha256": "ee6fd0cc6573127091e3e7a26da17f8bc826979644d283d324391181e3cefb29"
+      "sha256": "0f45bfca078c11c958782ac231ef922a78e80a55f216c59c127d780d9314f9dd"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ActionPolicy.java",
-      "sha256": "c22c1d8c1f14e66b6f27a7e2a8a596a205e6d261a772f43189af7c7cb6fcae8d"
+      "sha256": "a8fb1e712e2e9e7fc6b00986c2f74ca6c28786bd10b23fd03c41a10fb3909ad7"
     },
     {
       "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
@@ -358,7 +421,7 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
-      "sha256": "78f921e2676b25499200f568af4b294f00bd496181b28cf68c9c9dd086911ef6"
+      "sha256": "4e38d693c9e4d7758e0399f70cc9c57304f65ad03569f6ad44891eb74373e57c"
     },
     {
       "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
@@ -366,7 +429,7 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "sha256": "6c6399e9a579f47c927ca6622db96bfb868348af7040076c7a4c9a3f494f66ae"
+      "sha256": "45975e692969d6a15e95c3c607203f8da82954907730d3f4756222d51e6dca01"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -378,11 +441,11 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "sha256": "004c6538841141290182bf696c9ef8606db41a15a47c062ab5b3e697adc5b1c0"
+      "sha256": "f2bb0ce3f9531279da50ed64dc2015fbec7ff85b9fc83313db95202ba41951d9"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
-      "sha256": "f5a41d9e717ff2e3fdfd663bf0298b6d7ce83ef5eff1903cdc20bd50d540be0e"
+      "sha256": "5f96c9d32772c91651997f4247eb91f5e7ac20a376f4420bcaca36907725c9e8"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
@@ -390,7 +453,7 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "sha256": "a88ed05063f19fc2664946e410f39ebc7aefb801e42f312b4912af0cb754a862"
+      "sha256": "b1ed651abfba6ca73c75aa9548c78bbc527fbf181da1a0dddd242cbef1b2e856"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -398,11 +461,31 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "sha256": "f8dddb642f8153ee5e78e4d7940bfbe34d230d29129468aff470298f16e4ab06"
+      "sha256": "f734b29824b3bfd08a87c84a1d32d6ad4afb3b3adfb087b3612ff836f0b14936"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
       "sha256": "bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "sha256": "e92fe815fcdbfcc052ea4574cb10a6dde50c3f23171d4d61a8d4a4a4e3072513"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
@@ -410,7 +493,7 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
-      "sha256": "19851ccdcd056f114300d0d9fc0ac8d76363fa601ed7f0a5c6b9eaaa57dc0bac"
+      "sha256": "f3c6ecedc02e6d321a80dfe449d407c6939cee8282e8c14e29998c8eb2e93840"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
@@ -421,16 +504,36 @@
       "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "sha256": "0de6647a787e033db5e5ab93a2f97d6c5c22ae92a4a244e772268e819269afe2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PersistentActionPolicy.java",
+      "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
-      "sha256": "3d64c6a83664c285fe851e38f83cabca2ed3db7a8cdc30de495e597c0cae6547"
+      "sha256": "3f05377161b004dbf1c8e81a9869aec60b289444d938d420f0f9a969d74b75f3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
       "sha256": "c4bd2c52a5050da897f0833dc9f15fe5bb96599255897e4eef804c8bc138be14"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
-      "sha256": "fef94a33a0efbb019f0ae48ae97182fc81186c528833f323a22e9ad7bbd8631e"
+      "sha256": "aa827865a773217eafda71046420cbaf704787b1280b3dcf0cd1af78649b2dbc"
     },
     {
       "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
@@ -438,15 +541,19 @@
     },
     {
       "path": "tests/ActionFreshnessHostTest.java",
-      "sha256": "9000ca110ce7826c93e671fa9e6192d264d6bfc3f44f263e285e228624ace361"
+      "sha256": "23bcebbe8857aa7ef9ae7eebba4b98bccf8e1f1cb339dd813ab4149735d6845d"
     },
     {
       "path": "tests/AppCatalogueHostTest.java",
-      "sha256": "a81f2430619c1afb97f1cd8d7687a8480d1f4fc498aacab2828dd9af9a020ec4"
+      "sha256": "0f11fb81f6877971832b62f17e91fbbe6ac98d64a6bb8fee2b3bab586c1ddd20"
     },
     {
       "path": "tests/BudgetHostTest.java",
       "sha256": "053c6c3a1c9eff1d5055c425a6b97b6c323bbea72864abe3f6a391b45534d737"
+    },
+    {
+      "path": "tests/Gemma4ProfileHostTest.java",
+      "sha256": "b0eed227ceeebaede974ff2cf56ade8ba91d8463cd9257e13a5b78a983e3e0b1"
     },
     {
       "path": "tests/ImeObservationHostTest.java",
@@ -454,19 +561,47 @@
     },
     {
       "path": "tests/LocalPolicyHostTest.java",
-      "sha256": "fdeab32002efc17f20c0c034a232661d84cdd28d97d51bd8bb089866facd69c6"
+      "sha256": "9d484d5cb1d5e3e6c4e18587cfed04a12062c2d3151e52e4008cbb3933c209bc"
     },
     {
       "path": "tests/MemoryAvailabilityHostTest.java",
       "sha256": "c1d24b1d49dc9c8d73ac01ec69a53e8dced7d0b31623f399de665363167e7f61"
     },
     {
+      "path": "tests/MobiMindContractHostTest.java",
+      "sha256": "9ae8dd710b1cb763d748e047b260ffd00d3c226e1f7095cd46f167fc513cb9be"
+    },
+    {
+      "path": "tests/MobiMindSessionContractHostTest.java",
+      "sha256": "0adddcf74e0379ac7f2cd46aa255e22f43416bd1081f03cfde9beec1f376f0ec"
+    },
+    {
       "path": "tests/ModelProfileHostTest.java",
-      "sha256": "599faafd180fcd593d872282d00e25dce320a74d5541f48f15635b7742ffdd58"
+      "sha256": "7c52ceb208efbda8edacf6b132bccfdf7874c7b900e09afa2f5a56e6d75c7382"
+    },
+    {
+      "path": "tests/ObservedChildTextHostTest.java",
+      "sha256": "26744b5406a1f59ffcd7cfbd5c0d96d2666d093b8685a1976995406e815a142d"
+    },
+    {
+      "path": "tests/ObservedTargetLabelsHostTest.java",
+      "sha256": "ed3f87d01fa5d889c78da37de1e35a4828fd70b073f01885d28674a06a421ddb"
+    },
+    {
+      "path": "tests/ObservedWindowMetadataHostTest.java",
+      "sha256": "1cdfa93910fb613f59859ad4ef0eb7c1902d395297b61e8c9553a46c15604d43"
+    },
+    {
+      "path": "tests/PersistentActionPolicyHostTest.java",
+      "sha256": "238e3bb08c244a9dc765cb405860efafe1c1b788fabea030d81c6accc0023028"
     },
     {
       "path": "tests/RepeatActionGuardHostTest.java",
-      "sha256": "e7e2b9f57b6edc5058c55d58e7a7e1b2338a4b20d44b9313b37ca996b8ffc14f"
+      "sha256": "d45768cc2ce084bbc717d38fd2502545fb30f2435ae5a249390d303a8430f1ca"
+    },
+    {
+      "path": "tests/RepeatClickProjectionHostTest.java",
+      "sha256": "ef768613f3db35022e3e8d4798bf856e7edb30eef3cc48c45854fd31380daf37"
     },
     {
       "path": "tests/SessionRecoveryHostTest.java",
@@ -474,7 +609,7 @@
     },
     {
       "path": "tests/action-grammar/DecisionGrammarHostTest.java",
-      "sha256": "bf890c50d8cceeb651e57253e454ed8fad8e0127cea16cbe2c84dae1b2d1f73d"
+      "sha256": "f849b51768242a81377a5ec52dbd2563b5d56feac25169e9990411192b38ad4b"
     },
     {
       "path": "tests/action-grammar/gbnf_recognizer.py",
@@ -482,23 +617,23 @@
     },
     {
       "path": "tests/action-grammar/test_completion_protocol.py",
-      "sha256": "02bf67122bd3921ef641ae4b1d5a786355d986606a47b71005008c8237d6dfed"
+      "sha256": "9c1d7d8fb7fbd70af311d284ceca4e247576c95f71bfb38c4c86e11b67da7d14"
     },
     {
       "path": "tests/action-grammar/test_decision_grammar.py",
-      "sha256": "8c8154e9c5c0192a275d92726ad2e140b1817771b7cb38eb7fb3f13dcfc6cc9f"
+      "sha256": "22a6011d4c7b0c403076790cd2c56d4b275eeacce4e95839ff182fc7598569eb"
     },
     {
       "path": "tests/action-parser/ActionDecisionHostTest.java",
-      "sha256": "8f7b30e281288a25389303f811ed2189ffb2db6655136e5c948d5c2666c3eece"
+      "sha256": "7c29a1b329c4c5363267692e84608936a082a6b7c4603ade764f213961e0c519"
     },
     {
       "path": "tests/action-parser/run_host_tests.py",
-      "sha256": "2106bda52fc6c56a93a924af1bc984110c850c1dfa90aec44ab57685099a34a9"
+      "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
     },
     {
       "path": "tools/build_identity.py",
-      "sha256": "4116f87e2cef1e5de1dacadf9500c7fa15d7e0d7db19fff3d111cecf62e6427c"
+      "sha256": "354cbe3d61ae56d2bb08ce6a97a1a0312c70ab296dc6eb8f02e31f2015707b17"
     },
     {
       "path": "tools/create_debug_task.py",
@@ -510,11 +645,11 @@
     },
     {
       "path": "tools/model_profiles.py",
-      "sha256": "85b5a72f24912f705ec07bb033204724bdfbf5aad30dfdc0e76b9fccbda91c90"
+      "sha256": "6e6822d1492de42a7b19555599eb25ff3ead480c0270458c8895b8279390d08f"
     },
     {
       "path": "tools/phone_acceptance.py",
-      "sha256": "d461a28b5739a3fad92283e82bd258fb5a315bc7264e621d71723a9d6c4432eb"
+      "sha256": "705f10b732546c1d85fb41d545615c949b51012d68e9270cd161b35f93177922"
     },
     {
       "path": "tools/phone_inventory.py",
@@ -526,11 +661,15 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "sha256": "cad7db9df46606c1bec96a8c30765091e13413ffe7e8a379aab4099fdc65191c"
+      "sha256": "513ef4c380fd9201a3d2d44bb7efad9ebb21f169d27b3bf57779ae088f97de4d"
     },
     {
       "path": "tools/test_build_identity.py",
-      "sha256": "cadc1bcdb9c132ee1f102223cf234cfba26bd74f45b5ab9373083422c3fc0333"
+      "sha256": "b617d7cdbb3d3870cb005a6312458cf286f4f256a3f5547ce05521ff7f8c91ae"
+    },
+    {
+      "path": "tools/test_labeled_target_binding.py",
+      "sha256": "6a8dcb8745c610e1e1325e325fc25a918f29140096a12bb9def2f09d9e46762b"
     },
     {
       "path": "tools/test_model_profiles.py",
@@ -538,7 +677,7 @@
     },
     {
       "path": "tools/test_phone_acceptance.py",
-      "sha256": "cb97d6b34b41b752f5dfcf8359a37fa953180e7de75e08a8ed0d74d0024e7ec9"
+      "sha256": "484c7ae66ad16e2eb9e32df31d5c750b78c3ef39866d890074162cddf0a51f4f"
     },
     {
       "path": "tools/test_phone_inventory.py",
@@ -549,8 +688,20 @@
       "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
     },
     {
+      "path": "tools/test_verify_mobimind_runtime.py",
+      "sha256": "57911fd63315474ea13d295246d56d9e06a793979ee6b04084900d6debcfa7be"
+    },
+    {
       "path": "tools/test_verify_runtime.py",
       "sha256": "70b32dcb6b4a900e715b4aa0e01610b9e308bee0a7a3f2cafb8f8deb334880dd"
+    },
+    {
+      "path": "tools/test_verify_source.py",
+      "sha256": "6070ec98bb1cd6f1bc23abfbd7e68a393348e9de23bac97b8cf8773690717e86"
+    },
+    {
+      "path": "tools/verify_mobimind_runtime.py",
+      "sha256": "a35cba2df6a4b4441d97d732ae1f9c10cf68d995329d52036ba93703b2b789db"
     },
     {
       "path": "tools/verify_runtime.py",
@@ -558,7 +709,7 @@
     },
     {
       "path": "tools/verify_source.py",
-      "sha256": "d2b41fe70ac8f71b81d4af04db73993239bc35b7298a6d89d7d4520845bb5b8d"
+      "sha256": "b8db2eb7b0ca64a54ed18f202abdf424d7c3424dadaf5e19ced2157d0f9a42bb"
     }
   ],
   "native_adapter": {
@@ -607,5 +758,5 @@
     "controller_grammar": "optional fixed-schema per-observation GBNF; same private request directory and native SHA binding",
     "model_contract_sha256": "43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452"
   },
-  "finished_host_wall_ms": 1794166442500
+  "finished_host_wall_ms": 1794179135319
 }
