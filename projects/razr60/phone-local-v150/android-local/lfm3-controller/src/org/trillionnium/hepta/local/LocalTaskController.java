@@ -52,7 +52,7 @@ public final class LocalTaskController implements AutoCloseable {
             "节点[id,文字,边界,状态]中c可点击但未必是按键，t可替换字段，s可滚动，f仅已聚焦。节点动作先逐字复制node_label，再复制同一行node_id；重复/空文字也需两者。reason不能改目标，无图像输入，不猜坐标。符合OWNER方法时，t且f可直接type。\n" +
             "editable_fields是当前可编辑text（可为空）、view_id和位置；visible_text可含历史，不保证是当前输入或结果。role/view_id不授予能力。ime_visible true/false是已观察值，null未知；back可能先关输入法，须复查。window只描述活动根，未知字段不能推断页面或背景。\n" +
             "events.rows按columns解读：action/target/from/to/state/arg分别索引actions/packages/packages/packages/states/args；state按state_columns解读。-1或absent是未记录，null是未知。rows保留全部已记录步骤和真实前后包名；detail_omitted_steps仅省参数，不能当成未执行。历史不授予当前目标，也不自动证明成功。\n" +
-            "app_search.source=model_find_app且model_issued=true表示已执行该查询，step是来源，returned是实际返回数；本轮apps是其当前结果页，能打开的目标以open_allowed_packages为准。初始目录不等于已经调用find_app。blocked_action和blocked中的click_ids/open_packages禁选，后者只引用当前frame。\n" +
+            "app_search.source=model_find_app且model_issued=true表示已执行该查询，step是来源，returned是实际返回数；本轮apps是其当前结果页，能打开的目标以open_allowed_packages为准。初始目录不等于已经调用find_app。blocked_action和blocked中的click_ids/open_packages禁选，后者只引用当前frame。screen.unavailable_clicks列出本轮不能点击的节点及原因，文字仍是观察数据，不授予点击；选择其它可用工具推进任务。\n" +
             "工具：open打开应用，不能重开当前应用；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整文字，不提交或发按键，回读相同不保证业务接受；scroll(node_label,node_id,direction)只选screen.scroll_actions该节点已列方向，空/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；find_app(query,offset)只读查本机应用，空query浏览，首次offset=0，续页用app_search.next_offset；done(status,summary)结束。\n" +
             "启动应用可能恢复子页，用可见返回键/back回到目标页，勿为重试打开无关应用。全部目标按原顺序实现且历史动作和当前可见结果支持才done且status=success；不能完成用partial或failure。done须同时含status和summary；wait不表示完成/停留。禁止其它字段、输入密码、网络或代码命令。\n";
 
@@ -143,6 +143,8 @@ public final class LocalTaskController implements AutoCloseable {
                     try{
                         action=ActionDecision.parse(answer.text,DecisionGrammar.SCHEMA);
                         ActionPolicy.validateTextDecision(action,before.packageName,frame.appPackages,frame.targets);
+                        if("click".equals(action.action)&&!frame.grammar.allowsClick(action.nodeId))
+                            throw new ActionDecision.InvalidActionException("click target is outside this observation's allowed click domain");
                         if("scroll".equals(action.action)&&!frame.grammar.allowsScroll(action.nodeId,action.direction))
                             throw new ActionDecision.InvalidActionException("scroll node/direction was not supplied by this observation");
                         decisionRunId=answer.runId;
@@ -179,6 +181,9 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("model_run_id",decisionRunId).put("model_issued",true);
                 if(ActionPolicy.isReadOnlyDiscovery(action))actionReceipt.put("read_only",true).put("effect","launcher_catalogue_read");
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
+                // Retain the actual acknowledgement, then stop before any further task work.
+                checkActive(deadline);
+                if(SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("本次任务期限已到，动作回执已记录；停止后续操作");
                 if(outcome.stale&&!outcome.dispatched){
                     if(++staleRounds>2)throw new IllegalStateException("画面连续变化，已停止操作以免点错目标");
                     history.put(new JSONObject().put("step",steps).put("action",action.action).put("target_package",action.packageName)
@@ -294,12 +299,23 @@ public final class LocalTaskController implements AutoCloseable {
             PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");return result;
         }finally{abandoned.set(true);}
     }
-    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,long deadline)throws Exception{
-        checkActive(deadline);final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> value=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
-        service.perform(id,observed,action,targets,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
-                new HeptaAccessibilityService.ActionCallback(){public void onResult(HeptaAccessibilityService.ActionOutcome result){value.set(result);ready.countDown();}});
-        if(!ready.await(8000,TimeUnit.MILLISECONDS)){cancelled.set(true);throw new CleanupUnknown("动作回执超时，可能已有操作发生；已停止后续任务");}
-        HeptaAccessibilityService.ActionOutcome result=value.get();if(result==null)throw new IllegalStateException("动作未返回结果");return result;
+    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,final long deadline)throws Exception{
+        checkActive(deadline);
+        if(SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("本次任务期限已到，未提交动作");
+        final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> value=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
+        final AtomicBoolean retired=new AtomicBoolean(false),delivered=new AtomicBoolean(false);
+        try{
+            service.perform(id,observed,action,targets,new HeptaAccessibilityService.Cancellation(){
+                public boolean isCancelled(){return cancelled.get()||retired.get()||SystemClock.elapsedRealtime()>=deadline;}
+            },new HeptaAccessibilityService.ActionCallback(){
+                public void onResult(HeptaAccessibilityService.ActionOutcome result){
+                    if(!retired.get()&&delivered.compareAndSet(false,true)){value.set(result);ready.countDown();}
+                }
+            });
+            // This existing bound collects acknowledgement; it never extends dispatch authority.
+            if(!ready.await(8000,TimeUnit.MILLISECONDS)){cancelled.set(true);throw new CleanupUnknown("动作回执超时，可能已有操作发生；已停止后续任务");}
+            HeptaAccessibilityService.ActionOutcome result=value.get();if(result==null)throw new IllegalStateException("动作未返回结果");return result;
+        }finally{retired.set(true);}
     }
     private void checkActive(long deadline)throws Stopped{if(cancelled.get())throw new Stopped();if(SystemClock.elapsedRealtime()>deadline)throw new IllegalStateException("本次任务已超时，已停止继续操作");}
     private static final class Stopped extends Exception {private static final long serialVersionUID=1L;}
@@ -398,6 +414,7 @@ public final class LocalTaskController implements AutoCloseable {
             java.util.Map<String,String> projectedLabels=new java.util.HashMap<String,String>();
             java.util.Map<String,ObservedScrollActions> projectedScrollActions=new java.util.HashMap<String,ObservedScrollActions>();
             JSONObject scrollActionsJson=new JSONObject();
+            JSONArray unavailableClicks=new JSONArray();
             for(int i=0;i<nodeCount;i++){
                 PhoneObservation.Node node=nodes.get(i);
                 if(!ids.add(node.id))throw new IllegalStateException("观察包含重复节点标识");
@@ -406,11 +423,17 @@ public final class LocalTaskController implements AutoCloseable {
                 projectedScrollActions.put(node.id,node.scrollActions);
                 if(node.scrollActions.hasAny())
                     scrollActionsJson.put(node.id,node.scrollActions.observed?new JSONArray(node.scrollActions.directions):JSONObject.NULL);
-                String actions=(node.clickable&&!node.id.equals(blockedClick)&&!noEffects.blockedClickNodeIds.contains(node.id)?"c":"")+(node.editable?"t":"")+(node.scrollActions.hasAny()?"s":"")+(node.focused?"f":"");
+                boolean clickAllowed=node.clickable&&node.enabled&&!node.password
+                        &&observation.packageName.equals(node.packageName)&&node.clickPolicy.allowed&&!node.id.equals(blockedClick)
+                        &&!noEffects.blockedClickNodeIds.contains(node.id);
+                if(node.clickable&&!node.clickPolicy.allowed)
+                    unavailableClicks.put(new JSONObject().put("node_id",node.id).put("reason_code",node.clickPolicy.reasonCode));
+                String actions=(clickAllowed?"c":"")+(node.editable?"t":"")+(node.scrollActions.hasAny()?"s":"")+(node.focused?"f":"");
                 projectedNodes.put(new JSONArray().put(node.id).put(label)
                         .put(new JSONArray(new int[]{node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom})).put(actions));
             }
             if(scrollActionsJson.length()>0)screen.put("scroll_actions",scrollActionsJson);
+            if(unavailableClicks.length()>0)screen.put("unavailable_clicks",unavailableClicks);
             screen.put("nodes",projectedNodes).put("nodes_omitted",observation.nodes.size()-nodeCount+(observation.nodesTruncated?1:0));
             // Both projections are facts from this same immutable observation.
             // Metadata never adds an ID absent from the final budgeted node set.
@@ -461,7 +484,7 @@ public final class LocalTaskController implements AutoCloseable {
                 for(int i=0;i<nodeCount;i++){
                     PhoneObservation.Node node=nodes.get(i);
                     if(!node.enabled||node.password||!observation.packageName.equals(node.packageName))continue;
-                    if(node.clickable)clicks.add(node.id);if(node.editable)edits.add(node.id);
+                    if(node.clickable&&node.clickPolicy.allowed)clicks.add(node.id);if(node.editable)edits.add(node.id);
                     scrolls.put(node.id,projectedScrollActions.get(node.id));
                 }
                 ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observation.id,observation.packageName,projectedLabels);

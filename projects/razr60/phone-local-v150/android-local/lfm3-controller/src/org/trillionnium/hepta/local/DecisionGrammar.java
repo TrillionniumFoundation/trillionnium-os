@@ -18,8 +18,10 @@ public final class DecisionGrammar {
     public final List<String> actions;
     public final ObservedTargetLabels targets;
     public final Map<String,List<String>> scrollDirections;
+    public final Set<String> clickNodes;
 
-    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections){
+    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections,Set<String> clickNodes){
+        this.clickNodes=Collections.unmodifiableSet(new TreeSet<String>(clickNodes));
         this.scrollDirections=Collections.unmodifiableMap(new TreeMap<String,List<String>>(scrollDirections));
         this.targets=targets;this.observationId=targets.observationId;this.currentPackage=targets.packageName;this.text=text;
         this.actions=Collections.unmodifiableList(new ArrayList<String>(actions));
@@ -79,8 +81,11 @@ public final class DecisionGrammar {
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
         rule(rules,"ws","[ \\t\\n\\r]{0,8}");
         List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-'));
-        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls);
+        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls,clicks);
     }
+
+    /** Match the exact click domain encoded in this observation's grammar. */
+    public boolean allowsClick(String nodeId){return nodeId!=null&&clickNodes.contains(nodeId);}
 
     /** A direction cannot migrate to another node that has a different action list. */
     public boolean allowsScroll(String nodeId,String direction){

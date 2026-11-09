@@ -517,8 +517,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                 AccessibilityNodeInfo node=queue.removeFirst();visited++;
                 try{
                     Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
-                    String text=node.isPassword()?"":limited(string(node.getText()),96);
-                    String description=node.isPassword()?"":limited(string(node.getContentDescription()),96);
+                    boolean password=node.isPassword();
+                    String rawText=password?"":string(node.getText());
+                    String rawDescription=password?"":string(node.getContentDescription());
+                    String text=limited(rawText,96);
+                    String description=limited(rawDescription,96);
                     ObservedScrollActions scrollActions=readScrollActions(node);
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
@@ -527,7 +530,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                             String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
                             scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
                             boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('\n');
-                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions));
+                            PersistentActionPolicy.Decision clickPolicy=PersistentActionPolicy.evaluate(rawText,
+                                    rawDescription,childText.text,node.isEditable());
+                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,password,childText,scrollActions,clickPolicy));
                             characters+=text.length()+description.length()+childText.text.length();
                         }else graph.truncated=true;
                     }

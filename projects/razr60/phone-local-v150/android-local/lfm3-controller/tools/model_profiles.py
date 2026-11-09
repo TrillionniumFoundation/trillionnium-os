@@ -14,6 +14,10 @@ PROFILES = {
         "sha256": "fa401b55b07ee70a54c6dae3903c783a6e65064312529ea57175cb5f8dec6634", "architecture": "gemma4", "exact": True},
     "nemotron-3.5-bolt-e4b-q4_k_m": {"file": "Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf", "bytes": 6180446208,
         "sha256": "c8af2b8aea10a690a1d9491db744a9446660173cb38fc489612b556615a69612", "architecture": "gemma4", "exact": True},
+    "lfm2.5-8b-a1b-q4_0": {"file": "LFM2.5-8B-A1B-Q4_0.gguf", "bytes": 4844678368,
+        "sha256": "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715", "architecture": "lfm2moe", "exact": True},
+    "qwen35-4b-q4_0": {"file": "Qwen3.5-4B-Q4_0.gguf", "bytes": 2583221408,
+        "sha256": "298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb", "architecture": "qwen35", "exact": True},
 }
 
 def profile(name=DEFAULT_PROFILE):

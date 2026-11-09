@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.code23.publication-scope.v1",
+  "canonical_module": "projects/razr60/phone-local-v150/android-local/lfm3-controller",
+  "version_code": 23,
+  "version_name": "0.23.0-local-deadline-moe-qwen",
+  "base_commit": "cc4a7035760383a126e4510002139d88667e0b97",
+  "draft_target": "integration/razr60-r9-20261107",
+  "original_click_delta_commit": "47be96088bb43d42af4ae107c849f97d56b1be4d",
+  "later_click_evidence_only_commit": "7fe8740297e9187cd1bf08fd3d08412312dd0bfa",
+  "source_mapping": "SOURCE-MAPPING.json",
+  "production_and_synthetic_tests_only": true,
+  "private_phone_prompts_screenshots_identifiers_credentials_included": false,
+  "old_branches_modified": false,
+  "merged": false,
+  "source_specific_ci_binding": "Existing strict helpers still admit the older public source. A separate successor commit must bind new versioned helpers to this exact public manifest; the old checks are not relaxed."
+}
