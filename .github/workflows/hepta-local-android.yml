@@ -20,7 +20,89 @@ permissions:
   contents: read
 
 jobs:
+  mnn-runtime:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the exact candidate source for the macOS runtime build
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Set up Java for the Android SDK manager
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify complete source closure
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/verify_source.py
+      - name: Install and identify the original macOS NDK compiler
+        run: |
+          hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
+          "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'ndk;28.1.13356709'
+          hepta_ndk="$hepta_sdk/ndk/28.1.13356709"
+          python -c 'import hashlib,pathlib,sys; actual=hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest(); assert actual=="ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6", "original macOS compiler bytes differ"' "$hepta_ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang"
+          printf '%s\n' "ANDROID_NDK_ROOT=$hepta_ndk" >> "$GITHUB_ENV"
+      - name: Check out the fixed public MNN source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: doulujiyao12/mobiinfer
+          ref: bce7456ce60b5e51b4d3b357f303515860353d8c
+          path: hepta-mnn-upstream
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Rebuild and match all three original runtime files on macOS
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v2/rebuild_exact_runtime.py \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --mnn-checkout "$GITHUB_WORKSPACE/hepta-mnn-upstream" \
+            --ndk "$ANDROID_NDK_ROOT" \
+            --output "$RUNNER_TEMP/hepta-mobimind-rebuild"
+      - name: Bind the exact rebuilt runtime to this source and workflow attempt
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v1/verify_ci_runtime_bundle.py bind \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v2/rebuild_exact_runtime.py" \
+            --bundle "$RUNNER_TEMP/hepta-mobimind-rebuild" \
+            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
+      - name: Transfer only the exact runtime within this workflow
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-mobimind-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hepta-mobimind-rebuild/runtime/*
+            ${{ runner.temp }}/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/CURRENT-CI-SOURCE.json
+      - name: Preserve actual macOS runtime build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-mobimind-macos-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/three-elf-comparison.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/source-qualification.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/worker-compile-commands.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/*.log
   source-and-android:
+    needs: mnn-runtime
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -94,15 +176,6 @@ jobs:
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
           "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'platforms;android-34' 'build-tools;34.0.0' 'ndk;28.1.13356709'
           printf '%s\n' "ANDROID_SDK_ROOT=$hepta_sdk" "ANDROID_NDK_ROOT=$hepta_sdk/ndk/28.1.13356709" "AAPT2=$hepta_sdk/build-tools/34.0.0/aapt2" "APKSIGNER=$hepta_sdk/build-tools/34.0.0/apksigner" "READELF=/usr/bin/readelf" "KEYTOOL=$JAVA_HOME/bin/keytool" "HEPTA_BUILD_OUT=$RUNNER_TEMP/hepta-build" >> "$GITHUB_ENV"
-      - name: Check out the fixed public MNN source
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          repository: doulujiyao12/mobiinfer
-          ref: bce7456ce60b5e51b4d3b357f303515860353d8c
-          path: hepta-mnn-upstream
-          persist-credentials: false
-          submodules: false
-          lfs: false
       - name: Verify and extract pinned GenieX runtime
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: |
@@ -111,14 +184,20 @@ jobs:
       - name: Compile Android Java and arm64 runner
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B build_mac.py
-      - name: Rebuild and match all three original MNN runtime files
+      - name: Download the current workflow's exact macOS runtime
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-mobimind-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-mobimind-from-macos
+      - name: Reverify all original runtime bytes and the actual macOS build identity on Linux
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v2/rebuild_exact_runtime.py \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v1/verify_ci_runtime_bundle.py verify \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
-            --mnn-checkout "$GITHUB_WORKSPACE/hepta-mnn-upstream" \
-            --ndk "$ANDROID_NDK_ROOT" \
-            --output "$RUNNER_TEMP/hepta-mobimind-rebuild"
-          printf '%s\n' "MOBIMIND_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-mobimind-rebuild/runtime" >> "$GITHUB_ENV"
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v2/rebuild_exact_runtime.py" \
+            --bundle "$RUNNER_TEMP/hepta-mobimind-from-macos" \
+            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/hepta-mobimind-consumer-verification.json"
+          printf '%s\n' "MOBIMIND_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-mobimind-from-macos/runtime" >> "$GITHUB_ENV"
       - name: Verify packaging with an ephemeral development signer
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B assemble_pocket4.py
@@ -138,19 +217,17 @@ jobs:
             ${{ runner.temp }}/hepta-build/worker-adapter.json
             ${{ runner.temp }}/hepta-build/control-v*-static/*.json
             ${{ runner.temp }}/hepta-build/control-v*-static/*.txt
-      - name: Preserve MNN rebuild comparison evidence only
+      - name: Preserve the Linux runtime consumer verification
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-mobimind-rebuild-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          name: hepta-mobimind-linux-consumer-${{ github.event.pull_request.head.sha || github.sha }}
           retention-days: 14
           if-no-files-found: warn
           path: |
-            ${{ runner.temp }}/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json
-            ${{ runner.temp }}/hepta-mobimind-rebuild/three-elf-comparison.json
-            ${{ runner.temp }}/hepta-mobimind-rebuild/source-qualification.json
-            ${{ runner.temp }}/hepta-mobimind-rebuild/worker-compile-commands.json
-            ${{ runner.temp }}/hepta-mobimind-rebuild/*.log
+            ${{ runner.temp }}/hepta-mobimind-consumer-verification.json
+            ${{ runner.temp }}/hepta-mobimind-from-macos/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-mobimind-from-macos/CURRENT-CI-SOURCE.json
       - name: Preserve unsigned build inputs for same-signer device assembly
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
