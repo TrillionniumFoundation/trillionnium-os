@@ -1,0 +1,18 @@
+{
+  "action": {
+    "action": "find_app",
+    "observation_id": "6e5961df569a4301a0e75cb6b57fab1a",
+    "package": "com.motorola.launcher3",
+    "query": "计算器",
+    "offset": 0,
+    "reason": "当前在桌面，目标是先查找“计算器”，再打开它。"
+  },
+  "accepted": true,
+  "dispatched": false,
+  "stale": false,
+  "detail": "已只读查询本机应用目录",
+  "model_run_id": "d944f061782b400fa68e229fdfa49be8",
+  "model_issued": true,
+  "read_only": true,
+  "effect": "launcher_catalogue_read"
+}

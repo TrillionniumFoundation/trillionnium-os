@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.local-app-discovery.v1",
+  "source": "installed_launcher_snapshot",
+  "catalogue_sha256": "1ba97d7d2740ca302cd32dc6897d29a728ac5d7b2c68faa89f5f47d3791aee96",
+  "query": "计算器",
+  "offset": 0,
+  "total_apps": 55,
+  "matching_apps": 1,
+  "apps": [
+    {
+      "package": "com.motorola.cn.calculator",
+      "label": "计算器"
+    }
+  ],
+  "returned": 1,
+  "prompt_may_show_fewer": true,
+  "task_id": "f67d5582e3dd4b9a909fe7afe6d49ec4",
+  "request_observation_id": "6e5961df569a4301a0e75cb6b57fab1a",
+  "model_run_id": "d944f061782b400fa68e229fdfa49be8",
+  "model_issued": true,
+  "read_only": true,
+  "dispatched": false,
+  "original_instruction_sha256": "da2f1777b3001817c50f635346d28433ff9f8313b07de3cd8f15b396131d9312"
+}
