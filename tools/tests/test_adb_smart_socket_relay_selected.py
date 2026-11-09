@@ -75,7 +75,7 @@ class SelectedAdbSmartSocketRelayTest(unittest.TestCase):
         self.upstream.close()
         self.temp.cleanup()
 
-    def start_relay(self, *, max_clients: int = 8, event_bytes: int = 1048576):
+    def start_relay(self, *, max_clients: int = 8, event_bytes: int = 1048576, native_identity: bool = False):
         descriptor = self.root / f"descriptor-{time.monotonic_ns()}.json"
         events = self.root / f"events-{time.monotonic_ns()}.jsonl"
         child = subprocess.Popen(
@@ -100,7 +100,7 @@ class SelectedAdbSmartSocketRelayTest(unittest.TestCase):
                 str(descriptor),
                 "--events",
                 str(events),
-            ],
+            ] + (["--native-process-identity"] if native_identity else []),
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -144,6 +144,21 @@ class SelectedAdbSmartSocketRelayTest(unittest.TestCase):
                     break
                 result.extend(chunk)
             return bytes(result)
+
+    def test_native_listener_descriptor_binds_live_process_generation(self):
+        child, descriptor, _events = self.start_relay(native_identity=True)
+        try:
+            identity = descriptor["runtime_identity"]
+            raw = Path(f"/proc/{child.pid}/stat").read_bytes()
+            fields = raw.rsplit(b")", 1)[1].split()
+            self.assertEqual(identity["pid"], child.pid)
+            self.assertEqual(identity["parent_pid"], os.getpid())
+            self.assertEqual(identity["process_group"], int(fields[2]))
+            self.assertEqual(identity["session_id"], int(fields[3]))
+            self.assertEqual(identity["start_time_ticks"], int(fields[19]))
+            self.assertFalse(identity["is_recovery_or_signal_authority"])
+        finally:
+            self.stop_relay(child)
 
     def test_arbitrary_bytes_and_half_close_are_preserved(self) -> None:
         child, descriptor, events = self.start_relay()
