@@ -6,7 +6,7 @@
   "reviewed_controller_merge_manifest_sha256": "19ea7449f35e76f86cc156c620a9dffbc2f46eff5bb5f45d4876e49da2f910dd",
   "android_build": "separate build receipt",
   "phone_qualified": false,
-  "functional_scope": "allow fresh stable observation evidence within the existing ten-second caller window; two-sample identity, original task and observation deadlines, screenshot rechecks, cancellation, owner and native behavior unchanged",
+  "functional_scope": "allow fresh stable observation evidence within the existing ten-second caller window; two-sample identity, original task and observation deadlines, screenshot rechecks, cancellation, owner and native behavior unchanged; bind each action dispatch to its original task deadline and retired wait; preserve raw acknowledgements before stopping late or cancelled continuation",
   "visual_planner_merged": false,
   "native_tool_protocol_merged": false,
   "thinking_protocol_merged": false,
@@ -3941,8 +3941,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 46544,
-      "sha256": "75fd20f418ebce250fb83d057c0893d283d0039e9c90f0c630b9da7a310f6500"
+      "bytes": 47438,
+      "sha256": "f81e5daafb18b99f7f83840ad9b4ab892beed651c32c481273c6c07b6036cf58"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -4190,6 +4190,11 @@
       "sha256": "0baa30e51254e8886cad11978f178efe91330a673415f46349f27175bb68c802"
     },
     {
+      "path": "tests/action-deadline/ActionDeadlineHarness.java",
+      "bytes": 10760,
+      "sha256": "7692e1de6267470e75994291a552ed9709d32dcf7aa67d50e31e37b078d0ce09"
+    },
+    {
       "path": "tests/action-grammar/DecisionGrammarHostTest.java",
       "bytes": 5740,
       "sha256": "7e4d08d30f437587d84515359cf9faed5808db24fad98d76331d451b3e92865e"
@@ -4285,6 +4290,11 @@
       "sha256": "414b3aa19ad61b9287e44173bedda07a46cd8e4afd6e3d609aba49e54c43f376"
     },
     {
+      "path": "tools/test_action_deadline_dispatch.py",
+      "bytes": 8800,
+      "sha256": "699898ae680638f78da903dd4499172f17ec05f3cc2fa14ae66345593782f0c8"
+    },
+    {
       "path": "tools/test_build_identity.py",
       "bytes": 2997,
       "sha256": "b617d7cdbb3d3870cb005a6312458cf286f4f256a3f5547ce05521ff7f8c91ae"
@@ -4348,5 +4358,7 @@
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
   "observation_text_projection_schema": "hepta.observed-text-projection.v1",
   "derived_from_code17_source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
-  "derived_from_code18_source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954"
+  "derived_from_code18_source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954",
+  "isolated_action_deadline_base_head": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "isolated_action_deadline_base_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69"
 }
