@@ -2,6 +2,7 @@ package org.trillionnium.owneropen;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,20 +18,68 @@ import java.util.concurrent.Executors;
 
 /** Minimal truthful UI over the owner-open R5 broker wire. */
 public final class OwnerOpenShellActivity extends Activity implements OwnerOpenClient.Listener {
+    private static final String STATE_SESSION = "owneropen.session";
+    private static final String STATE_TASK = "owneropen.task";
+    private static final String STATE_TURN = "owneropen.turn";
+    private static final String STATE_PROMPT = "owneropen.prompt";
+    private static final String STATE_TRANSCRIPT = "owneropen.transcript";
+    private static final String STATE_SCROLL = "owneropen.scroll";
+    private static final int MAX_PROMPT_CHARS = 65_536;
+    private static final int MAX_SAVED_TRANSCRIPT_CHARS = 16_384;
     private final ExecutorService operations = Executors.newSingleThreadExecutor();
-    private final String sessionId = id("session");
-    private final String taskId = id("task");
+    private String sessionId = id("session");
+    private String taskId = id("task");
     private OwnerOpenClient client;
     private String turnId;
     private EditText prompt;
     private TextView transcript;
+    private ScrollView scroll;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        if (state != null) {
+            sessionId = state.getString(STATE_SESSION, sessionId);
+            taskId = state.getString(STATE_TASK, taskId);
+            turnId = state.getString(STATE_TURN);
+        }
         client = new OwnerOpenClient(this);
         setContentView(buildView());
-        runOperation("connect", () -> client.connect());
+        if (state == null) {
+            runOperation("connect", () -> client.connect());
+        } else {
+            prompt.setText(state.getString(STATE_PROMPT, ""));
+            transcript.setText(state.getString(STATE_TRANSCRIPT, ""));
+            final int savedScroll = state.getInt(STATE_SCROLL, 0);
+            scroll.post(() -> scroll.scrollTo(0, savedScroll));
+            // Saved identity and visible history do not authorize re-dispatch.
+            // Only explicit user controls may reconnect/inspect. Send always
+            // creates a different turn identity.
+            append("local: restored UI history; outcome requires explicit Inspect or Reconnect. "
+                    + "No saved turn was sent again.");
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        // Keep UI identity/text only; never save the client, socket or broker
+        // credential in an Android saved-state Bundle.
+        state.putString(STATE_SESSION, sessionId);
+        state.putString(STATE_TASK, taskId);
+        state.putString(STATE_TURN, turnId);
+        state.putString(STATE_PROMPT, prompt.getText().toString());
+        String history = transcript.getText().toString();
+        if (history.length() > MAX_SAVED_TRANSCRIPT_CHARS) {
+            int start = history.length() - MAX_SAVED_TRANSCRIPT_CHARS;
+            if (Character.isLowSurrogate(history.charAt(start))) {
+                start++;
+            }
+            history = "local: restored recent UI history; Inspect retrieves durable evidence.\n"
+                    + history.substring(start);
+        }
+        state.putString(STATE_TRANSCRIPT, history);
+        state.putInt(STATE_SCROLL, scroll.getScrollY());
     }
 
     private LinearLayout buildView() {
@@ -43,6 +92,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
         prompt.setHint(R.string.prompt_hint);
         prompt.setMinLines(3);
         prompt.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        prompt.setFilters(new InputFilter[] {new InputFilter.LengthFilter(MAX_PROMPT_CHARS)});
         root.addView(prompt, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -61,7 +111,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
 
         transcript = new TextView(this);
         transcript.setTextIsSelectable(true);
-        ScrollView scroll = new ScrollView(this);
+        scroll = new ScrollView(this);
         scroll.addView(transcript, new ScrollView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         root.addView(scroll, new LinearLayout.LayoutParams(

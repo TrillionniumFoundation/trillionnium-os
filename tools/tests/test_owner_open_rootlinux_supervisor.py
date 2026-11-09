@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 import ctypes
+import errno
+import io
+from contextlib import nullcontext
+from types import SimpleNamespace
 import importlib.util
 import json
 import os
@@ -1167,6 +1171,87 @@ class RootLinuxSessionFenceTest(SupervisorFixture):
         other = module.Supervisor(self.loaded)
         self.assertEqual(other.run(), 70)
         self.assertNotEqual(prior_id, other._session_id)
+
+class NativeSameDomainObservationTest(SupervisorFixture):
+    def stat_record(self, pid=99, start=123):
+        fields = [b"Z", b"10", str(pid).encode(), str(pid).encode()] + [b"0"] * 15 + [str(start).encode()]
+        return str(pid).encode() + b" (command (with) parentheses)) " + b" ".join(fields)
+
+    def scan(self, denied_pid, *, opt_in, start=123):
+        entries = [SimpleNamespace(name="1"), SimpleNamespace(name="99")]
+        def opened(path, *_args, **_kwargs):
+            if path == f"/proc/{denied_pid}/stat":
+                raise PermissionError(errno.EACCES, "denied")
+            return io.BytesIO(self.stat_record(start=start))
+        observation = {}
+        with mock.patch.object(module.os, "scandir", return_value=nullcontext(entries)), mock.patch("builtins.open", side_effect=opened):
+            result = module.Supervisor.live_group_members(
+                99, allow_unreadable_other_domains=opt_in, anchor_start_time=123,
+                observation=observation,
+            )
+        return result, observation
+
+    def test_native_opt_in_counts_unreadable_nonanchor_without_claiming_absence(self):
+        self.assertEqual(self.scan(1, opt_in=True), ((), {"permission_denied": 1}))
+
+    def test_default_mode_still_rejects_unreadable_nonanchor(self):
+        with self.assertRaisesRegex(module.SupervisorError, "unavailable"):
+            self.scan(1, opt_in=False)
+
+    def test_native_anchor_permission_denial_is_always_hold(self):
+        with self.assertRaisesRegex(module.SupervisorError, "unavailable"):
+            self.scan(99, opt_in=True)
+
+    def test_native_anchor_starttime_mismatch_is_hold(self):
+        with self.assertRaisesRegex(module.SupervisorError, "start time differs"):
+            self.scan(1, opt_in=True, start=124)
+
+    def test_native_opt_in_requires_exact_bootstrap_selinux_domain(self):
+        with mock.patch("builtins.open", return_value=io.BytesIO(b"u:r:init:s0")):
+            with self.assertRaisesRegex(module.SupervisorError, "requires the native bootstrap domain"):
+                module.assert_same_domain_observation()
+        with mock.patch("builtins.open", return_value=io.BytesIO(b"u:r:trillionnium_owner_open_bootstrap:s0\x00")):
+            module.assert_same_domain_observation()
+
+class NativeCarrierOutputTest(SupervisorFixture):
+    def configured(self):
+        self.write_child("raise SystemExit(0)\n")
+        value = self.config()
+        value["children"][0]["argv"].extend([
+            "--descriptor", str(self.state / "carriers/{carrier_instance}/descriptor.json"),
+            "--events", str(self.state / "carriers/{carrier_instance}/events.jsonl"),
+        ])
+        return self.write_config(value)
+
+    def test_per_launch_outputs_preserve_prior_evidence(self):
+        config = self.configured()
+        with mock.patch.object(module, "assert_same_domain_observation"):
+            supervisor = module.Supervisor(config, same_domain_proc_observation=True)
+        try:
+            supervisor.validate_state_root()
+            supervisor.begin_session()
+            argv1, directory1 = supervisor.carrier_argv(config.children[0])
+            (directory1 / "events.jsonl").write_text("earlier evidence\n")
+            argv2, directory2 = supervisor.carrier_argv(config.children[0])
+            self.assertNotEqual(directory1, directory2)
+            self.assertIn(supervisor._session_id, str(directory2))
+            self.assertEqual((directory1 / "events.jsonl").read_text(), "earlier evidence\n")
+            self.assertEqual(directory2.stat().st_mode & 0o777, 0o700)
+            self.assertFalse(any("{carrier_instance}" in value for value in argv1 + argv2))
+            supervisor.assert_state_namespace()
+        finally:
+            supervisor.close_state()
+
+    def test_default_profile_cannot_materialize_reserved_outputs(self):
+        config = self.configured()
+        supervisor = module.Supervisor(config)
+        try:
+            supervisor.validate_state_root()
+            supervisor.begin_session()
+            with self.assertRaisesRegex(module.SupervisorError, "native session profile"):
+                supervisor.carrier_argv(config.children[0])
+        finally:
+            supervisor.close_state()
 
 if __name__ == "__main__":
     unittest.main()

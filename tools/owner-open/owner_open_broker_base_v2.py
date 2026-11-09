@@ -494,8 +494,17 @@ class BrokerBase:
         return value
 
     def _build_descriptor(self) -> dict[str, Any]:
-        if self.host_hello_ack is None:
+        if self.host_hello_ack is None or self.upstream_process_identity is None:
             raise BrokerError("cannot build descriptor before Host handshake")
+        broker_identity = _observe_process_identity(os.getpid())
+        if broker_identity is None:
+            raise BrokerError("broker identity disappeared before descriptor publication")
+        def identity_fields(identity: _ProcessIdentity) -> dict[str, Any]:
+            return {
+                "pid": identity.pid, "process_group": identity.process_group,
+                "session_id": identity.session_id, "start_time_ticks": identity.start_time_ticks,
+                "boot_id_sha256": identity.boot_id_sha256,
+            }
         return finalize_descriptor(
             {
                 "schema": SCHEMA,
@@ -553,6 +562,11 @@ class BrokerBase:
                     canonical(self.upstream_argv)
                 ).hexdigest(),
                 "host_hello_ack": self.host_hello_ack,
+                "runtime_identity": {
+                    "broker": {**identity_fields(broker_identity), "parent_pid": os.getppid()},
+                    "host": {**identity_fields(self.upstream_process_identity), "parent_pid": os.getpid()},
+                    "is_recovery_or_signal_authority": False,
+                },
                 "automatic_redispatch": False,
             }
         )
