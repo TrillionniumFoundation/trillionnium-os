@@ -1,5 +1,6 @@
 {
   "approved_original_files": 9,
+  "byte_exact_approved_original_files": 8,
   "candidate_sources_included": false,
   "files": [
     {
@@ -51,18 +52,48 @@
       "sha256": "63e57690df46b43d974e268b98602f4643c8f704d788f6fa503b73dc845f2026"
     },
     {
-      "approved_original_copied_byte_for_byte": true,
-      "bytes": 9838,
+      "approved_original_bytes": 9838,
+      "approved_original_copied_byte_for_byte": false,
+      "approved_original_sha256": "33bac94c95ad3047f3c37421053755565f376accbe98b684ee635b61b865e270",
+      "bytes": 9918,
+      "format_only_derivative": true,
       "path": "remaining-seven/PUBLIC-SUMMARY.md",
-      "sha256": "33bac94c95ad3047f3c37421053755565f376accbe98b684ee635b61b865e270"
+      "sha256": "cf9932d37c36d31b7d29249e3dca45f037c366e1330d93f10799e0271f2f7141"
     },
     {
-      "bytes": 4107,
+      "bytes": 4583,
       "new_index": true,
       "path": "README.md",
-      "sha256": "d15efffd4fd00a76e09d8b9f518bdd0a2a8523cedd0d2456e14a2c02e4c9d6cb"
+      "sha256": "c076f2b511cad846a44230366408de201fdc497a8c17cdff1895b76de471ca23"
     }
   ],
+  "format_derivation": {
+    "after_sha256": "cf9932d37c36d31b7d29249e3dca45f037c366e1330d93f10799e0271f2f7141",
+    "before_sha256": "33bac94c95ad3047f3c37421053755565f376accbe98b684ee635b61b865e270",
+    "evidence_labels_reformatted": 20,
+    "exact_reverse_transform_matches_original": true,
+    "facts_changed": false,
+    "parent_head_sha": "8033b571d089c0aebb486c796f6f6577f8bafc99",
+    "path": "remaining-seven/PUBLIC-SUMMARY.md",
+    "reason": "Evidence tags were parsed as undefined Markdown reference links; use fullwidth parentheses only.",
+    "retained_failed_jobs": [
+      {
+        "bytes": 63218,
+        "job_id": 129088231607,
+        "sha256": "4fb6192173275e44b33100e5ea03753f8f32d86a7ba9480756f66248e4955ae9"
+      },
+      {
+        "bytes": 129996,
+        "job_id": 129088231322,
+        "sha256": "9b681628ec06fcb8245f716861487f66746eca73d349d9edefe7c157b1a35876"
+      }
+    ],
+    "retained_failed_runs": [
+      42595872770,
+      42595872685
+    ]
+  },
+  "format_only_derivatives": 1,
   "new_model_or_runtime_execution": false,
   "parent_head_sha": "64c0612017eb019984e1e16872c0d60015f04da2",
   "parent_tree_sha": "bc89aff8475aaaba9bbd28f4046c07e8f1032007",
