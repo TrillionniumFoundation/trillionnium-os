@@ -13,6 +13,14 @@ import java.util.Set;
 
 /** Real parser, guard, policy and emitted grammar; no Android or inference. */
 public final class RepeatActionGuardHostTest {
+    /** Synthetic test capabilities are now explicit instead of implied by a node set. */
+    private static java.util.Map<String,org.trillionnium.hepta.local.ObservedScrollActions> scrolls(java.util.Set<String> nodes){
+        java.util.Map<String,org.trillionnium.hepta.local.ObservedScrollActions> out=new java.util.HashMap<String,org.trillionnium.hepta.local.ObservedScrollActions>();
+        for(String node:nodes)out.put(node,org.trillionnium.hepta.local.ObservedScrollActions.observed(
+                java.util.Arrays.asList("forward","backward","up","down","left","right")));
+        return out;
+    }
+
     private static final String OBS="f91c685bf5f04f5c9a6a3197eade1fed";
     private static final String CURRENT="com.example.launcher";
     private static final String TARGET="com.example.reader";
@@ -79,7 +87,7 @@ public final class RepeatActionGuardHostTest {
 
     private static void emit(Path out,String name,RepeatActionGuard guard,Set<String> catalogue,String tree)throws Exception {
         Set<String> allowed=guard.allowedOpenPackages(catalogue,tree);
-        DecisionGrammar grammar=DecisionGrammar.create(OBS,CURRENT,allowed,set("n1"),set(),set(),labels(set("n1")));
+        DecisionGrammar grammar=DecisionGrammar.create(OBS,CURRENT,allowed,set("n1"),set(),scrolls(set()),labels(set("n1")));
         Files.write(out.resolve(name),grammar.text.getBytes(StandardCharsets.UTF_8));
     }
     private static boolean policy(ActionDecision action,Set<String> apps,Set<String> nodes)throws Exception {

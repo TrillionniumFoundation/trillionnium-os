@@ -14,7 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedWindowMetadata", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
+PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "ObservedScrollActions", "ObservationStabilityGate", "RecentActionProjection", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedWindowMetadata", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
               "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
               "AppCatalogueRanker", "SessionRecovery", "MobiMindPins", "MobiMindContract", "MobiMindSessionContract"]
 
@@ -65,9 +65,10 @@ def main():
         for test in tests:
             name=test.stem
             command=[java,"-cp",classes,name]
-            if name in ("DecisionGrammarHostTest","AppCatalogueHostTest","RepeatActionGuardHostTest"):command.append(fixtures)
+            if name in ("DecisionGrammarHostTest","AppCatalogueHostTest","RepeatActionGuardHostTest","ScrollGrammarHostTest"):command.append(fixtures)
             run(name,command)
         run("grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_decision_grammar.py",fixtures])
+        run("scroll-grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_scroll_grammar.py",fixtures])
         run("completion-protocol",[sys.executable,ROOT/"tests/action-grammar/test_completion_protocol.py",fixtures])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         run("mobimind-private-staging",[sys.executable,"-m","unittest","discover","-s",

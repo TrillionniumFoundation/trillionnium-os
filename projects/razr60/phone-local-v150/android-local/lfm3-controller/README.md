@@ -1,10 +1,17 @@
-# Hepta local qualification candidate 15
+# Hepta local qualification candidate 16
 
-Version 15 / `0.15.0-local-mnn-loader` changes only the separate MNN diagnostic
-child environment to a fixed system-first library search path. It keeps the
-three MNN ELF files, all GenieX files, text planner, models, and execution guards
-unchanged. Ordinary-App GPU execution still requires a fresh device test. See
-[CODE15-MNN-LOADER.md](docs/CODE15-MNN-LOADER.md).
+Version 16 / `0.16.0-local-observation` adds a bounded stable-observation phase,
+compact action-relevant recent history, explicit whole-field typing semantics,
+and exact observed node-by-direction scroll capabilities. It preserves the
+custom JSON/GBNF controller and every execution-time freshness, locked-device,
+repeat-action and destructive-click guard. See
+[CODE16-OBSERVATION.md](docs/CODE16-OBSERVATION.md) for scope and limits.
+
+The Code15 separate MNN diagnostic child keeps its fixed system-first loader,
+all three MNN ELF identities, and model-only boundary. All 16 packaged native
+members must remain byte-identical to Code15. New APK compilation and host checks
+do not establish device task completion or transfer earlier device qualification
+onto this candidate.
 
 The retained code14 controller exposes
 bounded actual active-window metadata and node focus, binds them to exact

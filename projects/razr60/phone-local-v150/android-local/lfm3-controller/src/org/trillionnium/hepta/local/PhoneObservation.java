@@ -14,14 +14,18 @@ public final class PhoneObservation {
     public static final class Node {
         public final String id, packageName, className, viewId, text, description;
         public final ObservedChildText.Result childText;
+        public final ObservedScrollActions scrollActions;
         public final Rect bounds;
         public final boolean clickable, editable, scrollable, enabled, focused, password;
         Node(String id, String packageName, String className, String viewId, String text,
              String description, Rect bounds, boolean clickable, boolean editable,
-             boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText) {
+             boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
+             ObservedScrollActions scrollActions) {
             this.id=id; this.packageName=packageName; this.className=className; this.viewId=viewId;
             this.text=text; this.description=description; this.bounds=new Rect(bounds);
             this.childText=childText;
+            if(scrollActions==null)throw new IllegalArgumentException("observed scroll action state required");
+            this.scrollActions=scrollActions;
             this.clickable=clickable; this.editable=editable; this.scrollable=scrollable;
             this.enabled=enabled; this.focused=focused; this.password=password;
         }
@@ -44,7 +48,9 @@ public final class PhoneObservation {
             if (!viewId.isEmpty()) value.put("view_id",viewId);
             if (clickable) value.put("clickable",true);
             if (editable) value.put("editable",true);
-            if (scrollable) value.put("scrollable",true);
+            if (scrollable) value.put("scrollable",true); // Platform isScrollable, not a direction grant.
+            value.put("scroll_actions_observed",scrollActions.observed);
+            value.put("scroll_directions",scrollActions.observed?new JSONArray(scrollActions.directions):JSONObject.NULL);
             if (!enabled) value.put("enabled",false);
             if (focused) value.put("focused",true);
             if (password) value.put("password",true);
@@ -106,6 +112,7 @@ public final class PhoneObservation {
         value.put("window",windowJson());
         value.put("app_tree_sha256",state.appTreeSha256);value.put("observation_state_sha256",treeSha256);
         value.put("ime_visible",state.imeVisibility.value()==null?JSONObject.NULL:state.imeVisibility.value());
+        value.put("scroll_actions_schema",ObservedScrollActions.SCHEMA);
         value.put("node_data_is_untrusted",true);value.put("nodes_truncated",nodesTruncated);
         JSONArray array=new JSONArray();for(Node node:nodes) array.put(node.json());value.put("nodes",array);
         return value;

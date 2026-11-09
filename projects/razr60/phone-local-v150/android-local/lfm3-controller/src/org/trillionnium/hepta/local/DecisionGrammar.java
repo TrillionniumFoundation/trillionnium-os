@@ -5,6 +5,8 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,8 +17,10 @@ public final class DecisionGrammar {
     public final String observationId, currentPackage, text, sha256;
     public final List<String> actions;
     public final ObservedTargetLabels targets;
+    public final Map<String,List<String>> scrollDirections;
 
-    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions){
+    private DecisionGrammar(ObservedTargetLabels targets,String text,List<String> actions,Map<String,List<String>> scrollDirections){
+        this.scrollDirections=Collections.unmodifiableMap(new TreeMap<String,List<String>>(scrollDirections));
         this.targets=targets;this.observationId=targets.observationId;this.currentPackage=targets.packageName;this.text=text;
         this.actions=Collections.unmodifiableList(new ArrayList<String>(actions));
         byte[] bytes=text.getBytes(StandardCharsets.UTF_8);
@@ -29,7 +33,7 @@ public final class DecisionGrammar {
     }
 
     public static DecisionGrammar create(String observationId,String currentPackage,Set<String> shownApps,
-            Set<String> clickableNodes,Set<String> editableNodes,Set<String> scrollableNodes,ObservedTargetLabels targets){
+            Set<String> clickableNodes,Set<String> editableNodes,Map<String,ObservedScrollActions> scrollActions,ObservedTargetLabels targets){
         if(observationId==null||!observationId.matches("[0-9a-f]{32}"))throw new IllegalArgumentException("invalid observed id");
         checkPackage(currentPackage);
         if(targets==null||!observationId.equals(targets.observationId)||!currentPackage.equals(targets.packageName))
@@ -37,7 +41,8 @@ public final class DecisionGrammar {
         if(shownApps==null||shownApps.size()>40)throw new IllegalArgumentException("invalid application projection");
         TreeSet<String> apps=new TreeSet<String>();
         for(String name:shownApps){checkPackage(name);if(!currentPackage.equals(name)&&!"android".equals(name))apps.add(name);}
-        TreeSet<String> clicks=checkedNodes(clickableNodes),edits=checkedNodes(editableNodes),scrolls=checkedNodes(scrollableNodes);
+        TreeSet<String> clicks=checkedNodes(clickableNodes),edits=checkedNodes(editableNodes);
+        Map<String,List<String>> scrolls=checkedScrollActions(scrollActions,targets);
         StringBuilder rules=new StringBuilder();List<String> branches=new ArrayList<String>();
         branches.add("find_app");
         rule(rules,"find-app",prefix("find_app",observationId)+field("package",jsonValue(currentPackage))+comma()+field("query","query-string")+comma()+field("offset","app-offset")+ending());
@@ -54,8 +59,8 @@ public final class DecisionGrammar {
             rule(rules,"type-target",targetPairs(edits,targets));
         }
         if(!scrolls.isEmpty()){
-            branches.add("scroll");rule(rules,"scroll",prefix("scroll",observationId)+field("package",jsonValue(currentPackage))+comma()+"scroll-target"+comma()+field("direction","direction")+ending());
-            rule(rules,"scroll-target",targetPairs(scrolls,targets));
+            branches.add("scroll");rule(rules,"scroll",prefix("scroll",observationId)+field("package",jsonValue(currentPackage))+comma()+"scroll-target"+ending());
+            rule(rules,"scroll-target",scrollPairs(scrolls,targets));
         }
         for(String name:new String[]{"back","home"}){
             branches.add(name);rule(rules,name,prefix(name,observationId)+field("package",jsonValue(currentPackage))+ending());
@@ -63,7 +68,6 @@ public final class DecisionGrammar {
         branches.add("wait");rule(rules,"wait",prefix("wait",observationId)+field("package",jsonValue(currentPackage))+comma()+field("duration_ms","duration")+ending());
         branches.add("done");rule(rules,"done",prefix("done",observationId)+field("package",jsonValue(currentPackage))+comma()+field("status","status")+comma()+field("summary","summary-string")+ending());
         // A brief state assessment precedes action selection in the generated JSON.
-        rule(rules,"direction",alternatives(new TreeSet<String>(java.util.Arrays.asList("forward","backward","up","down","left","right"))));
         rule(rules,"status",alternatives(new TreeSet<String>(java.util.Arrays.asList("success","partial","failure"))));
         rule(rules,"duration","[1-9] [0-9]{2} | "+literal("1")+" [0-9]{3} | "+literal("2000"));
         rule(rules,"app-offset",literal("0")+" | [1-9] [0-9]{0,2} | [1-3] [0-9]{3} | "+literal("40")+" [0-8] [0-9] | "+literal("409")+" [0-5]");
@@ -75,7 +79,31 @@ public final class DecisionGrammar {
         rules.append("json-char ::= [^\"\\\\\\x00-\\x1F] | "+literal("\\")+" [\"\\\\/bfnrt]\n");
         rule(rules,"ws","[ \\t\\n\\r]{0,8}");
         List<String> ruleNames=new ArrayList<String>();for(String branch:branches)ruleNames.add(branch.replace('_','-'));
-        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches);
+        return new DecisionGrammar(targets,"root ::= ws ("+join(ruleNames," | ")+") ws\n"+rules.toString(),branches,scrolls);
+    }
+
+    /** A direction cannot migrate to another node that has a different action list. */
+    public boolean allowsScroll(String nodeId,String direction){
+        List<String> allowed=scrollDirections.get(nodeId);return allowed!=null&&allowed.contains(direction);
+    }
+    private static Map<String,List<String>> checkedScrollActions(Map<String,ObservedScrollActions> values,ObservedTargetLabels targets){
+        if(values==null||values.size()>200)throw new IllegalArgumentException("invalid scroll action projection");
+        checkedNodes(values.keySet());Map<String,List<String>> result=new TreeMap<String,List<String>>();
+        for(Map.Entry<String,ObservedScrollActions> pair:values.entrySet()){
+            if(!targets.labels.containsKey(pair.getKey())||pair.getValue()==null)
+                throw new IllegalArgumentException("scroll capability is not bound to a supplied node");
+            if(pair.getValue().hasAny())result.put(pair.getKey(),pair.getValue().directions);
+        }
+        return result;
+    }
+    private static String scrollPairs(Map<String,List<String>> values,ObservedTargetLabels targets){
+        List<String> pairs=new ArrayList<String>();
+        for(Map.Entry<String,List<String>> pair:values.entrySet()){
+            String id=pair.getKey();
+            pairs.add("("+field("node_label",jsonValue(targets.labels.get(id)))+comma()+field("node_id",jsonValue(id))
+                    +comma()+field("direction","("+alternatives(pair.getValue())+")")+")");
+        }
+        return join(pairs," | ");
     }
 
     private static void checkPackage(String value){

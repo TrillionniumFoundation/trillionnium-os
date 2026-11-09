@@ -1,12 +1,17 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 15,
-  "version_name": "0.15.0-local-mnn-loader",
-  "derived_from_code13_source_manifest_sha256": "e48ddbd38cffe0ed3218606d47b0bcd126827d081cb5647c50bebb8c56f445a2",
+  "version_code": 16,
+  "version_name": "0.16.0-local-observation",
+  "derived_from_code15_source_manifest_sha256": "aaae9cd4505dc4c3dbbb0d8f246b1193f284ed18b2be1263f40445df466575db",
+  "reviewed_controller_merge_manifest_sha256": "19ea7449f35e76f86cc156c620a9dffbc2f46eff5bb5f45d4876e49da2f910dd",
   "android_build": "separate build receipt",
   "phone_qualified": false,
-  "visual12_planner_merged": false,
+  "functional_scope": "bounded observation stability; action-relevant recent projection and tool semantics; exact observed node-direction scroll domains",
+  "visual_planner_merged": false,
   "native_tool_protocol_merged": false,
+  "thinking_protocol_merged": false,
+  "wake_permission_added": false,
+  "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
   "files": [
     {
@@ -21,8 +26,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1862,
-      "sha256": "b11b7a4efae48850e0bb3d27f756bfacd69debbb9b4149b25d041f5de47712b7"
+      "bytes": 1863,
+      "sha256": "0e8d9a52d4e30d8d1f12ff0352a1c342905306604e70249ea374322df7c3fc39"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -71,8 +76,8 @@
     },
     {
       "path": "HOST-CHECKS.json",
-      "bytes": 30033,
-      "sha256": "e91778cffddf6e5ed979e71942b77c45b12906f901079263962b4d5768d15f15"
+      "bytes": 32820,
+      "sha256": "05759b84a5f8cdd60c7309433b36f7b37e5da6ef583279c128c671bf77c120e7"
     },
     {
       "path": "LOCAL-CONTROL.md",
@@ -86,13 +91,13 @@
     },
     {
       "path": "PUBLIC-BUILD.md",
-      "bytes": 6685,
-      "sha256": "908967833fe4bb75489a41f4a2470a3bd009b583fbeb5c4cd5314cae06418e18"
+      "bytes": 6686,
+      "sha256": "1f65c9fc401c86ce7a7fbf205470d1931546d454acc75cac92e591fb23c4e164"
     },
     {
       "path": "README.md",
-      "bytes": 6857,
-      "sha256": "5ecb5c17c7b61dabaf52ac6e2ee9837a91901861da3c52d77bc694d856109a68"
+      "bytes": 7266,
+      "sha256": "72b7c5bf9563c559b6f477f7de9b8ee1d7336b97743cb29a0d4526c3f68288f2"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -123,6 +128,11 @@
       "path": "docs/CODE15-MNN-LOADER.md",
       "bytes": 2147,
       "sha256": "b2ecf8778b5125d8faea61673e977b9ef774a316cbf5906c49081ba7aa5527ca"
+    },
+    {
+      "path": "docs/CODE16-OBSERVATION.md",
+      "bytes": 3736,
+      "sha256": "1cd86d22b0ae52ed7721a03e9b3effb3177f2ce7155926e0eefada35391e61a8"
     },
     {
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
@@ -3881,8 +3891,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
-      "bytes": 9012,
-      "sha256": "4e38d693c9e4d7758e0399f70cc9c57304f65ad03569f6ad44891eb74373e57c"
+      "bytes": 10712,
+      "sha256": "e620c88e4f92fcd40d85fed30e95f2f0314bf9b8edfb8a7dcb0c0978b627040a"
     },
     {
       "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
@@ -3891,8 +3901,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 38501,
-      "sha256": "45975e692969d6a15e95c3c607203f8da82954907730d3f4756222d51e6dca01"
+      "bytes": 45704,
+      "sha256": "52097e16d264552d3b88181002d5ddfa6397283b630f2144926742dd07c80f30"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -3921,8 +3931,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 38570,
-      "sha256": "b1ed651abfba6ca73c75aa9548c78bbc527fbf181da1a0dddd242cbef1b2e856"
+      "bytes": 39604,
+      "sha256": "75f030e8f1ae151a2a3cb1525b72d4118a1cde7278c404c1eff97fe2532cbfec"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -3980,6 +3990,11 @@
       "sha256": "1a03857c440ea1349fd35f875395c66a58f12aaa9daa6e59d72eafa6cb30c13d"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
+      "bytes": 3770,
+      "sha256": "cb57dd9daee483b62176ed26f7d2cc5a817627a4a4dfa98730c04e6229fd8c1c"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/ObservationState.java",
       "bytes": 1258,
       "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
@@ -3988,6 +4003,11 @@
       "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
       "bytes": 8289,
       "sha256": "0de6647a787e033db5e5ab93a2f97d6c5c22ae92a4a244e772268e819269afe2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "bytes": 2303,
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
@@ -4006,8 +4026,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
-      "bytes": 7163,
-      "sha256": "3f05377161b004dbf1c8e81a9869aec60b289444d938d420f0f9a969d74b75f3"
+      "bytes": 7747,
+      "sha256": "2813b9a5d14834cdfb3ef6a2b1a8252e94fa877a767d617223f3385c38982eff"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
@@ -4018,6 +4038,11 @@
       "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
       "bytes": 9097,
       "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
+      "bytes": 2893,
+      "sha256": "2e803ad9bff8a64f84134be6ba792c18e42d3355e043b1c4ca7113da86ed6892"
     },
     {
       "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
@@ -4036,8 +4061,8 @@
     },
     {
       "path": "tests/AppCatalogueHostTest.java",
-      "bytes": 12249,
-      "sha256": "0f11fb81f6877971832b62f17e91fbbe6ac98d64a6bb8fee2b3bab586c1ddd20"
+      "bytes": 12879,
+      "sha256": "34793a57edb9587cdc98c9963bac545e4dc43b92be509771ebb68d3af382386e"
     },
     {
       "path": "tests/BudgetHostTest.java",
@@ -4080,9 +4105,19 @@
       "sha256": "7c52ceb208efbda8edacf6b132bccfdf7874c7b900e09afa2f5a56e6d75c7382"
     },
     {
+      "path": "tests/ObservationStabilityHostTest.java",
+      "bytes": 4702,
+      "sha256": "5220fa4e38c04b089ce84cb67a7c0c1a61c0bef15c8e99c90877d4820e09e26a"
+    },
+    {
       "path": "tests/ObservedChildTextHostTest.java",
       "bytes": 9371,
       "sha256": "26744b5406a1f59ffcd7cfbd5c0d96d2666d093b8685a1976995406e815a142d"
+    },
+    {
+      "path": "tests/ObservedScrollActionsHostTest.java",
+      "bytes": 2610,
+      "sha256": "4895b044a61be75552ab9abf44f414562342cfcda937e4074d2e31c58fd5c891"
     },
     {
       "path": "tests/ObservedTargetLabelsHostTest.java",
@@ -4100,14 +4135,24 @@
       "sha256": "238e3bb08c244a9dc765cb405860efafe1c1b788fabea030d81c6accc0023028"
     },
     {
+      "path": "tests/RecentActionProjectionHostTest.java",
+      "bytes": 5003,
+      "sha256": "a3fa7e95184c7629c3fc95d930a5c657d86377f04abbbf1c4e328a5f782a6857"
+    },
+    {
       "path": "tests/RepeatActionGuardHostTest.java",
-      "bytes": 7097,
-      "sha256": "d45768cc2ce084bbc717d38fd2502545fb30f2435ae5a249390d303a8430f1ca"
+      "bytes": 7718,
+      "sha256": "67ac06e819c145a12a12e5fb8a8ed7de53b4cff14a5d9dccafdd802270a93e0c"
     },
     {
       "path": "tests/RepeatClickProjectionHostTest.java",
       "bytes": 4349,
       "sha256": "ef768613f3db35022e3e8d4798bf856e7edb30eef3cc48c45854fd31380daf37"
+    },
+    {
+      "path": "tests/ScrollGrammarHostTest.java",
+      "bytes": 3133,
+      "sha256": "2b97d3d1b0f467bca96607cb207dad0328c9bd7178c76b21de29f2b011391df6"
     },
     {
       "path": "tests/SessionRecoveryHostTest.java",
@@ -4116,8 +4161,8 @@
     },
     {
       "path": "tests/action-grammar/DecisionGrammarHostTest.java",
-      "bytes": 5047,
-      "sha256": "f849b51768242a81377a5ec52dbd2563b5d56feac25169e9990411192b38ad4b"
+      "bytes": 5740,
+      "sha256": "7e4d08d30f437587d84515359cf9faed5808db24fad98d76331d451b3e92865e"
     },
     {
       "path": "tests/action-grammar/gbnf_recognizer.py",
@@ -4133,6 +4178,11 @@
       "path": "tests/action-grammar/test_decision_grammar.py",
       "bytes": 10970,
       "sha256": "22a6011d4c7b0c403076790cd2c56d4b275eeacce4e95839ff182fc7598569eb"
+    },
+    {
+      "path": "tests/action-grammar/test_scroll_grammar.py",
+      "bytes": 1515,
+      "sha256": "38aaec7ba80caa5ef5a296ec37d8ab96830d6dd8bb1d5fa5bbd3ea5d3bcc3755"
     },
     {
       "path": "tests/action-parser/ActionDecisionHostTest.java",
@@ -4196,8 +4246,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 6010,
-      "sha256": "513ef4c380fd9201a3d2d44bb7efad9ebb21f169d27b3bf57779ae088f97de4d"
+      "bytes": 6232,
+      "sha256": "beb116e0ee41a2ca20903eae9b6d50e9428cb93306d824a2eb8ddbb7adc0358f"
     },
     {
       "path": "tools/suite-navigation-draft.json",
@@ -4264,8 +4314,5 @@
       "bytes": 1771,
       "sha256": "b8db2eb7b0ca64a54ed18f202abdf424d7c3424dadaf5e19ced2157d0f9a42bb"
     }
-  ],
-  "derived_from_code14_source_manifest_sha256": "ae815ddf677ab3591f9d588cae19d9067fe86d04445d562b9f2583a9147f7edf",
-  "code15_functional_scope": "MobiMindModelEngine system-first diagnostic loader only",
-  "ordinary_app_gpu_qualified": false
+  ]
 }

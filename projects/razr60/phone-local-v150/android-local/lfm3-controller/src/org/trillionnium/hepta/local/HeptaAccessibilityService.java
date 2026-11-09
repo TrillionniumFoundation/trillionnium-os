@@ -60,6 +60,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     private long lastScreenshotAt;
     private boolean capturePending;
     private long captureSerial;
+    private ObservationRequest activeObservation;
     private PhoneObservation current;
     private Graph currentGraph;
     private Bitmap currentBitmap;
@@ -82,7 +83,9 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     @Override public void onDestroy() {
         LocalTaskController controller; synchronized(this){controller=ownedController;}
         if(controller!=null)controller.close();
-        requestStop();if(live==this)live=null;clearSnapshot();super.onDestroy();
+        requestStop();
+        if(activeObservation!=null)failObservation(activeObservation,"无障碍服务已断开");
+        if(live==this)live=null;clearSnapshot();super.onDestroy();
     }
     /** Service-owned session survives Activity recreation. The controller stays injectable. */
     public synchronized LocalTaskController taskController(LocalInference inference){
@@ -119,47 +122,116 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         return snapshot.search("",0);
     }
 
-    public void observe(final String taskId,final File evidenceDirectory,final ObservationCallback callback) {
-        main.post(new Runnable(){public void run(){observeOnMain(taskId,evidenceDirectory,callback,0);}});
+    /** Each observation owns its samples/capture and the caller's original deadline. */
+    private static final class ObservationRequest {
+        final String taskId;final File directory;final ObservationCallback callback;final Cancellation cancel;
+        final ObservationStabilityGate gate;
+        Graph captured;long token;int intervalRetries;boolean finished,shotPending;
+        ObservationRequest(String taskId,File directory,ObservationCallback callback,Cancellation cancel,long deadline){
+            this.taskId=taskId;this.directory=directory;this.callback=callback;this.cancel=cancel;
+            this.gate=new ObservationStabilityGate(SystemClock.elapsedRealtime(),deadline);
+        }
     }
-    private void observeOnMain(final String taskId,final File directory,final ObservationCallback callback,final int retry) {
-        if(!owns(taskId)){callback.onError("任务已经停止或无障碍服务已断开");return;}
-        if(locked()){callback.onError("手机已锁定，请正常解锁后重新发起任务");return;}
-        if(capturePending){callback.onError("已有屏幕观察尚未结束");return;}
-        long delay=Math.max(0,400-(SystemClock.elapsedRealtime()-lastScreenshotAt));
-        if(delay>0){main.postDelayed(new Runnable(){public void run(){observeOnMain(taskId,directory,callback,retry);}},delay);return;}
-        final Graph graph;
-        try{graph=readGraph();}catch(Exception e){callback.onError("无法读取当前活动窗口："+message(e));return;}
-        capturePending=true;lastScreenshotAt=SystemClock.elapsedRealtime();final long token=++captureSerial;
-        main.postDelayed(new Runnable(){public void run(){
-            if(capturePending&&captureSerial==token){capturePending=false;captureSerial++;graph.close();callback.onError("系统截图回调超时");}
-        }},5000);
-        try { takeScreenshot(Display.DEFAULT_DISPLAY,getMainExecutor(),new TakeScreenshotCallback(){
+    public void observe(final String taskId,final File evidenceDirectory,final Cancellation cancel,
+                        final long deadline,final ObservationCallback callback) {
+        final ObservationRequest request=new ObservationRequest(taskId,evidenceDirectory,callback,cancel,deadline);
+        main.post(new Runnable(){public void run(){
+            if(activeObservation!=null){
+                ObservationRequest old=activeObservation;
+                if(!owns(old.taskId)||old.cancel.isCancelled())failObservation(old,"任务已经停止");
+                else {callback.onError("已有屏幕观察尚未结束");return;}
+            }
+            if(capturePending){callback.onError("已有截图尚未结束");return;}
+            activeObservation=request;sampleObservation(request);
+        }});
+    }
+    private boolean observationActive(ObservationRequest request){
+        if(request.finished||activeObservation!=request)return false;
+        if(!request.gate.requestAlive(SystemClock.elapsedRealtime(),owns(request.taskId)&&!request.cancel.isCancelled())){
+            failObservation(request,"任务停止或本次观察已超时");return false;
+        }
+        if(locked()){failObservation(request,"手机已锁定，请正常解锁后重新发起任务");return false;}
+        return true;
+    }
+    private static ObservationStabilityGate.FrameKey frameKey(Graph graph){
+        return new ObservationStabilityGate.FrameKey(graph.packageName,graph.windowId,graph.rotation,
+                graph.bounds.left,graph.bounds.top,graph.bounds.right,graph.bounds.bottom,graph.digest,graph.truncated);
+    }
+    private static boolean sameObservedFrame(Graph a,Graph b){
+        return a.sameWindowAndTree(b)&&a.truncated==b.truncated;
+    }
+    private void sampleObservation(final ObservationRequest request){
+        if(!observationActive(request))return;
+        Graph graph=null;
+        try{
+            try{graph=readGraph();}catch(NoActiveWindow busy){/* Only this explicit missing root is transient. */}
+            long now=SystemClock.elapsedRealtime();
+            ObservationStabilityGate.Result result=request.gate.sample(now,graph==null?null:frameKey(graph),true);
+            if(result==ObservationStabilityGate.Result.EXPIRED||result==ObservationStabilityGate.Result.CANCELLED){
+                failObservation(request,"窗口仍在变化或没有活动窗口，未取得稳定观察");return;
+            }
+            long screenshotDelay=Math.max(0,400-(now-lastScreenshotAt));
+            if(result==ObservationStabilityGate.Result.READY&&screenshotDelay==0){
+                request.captured=graph;graph=null;captureObservation(request);return;
+            }
+            long delay=request.gate.nextSampleDelay(now);
+            if(result==ObservationStabilityGate.Result.READY)delay=Math.min(delay,screenshotDelay);
+            main.postDelayed(new Runnable(){public void run(){sampleObservation(request);}},delay);
+        }catch(Exception error){failObservation(request,"无法读取当前活动窗口："+message(error));}
+        finally{if(graph!=null)graph.close();}
+    }
+    private void failObservation(ObservationRequest request,String error){
+        if(request.finished)return;
+        request.finished=true;request.gate.retire();
+        if(request.shotPending&&captureSerial==request.token){capturePending=false;captureSerial++;}
+        request.shotPending=false;
+        if(request.captured!=null){request.captured.close();request.captured=null;}
+        if(activeObservation==request)activeObservation=null;
+        request.callback.onError(error);
+    }
+    private void retryObservation(final ObservationRequest request,long delay){
+        if(request.captured!=null){request.captured.close();request.captured=null;}
+        request.gate.resetEvidence();
+        if(!observationActive(request))return;
+        // This never renews the original two-second settling or caller deadline.
+        main.postDelayed(new Runnable(){public void run(){sampleObservation(request);}},
+                Math.min(delay,request.gate.nextSampleDelay(SystemClock.elapsedRealtime())));
+    }
+    private void watchCapture(final ObservationRequest request,final long captureDeadline){
+        if(request.finished||activeObservation!=request||!request.shotPending)return;
+        if(!observationActive(request))return;
+        if(SystemClock.elapsedRealtime()>=captureDeadline){failObservation(request,"系统截图回调超时");return;}
+        main.postDelayed(new Runnable(){public void run(){watchCapture(request,captureDeadline);}},100);
+    }
+    private void captureObservation(final ObservationRequest request){
+        if(!observationActive(request))return;
+        if(capturePending){failObservation(request,"已有截图尚未结束");return;}
+        capturePending=true;request.shotPending=true;lastScreenshotAt=SystemClock.elapsedRealtime();
+        final long token=++captureSerial;request.token=token;
+        watchCapture(request,lastScreenshotAt+5000);
+        try{takeScreenshot(Display.DEFAULT_DISPLAY,getMainExecutor(),new TakeScreenshotCallback(){
             @Override public void onFailure(int code){
-                if(captureSerial!=token){graph.close();return;}
-                capturePending=false;captureSerial++;graph.close();
-                if(code==ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT && retry<1){
-                    main.postDelayed(new Runnable(){public void run(){observeOnMain(taskId,directory,callback,retry+1);}},500);
-                }else callback.onError("系统截图失败，错误码 "+code+"；不会绕过受保护画面");
+                if(request.finished||activeObservation!=request||captureSerial!=token)return;
+                capturePending=false;captureSerial++;request.shotPending=false;
+                if(!observationActive(request))return;
+                if(code==ERROR_TAKE_SCREENSHOT_INTERVAL_TIME_SHORT&&request.intervalRetries++<1)
+                    retryObservation(request,500);
+                else failObservation(request,"系统截图失败，错误码 "+code+"；不会绕过受保护画面");
             }
             @Override public void onSuccess(ScreenshotResult result){
-                if(captureSerial!=token){result.getHardwareBuffer().close();graph.close();return;}
-                capturePending=false;captureSerial++;Bitmap bitmap=null;Graph after=null;
+                if(request.finished||activeObservation!=request||captureSerial!=token){result.getHardwareBuffer().close();return;}
+                capturePending=false;captureSerial++;request.shotPending=false;
+                Bitmap bitmap=null;Graph after=null;
                 try{
                     bitmap=copyScreenshot(result);
-                    if(!owns(taskId)||locked())throw new IllegalStateException("观察过程中任务停止或手机锁定");
-                    after=readGraph();
-                    if(!graph.sameWindowAndTree(after)){
-                        graph.close();after.close();bitmap.recycle();
-                        if(retry<2){main.postDelayed(new Runnable(){public void run(){observeOnMain(taskId,directory,callback,retry+1);}},300);}
-                        else callback.onError("窗口仍在变化，尚未取得稳定观察");
-                        return;
-                    }
+                    if(!observationActive(request))return;
+                    try{after=readGraph();}catch(NoActiveWindow busy){retryObservation(request,200);return;}
+                    if(!sameObservedFrame(request.captured,after)){retryObservation(request,200);return;}
                     after.close();after=null;
                     if(bitmap.getWidth()<1||bitmap.getHeight()<1||(long)bitmap.getWidth()*bitmap.getHeight()>16000000L)
                         throw new IllegalStateException("屏幕尺寸超出观察范围");
-                    if(!directory.isDirectory())throw new IllegalStateException("任务证据目录不存在");
-                    String id=UUID.randomUUID().toString().replace("-","");File path=new File(directory,id+".png");
+                    if(!request.directory.isDirectory())throw new IllegalStateException("任务证据目录不存在");
+                    String id=UUID.randomUUID().toString().replace("-","");File path=new File(request.directory,id+".png");
                     if(!path.createNewFile())throw new IllegalStateException("观察标识重复");
                     try(FileOutputStream stream=new FileOutputStream(path)){
                         if(!bitmap.compress(Bitmap.CompressFormat.PNG,100,stream))throw new IllegalStateException("截图编码失败");
@@ -167,15 +239,23 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     }
                     path.setReadable(false,false);path.setReadable(true,true);path.setWritable(false,false);path.setWritable(true,true);
                     String digest=fileSha256(path);
+                    // Encoding/fsync/hash can take time. Recheck the full observed graph before publication.
+                    if(!observationActive(request))return;
+                    try{after=readGraph();}catch(NoActiveWindow busy){retryObservation(request,200);return;}
+                    if(!sameObservedFrame(request.captured,after)){retryObservation(request,200);return;}
+                    after.close();after=null;
+                    if(!observationActive(request))return;
+                    Graph graph=request.captured;
                     PhoneObservation observation=new PhoneObservation(id,graph.packageName,SystemClock.elapsedRealtime(),
                             bitmap.getWidth(),bitmap.getHeight(),graph.rotation,graph.windowId,graph.bounds,path,digest,graph.digest,graph.state,graph.windowMetadata,graph.truncated,graph.rows);
-                    clearSnapshot();current=observation;currentGraph=graph;currentBitmap=bitmap;bitmap=null;
-                    callback.onObservation(observation);
-                }catch(Exception e){graph.close();if(after!=null)after.close();if(bitmap!=null)bitmap.recycle();callback.onError("观察失败："+message(e));}
+                    clearSnapshot();current=observation;currentGraph=graph;currentBitmap=bitmap;
+                    request.captured=null;bitmap=null; // Ownership transfers only here. Late callbacks cannot close this snapshot.
+                    request.finished=true;request.gate.retire();activeObservation=null;
+                    request.callback.onObservation(observation);
+                }catch(Exception error){failObservation(request,"观察失败："+message(error));}
+                finally{if(after!=null)after.close();if(bitmap!=null)bitmap.recycle();}
             }
-        }); } catch(Exception error){
-            if(captureSerial==token){capturePending=false;captureSerial++;graph.close();callback.onError("系统截图不可用："+message(error));}
-        }
+        });}catch(Exception error){failObservation(request,"系统截图不可用："+message(error));}
     }
     private static Bitmap copyScreenshot(ScreenshotResult result) {
         HardwareBuffer buffer=result.getHardwareBuffer();Bitmap wrapped=null;
@@ -345,9 +425,11 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         throw new IllegalArgumentException("未知滚动方向");
     }
     private static final class NodeRef {
-        final AccessibilityNodeInfo node;final String signature;
-        NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText){
-            this.node=AccessibilityNodeInfo.obtain(node);this.signature=nodeSignature(node,childText);
+        final AccessibilityNodeInfo node;final String signature,appTreeSignature;
+        NodeRef(AccessibilityNodeInfo node,ObservedChildText.Result childText,ObservedScrollActions scrollActions){
+            this.node=AccessibilityNodeInfo.obtain(node);
+            this.appTreeSignature=childText.bind(baseNodeSignature(node));
+            this.signature=scrollActions.bindFreshness(appTreeSignature);
         }
     }
     private static final class Graph {
@@ -406,13 +488,17 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         }catch(RuntimeException unavailable){return ObservedWindowMetadata.unknown(bounds,rootClass);}
         finally{if(window!=null)try{window.recycle();}catch(RuntimeException ignored){/* Cleanup supplies no metadata. */}}
     }
+    private static final class NoActiveWindow extends IllegalStateException {
+        private static final long serialVersionUID=1L;
+        NoActiveWindow(){super("没有活动窗口");}
+    }
     private Graph readGraph(){
-        AccessibilityNodeInfo root=getRootInActiveWindow();if(root==null)throw new IllegalStateException("没有活动窗口");
+        AccessibilityNodeInfo root=getRootInActiveWindow();if(root==null)throw new NoActiveWindow();
         Graph graph=new Graph();graph.packageName=string(root.getPackageName());graph.windowId=root.getWindowId();graph.rotation=rotation();graph.bounds=new Rect();root.getBoundsInScreen(graph.bounds);
         if(graph.packageName.isEmpty()||graph.bounds.isEmpty()){root.recycle();throw new IllegalStateException("活动窗口身份不可用");}
         graph.windowMetadata=readWindowMetadata(root,graph.bounds,graph.windowId);
         ArrayDeque<AccessibilityNodeInfo> queue=new ArrayDeque<AccessibilityNodeInfo>();queue.add(root);
-        StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder();int visited=0,characters=0;
+        StringBuilder signatures=new StringBuilder(),focusStates=new StringBuilder(),scrollStates=new StringBuilder();int visited=0,characters=0;
         try{
             while(!queue.isEmpty()&&visited<MAX_VISITED){
                 AccessibilityNodeInfo node=queue.removeFirst();visited++;
@@ -420,13 +506,15 @@ public final class HeptaAccessibilityService extends AccessibilityService {
                     Rect bounds=new Rect();node.getBoundsInScreen(bounds);boolean visible=node.isVisibleToUser()&&!bounds.isEmpty();
                     String text=node.isPassword()?"":limited(string(node.getText()),96);
                     String description=node.isPassword()?"":limited(string(node.getContentDescription()),96);
+                    ObservedScrollActions scrollActions=readScrollActions(node);
                     boolean useful=visible&&(node.isClickable()||node.isEditable()||node.isScrollable()||!text.isEmpty()||!description.isEmpty());
                     if(useful){
                         ObservedChildText.Result childText=graph.rows.size()<MAX_NODES?observedChildText(node):ObservedChildText.notApplicable();
                         if(graph.rows.size()<MAX_NODES&&characters+text.length()+description.length()+childText.text.length()<2400){
-                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText);graph.refs.put(id,reference);signatures.append(reference.signature).append('\n');
+                            String id="n"+graph.rows.size();NodeRef reference=new NodeRef(node,childText,scrollActions);graph.refs.put(id,reference);signatures.append(reference.appTreeSignature).append('\n');
+                            scrollStates.append(id).append('=').append(scrollActions.fingerprintInput()).append('\n');
                             boolean focused=node.isFocused();focusStates.append(id).append('=').append(focused).append('\n');
-                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText));
+                            graph.rows.add(new PhoneObservation.Node(id,string(node.getPackageName()),string(node.getClassName()),limited(string(node.getViewIdResourceName()),96),text,description,bounds,node.isClickable(),node.isEditable(),node.isScrollable(),node.isEnabled(),focused,node.isPassword(),childText,scrollActions));
                             characters+=text.length()+description.length()+childText.text.length();
                         }else graph.truncated=true;
                     }
@@ -439,14 +527,33 @@ public final class HeptaAccessibilityService extends AccessibilityService {
             String appTree=sha((graph.packageName+"|"+graph.windowId+"|"+graph.rotation+"|"+graph.bounds+"|"+signatures).getBytes(StandardCharsets.UTF_8));
             graph.state=new ObservationState(appTree,readImeVisibility(graph.windowId));
             // Focus is newly model-visible evidence, not an expansion of the old progress predicate.
-            graph.digest=sha(graph.windowMetadata.bindFreshness(graph.state.fingerprintInput()+"\nnode_focus="+focusStates)
+            graph.digest=sha(graph.windowMetadata.bindFreshness(graph.state.fingerprintInput()+"\nnode_focus="+focusStates+"\nnode_scroll_actions="+scrollStates)
                     .getBytes(StandardCharsets.UTF_8));return graph;
         }catch(RuntimeException e){graph.close();throw e;}
         finally{while(!queue.isEmpty())queue.removeFirst().recycle();}
     }
     private static String nodeSignature(AccessibilityNodeInfo node,ObservedChildText.Result childText){
         // Capture and target refresh both supply the same bounded subtree observation.
-        return childText.bind(baseNodeSignature(node));
+        return readScrollActions(node).bindFreshness(childText.bind(baseNodeSignature(node)));
+    }
+    /** No aliasing of logical forward/backward to content directions. */
+    private static ObservedScrollActions readScrollActions(AccessibilityNodeInfo node){
+        try{
+            List<AccessibilityNodeInfo.AccessibilityAction> actions=node.getActionList();
+            if(actions==null||actions.size()>128)return ObservedScrollActions.UNKNOWN;
+            List<String> directions=new ArrayList<String>();
+            for(AccessibilityNodeInfo.AccessibilityAction action:actions){
+                if(action==null)return ObservedScrollActions.UNKNOWN;
+                int id=action.getId();
+                if(id==AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD.getId())directions.add("forward");
+                else if(id==AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD.getId())directions.add("backward");
+                else if(id==AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_UP.getId())directions.add("up");
+                else if(id==AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_DOWN.getId())directions.add("down");
+                else if(id==AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_LEFT.getId())directions.add("left");
+                else if(id==AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_RIGHT.getId())directions.add("right");
+            }
+            return ObservedScrollActions.observed(directions);
+        }catch(RuntimeException unavailable){return ObservedScrollActions.UNKNOWN;}
     }
     private static ObservedChildText.Result observedChildText(final AccessibilityNodeInfo root){
         final Rect rootBounds=new Rect();root.getBoundsInScreen(rootBounds);

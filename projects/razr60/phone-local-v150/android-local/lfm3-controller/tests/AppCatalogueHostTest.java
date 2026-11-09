@@ -18,6 +18,14 @@ import java.util.Set;
 
 /** Real parser/policy/catalogue/grammar contracts; no Android, model or app launch. */
 public final class AppCatalogueHostTest {
+    /** Synthetic test capabilities are now explicit instead of implied by a node set. */
+    private static java.util.Map<String,org.trillionnium.hepta.local.ObservedScrollActions> scrolls(java.util.Set<String> nodes){
+        java.util.Map<String,org.trillionnium.hepta.local.ObservedScrollActions> out=new java.util.HashMap<String,org.trillionnium.hepta.local.ObservedScrollActions>();
+        for(String node:nodes)out.put(node,org.trillionnium.hepta.local.ObservedScrollActions.observed(
+                java.util.Arrays.asList("forward","backward","up","down","left","right")));
+        return out;
+    }
+
     private static final String OBS = "f91c685bf5f04f5c9a6a3197eade1fed";
     private static final String CURRENT = "com.example.launcher";
     private static final String TARGET = "com.example.calculator";
@@ -121,7 +129,7 @@ public final class AppCatalogueHostTest {
         Set<String> initial=names(ranker.search("",0)),nodes=Collections.emptySet();
         ActionDecision open=ActionDecision.parse(json("open",TARGET,""));
         check(!allowed(open,initial,nodes),"unseen installed app cannot be opened before discovery");
-        DecisionGrammar before=DecisionGrammar.create(OBS,CURRENT,initial,nodes,nodes,nodes,labels(nodes));
+        DecisionGrammar before=DecisionGrammar.create(OBS,CURRENT,initial,nodes,nodes,scrolls(nodes),labels(nodes));
         Files.write(grammarOut.resolve("discovery-before.gbnf"),before.text.getBytes(StandardCharsets.UTF_8));
         String raw=json("find_app",CURRENT,",\"query\":\"calculator\",\"offset\":0");
         ActionDecision modelSearch=ActionDecision.parse(raw);
@@ -134,7 +142,7 @@ public final class AppCatalogueHostTest {
         AppCatalogueRanker.Page more=ranker.search("",6);
         Set<String> one=Collections.singleton(more.apps.get(0).packageName);
         check(!allowed(ActionDecision.parse(json("open",more.apps.get(1).packageName,"")),one,nodes),"returned but prompt-omitted apps remain unauthorized");
-        DecisionGrammar after=DecisionGrammar.create(OBS,CURRENT,supplied,nodes,nodes,nodes,labels(nodes));
+        DecisionGrammar after=DecisionGrammar.create(OBS,CURRENT,supplied,nodes,nodes,scrolls(nodes),labels(nodes));
         Files.write(grammarOut.resolve("discovery-after.gbnf"),after.text.getBytes(StandardCharsets.UTF_8));
         check(!before.sha256.equals(after.sha256),"discovered package produces a distinct bound grammar");
     }
