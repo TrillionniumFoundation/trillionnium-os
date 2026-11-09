@@ -50,6 +50,7 @@ public final class LocalTaskController implements AutoCloseable {
             "reason用1句、最多96字说明当前可见页面、剩余目标/下一步，再给action。先核对recent里dispatched=true。启动应用不代表完成；恢复子页时用可见返回键/back，再次open常恢复原页。关联页面可能异包；勿为重试打开无关应用。\n" +
             "ime_visible:true=输入法窗口可见，false=已确认不可见，null=未知；back可能先关闭输入法，须复查；未知不证明关闭。window只含当前活动根元数据，null未知；标题/类型/类名/包名不证明页面身份，菜单/弹窗不代表未观察到的背景。\n" +
             "只输出一个JSON，顺序reason,action,observation_id,package,动作参数。action必须是工具名字符串、不能null；observation_id复制screen.observation_id。open的package取自apps，其它动作复制screen.package。节点格式[id,文字,边界,状态]：c可点击（未必是按键）、t可替换字段、s滚动、f已聚焦但不授予能力。符合OWNER方法且需文字替换时，t且f可直接type，无须再click。\n" +
+            "editable_fields是可编辑字段的当前观测text（可为空）、view_id和位置；visible_text仅非交互文字，可能含历史，不代表当前输入或主结果。role/view_id不授予动作能力。dispatched_sequence仅已派发原动作，不证明进度或成功。\n" +
             "节点动作先node_label逐字复制目标文字，再node_id复制同一行原始ID；重复或空文字也需两者。reason不能代选或修正目标。无图像输入，不猜坐标。\n" +
             "工具：open打开应用（不能重开当前应用）；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整字段文字，不发按键事件或提交动作，回读匹配不保证业务接受；scroll(node_label,node_id,direction)滚动，方向只取screen.scroll_actions该节点列表，空/未列/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；done(status,summary)结束。\n" +
             "find_app(query,offset)只读查询本机应用，空query浏览，首次offset=0、续页用app_search.next_offset；找不到目标先查询。blocked_action已排除，不能再选。\n" +
@@ -192,7 +193,7 @@ public final class LocalTaskController implements AutoCloseable {
                 staleRounds=0;checkActive(deadline);
                 emit("操作后正在重新观察…");observation=awaitObservation(taskId,evidence,deadline);
                 JSONObject row=new JSONObject().put("step",steps).put("action",action.action).put("detail",outcome.detail)
-                        .put("target_package",action.packageName).put("dispatched",outcome.dispatched)
+                        .put("before_package",before.packageName).put("target_package",action.packageName).put("dispatched",outcome.dispatched)
                         .put("package_after",observation.packageName).put("observation_after",observation.id)
                         .put("window_changed",observation.state.changedFrom(before.state)==null?JSONObject.NULL:observation.state.changedFrom(before.state))
                         .put("ime_visible_before",before.state.imeVisibility.value()==null?JSONObject.NULL:before.state.imeVisibility.value())
@@ -202,6 +203,7 @@ public final class LocalTaskController implements AutoCloseable {
                     row.put("node_label",action.nodeLabel).put("node_id",action.nodeId);
                 }
                 if("type".equals(action.action))row.put("type_text",action.text);
+                if("scroll".equals(action.action))row.put("direction",action.direction);
                 if(ActionPolicy.isReadOnlyDiscovery(action))row.put("query",action.query).put("offset",action.offset).put("read_only",true).put("dispatched",false);
                 history.put(row);record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-after.json",steps),observation.toJson());
                 if("done".equals(action.action)){
@@ -298,10 +300,14 @@ public final class LocalTaskController implements AutoCloseable {
         final ObservedTargetLabels targets;
         final AppCatalogueRanker.Page catalogue;
         final int nodesShown,nodesObserved,appsShown,historyShown;
-        PromptFrame(String text,java.util.Set<String> ids,java.util.Set<String> packages,ConservativeTokenBudget budget,DecisionGrammar grammar,int shown,int observed,int apps,int history,AppCatalogueRanker.Page catalogue){
+        final int editableFieldsShown,editableFieldsObserved,visibleTextShown,visibleTextObserved,sequenceShown,sequenceObserved;
+        PromptFrame(String text,java.util.Set<String> ids,java.util.Set<String> packages,ConservativeTokenBudget budget,DecisionGrammar grammar,int shown,int observed,int apps,int history,AppCatalogueRanker.Page catalogue,
+                    int editableFieldsShown,int editableFieldsObserved,int visibleTextShown,int visibleTextObserved,int sequenceShown,int sequenceObserved){
             this.text=text;nodeIds=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(ids));
             appPackages=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(packages));
             this.budget=budget;this.grammar=grammar;targets=grammar.targets;nodesShown=shown;nodesObserved=observed;appsShown=apps;historyShown=history;this.catalogue=catalogue;
+            this.editableFieldsShown=editableFieldsShown;this.editableFieldsObserved=editableFieldsObserved;
+            this.visibleTextShown=visibleTextShown;this.visibleTextObserved=visibleTextObserved;this.sequenceShown=sequenceShown;this.sequenceObserved=sequenceObserved;
         }
         JSONObject budgetJson()throws Exception{return new JSONObject().put("schema","hepta.local-prompt-budget.v2")
                 .put("method",budget.method).put("is_exact_token_count",false).put("is_proven_upper_bound",budget.provenUpperBound)
@@ -319,15 +325,44 @@ public final class LocalTaskController implements AutoCloseable {
                 .put("target_label_schema",ObservedTargetLabels.SCHEMA).put("target_label_sha256",targets.sha256)
                 .put("nodes_observed",nodesObserved).put("apps_shown",appsShown).put("history_shown",historyShown)
                 .put("app_catalogue_sha256",catalogue.catalogueSha256).put("app_search",searchMetadata(catalogue,appsShown))
+                .put("text_projection_schema",ObservedTextProjection.SCHEMA)
+                .put("editable_fields_shown",editableFieldsShown).put("editable_fields_observed",editableFieldsObserved)
+                .put("editable_fields_omitted",editableFieldsObserved-editableFieldsShown)
+                .put("visible_text_shown",visibleTextShown).put("visible_text_observed",visibleTextObserved)
+                .put("visible_text_omitted",visibleTextObserved-visibleTextShown)
+                .put("dispatched_sequence_shown",sequenceShown).put("dispatched_sequence_observed",sequenceObserved)
+                .put("dispatched_sequence_omitted",sequenceObserved-sequenceShown)
                 .put("original_instruction_unchanged",true);}
     }
     private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard)throws Exception{
         java.util.List<AppCatalogueRanker.Entry> allApps=catalogue.apps;
         java.util.List<PhoneObservation.Node> nodes=new java.util.ArrayList<PhoneObservation.Node>(observation.nodes);
         java.util.Collections.sort(nodes,new java.util.Comparator<PhoneObservation.Node>(){
-            public int compare(PhoneObservation.Node a,PhoneObservation.Node b){return Integer.compare(nodeScore(b,owner),nodeScore(a,owner));}
+            public int compare(PhoneObservation.Node a,PhoneObservation.Node b){
+                // Retain current editable values before optional labels when shrinking the prompt.
+                boolean af=a.editable&&!a.password,bf=b.editable&&!b.password;
+                if(af!=bf)return af?-1:1;
+                return Integer.compare(nodeScore(b,owner),nodeScore(a,owner));
+            }
         });
+        java.util.List<java.util.Map<String,Object>> textMetadata=new java.util.ArrayList<java.util.Map<String,Object>>();
+        int editableFieldsObserved=0,visibleTextObserved=0;
+        for(PhoneObservation.Node node:nodes){
+            if(!observation.packageName.equals(node.packageName))continue;
+            java.util.Map<String,Object> projected=ObservedTextProjection.project(node.id,node.text,node.description,node.viewId,
+                    new int[]{node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom},
+                    node.clickable,node.editable,node.scrollable,node.password,node.focused,node.enabled);
+            if(projected==null)continue;
+            textMetadata.add(projected);
+            if(node.editable)editableFieldsObserved++;else visibleTextObserved++;
+        }
+        java.util.List<java.util.Map<String,Object>> dispatchedHistory=new java.util.ArrayList<java.util.Map<String,Object>>();
+        for(int i=0;i<history.length();i++){
+            java.util.Map<String,Object> effect=RecentActionProjection.dispatched(historyFields(history.getJSONObject(i)));
+            if(effect!=null)dispatchedHistory.add(effect);
+        }
         int nodeCount=Math.min(32,nodes.size()),appCount=allApps.size(),historyCount=Math.min(6,history.length());
+        int visibleTextLimit=Math.min(6,visibleTextObserved),sequenceCount=dispatchedHistory.size();
         final String blockedOpen=repeatGuard.blockedOpenPackage(observation.state);
         final String blockedClick=repeatGuard.blockedClickNodeId(observation.state);
         while(true){
@@ -353,28 +388,24 @@ public final class LocalTaskController implements AutoCloseable {
             }
             if(scrollActionsJson.length()>0)screen.put("scroll_actions",scrollActionsJson);
             screen.put("nodes",projectedNodes).put("nodes_omitted",observation.nodes.size()-nodeCount+(observation.nodesTruncated?1:0));
-            // A small text model needs visible result/readout text as well as
-            // actionable nodes. Keep these as untrusted evidence, never actions.
-            JSONArray readouts=new JSONArray();java.util.Set<String> seenReadouts=new java.util.HashSet<String>();
-            for(PhoneObservation.Node node:observation.nodes){
-                if(node.password||node.clickable||node.editable||node.scrollable)continue;
-                String label=node.text.isEmpty()?node.description:node.text;
-                if(!label.isEmpty()&&seenReadouts.add(label))readouts.put(HeptaAccessibilityService.limited(label,32));
-                if(readouts.length()>=6)break;
-            }
-            screen.put("readouts",readouts);
+            // Both projections are facts from this same immutable observation.
+            // Metadata never adds an ID absent from the final budgeted node set.
+            java.util.List<java.util.Map<String,Object>> editableFields=ObservedTextProjection.select(textMetadata,ids,"editable_text",Integer.MAX_VALUE);
+            java.util.List<java.util.Map<String,Object>> visibleText=ObservedTextProjection.select(textMetadata,ids,"noninteractive_text",visibleTextLimit);
+            screen.put("text_projection_schema",ObservedTextProjection.SCHEMA)
+                    .put("editable_fields",new JSONArray(editableFields)).put("editable_fields_omitted",editableFieldsObserved-editableFields.size())
+                    .put("visible_text",new JSONArray(visibleText)).put("visible_text_omitted",visibleTextObserved-visibleText.size());
             JSONArray apps=new JSONArray();java.util.Set<String> packages=new java.util.HashSet<String>();
             for(int i=0;i<appCount;i++){AppCatalogueRanker.Entry item=allApps.get(i);packages.add(item.packageName);apps.put(new JSONArray().put(item.packageName).put(HeptaAccessibilityService.limited(item.label,48)));}
             packages=repeatGuard.allowedOpenPackages(packages,observation.state);
-            JSONArray recent=new JSONArray();for(int i=Math.max(0,history.length()-historyCount);i<history.length();i++){
-                JSONObject entry=history.getJSONObject(i);
-                java.util.Map<String,Object> fields=new java.util.LinkedHashMap<String,Object>();
-                for(java.util.Iterator<String> keys=entry.keys();keys.hasNext();){String key=keys.next();fields.put(key,entry.get(key));}
-                recent.put(new JSONObject(RecentActionProjection.project(fields)));
-            }
+            JSONArray recent=new JSONArray();for(int i=Math.max(0,history.length()-historyCount);i<history.length();i++)
+                recent.put(new JSONObject(RecentActionProjection.project(historyFields(history.getJSONObject(i)))));
+            JSONArray sequence=new JSONArray();for(int i=dispatchedHistory.size()-sequenceCount;i<dispatchedHistory.size();i++)
+                sequence.put(new JSONObject(dispatchedHistory.get(i)));
             JSONObject data=new JSONObject().put("apps",apps).put("screen",screen).put("recent",recent)
                     .put("apps_omitted",catalogue.matchingApps-appCount).put("app_search",searchMetadata(catalogue,appCount))
-                    .put("history_omitted",history.length()-historyCount);
+                    .put("history_omitted",history.length()-historyCount)
+                    .put("dispatched_sequence",sequence).put("dispatched_sequence_omitted",dispatchedHistory.size()-sequenceCount);
             if(blockedOpen!=null)data.put("blocked_action",new JSONObject().put("action","open").put("package",blockedOpen)
                     .put("reason_code","repeat_action_unchanged_screen")
                     .put("reason","同一画面上该动作已无可确认变化，本轮已排除；请根据当前观察选择其它动作"));
@@ -398,14 +429,26 @@ public final class LocalTaskController implements AutoCloseable {
                 ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observation.id,observation.packageName,projectedLabels);
                 clicks=repeatGuard.allowedClicks(clicks,observation.state);
                 DecisionGrammar grammar=DecisionGrammar.create(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets);
-                return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,historyCount,catalogue);
+                return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,historyCount,catalogue,
+                        editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,sequenceCount,dispatchedHistory.size());
             }
-            if(nodeCount>4){nodeCount--;continue;}
+            // Keep current editable values and a recent dispatched effect as long
+            // as possible. All reductions are explicit in the model and budget receipts.
+            if(historyCount>2){historyCount--;continue;}
             if(appCount>1){appCount--;continue;}
+            if(visibleTextLimit>0){visibleTextLimit--;continue;}
+            if(nodeCount>Math.max(4,editableFields.size())){nodeCount--;continue;}
+            if(sequenceCount>1){sequenceCount--;continue;}
             if(historyCount>0){historyCount--;continue;}
             if(nodeCount>0){nodeCount--;continue;}
+            if(sequenceCount>0){sequenceCount--;continue;}
             throw new IllegalStateException("完整指令与必要画面信息超过本地上下文上限，请拆分任务");
         }
+    }
+    private static java.util.Map<String,Object> historyFields(JSONObject entry)throws Exception{
+        java.util.Map<String,Object> fields=new java.util.LinkedHashMap<String,Object>();
+        for(java.util.Iterator<String> keys=entry.keys();keys.hasNext();){String key=keys.next();fields.put(key,entry.get(key));}
+        return fields;
     }
     private static int nodeScore(PhoneObservation.Node node,String owner){
         int score=(node.clickable?4:0)+(node.editable?5:0)+(node.scrollable?2:0)+(node.enabled?1:-20);

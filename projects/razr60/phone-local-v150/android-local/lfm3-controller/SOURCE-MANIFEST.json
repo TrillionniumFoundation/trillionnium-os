@@ -1,12 +1,12 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 16,
-  "version_name": "0.16.0-local-observation",
+  "version_code": 17,
+  "version_name": "0.17.0-local-observation-fields",
   "derived_from_code15_source_manifest_sha256": "aaae9cd4505dc4c3dbbb0d8f246b1193f284ed18b2be1263f40445df466575db",
   "reviewed_controller_merge_manifest_sha256": "19ea7449f35e76f86cc156c620a9dffbc2f46eff5bb5f45d4876e49da2f910dd",
   "android_build": "separate build receipt",
   "phone_qualified": false,
-  "functional_scope": "bounded observation stability; action-relevant recent projection and tool semantics; exact observed node-direction scroll domains",
+  "functional_scope": "factual observed editable text and neutral visible text; bounded dispatched action sequence with observed before/after packages; unchanged action permissions and freshness gates",
   "visual_planner_merged": false,
   "native_tool_protocol_merged": false,
   "thinking_protocol_merged": false,
@@ -26,8 +26,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1863,
-      "sha256": "0e8d9a52d4e30d8d1f12ff0352a1c342905306604e70249ea374322df7c3fc39"
+      "bytes": 1870,
+      "sha256": "4421dbe4fa4b61c135a2ad57c64893a3c01eecdf8c4bd0dfa77f33a689fffeec"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -3931,8 +3931,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 39604,
-      "sha256": "75f030e8f1ae151a2a3cb1525b72d4118a1cde7278c404c1eff97fe2532cbfec"
+      "bytes": 43914,
+      "sha256": "3eef16dffb1bd73f0bacfa39755a47628758025542adb1eebb0fd4f4a440f70e"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -4015,6 +4015,11 @@
       "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/ObservedTextProjection.java",
+      "bytes": 2738,
+      "sha256": "1331624c4ea4144b31b8015e356d8840e6b2a330f18ca113ed265be3ebe4417d"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
       "bytes": 4536,
       "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
@@ -4041,8 +4046,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
-      "bytes": 2893,
-      "sha256": "2e803ad9bff8a64f84134be6ba792c18e42d3355e043b1c4ca7113da86ed6892"
+      "bytes": 4337,
+      "sha256": "c780302ba662b644a06af5acd1467277d55e350f2422e5405eaee2a14726585d"
     },
     {
       "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
@@ -4068,6 +4073,11 @@
       "path": "tests/BudgetHostTest.java",
       "bytes": 2039,
       "sha256": "053c6c3a1c9eff1d5055c425a6b97b6c323bbea72864abe3f6a391b45534d737"
+    },
+    {
+      "path": "tests/DispatchedActionSequenceHostTest.java",
+      "bytes": 6670,
+      "sha256": "2e079e310a7d659058efa44b7916c8fad13ac0e89322ea399db883a8bf195c2e"
     },
     {
       "path": "tests/Gemma4ProfileHostTest.java",
@@ -4123,6 +4133,11 @@
       "path": "tests/ObservedTargetLabelsHostTest.java",
       "bytes": 9258,
       "sha256": "ed3f87d01fa5d889c78da37de1e35a4828fd70b073f01885d28674a06a421ddb"
+    },
+    {
+      "path": "tests/ObservedTextProjectionHostTest.java",
+      "bytes": 5741,
+      "sha256": "b6b42ad38122f7d3be2eeae0c786b656ca000858e24de9b563c204699cbf0b1e"
     },
     {
       "path": "tests/ObservedWindowMetadataHostTest.java",
@@ -4246,8 +4261,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 6232,
-      "sha256": "beb116e0ee41a2ca20903eae9b6d50e9428cb93306d824a2eb8ddbb7adc0358f"
+      "bytes": 6258,
+      "sha256": "677c497d0188ce43f87dcd8e06e7f72f23a7d596fcfd64398ead6f085feccc2f"
     },
     {
       "path": "tools/suite-navigation-draft.json",
@@ -4314,5 +4329,7 @@
       "bytes": 1771,
       "sha256": "b8db2eb7b0ca64a54ed18f202abdf424d7c3424dadaf5e19ced2157d0f9a42bb"
     }
-  ]
+  ],
+  "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
+  "observation_text_projection_schema": "hepta.observed-text-projection.v1"
 }
