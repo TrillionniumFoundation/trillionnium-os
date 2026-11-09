@@ -177,6 +177,9 @@ public final class LocalTaskController implements AutoCloseable {
                         .put("model_run_id",decisionRunId).put("model_issued",true);
                 if(ActionPolicy.isReadOnlyDiscovery(action))actionReceipt.put("read_only",true).put("effect","launcher_catalogue_read");
                 record(evidence,String.format(java.util.Locale.ROOT,"step-%02d-action.json",steps),actionReceipt);
+                // Retain the actual acknowledgement, then stop before any further task work.
+                checkActive(deadline);
+                if(SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("本次任务期限已到，动作回执已记录；停止后续操作");
                 if(outcome.stale&&!outcome.dispatched){
                     if(++staleRounds>2)throw new IllegalStateException("画面连续变化，已停止操作以免点错目标");
                     history.put(new JSONObject().put("step",steps).put("action_rejected",outcome.detail).put("dispatched",false));
@@ -285,12 +288,23 @@ public final class LocalTaskController implements AutoCloseable {
             PhoneObservation result=value.get();if(result==null)throw new IllegalStateException("没有取得屏幕观察");return result;
         }finally{abandoned.set(true);}
     }
-    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,long deadline)throws Exception{
-        checkActive(deadline);final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> value=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
-        service.perform(id,observed,action,targets,new HeptaAccessibilityService.Cancellation(){public boolean isCancelled(){return cancelled.get();}},
-                new HeptaAccessibilityService.ActionCallback(){public void onResult(HeptaAccessibilityService.ActionOutcome result){value.set(result);ready.countDown();}});
-        if(!ready.await(8000,TimeUnit.MILLISECONDS)){cancelled.set(true);throw new CleanupUnknown("动作回执超时，可能已有操作发生；已停止后续任务");}
-        HeptaAccessibilityService.ActionOutcome result=value.get();if(result==null)throw new IllegalStateException("动作未返回结果");return result;
+    private HeptaAccessibilityService.ActionOutcome awaitAction(String id,PhoneObservation observed,ActionDecision action,ObservedTargetLabels targets,final long deadline)throws Exception{
+        checkActive(deadline);
+        if(SystemClock.elapsedRealtime()>=deadline)throw new IllegalStateException("本次任务期限已到，未提交动作");
+        final CountDownLatch ready=new CountDownLatch(1);final AtomicReference<HeptaAccessibilityService.ActionOutcome> value=new AtomicReference<HeptaAccessibilityService.ActionOutcome>();
+        final AtomicBoolean retired=new AtomicBoolean(false),delivered=new AtomicBoolean(false);
+        try{
+            service.perform(id,observed,action,targets,new HeptaAccessibilityService.Cancellation(){
+                public boolean isCancelled(){return cancelled.get()||retired.get()||SystemClock.elapsedRealtime()>=deadline;}
+            },new HeptaAccessibilityService.ActionCallback(){
+                public void onResult(HeptaAccessibilityService.ActionOutcome result){
+                    if(!retired.get()&&delivered.compareAndSet(false,true)){value.set(result);ready.countDown();}
+                }
+            });
+            // This existing bound collects acknowledgement; it never extends dispatch authority.
+            if(!ready.await(8000,TimeUnit.MILLISECONDS)){cancelled.set(true);throw new CleanupUnknown("动作回执超时，可能已有操作发生；已停止后续任务");}
+            HeptaAccessibilityService.ActionOutcome result=value.get();if(result==null)throw new IllegalStateException("动作未返回结果");return result;
+        }finally{retired.set(true);}
     }
     private void checkActive(long deadline)throws Stopped{if(cancelled.get())throw new Stopped();if(SystemClock.elapsedRealtime()>deadline)throw new IllegalStateException("本次任务已超时，已停止继续操作");}
     private static final class Stopped extends Exception {private static final long serialVersionUID=1L;}
