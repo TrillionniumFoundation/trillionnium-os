@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.fixed-runtime-ci-transport.v1",
+  "source_fetch_sha256": "3fd70e3fbe4e5f617a2cbab08bd703dd4795137c9d9562936cf996a9fe77f05c",
+  "official_url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+  "fixed_asset_api_url": "https://api.github.com/repos/qualcomm/GenieX/releases/assets/683271197",
+  "archive_bytes": 98545327,
+  "archive_sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f",
+  "core_library_sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56",
+  "maximum_attempts": 4,
+  "phone_contacted": false,
+  "models_downloaded": false,
+  "source_modified": false,
+  "original_extractor_and_pins_preserved": true,
+  "result": "success",
+  "attempts": [
+    {
+      "attempt": 1,
+      "transport_url": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz",
+      "result": "verified",
+      "bytes": 98545327,
+      "sha256": "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f"
+    }
+  ],
+  "selected_transport": "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz"
+}

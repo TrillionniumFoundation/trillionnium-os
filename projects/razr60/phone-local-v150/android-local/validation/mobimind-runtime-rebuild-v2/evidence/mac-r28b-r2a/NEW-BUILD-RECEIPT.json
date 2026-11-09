@@ -1,0 +1,416 @@
+{
+  "schema": "hepta.mobimind.fixed-source-rebuild.v1",
+  "helper_revision": "r2-debug-paths",
+  "state": "exact_original_runtime_rebuilt",
+  "helper_sha256": "62309fa20e51186f37f59e6aba1ea8ace08fb086131b61b47383f89e3c42e861",
+  "app_manifest_sha256": "ae815ddf677ab3591f9d588cae19d9067fe86d04445d562b9f2583a9147f7edf",
+  "mnn_source_commit": "bce7456ce60b5e51b4d3b357f303515860353d8c",
+  "mnn_repository": "https://github.com/doulujiyao12/mobiinfer",
+  "ndk_revision_required": "28.1.13356709",
+  "original_ndk_directory_name_is_not_revision": true,
+  "source_build_completed": true,
+  "original_runtime_byte_identity": true,
+  "original_assembler_allowed": true,
+  "phone_contacted": false,
+  "android_execution_performed": false,
+  "model_inference_performed": false,
+  "apk_assembled": false,
+  "runtime_uploaded": false,
+  "source14_modified": false,
+  "pins_modified": false,
+  "elf_rewritten": false,
+  "removed_build_environment_keys": [
+    "CPATH",
+    "LIBRARY_PATH",
+    "SDKROOT"
+  ],
+  "commands": [
+    {
+      "stage": "cmake-version",
+      "argv": [
+        "/opt/homebrew/Cellar/cmake/4.3.2/bin/cmake",
+        "--version"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.211,
+      "log_sha256": "49da5b8c6869fe4b385bd4d095bf446bc9e6f32d0f6a86b437022e99e19f4ef7"
+    },
+    {
+      "stage": "clang-version",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+        "--version"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.223,
+      "log_sha256": "4e2eb7a980c0beca8de5cca1b0300d483bd3c7b4e92c34b936c4871de2d245e0"
+    },
+    {
+      "stage": "cached-mnn-commit",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/source",
+        "rev-parse",
+        "bce7456ce60b5e51b4d3b357f303515860353d8c^{commit}"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.212,
+      "log_sha256": "9d994377ddbd5a80c7d9426508b687f7fba5c4d3077cd1c4fa19b2c4d3e700eb"
+    },
+    {
+      "stage": "clone-mnn",
+      "argv": [
+        "git",
+        "-c",
+        "init.templateDir=",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/source",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 1.041,
+      "log_sha256": "7f5ee02c8258bbe59f7adbc9dc3bb3c965996062dd6f6cfd417c9ee04e5e0573"
+    },
+    {
+      "stage": "checkout-mnn",
+      "argv": [
+        "git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "core.autocrlf=false",
+        "-C",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source",
+        "checkout",
+        "--detach",
+        "bce7456ce60b5e51b4d3b357f303515860353d8c"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.835,
+      "log_sha256": "718d6ba2f77605dbc533328c6a5c34530d387113873122ff11967fa2cb380b55"
+    },
+    {
+      "stage": "clean-mnn",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.421,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "stage": "configure-mnn",
+      "argv": [
+        "/opt/homebrew/Cellar/cmake/4.3.2/bin/cmake",
+        "-S",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-build",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_TOOLCHAIN_FILE=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-26",
+        "-DANDROID_STL=c++_shared",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_CXX_STANDARD=17",
+        "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+        "-DMNN_BUILD_SHARED_LIBS=ON",
+        "-DMNN_SEP_BUILD=OFF",
+        "-DMNN_BUILD_FOR_ANDROID_COMMAND=ON",
+        "-DMNN_OPENCL=ON",
+        "-DMNN_BUILD_LLM=ON",
+        "-DMNN_BUILD_LLM_OMNI=ON",
+        "-DMNN_BUILD_OPENCV=ON",
+        "-DMNN_IMGCODECS=ON",
+        "-DMNN_BUILD_TOOLS=OFF",
+        "-DMNN_BUILD_DEMO=OFF",
+        "-DMNN_LLM_BUILD_DEMO=OFF",
+        "-DLLM_SUPPORT_HTTP_RESOURCE=OFF",
+        "-DBUILD_MLS=OFF",
+        "-DMNN_QNN=OFF",
+        "-DMNN_HIAI=OFF",
+        "-DMNN_SME2=OFF",
+        "-DMNN_USE_LOGCAT=OFF"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 6.39,
+      "log_sha256": "55aa9488c81a6459869b1e601122baaa0285cdd6616268fcdfcb7125c58b4935"
+    },
+    {
+      "stage": "build-mnn",
+      "argv": [
+        "/opt/homebrew/Cellar/cmake/4.3.2/bin/cmake",
+        "--build",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-build",
+        "--target",
+        "MNN",
+        "--parallel",
+        "6"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 59.868,
+      "log_sha256": "c5d7ab6e178d1741fbe3c8c735e47d15065ef826597cd84188d4ed3c8070deb3"
+    },
+    {
+      "stage": "configure-worker",
+      "argv": [
+        "/opt/homebrew/Cellar/cmake/4.3.2/bin/cmake",
+        "-S",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-source",
+        "-B",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-build",
+        "-G",
+        "Unix Makefiles",
+        "-DCMAKE_TOOLCHAIN_FILE=/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake",
+        "-DANDROID_ABI=arm64-v8a",
+        "-DANDROID_PLATFORM=android-26",
+        "-DANDROID_STL=c++_shared",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DCMAKE_CXX_FLAGS_RELEASE=-fdebug-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/mobimind-opencl-probe-r4 -ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/mobimind-opencl-probe-r4 -fdebug-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-build=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/probe-build -ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-build=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/probe-build -fdebug-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/source -ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/source",
+        "-DMNN_SOURCE=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source",
+        "-DMNN_LIBRARY=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-build/libMNN.so"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.211,
+      "log_sha256": "1c968dc0e0b12e4d98fff6dd50c14fac6b4e05235627c988bd1d28959ce5dd52"
+    },
+    {
+      "stage": "build-worker",
+      "argv": [
+        "/opt/homebrew/Cellar/cmake/4.3.2/bin/cmake",
+        "--build",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-build",
+        "--parallel",
+        "2"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 1.262,
+      "log_sha256": "7f79a4c46843b4504c56c3ef9b04947cdc2fc079e9b49bf4eba3df459201a9c1"
+    },
+    {
+      "stage": "hepta-mobimind-probe-elf",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-h",
+        "-l",
+        "-d",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/candidate-runtime/hepta-mobimind-probe"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.212,
+      "log_sha256": "274ad41fecdc05e3563a30f1a8983b8d1898236ae0d6da6f4cc6fec954734335"
+    },
+    {
+      "stage": "libMNN.so-elf",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-h",
+        "-l",
+        "-d",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/candidate-runtime/libMNN.so"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.21,
+      "log_sha256": "9205263a4db649d3d1d096790bad7a280b6c69a0a40bdc88287404301b8237e3"
+    },
+    {
+      "stage": "libc++_shared.so-elf",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+        "-h",
+        "-l",
+        "-d",
+        "--dyn-syms",
+        "--wide",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/candidate-runtime/libc++_shared.so"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.214,
+      "log_sha256": "6d19afed08d8c53c7324b2cc45078b14e712074c4a94c891b57bc402ff79284b"
+    },
+    {
+      "stage": "worker-disassembly",
+      "argv": [
+        "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-objdump",
+        "-d",
+        "--demangle",
+        "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/candidate-runtime/hepta-mobimind-probe"
+      ],
+      "cwd": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out",
+      "exit_code": 0,
+      "elapsed_seconds": 0.428,
+      "log_sha256": "8b5e92b942df385e8f02d0cf95b3eb300591e212840c43ccf614461f00f56383"
+    }
+  ],
+  "errors": [],
+  "ndk_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "ndk_directory": "/Users/qianqi/Library/Android/sdk/ndk/28.2.13676358",
+  "ndk_source_properties_sha256": "84bef2c605bb263571c299f1eef3307ff58f741710f8cce514cb525b28567f41",
+  "ndk_revision_observed": "28.1.13356709",
+  "toolchain": {
+    "host_tag": "darwin-x86_64",
+    "clang_version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: x86_64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Users/qianqi/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+    "clang_sha256": "ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6",
+    "cmake_version": "cmake version 4.3.2",
+    "cmake_sha256": "ac1172eecbecdeb1a2100e99e049294becd282a46f81fd575004c72f96de4be8",
+    "matches_original_cmake_version": true,
+    "toolchain_file_sha256": "dbad92d9dcfea0d32b7c5e5f82f5072d878ded5d46a5d3f1f581ea108ca7fe89",
+    "libcxx_sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754"
+  },
+  "observer_transforms": {
+    "express/Executor.cpp": {
+      "upstream_sha256": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05",
+      "patched_sha256": "73415fa6b438c14c47be37294fbc0e46aa16bdf0901cfbb30746d4617280a4eb"
+    },
+    "source/core/Pipeline.cpp": {
+      "upstream_sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2",
+      "patched_sha256": "2df51615121e33986b35c814dfd6d09192bdd6eb841759efd7b5508744822d01"
+    },
+    "transformers/llm/engine/src/llm.cpp": {
+      "upstream_sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8",
+      "patched_sha256": "185a0aba9e3c38dc8e9e4a39eb486609d633b9edec2be850057b8b5e03c057cc"
+    }
+  },
+  "mnn_license_sha256": "a830d59c4f98d110e0540d0581efada06192ba6e798434307d1794b07a290302",
+  "worker_debug_prefix_mappings": [
+    {
+      "from": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-source",
+      "to": "/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/mobimind-opencl-probe-r4"
+    },
+    {
+      "from": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-build",
+      "to": "/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/probe-build"
+    },
+    {
+      "from": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source",
+      "to": "/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/source"
+    }
+  ],
+  "worker_debug_prefix_flags": [
+    "-fdebug-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/mobimind-opencl-probe-r4",
+    "-ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/mobimind-opencl-probe-r4",
+    "-fdebug-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-build=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/probe-build",
+    "-ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/worker-build=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/opencl-probe-build-r4/probe-build",
+    "-fdebug-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/source",
+    "-ffile-prefix-map=/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/mnn-source=/Users/qianqi/Documents/Codex/2026-11-08/mobiinfer-dda84ccf-r1/source"
+  ],
+  "libraries": [
+    {
+      "name": "hepta-mobimind-probe",
+      "bytes": 2186768,
+      "sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "expected_bytes": 2186768,
+      "expected_sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020",
+      "exact_original_bytes": true
+    },
+    {
+      "name": "libMNN.so",
+      "bytes": 6408488,
+      "sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "expected_bytes": 6408488,
+      "expected_sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d",
+      "exact_original_bytes": true
+    },
+    {
+      "name": "libc++_shared.so",
+      "bytes": 9236352,
+      "sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "expected_bytes": 9236352,
+      "expected_sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754",
+      "exact_original_bytes": true
+    }
+  ],
+  "runtime_content_identity_sha256": "c8d99e8a2399663d8fa1d24c272fafd704d45befd619a0edf042f838aeabfdc6",
+  "new_runtime_candidate": false,
+  "mnn_library_rebuilt": true,
+  "worker_rebuilt": true,
+  "cxx_library_rebuilt": false,
+  "static_runtime_evidence": {
+    "libraries": [
+      {
+        "name": "hepta-mobimind-probe",
+        "needed": [
+          "libMNN.so",
+          "liblog.so",
+          "libandroid.so",
+          "libdl.so",
+          "libm.so",
+          "libc++_shared.so",
+          "libc.so"
+        ],
+        "elf_class": 64,
+        "machine": "AArch64",
+        "linker_policy": {
+          "policy": "origin-runpath-platform-defaults.v1",
+          "worker_runpath": "$ORIGIN",
+          "worker_rpath": null,
+          "private_direct_dependencies": [
+            "libMNN.so",
+            "libc++_shared.so"
+          ],
+          "global_ld_library_path_required": false,
+          "runtime_resolution_proven": false
+        }
+      },
+      {
+        "name": "libMNN.so",
+        "needed": [
+          "liblog.so",
+          "libm.so",
+          "libandroid.so",
+          "libc++_shared.so",
+          "libdl.so",
+          "libc.so"
+        ],
+        "elf_class": 64,
+        "machine": "AArch64"
+      },
+      {
+        "name": "libc++_shared.so",
+        "needed": [
+          "libc.so",
+          "libm.so",
+          "libdl.so"
+        ],
+        "elf_class": 64,
+        "machine": "AArch64"
+      }
+    ],
+    "sha2_instruction_count": 56,
+    "sha2_only_in_guarded_function": true,
+    "actual_android_loading_proven": false
+  },
+  "exact_runtime_directory": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mnn-ci-rebuild-dda84ccf-r2a/out/runtime",
+  "original_receipt_copied_unchanged": true,
+  "original_receipt_is_new_build_receipt": false,
+  "elapsed_seconds": 72.093,
+  "process_exit_code": 0
+}

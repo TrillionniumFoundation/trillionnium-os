@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.android-build-provenance.v1",
+  "version_code": 10,
+  "version_name": "0.10.0-local-labels",
+  "package": "org.trillionnium.hepta.local",
+  "source_manifest_sha256": "519b46dba5078e591bc1c9ef1a0e20c92bef2a68e023108c6c7c582bea774394",
+  "source_manifest_members": 630,
+  "source_archive_sha256": "d257d3e76d38dc46ed2e21b31eeebe0d9042957011cfa49ad219c2730179e2b7",
+  "true_android_java_dex_native_rebuild": true,
+  "verified_actual_build_source_inputs": 65,
+  "host_platform": "darwin",
+  "java_version": 17,
+  "compile_sdk": 34,
+  "ndk_version": "28.2.13676358",
+  "generated_worker_sha256": "605a080c42415bc461e050385da537d94af9a880c73b5d651c65e3a88c1f1c3a",
+  "native_generated_source_unchanged_from_code6": true,
+  "apk_sha256": "f4a5281850e72a6c7e5d0db095c069ea990471215323192758e481d47ce86aee",
+  "apk_bytes": 15381960,
+  "same_original_installation_signer_verified": true,
+  "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "new_key_created": false,
+  "all_packaged_runtime_members_verified_against_pinned_archive": true,
+  "source_host_gates_passed": 33,
+  "exact_target_pair_java_assertions": 61,
+  "actual_generated_grammar_recognition_tests": 18,
+  "python_tests": 138,
+  "sha256_instruction_gate": {
+    "verified_actual_android_elf": true,
+    "global_crypto_flag": false,
+    "runtime_gate": "getauxval(AT_HWCAP) & HWCAP_SHA2",
+    "instruction_owners": {
+      "hepta_sha256_armv8_blocks": 56
+    },
+    "disassembly_sha256": "f6651868d20774e73fdadaa4f98c3ffe1caa5f820571ea6d9e347938723e8beb"
+  },
+  "runtime_change_scope": "Exact label-first node target pairs, immutable prompt/grammar binding, parser/policy/service pair validation and receipt verifier. Native/model/sampling/repeat/freshness/persistent-destruction guard unchanged.",
+  "mnn_included": false,
+  "device_full_acceptance": "in_progress_not_claimed",
+  "model_weights_or_keys_or_phone_ui_published": false
+}

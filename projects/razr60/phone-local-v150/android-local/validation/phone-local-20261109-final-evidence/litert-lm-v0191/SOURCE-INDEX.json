@@ -1,0 +1,529 @@
+{
+  "schema": "hepta.litert-lm-v0191-source-index.v1",
+  "metadata": {
+    "checked_date_utc": "2026-11-09",
+    "checked_through_utc": "2026-11-09 08:52:35 UTC",
+    "release": {
+      "url": "https://api.github.com/repos/google-ai-edge/LiteRT-LM/releases/tags/v0.19.1",
+      "tag": "v0.19.1",
+      "published_at": "2026-11-05T21:57:29Z",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "tag_api": "https://api.github.com/repos/google-ai-edge/LiteRT-LM/git/ref/tags/v0.19.1",
+      "api_version": "1.0.0"
+    },
+    "sample": {
+      "url": "https://api.github.com/repos/google-ai-edge/litert-samples/branches/main",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "litert_lm_dependency": "0.11.0-rc1",
+      "qairt_default": "2.44.0.260225",
+      "htp_architecture": 79
+    },
+    "hf_api_verified": false,
+    "hf_api_limitation": "Research web tool returned inaccessible/internal error; conclusions are sourced to official webpages and immutable commit diffs, not a claimed live HF API response.",
+    "model_contents_downloaded": false,
+    "inference_executed": false,
+    "android_runtime_compiled": false,
+    "phone_contacted": false,
+    "official_model_evidence": [
+      {
+        "kind": "current_tree_webpage",
+        "repository": "litert-community/gemma-4-E4B-it-litert-lm",
+        "observed_head": "71064b01bd5e2bfd9a5f9dd52df86ae4800138c1",
+        "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/tree/main"
+      },
+      {
+        "kind": "current_tree_webpage",
+        "repository": "litert-community/gemma-4-E2B-it-litert-lm",
+        "observed_head": "3d48132a00cf76de57d926de30f5c5c5ed9b8c0d",
+        "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/tree/main"
+      },
+      {
+        "kind": "raw_lfs_pointer_webpage",
+        "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/raw/main/gemma-4-E4B-it-gpu.litertlm",
+        "model_bytes": 2969059328,
+        "model_sha256_declared": "4912bb5a9c30993c51a7711f763212077458529312175df0573a78323a2bb7ff",
+        "content_downloaded_and_rehashed": false
+      },
+      {
+        "kind": "file_pointer_webpage",
+        "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/blob/main/gemma-4-E4B-it.litertlm",
+        "display_size": "3.66 GB",
+        "model_bytes": null,
+        "model_sha256_declared": "0b2a8980ce155fd97673d8e820b4d29d9c7d99b8fa6806f425d969b145bd52e0",
+        "content_downloaded_and_rehashed": false
+      },
+      {
+        "kind": "immutable_commit_diff_webpage",
+        "date_from_commit_history": "2026-04-29",
+        "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/commit/84b6978eff6e4eea02825bc2ee4ea48579f13109",
+        "effect": "replace_sm8750_pointer",
+        "model_bytes": 3016294400,
+        "model_sha256_declared": "41dd675fbe735b6029012b5576a5716bac614fd8156de0128db4c9dff3cebd4e",
+        "content_downloaded_and_rehashed": false
+      },
+      {
+        "kind": "immutable_commit_diff_webpage",
+        "date_from_commit_history": "2026-10-19",
+        "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/commit/f06ffc3bd3aa7d1dce244a5db08d42d3a2d81827",
+        "effect": "upload_sm8750_pointer",
+        "model_bytes": 2724793461,
+        "model_sha256_declared": "248e732911222c173d6c7d7086258990fc009f23a6144fb8abcf43dd111c7a1b",
+        "content_downloaded_and_rehashed": false
+      },
+      {
+        "kind": "immutable_commit_diff_webpage",
+        "date_from_commit_history": "2026-10-19",
+        "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/commit/21c646194210256750db12cfa1e4fdf22bd3ddf1",
+        "effect": "delete_sm8750_pointer",
+        "model_bytes": 2724793461,
+        "model_sha256_declared": "248e732911222c173d6c7d7086258990fc009f23a6144fb8abcf43dd111c7a1b",
+        "content_downloaded_and_rehashed": false
+      },
+      {
+        "kind": "file_pointer_webpage",
+        "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/blob/main/gemma-4-E2B-it_NPU_Uncompiled.litertlm",
+        "display_size": "2.61 GB",
+        "model_bytes": null,
+        "model_sha256_declared": "b4f86de05f54bda24e8633ef20375b81b3fcc5dace7c6ac9f4269644267ca4aa",
+        "content_downloaded_and_rehashed": false
+      },
+      {
+        "kind": "model_card_webpage",
+        "url": "https://huggingface.co/litert-community/gemma-4-E2B-it-litert-lm/blob/main/README.md",
+        "specific_artifact": "gemma-4-E2B-it_Qualcomm_QCS8275.litertlm",
+        "model_bytes": 2722352245,
+        "model_sha256_declared": "794339191f0e1dc8353b7f84fb205af5e62870ed5647a315eddbf7a9a9c90f06",
+        "target": "QCS8275/HTP-v75/Linux",
+        "qairt": "2.50.0.260828",
+        "runtime_example": "native-v0.18.0-e",
+        "content_downloaded_and_rehashed": false
+      },
+      {
+        "kind": "model_card_webpage",
+        "url": "https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm/raw/main/README.md",
+        "note": "MTP text and baseline metadata refer to base .litertlm, not proven properties of -gpu artifact"
+      }
+    ]
+  },
+  "github_source_text_count": 38,
+  "github_source_text_hashes": [
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "README.md",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/README.md",
+      "git_blob_sha": "30aa5dfae04c01859571a06673a1e686846a93c8",
+      "utf8_bytes": 8712,
+      "text_sha256": "1f8808d1393bcdb58caa4a45e116d21336aad8c0f03e8a26b2b7cedc881a0a85",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/conversation/conversation.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/conversation/conversation.h",
+      "git_blob_sha": "ebec4e7076a4258461b46e745747ea4d5b6fc878",
+      "utf8_bytes": 38797,
+      "text_sha256": "df2af8ccc041b713b8c1a390c2a9cfab3ab1e97bd4697da15bd78d36cea1fbe4",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/conversation/io_types.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/conversation/io_types.h",
+      "git_blob_sha": "660d93818f20d3dd1ec437ff169bb7443b1c8fac",
+      "utf8_bytes": 2558,
+      "text_sha256": "a0e81659f296dd44caf72687e52ca1e76feccc82f0019a9cf3db08e4f495b41f",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/engine/engine.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/engine/engine.h",
+      "git_blob_sha": "d844e4b137bce073c4d2e99c3a7b40ef257b8893",
+      "utf8_bytes": 21055,
+      "text_sha256": "446840aa98f072ee43a1e2447246276434caeaf3bf6e83904a0a82a77c33b6ab",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "c/conversation.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/c/conversation.h",
+      "git_blob_sha": "887e90fdc24f674d9515322ff3c538fdaa320bd2",
+      "utf8_bytes": 30505,
+      "text_sha256": "251d4b5b17aaef3c2a489652928a9b9ebfc3675a44157c742e9a10ae327a8a5f",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "c/engine.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/c/engine.h",
+      "git_blob_sha": "bde3d0d71c97dbbfe185570f7bc3a128d9b185fe",
+      "utf8_bytes": 98274,
+      "text_sha256": "75f35e30fb056696b08c79a379f38e84cd9b61d4eec9c3f829984cdf8af6674c",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/Conversation.kt",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/Conversation.kt",
+      "git_blob_sha": "9aadb0f642a400638670242d41c4d8a4093dfe57",
+      "utf8_bytes": 33549,
+      "text_sha256": "7676881b7e4379758cde1c353f8855774bee555ed0da6c973118c52764b0e5d7",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/Config.kt",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/Config.kt",
+      "git_blob_sha": "60c71735e6d52a0640ac8ae1a8424254a81d5b39",
+      "utf8_bytes": 18320,
+      "text_sha256": "30a7e9826fac4763d3d3dff6960707ed8aaa26956d2e0500627d06fbf5e7d689",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/Session.kt",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/Session.kt",
+      "git_blob_sha": "7731217e1683aad9019f741af4f489708748cfea",
+      "utf8_bytes": 6730,
+      "text_sha256": "58cd2ac63793d6abced1aac5937053a494b7efd609b31ff8f7aa1aff515dce45",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/conversation/conversation.cc",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/conversation/conversation.cc",
+      "git_blob_sha": "df64d37d2644f3ae4dd57296ed57e354f89f5d15",
+      "utf8_bytes": 50087,
+      "text_sha256": "ccfbb9afc6af5306e6176435d040e5358c17058bf063b2d5025d1ef0fa4ff591",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/conversation/internal_callback_util.cc",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/conversation/internal_callback_util.cc",
+      "git_blob_sha": "48901638565efc4f0ee6a4c923e656628fae7780",
+      "utf8_bytes": 20913,
+      "text_sha256": "e524e0ee1f00eb6696c5536c8b4349b7d0823d2e663d9b1c2daf5577c60834a7",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/conversation/internal_callback_util.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/conversation/internal_callback_util.h",
+      "git_blob_sha": "91e7fa3e1b54e9b58b70bb0050082e1f039c14f4",
+      "utf8_bytes": 2546,
+      "text_sha256": "19a610ac9f7e22ef77d1c60d9ed640b0f047d2f9facb9ae37e166f4e55393002",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "docs/api/cpp/conversation.md",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/docs/api/cpp/conversation.md",
+      "git_blob_sha": "c3f145b67da2e9b1f2591664b97901753a69f377",
+      "utf8_bytes": 22934,
+      "text_sha256": "de070a96c899fa223749c15004ba9bea075ef444dda0b59edeb2b022d821b729",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/Message.kt",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/Message.kt",
+      "git_blob_sha": "12e042b36e9f7c41d063565548d5e4451f189875",
+      "utf8_bytes": 6955,
+      "text_sha256": "0b293e6b216f3e0fceb58cc898b857ced81d1f2d95a43236c3f7863ee22dc11e",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/ResponseFormat.kt",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/ResponseFormat.kt",
+      "git_blob_sha": "61c859faaa227706c5e146f5dcf0b3e61487055c",
+      "utf8_bytes": 2017,
+      "text_sha256": "a23087172e0f891d9731ce2a977ca8186f4c63956b93abd0e92ab3e177a8f53d",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/constraint.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/constraint.h",
+      "git_blob_sha": "91b7403b878c567f9bd3a3764db5ff6dcab095ec",
+      "utf8_bytes": 2543,
+      "text_sha256": "bab9cfea03152d493e01b02fc7cc9bbba21485d5d5ff0e1dd5e48d62b469c3b2",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/constraint_provider_config.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/constraint_provider_config.h",
+      "git_blob_sha": "04f409f2b9513bc699a3e55832a790d408791531",
+      "utf8_bytes": 1463,
+      "text_sha256": "48a395c5f54782ebdb85539316bfff0bb8432587fef6f88e8fa46c9a1af316bf",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/constraint_provider.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/constraint_provider.h",
+      "git_blob_sha": "9c853f81bf0be5dd80fefc0c8620ec0ac80a6f7d",
+      "utf8_bytes": 1588,
+      "text_sha256": "b729a00e320ffe43a782ea1fa4160fd138af85763bfeaeda7bff2876d9fc0d2f",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/llg_constraint_config.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/llg_constraint_config.h",
+      "git_blob_sha": "75ffb0b459ebbbe80ec7b08f5b4d8c2f3d4abb6d",
+      "utf8_bytes": 2059,
+      "text_sha256": "b475cdada7ee4b6cee4b0039df02a81fbdde300b84ed65ba850a21ed62d06ee5",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/llg_constraint_provider.cc",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/llg_constraint_provider.cc",
+      "git_blob_sha": "769fedb22e417a968d6b7899c4fc1e7e0c34659e",
+      "utf8_bytes": 6400,
+      "text_sha256": "91e0174e024b8787cdf83b21ca7eaae0718ba140e12f6e7a82bbd6193078e5ce",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "c/conversation.cc",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/c/conversation.cc",
+      "git_blob_sha": "95f9a6dc076cdcc1ee65895356428b582e765407",
+      "utf8_bytes": 30652,
+      "text_sha256": "a7c772314a0a0b6a0efeb9e0835838b6e94d87c54670728ea4c7cd321a3fe4c8",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/Engine.kt",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/Engine.kt",
+      "git_blob_sha": "22c24f064f0dda7a4ab468f1011e772e0c9ad266",
+      "utf8_bytes": 8767,
+      "text_sha256": "f3d94676427e89d25a0e36b65d86a431e3826ec73b214875135a9355a8c67951",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/jni/litertlm.cc",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/jni/litertlm.cc",
+      "git_blob_sha": "680eb6a671a62dcabdbef18156d0b44ec4c64b5f",
+      "utf8_bytes": 91629,
+      "text_sha256": "134660288df4b6282f39209d6c641510620cb06ffbf47affd9cb4312e8fc1d6e",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "docs/api/kotlin/getting_started.md",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/docs/api/kotlin/getting_started.md",
+      "git_blob_sha": "f9ab1b626ac5119c8429430282d72b52422d61fe",
+      "utf8_bytes": 16540,
+      "text_sha256": "6ffe62553f9ac2a2be790ac58161c29212590f02e64613f39ae96883c4e08508",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/CMakeLists.txt",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/CMakeLists.txt",
+      "git_blob_sha": "f447acf0dca59b5f9fe4ad7f6cd7e5fe45f3c705",
+      "utf8_bytes": 28429,
+      "text_sha256": "ea5ded9896d697d6dc6654ab5da037eba94321c0adfd214eb6e7203e4d446464",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/BUILD",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/BUILD",
+      "git_blob_sha": "63e981dcf0150711987571d0dee8e7484ae4019e",
+      "utf8_bytes": 24916,
+      "text_sha256": "9ee6588548f9ec54ed1418ff20945e289b60308606bee27e7ad432944b969c04",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/constraint_provider_factory.cc",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/constraint_provider_factory.cc",
+      "git_blob_sha": "e2a3187a0a76113ceddc4d4f50ee0e10ffa9e3b1",
+      "utf8_bytes": 2692,
+      "text_sha256": "d6ba4c40b9730284a59b43c72415143b43c7643b4aa42d8691c42034a74ab9be",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/components/constrained_decoding/llg_constraint_provider_noop.cc",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/components/constrained_decoding/llg_constraint_provider_noop.cc",
+      "git_blob_sha": "0f9b6d36db88a866165b49ad38e9baca371eebda",
+      "utf8_bytes": 1731,
+      "text_sha256": "89265aff874e69c01d718bd51f02321cb012cb5b33ac805cbe0e9b6a46352760",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/engine/io_types.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/engine/io_types.h",
+      "git_blob_sha": "e8cc70e54351a190ec0142e7b04795680a31fd5d",
+      "utf8_bytes": 17875,
+      "text_sha256": "aefcaf9df9388b6dede3ba222a1a8c8508479e7e894f3a73eebd14a578294f83",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "runtime/engine/engine_settings.h",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/runtime/engine/engine_settings.h",
+      "git_blob_sha": "8def9722f79901d3ef281c7b436422537417ffa6",
+      "utf8_bytes": 19018,
+      "text_sha256": "17a5dc329f3ebe73ad0364c457b1dc7e0d91d0972a31e7daecd4aec345547222",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/LiteRT-LM",
+      "commit": "7a03724cece417f1724c923b3d527b4319730841",
+      "path": "kotlin/java/com/google/ai/edge/litertlm/BUILD",
+      "url": "https://github.com/google-ai-edge/LiteRT-LM/blob/7a03724cece417f1724c923b3d527b4319730841/kotlin/java/com/google/ai/edge/litertlm/BUILD",
+      "git_blob_sha": "bfe625b2377258b3a72793042879bb0a5f5c2004",
+      "utf8_bytes": 1481,
+      "text_sha256": "fcf0524fd71a9998b3774a65a6b45867059fd8b75944514e08284804d68f512d",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/litert-samples",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "path": "samples/litert/qualcomm/llm_chatbot_npu/README.md",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/163222b0a76d2e80f959c1fc1f1918420e3b1e4d/samples/litert/qualcomm/llm_chatbot_npu/README.md",
+      "git_blob_sha": "0bc398c258a2277ddb579552fa2667e6d5cebc7c",
+      "utf8_bytes": 3189,
+      "text_sha256": "c98c79210916d742bedd32c4afbc41f37f16e4b192d961dd6124bceb1421b566",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/litert-samples",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "path": "samples/litert/qualcomm/llm_chatbot_npu/NPU_COMPILATION_GUIDE.md",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/163222b0a76d2e80f959c1fc1f1918420e3b1e4d/samples/litert/qualcomm/llm_chatbot_npu/NPU_COMPILATION_GUIDE.md",
+      "git_blob_sha": "90d3b8ea3cb36e7c7468212d3102a4208d171a0a",
+      "utf8_bytes": 2300,
+      "text_sha256": "e20b902b564665cefff4473f57b70897fcf33c70787ded845e1654a19b727e80",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/litert-samples",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "path": "samples/litert/qualcomm/llm_chatbot_npu/app/build.gradle.kts",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/163222b0a76d2e80f959c1fc1f1918420e3b1e4d/samples/litert/qualcomm/llm_chatbot_npu/app/build.gradle.kts",
+      "git_blob_sha": "0c1b2d5f2c8e0c93ee827ecb0e5a7d7f32d1009b",
+      "utf8_bytes": 1797,
+      "text_sha256": "9310d7ee6fe5cba977fa09cd8ed82e152a1d332282268b0998165a609bba761f",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/litert-samples",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "path": "samples/litert/qualcomm/llm_chatbot_npu/gradle/libs.versions.toml",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/163222b0a76d2e80f959c1fc1f1918420e3b1e4d/samples/litert/qualcomm/llm_chatbot_npu/gradle/libs.versions.toml",
+      "git_blob_sha": "6bbf0f90aef1a0c1b1ab8e59eb96efb6c6a959f2",
+      "utf8_bytes": 1970,
+      "text_sha256": "3447a5415baaf85925a4139a4bd2ae9a04b0ebea4b66e42d119a666601dd2fc1",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/litert-samples",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "path": "samples/litert/qualcomm/llm_chatbot_npu/fetch_qualcomm_library.sh",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/163222b0a76d2e80f959c1fc1f1918420e3b1e4d/samples/litert/qualcomm/llm_chatbot_npu/fetch_qualcomm_library.sh",
+      "git_blob_sha": "1f9690a6149974743e62a53f140be29ae7fb74cd",
+      "utf8_bytes": 4946,
+      "text_sha256": "56f9aaa8b1ea25db40e541d168e40f51ce5e5674521124cdbd9c299597bfe9d8",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/litert-samples",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "path": "samples/litert/qualcomm/llm_chatbot_npu/app/src/main/java/com/example/qnn_litertlm_gemma/LiteRTLMManager.kt",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/163222b0a76d2e80f959c1fc1f1918420e3b1e4d/samples/litert/qualcomm/llm_chatbot_npu/app/src/main/java/com/example/qnn_litertlm_gemma/LiteRTLMManager.kt",
+      "git_blob_sha": "1080325e10f1db25dd19b45524e99da3f9572c5a",
+      "utf8_bytes": 12021,
+      "text_sha256": "67de54b5303396edc14753523b9e5ebe4065a8b5d8591c647dc949cf2c22baf4",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    },
+    {
+      "repository": "google-ai-edge/litert-samples",
+      "commit": "163222b0a76d2e80f959c1fc1f1918420e3b1e4d",
+      "path": "samples/litert/qualcomm/llm_chatbot_npu/app/src/main/java/com/example/qnn_litertlm_gemma/ModelConfig.kt",
+      "url": "https://github.com/google-ai-edge/litert-samples/blob/163222b0a76d2e80f959c1fc1f1918420e3b1e4d/samples/litert/qualcomm/llm_chatbot_npu/app/src/main/java/com/example/qnn_litertlm_gemma/ModelConfig.kt",
+      "git_blob_sha": "e5a3a1e8df558b3a67acde6b7612b8182bb46269",
+      "utf8_bytes": 496,
+      "text_sha256": "4f000865354b337884cda864937f4fe7210e8d32efe8a0608649aeb1fe3bee75",
+      "git_blob_recomputed_equal": true,
+      "validation": "retrieved source-text identity; not compiled or executed"
+    }
+  ]
+}

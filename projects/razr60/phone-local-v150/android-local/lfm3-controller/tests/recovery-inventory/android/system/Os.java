@@ -1,0 +1,1 @@
+package android.system; public final class Os {public static StructStat lstat(String path)throws ErrnoException{throw new ErrnoException();}public static StructStat fstat(java.io.FileDescriptor fd)throws ErrnoException{throw new ErrnoException();}public static java.io.FileDescriptor open(String path,int flags,int mode)throws ErrnoException{throw new ErrnoException();}}
