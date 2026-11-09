@@ -48,12 +48,15 @@ jobs:
       - name: Verify complete source closure
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: python -B tools/verify_source.py
+      - name: Verify exact public Code23 CI source and helper binding contracts
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9-code23-037c
+        run: python -B -m unittest -v test_code23_source_binding.py
       - name: Install and identify the original macOS NDK compiler
         run: |
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
           "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'ndk;28.1.13356709'
           hepta_ndk="$hepta_sdk/ndk/28.1.13356709"
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/qualify_macos_compiler.py \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9-code23-037c/qualify_macos_compiler.py \
             --ndk "$hepta_ndk" --output "$RUNNER_TEMP/hepta-ndk-identity.json"
           printf '%s\n' "ANDROID_NDK_ROOT=$hepta_ndk" >> "$GITHUB_ENV"
       - name: Check out the fixed public MNN source
@@ -67,16 +70,16 @@ jobs:
           lfs: false
       - name: Rebuild and match all three original runtime files on macOS
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9-code23-037c/rebuild_exact_runtime.py \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
             --mnn-checkout "$GITHUB_WORKSPACE/hepta-mnn-upstream" \
             --ndk "$ANDROID_NDK_ROOT" \
             --output "$RUNNER_TEMP/hepta-mobimind-rebuild"
       - name: Bind the exact rebuilt runtime to this source and workflow attempt
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/verify_ci_runtime_bundle.py bind \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9-code23-037c/verify_ci_runtime_bundle.py bind \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
-            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py" \
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9-code23-037c/rebuild_exact_runtime.py" \
             --bundle "$RUNNER_TEMP/hepta-mobimind-rebuild" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json"
@@ -92,7 +95,7 @@ jobs:
             ${{ runner.temp }}/hepta-mobimind-rebuild/CURRENT-CI-SOURCE.json
             ${{ runner.temp }}/hepta-mobimind-rebuild/COMPILER-IDENTITY.json
       - name: Test fixed UI-Venus source and transfer binding contracts
-        working-directory: projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v1
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v2-code23-037c
         run: python -B -m unittest -v test_rebuild_and_verify.py
       - name: Fetch and verify the fixed SDK for the independent UI-Venus build
         run: |
@@ -102,11 +105,11 @@ jobs:
             --receipt "$RUNNER_TEMP/hepta-ui-venus-geniex-transport.json"
       - name: Rebuild and bind the exact ordinary-App UI-Venus worker on macOS
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v1/rebuild_and_verify.py build \
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v2-code23-037c/rebuild_and_verify.py build \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
             --ndk "$ANDROID_NDK_ROOT" --sdk-libs "$RUNNER_TEMP/hepta-ui-venus-geniex/lib" \
             --bundle "$RUNNER_TEMP/hepta-ui-venus-rebuild" \
-            --compiler-qualifier "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/qualify_macos_compiler.py" \
+            --compiler-qualifier "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9-code23-037c/qualify_macos_compiler.py" \
             --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
       - name: Transfer only the exact UI-Venus runtime within this workflow
@@ -241,9 +244,9 @@ jobs:
           path: ${{ runner.temp }}/hepta-mobimind-from-macos
       - name: Reverify all original runtime bytes and the actual macOS build identity on Linux
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/verify_ci_runtime_bundle.py verify \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9-code23-037c/verify_ci_runtime_bundle.py verify \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
-            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py" \
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9-code23-037c/rebuild_exact_runtime.py" \
             --bundle "$RUNNER_TEMP/hepta-mobimind-from-macos" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-mobimind-consumer-verification.json"
@@ -255,10 +258,10 @@ jobs:
           path: ${{ runner.temp }}/hepta-ui-venus-from-macos
       - name: Reverify the UI-Venus worker and actual producer identity on Linux
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v1/rebuild_and_verify.py verify \
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v2-code23-037c/rebuild_and_verify.py verify \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
             --bundle "$RUNNER_TEMP/hepta-ui-venus-from-macos" \
-            --compiler-qualifier "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/qualify_macos_compiler.py" \
+            --compiler-qualifier "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9-code23-037c/qualify_macos_compiler.py" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-ui-venus-consumer-verification.json"
           printf '%s\n' "UI_VENUS_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-ui-venus-from-macos/runtime" >> "$GITHUB_ENV"
