@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.ui-venus-runtime-rebuild-helper.v2",
+  "app_source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 3237,
+      "sha256": "67741bee3e840f0ff01a2b83c0b1d4c6effbbdda628832d85f1198c624d27ea9"
+    },
+    {
+      "path": "rebuild_exact_runtime.py",
+      "bytes": 15491,
+      "sha256": "2832f6db1133e5e462819e055e65fd88c6f5943df8570623b4c4021b71fbfd28"
+    },
+    {
+      "path": "test_identity.py",
+      "bytes": 4278,
+      "sha256": "afc22cae1cfe2d11294966e73e043bb460cf1f2dd37ccc97c6e3c866e76fe039"
+    },
+    {
+      "path": "verify_ci_runtime_bundle.py",
+      "bytes": 4667,
+      "sha256": "d1b53d237b185da950034f183bf539e05dca2ef9016ffe6bbfab8ae508f70fab"
+    }
+  ]
+}

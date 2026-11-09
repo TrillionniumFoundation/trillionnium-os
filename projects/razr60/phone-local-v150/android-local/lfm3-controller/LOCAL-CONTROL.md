@@ -8,6 +8,12 @@ Actions are `find_app`, `open`, `click`, `type`, `scroll`, `back`, `home`, `wait
 
 A small set of visible noninteractive readouts accompanies actionable nodes so the model can see results before choosing `done`. Final status remains `model_reported_done` with `goal_independently_verified:false`. The external test driver must verify visible final predicates, matching task/nonce/owner, actual native process exit, runtime/model binding and positive accelerator offload evidence.
 
+## Current observed domain and history
+
+The prompt retains every currently observed eligible control: same-package, enabled, non-password nodes with actual click, edit or observed scroll capability. Existing repeat restrictions still remove only actions they already reject. Optional catalogue and noninteractive projections may shrink with explicit omission counts; the complete required control set and complete recorded scalar history are indivisible. If they cannot fit the existing admission heuristic, the request fails before model inference. Native exact input-token authorization remains independent.
+
+The model receives one lossless history table with columns, scalar dictionary references and rows. Absent fields, explicit null, false, zero, empty strings, row order and repeated actions remain distinct. This records outcomes without declaring task success. `open_allowed_packages` is the exact shown catalogue subset after the existing repeat/current-package/Android exclusions, and is the same set bound into the finite grammar. App labels remain untrusted observations.
+
 ## Fixed runtime and optional private parameters
 
 Only the fixed official GGUF filename under the application's own `files/model` is accepted. No model or executable path is accepted from an Intent. Default settings are NPU, 8192 context and four threads. An optional app-owned, regular, one-link mode0600 `files/model/runtime-config.json` can contain exactly:

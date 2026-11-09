@@ -14,9 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "ObservedScrollActions", "ObservationStabilityGate", "RecentActionProjection", "ObservedTextProjection", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedWindowMetadata", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
-              "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
-              "AppCatalogueRanker", "SessionRecovery", "MobiMindPins", "MobiMindContract", "MobiMindSessionContract"]
+PURE_CLASSES=['ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedScrollActions', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'CompactTaskHistory', 'PromptActionDomain']
 
 
 def main():
@@ -73,6 +71,7 @@ def main():
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         run("mobimind-private-staging",[sys.executable,"-m","unittest","discover","-s",
             ROOT/"provenance/mobimind-app-only-r1/tests","-p","test_*.py","-v"])
+        run("ui-venus-q4_0-provenance",[sys.executable,ROOT/"tests/test_ui_venus_q4_0_runtime.py"])
         for source in sorted((ROOT/"native/tests").glob("*.c")):
             binary=out/source.stem
             run(source.stem+"-compile",[cc,"-std=c11","-Wall","-Wextra","-Werror","-O2","-I"+str(ROOT/"native"),source,"-o",binary])

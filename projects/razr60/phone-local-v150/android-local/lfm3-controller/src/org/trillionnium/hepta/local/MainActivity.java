@@ -20,18 +20,22 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     private LocalModelEngine engine;
     private LocalTaskSession tasks;
     private MobiMindModelEngine visualDiagnostic;
+    private UiVenusModelEngine uiVenusDiagnostic;
     private EditText taskInput, probePrompt;
     private TextView modelInfo, taskState, taskLog, taskResult, probeOutput;
     private TextView visualProbeOutput;
+    private TextView uiVenusProbeOutput;
     private LinearLayout diagnostics;
     private Button startTask, stopTask, runText;
     private String lastShownProbeId;
     private String lastShownVisualProbeId;
+    private String lastShownUiVenusProbeId;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         LocalProbeApplication app=(LocalProbeApplication)getApplication();
         engine=app.modelEngine();tasks=app.taskSession();visualDiagnostic=app.mobiMindDiagnostic();
+        uiVenusDiagnostic=app.uiVenusDiagnostic();
         ScrollView outer=new ScrollView(this);outer.setFillViewport(true);
         LinearLayout page=new LinearLayout(this);page.setOrientation(LinearLayout.VERTICAL);
         int pad=dp(16);page.setPadding(pad,pad,pad,pad);outer.addView(page);
@@ -66,6 +70,9 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
         diagnostics.addView(text("私有截图诊断只生成本地视觉模型输出，不会操作手机。",12));
         visualProbeOutput=text("",11);visualProbeOutput.setTypeface(Typeface.MONOSPACE);visualProbeOutput.setTextIsSelectable(true);
         visualProbeOutput.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);diagnostics.addView(visualProbeOutput);
+        diagnostics.addView(text("UI-Venus 私有图像诊断；只显示模型原始输出，不执行动作。",12));
+        uiVenusProbeOutput=text("尚未收到已准备的私有诊断请求。",11);uiVenusProbeOutput.setTypeface(Typeface.MONOSPACE);uiVenusProbeOutput.setTextIsSelectable(true);
+        uiVenusProbeOutput.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);diagnostics.addView(uiVenusProbeOutput);
         setContentView(outer);tasks.bind(this);refresh();handleIntent(getIntent());
     }
     private int dp(int value){return Math.round(value*getResources().getDisplayMetrics().density);}
@@ -75,6 +82,13 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
     @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);handleIntent(intent);}
     private void handleIntent(Intent intent){
         if(intent==null)return;
+        if(intent.getBooleanExtra("auto_ui_venus_probe",false)){
+            final String nonce=intent.getStringExtra("ui_venus_nonce");
+            boolean conflict=intent.getBooleanExtra("auto_mobi_probe",false)||intent.getBooleanExtra("auto_task",false)||intent.getBooleanExtra("auto_run",false);
+            // Consume all launch selectors before verification: Activity recreation cannot replay this trigger.
+            for(String key:new String[]{"auto_ui_venus_probe","ui_venus_nonce","auto_mobi_probe","mobi_nonce","auto_task","test_nonce","auto_run"})intent.removeExtra(key);
+            diagnostics.setVisibility(View.VISIBLE);runUiVenusProbe(nonce,conflict);return;
+        }
         if(intent.getBooleanExtra("auto_mobi_probe",false)){
             final String nonce=intent.getStringExtra("mobi_nonce");
             // A recreated Activity cannot replay this one-use launch extra.
@@ -172,6 +186,30 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             +"\n推理完整完成："+result.inferenceCompleted+"\n退出与回执已确认："+result.cleanupKnown
             +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
     }
+    private void runUiVenusProbe(String nonce,boolean conflict){
+        boolean consumed=false;String requestId=null;
+        try{
+            if(conflict)throw new IllegalStateException("UI-Venus诊断不能与其它启动请求合并");
+            if(tasks.isRunning()||tasks.isBlocked()||engine.isBusy()||visualDiagnostic.isBlocked()||uiVenusDiagnostic.isBlocked())
+                throw new IllegalStateException("已有本地请求或退出状态待确认");
+            PrivateUiVenusProbe request=PrivateUiVenusProbe.consume(this,nonce);consumed=true;requestId=request.id;
+            uiVenusProbeOutput.setText("正在执行手机本地图像推理；原始输出不会用于操作手机……");
+            uiVenusDiagnostic.start(request,tasks,result -> {renderUiVenusProbe(result);refresh();});
+            recordUiVenusTrigger(nonce,requestId,true,consumed,null);refresh();
+        }catch(Exception error){
+            uiVenusProbeOutput.setText("未启动UI-Venus诊断："+HeptaAccessibilityService.message(error));
+            recordUiVenusTrigger(nonce,requestId,false,consumed,HeptaAccessibilityService.message(error));refresh();
+        }
+    }
+    private void renderUiVenusProbe(UiVenusModelEngine.Result result){
+        lastShownUiVenusProbeId=result.runId;String receipt;
+        try{receipt=result.receipt.toString(2);}catch(Exception error){receipt=result.receipt.toString();}
+        String raw=result.rawText.length()>16000?result.rawText.substring(0,16000)+"\n（完整原始输出保存在凭据目录）":result.rawText;
+        uiVenusProbeOutput.setText("仅模型推理，未执行手机操作\n状态："+result.status
+            +"\n真实进程退出："+result.processExitObserved+" / "+result.exitCode
+            +"\n推理完整完成："+result.inferenceCompleted+"\n退出与回执已确认："+result.cleanupKnown
+            +"\n\n"+raw+"\n\n凭据："+result.runDirectory+"\n"+receipt);
+    }
     @Override public void onSessionChanged(){refresh();}
     private void refresh(){
         if(modelInfo==null)return;
@@ -199,6 +237,26 @@ public final class MainActivity extends Activity implements LocalTaskSession.Lis
             startTask.setEnabled(false);runText.setEnabled(false);
             if(visual==null)visualProbeOutput.setText(visualDiagnostic.recoveryMessage());
         }
+        UiVenusModelEngine.Result venus=uiVenusDiagnostic.lastResult();
+        if(venus!=null&&!venus.runId.equals(lastShownUiVenusProbeId))renderUiVenusProbe(venus);
+        if(uiVenusDiagnostic.isBlocked()){
+            startTask.setEnabled(false);runText.setEnabled(false);
+            if(venus==null)uiVenusProbeOutput.setText(uiVenusDiagnostic.recoveryMessage());
+        }
+    }
+    private void recordUiVenusTrigger(String nonce,String requestId,boolean accepted,boolean consumed,String error){
+        AtomicFile file=new AtomicFile(new File(getFilesDir(),"ui-venus-probe-trigger-result.json"));FileOutputStream out=null;
+        try{
+            JSONObject value=new JSONObject().put("schema","hepta.private-ui-venus-trigger.v1").put("accepted",accepted)
+                .put("request_id",requestId==null?JSONObject.NULL:requestId)
+                .put("nonce_sha256",nonce==null?JSONObject.NULL:MobiMindContract.sha(nonce.getBytes(StandardCharsets.UTF_8)))
+                .put("error",error==null?JSONObject.NULL:error).put("app_uid",android.os.Process.myUid())
+                .put("app_pid",android.os.Process.myPid()).put("at_wall_ms",System.currentTimeMillis())
+                .put("private_request_consumed",consumed?Boolean.TRUE:JSONObject.NULL)
+                .put("consume_completed",consumed).put("actions_executed",false).put("automatic_resume",false);
+            out=file.startWrite();out.write(value.toString(2).getBytes(StandardCharsets.UTF_8));out.getFD().sync();file.finishWrite(out);out=null;
+            android.system.Os.chmod(file.getBaseFile().getPath(),0600);
+        }catch(Exception ignored){if(out!=null)file.failWrite(out);}
     }
     private void recordVisualTrigger(String nonce,String requestId,boolean accepted,boolean consumed,String error){
         AtomicFile file=new AtomicFile(new File(getFilesDir(),"mobi-probe-trigger-result.json"));FileOutputStream out=null;

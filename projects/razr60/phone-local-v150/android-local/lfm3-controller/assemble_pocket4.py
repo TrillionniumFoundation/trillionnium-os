@@ -11,6 +11,7 @@ from build_identity import verify_source_inputs
 from model_profiles import PROFILES,DEFAULT_PROFILE,LLAMA_COMMIT
 from verify_runtime import verify_runtime_archive
 from verify_mobimind_runtime import verify_mobimind_runtime,verify_worker_linker_policy
+from verify_ui_venus_runtime import verify_ui_venus_runtime,verify_worker_dynamic
 OUT=Path(os.environ.get('HEPTA_BUILD_OUT', str(ROOT/'out'))).expanduser().resolve()
 KEYS=ROOT/'keys'
 sdk_directory=os.environ.get('GENIEX_ANDROID_LIB_DIR')
@@ -67,6 +68,13 @@ mobimind_expected=verify_mobimind_runtime(ROOT,Path(mobi_directory).expanduser()
 if set(mobimind_expected)&set(libraries):
     raise RuntimeError('MNN members must not replace any original GenieX runtime member')
 libraries.update({name:item['path'] for name,item in mobimind_expected.items()})
+venus_directory=os.environ.get('UI_VENUS_ANDROID_RUNTIME_DIR')
+if not venus_directory:
+    raise RuntimeError('Set UI_VENUS_ANDROID_RUNTIME_DIR to the independently built ordinary-App UI-Venus worker')
+ui_venus_expected=verify_ui_venus_runtime(ROOT,Path(venus_directory).expanduser().resolve(strict=True))
+if set(ui_venus_expected)&set(libraries):
+    raise RuntimeError('UI-Venus worker must not replace any original GenieX/MNN member')
+libraries.update({name:item['path'] for name,item in ui_venus_expected.items()})
 build=json.loads((OUT/'mac-build-receipt.json').read_text())
 verify_source_inputs(ROOT,build)
 expected_outputs={'classes.dex':OUT/'dex/classes.dex','base.apk':OUT/'base.apk','libhepta_local_runner.so':OUT/'libhepta_local_runner.so'}
@@ -86,6 +94,7 @@ platform_libraries={'libc.so','libm.so','libdl.so','liblog.so','libandroid.so',
     'libOpenCL.so','libcdsprpc.so','libadsprpc.so','libz.so'}
 dependencies={}
 mobimind_linker_policy=None
+ui_venus_linker_policy=None
 for name,path in libraries.items():
     with path.open('rb') as binary: header=binary.read(20)
     if header[:4]!=b'\x7fELF' or len(header)<20 or header[5]!=1: raise RuntimeError('Not a little-endian ELF library: '+name)
@@ -100,11 +109,15 @@ for name,path in libraries.items():
         raise RuntimeError('Actual MNN ELF dependencies differ from the pinned Android build: '+name)
     if name=='libhepta_mobimind_runner.so':
         mobimind_linker_policy=verify_worker_linker_policy(dynamic)
+    if name in ui_venus_expected:
+        ui_venus_linker_policy=verify_worker_dynamic(dynamic,ui_venus_expected[name])
     unresolved=set(needed)-set(libraries)-platform_libraries
     if unresolved: raise RuntimeError('Unresolved Android library dependencies for '+name+': '+str(sorted(unresolved)))
     dependencies[name]=needed
 if mobimind_linker_policy is None:
     raise RuntimeError('Pinned MNN worker linker policy was not verified')
+if ui_venus_linker_policy is None:
+    raise RuntimeError('Independent UI-Venus App worker linker policy was not verified')
 
 with zipfile.ZipFile(OUT/'base.apk') as base, zipfile.ZipFile(UNSIGNED,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
     for info in base.infolist():
@@ -175,6 +188,10 @@ mobi_elf=run([READELF,'-h','-l','-d',libraries['libhepta_mobimind_runner.so']])
 if 'DYN (Position-Independent Executable file)' not in mobi_elf or '/system/bin/linker64' not in mobi_elf:
     raise RuntimeError('MobiMind runner must be the unchanged Android PIE executable')
 (REPORT/'mobimind-runner-elf.txt').write_text(mobi_elf)
+venus_elf=run([READELF,'-h','-l','-d',libraries['libhepta_ui_venus_runner.so']])
+if 'DYN (Position-Independent Executable file)' not in venus_elf or '/system/bin/linker64' not in venus_elf:
+    raise RuntimeError('UI-Venus App runner must be its independently pinned Android PIE')
+(REPORT/'ui-venus-runner-elf.txt').write_text(venus_elf)
 with zipfile.ZipFile(APK) as z:
     if len(z.namelist())!=len(set(z.namelist())): raise RuntimeError('Duplicate APK member')
     resource=z.getinfo('resources.arsc')
@@ -195,6 +212,9 @@ with zipfile.ZipFile(APK) as z:
         elif name in mobimind_expected:
             expected=mobimind_expected[name]['sha256']; provenance=mobimind_expected[name]['provenance']
             if len(payload)!=mobimind_expected[name]['bytes']: raise RuntimeError('MNN packaged member size differs: '+name)
+        elif name in ui_venus_expected:
+            expected=ui_venus_expected[name]['sha256'];provenance=ui_venus_expected[name]['provenance']
+            if len(payload)!=ui_venus_expected[name]['bytes']: raise RuntimeError('UI-Venus packaged member size differs: '+name)
         else:
             expected=runtime_expected[runtime_relative[name]]['sha256']; provenance='pinned_geniex_release_archive'
         if hashlib.sha256(payload).hexdigest()!=expected: raise RuntimeError('library hash mismatch: '+name)
@@ -202,7 +222,7 @@ with zipfile.ZipFile(APK) as z:
 receipt={'schema':'hepta.local-model.static-acceptance.v3','apk':str(APK),'apk_bytes':APK.stat().st_size,'apk_sha256':sha(APK),
     'new_development_signing_key_created':created_signing_key,'existing_installation_signer_match_proven':False,
     'package':'org.trillionnium.hepta.local','permissions':[],'abi':['arm64-v8a'],
-    'version_code':version_code,
+    'version_code':version_code, 'version_name':version_name,
     'debuggable':True,'extract_native_libs':True,'compile_sdk':34,'min_sdk':30,'target_sdk':35,
     'uses_native_libraries_optional':['libadsprpc.so','libcdsprpc.so','libOpenCL.so'],
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','default_compute':'npu','default_context':8192,
@@ -215,12 +235,17 @@ receipt={'schema':'hepta.local-model.static-acceptance.v3','apk':str(APK),'apk_b
         'linker_policy':mobimind_linker_policy,
         'installed_runner_is_pie':True,'shared_model_slot':True,'private_one_use_request':True,
         'ordinary_app_runtime_qualified':False,'phone_action_dispatch_connected':False,'model_in_apk':False},
+    'ui_venus_runtime':{'libraries':[{k:v for k,v in item.items() if k!='path'} for item in ui_venus_expected.values()],
+        'original_geniex_mnn_members_unchanged':True,'linker_policy':ui_venus_linker_policy,'installed_runner_is_pie':True,
+        'shared_model_slot':True,'aggregate_three_session_recovery':True,'private_one_use_request':True,
+        'ordinary_app_runtime_qualified':False,'phone_action_dispatch_connected':False,'model_in_apk':False,
+        'full_multimodal_input_qualified':False,'no_context_shift_proven':False},
     'fallback_allowed':False,'dsp_arch':'v79','host_library_dependencies':dependencies,
     'installed_on_phone':False,'ordinary_app_uid_accelerator_qualified':False,'phone_actions_supported':control,
     'accessibility_service_guarded_by_bind_permission':control,'task_trigger_private_nonce':control,
     'application_shared_engine_and_session':True,'process_wide_single_request':True,
     'native_runner_is_installed_pie':True,'model_in_apk':False,'libraries':lib_receipts,
     'resources_arsc_uncompressed':True,'resources_arsc_data_offset':resource_data_offset,'resources_arsc_alignment':4,
-    'artifacts':{'badging':'apk-badging.txt','permissions':'apk-permissions.txt','manifest':'apk-manifest.txt','signature':'apk-signature.txt','runner_elf':'runner-elf.txt','mobimind_runner_elf':'mobimind-runner-elf.txt'}}
+    'artifacts':{'badging':'apk-badging.txt','permissions':'apk-permissions.txt','manifest':'apk-manifest.txt','signature':'apk-signature.txt','runner_elf':'runner-elf.txt','mobimind_runner_elf':'mobimind-runner-elf.txt','ui_venus_runner_elf':'ui-venus-runner-elf.txt'}}
 (REPORT/'STATIC-ACCEPTANCE.json').write_text(json.dumps(receipt,indent=2)+'\n')
 print(json.dumps({k:v for k,v in receipt.items() if k!='libraries'},indent=2),flush=True)

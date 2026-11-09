@@ -10,6 +10,8 @@ import json
 from pathlib import Path, PurePosixPath
 import shutil
 import tarfile
+import time
+import urllib.error
 import urllib.request
 
 URL = "https://github.com/qualcomm/GenieX/releases/download/v0.10.0/geniex-bench-android-arm64-v0.10.0.tar.gz"
@@ -18,13 +20,58 @@ SHA256 = "248b49c83bc74238babc0d9ebf46f0c8b6d2e9b6de3ffb90c2a5a2042523831f"
 PREFIX = "geniex-bench-android-arm64-v0.10.0/lib/"
 CORE_SHA256 = "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
 
+# Retry only a transient HTTP response before any archive is opened or written.
+# A stream failure, size/SHA mismatch, 4xx response or TLS failure remains fatal.
+TRANSIENT_HTTP_STATUS = frozenset((500, 502, 503, 504))
+MAX_RESPONSE_ATTEMPTS = 3
+
+
+def _open_fixed_response(destination):
+    for attempt in range(1, MAX_RESPONSE_ATTEMPTS + 1):
+        started = time.time()
+        record = {"schema": "hepta.runtime-download-response.v1", "url": URL,
+                  "attempt": attempt, "maximum_attempts": MAX_RESPONSE_ATTEMPTS,
+                  "timeout_seconds": 60, "started_wall_s": started,
+                  "archive_opened": False, "archive_verified": False,
+                  "tls_verification_disabled": False}
+        target = destination / ("download-response-%02d.json" % attempt)
+        try:
+            response = urllib.request.urlopen(URL, timeout=60)
+        except urllib.error.HTTPError as error:
+            retry = error.code in TRANSIENT_HTTP_STATUS and attempt < MAX_RESPONSE_ATTEMPTS
+            record.update(outcome="http_error", http_status=error.code,
+                          retry_admitted=retry, error_type=type(error).__name__)
+            with target.open("x") as report:
+                json.dump(record, report, indent=2); report.write("\n")
+            error.close()
+            if not retry:
+                raise
+            time.sleep(2 * attempt)
+        except Exception as error:
+            record.update(outcome="open_failed", retry_admitted=False,
+                          error_type=type(error).__name__)
+            with target.open("x") as report:
+                json.dump(record, report, indent=2); report.write("\n")
+            raise
+        else:
+            record.update(outcome="response_opened", http_status=response.getcode(),
+                          retry_admitted=False)
+            try:
+                with target.open("x") as report:
+                    json.dump(record, report, indent=2); report.write("\n")
+            except BaseException:
+                response.close()
+                raise
+            return response
+    raise RuntimeError("fixed response attempts exhausted")
+
 
 def fetch(destination):
     destination = destination.expanduser().resolve()
     destination.mkdir(parents=True, exist_ok=False)
     archive = destination / "geniex-android-v0.10.0.tar.gz"
     size = 0; checksum = hashlib.sha256()
-    with urllib.request.urlopen(URL, timeout=60) as response, archive.open("xb") as out:
+    with _open_fixed_response(destination) as response, archive.open("xb") as out:
         while True:
             data = response.read(min(1024 * 1024, BYTES + 1 - size))
             if not data: break
@@ -67,3 +114,4 @@ if __name__ == "__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--destination", type=Path, required=True)
     fetch(parser.parse_args().destination)
+

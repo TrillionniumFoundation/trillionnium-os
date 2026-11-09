@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.code20.ci-helper-host-checks.v1",
+  "app_source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "all_passed": true,
+  "checks": [
+    {
+      "name": "MNN v8 exact delta from v7",
+      "passed": true,
+      "only_changes": [
+        "APP_MANIFEST_SHA",
+        "helper_revision",
+        "rejection wording"
+      ]
+    },
+    {
+      "name": "MNN transfer exact delta from v7",
+      "passed": true,
+      "only_changes": [
+        "APP_SHA",
+        "HELPER_SHA"
+      ]
+    },
+    {
+      "name": "Compiler qualifier unchanged",
+      "passed": true,
+      "sha256": "4a20e508438286517659b51ed27829d64dfdf6ee8d22967d6d970ad0a602ae5f"
+    },
+    {
+      "name": "UIv rebuild function boundary",
+      "passed": true,
+      "changed_functions": [
+        "dependencies",
+        "check_native_receipt"
+      ],
+      "unchanged_functions": [
+        "require",
+        "sha",
+        "module",
+        "verify_frozen_source",
+        "runtime_api",
+        "check_report",
+        "write_json",
+        "build",
+        "main"
+      ],
+      "build_revision_label_only": true
+    },
+    {
+      "name": "UIv transfer all functions unchanged",
+      "passed": true,
+      "only_changes": [
+        "APP_SHA",
+        "HELPER_SHA"
+      ]
+    },
+    {
+      "name": "All helper Python source compiled in memory",
+      "passed": true
+    },
+    {
+      "name": "Actual public Q4_0 native four-literal source boundary",
+      "passed": true,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "/workspace/scratch/dda84ccf2855/code20-public-stage-r1/source/provenance/ui-venus-app-r1/native-worker/verify_source_boundary.py"
+      ],
+      "exit_code": 0,
+      "files": 19,
+      "unchanged": 18,
+      "changed_literal_count": 4,
+      "stdout_sha256": "d9eea89459fe8903157484548975c86009ec400a9430b63f43fdd74532c5a845"
+    },
+    {
+      "name": "Identity tests",
+      "passed": true,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/dda84ccf2855/code20-ci-helper-draft-r1/validation/ui-venus-runtime-rebuild-v2",
+        "-p",
+        "test_identity.py",
+        "-v"
+      ],
+      "environment": {
+        "HEPTA_PUBLIC_SOURCE": "/workspace/scratch/dda84ccf2855/code20-public-stage-r1/source"
+      },
+      "exit_code": 0,
+      "tests_run": 6,
+      "observed_tool_chunk": "299433",
+      "reported_elapsed_seconds": 0.158,
+      "native_build_performed": false
+    }
+  ],
+  "original_inputs_unchanged": true,
+  "native_build_performed": false,
+  "runtime_rebuilt": false,
+  "workflow_executed": false,
+  "phone_contacted": false,
+  "repository_modified": false,
+  "public_source_modified": false
+}

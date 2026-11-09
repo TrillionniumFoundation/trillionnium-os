@@ -7,12 +7,14 @@ def source_inputs(root):
     root = Path(root)
     paths = {root / "AndroidManifest.xml", root / "build_mac.py", root / "assemble_pocket4.py",
              root / "tools/build_identity.py", root / "tools/verify_runtime.py", root / "tools/fetch_pinned_runtime.py",root / "tools/model_profiles.py",
-             root / "tools/verify_mobimind_runtime.py", root / "provenance/mobimind-worker-r4-build.json",
+             root / "tools/verify_mobimind_runtime.py", root / "tools/verify_ui_venus_runtime.py", root / "provenance/mobimind-worker-r4-build.json",
              root / "provenance/mobimind-worker-r4/SOURCE-MANIFEST.json"}
     paths.update((root / "src").rglob("*.java"))
     paths.update((root / "res").rglob("*.xml"))
     for extension in ("*.c", "*.h", "*.inc", "*.py", "*.json"):
         paths.update((root / "native").rglob(extension))
+    for extension in ("*.c", "*.h", "*.inc", "*.py", "*.json", "*.txt", "*.jinja"):
+        paths.update((root / "provenance/ui-venus-app-r1").rglob(extension))
     if any(p.is_symlink() or not p.is_file() for p in paths):
         raise RuntimeError("Build inputs must be existing regular source files")
     return [{"path": str(p.relative_to(root)), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}

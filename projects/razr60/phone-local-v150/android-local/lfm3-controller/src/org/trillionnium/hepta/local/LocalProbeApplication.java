@@ -7,26 +7,44 @@ public final class LocalProbeApplication extends Application {
     private LocalModelEngine model;
     private LocalTaskSession tasks;
     private MobiMindModelEngine visualDiagnostic;
+    private UiVenusModelEngine uiVenusDiagnostic;
+    private LocalModelEngine.ExternalRunLease recoveryBarrier;
+    private boolean initialized;
     @Override public void onCreate() {
         super.onCreate();
-        // Inspect a previous visual diagnostic before any Activity or service can
-        // reserve the shared local-model process slot. Never replay an old request.
-        mobiMindDiagnostic();
+        // Inspect every old session before an Activity/service can reserve the shared slot.
+        initializeSessions();
     }
     public synchronized LocalModelEngine modelEngine() {
-        if (model == null) model = new LocalModelEngine(this);
+        initializeSessions();
         return model;
     }
     public synchronized LocalTaskSession taskSession() {
-        if (tasks == null) tasks = new LocalTaskSession(this, modelEngine());
+        initializeSessions();
         return tasks;
     }
     public synchronized MobiMindModelEngine mobiMindDiagnostic() {
-        if (visualDiagnostic == null) visualDiagnostic = new MobiMindModelEngine(this, modelEngine());
+        initializeSessions();
         return visualDiagnostic;
+    }
+    public synchronized UiVenusModelEngine uiVenusDiagnostic() {
+        initializeSessions();return uiVenusDiagnostic;
+    }
+    /** All inspections complete synchronously before any accessor exposes the shared broker. */
+    private synchronized void initializeSessions() {
+        if (initialized) return;
+        if (model != null) throw new IllegalStateException("session initialization was interrupted");
+        model=new LocalModelEngine(this);
+        tasks=new LocalTaskSession(this,model);
+        visualDiagnostic=new MobiMindModelEngine(this,model);
+        uiVenusDiagnostic=new UiVenusModelEngine(this,model);
+        DiagnosticStartupGate gate=new DiagnosticStartupGate(tasks.isBlocked(),visualDiagnostic.isBlocked(),uiVenusDiagnostic.isBlocked());
+        gate.apply(() -> recoveryBarrier=model.reserveExternal(java.util.UUID.randomUUID().toString().replace("-","")));
+        initialized=true;
     }
     @Override public void onTerminate() {
         if (visualDiagnostic != null) visualDiagnostic.close();
+        if (uiVenusDiagnostic != null) uiVenusDiagnostic.close();
         if (model != null) model.close();
         super.onTerminate();
     }
