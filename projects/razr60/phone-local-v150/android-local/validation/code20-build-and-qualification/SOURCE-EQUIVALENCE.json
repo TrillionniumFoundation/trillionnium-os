@@ -1,0 +1,834 @@
+{
+  "schema": "hepta.code20.public-source-equivalence.v1",
+  "frozen_device_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
+  "public_source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "source_members": 1058,
+  "source_manifests_identical": false,
+  "original_native_manifest_sha256": "d2b91f0e6425c896f3249b8eb156884c08cc31524dd76cd664e3c4455bd3e748",
+  "public_native_manifest_sha256": "8fcdc6c8edb378314f2afc74c574a2fd1037ccf49c8741484c9c484037666413",
+  "changed_files_excluding_top_manifest": [
+    {
+      "path": "UI-VENUS-APP-PROBE.md",
+      "original_bytes": 11233,
+      "original_sha256": "e4df80e46eeaa4f68599f5024030dfab7a68d88496a37fb31ed39e27a5a6e536",
+      "public_bytes": 11967,
+      "public_sha256": "745eff0b670404ad682bca78000f8853fa28ccb07ae48ca155cca1da17b36ca8"
+    },
+    {
+      "path": "native/ui-venus-runtime-pins.json",
+      "original_bytes": 2184,
+      "original_sha256": "c3ec1a636c39ef2908239f948694faa36b20f75c141749edd2302ffa985a3793",
+      "public_bytes": 2184,
+      "public_sha256": "4902ad58283c5673d9932bc8a9d09eec24547a88435f4b3591151044582247f7"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+      "original_bytes": 7678,
+      "original_sha256": "d2b91f0e6425c896f3249b8eb156884c08cc31524dd76cd664e3c4455bd3e748",
+      "public_bytes": 7678,
+      "public_sha256": "8fcdc6c8edb378314f2afc74c574a2fd1037ccf49c8741484c9c484037666413"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+      "original_bytes": 3027,
+      "original_sha256": "9b893e4f222a3a5701d64dc5266dd89428797e5d8e079ee877cddcd3ad6f62e1",
+      "public_bytes": 3283,
+      "public_sha256": "c7316e8e8652039ee87caf61b800e8888eb8fb4551babbbb35d093126993857e"
+    }
+  ],
+  "all_other_source_members_byte_identical": true,
+  "android_java_resource_native_compile_inputs_byte_identical": true,
+  "compile_input_files": [
+    {
+      "path": "AndroidManifest.xml",
+      "bytes": 1874,
+      "sha256": "972b73bd9a12d2415baea5553c4da60136f7bf8f6c045f91b4e6c95512b51536"
+    },
+    {
+      "path": "native/model-profile.h",
+      "bytes": 2131,
+      "sha256": "16cdf95997a69dcbfdab4b3325dda0ee3adcbd97ee202b17fe290ef6adad0cda"
+    },
+    {
+      "path": "native/model-runtime.inc",
+      "bytes": 6356,
+      "sha256": "2e8c514c30b0689e3527e9687b6fdc5bae81583a7deb23a313ddc33e7a91ffab"
+    },
+    {
+      "path": "native/parent-death-guard.h",
+      "bytes": 2096,
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "native/phase-timing.h",
+      "bytes": 2899,
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "native/probe-worker.c",
+      "bytes": 3857,
+      "sha256": "6fe2ca2ada2bd543b56ec83428c0ad3500059d1665a3635413ebc0c066195900"
+    },
+    {
+      "path": "native/prompt-budget.h",
+      "bytes": 4700,
+      "sha256": "47e8587a9762b6018748d3560344024fcbd875da280df93afb57976c5eee8c3e"
+    },
+    {
+      "path": "native/prompt-evidence.inc",
+      "bytes": 6055,
+      "sha256": "cd2f93f7b894eb64fb806e24e0ca214b512c148d3b4f19bed39e9e70196e56b0"
+    },
+    {
+      "path": "native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "native/sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "native/tests/model_profile_contract.c",
+      "bytes": 1669,
+      "sha256": "c045929ef885803050275d3f206d25552121bd13a059dd4a7b2005105f7f1229"
+    },
+    {
+      "path": "native/tests/parent_death_contract.c",
+      "bytes": 7520,
+      "sha256": "d3824dcb181d2a8b6a9fd31b174281c3f7dfcf6663c98e3f1a9bb5e2671bf397"
+    },
+    {
+      "path": "native/tests/phase_timing_contract.c",
+      "bytes": 3810,
+      "sha256": "479c5e6e23d6bf86515a39046e07c62bc0cc33a5ffbbe3703f5e92cc91db5527"
+    },
+    {
+      "path": "native/tests/prompt_budget_contract.c",
+      "bytes": 1772,
+      "sha256": "71fe6d15efc4ecda21e47d805625e8463221af6bd63acfef1dedca6d5f6d0bc1"
+    },
+    {
+      "path": "native/tests/publish_contract.c",
+      "bytes": 2430,
+      "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/tests/sha256_probe.c",
+      "bytes": 8705,
+      "sha256": "4a88ff711def3aa8a9b0697830664e6d42488869be7d128441feb8d194ee9fb2"
+    },
+    {
+      "path": "native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "native/vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "native/vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "native/vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "native/vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "native/vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "native/vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "native/vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "native/worker-upstream.c",
+      "bytes": 30066,
+      "sha256": "07cd434bea9d1214acef499a69ed204ecef879a6ac05c82f24d062160e2efb3e"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/integration-src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "bytes": 31204,
+      "sha256": "f2bb0ce3f9531279da50ed64dc2015fbec7ff85b9fc83313db95202ba41951d9"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/integration-src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "bytes": 1326,
+      "sha256": "5f96c9d32772c91651997f4247eb91f5e7ac20a376f4420bcaca36907725c9e8"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/integration-src/org/trillionnium/hepta/local/MainActivity.java",
+      "bytes": 17179,
+      "sha256": "f734b29824b3bfd08a87c84a1d32d6ad4afb3b3adfb087b3612ff836f0b14936"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "bytes": 15174,
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "bytes": 21496,
+      "sha256": "13decbcc1416a9e3850dff072ce4b08c2ed48bfaaafe4e7dd1ba7bc189504e2e"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "bytes": 2565,
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "bytes": 3910,
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "bytes": 2764,
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "bytes": 9097,
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/tests/MobiMindContractHostTest.java",
+      "bytes": 8539,
+      "sha256": "9ae8dd710b1cb763d748e047b260ffd00d3c226e1f7095cd46f167fc513cb9be"
+    },
+    {
+      "path": "provenance/mobimind-app-only-r1/tests/MobiMindSessionContractHostTest.java",
+      "bytes": 4373,
+      "sha256": "0adddcf74e0379ac7f2cd46aa255e22f43416bd1081f03cfde9beec1f376f0ec"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4/evidence/code9-sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4/native/worker.cpp",
+      "bytes": 26303,
+      "sha256": "642eb342af59e02e0fa43d8c5bacfa75fe44b6a1f6a5c42dcb565dcc7facf34c"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4/tests/sha_probe.cpp",
+      "bytes": 8765,
+      "sha256": "d7bbb25e599769f5864123381a3ad030826dbc5ff550f250cb2ff824ea87168f"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4/tests/upstream/Executor.cpp",
+      "bytes": 24833,
+      "sha256": "79fd37b7111e91201efcbca12aa61f287d6ffe7d05a95cc7e9b215a6990cda05"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4/tests/upstream/Pipeline.cpp",
+      "bytes": 55493,
+      "sha256": "f7cd899354b062e55f19643a3b88becfcf4a33983f57b249362a4d72ded2cfa2"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4/tests/upstream/llm.cpp",
+      "bytes": 75079,
+      "sha256": "30fafe27c266787512fd6a0a18811f7c7aeaed4b0215d185599e8e50777cf0b8"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
+      "bytes": 3372,
+      "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/app-entry-guard.h",
+      "bytes": 12192,
+      "sha256": "f9d8d6d4cc29257990c9a1d85dda5550157a473511f199683d63b7aa45f24bf5"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/official-mobile.h",
+      "bytes": 3630,
+      "sha256": "9fa089893f13a1ed809227b38d79bc6600f518a1521aa0cefb30cafff6075c0b"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/parent-death-guard.h",
+      "bytes": 2096,
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/phase-timing.h",
+      "bytes": 2899,
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/probe-worker.c",
+      "bytes": 3880,
+      "sha256": "1dc01c74a612f3566a4f3190266bcc808dc55582da0aea4cce652a6f299b9f04"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/venus-runtime.inc",
+      "bytes": 14585,
+      "sha256": "28c7209d50b4a13e03b22d65afad92defbb0761aaac6e93c39170ea7d13ac396"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/worker-venus.c",
+      "bytes": 31575,
+      "sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-venus-runtime.inc",
+      "bytes": 14589,
+      "sha256": "c08cc9ec60a1e3abb5e5e4305cfb8340544537f49374a8c59418a02690df7000"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/SHELL-probe-worker.c",
+      "bytes": 3228,
+      "sha256": "2aef28e69cb8cc4e9f7f42c00b42760105d0ae7692565784669e977f9805f1ab"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/tests/app_entry_contract.c",
+      "bytes": 9539,
+      "sha256": "f61c7c665281907b21bb49242a4697dfc126d6ac0e56fa060f275fbfec51f829"
+    },
+    {
+      "path": "res/values/strings.xml",
+      "bytes": 336,
+      "sha256": "0e73a193a0b5a706153dcb3a9b91e41341dd9ee5b7a78c2e11c0b590f66d8d7f"
+    },
+    {
+      "path": "res/xml/hepta_accessibility_service.xml",
+      "bytes": 642,
+      "sha256": "1e0a313b943d12352bd740cc30dd9834b86225a9c52b27117319f44810f9f409"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+      "bytes": 19703,
+      "sha256": "0f45bfca078c11c958782ac231ef922a78e80a55f216c59c127d780d9314f9dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionPolicy.java",
+      "bytes": 2556,
+      "sha256": "a8fb1e712e2e9e7fc6b00986c2f74ca6c28786bd10b23fd03c41a10fb3909ad7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "bytes": 9217,
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CompactTaskHistory.java",
+      "bytes": 5534,
+      "sha256": "ba814f46710b1d155d107482fd1646e740fb35b0625b5b5dd2c3cf670c43a40d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
+      "bytes": 3395,
+      "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "bytes": 10712,
+      "sha256": "e620c88e4f92fcd40d85fed30e95f2f0314bf9b8edfb8a7dcb0c0978b627040a"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
+      "bytes": 904,
+      "sha256": "b2656fc23d0ad7166c20330e7e05e89ba550be4a87ebf8f3512b906e16fbfb54"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
+      "bytes": 1759,
+      "sha256": "400b04c858e8bf9fda019752548418890843f7bb0d061d0c8ec612952f97d624"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "bytes": 45712,
+      "sha256": "6a72f1020df59af49d9876af3dcfe550eb6320167ceb26512e36a06cd367df1e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "bytes": 711,
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalInference.java",
+      "bytes": 789,
+      "sha256": "9d752ade6e30119112fc02e745c0a3a145f4d85908f93516088a8160206cf52d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "bytes": 31204,
+      "sha256": "f2bb0ce3f9531279da50ed64dc2015fbec7ff85b9fc83313db95202ba41951d9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "bytes": 2227,
+      "sha256": "41e1383a34badeed677e9d8983e750004d2b59fd7d81da9ac42675530f5c4b39"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+      "bytes": 3352,
+      "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "bytes": 43933,
+      "sha256": "3e52adc2b0dc926f15feee8ffc8376bd42cd8c20aefab5209317ed4048453757"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "bytes": 17432,
+      "sha256": "ebb057e591f5ad7a7605ca8dd342846cf181a32828b4c7cd1958f6a17c4ab6eb"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "bytes": 22094,
+      "sha256": "db66c57f68b54d90a280843284e6ecaf32d08ce4bd58c3aa20f9428c85762a20"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
+      "bytes": 4417,
+      "sha256": "bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "bytes": 15174,
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "bytes": 22080,
+      "sha256": "331460f5826d184feda6ba827efdc402cfa72646dee10303ba602b16468a4207"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "bytes": 2565,
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "bytes": 3910,
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "bytes": 2764,
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
+      "bytes": 2504,
+      "sha256": "77f9630a2d3ab77a723f6b0237d0e5a5f02e7371535e3fa53408b99315e1e4c7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "bytes": 3700,
+      "sha256": "f3c6ecedc02e6d321a80dfe449d407c6939cee8282e8c14e29998c8eb2e93840"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
+      "bytes": 2562,
+      "sha256": "1a03857c440ea1349fd35f875395c66a58f12aaa9daa6e59d72eafa6cb30c13d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
+      "bytes": 3870,
+      "sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+      "bytes": 1258,
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "bytes": 8289,
+      "sha256": "0de6647a787e033db5e5ab93a2f97d6c5c22ae92a4a244e772268e819269afe2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "bytes": 2303,
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "bytes": 4685,
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTextProjection.java",
+      "bytes": 2738,
+      "sha256": "1331624c4ea4144b31b8015e356d8840e6b2a330f18ca113ed265be3ebe4417d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "bytes": 4536,
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PersistentActionPolicy.java",
+      "bytes": 5670,
+      "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "bytes": 7747,
+      "sha256": "2813b9a5d14834cdfb3ef6a2b1a8252e94fa877a767d617223f3385c38982eff"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "bytes": 3590,
+      "sha256": "c4bd2c52a5050da897f0833dc9f15fe5bb96599255897e4eef804c8bc138be14"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "bytes": 9097,
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateUiVenusProbe.java",
+      "bytes": 3019,
+      "sha256": "e26ea7ba9b8b96d41958102df5f2888954be7f213159c8cc64d6cab4df663c38"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
+      "bytes": 1119,
+      "sha256": "79a3ec5459be43adac3c084b9346132cedb88f39a60b60c83eb545d12466340d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
+      "bytes": 7732,
+      "sha256": "6dbf9d6d593f53d729fe1a71411bd88d6efc1486547af3194f681cf4cd4cd23c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
+      "bytes": 4097,
+      "sha256": "aa827865a773217eafda71046420cbaf704787b1280b3dcf0cd1af78649b2dbc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
+      "bytes": 5786,
+      "sha256": "6461143f68156fd0269d5bf7b2f6b636a2d88c467332ac1e3cecf4340e6092b4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusContract.java",
+      "bytes": 9746,
+      "sha256": "422a4d98c86c81aca08820f44929beaa9855d4bac3c1b5a6ffd09c72ca904128"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusInputContract.java",
+      "bytes": 7289,
+      "sha256": "79688ad22a3e81effad1de1f08f52f776c27185c9f1bc27d1d0900197995d0d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "bytes": 23962,
+      "sha256": "d5694b4c034d3a7147f2469f411ee6157a4f847e54ce56b50483fd29a4fd2216"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusPins.java",
+      "bytes": 3571,
+      "sha256": "6a1b7ae7259a25ba88e42976afe1e81b19858d339314a7cea0d166dcddd414dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusProcessContract.java",
+      "bytes": 3392,
+      "sha256": "96d7dbcb44b48801dd4751f516675847ad31861c8c63924ab26d969d5a55799f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusRequestContract.java",
+      "bytes": 3481,
+      "sha256": "2d508be473bd713bffaf041d31c9de666c2d50d5c0e611e4746ba43915969fdf"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusSessionContract.java",
+      "bytes": 2762,
+      "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
+    },
+    {
+      "path": "tests/ActionFreshnessHostTest.java",
+      "bytes": 1553,
+      "sha256": "23bcebbe8857aa7ef9ae7eebba4b98bccf8e1f1cb339dd813ab4149735d6845d"
+    },
+    {
+      "path": "tests/AppCatalogueHostTest.java",
+      "bytes": 12879,
+      "sha256": "34793a57edb9587cdc98c9963bac545e4dc43b92be509771ebb68d3af382386e"
+    },
+    {
+      "path": "tests/BudgetHostTest.java",
+      "bytes": 2039,
+      "sha256": "053c6c3a1c9eff1d5055c425a6b97b6c323bbea72864abe3f6a391b45534d737"
+    },
+    {
+      "path": "tests/CompactSequenceHostTest.java",
+      "bytes": 8759,
+      "sha256": "0983579f04dec42f37e257aa940e3cb3f3e117b77b6973dab429a3456b3b472b"
+    },
+    {
+      "path": "tests/CompactTaskHistoryHostTest.java",
+      "bytes": 3103,
+      "sha256": "83c73d923fabf5c77c2ed027cbf9ff9875c9f2fb314c25276d7f99758fab925a"
+    },
+    {
+      "path": "tests/DiagnosticStartupGateHostTest.java",
+      "bytes": 1350,
+      "sha256": "5f9a001a7f9f9e305c1eb801fef9ad4f5516b936901391c1c6bd6f3ea7b26ff8"
+    },
+    {
+      "path": "tests/DispatchedActionSequenceHostTest.java",
+      "bytes": 6670,
+      "sha256": "2e079e310a7d659058efa44b7916c8fad13ac0e89322ea399db883a8bf195c2e"
+    },
+    {
+      "path": "tests/Gemma4ProfileHostTest.java",
+      "bytes": 4294,
+      "sha256": "b0eed227ceeebaede974ff2cf56ade8ba91d8463cd9257e13a5b78a983e3e0b1"
+    },
+    {
+      "path": "tests/ImeObservationHostTest.java",
+      "bytes": 5603,
+      "sha256": "03d9442b184d772976dbf0a482f8576509112203fe4700abe4cfb20e67f7cdca"
+    },
+    {
+      "path": "tests/LocalPolicyHostTest.java",
+      "bytes": 5665,
+      "sha256": "b05d1b82215ec82420e851d9e9940e9f45b7c76808437dafbfd4705f1bcb641e"
+    },
+    {
+      "path": "tests/MemoryAvailabilityHostTest.java",
+      "bytes": 3283,
+      "sha256": "c1d24b1d49dc9c8d73ac01ec69a53e8dced7d0b31623f399de665363167e7f61"
+    },
+    {
+      "path": "tests/MobiMindContractHostTest.java",
+      "bytes": 8539,
+      "sha256": "9ae8dd710b1cb763d748e047b260ffd00d3c226e1f7095cd46f167fc513cb9be"
+    },
+    {
+      "path": "tests/MobiMindSessionContractHostTest.java",
+      "bytes": 4373,
+      "sha256": "0adddcf74e0379ac7f2cd46aa255e22f43416bd1081f03cfde9beec1f376f0ec"
+    },
+    {
+      "path": "tests/ModelProfileHostTest.java",
+      "bytes": 5917,
+      "sha256": "7c52ceb208efbda8edacf6b132bccfdf7874c7b900e09afa2f5a56e6d75c7382"
+    },
+    {
+      "path": "tests/ObservationStabilityHostTest.java",
+      "bytes": 8731,
+      "sha256": "28b07236e1e4483f7850e9a86b04ff4d25014eac7f9a430a606ec503b603080e"
+    },
+    {
+      "path": "tests/ObservedChildTextHostTest.java",
+      "bytes": 9371,
+      "sha256": "26744b5406a1f59ffcd7cfbd5c0d96d2666d093b8685a1976995406e815a142d"
+    },
+    {
+      "path": "tests/ObservedScrollActionsHostTest.java",
+      "bytes": 2610,
+      "sha256": "4895b044a61be75552ab9abf44f414562342cfcda937e4074d2e31c58fd5c891"
+    },
+    {
+      "path": "tests/ObservedTargetLabelsHostTest.java",
+      "bytes": 9258,
+      "sha256": "ed3f87d01fa5d889c78da37de1e35a4828fd70b073f01885d28674a06a421ddb"
+    },
+    {
+      "path": "tests/ObservedTextProjectionHostTest.java",
+      "bytes": 5741,
+      "sha256": "b6b42ad38122f7d3be2eeae0c786b656ca000858e24de9b563c204699cbf0b1e"
+    },
+    {
+      "path": "tests/ObservedWindowMetadataHostTest.java",
+      "bytes": 4753,
+      "sha256": "1cdfa93910fb613f59859ad4ef0eb7c1902d395297b61e8c9553a46c15604d43"
+    },
+    {
+      "path": "tests/PersistentActionPolicyHostTest.java",
+      "bytes": 3170,
+      "sha256": "238e3bb08c244a9dc765cb405860efafe1c1b788fabea030d81c6accc0023028"
+    },
+    {
+      "path": "tests/PromptActionDomainHostTest.java",
+      "bytes": 2091,
+      "sha256": "a1fef9fcc7eb07c920b95f480e888e842007e3ccc31be8ee209b7f1103ad21af"
+    },
+    {
+      "path": "tests/RecentActionProjectionHostTest.java",
+      "bytes": 5003,
+      "sha256": "a3fa7e95184c7629c3fc95d930a5c657d86377f04abbbf1c4e328a5f782a6857"
+    },
+    {
+      "path": "tests/RepeatActionGuardHostTest.java",
+      "bytes": 7718,
+      "sha256": "67ac06e819c145a12a12e5fb8a8ed7de53b4cff14a5d9dccafdd802270a93e0c"
+    },
+    {
+      "path": "tests/RepeatClickProjectionHostTest.java",
+      "bytes": 4349,
+      "sha256": "ef768613f3db35022e3e8d4798bf856e7edb30eef3cc48c45854fd31380daf37"
+    },
+    {
+      "path": "tests/ScrollGrammarHostTest.java",
+      "bytes": 3133,
+      "sha256": "2b97d3d1b0f467bca96607cb207dad0328c9bd7178c76b21de29f2b011391df6"
+    },
+    {
+      "path": "tests/SessionRecoveryHostTest.java",
+      "bytes": 7304,
+      "sha256": "0baa30e51254e8886cad11978f178efe91330a673415f46349f27175bb68c802"
+    },
+    {
+      "path": "tests/UiVenusContractHostTest.java",
+      "bytes": 8096,
+      "sha256": "7e652343e4905a6137876131714428db0d1995a7f76aa8f1b8172d7abe30af00"
+    },
+    {
+      "path": "tests/UiVenusInputContractHostTest.java",
+      "bytes": 3623,
+      "sha256": "0d603ed12c228574640f52c3fdf25854831e91072bbc3370080dbf372b3d1f82"
+    },
+    {
+      "path": "tests/UiVenusProcessContractHostTest.java",
+      "bytes": 4601,
+      "sha256": "40350a82e03f3a19afab6a107949280b8330725647837b1b649c2fd4d4c3683b"
+    },
+    {
+      "path": "tests/UiVenusRequestContractHostTest.java",
+      "bytes": 4034,
+      "sha256": "ff773d205a101ac955628c021e2238bcf21b0ff6da1091223d06e199e46c23d1"
+    },
+    {
+      "path": "tests/UiVenusSessionContractHostTest.java",
+      "bytes": 4356,
+      "sha256": "9a2ce13ae09eda784c127f3a7c8348d2ac4176a9a537a85862e0d083419c231c"
+    },
+    {
+      "path": "tests/action-grammar/DecisionGrammarHostTest.java",
+      "bytes": 5740,
+      "sha256": "7e4d08d30f437587d84515359cf9faed5808db24fad98d76331d451b3e92865e"
+    },
+    {
+      "path": "tests/action-parser/ActionDecisionHostTest.java",
+      "bytes": 20353,
+      "sha256": "7c29a1b329c4c5363267692e84608936a082a6b7c4603ade764f213961e0c519"
+    }
+  ],
+  "synthetic_scanner_checks": 8,
+  "synthetic_png": {
+    "bytes": 33,
+    "sha256": "a2b294f12d5baa831229af2e0dd5aa04b1f7efc1081c6b6178a0e244671f2562",
+    "IHDR_only": true,
+    "runtime_decodable_image_claimed": false,
+    "phone_capture": false
+  },
+  "historical_native_build_receipt_unchanged": true,
+  "fresh_public_android_build_performed": false,
+  "phone_contacted": false,
+  "git_pushed": false,
+  "compile_input_files_definition": "Conservative suffix-based source/resource set, including archived and host-test sources; it is not the complete build_identity.source_inputs receipt.",
+  "build_identity_source_inputs": {
+    "original_count": 141,
+    "public_count": 141,
+    "complete_receipt_inputs_byte_identical": false,
+    "changed": [
+      {
+        "original": {
+          "path": "native/ui-venus-runtime-pins.json",
+          "sha256": "c3ec1a636c39ef2908239f948694faa36b20f75c141749edd2302ffa985a3793"
+        },
+        "public": {
+          "path": "native/ui-venus-runtime-pins.json",
+          "sha256": "4902ad58283c5673d9932bc8a9d09eec24547a88435f4b3591151044582247f7"
+        }
+      },
+      {
+        "original": {
+          "path": "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+          "sha256": "d2b91f0e6425c896f3249b8eb156884c08cc31524dd76cd664e3c4455bd3e748"
+        },
+        "public": {
+          "path": "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+          "sha256": "8fcdc6c8edb378314f2afc74c574a2fd1037ccf49c8741484c9c484037666413"
+        }
+      },
+      {
+        "original": {
+          "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+          "sha256": "9b893e4f222a3a5701d64dc5266dd89428797e5d8e079ee877cddcd3ad6f62e1"
+        },
+        "public": {
+          "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+          "sha256": "c7316e8e8652039ee87caf61b800e8888eb8fb4551babbbb35d093126993857e"
+        }
+      }
+    ],
+    "fresh_public_rebuild_required": true
+  }
+}

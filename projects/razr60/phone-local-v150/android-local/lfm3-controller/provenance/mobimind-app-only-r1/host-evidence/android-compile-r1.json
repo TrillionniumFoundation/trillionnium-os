@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.mobimind.android-java-compile.v1",
+  "exit_code": 1,
+  "java_home": "/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home",
+  "android_jar": "/Users/qianqi/Library/Android/sdk/platforms/android-34/android.jar",
+  "compile_sdk": 34,
+  "java_target": 8,
+  "source_count": 32,
+  "source_archive_sha256": "36593ebc34ae2216387e16ffd2026675555f31340c9492c8b6c0d5edcec67dd0",
+  "base_source_manifest_sha256": "a60df35bf0899a32db06fd0486592e573c3f078fff5d13079bd2171ff3aee0a4",
+  "source_overlays": [
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "base_sha256": "004c6538841141290182bf696c9ef8606db41a15a47c062ab5b3e697adc5b1c0",
+      "overlay_sha256": "a2bdc8104a8c3f8c9325d36cb5a2f79ff749d9d3d882ccab7cf4ccb30b5825b3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "base_sha256": "f5a41d9e717ff2e3fdfd663bf0298b6d7ce83ef5eff1903cdc20bd50d540be0e",
+      "overlay_sha256": "5f96c9d32772c91651997f4247eb91f5e7ac20a376f4420bcaca36907725c9e8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "base_sha256": "f8dddb642f8153ee5e78e4d7940bfbe34d230d29129468aff470298f16e4ab06",
+      "overlay_sha256": "922008c7894940ba69ced7719a84f02584c215cc1e772c54f7ea287284bc852a"
+    }
+  ],
+  "class_count": 89,
+  "apk_built": false,
+  "phone_contacted": false,
+  "stdout": "",
+  "stderr": "/Users/qianqi/Documents/Codex/2026-11-08/hepta-mobimind-app-draft-dda84ccf-r1/src/org/trillionnium/hepta/local/PrivateMobiProbe.java:80: 错误: 找不到符号\n        request.unchangedPath();Os.unlink(request.path.getPath());MobiMindPrivateFiles.syncDirectory(files);\n                                  ^\n  符号:   方法 unlink(String)\n  位置: 类 Os\n注: /Users/qianqi/Documents/Codex/2026-11-08/hepta-mobimind-app-draft-dda84ccf-r1/src/org/trillionnium/hepta/local/HeptaAccessibilityService.java使用或覆盖了已过时的 API。\n注: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。\n1 个错误\n"
+}

@@ -1,0 +1,302 @@
+{
+  "all_pass": true,
+  "android_java_compiled": true,
+  "dex_generated": true,
+  "native_rebuilt": false,
+  "apk_assembled": false,
+  "phone_tested": false,
+  "source_unchanged_during_build": true,
+  "source_files": [
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionDecision.java",
+      "bytes": 19703,
+      "sha256": "0f45bfca078c11c958782ac231ef922a78e80a55f216c59c127d780d9314f9dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ActionPolicy.java",
+      "bytes": 2556,
+      "sha256": "a8fb1e712e2e9e7fc6b00986c2f74ca6c28786bd10b23fd03c41a10fb3909ad7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/AppCatalogueRanker.java",
+      "bytes": 9217,
+      "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/CompactTaskHistory.java",
+      "bytes": 5534,
+      "sha256": "ba814f46710b1d155d107482fd1646e740fb35b0625b5b5dd2c3cf670c43a40d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
+      "bytes": 3395,
+      "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+      "bytes": 11046,
+      "sha256": "570fddf60c50c47bd4b032c2d088c491a6f2bd5ef4ca592dc9b18f62de0b33e3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
+      "bytes": 904,
+      "sha256": "b2656fc23d0ad7166c20330e7e05e89ba550be4a87ebf8f3512b906e16fbfb54"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
+      "bytes": 1759,
+      "sha256": "400b04c858e8bf9fda019752548418890843f7bb0d061d0c8ec612952f97d624"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+      "bytes": 46054,
+      "sha256": "bb9e7bd23b7c2560b6cf43edc66714d40467e6155e43b54e90c2e0788d8710d3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
+      "bytes": 711,
+      "sha256": "4e7fdaf10d6d502e77642fb043296e8da5d94fbfc78d884826f60dafed8f6e36"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalInference.java",
+      "bytes": 789,
+      "sha256": "9d752ade6e30119112fc02e745c0a3a145f4d85908f93516088a8160206cf52d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
+      "bytes": 31204,
+      "sha256": "f2bb0ce3f9531279da50ed64dc2015fbec7ff85b9fc83313db95202ba41951d9"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
+      "bytes": 2227,
+      "sha256": "41e1383a34badeed677e9d8983e750004d2b59fd7d81da9ac42675530f5c4b39"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
+      "bytes": 3352,
+      "sha256": "81447620dbc2a789bba8c22d561c768144f4d5619859b202d07cd83660a05dce"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+      "bytes": 44886,
+      "sha256": "e338748e66b48fe40ecbd0a77d2ce6b75e6399ca8564953e401f8e178aa545b3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "bytes": 17432,
+      "sha256": "ebb057e591f5ad7a7605ca8dd342846cf181a32828b4c7cd1958f6a17c4ab6eb"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MainActivity.java",
+      "bytes": 22094,
+      "sha256": "db66c57f68b54d90a280843284e6ecaf32d08ce4bd58c3aa20f9428c85762a20"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
+      "bytes": 4417,
+      "sha256": "bce1c5e23aba1febec3fab53794cf80c16d713df4bedf4a4d404d05e3c833003"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindContract.java",
+      "bytes": 15174,
+      "sha256": "f0cb174fd287ea2b20c857fdfa2eeda13d31ddfccac303d1fd34800c4272f14f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "bytes": 22080,
+      "sha256": "331460f5826d184feda6ba827efdc402cfa72646dee10303ba602b16468a4207"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
+      "bytes": 2565,
+      "sha256": "2f7117fd3234d514775717eef9bf04a67e347f809a93a1f34623e62a8b7a552e"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindPrivateFiles.java",
+      "bytes": 3910,
+      "sha256": "27e1e87e94b74e7c15b88de9e804748537b1f33bc65bb3816b09c5b00110de22"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/MobiMindSessionContract.java",
+      "bytes": 2764,
+      "sha256": "dfc7e7ffec3ac928ba9f22246fc9c09d3c5956e788e62554c83cda1c788bb250"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelFileVerifier.java",
+      "bytes": 2504,
+      "sha256": "77f9630a2d3ab77a723f6b0237d0e5a5f02e7371535e3fa53408b99315e1e4c7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "bytes": 3700,
+      "sha256": "f3c6ecedc02e6d321a80dfe449d407c6939cee8282e8c14e29998c8eb2e93840"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
+      "bytes": 2562,
+      "sha256": "1a03857c440ea1349fd35f875395c66a58f12aaa9daa6e59d72eafa6cb30c13d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
+      "bytes": 3870,
+      "sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservationState.java",
+      "bytes": 1258,
+      "sha256": "a2a664a3567995de8665e66d7667cfc089277fdd16175aa9dab837f7919dd257"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedChildText.java",
+      "bytes": 8289,
+      "sha256": "0de6647a787e033db5e5ab93a2f97d6c5c22ae92a4a244e772268e819269afe2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedScrollActions.java",
+      "bytes": 2303,
+      "sha256": "c31012cf776fbc4177d6c617341d006f4a45ed63df3cfc435f705e515ebbc188"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTargetLabels.java",
+      "bytes": 4685,
+      "sha256": "c4e1b1a7ae0223fc7cda90864c6a5c3759a2875bb435359464672bc79465c8ba"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedTextProjection.java",
+      "bytes": 2738,
+      "sha256": "1331624c4ea4144b31b8015e356d8840e6b2a330f18ca113ed265be3ebe4417d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/ObservedWindowMetadata.java",
+      "bytes": 4536,
+      "sha256": "73948e97e6a164ef27753ba0536d0cfadac2ee670179aa2e5b4bb2af0e9e66c5"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PersistentActionPolicy.java",
+      "bytes": 5670,
+      "sha256": "0e498e9d58792be305b334bb12dc8d1f060e005c90555e04aa09b8f860f82db0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+      "bytes": 8241,
+      "sha256": "420feca6fd4f16a4e488d769835a88456fb4d3c2aa0a850dc1accce7aff1d8f2"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
+      "bytes": 3590,
+      "sha256": "c4bd2c52a5050da897f0833dc9f15fe5bb96599255897e4eef804c8bc138be14"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateMobiProbe.java",
+      "bytes": 9097,
+      "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PrivateUiVenusProbe.java",
+      "bytes": 3019,
+      "sha256": "e26ea7ba9b8b96d41958102df5f2888954be7f213159c8cc64d6cab4df663c38"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
+      "bytes": 1119,
+      "sha256": "79a3ec5459be43adac3c084b9346132cedb88f39a60b60c83eb545d12466340d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
+      "bytes": 7732,
+      "sha256": "6dbf9d6d593f53d729fe1a71411bd88d6efc1486547af3194f681cf4cd4cd23c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
+      "bytes": 4097,
+      "sha256": "aa827865a773217eafda71046420cbaf704787b1280b3dcf0cd1af78649b2dbc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
+      "bytes": 5786,
+      "sha256": "6461143f68156fd0269d5bf7b2f6b636a2d88c467332ac1e3cecf4340e6092b4"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusContract.java",
+      "bytes": 9746,
+      "sha256": "422a4d98c86c81aca08820f44929beaa9855d4bac3c1b5a6ffd09c72ca904128"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusInputContract.java",
+      "bytes": 7289,
+      "sha256": "79688ad22a3e81effad1de1f08f52f776c27185c9f1bc27d1d0900197995d0d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "bytes": 23962,
+      "sha256": "d5694b4c034d3a7147f2469f411ee6157a4f847e54ce56b50483fd29a4fd2216"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusPins.java",
+      "bytes": 3571,
+      "sha256": "6a1b7ae7259a25ba88e42976afe1e81b19858d339314a7cea0d166dcddd414dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusProcessContract.java",
+      "bytes": 3392,
+      "sha256": "96d7dbcb44b48801dd4751f516675847ad31861c8c63924ab26d969d5a55799f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusRequestContract.java",
+      "bytes": 3481,
+      "sha256": "2d508be473bd713bffaf041d31c9de666c2d50d5c0e611e4746ba43915969fdf"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusSessionContract.java",
+      "bytes": 2762,
+      "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
+    }
+  ],
+  "checks": [
+    {
+      "name": "android-javac",
+      "exit_code": 0,
+      "elapsed_s": 4.742696083,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5dcf6b1ae881c07f8c604e4df0459359bca69b41c00c92728daa1e1cf9784d91"
+    },
+    {
+      "name": "android-d8",
+      "exit_code": 0,
+      "elapsed_s": 8.020375292,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "jdk_version": "javac 17.0.7",
+  "artifacts": [
+    {
+      "path": "android-java-build/dex/classes.dex",
+      "bytes": 308624,
+      "sha256": "88711aeabdde57dce8d34c967dbbdd12f53a6704de007682e3b83f6c124c0e4e"
+    }
+  ],
+  "schema": "hepta.click-policy.android-java-dex-checks.public.v1",
+  "source_manifest_sha256": "1e5041491e3d2b9472b66db28d1cf2c602b45df8c3d0e8c9ee717e91cfd881ca",
+  "original_build_receipt_sha256": "a2be60552162f75585a1477f9f17997a868249e4f1bdc4abb828dcc502519213",
+  "compiled_java_count": 49,
+  "compile_sdk": 34,
+  "java_release": 8,
+  "dex_min_api": 30,
+  "public_projection": "private absolute toolchain paths replaced by logical names; no outcome or source hash changed",
+  "fresh_ci_required": true,
+  "ordinary_phone_runtime_qualified": false,
+  "toolchain": [
+    {
+      "name": "android-34/android.jar",
+      "bytes": 26361808,
+      "sha256": "6cea1df3efb77103ac3e2beb9bf4718964b0e0869ab16d39d29d5cbae1c147ad"
+    },
+    {
+      "name": "build-tools-34.0.0/d8.jar",
+      "bytes": 14929869,
+      "sha256": "d43c8a94c9b1f1da1a7cc49c32b81e8cee1708b37ee8b530a81a0688222b42c0"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.code20.integrated-ci-helpers.v1",
+  "path_base": "projects/razr60/phone-local-v150/android-local/validation",
+  "original_draft_manifest_sha256": "4776e1a148bb171df41f062d979a1e3d8262b2ee9e16af5131be74126cd08773",
+  "all_selected_helper_members_byte_identical": true,
+  "app_source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "files": [
+    {
+      "path": "mobimind-runtime-rebuild-v8/README.md",
+      "bytes": 1907,
+      "sha256": "c3b7961e02ebe239353e2d010467a8c046b91961bbd98a449ae3591da3ded98d"
+    },
+    {
+      "path": "mobimind-runtime-rebuild-v8/SOURCE-MANIFEST.json",
+      "bytes": 480,
+      "sha256": "330463665e23f1c0d983b34c3e6b7d89838e683bd0ac5470f15ca3eaf7f8c2b2"
+    },
+    {
+      "path": "mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py",
+      "bytes": 26044,
+      "sha256": "961594375f7a8c6967426695b38f478106c09fa02e8c60b52eda3061f816d65d"
+    },
+    {
+      "path": "mobimind-ci-host-split-v8/README.md",
+      "bytes": 3752,
+      "sha256": "0e7d2233dcffd9f285b2e07934f49bb2d5679f17a02c9cebbef729cc40c97f65"
+    },
+    {
+      "path": "mobimind-ci-host-split-v8/SOURCE-MANIFEST.json",
+      "bytes": 635,
+      "sha256": "37d0ddb46d61381829f1a078494cd313ff1585a45ca4e8de531557d418307b69"
+    },
+    {
+      "path": "mobimind-ci-host-split-v8/qualify_macos_compiler.py",
+      "bytes": 7493,
+      "sha256": "4a20e508438286517659b51ed27829d64dfdf6ee8d22967d6d970ad0a602ae5f"
+    },
+    {
+      "path": "mobimind-ci-host-split-v8/verify_ci_runtime_bundle.py",
+      "bytes": 9012,
+      "sha256": "75c75071b23a5987fdc9d30c0da8e75d7c857d8a59eb1315b0d673d616e9461b"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v2/README.md",
+      "bytes": 3237,
+      "sha256": "67741bee3e840f0ff01a2b83c0b1d4c6effbbdda628832d85f1198c624d27ea9"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v2/SOURCE-MANIFEST.json",
+      "bytes": 793,
+      "sha256": "38bcb3128b25520bf5b3f3069b31a2fcfb0fd70e0b771b8eab7f8ad59f07749e"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v2/rebuild_exact_runtime.py",
+      "bytes": 15491,
+      "sha256": "2832f6db1133e5e462819e055e65fd88c6f5943df8570623b4c4021b71fbfd28"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v2/test_identity.py",
+      "bytes": 4278,
+      "sha256": "afc22cae1cfe2d11294966e73e043bb460cf1f2dd37ccc97c6e3c866e76fe039"
+    },
+    {
+      "path": "ui-venus-runtime-rebuild-v2/verify_ci_runtime_bundle.py",
+      "bytes": 4667,
+      "sha256": "d1b53d237b185da950034f183bf539e05dca2ef9016ffe6bbfab8ae508f70fab"
+    }
+  ],
+  "fresh_native_build_or_ci_executed": false
+}

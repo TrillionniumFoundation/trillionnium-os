@@ -1,0 +1,312 @@
+name: Hepta local Android candidate
+
+on:
+  pull_request:
+    paths:
+      - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
+      - 'projects/razr60/phone-local-v150/android-local/validation/**'
+      - '.github/workflows/hepta-local-android.yml'
+  push:
+    branches:
+      - 'codex/razr60-local-r3-*'
+      - 'codex/razr-local-profiles-*'
+    paths:
+      - 'projects/razr60/phone-local-v150/android-local/lfm3-controller/**'
+      - 'projects/razr60/phone-local-v150/android-local/validation/**'
+      - '.github/workflows/hepta-local-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mnn-runtime:
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the exact candidate source for the macOS runtime build
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Set up Java for the Android SDK manager
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify complete source closure
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/verify_source.py
+      - name: Install and identify the original macOS NDK compiler
+        run: |
+          hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
+          "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'ndk;28.1.13356709'
+          hepta_ndk="$hepta_sdk/ndk/28.1.13356709"
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9/qualify_macos_compiler.py \
+            --ndk "$hepta_ndk" --output "$RUNNER_TEMP/hepta-ndk-identity.json"
+          printf '%s\n' "ANDROID_NDK_ROOT=$hepta_ndk" >> "$GITHUB_ENV"
+      - name: Check out the fixed public MNN source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: doulujiyao12/mobiinfer
+          ref: bce7456ce60b5e51b4d3b357f303515860353d8c
+          path: hepta-mnn-upstream
+          persist-credentials: false
+          submodules: false
+          lfs: false
+      - name: Rebuild and match all three original runtime files on macOS
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9/rebuild_exact_runtime.py \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --mnn-checkout "$GITHUB_WORKSPACE/hepta-mnn-upstream" \
+            --ndk "$ANDROID_NDK_ROOT" \
+            --output "$RUNNER_TEMP/hepta-mobimind-rebuild"
+      - name: Bind the exact rebuilt runtime to this source and workflow attempt
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9/verify_ci_runtime_bundle.py bind \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9/rebuild_exact_runtime.py" \
+            --bundle "$RUNNER_TEMP/hepta-mobimind-rebuild" \
+            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json"
+      - name: Transfer only the exact runtime within this workflow
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-mobimind-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hepta-mobimind-rebuild/runtime/*
+            ${{ runner.temp }}/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/CURRENT-CI-SOURCE.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/COMPILER-IDENTITY.json
+      - name: Fetch and verify the fixed GenieX SDK for the UI-Venus source build
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/fetch_pinned_runtime.py --destination "$RUNNER_TEMP/hepta-ui-venus-geniex"
+      - name: Freshly compile and match the pinned Q4_0 UI-Venus App worker
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3/rebuild_exact_runtime.py \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --ndk "$ANDROID_NDK_ROOT" --sdk-libs "$RUNNER_TEMP/hepta-ui-venus-geniex/lib" \
+            --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json" \
+            --output "$RUNNER_TEMP/hepta-ui-venus-rebuild"
+      - name: Bind the new UI-Venus build to this exact source and workflow attempt
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3/verify_ci_runtime_bundle.py bind \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" --bundle "$RUNNER_TEMP/hepta-ui-venus-rebuild" \
+            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json"
+      - name: Transfer only the current exact UI-Venus runtime
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-ui-venus-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/runtime/*
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/CURRENT-CI-SOURCE.json
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/COMPILER-IDENTITY.json
+      - name: Preserve the actual UI-Venus macOS source-build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-ui-venus-macos-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/native-build.stdout
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/native-build.stderr
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/native-build/BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/native-build/*.stdout
+            ${{ runner.temp }}/hepta-ui-venus-rebuild/native-build/*.stderr
+            ${{ runner.temp }}/hepta-ui-venus-geniex/dependency-receipt.json
+            ${{ runner.temp }}/hepta-ui-venus-geniex/download-response-*.json
+      - name: Preserve actual macOS runtime build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-mobimind-macos-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-ndk-identity.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/three-elf-comparison.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/source-qualification.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/worker-compile-commands.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/*.log
+  source-and-android:
+    needs: mnn-runtime
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HEPTA_SOURCE: projects/razr60/phone-local-v150/android-local/lfm3-controller
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the exact candidate source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Set up Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify complete source closure
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/verify_source.py
+      - name: Run host contracts
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B tools/run_host_checks.py --out "$RUNNER_TEMP/hepta-host-checks"
+      - name: Run independent core acceptance regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite
+        run: python -B -m unittest -v test_core_assertions.py
+      - name: Run independent GPU evidence regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/gpu-runtime
+        run: python -B -m unittest -v test_gpu_log_validation.py
+      - name: Run independent lifecycle guard regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run compatible base-driver regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/compat-drivers-v1
+        run: python -B -m unittest -v test_phone_acceptance test_phone_suite test_phone_inventory
+      - name: Run core-v2 goal and ordering regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/core-phone-suite-v2
+        env:
+          HEPTA_CORE_TEST_DRIVERS: ../compat-drivers-v1
+        run: python -B -m unittest -v test_core_assertions.py
+      - name: Run lifecycle path-binding regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v2
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run offline-transaction restoration regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v1
+        run: python -B -m unittest -v test_offline_transaction.py
+      - name: Run display-scoped lifecycle regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v3
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run qualified-data-key offline regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v2
+        run: python -B -m unittest -v test_offline_transaction.py
+      - name: Run exact-pixel lifecycle regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v4
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run physical-directory and live Stop guard regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/lifecycle-v5
+        run: python -B -m unittest -v test_lifecycle_guards.py
+      - name: Run current offline-restoration transaction regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v3-public
+        run: python -B -m unittest -v test_offline_transaction.py
+      - name: Verify public-source and fresh-build receipt identity boundaries
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3
+        env:
+          HEPTA_PUBLIC_SOURCE: ${{ github.workspace }}/projects/razr60/phone-local-v150/android-local/lfm3-controller
+        run: python -B -m unittest -v test_identity.py
+      - name: Prepare Android build dependencies
+        run: |
+          hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
+          "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'platforms;android-34' 'build-tools;34.0.0' 'ndk;28.1.13356709'
+          printf '%s\n' "ANDROID_SDK_ROOT=$hepta_sdk" "ANDROID_NDK_ROOT=$hepta_sdk/ndk/28.1.13356709" "AAPT2=$hepta_sdk/build-tools/34.0.0/aapt2" "APKSIGNER=$hepta_sdk/build-tools/34.0.0/apksigner" "READELF=/usr/bin/readelf" "KEYTOOL=$JAVA_HOME/bin/keytool" "HEPTA_BUILD_OUT=$RUNNER_TEMP/hepta-build" >> "$GITHUB_ENV"
+      - name: Retain historical fixed-release transport adapter regressions
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1
+        run: python -B -m unittest -v test_fetch_verified_runtime.py
+      - name: Verify and extract pinned GenieX runtime
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: |
+          python -B tools/fetch_pinned_runtime.py --destination "$RUNNER_TEMP/hepta-geniex"
+          printf '%s\n' "GENIEX_ANDROID_LIB_DIR=$RUNNER_TEMP/hepta-geniex/lib" >> "$GITHUB_ENV"
+      - name: Compile Android Java and arm64 runner
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B build_mac.py
+      - name: Download the current workflow's exact macOS runtime
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-mobimind-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-mobimind-from-macos
+      - name: Reverify all original runtime bytes and the actual macOS build identity on Linux
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9/verify_ci_runtime_bundle.py verify \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9/rebuild_exact_runtime.py" \
+            --bundle "$RUNNER_TEMP/hepta-mobimind-from-macos" \
+            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/hepta-mobimind-consumer-verification.json"
+          printf '%s\n' "MOBIMIND_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-mobimind-from-macos/runtime" >> "$GITHUB_ENV"
+      - name: Download the current workflow UI-Venus source-built runtime
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hepta-ui-venus-macos-runtime-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-ui-venus-from-macos
+      - name: Reverify the exact UI-Venus bytes and actual macOS build identity on Linux
+        run: |
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3/verify_ci_runtime_bundle.py verify \
+            --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" --bundle "$RUNNER_TEMP/hepta-ui-venus-from-macos" \
+            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            > "$RUNNER_TEMP/hepta-ui-venus-consumer-verification.json"
+          printf '%s\n' "UI_VENUS_ANDROID_RUNTIME_DIR=$RUNNER_TEMP/hepta-ui-venus-from-macos/runtime" >> "$GITHUB_ENV"
+      - name: Verify packaging with an ephemeral development signer
+        working-directory: ${{ env.HEPTA_SOURCE }}
+        run: python -B assemble_pocket4.py
+      - name: Preserve host and static build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-host-and-static-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-host-checks/HOST-CHECKS.json
+            ${{ runner.temp }}/hepta-host-checks/*.stdout
+            ${{ runner.temp }}/hepta-host-checks/*.stderr
+            ${{ runner.temp }}/hepta-geniex/dependency-receipt.json
+            ${{ runner.temp }}/hepta-geniex/download-response-*.json
+            ${{ runner.temp }}/hepta-build/mac-build-receipt.json
+            ${{ runner.temp }}/hepta-build/worker-adapter.json
+            ${{ runner.temp }}/hepta-build/control-v*-static/*.json
+            ${{ runner.temp }}/hepta-build/control-v*-static/*.txt
+      - name: Preserve the Linux runtime consumer verification
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-mobimind-linux-consumer-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-mobimind-consumer-verification.json
+            ${{ runner.temp }}/hepta-mobimind-from-macos/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-mobimind-from-macos/CURRENT-CI-SOURCE.json
+            ${{ runner.temp }}/hepta-ui-venus-consumer-verification.json
+            ${{ runner.temp }}/hepta-ui-venus-from-macos/NEW-BUILD-RECEIPT.json
+            ${{ runner.temp }}/hepta-ui-venus-from-macos/CURRENT-CI-SOURCE.json
+      - name: Preserve unsigned build inputs for same-signer device assembly
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-unsigned-build-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hepta-build/base.apk
+            ${{ runner.temp }}/hepta-build/dex/classes.dex
+            ${{ runner.temp }}/hepta-build/libhepta_local_runner.so
+            ${{ runner.temp }}/hepta-build/mac-build-receipt.json

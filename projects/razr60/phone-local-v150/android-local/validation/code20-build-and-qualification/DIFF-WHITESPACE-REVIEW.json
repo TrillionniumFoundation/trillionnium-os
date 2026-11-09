@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.code20.diff-whitespace-review.v1",
+  "full_diff_check_exit": 2,
+  "non_frozen_diff_check_exit": 0,
+  "known_frozen_artifacts_preserved": [
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/provenance/ui-venus-app-r1/native-build-readelf.stdout",
+      "sha256": "7dc33afe1ac2bf308b7b5d3bb1ba6a8c9f07d4ee4edae0d6afe5e28f4a3a83bb",
+      "frozen_original_bytes_preserved": true
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/provenance/ui-venus-app-r1/native-worker/BUILD-HELPER.patch",
+      "sha256": "f7c5e3a1343230850c6afcc8e978245710b7ae11180e4b4962c182fc41d677a4",
+      "frozen_original_bytes_preserved": true
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/provenance/ui-venus-app-r1/native-worker/Q4KM-TO-Q40-NATIVE.patch",
+      "sha256": "e892f6a0eab286d2247d13162cd0563e81f74da653baee928025f499d14de745",
+      "frozen_original_bytes_preserved": true
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tools/fetch_pinned_runtime.py",
+      "sha256": "b7c97e4391984c85630fc15f66e71540d781c4bf7f8a458587714b61294a0664",
+      "frozen_original_bytes_preserved": true
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/lfm3-controller/tools/test_fixed_response_retry.py",
+      "sha256": "e9e1b2800c4397fc05922a47984b256b140d5a113567dab1788c3b4d5524f48f",
+      "frozen_original_bytes_preserved": true
+    }
+  ],
+  "fresh_source_or_receipt_rewritten_for_whitespace": false,
+  "reason": "Retain exact readelf output, archived patch bytes and already approved fetch/test EOF bytes. These paths were not changed for presentation."
+}

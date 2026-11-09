@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.ui-venus.app-worker-packaging.v1",
+  "worker_build_qualified": true,
+  "ordinary_app_runtime_qualified": false,
+  "geniex_release_member": false,
+  "sdk_source_commit": "071f609995470bdb0e0769ab964754adfaab7e47",
+  "llama_source_commit": "19cce6919992fdffd92e0ac152caaf1e2b8f254e",
+  "worker": {
+    "source_name": "libhepta_ui_venus_runner.so",
+    "apk_name": "libhepta_ui_venus_runner.so",
+    "bytes": 58144,
+    "sha256": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551",
+    "needed": [
+      "libgeniex.so",
+      "libllama.so",
+      "libdl.so",
+      "libm.so",
+      "libc.so"
+    ],
+    "runpath": "$ORIGIN"
+  },
+  "build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
+  "native_source_manifest_sha256": "8fcdc6c8edb378314f2afc74c574a2fd1037ccf49c8741484c9c484037666413",
+  "build_receipt_schema": "hepta.ui-venus.app-native-android-build.v1",
+  "source_generation_sha256": "4bd089e0d061ce1832fda00e764b28e282eb2a991c6037fa50d6f585f3543000",
+  "core_source_sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78",
+  "wrapper_source_sha256": "1dc01c74a612f3566a4f3190266bcc808dc55582da0aea4cce652a6f299b9f04",
+  "entry_guard_sha256": "f9d8d6d4cc29257990c9a1d85dda5550157a473511f199683d63b7aa45f24bf5",
+  "actual_ndk_revision": "28.1.13356709",
+  "source_manifest_name": "DRAFT-MANIFEST.json",
+  "model_profile": "ui-venus2-9b-q4_0-f16-mmproj",
+  "model": {
+    "name": "UI-Venus-2-9B-Q4_0.gguf",
+    "bytes": 5482832672,
+    "sha256": "2e881d6e74899b47b1f0c9052abeeb0a7ff55913dfb18d942a3de3cadb3d1adb"
+  },
+  "mmproj": {
+    "name": "mmproj-UI-Venus-2-9B-f16.gguf",
+    "bytes": 918165664,
+    "sha256": "6ef77c3bf87391664be7cd71c595352e7281dabe52f24e961e2deace550f3af2"
+  },
+  "runtime_core_source_sha256": "28c7209d50b4a13e03b22d65afad92defbb0761aaac6e93c39170ea7d13ac396",
+  "build_helper_sha256": "8ffbf2f722cc7279d7495ef96c62fe1b60fe9463f2b29e7e9fa396f190ed112d",
+  "source_boundary_sha256": "d9eea89459fe8903157484548975c86009ec400a9430b63f43fdd74532c5a845",
+  "baseline_app_source_generation_sha256": "c84fd4e7d97f2657aaf3e16f1307ba032ca9dc6c03f0f5d5a4fa3659960a91d5"
+}

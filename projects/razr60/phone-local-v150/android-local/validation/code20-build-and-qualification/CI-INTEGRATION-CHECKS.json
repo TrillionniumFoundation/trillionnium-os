@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.code20.integrated-ci-host-checks.v1",
+  "checks": {
+    "same_exact_head_checkout": true,
+    "read_only_github_permissions": true,
+    "all_run_paths_exist": true,
+    "runtime_exports_after_verifier": true
+  },
+  "integrated_identity_tests_run": 6,
+  "integrated_identity_tests_exit": 0,
+  "public_source_verifier_exit": 0,
+  "native_build_performed": false,
+  "ci_executed": false,
+  "phone_contacted": false
+}

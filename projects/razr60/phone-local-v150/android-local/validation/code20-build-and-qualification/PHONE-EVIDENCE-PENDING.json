@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.code20.phone-evidence-template.v1",
+  "status": "pending",
+  "candidate_apk_sha256": "2400c79fb140d730d08d4fb16b13092850137287ece5e6d3675bc5ab184231f9",
+  "candidate_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
+  "configuration": null,
+  "installation": null,
+  "core9": null,
+  "offline_restoration": null,
+  "active_stop": null,
+  "post_stop_fresh_task": null,
+  "idle_restart_no_replay": null,
+  "ordinary_user_button": null,
+  "ui_venus_ordinary_app_model_only": null,
+  "evidence_rules": [
+    "Bind every result to the actual APK, source, selected configuration and fresh run.",
+    "Retain failed or inconclusive original verdicts; do not infer application quality from host gates.",
+    "Publish aggregate conclusions and evidence hashes only; retain device identifiers, UI captures, prompts and journals privately.",
+    "UI-Venus model-only success does not qualify a visual action controller."
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.code20.public-build-summary.v1",
+  "candidate_version_code": 20,
+  "candidate_version_name": "0.20.0-local-stable-ui-venus-budget",
+  "frozen_device_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
+  "public_source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "source_manifests_identical": false,
+  "frozen_candidate_apk": {
+    "bytes": 20666116,
+    "sha256": "2400c79fb140d730d08d4fb16b13092850137287ece5e6d3675bc5ab184231f9"
+  },
+  "frozen_candidate_dex": {
+    "bytes": 307756,
+    "sha256": "11da38396daa183f6b71dc4b25f5b819aab3bdbbea77df9f5ae59e72f29da94e"
+  },
+  "original_signer_certificate_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "new_signing_key_created": false,
+  "device_signature_verification_performed_by_this_stage": false,
+  "frozen_build": {
+    "actual_android_java_dex_geniex_rebuild": true,
+    "java_source_count": 49,
+    "actual_build_host": "macOS",
+    "assembly_host": "Linux",
+    "compile_sdk": 34,
+    "actual_ndk_revision": "28.1.13356709",
+    "host_checks_all_pass": true,
+    "host_checks_count": 56,
+    "host_checks_sha256": "2f062393b4210dde381bc9c8b0e960c54c861103d5b717593a05c9ce9c1198c1",
+    "permissions": [],
+    "ui_venus_worker_rebuilt_in_this_pipeline": false,
+    "ui_venus_worker_independent_build_whole_sha_verified": true
+  },
+  "retained_original_receipts": {
+    "PREPARED.json": {
+      "bytes": 12015,
+      "sha256": "503ef6a9b45efbee5de812735b4d61b685ff2cc20a1abf033c1521a67c479858"
+    },
+    "NATIVE-CLOSURE-COMPARISON.json": {
+      "bytes": 4001,
+      "sha256": "609803f9699ce76c5bd86bc074740f0cbbd249f4db6949eb598655ba864337f3"
+    },
+    "STATIC-ACCEPTANCE.json": {
+      "bytes": 15923,
+      "sha256": "9c6ac6b70fe20ce7364c2003c5a2cf8e286e1c22be599133f05755234d9576af"
+    },
+    "mac-build-receipt.json": {
+      "bytes": 28582,
+      "sha256": "f0d10e23c0055f2f7bbbad0ee0dcb2a2e8cfe320cf6a7d1475bc33d432c154e9"
+    },
+    "SOURCE-FREEZE.json": {
+      "bytes": 1751,
+      "sha256": "baeb08fcef0d245d0d16c79b140728ffd9ce8d80f1d7bdb424a59d1b8698143c"
+    }
+  },
+  "native_closure": {
+    "original_member_count": 16,
+    "new_member_count": 17,
+    "original_16_byte_identical_to_code16_and_actual_external19": true,
+    "all_17_byte_identical_to_our_frozen19": true,
+    "members": [
+      {
+        "member": "lib/arm64-v8a/libMNN.so",
+        "bytes": 6408488,
+        "sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d"
+      },
+      {
+        "member": "lib/arm64-v8a/libc++_shared.so",
+        "bytes": 9236352,
+        "sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754"
+      },
+      {
+        "member": "lib/arm64-v8a/libgeniex.so",
+        "bytes": 19781824,
+        "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
+      },
+      {
+        "member": "lib/arm64-v8a/libgeniex_plugin_llama_cpp.so",
+        "bytes": 377040,
+        "sha256": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a"
+      },
+      {
+        "member": "lib/arm64-v8a/libggml-base.so",
+        "bytes": 3534496,
+        "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40"
+      },
+      {
+        "member": "lib/arm64-v8a/libggml-cpu.so",
+        "bytes": 936328,
+        "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b"
+      },
+      {
+        "member": "lib/arm64-v8a/libggml-hexagon.so",
+        "bytes": 3874328,
+        "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+      },
+      {
+        "member": "lib/arm64-v8a/libggml-htp-v79.so",
+        "bytes": 858848,
+        "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5"
+      },
+      {
+        "member": "lib/arm64-v8a/libggml-opencl.so",
+        "bytes": 7886880,
+        "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875"
+      },
+      {
+        "member": "lib/arm64-v8a/libggml.so",
+        "bytes": 41088,
+        "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149"
+      },
+      {
+        "member": "lib/arm64-v8a/libhepta_local_runner.so",
+        "bytes": 49048,
+        "sha256": "6a207fce674c95f2d588251861fa737004a54d124e7c244be1bd240df363e81d"
+      },
+      {
+        "member": "lib/arm64-v8a/libhepta_mobimind_runner.so",
+        "bytes": 2186768,
+        "sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020"
+      },
+      {
+        "member": "lib/arm64-v8a/libllama-common.so",
+        "bytes": 6242864,
+        "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122"
+      },
+      {
+        "member": "lib/arm64-v8a/libllama.so",
+        "bytes": 5642424,
+        "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+      },
+      {
+        "member": "lib/arm64-v8a/libmtmd.so",
+        "bytes": 1643536,
+        "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d"
+      },
+      {
+        "member": "lib/arm64-v8a/libomp.so",
+        "bytes": 1234864,
+        "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+      },
+      {
+        "member": "lib/arm64-v8a/libhepta_ui_venus_runner.so",
+        "bytes": 58144,
+        "sha256": "5fa2dcae05fb649157d96481c5890c157301c76dab3522fcabcbe01b9b0d8551"
+      }
+    ]
+  },
+  "packing_continuity": {
+    "source_inputs_unchanged_from_our_frozen19": true,
+    "continuity_receipt_sha256": "edb24bf40f20037ece6e4341b3d9120a0db1991f433071d6cf8282d83399ee93",
+    "new_64_frame_replay_performed": false,
+    "retained_replay_report_sha256": "3c86284df5b6b573cdd1ddb684c3939853d04c723e587a1f8bb2c45f968d2dd0",
+    "retained_replay_4096": {
+      "admitted": 54,
+      "refused": 10
+    },
+    "retained_replay_8192": {
+      "admitted": 64,
+      "refused": 0
+    },
+    "claim": "Representation, domain and conservative packing replay only; no new native-token or phone-quality claim."
+  },
+  "fresh_public_ci_build_performed": false,
+  "current_device_installation_claimed": false,
+  "phone_qualification": "pending independent root evidence",
+  "phone_contacted": false
+}

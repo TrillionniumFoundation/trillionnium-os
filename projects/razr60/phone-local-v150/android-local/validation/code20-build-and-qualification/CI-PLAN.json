@@ -1,0 +1,23 @@
+{
+  "base_workflow_sha256": "015bff2c95340735d74b617f927f72b25f8a13a996321e508f2cd34f73e6f7a0",
+  "proposed_workflow_sha256": "f75731ff4a8b121ee8c2e6384d7c3250ae1c5e0103aa515bd7c0b15fb59f3528",
+  "actual_ci_executed": false,
+  "historical_geniex_transport_v1_preserved": true,
+  "selected_fetch_source_sha256": "b7c97e4391984c85630fc15f66e71540d781c4bf7f8a458587714b61294a0664",
+  "selected_fetch_policy": "original fixed URL; at most three opens; only HTTP 500/502/503/504 before body; 2/4 seconds",
+  "mnn_helpers": [
+    "mobimind-runtime-rebuild-v8",
+    "mobimind-ci-host-split-v8"
+  ],
+  "ui_venus_helpers": [
+    "ui-venus-runtime-rebuild-v2"
+  ],
+  "historical_mnn_v7_preserved": true,
+  "same_source_head_run_attempt_required": true,
+  "fresh_macos_runtime_builds_required": true,
+  "fresh_linux_build_and_development_signer_required": true,
+  "original_device_signing_key_in_ci": false,
+  "ci_helper_host_checks_sha256": "776b963ccadee7371701528006c55592426941dfca340cdd651eec30cf5a113a",
+  "ci_helper_draft_manifest_sha256": "4776e1a148bb171df41f062d979a1e3d8262b2ee9e16af5131be74126cd08773",
+  "ci_helper_contracts_passed": 6
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.code20.historical-validation-preservation.v1",
+  "parent": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "all_byte_identical": true,
+  "files": [
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v7/README.md",
+      "bytes": 1893,
+      "sha256": "99343b1745f6802723c11844d5a5da4025196da7e979481cb9fe5e8841aec972"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v7/SOURCE-MANIFEST.json",
+      "bytes": 559,
+      "sha256": "5411a0d941e5e9ee83fd2fc0527bfcb1cb906b6ae46d802aedc1b609c20f58a1"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v7/rebuild_exact_runtime.py",
+      "bytes": 26033,
+      "sha256": "b585c1654ce91888bc4906b32fbe8ac1ace22987f445d1af25994d084f19dc78"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v7/README.md",
+      "bytes": 3717,
+      "sha256": "3f465c12bff6011622a1b9a98492cc95b52517efe4e9a06f8ca3bd09a2fd2772"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v7/SOURCE-MANIFEST.json",
+      "bytes": 700,
+      "sha256": "db9ee99f9ac616a09e11ef259207a921f9b614a4b3cda703bef65400cc43ffeb"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v7/qualify_macos_compiler.py",
+      "bytes": 7493,
+      "sha256": "4a20e508438286517659b51ed27829d64dfdf6ee8d22967d6d970ad0a602ae5f"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v7/verify_ci_runtime_bundle.py",
+      "bytes": 9012,
+      "sha256": "29799c12fe3bc4f73a7aff9803ec010788a7fcf30b6a8bd83b38a5fe7df6dae6"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/HELPER-MANIFEST.json",
+      "bytes": 625,
+      "sha256": "2e9d7b2571e936c2f772992cdf2c15b3cbaf07301dc3e03bc4d354c461372ca4"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/PROVENANCE.json",
+      "bytes": 2147,
+      "sha256": "902374a939a1f9bbb5d0ed2dc30eeb5226bd5c3a7a948098b67c4b29826e0cef"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/README.md",
+      "bytes": 1972,
+      "sha256": "b58dad72de25c8d220888a83cc3776f9e92a54963e2b068bcc779c04aef993cd"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py",
+      "bytes": 8711,
+      "sha256": "72d9108f08fdb2bf18074f0982982b9bd2ae3f0d515dc51ca24b74c20f12d1b7"
+    },
+    {
+      "path": "projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/test_fetch_verified_runtime.py",
+      "bytes": 6668,
+      "sha256": "71efc3c39c1d3e6ab7856afd187eb87889bee1ee254e28a3e6badc86572f0649"
+    }
+  ]
+}
