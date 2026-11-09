@@ -180,10 +180,13 @@ jobs:
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
           "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'platforms;android-34' 'build-tools;34.0.0' 'ndk;28.1.13356709'
           printf '%s\n' "ANDROID_SDK_ROOT=$hepta_sdk" "ANDROID_NDK_ROOT=$hepta_sdk/ndk/28.1.13356709" "AAPT2=$hepta_sdk/build-tools/34.0.0/aapt2" "APKSIGNER=$hepta_sdk/build-tools/34.0.0/apksigner" "READELF=/usr/bin/readelf" "KEYTOOL=$JAVA_HOME/bin/keytool" "HEPTA_BUILD_OUT=$RUNNER_TEMP/hepta-build" >> "$GITHUB_ENV"
+      - name: Test fixed-release transport adapter
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1
+        run: python -B -m unittest -v test_fetch_verified_runtime.py
       - name: Verify and extract pinned GenieX runtime
         working-directory: ${{ env.HEPTA_SOURCE }}
         run: |
-          python -B tools/fetch_pinned_runtime.py --destination "$RUNNER_TEMP/hepta-geniex"
+          python -B "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/geniex-ci-transport-v1/fetch_verified_runtime.py" --source . --destination "$RUNNER_TEMP/hepta-geniex" --receipt "$RUNNER_TEMP/hepta-geniex-transport.json"
           printf '%s\n' "GENIEX_ANDROID_LIB_DIR=$RUNNER_TEMP/hepta-geniex/lib" >> "$GITHUB_ENV"
       - name: Compile Android Java and arm64 runner
         working-directory: ${{ env.HEPTA_SOURCE }}
@@ -217,6 +220,7 @@ jobs:
             ${{ runner.temp }}/hepta-host-checks/*.stdout
             ${{ runner.temp }}/hepta-host-checks/*.stderr
             ${{ runner.temp }}/hepta-geniex/dependency-receipt.json
+            ${{ runner.temp }}/hepta-geniex-transport.json
             ${{ runner.temp }}/hepta-build/mac-build-receipt.json
             ${{ runner.temp }}/hepta-build/worker-adapter.json
             ${{ runner.temp }}/hepta-build/control-v*-static/*.json
