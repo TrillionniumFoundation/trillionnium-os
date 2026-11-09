@@ -4,9 +4,9 @@
   "version_name": "0.19.0-local-stable-observation",
   "derived_from_code15_source_manifest_sha256": "aaae9cd4505dc4c3dbbb0d8f246b1193f284ed18b2be1263f40445df466575db",
   "reviewed_controller_merge_manifest_sha256": "19ea7449f35e76f86cc156c620a9dffbc2f46eff5bb5f45d4876e49da2f910dd",
-  "android_build": "separate build receipt",
+  "android_build": "not built for this isolated discovery-provenance candidate",
   "phone_qualified": false,
-  "functional_scope": "allow fresh stable observation evidence within the existing ten-second caller window; two-sample identity, original task and observation deadlines, screenshot rechecks, cancellation, owner and native behavior unchanged; bind each action dispatch to its original task deadline and retired wait; preserve raw acknowledgements before stopping late or cancelled continuation",
+  "functional_scope": "allow fresh stable observation evidence within the existing ten-second caller window; two-sample identity, original task and observation deadlines, screenshot rechecks, cancellation, owner and native behavior unchanged; bind each action dispatch to its original task deadline and retired wait; preserve raw acknowledgements before stopping late or cancelled continuation; retain one mandatory page-bound provenance fact for initial ranking or successful model-issued read-only find_app, independently of optional recent-history trimming; keep original OWNER, current action targets, grammar generation, native protocol and dispatch authority unchanged",
   "visual_planner_merged": false,
   "native_tool_protocol_merged": false,
   "thinking_protocol_merged": false,
@@ -3895,6 +3895,11 @@
       "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/AppSearchProvenance.java",
+      "bytes": 2782,
+      "sha256": "02ad1bcf5ef0f5f41d67e644b06ccc38f6b9d46b752fba891f3f607ab3d24362"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
       "bytes": 3395,
       "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
@@ -3941,8 +3946,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 47438,
-      "sha256": "f81e5daafb18b99f7f83840ad9b4ab892beed651c32c481273c6c07b6036cf58"
+      "bytes": 47884,
+      "sha256": "ce79bec71eb197a804cfbb56e9ce5ffcd7cb0b910c232b7b0c4c1ebf5b3311ee"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -4078,6 +4083,11 @@
       "path": "tests/AppCatalogueHostTest.java",
       "bytes": 12879,
       "sha256": "34793a57edb9587cdc98c9963bac545e4dc43b92be509771ebb68d3af382386e"
+    },
+    {
+      "path": "tests/AppSearchProvenanceHostTest.java",
+      "bytes": 7415,
+      "sha256": "f7296ce11a42b9e6f89f9596b5a2b94f7260ee12e7b247f7e25d67b9406d3e20"
     },
     {
       "path": "tests/BudgetHostTest.java",
@@ -4235,6 +4245,66 @@
       "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
     },
     {
+      "path": "tests/app-discovery/PromptProjectionHarness.java",
+      "bytes": 9440,
+      "sha256": "e923fc309588000de6c695652e717d85e5307f264ff687bc98f24767a8d0759c"
+    },
+    {
+      "path": "tests/app-discovery/controller-delta.json",
+      "bytes": 22779,
+      "sha256": "bb45c16ba63bb24bf9b1df2bf1fdf63e1603a227427ea7c375356d923f0a65f8"
+    },
+    {
+      "path": "tests/app-discovery/fdab-controller.java.txt",
+      "bytes": 47438,
+      "sha256": "f81e5daafb18b99f7f83840ad9b4ab892beed651c32c481273c6c07b6036cf58"
+    },
+    {
+      "path": "tests/app-discovery/fixture-provenance.json",
+      "bytes": 2309,
+      "sha256": "ea1009ab750ecc8a36b1b2274fe3d2494f10d53cb877f2674ae9e07ae0139ada"
+    },
+    {
+      "path": "tests/app-discovery/frozen-step01-action.json",
+      "bytes": 523,
+      "sha256": "32e1ad0999927dce3f3595dfb0bb0a4ea2bdc87dd2d627a686792e003c7a4373"
+    },
+    {
+      "path": "tests/app-discovery/frozen-step01-after.json",
+      "bytes": 8512,
+      "sha256": "15d91704d85f27708a3f333cddc7f4175481da03a8995268c8e6e5b4376482e9"
+    },
+    {
+      "path": "tests/app-discovery/frozen-step01-before.json",
+      "bytes": 8512,
+      "sha256": "bf8cf006b99d7401984e122b7ad3e1e310dcc80d9a538665fa9c5a99f90e2a08"
+    },
+    {
+      "path": "tests/app-discovery/frozen-step01-find-app.json",
+      "bytes": 749,
+      "sha256": "e77be7402395bc9fffeb61315524f43014ed26e218852d2089f83a38ecb15389"
+    },
+    {
+      "path": "tests/app-discovery/frozen-step02-before.json",
+      "bytes": 8512,
+      "sha256": "15d91704d85f27708a3f333cddc7f4175481da03a8995268c8e6e5b4376482e9"
+    },
+    {
+      "path": "tests/app-discovery/frozen-step02-grammar.gbnf",
+      "bytes": 4183,
+      "sha256": "29ab9f9227e87103924ba6bd0aa66b538a6d8f14a1feb557193095ddf17fa8d3"
+    },
+    {
+      "path": "tests/app-discovery/frozen-step02-prompt.txt",
+      "bytes": 2859,
+      "sha256": "eb63124abdce8944923bef6cc7158f384a42b935f54e939c66e8eea80c43a886"
+    },
+    {
+      "path": "tests/app-discovery/frozen-system.txt",
+      "bytes": 2948,
+      "sha256": "a8e76236210702f1a091bb188dce489d7ce513e0de4723c5a42e47c313e6c98d"
+    },
+    {
       "path": "tools/PHONE-ACCEPTANCE.md",
       "bytes": 7040,
       "sha256": "8b0b5ff513ecfa594793f47a629a6331115141ca89fb867cac3f567332fdcc9e"
@@ -4253,6 +4323,11 @@
       "path": "tools/create_debug_task.py",
       "bytes": 1236,
       "sha256": "db959a4382b4b4fc67504a9201311f0ea4a38a1c45dfcf093d68ed5a5b7583f2"
+    },
+    {
+      "path": "tools/discovery_scope.py",
+      "bytes": 1098,
+      "sha256": "0bb7a180e841b7b6311ffdb6dcb71f0c030ba9b9466bc20a6cafb1d0d19aac4b"
     },
     {
       "path": "tools/fetch_pinned_runtime.py",
@@ -4281,8 +4356,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 6258,
-      "sha256": "677c497d0188ce43f87dcd8e06e7f72f23a7d596fcfd64398ead6f085feccc2f"
+      "bytes": 6307,
+      "sha256": "54ea311de034ab963a9da29956cad350f7d722e5377cd3eadc9e617777dcea9d"
     },
     {
       "path": "tools/suite-navigation-draft.json",
@@ -4291,8 +4366,13 @@
     },
     {
       "path": "tools/test_action_deadline_dispatch.py",
-      "bytes": 8800,
-      "sha256": "699898ae680638f78da903dd4499172f17ec05f3cc2fa14ae66345593782f0c8"
+      "bytes": 8875,
+      "sha256": "fd020c516d95ce5c0be4fd127327b8d6506b352f9afdfe7bea1d92779f8f335d"
+    },
+    {
+      "path": "tools/test_app_search_provenance.py",
+      "bytes": 15314,
+      "sha256": "de1aa88e8d42b2c7cd82c98b5aa25b5813fa48a9b6ff9032d4ff4a2e0670ef8c"
     },
     {
       "path": "tools/test_build_identity.py",
@@ -4360,5 +4440,14 @@
   "derived_from_code17_source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
   "derived_from_code18_source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954",
   "isolated_action_deadline_base_head": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
-  "isolated_action_deadline_base_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69"
+  "isolated_action_deadline_base_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+  "isolated_discovery_base_manifest_sha256": "fdab3c67d726aa44c19c9efe4d65cc845ee433dbabe2d97f7fe7fb07b92bcec7",
+  "isolated_discovery_base_controller_sha256": "f81e5daafb18b99f7f83840ad9b4ab892beed651c32c481273c6c07b6036cf58",
+  "app_search_mandatory_provenance_fields": [
+    "source",
+    "source_step",
+    "model_issued",
+    "tool_completed",
+    "catalogue_sha256"
+  ]
 }

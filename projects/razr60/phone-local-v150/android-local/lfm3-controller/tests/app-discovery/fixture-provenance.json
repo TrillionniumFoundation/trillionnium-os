@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.app-search-frozen-evidence.v1",
+  "purpose": "Host budget/provenance regression fixture; no model replay or phone action",
+  "original_suite": "/home/alex/razr-local-ai-20261108-dda84ccf/code19-gemma-npu4096-core7-remaining-offline-037c-20261109-r3",
+  "original_case": "core-find-calculator-01",
+  "step02_model_run_id": "579d9e8ece4244619a05cb1e8d0bda60",
+  "readonly_query_receipt_step": 1,
+  "frozen_files": [
+    {
+      "path": "frozen-step01-action.json",
+      "bytes": 523,
+      "sha256": "32e1ad0999927dce3f3595dfb0bb0a4ea2bdc87dd2d627a686792e003c7a4373"
+    },
+    {
+      "path": "frozen-step01-after.json",
+      "bytes": 8512,
+      "sha256": "15d91704d85f27708a3f333cddc7f4175481da03a8995268c8e6e5b4376482e9"
+    },
+    {
+      "path": "frozen-step01-before.json",
+      "bytes": 8512,
+      "sha256": "bf8cf006b99d7401984e122b7ad3e1e310dcc80d9a538665fa9c5a99f90e2a08"
+    },
+    {
+      "path": "frozen-step01-find-app.json",
+      "bytes": 749,
+      "sha256": "e77be7402395bc9fffeb61315524f43014ed26e218852d2089f83a38ecb15389"
+    },
+    {
+      "path": "frozen-step02-before.json",
+      "bytes": 8512,
+      "sha256": "15d91704d85f27708a3f333cddc7f4175481da03a8995268c8e6e5b4376482e9"
+    },
+    {
+      "path": "frozen-step02-grammar.gbnf",
+      "bytes": 4183,
+      "sha256": "29ab9f9227e87103924ba6bd0aa66b538a6d8f14a1feb557193095ddf17fa8d3"
+    },
+    {
+      "path": "frozen-step02-prompt.txt",
+      "bytes": 2859,
+      "sha256": "eb63124abdce8944923bef6cc7158f384a42b935f54e939c66e8eea80c43a886"
+    },
+    {
+      "path": "frozen-system.txt",
+      "bytes": 2948,
+      "sha256": "a8e76236210702f1a091bb188dce489d7ce513e0de4723c5a42e47c313e6c98d"
+    }
+  ],
+  "observation_boundary": "Original recorded node properties and query transition; child package scope is reconstructed only from the exact bound grammar and complete text projection, because observation JSON omits child packageName. Synthetic unshown installed entries preserve total_apps without copying private inventory.",
+  "assertions": "Exact baseline prompt bytes and grammar SHA must equal original phone input. Candidate uses the same observed OWNER, node affordances and grammar in the frozen scenario. This is host projection only, not a new model/phone run.",
+  "phone_tested": false
+}

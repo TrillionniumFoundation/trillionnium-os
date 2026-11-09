@@ -16,7 +16,7 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "ObservedScrollActions", "ObservationStabilityGate", "RecentActionProjection", "ObservedTextProjection", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedWindowMetadata", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
               "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
-              "AppCatalogueRanker", "SessionRecovery", "MobiMindPins", "MobiMindContract", "MobiMindSessionContract"]
+              "AppCatalogueRanker", "AppSearchProvenance", "SessionRecovery", "MobiMindPins", "MobiMindContract", "MobiMindSessionContract"]
 
 
 def main():
@@ -38,7 +38,7 @@ def main():
         ROOT/"tests/action-grammar/DecisionGrammarHostTest.java"]
     def all_inputs():
         paths=set(ROOT.glob("*.py"))
-        for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py")),
+        for directory, extensions in (("src",("*.java",)),("tests",("*.java","*.py","*.json","*.txt","*.gbnf")),
                                       ("native",("*.c","*.h","*.inc","*.py")),("tools",("*.py",))):
             for extension in extensions: paths.update((ROOT/directory).rglob(extension))
         if any(p.is_symlink() for p in paths): raise RuntimeError("Host inputs must not be symbolic links")

@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.mnn-ci-host-split-source.v9",
+  "app_source_manifest_sha256": "eb85ee802f2718233553281529cc7c8cc166b6a37c0c09a3a3c58b75b0e4a26e",
+  "app_source_modified": false,
+  "compiler_identity_overridden": false,
+  "runtime_pins_modified": false,
+  "files": {
+    "README.md": {
+      "bytes": 6276,
+      "sha256": "f53397a5070cd6571cddd8cd20d4e0e5a9608c094add4b6569875d8f84b79760"
+    },
+    "qualify_macos_compiler.py": {
+      "bytes": 7493,
+      "sha256": "4a20e508438286517659b51ed27829d64dfdf6ee8d22967d6d970ad0a602ae5f"
+    },
+    "test_discovery_source_binding.py": {
+      "bytes": 15601,
+      "sha256": "90b81fb6397fccb23673ea0827394e8a85a6efa5a2e8b487429af57403cddd0f"
+    },
+    "verify_ci_runtime_bundle.py": {
+      "bytes": 9012,
+      "sha256": "e8d46ec979051f101f727f7f2ce7f4207292fc6f6d69c13f183bf34c4c379ac5"
+    }
+  }
+}

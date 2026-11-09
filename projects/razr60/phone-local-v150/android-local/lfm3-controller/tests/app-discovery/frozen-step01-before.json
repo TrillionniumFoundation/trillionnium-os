@@ -1,0 +1,392 @@
+{
+  "observation_id": "6e5961df569a4301a0e75cb6b57fab1a",
+  "package": "com.motorola.launcher3",
+  "screen_width": 1224,
+  "screen_height": 2992,
+  "rotation": 0,
+  "window_id": 17,
+  "screen_sha256": "1b4fc7a36f5ad717282cf32ed8eea343cb5dede8ce068c36e016795bfaccf621",
+  "window": {
+    "scope": "active_root_only",
+    "metadata_status": "observed",
+    "window_id": 17,
+    "root_bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "root_class": "android.widget.FrameLayout",
+    "root_class_truncated": false,
+    "type": 1,
+    "display_id": 0,
+    "bounds": [
+      0,
+      0,
+      1224,
+      2992
+    ],
+    "title": "桌面",
+    "title_truncated": false
+  },
+  "app_tree_sha256": "19117ceabaf8f25db03c3caea7459c4ca9e96e411b278d9d1f5be5f4bafa47a9",
+  "observation_state_sha256": "758a38824090b2f51b6b567cab4ec706b894552a1c62f1ceb21db913f1270f62",
+  "ime_visible": false,
+  "scroll_actions_schema": "hepta.observed-scroll-actions.v1",
+  "node_data_is_untrusted": true,
+  "nodes_truncated": false,
+  "nodes": [
+    {
+      "id": "n0",
+      "bounds": [
+        0,
+        0,
+        1224,
+        2992
+      ],
+      "view_id": "com.motorola.launcher3:id\/workspace",
+      "scrollable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": [
+        "forward"
+      ]
+    },
+    {
+      "id": "n1",
+      "bounds": [
+        0,
+        130,
+        1224,
+        2920
+      ],
+      "description": "桌面",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n2",
+      "bounds": [
+        0,
+        2512,
+        1224,
+        2597
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "AI 搜索",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "e7292325550757c3c0373ca35fbbb51e16b56b49c4933e2a099fe1b24ce16767",
+          "node_signature": "84b371b5f7257163d93b0d74ba2fe6718f78666317bcf2fa28837192e9e2f7f7"
+        }
+      ],
+      "view_id": "com.motorola.launcher3:id\/search_view",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n3",
+      "bounds": [
+        24,
+        2618,
+        318,
+        2860
+      ],
+      "text": "电话",
+      "description": "电话",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n4",
+      "bounds": [
+        318,
+        2618,
+        612,
+        2860
+      ],
+      "text": "信息",
+      "description": "信息",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n5",
+      "bounds": [
+        612,
+        2618,
+        906,
+        2860
+      ],
+      "text": "浏览器",
+      "description": "浏览器",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n6",
+      "bounds": [
+        906,
+        2618,
+        1200,
+        2860
+      ],
+      "text": "相机",
+      "description": "相机",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n7",
+      "bounds": [
+        24,
+        162,
+        612,
+        826
+      ],
+      "description": "简约",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n8",
+      "bounds": [
+        24,
+        1822,
+        318,
+        2154
+      ],
+      "text": "日历",
+      "description": "“日历”有 1 条通知",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n9",
+      "bounds": [
+        318,
+        1822,
+        612,
+        2154
+      ],
+      "text": "应用商店",
+      "description": "应用商店",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n10",
+      "bounds": [
+        612,
+        1822,
+        906,
+        2154
+      ],
+      "text": "超级互联",
+      "description": "超级互联",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n11",
+      "bounds": [
+        906,
+        1822,
+        1200,
+        2154
+      ],
+      "text": "设置",
+      "description": "设置",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n12",
+      "bounds": [
+        24,
+        2154,
+        318,
+        2486
+      ],
+      "text": "超级文件",
+      "description": "超级文件",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n13",
+      "bounds": [
+        318,
+        2154,
+        612,
+        2486
+      ],
+      "text": "手机管家",
+      "description": "手机管家",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n14",
+      "bounds": [
+        612,
+        2154,
+        906,
+        2486
+      ],
+      "text": "相册",
+      "description": "相册",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n15",
+      "bounds": [
+        906,
+        2154,
+        1200,
+        2486
+      ],
+      "description": "文件夹：生活工具，3 个项目",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n16",
+      "bounds": [
+        574,
+        2524,
+        709,
+        2585
+      ],
+      "text": "AI 搜索",
+      "view_id": "com.motorola.launcher3:id\/search_tv",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n17",
+      "bounds": [
+        59,
+        186,
+        577,
+        684
+      ],
+      "text": "16\n50",
+      "description": "16\n50",
+      "view_id": "com.motorola.timeweatherwidget:id\/v_clock",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n18",
+      "bounds": [
+        82,
+        655,
+        554,
+        720
+      ],
+      "text": "11月9日 周一",
+      "description": "11月9日 周一",
+      "view_id": "com.motorola.timeweatherwidget:id\/v_date",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n19",
+      "bounds": [
+        82,
+        720,
+        554,
+        785
+      ],
+      "child_text_status": "derived",
+      "child_text_truncated": false,
+      "child_text": "添加天气",
+      "child_text_source": "visible_noninteractive_descendants.v1",
+      "child_text_sources": [
+        {
+          "descendant_path": "0",
+          "property": "text",
+          "text_sha256": "f70cfd106e27c191beba087e3776d6c6117da0a99f568421c505e97e72830d0e",
+          "node_signature": "f4a1f5603d388275e2a3da8b67cd569ff66dc5b2015eacbc675a0aea404d2955"
+        }
+      ],
+      "view_id": "com.motorola.timeweatherwidget:id\/v_add_cities_layout",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n20",
+      "bounds": [
+        930,
+        2388,
+        1176,
+        2486
+      ],
+      "text": "生活工具",
+      "view_id": "com.motorola.launcher3:id\/folder_icon_name",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n21",
+      "bounds": [
+        82,
+        720,
+        262,
+        785
+      ],
+      "text": "添加天气",
+      "view_id": "com.motorola.timeweatherwidget:id\/v_widget_start_text",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n22",
+      "bounds": [
+        24,
+        1158,
+        1200,
+        1822
+      ],
+      "description": "AI 出行",
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    },
+    {
+      "id": "n23",
+      "bounds": [
+        84,
+        1212,
+        1140,
+        1768
+      ],
+      "child_text_status": "empty",
+      "child_text_truncated": false,
+      "view_id": "com.motorola.cn.smartservice:id\/greet_widget_root",
+      "clickable": true,
+      "scroll_actions_observed": true,
+      "scroll_directions": []
+    }
+  ]
+}

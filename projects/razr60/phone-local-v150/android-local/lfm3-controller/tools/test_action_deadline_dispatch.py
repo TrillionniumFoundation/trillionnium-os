@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from discovery_scope import restore_discovery_base
 
 ROOT=Path(__file__).resolve().parents[1]
 CONTROLLER=ROOT/'src/org/trillionnium/hepta/local/LocalTaskController.java'
@@ -106,7 +107,7 @@ class ActionDeadlineDispatchTest(unittest.TestCase):
         return subprocess.run([self.java,'-cp',str(self.outputs[variant]),'ActionDeadlineHarness',scenario],capture_output=True,text=True,timeout=10)
 
     def test_only_await_and_immediate_receipt_boundary_changed(self):
-        reconstructed=self.source
+        reconstructed=restore_discovery_base(self.source)
         for key in ('await','caller'):
             self.assertEqual(reconstructed.count(self.fragments[key]),1)
             reconstructed=reconstructed.replace(self.fragments[key],BASE_FRAGMENTS[key],1)

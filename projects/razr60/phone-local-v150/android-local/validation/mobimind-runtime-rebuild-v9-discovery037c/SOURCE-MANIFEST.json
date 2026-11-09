@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.mnn-fixed-source-rebuild-helper.v9",
+  "app_source_manifest_sha256": "eb85ee802f2718233553281529cc7c8cc166b6a37c0c09a3a3c58b75b0e4a26e",
+  "app_source_modified": false,
+  "compiler_identity_overridden": false,
+  "runtime_pins_modified": false,
+  "files": {
+    "README.md": {
+      "bytes": 3248,
+      "sha256": "6a9f852a2493ce1385f92d1979c2b3f74b06834575a577c5f834ccbd27232b2c"
+    },
+    "rebuild_exact_runtime.py": {
+      "bytes": 26056,
+      "sha256": "c6a6af2b0f6995a57e202d7b39263285890f70641de5b77cad635afab909566e"
+    }
+  }
+}
