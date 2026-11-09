@@ -1,0 +1,298 @@
+{
+  "schema": "hepta.code23.host-summary.public.v1",
+  "tested_frozen_source_manifest_sha256": "e445eec726a79a5d4340fff33125c6db9210f839885b8985175ba3dde26a07eb",
+  "original_host_report_sha256": "fce33a87009ca9423f77a8d990d9b2b5a4a2a0fb858cfe3899ee4f9254c60a0c",
+  "scope": "host_only",
+  "all_pass": true,
+  "checks": [
+    {
+      "name": "java-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "ActionFreshnessHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "AppCatalogueHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "BudgetHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "CompactEvidenceHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "CompactSequenceHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "CompactTaskHistoryHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "DiagnosticStartupGateHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "DispatchedActionSequenceHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "Gemma4ProfileHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ImeObservationHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "Lfm25MoeProfileHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "LocalPolicyHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "MemoryAvailabilityHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "MobiMindContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "MobiMindSessionContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ModelProfileHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservationStabilityHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedChildTextHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedScrollActionsHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedTargetLabelsHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedTextProjectionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ObservedWindowMetadataHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "PersistentActionPolicyHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "PromptActionDomainHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "Qwen35ProfileHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RecentActionProjectionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RecoveryAcknowledgementHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RecoveryDispatchHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RecoverySlotHandoffHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RepeatActionGuardHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "RepeatClickProjectionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "SameStateNoEffectGuardHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ScrollGrammarHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "SessionRecoveryHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "UiVenusContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "UiVenusInputContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "UiVenusProcessContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "UiVenusRequestContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "UiVenusSessionContractHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "ActionDecisionHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "DecisionGrammarHostTest",
+      "exit_code": 0
+    },
+    {
+      "name": "grammar-recognition",
+      "exit_code": 0
+    },
+    {
+      "name": "scroll-grammar-recognition",
+      "exit_code": 0
+    },
+    {
+      "name": "completion-protocol",
+      "exit_code": 0
+    },
+    {
+      "name": "same-state-no-effect-grammar",
+      "exit_code": 0
+    },
+    {
+      "name": "click-policy-projection",
+      "exit_code": 0
+    },
+    {
+      "name": "python-tools",
+      "exit_code": 0
+    },
+    {
+      "name": "mobimind-private-staging",
+      "exit_code": 0
+    },
+    {
+      "name": "ui-venus-q4_0-provenance",
+      "exit_code": 0
+    },
+    {
+      "name": "lfm25_profile_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "lfm25_profile_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "model_profile_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "model_profile_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "parent_death_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "parent_death_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "phase_timing_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "phase_timing_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "prompt_budget_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "prompt_budget_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "publish_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "publish_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "qwen35_profile_contract-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "qwen35_profile_contract",
+      "exit_code": 0
+    },
+    {
+      "name": "sha256_probe-compile",
+      "exit_code": 0
+    },
+    {
+      "name": "sha256_probe",
+      "exit_code": 0
+    },
+    {
+      "name": "sha256-hashlib-differential",
+      "exit_code": 0
+    },
+    {
+      "name": "native-adapter-syntax",
+      "exit_code": 0
+    },
+    {
+      "name": "private-prompt-evidence",
+      "exit_code": 0
+    }
+  ],
+  "checks_count": 69,
+  "python_tests": 199,
+  "click_scenarios": 19,
+  "deadline_contracts": 25,
+  "qwen_registry_python_tests": 5,
+  "exact_tested_source_inputs": 188,
+  "public_source_input_equivalence_checked": true,
+  "public_derivative_full_host_rerun": false,
+  "android_compile_claim_for_this_public_source": false,
+  "phone_tested": false,
+  "models_qualified": false,
+  "first_local_attempt_failure_retained_privately": "The two existing recovery Python tests could not find a javac executable; the same existing OpenJDK 17 compiler module was then used through their supported compiler override. No test was skipped or weakened.",
+  "runtime_or_semantic_model_success_inferred": false
+}

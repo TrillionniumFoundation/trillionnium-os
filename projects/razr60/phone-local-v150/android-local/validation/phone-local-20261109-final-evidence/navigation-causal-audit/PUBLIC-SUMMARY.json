@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.public-completed-navigation-causal-summary.v1",
+  "scope": "Three failed retained cases in the completed seven-case continuation; original results unchanged.",
+  "source_version": 19,
+  "compute_requested": "npu",
+  "context_tokens": 4096,
+  "original_suite_counts": {
+    "pass": 3,
+    "fail": 4,
+    "unverified": 0,
+    "not_run": 0,
+    "unknown": 0
+  },
+  "cases": [
+    {
+      "case_id": "core-find-calculator-01",
+      "verdict": "fail",
+      "classification": "repeated_read_only_search_with_explicit_tool_history_removed",
+      "task_steps": 17,
+      "native_calls": 17,
+      "complete_model_decisions": 16,
+      "successful_read_only_queries": 16,
+      "dispatched_effects": 0,
+      "target_opened": false,
+      "explicit_query_history_visible_after_first_query": false,
+      "returned_target_and_open_option_visible": true,
+      "all_current_nodes_preserved_in_audited_prompts": true,
+      "terminal": "deadline",
+      "cause_limit": "Repeated search selection coexists with omitted explicit tool provenance; no counterfactual result is established."
+    },
+    {
+      "case_id": "core-cross-app-01",
+      "verdict": "fail",
+      "classification": "navigation_semantic_mischoice_with_late_full_history_and_guard_stop",
+      "task_steps": 13,
+      "native_calls": 13,
+      "complete_model_decisions": 13,
+      "dispatched_effects": 12,
+      "visit_order_predicate_passed": true,
+      "final_homepage_predicate_passed": false,
+      "complete_dispatched_history_visible_at_steps": [
+        10,
+        11,
+        12,
+        13
+      ],
+      "model_output_rejected_before_final_dispatch": true,
+      "terminal": "existing_repeat_action_guard",
+      "cause_limit": "Late choices conflict with retained navigation history and current subpage; earlier history omissions are also preserved."
+    },
+    {
+      "case_id": "core-settings-scroll-01",
+      "verdict": "fail",
+      "classification": "changed_state_scroll_loop_with_completed_action_history_removed",
+      "task_steps": 16,
+      "native_calls": 16,
+      "complete_model_decisions": 15,
+      "dispatched_effects": 15,
+      "scroll_effects": 13,
+      "downward_content_change_steps": [
+        3,
+        4,
+        5,
+        7,
+        9,
+        11,
+        13,
+        15
+      ],
+      "goal_specific_predicates_passed": true,
+      "done_emitted": false,
+      "history_absent_at_steps": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "sequence_omitted_range": [
+        3,
+        14
+      ],
+      "current_scroll_target_retained": true,
+      "terminal": "deadline",
+      "cause_limit": "Actual successful scrolling is not shown in later history; changed-state repetition remains outside the no-effect guard candidate."
+    }
+  ],
+  "evidence": {
+    "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+    "suite_result_sha256": "476431ec607b861e00ef328af757daf3156f1e89f0104dcdf637a62e2d5be37f",
+    "full_inputs_digest": "c40ebee1b5d450f85a87d9fcfce0d66202c79c1d1c9f528b2f64d4750de5be8c",
+    "private_audit_sha256": "b9a7936a37297692e9dea2d54cbb83801b041ed670bcd5d8951e66af7863d656",
+    "source_members_verified": 866,
+    "source_and_evidence_inputs_verified": 1592,
+    "completed_decisions_with_raw_prompt_grammar_native_binding": 44,
+    "observed_offloaded_layers_per_completed_decision": 43,
+    "original_assertions_and_action_sequences_recomputed_equal": true,
+    "task_result_sha256": [
+      {
+        "case_id": "core-find-calculator-01",
+        "sha256": "341f30eb3f10dd1a4afa336c39bb8e2307bc1b5806903eac10b0f4407a85b4f9"
+      },
+      {
+        "case_id": "core-cross-app-01",
+        "sha256": "ca8c3709178e5332bcadfa49015f177aabd0b126eecc8257417212e0864d75e0"
+      },
+      {
+        "case_id": "core-settings-scroll-01",
+        "sha256": "265e1f3af8cf6b1ed36db2cecf182f2654e582ac97bb263f1214ac5f96793391"
+      }
+    ],
+    "all_actual_open_domains_equal_prompt_metadata": true,
+    "done_available_in_all_completed_model_grammars": true
+  },
+  "limitations": [
+    "No phone contact, new inference or source changes occurred during this audit.",
+    "Original failures remain failures. Goal predicates alone do not replace successful task completion.",
+    "NPU layer evidence does not establish that every operator executes on the accelerator.",
+    "Network and telemetry acceptance are outside this causal audit and are not requalified.",
+    "The unreleased same-state click/open guard is not claimed to solve these three failures."
+  ]
+}

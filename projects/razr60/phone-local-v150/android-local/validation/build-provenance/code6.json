@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.android-build-provenance.v1",
+  "version_code": 6,
+  "version_name": "0.6.0-local-reasoning",
+  "package": "org.trillionnium.hepta.local",
+  "source_manifest_sha256": "9ac0445ed9101a3fdca23401fa16c53f6e8f35e8edad47c3c9ed638bde54052a",
+  "source_manifest_members": 232,
+  "source_archive_sha256": "49014f7135192a4d861dd9a8b04c79474a878cddf6d829d5a468c841641c84d2",
+  "true_android_java_dex_native_rebuild": true,
+  "host_platform": "darwin",
+  "java_version": 17,
+  "compile_sdk": 34,
+  "ndk_version": "28.2.13676358",
+  "generated_worker_sha256": "605a080c42415bc461e050385da537d94af9a880c73b5d651c65e3a88c1f1c3a",
+  "apk_sha256": "992f013e3d41cae34c07afc92d21b9f006949a44c36f661ea75f687b2aea0476",
+  "apk_bytes": 15373767,
+  "same_original_installation_signer_verified": true,
+  "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "new_key_created": false,
+  "all_packaged_runtime_members_verified_against_pinned_archive": true,
+  "source_host_gates_passed": 28,
+  "sha256_instruction_gate": {
+    "verified_actual_android_elf": true,
+    "global_crypto_flag": false,
+    "runtime_gate": "getauxval(AT_HWCAP) & HWCAP_SHA2",
+    "instruction_owners": {
+      "hepta_sha256_armv8_blocks": 56
+    },
+    "disassembly_sha256": "4f4dbac071de1c91a987e5db12c797055a5e5220434184e3133088a9c3cd39d6"
+  },
+  "sha256_standalone_phone_qualification": "parent operator passed hardware and portable published vectors, boundary and chunk tests; identical fixture and 128 MiB benchmark hashes",
+  "sha256_full_app_model_qualification": "pending first actual code6 task",
+  "independent_lifecycle_guard_tests_passed": 8,
+  "lifecycle_device_tests": "not_run_by_source_owner",
+  "device_full_acceptance": "in_progress_not_claimed",
+  "model_weights_or_keys_or_phone_ui_published": false
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.code17.retry-ci-qualification.v1",
+  "head_sha": "c726c48b7f9f9477957a138f5a9c826643d423da",
+  "run_id": 42569728212,
+  "run_url": "https://github.com/TrillionniumFoundation/trillionnium-os/actions/runs/42569728212",
+  "run_attempt": 1,
+  "producer_job_id": 129004078205,
+  "consumer_job_id": 129005738796,
+  "producer_success": true,
+  "host_gate_count": 46,
+  "host_all_pass_from_job_log": true,
+  "workflow_conclusion": "failure",
+  "failure_stage": "pinned official GenieX archive download",
+  "http_status": 504,
+  "host_artifact": {
+    "id": 13653047416,
+    "bytes": 36572,
+    "sha256_from_github_metadata": "3efea543591d76677782fff845a52afb62ff1dd1edcd6e36c4c841e3b486cc08",
+    "redownloaded_for_this_summary": false
+  },
+  "consumer_android_compile_reached": false,
+  "original_failed_run_preserved": true,
+  "later_code18_success_is_separate": true
+}

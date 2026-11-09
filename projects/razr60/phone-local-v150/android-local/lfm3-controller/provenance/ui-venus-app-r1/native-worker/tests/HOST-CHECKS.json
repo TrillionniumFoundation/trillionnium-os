@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.ui-venus.app-entry-host-check.v1",
+  "test_result": {
+    "schema": "hepta.ui-venus.app-entry-contract-test.v1",
+    "assertions": 36,
+    "passed": true,
+    "sdk_initialized": false,
+    "phone_contact": false
+  },
+  "compiler_version": "cc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "test_source_sha256": "f61c7c665281907b21bb49242a4697dfc126d6ac0e56fa060f275fbfec51f829",
+  "helper_sha256": "f9d8d6d4cc29257990c9a1d85dda5550157a473511f199683d63b7aa45f24bf5",
+  "flags": [
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "android_build": false,
+  "phone_contact": false
+}

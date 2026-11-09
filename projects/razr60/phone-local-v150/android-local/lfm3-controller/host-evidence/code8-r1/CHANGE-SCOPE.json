@@ -1,0 +1,9 @@
+{
+  "runtime_source_changes": [
+    "src/org/trillionnium/hepta/local/LocalTaskController.java:SYSTEM only"
+  ],
+  "outside_SYSTEM_identical_to_code7": true,
+  "native_and_resources_unchanged": true,
+  "grammar_dispatch_and_owner_unchanged": true,
+  "phone_contacted": false
+}

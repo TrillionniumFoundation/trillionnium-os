@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.lifecycle-source.v1",
+  "revision": 5,
+  "files": [
+    {
+      "path": "phone_lifecycle.py",
+      "bytes": 67678,
+      "sha256": "ea8744d592da35f3c73a3b6fe562302464afcbc1443a3592e6d5f8db41d242e3"
+    },
+    {
+      "path": "lifecycle_guards.py",
+      "bytes": 27397,
+      "sha256": "2b1a5ba2f9b7dd5ca09bbefe072d0afb83ae099ae3c54f53aa6fab0b0cdf4292"
+    },
+    {
+      "path": "test_lifecycle_guards.py",
+      "bytes": 28289,
+      "sha256": "b39392e5b1d83d9ea80b856d16d1ab5da1b40b9265f1ba955a26f6058718140f"
+    },
+    {
+      "path": "test_lifecycle_templates.py",
+      "bytes": 8874,
+      "sha256": "593d9cb3438c6948a4291ba2a424da0a4d5c57cd2fa5c2ab52717d3317211351"
+    },
+    {
+      "path": "benchmark_png_roi.py",
+      "bytes": 2653,
+      "sha256": "8af11777e05ace0b9b81a03b05ca1875d7aa28edf0f9e765655336dbd6d76afd"
+    },
+    {
+      "path": "README.md",
+      "bytes": 23090,
+      "sha256": "2fbddd8e8961fa6f0e117a454bb819b9be3979a5db5381a204ea4d7079d2ba93"
+    }
+  ],
+  "phone_contacted": false,
+  "host_contracts": 46,
+  "manual_default": true,
+  "explicit_observed_template_mode_available": true,
+  "physical_directory_aliases_verified_from_stat": true,
+  "geniex_text_lifecycle_only": true,
+  "phone_cancellation_qualified": false
+}

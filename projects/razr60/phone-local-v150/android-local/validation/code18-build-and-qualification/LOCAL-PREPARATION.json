@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.code18.public-local-preparation.v1",
+  "source_head_sha": "bd4abff7d1867dcb796bee1da9a194a0da152496",
+  "source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954",
+  "source_members": 865,
+  "source_verified": true,
+  "source_archive_sha256": "fb2b6591a981ef049892e9b1f0eee32725a3bb8319c0477de4d7fbcf724bee40",
+  "source_archive_bytes": 693890,
+  "version_code": 18,
+  "version_name": "0.18.0-local-budget-continuation",
+  "package": "org.trillionnium.hepta.local",
+  "apk_sha256": "3db3860bb8613bea3afb36062bf93bf7acadcad9a026e99edea40fab154293d5",
+  "apk_bytes": 20612784,
+  "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "same_original_signer": true,
+  "new_signing_key_created": false,
+  "true_java_dex_native_rebuild": true,
+  "mac_build_receipt_sha256": "14bb6be26f60b77cb3c0d605b02cf68e742dee925202ff2eaa2d107ed2e7e6ec",
+  "unsigned_archive_sha256": "77e5853be1b66381370f592e380bc38c1ee4a3df3b93b81fd1884507745c4635",
+  "default_context_tokens_for_fresh_lfm3": 8192,
+  "explicit_configurations_migrated": false,
+  "native_members": 16,
+  "native_payloads_identical_to_code17": true,
+  "host_qualification": {
+    "actual_java_contracts_pass": true,
+    "java_compile_and_contract_count": 27,
+    "linux_python_tools_tests": 152,
+    "linux_mobimind_private_staging_tests": 4,
+    "all_listed_pass": true,
+    "single_host_full_suite_pass": false,
+    "mac_full_suite_stopped_at_existing_linux_shell_fixture": true,
+    "complete_exact_head_ci_is_separate": true
+  },
+  "historical_prompt_replay": {
+    "qualified_frames": [
+      "calc9",
+      "calc12",
+      "calc15",
+      "settings5",
+      "settings15"
+    ],
+    "unresolved_old_launcher_frames": [
+      4,
+      6,
+      16
+    ],
+    "all_historical_frames_pass": false
+  },
+  "static_acceptance_sha256": "23cf949c63f45f07fff6598d8ee5c0d60f88303ef14708cdc92f10d2e541aaec",
+  "phone_contacted": false,
+  "phone_tested": false,
+  "installed": false,
+  "selected_model_task_quality_qualified": false,
+  "record_scope": "Historical build preparation only; this is not current phone state.",
+  "original_preparation_sha256": "70ea320d2f8d71b65b2ff1f0d6ab0ffda43c96e5283c493c9ea56cfee4f9030b",
+  "apk_filename": "hepta-local-0.18.0.apk",
+  "internet_permission_declared": false
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.ui-venus-runtime-source.v2-code23-037c",
+  "base_commit": "cc4a7035760383a126e4510002139d88667e0b97",
+  "app_source_manifest_sha256": "5559ef2ad8e9b7e8d886dfc9f3bf6b4cce2fde7170a7cb40ba0b6ce1061a8b4f",
+  "app_source_modified": false,
+  "compiler_identity_overridden": false,
+  "runtime_pins_modified": false,
+  "files": {
+    "README.md": {
+      "bytes": 1407,
+      "sha256": "2c05b4b87ffaf8d1d3bddfa6c990d3a42db9c8481fca1ed207d826f10e9a5e87"
+    },
+    "rebuild_and_verify.py": {
+      "bytes": 14391,
+      "sha256": "e88e66bf7b25be7db8fe549e8bbc79645d943a5ade8fce014bafcd77fe8d0378"
+    },
+    "test_rebuild_and_verify.py": {
+      "bytes": 7492,
+      "sha256": "d1237cf4ea33038b9a42eacadb5dcebc6c83873077677c416facb93fd5cd87a0"
+    }
+  }
+}
