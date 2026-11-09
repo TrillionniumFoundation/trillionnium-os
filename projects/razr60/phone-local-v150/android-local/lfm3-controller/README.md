@@ -63,7 +63,7 @@ SHA-pinned MiniCPM5, Spark, Gemma 4 and experimental Bolt profiles. New models r
 tokenization and same-input-ID budget proof. See [MODEL-PROFILES.md](MODEL-PROFILES.md)
 for configuration, identity binding and remaining phone-validation gates.
 
-This candidate reuses the ordinary Android Accessibility controller, Start/Stop UI, private one-use test trigger, app-wide session, strict JSON action parser, fresh-screen checks and owned native-process cleanup. It selects **LiquidAI LFM3-1.7B QAD Q4_0** with the pinned **GenieX 0.10.0 llama_cpp** runtime. Defaults are **Hexagon NPU**, context **4096**, four CPU support threads. It declares no INTERNET or other application permissions. It has no model URL, HTTP client, shell tool, external model endpoint or automatic CPU fallback.
+This candidate reuses the ordinary Android Accessibility controller, Start/Stop UI, private one-use test trigger, app-wide session, strict JSON action parser, fresh-screen checks and owned native-process cleanup. It selects **LiquidAI LFM3-1.7B QAD Q4_0** with the pinned **GenieX 0.10.0 llama_cpp** runtime. Defaults are **Hexagon NPU**, context **8192**, four CPU support threads. It declares no INTERNET or other application permissions. It has no model URL, HTTP client, shell tool, external model endpoint or automatic CPU fallback.
 
 The selected file is exactly `files/model/LFM3-1.7B-QAD-Q4_0.gguf`, 1,049,615,680 bytes, SHA-256 `43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452`. App-private ownership and a full first-use SHA verification bind the embedded tokenizer/template as well as the weights. The verification is reused only for the unchanged file in the same app process.
 
@@ -80,3 +80,7 @@ Revision 3 adds explicit package/normalized-label ranking and model-issued local
 Process recreation reads persisted session ownership before admitting new work. Only a known clean terminal state can allow another task; unresolved/corrupt state blocks without replay. The native worker validates its expected parent and uses a parent-death signal. `SESSION-RECOVERY.md` explains the remaining Android-specific qualification.
 
 This standalone candidate has no active Cargo/G1 adoption claim. `CONTROL-INTEGRATION.md` is its current interface, state, resource, evidence, migration and rollback contract. Historical source overlays and old test receipts are not part of this source closure.
+
+### LFM3 default context
+
+The factory default uses NPU / 8192 / four support threads so the unchanged native context guard has room for the Chinese controller instruction and observed screen. Existing explicit runtime-config files, including 4096-context selections and other model profiles, are parsed unchanged; installation does not migrate them. The original acceptance driver's default expected context remains 4096 for its existing contract. When qualifying the factory LFM3 configuration, pass `--expected-context 8192` explicitly or use a frozen candidate plan that supplies 8192. This default change does not establish model task quality or 8K peak-memory measurements.

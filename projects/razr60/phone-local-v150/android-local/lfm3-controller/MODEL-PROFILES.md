@@ -2,7 +2,7 @@
 
 Version 0.4.0 / code 4 introduced the explicit, closed artifact allowlist retained
 by code 5. The original
-LFM3 filename, bytes, SHA256 and default NPU / 4096 configuration are unchanged.
+LFM3 filename, bytes and SHA256 are unchanged. Its factory default is NPU / 8192; existing explicit configurations, including 4096 and other model selections, are not migrated. The original acceptance driver remains unchanged: LFM3 qualification supplies `--expected-context 8192` explicitly through its candidate plan.
 No new Android permission is declared. The worker remains a private subprocess,
 without a local HTTP server. Phone execution and model quality are not established
 by the host checks in this source package.

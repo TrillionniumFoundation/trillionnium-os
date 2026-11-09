@@ -32,7 +32,7 @@ public final class LocalRuntimeConfig {
         this.threads = threads;
     }
 
-    public static LocalRuntimeConfig defaults() { return new LocalRuntimeConfig("npu", 4096, 4); }
+    public static LocalRuntimeConfig defaults() { return new LocalRuntimeConfig("npu", 8192, 4); }
     public static LocalRuntimeConfig fromFields(java.util.Map<String,?> value){
         if(value==null)throw new IllegalArgumentException("runtime config required");
         boolean legacy="hepta.local-runtime.v1".equals(value.get("schema"));

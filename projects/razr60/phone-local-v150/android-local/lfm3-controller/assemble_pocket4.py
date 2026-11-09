@@ -205,7 +205,7 @@ receipt={'schema':'hepta.local-model.static-acceptance.v3','apk':str(APK),'apk_b
     'version_code':version_code,
     'debuggable':True,'extract_native_libs':True,'compile_sdk':34,'min_sdk':30,'target_sdk':35,
     'uses_native_libraries_optional':['libadsprpc.so','libcdsprpc.so','libOpenCL.so'],
-    'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','default_compute':'npu','default_context':4096,
+    'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','default_compute':'npu','default_context':8192,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
     'all_packaged_runtime_libraries_bound_to_pinned_archive':False,
     'all_packaged_geniex_libraries_bound_to_pinned_archive':True,

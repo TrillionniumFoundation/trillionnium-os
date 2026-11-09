@@ -10,13 +10,13 @@ A small set of visible noninteractive readouts accompanies actionable nodes so t
 
 ## Fixed runtime and optional private parameters
 
-Only the fixed official GGUF filename under the application's own `files/model` is accepted. No model or executable path is accepted from an Intent. Default settings are NPU, 4096 context and four threads. An optional app-owned, regular, one-link mode0600 `files/model/runtime-config.json` can contain exactly:
+Only the fixed official GGUF filename under the application's own `files/model` is accepted. No model or executable path is accepted from an Intent. Default settings are NPU, 8192 context and four threads. An optional app-owned, regular, one-link mode0600 `files/model/runtime-config.json` can contain exactly:
 
 ```json
-{"schema":"hepta.local-runtime.v1","compute":"npu","context_tokens":4096,"threads":4}
+{"schema":"hepta.local-runtime.v1","compute":"npu","context_tokens":8192,"threads":4}
 ```
 
-Only `compute=npu|gpu`, `context_tokens=4096|8192`, and `threads=1..8` are allowed. Configuration is read once for the application process. Changes apply on a deliberate subsequent process start after all work has finished. Unsupported settings fail explicitly; there is no automatic fallback. A selected/resolved device is distinct from independently demonstrated accelerator execution.
+Only `compute=npu|gpu`, `context_tokens=4096|8192`, and `threads=1..8` are allowed. Existing explicit configuration bytes are not migrated: an explicitly selected 4096 context or different model remains selected. The acceptance CLI's preserved default expectation is 4096; qualify factory LFM3 with `--expected-context 8192` or an explicit 8192 candidate plan. Configuration is read once for the application process. Changes apply on a deliberate subsequent process start after all work has finished. Unsupported settings fail explicitly; there is no automatic fallback. A selected/resolved device is distinct from independently demonstrated accelerator execution.
 
 ## One-use private debug task
 

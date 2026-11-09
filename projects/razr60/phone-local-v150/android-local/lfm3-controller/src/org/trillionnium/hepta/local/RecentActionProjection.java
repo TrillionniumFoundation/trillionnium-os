@@ -76,6 +76,63 @@ public final class RecentActionProjection {
         return result;
     }
 
+
+    public static final String SEQUENCE_SCHEMA="hepta.dispatched-sequence.v2";
+    public static final java.util.List<String> SEQUENCE_COLUMNS=java.util.Collections.unmodifiableList(
+            java.util.Arrays.asList("step","action","target_package","before_package","after_package","details"));
+
+    /** A lossless package dictionary for the bounded suffix of actual dispatched rows. */
+    public static final class CompactSequence {
+        public final java.util.List<Object> packages;
+        public final java.util.List<java.util.List<Object>> rows;
+        public final int observed,omitted;
+        private CompactSequence(java.util.List<Object> packages,java.util.List<java.util.List<Object>> rows,int observed) {
+            this.packages=java.util.Collections.unmodifiableList(new java.util.ArrayList<Object>(packages));
+            this.rows=java.util.Collections.unmodifiableList(new java.util.ArrayList<java.util.List<Object>>(rows));
+            this.observed=observed;this.omitted=observed-rows.size();
+        }
+    }
+
+    /**
+     * Package indices are references to actual values, never inferred destinations.
+     * Missing base columns are null with their indices in details.absent_columns;
+     * explicit null package values remain dictionary values and are not absence.
+     */
+    public static CompactSequence compactDispatched(java.util.List<Map<String,Object>> history,int maximumRows) {
+        if(history==null||maximumRows<0)throw new IllegalArgumentException("History and nonnegative limit required");
+        java.util.List<Map<String,Object>> effects=new java.util.ArrayList<Map<String,Object>>();
+        for(Map<String,Object> entry:history){
+            Map<String,Object> effect=dispatched(entry);
+            if(effect!=null)effects.add(effect);
+        }
+        java.util.List<Object> packages=new java.util.ArrayList<Object>();
+        java.util.List<java.util.List<Object>> rows=new java.util.ArrayList<java.util.List<Object>>();
+        for(int i=Math.max(0,effects.size()-maximumRows);i<effects.size();i++){
+            Map<String,Object> effect=effects.get(i);
+            java.util.List<Object> row=new java.util.ArrayList<Object>();
+            java.util.List<Integer> absent=new java.util.ArrayList<Integer>();
+            for(int column=0;column<5;column++){
+                String key=SEQUENCE_COLUMNS.get(column);
+                if(!effect.containsKey(key)){
+                    row.add(null);absent.add(Integer.valueOf(column));
+                }else{
+                    Object value=effect.get(key);
+                    if(column>=2){
+                        int index=packages.indexOf(value);
+                        if(index<0){index=packages.size();packages.add(value);}
+                        row.add(Integer.valueOf(index));
+                    }else row.add(value);
+                }
+            }
+            Map<String,Object> details=new LinkedHashMap<String,Object>();
+            for(String key:new String[]{"node_label","direction","type_text","type_text_truncated"})copy(effect,details,key);
+            if(!absent.isEmpty())details.put("absent_columns",java.util.Collections.unmodifiableList(absent));
+            row.add(java.util.Collections.unmodifiableMap(details));
+            rows.add(java.util.Collections.unmodifiableList(row));
+        }
+        return new CompactSequence(packages,rows,effects.size());
+    }
+
     private static void copy(Map<String,Object> from,Map<String,Object> to,String key) {
         if (from.containsKey(key)) to.put(key,from.get(key));
     }

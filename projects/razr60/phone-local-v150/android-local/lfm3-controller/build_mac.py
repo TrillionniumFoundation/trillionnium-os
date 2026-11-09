@@ -80,7 +80,7 @@ receipt={'schema':'hepta.local-model.mac-build.v2','compile_sdk':34,'target_sdk'
     'source_root':str(ROOT),'sdk':str(SDK),'ndk_compiler':str(NDK/'aarch64-linux-android30-clang'),
     'geniex_version':'0.10.0','geniex_source_commit':'071f609995470bdb0e0769ab964754adfaab7e47',
     'runtime':'llama_cpp','model':'LiquidAI/LFM3-1.7B-GGUF','model_sha256':'43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452',
-    'compute_default':'npu','context_default':4096,
+    'compute_default':'npu','context_default':8192,
     'model_profile_default':DEFAULT_PROFILE,'model_profiles':PROFILES,'llama_source_commit':LLAMA_COMMIT,
     'worker_adapter':adapter_receipt,
     'sha256_instruction_gate':{'verified_actual_android_elf':True,'global_crypto_flag':False,
