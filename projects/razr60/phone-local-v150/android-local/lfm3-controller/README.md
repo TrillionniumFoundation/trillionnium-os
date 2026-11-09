@@ -1,17 +1,26 @@
-# Hepta local qualification candidate 16
+# Code20: complete observed actions and private UI-Venus Q4_0 qualification
 
-Version 16 / `0.16.0-local-observation` adds a bounded stable-observation phase,
-compact action-relevant recent history, explicit whole-field typing semantics,
-and exact observed node-by-direction scroll capabilities. It preserves the
-custom JSON/GBNF controller and every execution-time freshness, locked-device,
-repeat-action and destructive-click guard. See
-[CODE16-OBSERVATION.md](docs/CODE16-OBSERVATION.md) for scope and limits.
+The current candidate is versionCode 20 (`0.20.0-local-stable-ui-venus-budget`). It combines the complete observed action domain and lossless recorded-history projection with the exact allowed open-package list and a stable-observation cap clipped to the original ten-second caller/task deadline. Fresh unconfigured LFM3 uses NPU / 8192 / four threads; existing explicit configuration is preserved. The separate UI-Venus Q4_0 first-frame diagnostic remains model-only and does not dispatch phone actions. See `docs/CODE20-QUALIFICATION.md`; older version-specific documents and host receipts are historical evidence.
 
-The Code15 separate MNN diagnostic child keeps its fixed system-first loader,
-all three MNN ELF identities, and model-only boundary. All 16 packaged native
-members must remain byte-identical to Code15. New APK compilation and host checks
-do not establish device task completion or transfer earlier device qualification
-onto this candidate.
+## Private model-only diagnostic
+
+Code20 / `0.20.0-local-stable-ui-venus-budget` retains a separate private UI-Venus
+first-frame image diagnostic and a single Application-level recovery barrier
+for the control, MobiMind and UI-Venus sessions. The new VLM output is retained
+as raw text and never connected to the phone action dispatcher.
+See [UI-VENUS-APP-PROBE.md](UI-VENUS-APP-PROBE.md) for the exact private request,
+original-image/OWNER/template binding, budgets, model/runtime pins and limits.
+
+Code16 observation stability, exact scroll domains and execution guards remain
+unchanged. Recorded history now uses one lossless compact representation. The original sixteen GenieX/MNN native APK
+members must remain byte-identical; one independently pinned UI-Venus App worker
+is added. The existing private text configuration is not changed. The fresh LFM3
+8192 default from the budget-continuation branch is preserved. The APK still declares no INTERNET permission.
+
+Host contracts, Android compilation and a signed APK are separate from ordinary
+App VLM execution, actual device mapping and semantic GUI task acceptance. The
+original shell VLM probe is a different artifact. No runtime or phone task
+qualification transfers automatically to this candidate.
 
 The retained code14 controller exposes
 bounded actual active-window metadata and node focus, binds them to exact
@@ -67,7 +76,7 @@ This candidate reuses the ordinary Android Accessibility controller, Start/Stop 
 
 The selected file is exactly `files/model/LFM3-1.7B-QAD-Q4_0.gguf`, 1,049,615,680 bytes, SHA-256 `43a7d09a0e9cba91b63eb7052488b9564569bddfd65754d2e426465e572a7452`. App-private ownership and a full first-use SHA verification bind the embedded tokenizer/template as well as the weights. The verification is reused only for the unchanged file in the same app process.
 
-The text model receives the owner's instruction, a bounded application catalogue, Accessibility node text/bounds, visible readouts and observed recent outcomes. A read-only `find_app` tool searches and pages the complete bounded installed launcher snapshot when the first prompt omits the target app. Screenshots stay on the phone for observation consistency and evidence; they are not sent to this text model. Only observed node clicks are accepted. An app with no usable Accessibility nodes may require a separately qualified vision model; this candidate does not pretend to see images.
+The text model receives the owner's instruction, a bounded application catalogue, Accessibility node text/bounds, visible readouts and the full compact recorded task history. A read-only `find_app` tool searches and pages the complete bounded installed launcher snapshot when the first prompt omits the target app. Screenshots stay on the phone for observation consistency and evidence; they are not sent to this text model. Only observed node clicks are accepted. An app with no usable Accessibility nodes may require a separately qualified vision model; this candidate does not pretend to see images.
 
 Read `LOCAL-CONTROL.md` for the task contract, `PUBLIC-BUILD.md` for build commands and `TOKEN-BUDGET.md` for the model-specific conservative bound. `tools/phone_acceptance.py` performs independent final UI checks and binds app/native receipts; self-reported completion is never enough.
 
@@ -80,7 +89,3 @@ Revision 3 adds explicit package/normalized-label ranking and model-issued local
 Process recreation reads persisted session ownership before admitting new work. Only a known clean terminal state can allow another task; unresolved/corrupt state blocks without replay. The native worker validates its expected parent and uses a parent-death signal. `SESSION-RECOVERY.md` explains the remaining Android-specific qualification.
 
 This standalone candidate has no active Cargo/G1 adoption claim. `CONTROL-INTEGRATION.md` is its current interface, state, resource, evidence, migration and rollback contract. Historical source overlays and old test receipts are not part of this source closure.
-
-### LFM3 default context
-
-The factory default uses NPU / 8192 / four support threads so the unchanged native context guard has room for the Chinese controller instruction and observed screen. Existing explicit runtime-config files, including 4096-context selections and other model profiles, are parsed unchanged; installation does not migrate them. The original acceptance driver's default expected context remains 4096 for its existing contract. When qualifying the factory LFM3 configuration, pass `--expected-context 8192` explicitly or use a frozen candidate plan that supplies 8192. This default change does not establish model task quality or 8K peak-memory measurements.

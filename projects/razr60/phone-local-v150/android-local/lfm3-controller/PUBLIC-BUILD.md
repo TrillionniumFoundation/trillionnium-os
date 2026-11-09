@@ -1,7 +1,7 @@
 # Build the independent local controller
 
-The source is an ordinary Android app candidate, versionCode **16**, versionName
-**0.16.0-local-observation**. A successful build is not device acceptance or adoption into
+The source is an ordinary Android app candidate, versionCode **19**, versionName
+**0.20.0-local-stable-ui-venus-budget**. A successful build is not device acceptance or adoption into
 the protected owner-open implementation. Read `CONTROL-INTEGRATION.md` first.
 
 ## Source and host verification
@@ -64,14 +64,15 @@ of an existing installation, retain its original private signing key:
 export HEPTA_SIGNING_KEY_PATH=/private/path/to/original/hepta-local-debug.jks
 export HEPTA_REQUIRE_EXISTING_KEY=1
 export MOBIMIND_ANDROID_RUNTIME_DIR=/absolute/path/to/verified-mobimind-r4-runtime
+export UI_VENUS_ANDROID_RUNTIME_DIR=/absolute/path/to/verified-ui-venus-app-native-build
 python3 -B assemble_pocket4.py
 ```
 
 The assembler refuses stale build inputs, changed artifacts, mismatched actual
 APK identity/version, missing runtime libraries and unexpected dependencies.
 It checks the manifest, service guard, ABI, signature, resource alignment and
-packaged library hashes. It outputs `hepta-local-0.16.0.apk` under the build output
-and `control-v16-static/STATIC-ACCEPTANCE.json` as its static packaging receipt.
+packaged library hashes. It outputs `hepta-local-0.20.0.apk` under the build output
+and `control-v19-static/STATIC-ACCEPTANCE.json` as its static packaging receipt.
 
 The separate `MOBIMIND_ANDROID_RUNTIME_DIR` must contain the unchanged r4
 `hepta-mobimind-probe`, `libMNN.so`, `libc++_shared.so` and their original
@@ -79,7 +80,7 @@ The separate `MOBIMIND_ANDROID_RUNTIME_DIR` must contain the unchanged r4
 `native/mobimind-runtime-pins.json`; the retained source and build provenance are
 under `provenance/mobimind-worker-r4/` and
 `provenance/mobimind-worker-r4-build.json`. These are not GenieX release members.
-The assembler checks both groups independently and refuses a same-name
+The assembler checks each group independently and refuses a same-name
 replacement. It additionally verifies the MNN PIE's sole `$ORIGIN` RUNPATH and
 direct MNN/C++ dependencies, required for the child environment described in
 `docs/CODE15-MNN-LOADER.md`.
@@ -90,7 +91,7 @@ rebuild sources, not their binary payloads or a public binary download endpoint.
 The worker's retained README describes the fixed MNN checkout and two-stage
 NDK build. A new build must be checked for byte identity; if it differs, its new
 pins require a new candidate and fresh qualification rather than an override.
-A CI job without these verified runtime inputs cannot claim full code16 APK
+A CI job without these verified runtime inputs cannot claim full code20 APK
 assembly merely from a successful Java/native compilation stage.
 
 A fresh development checkout may omit both signing variables to create a local
@@ -118,3 +119,14 @@ offline operation and sustained thermal behavior. `tools/phone_inventory.py`
 collects a bounded read-only inventory using an existing ADB server.
 `tools/PHONE-SUITE.md` describes the separately authorized task driver. The
 shipped navigation plan has no candidate APK hash and cannot run as-is.
+
+## Separate UI-Venus App worker
+
+`UI_VENUS_ANDROID_RUNTIME_DIR` contains `libhepta_ui_venus_runner.so` and its
+original `BUILD-RECEIPT.json`. The pinned App worker differs from the shell probe.
+`native/ui-venus-runtime-pins.json` binds its actual Android artifact, preserved
+build receipt and full independent native source manifest. Assembly adds exactly
+one native member and does not replace the original sixteen. Actual ELF machine,
+PIE interpreter, unique `$ORIGIN` RUNPATH and every DT_NEEDED entry are checked.
+No model weights are included. Read `UI-VENUS-APP-PROBE.md` before a separately
+authorized private model-only request; successful assembly never triggers one.

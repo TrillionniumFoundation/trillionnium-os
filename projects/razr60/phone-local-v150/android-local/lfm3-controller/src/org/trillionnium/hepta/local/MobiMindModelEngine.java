@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -244,7 +243,7 @@ public final class MobiMindModelEngine implements AutoCloseable {
             throw new IOException("previous visual diagnostic has no committed clean terminal receipt");
         }catch(Exception failure){
             blocked=true;recoveryMessage="上次视觉诊断中断且退出未确认；不会自动恢复或重放，新本地请求已暂停。";
-            active=broker.reserveExternal(UUID.randomUUID().toString().replace("-",""));
+            // Application inspects all three journals before reserving one shared recovery barrier.
             persistInterruption(failure);
         }
     }

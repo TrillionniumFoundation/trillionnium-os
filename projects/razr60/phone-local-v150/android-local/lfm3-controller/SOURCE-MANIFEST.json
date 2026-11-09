@@ -1,18 +1,55 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 19,
-  "version_name": "0.19.0-local-stable-observation",
-  "derived_from_code15_source_manifest_sha256": "aaae9cd4505dc4c3dbbb0d8f246b1193f284ed18b2be1263f40445df466575db",
-  "reviewed_controller_merge_manifest_sha256": "19ea7449f35e76f86cc156c620a9dffbc2f46eff5bb5f45d4876e49da2f910dd",
-  "android_build": "separate build receipt",
+  "version_code": 21,
+  "version_name": "0.21.0-local-history-recovery",
+  "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
+  "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
   "phone_qualified": false,
-  "functional_scope": "allow fresh stable observation evidence within the existing ten-second caller window; two-sample identity, original task and observation deadlines, screenshot rechecks, cancellation, owner and native behavior unchanged",
+  "functional_scope": "complete observed action-domain and lossless scalar history; exact grammar-bound open packages; preserve fresh LFM3 NPU8192 default and explicit configurations; independent private Q4_0 UI-Venus model-only diagnostic; external fixed ten-second observation settling cap clipped to original caller/task deadline; complete compact ordered action/find provenance and cumulative same-observed-state guards; explicit owner-only interrupted-control recovery with hash-bound archives, actual-close shared-slot handoff, and app-visible same-UID stable quiescence; no automatic task replay",
+  "ui_venus_native_host_build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
+  "ui_venus_phone_action_dispatch_connected": false,
+  "ui_venus_ordinary_app_runtime_qualified": false,
+  "default_text_configuration_changed": false,
   "visual_planner_merged": false,
   "native_tool_protocol_merged": false,
   "thinking_protocol_merged": false,
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
+  "candidate_status": "public_source_derivative_not_the_retained_device_build",
+  "merge_parents": {
+    "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
+    "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
+    "recovery_source_inputs_sha256": "7170999df0b8e6ba434eb9574bf28f4ce3a456c659e95ecee00f8eaffe46a214",
+    "retained_code20_ancestry": {
+      "actual_external19": {
+        "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
+        "git_head": "fdb7eca8d3a434c515da547365fcc47bb2f510d3"
+      },
+      "our_frozen19": {
+        "source_manifest_sha256": "1e5b5c409ac5d730ffab739b04a131fac269740c52701f644fd92dfd6700649a"
+      },
+      "retained_prior_merges": {
+        "actual_external18": {
+          "source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954",
+          "git_head": "bd4abff7d1867dcb796bee1da9a194a0da152496"
+        },
+        "our_frozen18": {
+          "source_manifest_sha256": "0f57435b236a647b7ebad4bb7796ad28fabe7d1e7302c8978eef0dc9ffe14adb"
+        },
+        "common_observation17": {
+          "source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074"
+        }
+      }
+    }
+  },
+  "fresh_default_preserved_from_actual_external18": true,
+  "git_ancestry_parent": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "derived_from_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
+  "recovery_process_inventory_scope": "app_visible_procfs_same_uid",
+  "old_native_cleanup_claim": "unknown",
+  "recovery_ui_phone_qualified": false,
+  "native_source_unchanged_from_code20": true,
   "files": [
     {
       "path": ".gitignore",
@@ -26,8 +63,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1870,
-      "sha256": "a2a195390e6620c4d1e2e9b66b3c533ee75b74552ce135a1c184d89e762b0348"
+      "bytes": 1868,
+      "sha256": "0fa7aba82d81c0f1c9d1dfa828a33c53ce60b3465c5afaaf91110851e8e9b8b7"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -81,13 +118,13 @@
     },
     {
       "path": "HOST-CHECKS.json",
-      "bytes": 32820,
-      "sha256": "05759b84a5f8cdd60c7309433b36f7b37e5da6ef583279c128c671bf77c120e7"
+      "bytes": 40778,
+      "sha256": "2f062393b4210dde381bc9c8b0e960c54c861103d5b717593a05c9ce9c1198c1"
     },
     {
       "path": "LOCAL-CONTROL.md",
-      "bytes": 5904,
-      "sha256": "9bbe9fa8f168a48091cb3c4564fd26a3ad696dcc786e0122b7e220677e22cb0d"
+      "bytes": 6990,
+      "sha256": "88cf6bae07a7c2648b24b44580d817e5bb5cd89af00867786fd2c1e5ca99a6b7"
     },
     {
       "path": "MODEL-PROFILES.md",
@@ -96,13 +133,13 @@
     },
     {
       "path": "PUBLIC-BUILD.md",
-      "bytes": 6686,
-      "sha256": "1f65c9fc401c86ce7a7fbf205470d1931546d454acc75cac92e591fb23c4e164"
+      "bytes": 7463,
+      "sha256": "0b32d944f5c2a868ed594ca6df2fd9b569982e0a9a65ad8c010123de3e2f6414"
     },
     {
       "path": "README.md",
-      "bytes": 7946,
-      "sha256": "7fb2aefaf7c1ddb66627e6c5871a86c1c9c17b04360f526b9309479a92844a7b"
+      "bytes": 8417,
+      "sha256": "010dde4854a8308e8e8345444cddda3ab23167a2d73b363d08b64ecfa73fe645"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -115,9 +152,14 @@
       "sha256": "940fcc98e47e7eb997ef979bae14865cb4ae125dd43979a774d393ae5abbecb6"
     },
     {
+      "path": "UI-VENUS-APP-PROBE.md",
+      "bytes": 11797,
+      "sha256": "140ec917c9b468c63940d78278e6a8dc9e78ee604c0fb11c7db2da538d822711"
+    },
+    {
       "path": "assemble_pocket4.py",
-      "bytes": 15727,
-      "sha256": "609fc7ccfe90f03b49d3ab6ce4e81578093a4119b7a0fc61debad02384ffc8e2"
+      "bytes": 17830,
+      "sha256": "1e90fd239610ae2c0e0ae042307998590d0234c4b519799c19971b629a2c9156"
     },
     {
       "path": "build_mac.py",
@@ -140,9 +182,29 @@
       "sha256": "1cd86d22b0ae52ed7721a03e9b3effb3177f2ce7155926e0eefada35391e61a8"
     },
     {
+      "path": "docs/CODE18-MERGE-AND-PACKING.md",
+      "bytes": 2533,
+      "sha256": "5cf6538e79f4dc25665d1659466d6c8f716f107eb13a153f7c0e9a0735232a4e"
+    },
+    {
+      "path": "docs/CODE18-QUALIFICATION.md",
+      "bytes": 2798,
+      "sha256": "b8839d89fddf8ea463f018c9ca930a901c84404e97f89bd3188177d597260630"
+    },
+    {
+      "path": "docs/CODE19-QUALIFICATION.md",
+      "bytes": 4416,
+      "sha256": "11060c396351315517907eed70536119573ae3e73fcffad8857e40ec19f7b4e6"
+    },
+    {
       "path": "docs/CODE19-STABLE-OBSERVATION.md",
       "bytes": 5800,
       "sha256": "9c7eafe810a8e8ae9e314df625ebab72c53ea55d61a0a2b3eca0c13bbcfe94ff"
+    },
+    {
+      "path": "docs/CODE20-QUALIFICATION.md",
+      "bytes": 4081,
+      "sha256": "9840b9b870fbba2d1f97046af7d51a33109b29484411f011d75f08057d28bd59"
     },
     {
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
@@ -1250,6 +1312,511 @@
       "sha256": "cf4e1dc1c076bcd93550a61b6c766a3ba425299a21a0fde818915d0e9f9937ac"
     },
     {
+      "path": "host-evidence/code17-final-r1/ActionDecisionHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ActionDecisionHostTest.stdout",
+      "bytes": 200,
+      "sha256": "ad2fbd8e35c1114be45bc029eb51edb89840c946e9567b8bf7d06a0221e6f871"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ActionFreshnessHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ActionFreshnessHostTest.stdout",
+      "bytes": 93,
+      "sha256": "3113abbad4e9c7c60cc84e78860cba766af52654b938d4eb0b71ecbdf69b896f"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/AppCatalogueHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/AppCatalogueHostTest.stdout",
+      "bytes": 184,
+      "sha256": "62857df360fcb7fb759ab8a7c532ae591436f3fef488eb8ab629e091f54cf466"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/BudgetHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/BudgetHostTest.stdout",
+      "bytes": 81,
+      "sha256": "624058253b558d50dbd60045ed55d5d7b11a346ab9f69d9db682bd065f43ffe5"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/DecisionGrammarHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/DecisionGrammarHostTest.stdout",
+      "bytes": 77,
+      "sha256": "464b3c3a42aa1a1cd6f68a1f5354f806f245af705bb74ae57c9a794647a09e0b"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/DiagnosticStartupGateHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/DiagnosticStartupGateHostTest.stdout",
+      "bytes": 92,
+      "sha256": "49925788e8086c0d7590a4102de8d4460c8cbb6a8c81a0403e224fe1aeadc7a0"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/Gemma4ProfileHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/Gemma4ProfileHostTest.stdout",
+      "bytes": 78,
+      "sha256": "39233d7cae167afdb93cd98f7213e3775213e3e216ab9c04d5d296ebea5ec99a"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/HOST-CHECKS.json",
+      "bytes": 37399,
+      "sha256": "c3af054b668ff7f050ccbc29b32c8532040bf25cea4c95ed9e0c84050719ad17"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ImeObservationHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ImeObservationHostTest.stdout",
+      "bytes": 96,
+      "sha256": "1388ed89a212aa21af6683bc9b42f9ccb85235b3a9778f870b6e3cd43f3fce35"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/LocalPolicyHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/LocalPolicyHostTest.stdout",
+      "bytes": 75,
+      "sha256": "a5951199cbf4f1423d72661f1b8c358583c9778b225957b1b9e499e4cd14f27e"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/MemoryAvailabilityHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/MemoryAvailabilityHostTest.stdout",
+      "bytes": 72,
+      "sha256": "5b5bb21f651b68576a420f8de7fb4e3e961db1e06694a867f92ed648c18f4860"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/MobiMindContractHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/MobiMindContractHostTest.stdout",
+      "bytes": 39,
+      "sha256": "b00f07220bfe2b10ce56e2cbfb1905ee22e8f5691bd6004e1fbe562d87e406d2"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/MobiMindSessionContractHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/MobiMindSessionContractHostTest.stdout",
+      "bytes": 46,
+      "sha256": "35ebf6a777946372d0db516856aeb68c3f97e744a09124326ca3f7f202bcfa4d"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ModelProfileHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ModelProfileHostTest.stdout",
+      "bytes": 66,
+      "sha256": "d296131b967beef0da07316768c3553240a4138dd82e5c42bb1ff6e72814b5b9"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservationStabilityHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservationStabilityHostTest.stdout",
+      "bytes": 49,
+      "sha256": "729c95c339606f739e3acbac1f0071a43f8028771100834dc53acaa46e9dc791"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedChildTextHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedChildTextHostTest.stdout",
+      "bytes": 49,
+      "sha256": "55973ae1ef57215be08beeb92f7499c947432317e60bf66e44dbfbb9b64e4703"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedScrollActionsHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedScrollActionsHostTest.stdout",
+      "bytes": 85,
+      "sha256": "fff81e5f18c42fd58e38c3043ab3a294cf5880c20b6e632b86c2bb88749dc539"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedTargetLabelsHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedTargetLabelsHostTest.stdout",
+      "bytes": 117,
+      "sha256": "bb50d43ff8be73d0fae72225b6bfb50e852060f67fbc60f0539c16a7bb94331e"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedWindowMetadataHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ObservedWindowMetadataHostTest.stdout",
+      "bytes": 80,
+      "sha256": "b17ffe70e5a3c444a421acbfc92367b21bff0ff1b53faacc32eca7041adcca1d"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/PersistentActionPolicyHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/PersistentActionPolicyHostTest.stdout",
+      "bytes": 45,
+      "sha256": "5141536252f708cc14b01e355f9cdc345e4722617bffecf00ce6b4936f48e4d9"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/RecentActionProjectionHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/RecentActionProjectionHostTest.stdout",
+      "bytes": 45,
+      "sha256": "4d684e8ab83771bcd5eb3f392a27efc2cd73b5d342300376eafb208087866ccc"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/RepeatActionGuardHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/RepeatActionGuardHostTest.stdout",
+      "bytes": 86,
+      "sha256": "e8d395211f8bd74419d966fcf45379d11a85e1421ce997a0a5d3e7a1ad2e6664"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/RepeatClickProjectionHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/RepeatClickProjectionHostTest.stdout",
+      "bytes": 81,
+      "sha256": "69f4d6f8a64c350f09d7f210ed7cc726241c295215ce9716d3594eb32bf6d445"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ScrollGrammarHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/ScrollGrammarHostTest.stdout",
+      "bytes": 82,
+      "sha256": "506ebe0b4fc13873787435c93bcb5db6bb65d9cdb9b60d9baf103ab06b9e1efb"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/SessionRecoveryHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/SessionRecoveryHostTest.stdout",
+      "bytes": 109,
+      "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusContractHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusContractHostTest.stdout",
+      "bytes": 80,
+      "sha256": "dc2800a77494117c22d9623a537085f71488e12757bc03d41c41f390ab78e0ab"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusInputContractHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusInputContractHostTest.stdout",
+      "bytes": 89,
+      "sha256": "a0755ca281533bfa4d5ce5fa3311c6dac0a0a0cef662ef920512e0499e9089ac"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusProcessContractHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusProcessContractHostTest.stdout",
+      "bytes": 86,
+      "sha256": "fdffc2f6b4412be8fd4531c6ebad2a8024b2f49b4ca613f773cfb50fc956ce26"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusRequestContractHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusRequestContractHostTest.stdout",
+      "bytes": 83,
+      "sha256": "49a8f882d748c130a4a86d29215cabe48d65e96fb49181be6418ba31c31762a4"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusSessionContractHostTest.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/UiVenusSessionContractHostTest.stdout",
+      "bytes": 45,
+      "sha256": "b9c23ced378b0661c9818808c17a7e1de75c0d93f4d60bf12e88cdc3d8c100ee"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/completion-protocol.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/completion-protocol.stdout",
+      "bytes": 149,
+      "sha256": "4da7a3cf760b2f930365d91d615792d31657a91c5665cd4a287f314471755ae1"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/grammar-recognition.stderr",
+      "bytes": 2351,
+      "sha256": "40b556813d1dc8e8ffe9b29d8ddc6646c632f1ccd34b9352965e960ebab443ca"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/grammar-recognition.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/java-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/java-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/mobimind-private-staging.stderr",
+      "bytes": 694,
+      "sha256": "038222a3f754dd5416b5c0a654c98159ac2693dc48a8154b1eeefb1016877b72"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/mobimind-private-staging.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/model_profile_contract-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/model_profile_contract-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/model_profile_contract.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/model_profile_contract.stdout",
+      "bytes": 70,
+      "sha256": "bc9b99969b373d72ec83464d72b513fd5e74e5715c2b033f64a3f4af366d06a2"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/native-adapter-syntax.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/native-adapter-syntax.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/parent_death_contract-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/parent_death_contract-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/parent_death_contract.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/parent_death_contract.stdout",
+      "bytes": 101,
+      "sha256": "3b78bb55324e37b41ebd8b91ef5928bf8bedc2349cc2f964e827bfe1107af360"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/phase_timing_contract-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/phase_timing_contract-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/phase_timing_contract.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/phase_timing_contract.stdout",
+      "bytes": 2097,
+      "sha256": "f95229894848bdfe84b59efdf63c18ca140edcc526bb84f2dcaa48cc85ed3887"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/private-prompt-evidence.stderr",
+      "bytes": 631,
+      "sha256": "47b7630c4181961731722083771a47078e1a8acc388e66fa7b6f96cce3340d83"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/private-prompt-evidence.stdout",
+      "bytes": 158,
+      "sha256": "8c0b45d132c7bd5d06ad705b049243e6983f38541079700e535a549c0ddb28a6"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/prompt_budget_contract-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/prompt_budget_contract-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/prompt_budget_contract.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/prompt_budget_contract.stdout",
+      "bytes": 84,
+      "sha256": "6c4810c55d6d7e97b50ca7215cd9b1de00140c4dcb22095ba4a752d82fe2fb66"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/publish_contract-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/publish_contract-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/publish_contract.stderr",
+      "bytes": 425,
+      "sha256": "0e1ee1829a099dcbcf1a0b85600b0ee89f8a0f672d86c1b2984d2727052cf6ea"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/publish_contract.stdout",
+      "bytes": 94,
+      "sha256": "01c5c6781c6c3303246dbe138b3e6f6b7a23baebd4f6756b00f2082f18a6b81f"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/python-tools.stderr",
+      "bytes": 23818,
+      "sha256": "50fd7a2bdf566e00e68d38fcd10d30cf96cabc2375ff8951d17b3976cc0d8de2"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/python-tools.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/scroll-grammar-recognition.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/scroll-grammar-recognition.stdout",
+      "bytes": 149,
+      "sha256": "b25403ef0feb2b8edaf9073d5414820ef0fe4d7a81974983d06663012ba8e17c"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/sha256-hashlib-differential.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/sha256-hashlib-differential.stdout",
+      "bytes": 272,
+      "sha256": "7e874f33e133453e8c0d174975d446891f8af6d317663f959ebf5f4b33630c73"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/sha256_probe-compile.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/sha256_probe-compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/sha256_probe.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "host-evidence/code17-final-r1/sha256_probe.stdout",
+      "bytes": 3947,
+      "sha256": "cf4e1dc1c076bcd93550a61b6c766a3ba425299a21a0fde818915d0e9f9937ac"
+    },
+    {
       "path": "host-evidence/code5-r1/ActionDecisionHostTest.stderr",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1355,6 +1922,16 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "bytes": 1696,
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "bytes": 3187,
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -1393,16 +1970,6 @@
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "bytes": 1882,
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "bytes": 1696,
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "path": "host-evidence/code5-r1/java-compile.stderr",
@@ -3560,6 +4127,11 @@
       "sha256": "a986747ba4d3eaf520f3c1a95a8a4cbfcd066eb55efcafe7a9509e89992d5d9e"
     },
     {
+      "path": "native/ui-venus-runtime-pins.json",
+      "bytes": 2184,
+      "sha256": "77b0ed0108a63809a774bdeb0a9fa545a1fe4fb861b39d7f4fe291ddbfa03437"
+    },
+    {
       "path": "native/vendor/GENIEX-LICENSE",
       "bytes": 1565,
       "sha256": "3a1d5f5b391581a14dd06df9859a327ca26f07452a0aa2cfd2008f173d3acbba"
@@ -3755,6 +4327,11 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "bytes": 3066,
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
+    },
+    {
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "bytes": 1257,
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -3865,9 +4442,289 @@
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
     },
     {
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "bytes": 3066,
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
+      "path": "provenance/ui-venus-app-r1/BASELINE.json",
+      "bytes": 607,
+      "sha256": "77883966980c27614a5b80b5ae51f40c97f9ec6a0983ddfe7011cde9d02839ef"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/DESIGN.json",
+      "bytes": 3424,
+      "sha256": "a8b5f18f89c9bdf2c437845a56ddad53946a263991d333d828282f3273213da2"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/NATIVE-BUILD-RECEIPT.json",
+      "bytes": 15009,
+      "sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/gguf-chat-template.jinja",
+      "bytes": 7740,
+      "sha256": "4a3d47f53cc133e5dc859e9532fcb74baf0459ef426b8f107a3ac6e5926533e5"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-build-AUTHORITATIVE-STATUS.json",
+      "bytes": 731,
+      "sha256": "5f30fe9c74394a5d2266c54d35a3a9b75756c7b7657bf68bb9792cfd3bbe041f"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-build-TRANSFER.json",
+      "bytes": 673,
+      "sha256": "242f438c602ea8374ab2d60aefb92796bf7a26b1b1d3a4ecd9c44959e0718ac7"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-build-compiler-version.stdout",
+      "bytes": 353,
+      "sha256": "2d2a9243a571e0b8c77d1b6dd850de0478e1c9209973180e8450a75b0e3bd29f"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-build-readelf.stdout",
+      "bytes": 4116,
+      "sha256": "7dc33afe1ac2bf308b7b5d3bb1ba6a8c9f07d4ee4edae0d6afe5e28f4a3a83bb"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/APP-PROCESS-BINDING.json",
+      "bytes": 2598,
+      "sha256": "7f4e0cbf7eaa6aefd473097a4a80518712692569fd3731fd2f6b90cdfad42409"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/BUILD-HELPER.patch",
+      "bytes": 5395,
+      "sha256": "f7c5e3a1343230850c6afcc8e978245710b7ae11180e4b4962c182fc41d677a4"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+      "bytes": 7678,
+      "sha256": "87842f36e1ff9577235c3855a3e04be139af4c942eb3e1b452f966a8db923776"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/Q4KM-TO-Q40-BUILDER.patch",
+      "bytes": 1849,
+      "sha256": "dcb5380565046d2c54c610dffd51de4abfb6eacee912b8f83b28d5bcd651a39a"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/Q4KM-TO-Q40-NATIVE.patch",
+      "bytes": 1304,
+      "sha256": "e892f6a0eab286d2247d13162cd0563e81f74da653baee928025f499d14de745"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/README.md",
+      "bytes": 2017,
+      "sha256": "857ff0ff584b8a840b2d9dec113baa145040e51883ec71feb07b74ae4f925054"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/SHELL-TO-APP-WRAPPER.patch",
+      "bytes": 14565,
+      "sha256": "31030056c2d0413891c0a9401da34113c69ce2105a6e64c0b79fe7c4f9ea0c1e"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/SOURCE-BOUNDARY.json",
+      "bytes": 6293,
+      "sha256": "d9eea89459fe8903157484548975c86009ec400a9430b63f43fdd74532c5a845"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/SOURCE-GENERATION.json",
+      "bytes": 5655,
+      "sha256": "4bd089e0d061ce1832fda00e764b28e282eb2a991c6037fa50d6f585f3543000"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/app-entry-guard.h",
+      "bytes": 12192,
+      "sha256": "f9d8d6d4cc29257990c9a1d85dda5550157a473511f199683d63b7aa45f24bf5"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/official-mobile.h",
+      "bytes": 3630,
+      "sha256": "9fa089893f13a1ed809227b38d79bc6600f518a1521aa0cefb30cafff6075c0b"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/parent-death-guard.h",
+      "bytes": 2096,
+      "sha256": "92b094ecf9294907ba3f1e3d6c3a3b98fe2c01ec217e57055136bc69b7ee3a92"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/phase-timing.h",
+      "bytes": 2899,
+      "sha256": "b338f8a2026b641a5ae2928826d1639c13e37b712df089751ef3fa4f377c111f"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/probe-worker.c",
+      "bytes": 3880,
+      "sha256": "1dc01c74a612f3566a4f3190266bcc808dc55582da0aea4cce652a6f299b9f04"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/publish-appuid.inc",
+      "bytes": 1006,
+      "sha256": "d8113d5b3242a5a9a4f8eb54c7e6ebaee03dedb9d770948145ef18c845cf5fe3"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/sha256-dispatch.h",
+      "bytes": 7208,
+      "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/geniex.h",
+      "bytes": 46665,
+      "sha256": "c5d441ee290c5ec83f01ec1af9a7c16cdd8c740b522b78c23ed667062fc21e40"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/LICENSE",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/PIN.json",
+      "bytes": 1406,
+      "sha256": "c475b19715dcc77af1e444f6dbf190dc7b564f4e8487ae4cfe20e8be12307986"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-alloc.h",
+      "bytes": 3689,
+      "sha256": "d114067f9099c4a0e2bbc0625c676d4894d9cf0ea27168ee072c7de0e71bb51d"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-backend.h",
+      "bytes": 27570,
+      "sha256": "0e5e8e1f16d11ebbf501e38bc6705d79eee819b5f0b17476533f2100ed9674e2"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-cpu.h",
+      "bytes": 7753,
+      "sha256": "316279e004cdeb8e6ef78599acb602bf79a8abdf897fed9fd1914808c1518c6e"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml-opt.h",
+      "bytes": 14040,
+      "sha256": "3586de1bc8a934b5c72339e2b6937b0641e8f149b512231e666f67de0736eea2"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/ggml.h",
+      "bytes": 118304,
+      "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/gguf.h",
+      "bytes": 11355,
+      "sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/vendor/llama/llama.h",
+      "bytes": 90962,
+      "sha256": "c0854771d3760a41642c4e59429c5b3b9fc774887c59d37eeadc4527681732cd"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/venus-runtime.inc",
+      "bytes": 14585,
+      "sha256": "28c7209d50b4a13e03b22d65afad92defbb0761aaac6e93c39170ea7d13ac396"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/native/worker-venus.c",
+      "bytes": 31575,
+      "sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/prepare_entry_tests.py",
+      "bytes": 6943,
+      "sha256": "220fb55304dae76e6bc62358e177a8107b2258439b01ecac779653004e5ccf5f"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-DRAFT-MANIFEST.json",
+      "bytes": 6255,
+      "sha256": "62dc3be1929d7c99314ad596711966e12504463490eb080d1bb2675acadbedbc"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-README.md",
+      "bytes": 8523,
+      "sha256": "81f46292c6d9d284b94092c5f35edcb013a9d3e3b5edcd4afcd08d833cc2e83e"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-SOURCE-GENERATION.json",
+      "bytes": 5216,
+      "sha256": "c84fd4e7d97f2657aaf3e16f1307ba032ca9dc6c03f0f5d5a4fa3659960a91d5"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-build_android.py",
+      "bytes": 7991,
+      "sha256": "66f1fb1ab88850d565a618b064c35890ca8146547b84301f859ff853e73b0943"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-venus-runtime.inc",
+      "bytes": 14589,
+      "sha256": "c08cc9ec60a1e3abb5e5e4305cfb8340544537f49374a8c59418a02690df7000"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+      "bytes": 3517,
+      "sha256": "e39860c4d0b20620cf4a4ce10b58183d143f32288cab5b228495aea9f69fe2bc"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/SDK-RUNTIME-PINS.json",
+      "bytes": 2493,
+      "sha256": "97f4e0a383eb09d559fca08d1a786337991ed4b91e095bcdebf7c9e227608c19"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/SHELL-BUILD-RECEIPT.json",
+      "bytes": 7197,
+      "sha256": "cbe7ad58f62c0e35a2840f9ea2fe4bbad16b39eb11cec0045907dbbadf24870b"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/SHELL-NATIVE-SOURCES.json",
+      "bytes": 3022,
+      "sha256": "dabf4affdf2062da325290aafc7a31af05aab98f68b0cb22d830a623ae1b9bd0"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/SHELL-SOURCE-GENERATION.json",
+      "bytes": 4349,
+      "sha256": "ffee82c294c5859019ab0229d6df768d4ac17cd9549f8ea97228c51e6301f65f"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/SHELL-build_android.py",
+      "bytes": 6988,
+      "sha256": "dd327d49517127fb2d42bd89047bd17e30a336327c6d86e02a8866f8173ec6b7"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/SHELL-probe-worker.c",
+      "bytes": 3228,
+      "sha256": "2aef28e69cb8cc4e9f7f42c00b42760105d0ae7692565784669e977f9805f1ab"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/tests/HOST-CHECKS.json",
+      "bytes": 820,
+      "sha256": "991127a9a9b45cdf9d952f61dd0207087a3b0fce5c5f33a81e7bb1fcb16e426c"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/tests/PREPARED.json",
+      "bytes": 540,
+      "sha256": "9d9681b6bb361245ef56aabd06e19982d301ee55f4ff7d1e708813360a69f040"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/tests/app_entry_contract.c",
+      "bytes": 9539,
+      "sha256": "f61c7c665281907b21bb49242a4697dfc126d6ac0e56fa060f275fbfec51f829"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/tools/build_android.py",
+      "bytes": 8407,
+      "sha256": "8ffbf2f722cc7279d7495ef96c62fe1b60fe9463f2b29e7e9fa396f190ed112d"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/tools/sdk-runtime-pins.json",
+      "bytes": 2493,
+      "sha256": "97f4e0a383eb09d559fca08d1a786337991ed4b91e095bcdebf7c9e227608c19"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/verify_source_boundary.py",
+      "bytes": 3304,
+      "sha256": "bbb06f73cd903cd39e8caeb0b682f81f98ecc7fb147424f9b0c366db405dd02e"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/official-system-template.txt",
+      "bytes": 3354,
+      "sha256": "627c1f85167d72994d7d3c9da686456d1e9fd0eb3c8438605a1a8596f6e5efa3"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/sdk-runtime-pins.json",
+      "bytes": 2493,
+      "sha256": "97f4e0a383eb09d559fca08d1a786337991ed4b91e095bcdebf7c9e227608c19"
     },
     {
       "path": "res/values/strings.xml",
@@ -3895,6 +4752,11 @@
       "sha256": "0bc99b3864ea994ee53ef9c0d5f256ae66309ed19c9104f892c2dbf840597075"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/CompactTaskHistory.java",
+      "bytes": 5534,
+      "sha256": "ba814f46710b1d155d107482fd1646e740fb35b0625b5b5dd2c3cf670c43a40d"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/ConservativeTokenBudget.java",
       "bytes": 3395,
       "sha256": "f44740ae90f4c05b60a9a79ff0955b5fe730c8c38c03926c1d23568d640f54d7"
@@ -3905,14 +4767,19 @@
       "sha256": "e620c88e4f92fcd40d85fed30e95f2f0314bf9b8edfb8a7dcb0c0978b627040a"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
+      "bytes": 904,
+      "sha256": "b2656fc23d0ad7166c20330e7e05e89ba550be4a87ebf8f3512b906e16fbfb54"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/EngineInferenceAdapter.java",
       "bytes": 1759,
       "sha256": "400b04c858e8bf9fda019752548418890843f7bb0d061d0c8ec612952f97d624"
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 45712,
-      "sha256": "6a72f1020df59af49d9876af3dcfe550eb6320167ceb26512e36a06cd367df1e"
+      "bytes": 46727,
+      "sha256": "ba11f1b753762d9640b8a603555d09fa04e903ef39abc7d693283b9fd3f29747"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -3926,13 +4793,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalModelEngine.java",
-      "bytes": 31204,
-      "sha256": "f2bb0ce3f9531279da50ed64dc2015fbec7ff85b9fc83313db95202ba41951d9"
+      "bytes": 36846,
+      "sha256": "553718095dac3cf95f8d383f869e9f674ff8f5f9409e971341603bf985a1281a"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalProbeApplication.java",
-      "bytes": 1326,
-      "sha256": "5f96c9d32772c91651997f4247eb91f5e7ac20a376f4420bcaca36907725c9e8"
+      "bytes": 7894,
+      "sha256": "ddd0e8c8802e1c48bb73b2b2da039d507cc028d50a9c8d3c679a055e42d3a4b9"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalRuntimeConfig.java",
@@ -3941,18 +4808,18 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 46544,
-      "sha256": "75fd20f418ebce250fb83d057c0893d283d0039e9c90f0c630b9da7a310f6500"
+      "bytes": 48524,
+      "sha256": "efb519980f07e5a495cd982b92f6715a6014fcab35e7b2f9d88cb6426aaf1347"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
-      "bytes": 17432,
-      "sha256": "ebb057e591f5ad7a7605ca8dd342846cf181a32828b4c7cd1958f6a17c4ab6eb"
+      "bytes": 30621,
+      "sha256": "95ec12dbfe21926c31d868c10e3050d89c71c36f8c8df106226021a2d01f7848"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MainActivity.java",
-      "bytes": 17179,
-      "sha256": "f734b29824b3bfd08a87c84a1d32d6ad4afb3b3adfb087b3612ff836f0b14936"
+      "bytes": 23308,
+      "sha256": "da87217316db9493b665d35c332a53be7f7b3a9399fed90d8e97bc1307c1b1f3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MemoryAvailability.java",
@@ -3966,8 +4833,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/MobiMindModelEngine.java",
-      "bytes": 22091,
-      "sha256": "02e46c81935d0a1c027513d7a9994c4b79a34a33ca1ec3738718773cf5dbf434"
+      "bytes": 22080,
+      "sha256": "331460f5826d184feda6ba827efdc402cfa72646dee10303ba602b16468a4207"
     },
     {
       "path": "src/org/trillionnium/hepta/local/MobiMindPins.java",
@@ -4055,9 +4922,49 @@
       "sha256": "7843916ea64172cbd208e7f6631844989323462bce3f5427038c5fcff47beba4"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/PrivateUiVenusProbe.java",
+      "bytes": 3019,
+      "sha256": "e26ea7ba9b8b96d41958102df5f2888954be7f213159c8cc64d6cab4df663c38"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
+      "bytes": 1119,
+      "sha256": "79a3ec5459be43adac3c084b9346132cedb88f39a60b60c83eb545d12466340d"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
-      "bytes": 7732,
-      "sha256": "6dbf9d6d593f53d729fe1a71411bd88d6efc1486547af3194f681cf4cd4cd23c"
+      "bytes": 16995,
+      "sha256": "cb3f6da2250c59154acd29c7d549fdfd4649952ffee5f2f1ba32304d757202dc"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryDispatch.java",
+      "bytes": 2067,
+      "sha256": "e04794c7a6bba50bc58e583b7e21338e422e6c318ebe20e1a790c6e3b14f8d0c"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryJournalStore.java",
+      "bytes": 8859,
+      "sha256": "cac25c2f6a849142a4075b12beb341bf3a2283d0810235d2f67dfdeaa918086d"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryJournalTransaction.java",
+      "bytes": 21194,
+      "sha256": "5580e9a449b38d5b06c7a2e5a0cb454a1dfec949eefc94622e65000593347660"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryProcessInventory.java",
+      "bytes": 13090,
+      "sha256": "96459be86bd517cca66727e0e0768b1ada90122684163d7b6717db1dae7236c1"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoveryQuiescence.java",
+      "bytes": 4519,
+      "sha256": "590d91f50b19eed66d9ddec16592a44dd75132babfd72e37656a4d272ca177f0"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/RecoverySlotHandoff.java",
+      "bytes": 5276,
+      "sha256": "00c139dfa65af34ad5a9de1446064f193aabe2f5a7512b11da1723afcb0cf9a5"
     },
     {
       "path": "src/org/trillionnium/hepta/local/RepeatActionGuard.java",
@@ -4065,9 +4972,49 @@
       "sha256": "aa827865a773217eafda71046420cbaf704787b1280b3dcf0cd1af78649b2dbc"
     },
     {
+      "path": "src/org/trillionnium/hepta/local/SameStateNoEffectGuard.java",
+      "bytes": 7529,
+      "sha256": "3f6fb02f485f27e081e3741f157e4fad267e66501dcff8527583bcfd6eeae8c5"
+    },
+    {
       "path": "src/org/trillionnium/hepta/local/SessionRecovery.java",
-      "bytes": 5786,
-      "sha256": "6461143f68156fd0269d5bf7b2f6b636a2d88c467332ac1e3cecf4340e6092b4"
+      "bytes": 6516,
+      "sha256": "9139579bedd6ce965baa00813f94378ac638e6ba3b79503b2f3029c6261afcf3"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusContract.java",
+      "bytes": 9746,
+      "sha256": "422a4d98c86c81aca08820f44929beaa9855d4bac3c1b5a6ffd09c72ca904128"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusInputContract.java",
+      "bytes": 7289,
+      "sha256": "79688ad22a3e81effad1de1f08f52f776c27185c9f1bc27d1d0900197995d0d7"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "bytes": 23962,
+      "sha256": "d5694b4c034d3a7147f2469f411ee6157a4f847e54ce56b50483fd29a4fd2216"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusPins.java",
+      "bytes": 3571,
+      "sha256": "6a1b7ae7259a25ba88e42976afe1e81b19858d339314a7cea0d166dcddd414dd"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusProcessContract.java",
+      "bytes": 3392,
+      "sha256": "96d7dbcb44b48801dd4751f516675847ad31861c8c63924ab26d969d5a55799f"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusRequestContract.java",
+      "bytes": 3481,
+      "sha256": "2d508be473bd713bffaf041d31c9de666c2d50d5c0e611e4746ba43915969fdf"
+    },
+    {
+      "path": "src/org/trillionnium/hepta/local/UiVenusSessionContract.java",
+      "bytes": 2762,
+      "sha256": "aab2a12e324aae8191dff73c3b43f8643f7edba8a5f418d67219901bcdea6d1c"
     },
     {
       "path": "tests/ActionFreshnessHostTest.java",
@@ -4085,9 +5032,24 @@
       "sha256": "053c6c3a1c9eff1d5055c425a6b97b6c323bbea72864abe3f6a391b45534d737"
     },
     {
+      "path": "tests/CompactEvidenceHostTest.java",
+      "bytes": 11523,
+      "sha256": "063f093177da6fe427818a4a247ebb866519a0b968ab152f16a9efdf42a82d7c"
+    },
+    {
       "path": "tests/CompactSequenceHostTest.java",
       "bytes": 8759,
       "sha256": "0983579f04dec42f37e257aa940e3cb3f3e117b77b6973dab429a3456b3b472b"
+    },
+    {
+      "path": "tests/CompactTaskHistoryHostTest.java",
+      "bytes": 3103,
+      "sha256": "83c73d923fabf5c77c2ed027cbf9ff9875c9f2fb314c25276d7f99758fab925a"
+    },
+    {
+      "path": "tests/DiagnosticStartupGateHostTest.java",
+      "bytes": 1350,
+      "sha256": "5f9a001a7f9f9e305c1eb801fef9ad4f5516b936901391c1c6bd6f3ea7b26ff8"
     },
     {
       "path": "tests/DispatchedActionSequenceHostTest.java",
@@ -4165,9 +5127,29 @@
       "sha256": "238e3bb08c244a9dc765cb405860efafe1c1b788fabea030d81c6accc0023028"
     },
     {
+      "path": "tests/PromptActionDomainHostTest.java",
+      "bytes": 2091,
+      "sha256": "a1fef9fcc7eb07c920b95f480e888e842007e3ccc31be8ee209b7f1103ad21af"
+    },
+    {
       "path": "tests/RecentActionProjectionHostTest.java",
       "bytes": 5003,
       "sha256": "a3fa7e95184c7629c3fc95d930a5c657d86377f04abbbf1c4e328a5f782a6857"
+    },
+    {
+      "path": "tests/RecoveryAcknowledgementHostTest.java",
+      "bytes": 16227,
+      "sha256": "512dab16b9406dc5e7a0896518ce5e94cfa3834c3fb1d61f9ac98c5fbbc96c83"
+    },
+    {
+      "path": "tests/RecoveryDispatchHostTest.java",
+      "bytes": 3411,
+      "sha256": "435b0f99eeafbc56481a6d1758492209cc63992c78eb0bb9bd710b47ee3f7333"
+    },
+    {
+      "path": "tests/RecoverySlotHandoffHostTest.java",
+      "bytes": 13982,
+      "sha256": "400b028fef921d05aa640a325d3c3f5cd63939c3af4aec47a75f615e5345877e"
     },
     {
       "path": "tests/RepeatActionGuardHostTest.java",
@@ -4180,6 +5162,11 @@
       "sha256": "ef768613f3db35022e3e8d4798bf856e7edb30eef3cc48c45854fd31380daf37"
     },
     {
+      "path": "tests/SameStateNoEffectGuardHostTest.java",
+      "bytes": 9936,
+      "sha256": "27db3ea93ad3b9528b1eed69811e0a85b10c05cc506c01745340e56efbb9f227"
+    },
+    {
       "path": "tests/ScrollGrammarHostTest.java",
       "bytes": 3133,
       "sha256": "2b97d3d1b0f467bca96607cb207dad0328c9bd7178c76b21de29f2b011391df6"
@@ -4188,6 +5175,31 @@
       "path": "tests/SessionRecoveryHostTest.java",
       "bytes": 7304,
       "sha256": "0baa30e51254e8886cad11978f178efe91330a673415f46349f27175bb68c802"
+    },
+    {
+      "path": "tests/UiVenusContractHostTest.java",
+      "bytes": 8096,
+      "sha256": "7e652343e4905a6137876131714428db0d1995a7f76aa8f1b8172d7abe30af00"
+    },
+    {
+      "path": "tests/UiVenusInputContractHostTest.java",
+      "bytes": 3623,
+      "sha256": "0d603ed12c228574640f52c3fdf25854831e91072bbc3370080dbf372b3d1f82"
+    },
+    {
+      "path": "tests/UiVenusProcessContractHostTest.java",
+      "bytes": 4601,
+      "sha256": "40350a82e03f3a19afab6a107949280b8330725647837b1b649c2fd4d4c3683b"
+    },
+    {
+      "path": "tests/UiVenusRequestContractHostTest.java",
+      "bytes": 4034,
+      "sha256": "ff773d205a101ac955628c021e2238bcf21b0ff6da1091223d06e199e46c23d1"
+    },
+    {
+      "path": "tests/UiVenusSessionContractHostTest.java",
+      "bytes": 4356,
+      "sha256": "9a2ce13ae09eda784c127f3a7c8348d2ac4176a9a537a85862e0d083419c231c"
     },
     {
       "path": "tests/action-grammar/DecisionGrammarHostTest.java",
@@ -4210,6 +5222,11 @@
       "sha256": "22a6011d4c7b0c403076790cd2c56d4b275eeacce4e95839ff182fc7598569eb"
     },
     {
+      "path": "tests/action-grammar/test_same_state_no_effect_grammar.py",
+      "bytes": 2839,
+      "sha256": "db1b5e1011b7e6dbd4cd2d51c9a6b1d45964dfd3b92e1e9ded6470ebb5ab6068"
+    },
+    {
       "path": "tests/action-grammar/test_scroll_grammar.py",
       "bytes": 1515,
       "sha256": "38aaec7ba80caa5ef5a296ec37d8ab96830d6dd8bb1d5fa5bbd3ea5d3bcc3755"
@@ -4230,6 +5247,151 @@
       "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
     },
     {
+      "path": "tests/recovery-application/README.md",
+      "bytes": 1158,
+      "sha256": "516acf4097d916af553fd7b1e525cfd24c7318d4b02f0d2e1dd22a85ee493632"
+    },
+    {
+      "path": "tests/recovery-application/RecoveryApplicationHostTest.java",
+      "bytes": 15606,
+      "sha256": "561dcdb61cca4abeb3457802fd5b6501809d5da94cbb992c767ca9f4b3cf85a2"
+    },
+    {
+      "path": "tests/recovery-application/android/app/Application.java",
+      "bytes": 143,
+      "sha256": "f5e2d48bc826ae0aef0675eebcde96c5600de4439825e7e1e9bd2006e9290bc4"
+    },
+    {
+      "path": "tests/recovery-application/android/content/Context.java",
+      "bytes": 288,
+      "sha256": "16a2485cbb8d6de305df02a30a51a6ba542a4c3d4c1ac47715ec30f538f1ec86"
+    },
+    {
+      "path": "tests/recovery-application/android/content/pm/ApplicationInfo.java",
+      "bytes": 83,
+      "sha256": "351132873a0dfff522a95d378044ffa2695dadaed30088e7f6c8ab5fb1d92ec3"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Handler.java",
+      "bytes": 746,
+      "sha256": "99d3e879572a34c6e6ffddfea2f0aff6baaf0be674b44ab21321c3270651d50d"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Looper.java",
+      "bytes": 386,
+      "sha256": "0490a5dfa058c9a9a38628953d387ee9cc6b82f8bb3a0904cb1ed0932db6c305"
+    },
+    {
+      "path": "tests/recovery-application/android/os/Process.java",
+      "bytes": 162,
+      "sha256": "0afcc3ee62acb6c15f6fc789d541d4dabdd1fe65aeff775faed938afc68bf58c"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/LocalTaskSession.java",
+      "bytes": 650,
+      "sha256": "30eaa216585ebefc95bb5cc50209f5b08224259991b2cc506e3ec18a46268874"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/MobiMindModelEngine.java",
+      "bytes": 363,
+      "sha256": "6082cc71141649d2ccb4372b857791e2fcd011250305fbcdc299597208951daa"
+    },
+    {
+      "path": "tests/recovery-application/org/trillionnium/hepta/local/UiVenusModelEngine.java",
+      "bytes": 361,
+      "sha256": "3f205fae6da0308829ec3a6edf51fd7cbb10a9b9d41a76004182e7fce22bdf06"
+    },
+    {
+      "path": "tests/recovery-application/prepare_engine_fixture.py",
+      "bytes": 3467,
+      "sha256": "51f44228401a95740b5c7cac72ecdf7e9b244d6ad9852835225e5dea1660875a"
+    },
+    {
+      "path": "tests/recovery-inventory/README.md",
+      "bytes": 1572,
+      "sha256": "895fb6c7bd5df3ad2397c236348a294c5576eb3694ef6260fa826a88242a99b2"
+    },
+    {
+      "path": "tests/recovery-inventory/RecoveryInventoryHostTest.java",
+      "bytes": 6899,
+      "sha256": "30afe0066c62a72791ea9a52e929a44276858ef70033270581d65e0835a5794a"
+    },
+    {
+      "path": "tests/recovery-inventory/android/content/Context.java",
+      "bytes": 163,
+      "sha256": "93a9d3726ff4f1f8cc9a510e27c27538e3e4caefd4f79c39882718fa994cba90"
+    },
+    {
+      "path": "tests/recovery-inventory/android/content/pm/ApplicationInfo.java",
+      "bytes": 83,
+      "sha256": "52e318906b8d5de43270cb05edd537117ad39140bec86538ad93a67cdc5de6ed"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/Looper.java",
+      "bytes": 234,
+      "sha256": "874485cc8a937d8a587e5a5e159e35ee8179a78ee2c997c118947e403b51a46f"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/Process.java",
+      "bytes": 128,
+      "sha256": "e5a338c146ecd6afdc2578ca53530e862ec4ca1260e8a6b39b164618cb665d87"
+    },
+    {
+      "path": "tests/recovery-inventory/android/os/SystemClock.java",
+      "bytes": 125,
+      "sha256": "930c17587c70ccf674dae45df00afeabd88344a25868244a129964b1fcff3ece"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/ErrnoException.java",
+      "bytes": 175,
+      "sha256": "a854ff92ceaf29a827d5cec326ebb1899c2dac6c7c3248715995c9b1c78158a2"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/Os.java",
+      "bytes": 372,
+      "sha256": "3268611e327926c84dedc4a9db6ce98b03c77644c9a99710bdc05d8702ba243d"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/OsConstants.java",
+      "bytes": 230,
+      "sha256": "18352a11a86156e7e01fade6335bf564c2823ce60c4cb22fa8dc035b9d6a9d29"
+    },
+    {
+      "path": "tests/recovery-inventory/android/system/StructStat.java",
+      "bytes": 109,
+      "sha256": "cf6846193c3242e6fefaba9fd8321b274eb8ca98e73cf793ca04ca29d9864089"
+    },
+    {
+      "path": "tests/test_ui_venus_q4_0_runtime.py",
+      "bytes": 4938,
+      "sha256": "9ec137a870aed4d02cf3c089119cbb07c508394f6f0758813e5e586aa21d58ac"
+    },
+    {
+      "path": "tests/ui-venus/FIXTURE.json",
+      "bytes": 2593,
+      "sha256": "abeb88728d5e8caeb8e9c0556025928df501c0d9e2df00f7dccc89e59fe775dd"
+    },
+    {
+      "path": "tests/ui-venus/owner.txt",
+      "bytes": 30,
+      "sha256": "fc6d209eba6bc22d2434e5edaba1ce9712375cd8d1d78f19936a3a8d52b15af4"
+    },
+    {
+      "path": "tests/ui-venus/prompt.txt",
+      "bytes": 20,
+      "sha256": "fee516c227af45e32b1853b62a255a3718c0f2e2a1254d52946437f42190815e"
+    },
+    {
+      "path": "tests/ui-venus/screen.png",
+      "bytes": 33,
+      "sha256": "a2b294f12d5baa831229af2e0dd5aa04b1f7efc1081c6b6178a0e244671f2562"
+    },
+    {
+      "path": "tests/ui-venus/system.txt",
+      "bytes": 3373,
+      "sha256": "c490db14eaddaed65d43b38967586825abad0934ca5c6e5060a47e16aa1eb582"
+    },
+    {
       "path": "tools/PHONE-ACCEPTANCE.md",
       "bytes": 7040,
       "sha256": "8b0b5ff513ecfa594793f47a629a6331115141ca89fb867cac3f567332fdcc9e"
@@ -4241,8 +5403,8 @@
     },
     {
       "path": "tools/build_identity.py",
-      "bytes": 1326,
-      "sha256": "354cbe3d61ae56d2bb08ce6a97a1a0312c70ab296dc6eb8f02e31f2015707b17"
+      "bytes": 1530,
+      "sha256": "ef875c4c07c9896077cad8f44b58543cd02cfb6a43eb3259820658c623fab100"
     },
     {
       "path": "tools/create_debug_task.py",
@@ -4251,8 +5413,8 @@
     },
     {
       "path": "tools/fetch_pinned_runtime.py",
-      "bytes": 3622,
-      "sha256": "3fd70e3fbe4e5f617a2cbab08bd703dd4795137c9d9562936cf996a9fe77f05c"
+      "bytes": 5807,
+      "sha256": "b7c97e4391984c85630fc15f66e71540d781c4bf7f8a458587714b61294a0664"
     },
     {
       "path": "tools/model_profiles.py",
@@ -4276,8 +5438,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 6258,
-      "sha256": "677c497d0188ce43f87dcd8e06e7f72f23a7d596fcfd64398ead6f085feccc2f"
+      "bytes": 6824,
+      "sha256": "31a3c81c5f049099306cbe0d1744f4df217b9bb8264347409e76abe3b8d71cf3"
     },
     {
       "path": "tools/suite-navigation-draft.json",
@@ -4286,8 +5448,13 @@
     },
     {
       "path": "tools/test_build_identity.py",
-      "bytes": 2997,
-      "sha256": "b617d7cdbb3d3870cb005a6312458cf286f4f256a3f5547ce05521ff7f8c91ae"
+      "bytes": 3512,
+      "sha256": "508129733cb4b218e22da9e46990d1b3490233d968b158d6d5cc250f3bc54590"
+    },
+    {
+      "path": "tools/test_fixed_response_retry.py",
+      "bytes": 6154,
+      "sha256": "e9e1b2800c4397fc05922a47984b256b140d5a113567dab1788c3b4d5524f48f"
     },
     {
       "path": "tools/test_labeled_target_binding.py",
@@ -4315,6 +5482,16 @@
       "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
     },
     {
+      "path": "tools/test_recovery_application.py",
+      "bytes": 1657,
+      "sha256": "a9f77b19b9d23d43333b9a0d4ce7f527bde47cb2bd79b67938a91d995d219481"
+    },
+    {
+      "path": "tools/test_recovery_inventory.py",
+      "bytes": 3221,
+      "sha256": "478b244b6cd0be175f5ed57ecd7d737d4181a0d5803c3105f3dd682987b75ae0"
+    },
+    {
       "path": "tools/test_verify_mobimind_runtime.py",
       "bytes": 5544,
       "sha256": "57911fd63315474ea13d295246d56d9e06a793979ee6b04084900d6debcfa7be"
@@ -4330,6 +5507,11 @@
       "sha256": "6070ec98bb1cd6f1bc23abfbd7e68a393348e9de23bac97b8cf8773690717e86"
     },
     {
+      "path": "tools/test_verify_ui_venus_runtime.py",
+      "bytes": 1587,
+      "sha256": "fabd3465edc295837415e56b13e654b86fe0919711ea7ca4006ecab989ef7622"
+    },
+    {
       "path": "tools/verify_mobimind_runtime.py",
       "bytes": 6901,
       "sha256": "a35cba2df6a4b4441d97d732ae1f9c10cf68d995329d52036ba93703b2b789db"
@@ -4343,10 +5525,27 @@
       "path": "tools/verify_source.py",
       "bytes": 1771,
       "sha256": "b8db2eb7b0ca64a54ed18f202abdf424d7c3424dadaf5e19ced2157d0f9a42bb"
+    },
+    {
+      "path": "tools/verify_ui_venus_runtime.py",
+      "bytes": 13249,
+      "sha256": "5622ec1b12e55136f0a66179dca64029db0e979b8fc2dec6bf6a318cac4a251a"
     }
   ],
-  "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
-  "observation_text_projection_schema": "hepta.observed-text-projection.v1",
-  "derived_from_code17_source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
-  "derived_from_code18_source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954"
+  "derived_from_code21_initial_source_manifest_sha256": "f8bd05396037a7751857adec30e2128577995940f05000ac985b3e74e5266c20",
+  "sdk_api_compatibility_fix": "Use the public Android Os.remove API after the unchanged canonical allowlist, regular-file and byte-equality checks; retain fsync and readback.",
+  "publication_derivation": {
+    "private_original_source_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
+    "retained_device_apk_sha256": "c95378452e2754261825bbbdaa18115a52e11924851c4c59867f2af738fc960f",
+    "public_source_is_retained_device_build_source": false,
+    "compiled_java_and_native_code_bytes_unchanged": true,
+    "cleartext_identifier_guard_replaced_by_length_and_sha256": true,
+    "historical_original_manifest_preserved": true,
+    "changed_members_excluding_outer_manifest": [
+      "UI-VENUS-APP-PROBE.md",
+      "native/ui-venus-runtime-pins.json",
+      "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+      "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py"
+    ]
+  }
 }

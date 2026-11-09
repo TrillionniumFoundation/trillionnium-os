@@ -95,6 +95,19 @@ public final class HeptaAccessibilityService extends AccessibilityService {
     public synchronized LocalTaskController taskController(LocalModelEngine engine){
         return taskController(new EngineInferenceAdapter(engine));
     }
+    /** Administrative retirement only; no action, inference, capture or old task is restarted. */
+    synchronized boolean recoveryControllerIdle(LocalTaskController expected){
+        if(Looper.myLooper()!=Looper.getMainLooper())throw new IllegalStateException("recovery service check must run on main thread");
+        return live==this&&ownedController==expected&&(expected==null||!expected.isRunning())
+                &&activeObservation==null&&!capturePending
+                &&(lease==null||(expected!=null&&lease.equals(expected.currentTaskId())));
+    }
+    synchronized void retireControllerAfterAcknowledgement(LocalTaskController expected,
+            RecoveryJournalTransaction.Proof proof){
+        if(proof==null||!recoveryControllerIdle(expected))throw new IllegalStateException("controller is not idle for acknowledgement");
+        if(expected!=null){expected.setListener(null);expected.close();}
+        ownedController=null;lease=null;stopListener=null;appDiscovery=null;clearSnapshot();
+    }
     private void requestStop() { Runnable value; synchronized(this){value=stopListener;} if(value!=null)value.run(); }
     public synchronized boolean acquireTask(String taskId,Runnable onStop) {
         if(lease!=null || live!=this)return false;lease=taskId;stopListener=onStop;appDiscovery=null;return true;

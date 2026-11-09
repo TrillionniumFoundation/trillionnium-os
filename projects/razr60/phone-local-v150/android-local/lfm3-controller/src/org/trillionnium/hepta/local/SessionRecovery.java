@@ -46,6 +46,12 @@ public final class SessionRecovery {
 
     /** Latch presence wins even when its contents are unreadable or the base record looks clean. */
     public static Decision evaluate(Map<String, Object> value, int expectedAppUid, boolean interruptionLatchPresent) {
+        return evaluate(value, expectedAppUid, interruptionLatchPresent, null);
+    }
+
+    /** The new administrative idle state needs a verified persisted proof, never a JSON flag alone. */
+    public static Decision evaluate(Map<String, Object> value, int expectedAppUid, boolean interruptionLatchPresent,
+            RecoveryJournalTransaction.Proof acknowledgement) {
         if (interruptionLatchPresent) {
             return new Decision(false, false, "persistent_interruption_latch", value);
         }
@@ -72,6 +78,11 @@ public final class SessionRecovery {
         if (!Boolean.FALSE.equals(value.get("pending")) || !Boolean.FALSE.equals(value.get("running"))
                 || !Boolean.FALSE.equals(value.get("blocked")) || !Boolean.TRUE.equals(value.get("cleanup_known"))) {
             return new Decision(false, true, "prior_activity_or_cleanup_unresolved", value);
+        }
+        if (RecoveryJournalTransaction.IDLE_STATUS.equals(status)) {
+            boolean verified=acknowledgement!=null&&acknowledgement.matches(value,expectedAppUid);
+            return new Decision(verified, true, verified?"owner_acknowledged_new_idle_old_cleanup_unknown"
+                    :"new_idle_has_no_verified_acknowledgement", value);
         }
         if (!CLEAN_TERMINAL.contains(status)) {
             return new Decision(false, true, "prior_status_is_not_known_clean_terminal", value);

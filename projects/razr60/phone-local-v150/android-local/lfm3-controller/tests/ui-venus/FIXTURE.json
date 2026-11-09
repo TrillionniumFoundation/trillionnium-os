@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.ui-venus.mobile-first-frame-fixture.v1",
+  "official_repository": "inclusionAI/UI-Venus",
+  "official_revision": "6d5f8baf3d28868b3e32fefa9da501e99964a8c5",
+  "official_file": "models/mobile/mobile_example.py",
+  "official_file_sha256": "7210de8fbe52a6f02d2eacf022050a8c32b4886e453039b204c6400592c01375",
+  "official_system_template_sha256": "627c1f85167d72994d7d3c9da686456d1e9fd0eb3c8438605a1a8596f6e5efa3",
+  "model_repository": "bartowski/UI-Venus-2-9B-GGUF",
+  "model_revision": "3d2022e8bbe1fb95f12ca530a9d6ef063807d593",
+  "model": {
+    "name": "UI-Venus-2-9B-Q4_0.gguf",
+    "bytes": 5482832672,
+    "sha256": "2e881d6e74899b47b1f0c9052abeeb0a7ff55913dfb18d942a3de3cadb3d1adb"
+  },
+  "mmproj": {
+    "name": "mmproj-UI-Venus-2-9B-f16.gguf",
+    "bytes": 918165664,
+    "sha256": "6ef77c3bf87391664be7cd71c595352e7281dabe52f24e961e2deace550f3af2"
+  },
+  "files": {
+    "owner.txt": {
+      "bytes": 30,
+      "sha256": "fc6d209eba6bc22d2434e5edaba1ce9712375cd8d1d78f19936a3a8d52b15af4"
+    },
+    "prompt.txt": {
+      "bytes": 20,
+      "sha256": "fee516c227af45e32b1853b62a255a3718c0f2e2a1254d52946437f42190815e"
+    },
+    "system.txt": {
+      "bytes": 3373,
+      "sha256": "c490db14eaddaed65d43b38967586825abad0934ca5c6e5060a47e16aa1eb582"
+    },
+    "screen.png": {
+      "bytes": 33,
+      "sha256": "a2b294f12d5baa831229af2e0dd5aa04b1f7efc1081c6b6178a0e244671f2562"
+    }
+  },
+  "original_owner_path": "synthetic-host-contract",
+  "original_image_path": "synthetic-header-only-not-runtime-PNG",
+  "owner_bytes_unchanged": true,
+  "image_bytes_unchanged": true,
+  "image": {
+    "width": 32,
+    "height": 64,
+    "bit_depth": 8,
+    "color_type": 6,
+    "resized_by_fixture": false,
+    "validation": "signature_and_IHDR_CRC_only; SDK image decoding is a separate runtime gate"
+  },
+  "history_policy": "initial_frame_empty_history",
+  "historical_turns": 0,
+  "n_img": 0,
+  "n_img_zero_does_not_authorize_dropping_existing_assistant_history": true,
+  "requested_probe": {
+    "context_tokens": 8192,
+    "max_tokens": 1024,
+    "deadline_ms": 300000,
+    "enable_thinking": true,
+    "temperature": 0.1,
+    "repetition_penalty": 1.05,
+    "frequency_penalty": 0.3,
+    "seed": 42,
+    "speculative_decoding": false
+  },
+  "official_mobile_reference_max_tokens": 16384,
+  "output_budget_is_smaller_than_official_reference": true,
+  "full_multimodal_token_admission_proven": false,
+  "phone_contacted": false,
+  "inference_performed": false,
+  "actions_dispatched": false,
+  "ordinary_app_qualified": false,
+  "old_or_new_recording_is_model_only": true
+}

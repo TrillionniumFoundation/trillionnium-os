@@ -14,9 +14,7 @@ import sys
 import time
 
 ROOT=Path(__file__).resolve().parents[1]
-PURE_CLASSES=["ActionDecision", "ActionPolicy", "ObservedTargetLabels", "ObservedScrollActions", "ObservationStabilityGate", "RecentActionProjection", "ObservedTextProjection", "PersistentActionPolicy", "ImeVisibility", "ObservationState", "ObservedWindowMetadata", "ObservedChildText", "RepeatActionGuard", "DecisionGrammar", "ModelProfile", "NativeBudgetVerifier", "LocalRuntimeConfig",
-              "ModelFileVerifier", "ConservativeTokenBudget", "MemoryAvailability",
-              "AppCatalogueRanker", "SessionRecovery", "MobiMindPins", "MobiMindContract", "MobiMindSessionContract"]
+PURE_CLASSES=['ActionDecision', 'ActionPolicy', 'ObservedTargetLabels', 'ObservedScrollActions', 'ObservationStabilityGate', 'RecentActionProjection', 'PersistentActionPolicy', 'ImeVisibility', 'ObservationState', 'ObservedWindowMetadata', 'ObservedChildText', 'RepeatActionGuard', 'SameStateNoEffectGuard', 'DecisionGrammar', 'ModelProfile', 'NativeBudgetVerifier', 'LocalRuntimeConfig', 'ModelFileVerifier', 'ConservativeTokenBudget', 'MemoryAvailability', 'AppCatalogueRanker', 'SessionRecovery', 'MobiMindPins', 'MobiMindContract', 'MobiMindSessionContract', 'UiVenusPins', 'UiVenusInputContract', 'UiVenusRequestContract', 'UiVenusContract', 'UiVenusProcessContract', 'UiVenusSessionContract', 'DiagnosticStartupGate', 'ObservedTextProjection', 'CompactTaskHistory', 'PromptActionDomain', 'RecoveryQuiescence', 'RecoveryDispatch', 'RecoveryJournalTransaction', 'RecoverySlotHandoff']
 
 
 def main():
@@ -65,14 +63,16 @@ def main():
         for test in tests:
             name=test.stem
             command=[java,"-cp",classes,name]
-            if name in ("DecisionGrammarHostTest","AppCatalogueHostTest","RepeatActionGuardHostTest","ScrollGrammarHostTest"):command.append(fixtures)
+            if name in ("DecisionGrammarHostTest","AppCatalogueHostTest","RepeatActionGuardHostTest","ScrollGrammarHostTest","SameStateNoEffectGuardHostTest"):command.append(fixtures)
             run(name,command)
         run("grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_decision_grammar.py",fixtures])
         run("scroll-grammar-recognition",[sys.executable,ROOT/"tests/action-grammar/test_scroll_grammar.py",fixtures])
         run("completion-protocol",[sys.executable,ROOT/"tests/action-grammar/test_completion_protocol.py",fixtures])
+        run("same-state-no-effect-grammar",[sys.executable,ROOT/"tests/action-grammar/test_same_state_no_effect_grammar.py",fixtures])
         run("python-tools",[sys.executable,"-m","unittest","discover","-s","tools","-p","test_*.py","-v"])
         run("mobimind-private-staging",[sys.executable,"-m","unittest","discover","-s",
             ROOT/"provenance/mobimind-app-only-r1/tests","-p","test_*.py","-v"])
+        run("ui-venus-q4_0-provenance",[sys.executable,ROOT/"tests/test_ui_venus_q4_0_runtime.py"])
         for source in sorted((ROOT/"native/tests").glob("*.c")):
             binary=out/source.stem
             run(source.stem+"-compile",[cc,"-std=c11","-Wall","-Wextra","-Werror","-O2","-I"+str(ROOT/"native"),source,"-o",binary])

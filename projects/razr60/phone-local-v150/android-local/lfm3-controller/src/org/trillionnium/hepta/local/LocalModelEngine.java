@@ -119,6 +119,110 @@ public final class LocalModelEngine implements AutoCloseable {
         active.set(handle);return new ExternalRunLease(handle);
     }
 
+
+    /** An aggregate startup barrier has no child attachment API and is never an external lease. */
+    public final class RecoveryBarrier {
+        private final LocalModelEngine owner=LocalModelEngine.this;
+        private final RunHandle handle;
+        private final RecoverySlotHandoff<RunHandle> handoff;
+        private RecoveryBarrier(RunHandle handle,RecoverySlotHandoff<RunHandle> handoff){
+            this.handle=handle;this.handoff=handoff;
+        }
+    }
+    private static RecoverySlotHandoff.Slot<RunHandle> recoverySlot(final AtomicReference<RunHandle> value){
+        return new RecoverySlotHandoff.Slot<RunHandle>(){
+            @Override public RunHandle get(){return value.get();}
+            @Override public boolean compareAndSet(RunHandle expected,RunHandle replacement){
+                return value.compareAndSet(expected,replacement);
+            }
+        };
+    }
+    private void recoveryMainThread(){
+        if(android.os.Looper.myLooper()!=android.os.Looper.getMainLooper())
+            throw new IllegalStateException("recovery ownership changes must run on main thread");
+    }
+    public RecoveryBarrier reserveRecoveryBarrier(){
+        recoveryMainThread();
+        if(closed.get())throw new IllegalStateException("engine is closed");
+        RunHandle handle=new RunHandle();
+        RecoverySlotHandoff<RunHandle> handoff=RecoverySlotHandoff.acquire(
+                recoverySlot(PROCESS_ACTIVE),recoverySlot(active),handle);
+        RecoveryBarrier barrier=new RecoveryBarrier(handle,handoff);
+        if(closed.get())throw new IllegalStateException("engine closed while retaining recovery barrier");
+        return barrier;
+    }
+    public boolean canReserveRecovery(RecoveryBarrier barrier){
+        recoveryMainThread();
+        return !closed.get()&&barrier!=null&&barrier.owner==this
+                &&barrier.handle.child.get()==null&&barrier.handoff.canBorrow();
+    }
+    interface RecoveryCloseListener { void onClosed(RecoveryReservation reservation); }
+    /** Fresh cancellation state per explicit confirmation; failure restores the same occupied barrier. */
+    public final class RecoveryReservation implements RecoveryDispatch.Lease {
+        private final RecoveryBarrier barrier;
+        private final RunHandle handle;
+        private final RecoverySlotHandoff<RunHandle>.Attempt attempt;
+        private final AtomicBoolean released=new AtomicBoolean(false);
+        private final AtomicBoolean closeFinished=new AtomicBoolean(false);
+        private volatile RecoveryCloseListener closeListener;
+        private RecoveryReservation(RecoveryBarrier barrier,RunHandle handle,
+                RecoverySlotHandoff<RunHandle>.Attempt attempt){
+            this.barrier=barrier;this.handle=handle;this.attempt=attempt;
+        }
+        public String transactionId(){return handle.runId;}
+        boolean belongsTo(RecoveryBarrier expected){
+            return expected!=null&&barrier==expected&&barrier.owner==LocalModelEngine.this;
+        }
+        boolean isCloseFinished(){return closeFinished.get();}
+        boolean wasReleased(){return closeFinished.get()&&attempt.wasReleased();}
+        void setCloseListener(RecoveryCloseListener listener){
+            recoveryMainThread();
+            if(listener==null||closeListener!=null||released.get())
+                throw new IllegalStateException("recovery close listener already fixed");
+            closeListener=listener;
+        }
+        public boolean isCancellationRequested(){
+            return closed.get()||released.get()||handle.isCancellationRequested()||!attempt.isOwned();
+        }
+        void requireOwnedBy(RecoveryBarrier expected){
+            if(expected==null||barrier!=expected||barrier.owner!=LocalModelEngine.this
+                    ||isCancellationRequested()||handle.child.get()!=null)
+                throw new IllegalStateException("recovery reservation is cancelled or has different ownership");
+            attempt.requireOwned();
+        }
+        void commit(RecoveryBarrier expected){
+            recoveryMainThread();requireOwnedBy(expected);attempt.commit();
+        }
+        @Override public void close(){
+            if(!released.compareAndSet(false,true))return;
+            try{
+                if(handle.child.get()!=null)
+                    throw new IllegalStateException("recovery reservation unexpectedly owns a child");
+                if(closed.get()||handle.isCancellationRequested())attempt.retainBarrierOnClose();
+                attempt.close();
+            }finally{
+                closeFinished.set(true);
+                RecoveryCloseListener listener=closeListener;
+                if(listener!=null){
+                    try{listener.onClosed(this);}
+                    catch(RuntimeException ignored){
+                        // The Application still owns its references and can reconcile this receipt
+                        // on its next main-thread entry; notification is never a release authority.
+                    }
+                }
+            }
+        }
+    }
+    public RecoveryReservation reserveRecovery(RecoveryBarrier barrier){
+        recoveryMainThread();
+        if(closed.get()||barrier==null||barrier.owner!=this||barrier.handle.child.get()!=null)
+            throw new IllegalStateException("owned recovery barrier is unavailable");
+        RunHandle handle=new RunHandle();
+        RecoveryReservation reservation=new RecoveryReservation(barrier,handle,barrier.handoff.borrow(handle));
+        if(closed.get()){reservation.close();throw new IllegalStateException("engine closed during recovery handoff");}
+        return reservation;
+    }
+
     public RunHandle start(final Request request, final Listener listener) {
         if (request == null || listener == null) throw new IllegalArgumentException("request and listener required");
         if (closed.get()) throw new IllegalStateException("engine is closed");
