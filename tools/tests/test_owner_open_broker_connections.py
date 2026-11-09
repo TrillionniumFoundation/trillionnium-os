@@ -368,9 +368,25 @@ class ProductionConnectionBoundTests(unittest.TestCase):
                     if time.monotonic() >= deadline:
                         self.fail("broker startup deadline exceeded")
                     time.sleep(.01)
-                # Descriptor publication precedes static worker startup.
-                time.sleep(.1)
-                baseline = len(list(Path(f"/proc/{process.pid}/task").iterdir()))
+                # Descriptor publication precedes _start_workers(), so elapsed
+                # time is not evidence that the static workers exist. This
+                # invocation has exactly five persistent threads before accept:
+                # main, upstream stderr, upstream reader, timeout, dispatcher.
+                # Require that exact baseline before opening any client socket;
+                # do not charge delayed static startup to the client bound or
+                # accept additional static threads into the baseline.
+                task_directory = Path(f"/proc/{process.pid}/task")
+                startup_deadline = time.monotonic() + 5
+                while True:
+                    if process.poll() is not None:
+                        self.fail(process.communicate()[1].decode())
+                    baseline_tasks = {entry.name for entry in task_directory.iterdir()}
+                    baseline = len(baseline_tasks)
+                    if baseline == 5:
+                        break
+                    if time.monotonic() >= startup_deadline:
+                        self.fail(f"exact static worker baseline not ready: {baseline}")
+                    time.sleep(.01)
                 for _ in range(12):
                     peer = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                     peers.append(peer)
@@ -386,8 +402,9 @@ class ProductionConnectionBoundTests(unittest.TestCase):
                             time.sleep(.005)
                     time.sleep(.01)
                 time.sleep(.1)
-                threads = len(list(Path(f"/proc/{process.pid}/task").iterdir()))
-                self.assertLessEqual(threads - baseline, 2)
+                active_tasks = {entry.name for entry in task_directory.iterdir()}
+                self.assertTrue(baseline_tasks <= active_tasks, "static worker exited during connection accounting")
+                self.assertLessEqual(len(active_tasks - baseline_tasks), 2)
                 # Authenticate one reserved connection while another stays silent.
                 # Shutdown must retire both states without losing epoll wakeups.
                 token = (root / "token").read_text().strip()

@@ -1,22 +1,21 @@
 #include <algorithm>
 #include <array>
 #include <cerrno>
+#include <chrono>
 #include <csignal>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <fcntl.h>
-#include <linux/loop.h>
 #include <memory>
 #include <limits>
 #include <openssl/evp.h>
-#include <sched.h>
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <sys/ioctl.h>
 #include <sys/mount.h>
+#include <sys/vfs.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -27,14 +26,17 @@
 #include <json/json.h>
 
 #ifdef __ANDROID__
+#include <android/log.h>
 #include <sys/system_properties.h>
 #endif
 
 namespace {
-constexpr const char* kImage = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.squashfs";
-constexpr const char* kDigest = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.squashfs.sha256";
+constexpr const char* kImage = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs";
+constexpr const char* kDigest = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256";
 constexpr const char* kManifest = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json";
-constexpr const char* kProfile = "/system_ext/etc/trillionnium/owner-open/profile-v3.json";
+constexpr const char* kProfile = "/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json";
+constexpr const char* kBootstrapExecutable = "/system_ext/bin/trillionnium-owner-open-bootstrap";
+constexpr std::size_t kMaximumBootstrapBytes = 32ULL * 1024ULL * 1024ULL;
 constexpr const char* kMountRoot = "/data/trillionnium/owner-open/root";
 constexpr const char* kStateRoot = "/data/trillionnium/owner-open/state";
 constexpr const char* kStateTarget = "/var/lib/trillionnium/owner-open";
@@ -45,8 +47,6 @@ constexpr const char* kSupervisor =
     "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py";
 constexpr const char* kSupervisorConfig =
     "/etc/trillionnium/owner-open/rootlinux-supervisor.json";
-constexpr const char* kMountOptions =
-    "errors=continue,context=u:object_r:trillionnium_owner_open_payload_file:s0";
 constexpr std::size_t kMaximumImageBytes = 8ULL * 1024ULL * 1024ULL * 1024ULL;
 constexpr std::size_t kMaximumManifestBytes = 16ULL * 1024ULL * 1024ULL;
 constexpr std::size_t kMaximumProfileBytes = 1ULL * 1024ULL * 1024ULL;
@@ -57,9 +57,9 @@ constexpr const char* kImageManifestSchema =
 constexpr const char* kStagingManifestSchema =
     "org.trillionnium.owner-open.rootfs-payload-manifest.v1";
 constexpr const char* kRuntimeProfileSchema =
-    "org.trillionnium.owner-open.android-runtime-profile.v3";
-constexpr const char* kRuntimeProfileRevision = "2026-08-29-r5-android-source-closure";
-constexpr const char* kRuntimeProfileId = "owner-open-dogfood-v3";
+    "org.trillionnium.owner-open.android-runtime-profile.v4";
+constexpr const char* kRuntimeProfileRevision = "2026-10-09-leap-api37-owner-client-emergency";
+constexpr const char* kRuntimeProfileId = "leap-codex-host-relay-v1";
 volatile sig_atomic_t g_child_pid = -1;
 
 struct PayloadEntry {
@@ -80,9 +80,37 @@ struct ImageManifest {
   std::vector<PayloadEntry> entries;
 };
 
-int Fail(std::string_view message) {
-  std::fprintf(stderr, "owner-open bootstrap HOLD: %.*s: %s\n",
-               static_cast<int>(message.size()), message.data(), std::strerror(errno));
+// Diagnostic ABI: stable stage numbers only; never log request/protocol bytes,
+// configured paths, tokens, or directory contents.
+enum class BootstrapFailure : unsigned {
+  ExpectedMode = 1,
+  RuntimeProfile = 2,
+  ImageManifest = 3,
+  DirectoryHandoff = 4,
+  EmergencyStop = 5,
+  DigestRead = 6,
+  DigestAgreement = 7,
+  ImageOpen = 8,
+  ImageHash = 9,
+  MountHandoff = 10,
+  SupervisorFork = 11,
+  CarrierReadiness = 12,
+  SupervisorReap = 13,
+  SupervisorChildSetup = 14,
+  SupervisorChildExec = 15,
+  ComponentMeasurement = 16,
+};
+
+int Fail(BootstrapFailure stage) {
+  const int saved_errno = errno;
+#ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_ERROR, "TrillionniumOwnerOpenBootstrap",
+                      "HOLD stage=%u errno=%d", static_cast<unsigned>(stage), saved_errno);
+#else
+  std::fprintf(stderr, "owner-open bootstrap HOLD: stage=%u errno=%d\n",
+               static_cast<unsigned>(stage), saved_errno);
+#endif
+  errno = saved_errno;
   return 70;
 }
 
@@ -316,7 +344,7 @@ bool ReadImageManifest(ImageManifest* manifest) {
     errno = EBADMSG;
     return false;
   }
-  if (root["runtime_state_directory"] != kStateTarget) {
+  if (root["runtime_state_directory"] != kStateTarget || root["filesystem"] != "erofs") {
     errno = EBADMSG;
     return false;
   }
@@ -349,7 +377,7 @@ bool ReadImageManifest(ImageManifest* manifest) {
     std::uint64_t gid = 0;
     std::uint64_t bytes = 0;
     if (!JsonUnsigned(item, "uid", &uid) || !JsonUnsigned(item, "gid", &gid) || uid != 0 ||
-        gid != 0 || !JsonUnsigned(item, "bytes", &bytes) || bytes == 0 ||
+        gid != 0 || !JsonUnsigned(item, "bytes", &bytes) ||
         bytes > kMaximumEntryBytes) {
       errno = EBADMSG;
       return false;
@@ -362,20 +390,17 @@ bool ReadImageManifest(ImageManifest* manifest) {
 
   // The image manifest is the complete pre-Android payload contract, not just
   // a digest envelope. Require every path that the supervisor will execute.
-  static constexpr std::array<std::string_view, 13> kRequiredPaths = {
+  static constexpr std::array<std::string_view, 10> kRequiredPaths = {
       "/usr/bin/python3",
       "/usr/bin/adb",
-      "/usr/bin/codex",
       "/usr/libexec/trillionnium/trillionnium-owner-open-r5-host",
       "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
       "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
       "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker.py",
-      "/usr/libexec/trillionnium/owner-open/codex_owner_open_mcp.py",
-      "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification_release.py",
       "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_release.py",
-      "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_release.py",
       "/usr/libexec/trillionnium/provider-adapter",
       "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
+      "/etc/trillionnium/owner-open/provider-host-relay-v1.json",
   };
   for (const std::string_view required : kRequiredPaths) {
     if (std::none_of(manifest->entries.begin(), manifest->entries.end(),
@@ -428,12 +453,24 @@ bool ValidateRuntimeProfile() {
     errno = EBADMSG;
     return false;
   }
+  const Json::Value& handoff = root["mount_handoff"];
+  const Json::Value& provider = root["provider"];
+  if (!handoff.isObject() || handoff["owner"] != "android_init" ||
+      handoff["verified_property"] != "trillionnium.owner_open.verified" ||
+      handoff["mount_ready_property"] != "trillionnium.owner_open.mount_ready" ||
+      handoff["service_mount_namespace"] != "mnt" ||
+      handoff["bootstrap_mount_operations"] != false || !provider.isObject() ||
+      provider["role"] != "host_codex" || provider["automatic_reconnect"] != false ||
+      provider["automatic_redispatch"] != false || provider["long_lived_credentials_on_phone"] != false) {
+    errno = EBADMSG;
+    return false;
+  }
   const Json::Value& claims = root["claims"];
   if (!claims.isObject() || claims.size() != 7 || claims["source_modules_authored"] != true ||
       claims["soong_compiled"] != false || claims["selinux_compiled"] != false ||
       claims["target_files_built"] != false || claims["image_included"] != false ||
       claims["physical_device_observed"] != false || claims["public_release"] != false ||
-      root["claim_ceiling"] != "ANDROID_OWNER_OPEN_SOURCE_IMPLEMENTED_NOT_BUILT") {
+      root["claim_ceiling"] != "LEAP_API37_SOURCE_CANDIDATE_NOT_DEVICE_QUALIFIED") {
     errno = EBADMSG;
     return false;
   }
@@ -483,74 +520,22 @@ bool HashImage(int fd, std::string* digest, std::size_t* bytes) {
   return true;
 }
 
-bool EnsureDirectory(const char* path, mode_t mode) {
-  std::string current;
-  for (const char* cursor = path; *cursor != '\0'; ++cursor) {
-    current.push_back(*cursor);
-    if (*cursor != '/' || current.size() == 1) continue;
-    current.pop_back();
-    struct stat metadata {};
-    if (lstat(current.c_str(), &metadata) != 0) {
-      if (errno != ENOENT || mkdir(current.c_str(), mode) != 0) return false;
-    } else if (!S_ISDIR(metadata.st_mode) || S_ISLNK(metadata.st_mode)) {
-      errno = ENOTDIR;
-      return false;
-    }
-    current.push_back('/');
-  }
+// Platform init owns mkdir, chmod and restorecon, including the mountpoint.
+// Verification never modifies an already mounted immutable lower.
+bool VerifyDirectory(const char* path, mode_t mode) {
   struct stat metadata {};
-  if (lstat(path, &metadata) != 0) {
-    if (errno != ENOENT || mkdir(path, mode) != 0) return false;
-  } else if (!S_ISDIR(metadata.st_mode) || S_ISLNK(metadata.st_mode)) {
-    errno = ENOTDIR;
+  if (lstat(path, &metadata) != 0 || !S_ISDIR(metadata.st_mode) ||
+      S_ISLNK(metadata.st_mode) || metadata.st_uid != 0 || metadata.st_gid != 0 ||
+      (metadata.st_mode & 07777) != mode) {
+    errno = EPERM;
     return false;
   }
-  return chmod(path, mode) == 0;
+  return true;
 }
 
 bool EmergencyStopPresent() {
   struct stat metadata {};
   if (lstat(kEmergencyStop, &metadata) != 0) return errno != ENOENT;
-  return true;
-}
-
-struct LoopDevice {
-  int control = -1;
-  int device = -1;
-  std::string path;
-};
-
-void CloseLoop(LoopDevice* loop) {
-  if (loop->device >= 0) {
-    ioctl(loop->device, LOOP_CLR_FD, 0);
-    close(loop->device);
-    loop->device = -1;
-  }
-  if (loop->control >= 0) {
-    close(loop->control);
-    loop->control = -1;
-  }
-}
-
-bool ConfigureLoop(int image_fd, LoopDevice* loop) {
-  loop->control = open("/dev/loop-control", O_RDWR | O_CLOEXEC | O_NOFOLLOW);
-  if (loop->control < 0) return false;
-  const int number = ioctl(loop->control, LOOP_CTL_GET_FREE);
-  if (number < 0) return false;
-  std::array<char, 128> candidate {};
-  std::snprintf(candidate.data(), candidate.size(), "/dev/block/loop%d", number);
-  loop->device = open(candidate.data(), O_RDWR | O_CLOEXEC | O_NOFOLLOW);
-  if (loop->device < 0) {
-    std::snprintf(candidate.data(), candidate.size(), "/dev/loop%d", number);
-    loop->device = open(candidate.data(), O_RDWR | O_CLOEXEC | O_NOFOLLOW);
-  }
-  if (loop->device < 0 || ioctl(loop->device, LOOP_SET_FD, image_fd) != 0) return false;
-  struct loop_info64 info {};
-  info.lo_flags = LO_FLAGS_READ_ONLY | LO_FLAGS_AUTOCLEAR;
-  std::strncpy(reinterpret_cast<char*>(info.lo_file_name), kImage, LO_NAME_SIZE - 1);
-  info.lo_file_name[LO_NAME_SIZE - 1] = '\0';
-  if (ioctl(loop->device, LOOP_SET_STATUS64, &info) != 0) return false;
-  loop->path = candidate.data();
   return true;
 }
 
@@ -594,7 +579,7 @@ bool HashRegularDescriptor(int fd, std::size_t maximum, std::string* digest,
                             std::size_t* bytes, struct stat* metadata_out) {
   struct stat before {};
   if (fstat(fd, &before) != 0 || !S_ISREG(before.st_mode) || before.st_nlink != 1 ||
-      before.st_size <= 0 || static_cast<unsigned long long>(before.st_size) > maximum ||
+      before.st_size < 0 || static_cast<unsigned long long>(before.st_size) > maximum ||
       (before.st_mode & 0022) != 0 || lseek(fd, 0, SEEK_SET) < 0) {
     return false;
   }
@@ -609,7 +594,7 @@ bool HashRegularDescriptor(int fd, std::size_t maximum, std::string* digest,
   while (true) {
     const ssize_t current = read(fd, buffer.data(), buffer.size());
     if (current < 0 && errno == EINTR) continue;
-    if (current < 0 || (current == 0 && count == 0)) {
+    if (current < 0) {
       ok = false;
       break;
     }
@@ -658,7 +643,7 @@ bool StagingEntriesMatch(const Json::Value& staging,
         !JsonString(item, "sha256", &digest) || !ParseMode(item, "mode", &mode) ||
         !JsonUnsigned(item, "uid", &uid) || !JsonUnsigned(item, "gid", &gid) ||
         !JsonUnsigned(item, "bytes", &bytes) || !IsCanonicalPayloadPath(path) ||
-        !IsHexDigest(digest) || uid != 0 || gid != 0 || bytes == 0 ||
+        !IsHexDigest(digest) || uid != 0 || gid != 0 ||
         bytes > kMaximumEntryBytes) {
       return false;
     }
@@ -746,16 +731,211 @@ bool RequiredPayloadEntriesExist(const ImageManifest& manifest) {
   return ok;
 }
 
-bool BindState() {
-  const std::string target = std::string(kMountRoot) + kStateTarget;
-  struct stat metadata {};
-  if (lstat(target.c_str(), &metadata) != 0 || !S_ISDIR(metadata.st_mode) || S_ISLNK(metadata.st_mode)) {
-    errno = ENOENT;
+// Android init owns all loop, mount and unmount operations. The service is
+// launched with `namespace mnt`, established before the SELinux transition.
+// The bootstrap validates the resulting immutable lower and writable bind; it
+// never requests mount permission or trusts a readiness property by itself.
+bool ValidateInitMountedRoot() {
+  struct statfs lower {};
+  struct statfs state_fs {};
+  struct stat source {};
+  struct stat target {};
+  const std::string target_path = std::string(kMountRoot) + kStateTarget;
+  constexpr unsigned long kErofsMagic = 0xE0F5E1E2UL;
+  const unsigned long lower_flags = MS_RDONLY | MS_NOSUID | MS_NODEV;
+  const unsigned long state_flags = MS_NOSUID | MS_NODEV | MS_NOEXEC;
+  if (statfs(kMountRoot, &lower) != 0 ||
+      static_cast<unsigned long>(lower.f_type) != kErofsMagic ||
+      (static_cast<unsigned long>(lower.f_flags) & lower_flags) != lower_flags ||
+      statfs(target_path.c_str(), &state_fs) != 0 ||
+      (static_cast<unsigned long>(state_fs.f_flags) & state_flags) != state_flags ||
+      (static_cast<unsigned long>(state_fs.f_flags) & MS_RDONLY) != 0 ||
+      lstat(kStateRoot, &source) != 0 || lstat(target_path.c_str(), &target) != 0 ||
+      !S_ISDIR(source.st_mode) || !S_ISDIR(target.st_mode) ||
+      source.st_dev != target.st_dev || source.st_ino != target.st_ino) {
+    errno = EPERM;
     return false;
   }
-  if (mount(kStateRoot, target.c_str(), nullptr, MS_BIND | MS_REC, nullptr) != 0) return false;
-  return mount(nullptr, target.c_str(), nullptr,
-               MS_BIND | MS_REMOUNT | MS_NOSUID | MS_NODEV | MS_NOEXEC, nullptr) == 0;
+  struct statfs proc_fs {};
+  struct statfs dev_fs {};
+  struct stat proc_source {}, proc_target {}, dev_source {}, dev_target {};
+  const std::string proc_path = std::string(kMountRoot) + "/proc";
+  const std::string dev_path = std::string(kMountRoot) + "/dev";
+  const unsigned long proc_flags = MS_RDONLY | MS_NOSUID | MS_NODEV | MS_NOEXEC;
+  if (statfs(proc_path.c_str(), &proc_fs) != 0 ||
+      static_cast<unsigned long>(proc_fs.f_type) != 0x9fa0UL ||
+      (static_cast<unsigned long>(proc_fs.f_flags) & proc_flags) != proc_flags ||
+      lstat("/proc", &proc_source) != 0 || lstat(proc_path.c_str(), &proc_target) != 0 ||
+      proc_source.st_dev != proc_target.st_dev || proc_source.st_ino != proc_target.st_ino ||
+      statfs(dev_path.c_str(), &dev_fs) != 0 ||
+      (static_cast<unsigned long>(dev_fs.f_flags) & (MS_RDONLY | MS_NOSUID | MS_NOEXEC)) != (MS_RDONLY | MS_NOSUID | MS_NOEXEC) ||
+      lstat("/dev", &dev_source) != 0 || lstat(dev_path.c_str(), &dev_target) != 0 ||
+      dev_source.st_dev != dev_target.st_dev || dev_source.st_ino != dev_target.st_ino) {
+    errno = EPERM;
+    return false;
+  }
+  return true;
+}
+
+// Readiness observes this exact unreaped supervisor session and both children.
+// An old status file, a mere fork, and provider reachability are not readiness.
+bool ProcessIdentityMatches(const Json::Value& identity, pid_t parent, pid_t expected_pid,
+                            Json::Int64 expected_start) {
+  for (const char* field : {"pid", "parent_pid", "process_group", "session_id", "start_time_ticks"}) {
+    if (!identity[field].isInt64() || identity[field].asInt64() <= 0) return false;
+  }
+  const Json::Int64 pid = identity["pid"].asInt64();
+  if (pid > 1000000000 || (expected_pid > 0 && pid != expected_pid) ||
+      identity["parent_pid"].asInt64() != parent ||
+      identity["process_group"].asInt64() != pid || identity["session_id"].asInt64() != pid ||
+      (expected_start > 0 && identity["start_time_ticks"].asInt64() != expected_start)) return false;
+  const std::string path = "/proc/" + std::to_string(pid) + "/stat";
+  const int fd = open(path.c_str(), O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
+  if (fd < 0) return false;
+  std::array<char, 8193> buffer {};
+  const ssize_t count = read(fd, buffer.data(), buffer.size());
+  close(fd);
+  if (count <= 0 || count >= static_cast<ssize_t>(buffer.size())) return false;
+  const std::string raw(buffer.data(), static_cast<std::size_t>(count));
+  const auto terminator = raw.rfind(')');
+  if (terminator == std::string::npos) return false;
+  std::istringstream fields(raw.substr(terminator + 1));
+  std::string state;
+  Json::Int64 ppid = 0, pgid = 0, sid = 0, start = 0;
+  if (!(fields >> state >> ppid >> pgid >> sid) || state == "Z" || state == "X") return false;
+  std::string ignored;
+  for (int index = 4; index < 19; ++index) if (!(fields >> ignored)) return false;
+  if (!(fields >> start)) return false;
+  return ppid == parent && pgid == pid && sid == pid && start == identity["start_time_ticks"].asInt64();
+}
+
+bool RelayDescriptorPath(const Json::Value& session, const Json::Value& status, std::string* output) {
+  const auto& directory = status["children"]["owner-open-adb-relay"]["instance_directory"];
+  if (!session["session_id"].isString() || !directory.isString()) return false;
+  const std::string session_id = session["session_id"].asString();
+  const std::string path = directory.asString();
+  const std::string prefix = std::string(kStateTarget) + "/carriers/" + session_id + "/owner-open-adb-relay/";
+  const auto hex32 = [](std::string_view value) {
+    return value.size() == 32 && std::all_of(value.begin(), value.end(), [](char ch) {
+      return (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f');
+    });
+  };
+  if (!hex32(session_id) || path.compare(0, prefix.size(), prefix) != 0 ||
+      !hex32(std::string_view(path).substr(prefix.size()))) return false;
+  const std::string physical = std::string(kStateRoot) + path.substr(std::strlen(kStateTarget));
+  if (!VerifyDirectory(physical.c_str(), 0700)) return false;
+  *output = physical + "/descriptor.json";
+  return true;
+}
+
+// Readiness failures have their own bounded diagnostic vocabulary. In
+// particular an exited child is not the ENOENT left by a missing status file.
+// waitid(WNOWAIT) preserves the original child generation for safe cleanup.
+enum class ReadinessPhase : unsigned {
+  None = 0, PidPublication = 1, SignalHandlers = 2, WaitId = 3,
+  ChildExited = 4, EmergencyInhibit = 5, Deadline = 6,
+};
+struct ReadinessObservation {
+  ReadinessPhase phase = ReadinessPhase::None;
+  int error = 0;
+  int child_code = 0;
+  int child_status = 0;
+};
+
+bool SupervisorStillAlive(pid_t child, ReadinessObservation* observation) {
+  siginfo_t information {};
+  // Keep this observation bounded even under repeated signals. An
+  // interrupted observation fails closed, as in the original startup gate.
+  const int result = waitid(P_PID, child, &information, WEXITED | WNOHANG | WNOWAIT);
+  if (result != 0) {
+    *observation = {ReadinessPhase::WaitId, errno, 0, 0};
+    return false;
+  }
+  if (information.si_pid != 0) {
+    *observation = {ReadinessPhase::ChildExited, ECHILD,
+                    information.si_code, information.si_status};
+    errno = ECHILD;
+    return false;
+  }
+  return true;
+}
+
+void ReportReadinessFailure(const ReadinessObservation& observation) {
+  const int saved_errno = errno;
+#ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_ERROR, "TrillionniumOwnerOpenBootstrap",
+      "HOLD readiness=%u errno=%d child_code=%d child_status=%d",
+      static_cast<unsigned>(observation.phase), observation.error,
+      observation.child_code, observation.child_status);
+#else
+  std::fprintf(stderr, "owner-open readiness HOLD: readiness=%u errno=%d child_code=%d child_status=%d\n",
+      static_cast<unsigned>(observation.phase), observation.error,
+      observation.child_code, observation.child_status);
+#endif
+  errno = saved_errno;
+}
+
+bool WaitForSupervisorReady(pid_t child, ReadinessObservation* observation) {
+  const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(15);
+  while (std::chrono::steady_clock::now() < deadline) {
+    if (!SupervisorStillAlive(child, observation)) return false;
+    if (EmergencyStopPresent()) {
+      *observation = {ReadinessPhase::EmergencyInhibit, ECANCELED, 0, 0};
+      errno = ECANCELED;
+      return false;
+    }
+    std::string session_raw, status_raw, descriptor_raw, relay_raw, relay_path;
+    Json::Value session, status, descriptor, relay;
+    struct stat socket_metadata {}, token_metadata {};
+    if (ReadBoundedRegular("/data/trillionnium/owner-open/state/.supervisor-session.json", 65536, &session_raw) &&
+        ReadBoundedRegular("/data/trillionnium/owner-open/state/supervisor-status.json", 65536, &status_raw) &&
+        ParseJsonObject(session_raw, &session) && ParseJsonObject(status_raw, &status) &&
+        session["schema"] == "org.trillionnium.owner-open.rootlinux-supervisor-session.v1" &&
+        session["supervisor_pid"].isIntegral() && session["supervisor_pid"].asInt64() == child &&
+        status["schema"] == "org.trillionnium.owner-open.rootlinux-supervisor-status.v1" &&
+        status["state"] == "running" && session["session_id"].isString() &&
+        !session["session_id"].asString().empty() && status["session_id"] == session["session_id"] &&
+        status["automatic_effect_redispatch"] == false && status["children"].size() == 2 &&
+        status["children"]["owner-open-broker"]["running"] == true &&
+        status["children"]["owner-open-adb-relay"]["running"] == true &&
+        lstat("/data/trillionnium/owner-open/state/broker/owner-open.sock", &socket_metadata) == 0 &&
+        S_ISSOCK(socket_metadata.st_mode) && socket_metadata.st_uid == 0 &&
+        lstat("/data/trillionnium/owner-open/state/broker/owner-open.token", &token_metadata) == 0 &&
+        S_ISREG(token_metadata.st_mode) && token_metadata.st_uid == 0 &&
+        token_metadata.st_nlink == 1 && (token_metadata.st_mode & 07777) == 0600 &&
+        token_metadata.st_size == 65 &&
+        ReadBoundedRegular("/data/trillionnium/owner-open/state/broker/owner-open.descriptor.json", 262144, &descriptor_raw) &&
+        ParseJsonObject(descriptor_raw, &descriptor) &&
+        descriptor["schema"] == "org.trillionnium.owner-open.connection-broker.v1" &&
+        descriptor["automatic_redispatch"] == false &&
+        descriptor["host_hello_ack"]["kind"] == "hello.ack" &&
+        descriptor["host_hello_ack"]["payload"]["protocol"] == "trillionnium.agent.turn.v1" &&
+        descriptor["host_hello_ack"]["payload"]["protocol_version"] == 1 &&
+        descriptor["host_hello_ack"]["payload"]["runtime_ready"] == true &&
+        status["children"]["owner-open-broker"]["pid"].isInt64() &&
+        status["children"]["owner-open-broker"]["anchor_start_time_ticks"].isInt64() &&
+        ProcessIdentityMatches(descriptor["runtime_identity"]["broker"], child,
+          status["children"]["owner-open-broker"]["pid"].asInt64(),
+          status["children"]["owner-open-broker"]["anchor_start_time_ticks"].asInt64()) &&
+        ProcessIdentityMatches(descriptor["runtime_identity"]["host"],
+          descriptor["runtime_identity"]["broker"]["pid"].asInt64(), -1, 0) &&
+        RelayDescriptorPath(session, status, &relay_path) &&
+        ReadBoundedRegular(relay_path.c_str(), 65536, &relay_raw) &&
+        ParseJsonObject(relay_raw, &relay) &&
+        relay["schema"] == "org.trillionnium.owner-open.adb-smart-socket-relay.v1" &&
+        relay["listen_host"] == "127.0.0.1" && relay["listen_port"] == 15038 &&
+        relay["upstream_host"] == "127.0.0.1" && relay["upstream_port"] == 15037 &&
+        relay["automatic_redispatch"] == false &&
+        status["children"]["owner-open-adb-relay"]["pid"].isInt64() &&
+        status["children"]["owner-open-adb-relay"]["anchor_start_time_ticks"].isInt64() &&
+        ProcessIdentityMatches(relay["runtime_identity"], child,
+          status["children"]["owner-open-adb-relay"]["pid"].asInt64(),
+          status["children"]["owner-open-adb-relay"]["anchor_start_time_ticks"].asInt64())) return true;
+    usleep(50000);
+  }
+  *observation = {ReadinessPhase::Deadline, ETIMEDOUT, 0, 0};
+  errno = ETIMEDOUT;
+  return false;
 }
 
 bool WritePid(pid_t pid) {
@@ -771,12 +951,90 @@ bool WritePid(pid_t pid) {
   return ok;
 }
 
-void SetReady(const char* value) {
+void SetProperty(const char* name, const char* value) {
 #ifdef __ANDROID__
-  __system_property_set("trillionnium.owner_open.ready", value);
+  __system_property_set(name, value);
 #else
+  (void)name;
   (void)value;
 #endif
+}
+
+// Only digests of three fixed immutable components are published. They are
+// engineering observations, not hardware attestation or a replacement for
+// AVB. No state, command, credential or caller-selected path is exposed.
+bool SetMeasurementProperty(const char* name, const char* value) {
+#ifdef __ANDROID__
+  return __system_property_set(name, value) == 0;
+#else
+  (void)name;
+  (void)value;
+  return true;
+#endif
+}
+
+bool ClearComponentMeasurement() {
+  // Consumers must require valid=1 on the same boot. Clear it first, before
+  // modifying any digest, so partial publication cannot look complete.
+  return SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "0") &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.bootstrap_sha256", "") &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.manifest_sha256", "") &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.image_sha256", "");
+}
+
+bool HashExecutingBootstrap(const char* installed_path, std::string* executable_digest) {
+  // /proc/self/exe is a kernel reference to THIS executing file. Comparing
+  // its stable identity with the fixed init executable also detects a
+  // substituted pathname. Only this fixed proc reference follows a link.
+  const int self_fd = open("/proc/self/exe", O_RDONLY | O_CLOEXEC);
+  if (self_fd < 0) return false;
+  std::size_t executable_bytes = 0;
+  struct stat executable_metadata {}, installed_metadata {};
+  bool ok = HashRegularDescriptor(self_fd, kMaximumBootstrapBytes, executable_digest,
+                                  &executable_bytes, &executable_metadata) &&
+      executable_bytes > 0 && lstat(installed_path, &installed_metadata) == 0 &&
+      S_ISREG(installed_metadata.st_mode) &&
+      SameStableMetadata(executable_metadata, installed_metadata);
+  const int saved_errno = errno;
+  close(self_fd);
+  errno = saved_errno;
+  return ok;
+}
+
+bool PublishComponentMeasurement(const ImageManifest& manifest, const std::string& image_digest) {
+  std::string executable_digest;
+  if (!HashExecutingBootstrap(kBootstrapExecutable, &executable_digest)) return false;
+
+  std::array<unsigned char, EVP_MAX_MD_SIZE> raw {};
+  unsigned int raw_size = 0;
+  if (EVP_Digest(manifest.raw.data(), manifest.raw.size(), raw.data(), &raw_size,
+                 EVP_sha256(), nullptr) != 1 || raw_size != 32) {
+    errno = EIO;
+    return false;
+  }
+  static constexpr char kHex[] = "0123456789abcdef";
+  std::string manifest_digest(64, '0');
+  for (std::size_t index = 0; index < 32; ++index) {
+    manifest_digest[index * 2] = kHex[raw[index] >> 4];
+    manifest_digest[index * 2 + 1] = kHex[raw[index] & 0x0f];
+  }
+  if (!IsHexDigest(executable_digest) || !IsHexDigest(manifest_digest) ||
+      !IsHexDigest(image_digest)) {
+    errno = EBADMSG;
+    return false;
+  }
+  const bool ok = SetMeasurementProperty("trillionnium.owner_open.measurement.bootstrap_sha256",
+                               executable_digest.c_str()) &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.manifest_sha256",
+                               manifest_digest.c_str()) &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.image_sha256",
+                               image_digest.c_str()) &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "1");
+  if (!ok) {
+    SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "0");
+    errno = EIO;
+  }
+  return ok;
 }
 
 void ForwardSignal(int signal_number) {
@@ -793,33 +1051,64 @@ bool InstallSignalHandlers() {
          sigaction(SIGINT, &action, nullptr) == 0 &&
          sigaction(SIGHUP, &action, nullptr) == 0;
 }
+
+// Keep the child generation pinned until forwarding signals are blocked. A
+// numeric PGID is never signalled after reaping permits its PID to be reused.
+bool ReapPinnedChild(pid_t child, int* status) {
+  siginfo_t information {};
+  int result;
+  do { result = waitid(P_PID, child, &information, WEXITED | WNOWAIT); }
+  while (result < 0 && errno == EINTR);
+  if (result < 0) return false;
+  sigset_t blocked, previous;
+  sigemptyset(&blocked);
+  sigaddset(&blocked, SIGTERM);
+  sigaddset(&blocked, SIGINT);
+  sigaddset(&blocked, SIGHUP);
+  if (sigprocmask(SIG_BLOCK, &blocked, &previous) != 0) return false;
+  pid_t waited;
+  do { waited = waitpid(child, status, 0); } while (waited < 0 && errno == EINTR);
+  const int saved = errno;
+  g_child_pid = -1;
+  const bool restored = sigprocmask(SIG_SETMASK, &previous, nullptr) == 0;
+  errno = saved;
+  return waited == child && restored;
+}
 }  // namespace
 
-int main() {
+int main(int argc, char** argv) {
+  const bool verify_only = argc == 2 && std::strcmp(argv[1], "--verify-image") == 0;
+  const bool run_mounted = argc == 2 && std::strcmp(argv[1], "--run-mounted") == 0;
+  if (!verify_only && !run_mounted) {
+    errno = EINVAL;
+    return Fail(BootstrapFailure::ExpectedMode);
+  }
+  if (verify_only) SetProperty("trillionnium.owner_open.verified", "0");
   // init may restart this service after a crash while the old readiness
   // property is still set.  Clear it before any validation so a failed
   // bootstrap can never leave the ingress gate open on stale state.
-  SetReady("0");
-  if (!ValidateRuntimeProfile()) return Fail("runtime profile is missing or inconsistent");
+  SetProperty("trillionnium.owner_open.ready", "0");
+  if (!ClearComponentMeasurement()) return Fail(BootstrapFailure::ComponentMeasurement);
+  if (!ValidateRuntimeProfile()) return Fail(BootstrapFailure::RuntimeProfile);
   ImageManifest manifest;
-  if (!ReadImageManifest(&manifest)) return Fail("image manifest is missing or inconsistent");
-  if (!EnsureDirectory("/data/trillionnium", 0700) ||
-      !EnsureDirectory("/data/trillionnium/owner-open", 0700) ||
-      !EnsureDirectory(kStateRoot, 0700) || !EnsureDirectory(kMountRoot, 0700)) {
-    return Fail("cannot create private owner-open directories");
+  if (!ReadImageManifest(&manifest)) return Fail(BootstrapFailure::ImageManifest);
+  if (!VerifyDirectory("/data/trillionnium", 0700) ||
+      !VerifyDirectory("/data/trillionnium/owner-open", 0700) ||
+      !VerifyDirectory(kStateRoot, 0700) || !VerifyDirectory(kMountRoot, run_mounted ? 0755 : 0700)) {
+    return Fail(BootstrapFailure::DirectoryHandoff);
   }
   if (EmergencyStopPresent()) {
     errno = ECANCELED;
-    return Fail("emergency stop inhibits bootstrap");
+    return Fail(BootstrapFailure::EmergencyStop);
   }
   std::string expected_digest;
-  if (!ReadDigest(&expected_digest)) return Fail("cannot read canonical image digest");
+  if (!ReadDigest(&expected_digest)) return Fail(BootstrapFailure::DigestRead);
   if (expected_digest != manifest.image_digest) {
     errno = EBADMSG;
-    return Fail("image digest file disagrees with image manifest");
+    return Fail(BootstrapFailure::DigestAgreement);
   }
   const int image_fd = open(kImage, O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
-  if (image_fd < 0) return Fail("cannot open rootfs image");
+  if (image_fd < 0) return Fail(BootstrapFailure::ImageOpen);
   std::string actual_digest;
   std::size_t image_bytes = 0;
   if (!HashImage(image_fd, &actual_digest, &image_bytes) || image_bytes == 0 ||
@@ -827,78 +1116,76 @@ int main() {
       actual_digest != manifest.image_digest) {
     close(image_fd);
     errno = EBADMSG;
-    return Fail("rootfs image digest mismatch");
-  }
-  if (unshare(CLONE_NEWNS) != 0 || mount(nullptr, "/", nullptr, MS_REC | MS_PRIVATE, nullptr) != 0) {
-    close(image_fd);
-    return Fail("cannot isolate mount namespace");
-  }
-  LoopDevice loop;
-  if (!ConfigureLoop(image_fd, &loop)) {
-    close(image_fd);
-    CloseLoop(&loop);
-    return Fail("cannot configure read-only loop device");
+    return Fail(BootstrapFailure::ImageHash);
   }
   close(image_fd);
-  if (mount(loop.path.c_str(), kMountRoot, "squashfs", MS_RDONLY | MS_NOSUID | MS_NODEV,
-            kMountOptions) != 0) {
-    CloseLoop(&loop);
-    return Fail("cannot mount rootfs image read-only");
+  if (!PublishComponentMeasurement(manifest, actual_digest)) {
+    return Fail(BootstrapFailure::ComponentMeasurement);
   }
-  if (!RequiredPayloadEntriesExist(manifest) || !BindState()) {
-    umount2(kMountRoot, MNT_DETACH);
-    CloseLoop(&loop);
-    return Fail("rootfs payload entries or writable state binding are incomplete");
+  if (verify_only) {
+    SetProperty("trillionnium.owner_open.verified", "1");
+    return 0;
+  }
+  if (!ValidateInitMountedRoot() || !RequiredPayloadEntriesExist(manifest)) {
+    return Fail(BootstrapFailure::MountHandoff);
   }
   unlink(kSupervisorPid);
   const pid_t child = fork();
   if (child < 0) {
-    umount2(kMountRoot, MNT_DETACH);
-    CloseLoop(&loop);
-    return Fail("cannot fork Root Linux supervisor");
+    return Fail(BootstrapFailure::SupervisorFork);
   }
   if (child == 0) {
-    if (setsid() < 0 || chroot(kMountRoot) != 0 || chdir("/") != 0) _exit(126);
+    if (setsid() < 0 || chroot(kMountRoot) != 0 || chdir("/") != 0) {
+      Fail(BootstrapFailure::SupervisorChildSetup);
+      _exit(126);
+    }
+    setenv("PYTHONHOME", "/usr", 1);
+    setenv("PYTHONDONTWRITEBYTECODE", "1", 1);
     unsetenv("ANDROID_SERIAL");
     unsetenv("ADB_SERVER_PORT");
     unsetenv("ANDROID_ADB_SERVER_PORT");
     setenv("ADB_SERVER_SOCKET", "tcp:127.0.0.1:15038", 1);
-    execl(kPython, kPython, kSupervisor, "--execute", "--config", kSupervisorConfig,
+    execl(kPython, kPython, kSupervisor, "--execute", "--same-domain-proc-observation", "--config", kSupervisorConfig,
           static_cast<char*>(nullptr));
+    Fail(BootstrapFailure::SupervisorChildExec);
     _exit(127);
   }
   g_child_pid = child;
-  if (!WritePid(child) || !InstallSignalHandlers()) {
+  ReadinessObservation readiness;
+  bool ready = WritePid(child);
+  if (!ready) {
+    readiness = {ReadinessPhase::PidPublication, errno, 0, 0};
+  } else if (!InstallSignalHandlers()) {
+    readiness = {ReadinessPhase::SignalHandlers, errno, 0, 0};
+    ready = false;
+  } else {
+    ready = WaitForSupervisorReady(child, &readiness);
+  }
+  if (!ready) {
+    // Preserve the original cause across kill/waitpid/unlink, each of which
+    // may replace errno. Never log argv, state contents, or credentials.
+    const int failure_errno = readiness.error;
+    ReportReadinessFailure(readiness);
     kill(-child, SIGKILL);
-    waitpid(child, nullptr, 0);
+    // Also stop the unreaped direct child if failure preceded its setsid().
+    kill(child, SIGKILL);
+    int stopped_status = 0;
+    ReapPinnedChild(child, &stopped_status);
     unlink(kSupervisorPid);
-    umount2(kMountRoot, MNT_DETACH);
-    CloseLoop(&loop);
-    return Fail("cannot publish or supervise Root Linux process identity");
+    errno = failure_errno;
+    return Fail(BootstrapFailure::CarrierReadiness);
   }
-  SetReady("1");
+  SetProperty("trillionnium.owner_open.ready", "1");
   int status = 0;
-  pid_t waited = -1;
-  do {
-    waited = waitpid(child, &status, 0);
-  } while (waited < 0 && errno == EINTR);
-  if (waited < 0) {
+  if (!ReapPinnedChild(child, &status)) {
     const int saved = errno;
-    SetReady("0");
+    SetProperty("trillionnium.owner_open.ready", "0");
     unlink(kSupervisorPid);
-    const std::string state_target = std::string(kMountRoot) + kStateTarget;
-    umount2(state_target.c_str(), MNT_DETACH);
-    umount2(kMountRoot, MNT_DETACH);
-    CloseLoop(&loop);
     errno = saved;
-    return Fail("cannot reap Root Linux supervisor");
+    return Fail(BootstrapFailure::SupervisorReap);
   }
-  SetReady("0");
+  SetProperty("trillionnium.owner_open.ready", "0");
   unlink(kSupervisorPid);
-  const std::string state_target = std::string(kMountRoot) + kStateTarget;
-  umount2(state_target.c_str(), MNT_DETACH);
-  umount2(kMountRoot, MNT_DETACH);
-  CloseLoop(&loop);
   if (WIFEXITED(status)) return WEXITSTATUS(status);
   if (WIFSIGNALED(status)) return 128 + WTERMSIG(status);
   return 70;

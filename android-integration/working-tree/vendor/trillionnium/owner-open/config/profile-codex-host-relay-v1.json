@@ -1,0 +1,91 @@
+{
+  "schema": "org.trillionnium.owner-open.android-runtime-profile.v4",
+  "revision": "2026-10-09-leap-api37-owner-client-emergency",
+  "profile_id": "leap-codex-host-relay-v1",
+  "enabled_property": "ro.trillionnium.owner_open.enabled",
+  "data_ready_property": "trillionnium.owner_open.data_ready",
+  "ready_property": "trillionnium.owner_open.ready",
+  "emergency_stop_property": "sys.trillionnium.owner_open.stop",
+  "rootlinux_payload": {
+    "image": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs",
+    "image_sha256": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+    "image_manifest": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+    "mount_root": "/data/trillionnium/owner-open/root",
+    "state_root": "/data/trillionnium/owner-open/state",
+    "read_only_lower": true
+  },
+  "android_services": {
+    "bootstrap": "trillionnium-owner-open-bootstrap",
+    "ingress": "trillionnium-owner-open-ingress",
+    "emergency_stop": "trillionnium-owner-open-emergency-stop"
+  },
+  "android_ingress": {
+    "abstract_socket": "trillionnium_owner_open",
+    "allowed_peer_domain": "u:r:trillionnium_owner_open_client:s0",
+    "upstream_socket": "/data/trillionnium/owner-open/state/broker/owner-open.sock",
+    "broker_token": "/data/trillionnium/owner-open/state/broker/owner-open.token",
+    "maximum_connections": 32,
+    "automatic_redispatch": false
+  },
+  "rootlinux_supervisor": {
+    "executable": "/usr/bin/python3",
+    "entry": "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+    "config": "/etc/trillionnium/owner-open/rootlinux-supervisor.json"
+  },
+  "claims": {
+    "source_modules_authored": true,
+    "soong_compiled": false,
+    "selinux_compiled": false,
+    "target_files_built": false,
+    "image_included": false,
+    "physical_device_observed": false,
+    "public_release": false
+  },
+  "claim_ceiling": "LEAP_API37_SOURCE_CANDIDATE_NOT_DEVICE_QUALIFIED",
+  "mount_handoff": {
+    "owner": "android_init",
+    "verified_property": "trillionnium.owner_open.verified",
+    "mount_ready_property": "trillionnium.owner_open.mount_ready",
+    "service_mount_namespace": "mnt",
+    "bootstrap_mount_operations": false
+  },
+  "provider": {
+    "role": "host_codex",
+    "phone_adapter": "/usr/libexec/trillionnium/provider-adapter",
+    "config": "/etc/trillionnium/owner-open/provider-host-relay-v1.json",
+    "long_lived_credentials_on_phone": false,
+    "automatic_reconnect": false,
+    "automatic_redispatch": false
+  },
+  "owner_client_control": {
+    "schema": "org.trillionnium.owner-open.ingress-control.v1",
+    "version": 1,
+    "first_frame_required": true,
+    "maximum_line_bytes": 4096,
+    "maximum_pending_controls": 64,
+    "explicit_user_stop_required": true,
+    "control_available_while_runtime_unready": true,
+    "persistent_inhibit_leaf": "/data/trillionnium/owner-open/state/emergency-stop",
+    "automatic_redispatch": false,
+    "automatic_resume": false,
+    "process_quiescence_claim": "unknown_until_observed",
+    "selinux_source_sha256": {
+      "types": "d187fa0c7ea2ffd3abbce02db721d2071083854fb033bb9849fa2822d0cde7f9",
+      "domains": "93c7c21f59e7209d683038a8f7d03f275a19edd1e4a658a15374998add16eff4",
+      "file_contexts": "dc0818aae7c6809665ac35854a1dc2d382e4da98c5dc29e1813e015907363798",
+      "property_contexts": "64d652c3dce81ba5571c53adaef71e920c8baf99805821da8bb2a29fce2cd1df",
+      "seapp_contexts": "06c87b1957ec3be9419a657d8c2e51a22e826c42bc3391fdcdac6b2e787d0367"
+    },
+    "operation_id_format": "[a-z0-9-]{1,96}",
+    "mechanical_stop_attempts_per_ingress_process": 4096,
+    "mechanical_stop_attempt_deduplication": "operation_id_within_ingress_process_no_eviction",
+    "new_mechanical_stop_requires_new_explicit_user_confirmation": true,
+    "status_never_requests_stop": true,
+    "client_request_deadline_milliseconds": 5000,
+    "client_stop_queue_capacity": 1,
+    "client_status_queue_capacity": 1,
+    "local_stop_intent_persistence": "best_effort_shared_preferences",
+    "local_missing_or_unreadable_state": "inhibit_until_explicit_absent_unfenced_status_and_committed_initialization",
+    "normal_writes_fenced_before_property_and_storage": true
+  }
+}

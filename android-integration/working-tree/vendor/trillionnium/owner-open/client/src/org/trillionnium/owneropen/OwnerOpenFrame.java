@@ -19,6 +19,34 @@ public final class OwnerOpenFrame {
 
     private OwnerOpenFrame() {}
 
+    public static String ingressConnect() {
+        return "{\"schema\":\"org.trillionnium.owner-open.ingress-control.v1\","
+                + "\"version\":1,\"kind\":\"ingress.connect\"}";
+    }
+
+    public static String emergencyControl(String operationId, boolean explicitStop) {
+        if (operationId == null || !operationId.matches("[a-z0-9-]{1,96}")) {
+            throw new IllegalArgumentException("invalid emergency operation ID");
+        }
+        return "{\"schema\":\"org.trillionnium.owner-open.ingress-control.v1\","
+                + "\"version\":1,\"kind\":\"emergency."
+                + (explicitStop ? "stop" : "status") + "\",\"operation_id\":"
+                + quote(operationId) + (explicitStop ? ",\"explicit_user\":true" : "") + "}";
+    }
+
+    /** Exact native status receipt only; duplicates, extras and type drift fail closed. */
+    public static boolean controlStatusAllowsInitialization(String reply, String operationId) {
+        emergencyControl(operationId, false); // Validate the caller-owned correlation ID.
+        String expected = "{\"automatic_redispatch\":false,\"dispatch_inhibited\":false,"
+                + "\"durable_inhibit_confirmed\":false,\"inhibit_observation\":\"absent\","
+                + "\"kind\":\"emergency.result\",\"operation_id\":" + quote(operationId)
+                + ",\"prior_effect_outcome\":\"unknown\",\"process_quiescence\":\"unknown\","
+                + "\"request_attempt\":\"status_only\","
+                + "\"schema\":\"org.trillionnium.owner-open.ingress-control.v1\","
+                + "\"stop_requested\":false,\"version\":1}";
+        return expected.equals(reply);
+    }
+
     public static String turnStart(
             String sessionId, String taskId, String turnId, String userInput) {
         requireId(sessionId, "sessionId");
@@ -35,6 +63,41 @@ public final class OwnerOpenFrame {
                 + "}}";
     }
 
+    /** Exact primary Host request_sha256 for the fields this Android client sends. */
+    public static String turnRequestSha256(String sessionId, String taskId, String turnId,
+            String userInput) {
+        // Validate through the same mechanical serializer used for the actual dispatch.
+        turnStart(sessionId, taskId, turnId, userInput);
+        // serde_json's current default map is sorted by key; absent optional semantics are null.
+        String canonical = "{\"config_generation\":null,\"context_ref\":null,"
+                + "\"profile_id\":\"owner-open\",\"protocol\":\"trillionnium.agent.turn.v1\","
+                + "\"protocol_version\":1,"
+                + "\"schema\":\"trillionnium.owner-open.turn-request-digest.v1\","
+                + "\"session_id\":" + quote(sessionId) + ",\"task_id\":" + quote(taskId)
+                + ",\"turn_id\":" + quote(turnId) + ",\"user_input\":" + quote(userInput) + "}";
+        return sha256Hex(canonical);
+    }
+
+    /** Existing deterministic turn scope, never a producer epoch or effect identity. */
+    public static String turnStreamId(String sessionId, String taskId, String turnId) {
+        requireId(sessionId, "sessionId"); requireId(taskId, "taskId"); requireId(turnId, "turnId");
+        return "r5-stream-" + sha256Hex("{\"profile_id\":\"owner-open\","
+                + "\"schema\":\"trillionnium.owner-open.turn-stream.v1\",\"session_id\":" + quote(sessionId)
+                + ",\"task_id\":" + quote(taskId) + ",\"turn_id\":" + quote(turnId) + "}");
+    }
+
+    private static String sha256Hex(String canonical) {
+        try {
+            byte[] digest = java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(canonical.getBytes(StandardCharsets.UTF_8));
+            StringBuilder result = new StringBuilder(64);
+            for (byte value : digest) result.append(String.format(java.util.Locale.ROOT, "%02x", value & 255));
+            return result.toString();
+        } catch (java.security.NoSuchAlgorithmException error) {
+            throw new AssertionError("required SHA-256 unavailable", error);
+        }
+    }
+
     public static String turnCancel(String sessionId, String turnId) {
         requireId(sessionId, "sessionId");
         requireId(turnId, "turnId");
@@ -46,9 +109,17 @@ public final class OwnerOpenFrame {
 
     public static String turnInspect(
             String sessionId, String taskId, String turnId, long inclusiveCursor, int limit) {
+        return turnInspect(sessionId, taskId, turnId, null, inclusiveCursor, limit);
+    }
+
+    public static String turnInspect(String sessionId, String taskId, String turnId,
+            String requestSha256, long inclusiveCursor, int limit) {
         requireId(sessionId, "sessionId");
         requireId(taskId, "taskId");
         requireId(turnId, "turnId");
+        if (requestSha256 != null && !requestSha256.matches("[0-9a-f]{64}")) {
+            throw new IllegalArgumentException("invalid turn request digest");
+        }
         if (inclusiveCursor < 0) {
             throw new IllegalArgumentException("inclusiveCursor must be non-negative");
         }
@@ -59,6 +130,7 @@ public final class OwnerOpenFrame {
                 + "\"session_id\":" + quote(sessionId) + ","
                 + "\"task_id\":" + quote(taskId) + ","
                 + "\"turn_id\":" + quote(turnId) + ","
+                + (requestSha256 == null ? "" : "\"request_sha256\":" + quote(requestSha256) + ",")
                 + "\"inclusive_cursor\":" + inclusiveCursor + ","
                 + "\"limit\":" + limit
                 + "}}";
@@ -124,6 +196,12 @@ public final class OwnerOpenFrame {
     }
 
     public static String readLine(InputStream input) throws IOException {
+        return readLine(input, MAX_LINE_BYTES);
+    }
+
+    public static String readLine(InputStream input, int maximumWireBytes) throws IOException {
+        if (maximumWireBytes < 2 || maximumWireBytes > MAX_LINE_BYTES)
+            throw new IllegalArgumentException("invalid wire byte bound");
         Objects.requireNonNull(input, "input");
         ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
         // MAX_LINE_BYTES is the complete wire-line bound, including the
@@ -147,7 +225,7 @@ public final class OwnerOpenFrame {
                 }
                 return output.toString(StandardCharsets.UTF_8);
             }
-            if (output.size() >= MAX_PAYLOAD_BYTES) {
+            if (output.size() >= maximumWireBytes - 1) {
                 throw new IOException("owner-open frame exceeds the byte bound");
             }
             output.write(current);
