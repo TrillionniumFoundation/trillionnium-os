@@ -1,0 +1,1 @@
+PASS: fresh publication, no-clobber collision, symlink collision, empty output, fsync failure

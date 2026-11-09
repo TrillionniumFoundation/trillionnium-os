@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.mnn-v8-independent-readonly-review.v1",
+  "no_blocking_issue_found": true,
+  "parent": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "app_manifest": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "helper_sha256": "961594375f7a8c6967426695b38f478106c09fa02e8c60b52eda3061f816d65d",
+  "transfer_sha256": "75c75071b23a5987fdc9d30c0da8e75d7c857d8a59eb1315b0d673d616e9461b",
+  "qualifier_sha256": "4a20e508438286517659b51ed27829d64dfdf6ee8d22967d6d970ad0a602ae5f",
+  "delta": {
+    "rebuild_only": [
+      "APP_MANIFEST_SHA",
+      "helper_revision",
+      "rejection wording"
+    ],
+    "transfer_only": [
+      "APP_SHA",
+      "HELPER_SHA"
+    ],
+    "qualifier_unchanged": true
+  },
+  "focused_checks": [
+    "actual_public20_source_accepted",
+    "actual_fdb7_old_manifest_rejected_before_member_walk",
+    "synthetic_current_report_identity_accepted_only_as_unit_input",
+    "old_app_manifest_sha256_rejected",
+    "old_helper_sha256_rejected",
+    "both_v8_manifests_exact"
+  ],
+  "synthetic_report_is_not_build_evidence": true,
+  "native_build_performed": false,
+  "phone_contacted": false,
+  "reviewed_files_modified": false
+}

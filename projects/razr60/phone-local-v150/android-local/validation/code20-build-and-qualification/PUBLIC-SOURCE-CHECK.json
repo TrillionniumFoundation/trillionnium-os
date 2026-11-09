@@ -1,0 +1,13 @@
+{
+  "schema": "hepta.code20.public-source-verification.v1",
+  "source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "source_members": 1058,
+  "source_verifier_exit": 0,
+  "frozen_host_report_sha256": "2f062393b4210dde381bc9c8b0e960c54c861103d5b717593a05c9ce9c1198c1",
+  "frozen_host_checks_passed": 56,
+  "fresh_full_public_host_suite_run": false,
+  "generic_scanner_synthetic_checks_passed": 8,
+  "workflow_yaml_parsed": true,
+  "fresh_public_android_or_ci_build_run": false,
+  "phone_contacted": false
+}

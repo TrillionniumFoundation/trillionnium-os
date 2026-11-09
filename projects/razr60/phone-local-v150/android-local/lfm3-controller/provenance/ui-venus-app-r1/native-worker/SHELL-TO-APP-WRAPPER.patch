@@ -1,0 +1,274 @@
+--- a/native/probe-worker.c
++++ b/native/probe-worker.c
+@@ -48,19 +48,33 @@
+ #define main venus_worker_main
+ #include "worker-venus.c"
+ #undef main
++#include "app-entry-guard.h"
+ int main(int argc,char **argv){
+     if(argc==2&&!strcmp(argv[1],"--help"))return venus_worker_main(argc,argv);
+     pid_t expected=0;
+-    if(getuid()!=2000||geteuid()!=2000){
+-        fputs("HEPTA_UI_VENUS experimental artifact is shell-only, not ordinary-App qualified\n",stderr);return 78;
+-    }
+-    if(hepta_take_expected_parent(&argc,argv,&expected)!=0||hepta_arm_parent_death_guard(expected)!=0){
++    VenusAppEntry entry={0};
++    if(hepta_take_expected_parent(&argc,argv,&expected)!=0||
++       !venus_app_take_arguments(&argc,argv,&entry)||
++       !venus_app_uid_matches(&entry)||hepta_arm_parent_death_guard(expected)!=0){
+         fputs("HEPTA_UI_VENUS parent death guard failed\n",stderr);return 78;
+     }
+-    fprintf(stderr,"HEPTA_UI_VENUS parent=%ld uid=%lu euid=%lu pid=%ld\n",
++    entry.expected_parent=expected;
++    Options options;
++    if(!parse(argc,argv,&options)||!venus_app_check_parent(&entry,false)||
++       !venus_app_bind_scope(&entry,&options)){
++        fputs("HEPTA_UI_VENUS_APP direct App parent or private request scope invalid\n",stderr);return 78;
++    }
++    fprintf(stderr,"HEPTA_UI_VENUS_APP parent=%ld uid=%lu euid=%lu pid=%ld private_scope=verified\n",
+             (long)getppid(),(unsigned long)getuid(),(unsigned long)geteuid(),(long)getpid());
+     const char *version=geniex_version();
+     if(!version||(strcmp(version,"0.10.0")&&strcmp(version,"v0.10.0")))return 78;
+     int rc=probe_bootstrap();
+-    return rc?rc:venus_worker_main(argc,argv);
++    if(rc)return rc;
++    entry.same_directory_bootstrap_verified=true;
++    int core_rc=venus_worker_main(argc,argv);
++    bool parent_after=venus_app_check_parent(&entry,true);
++    bool scope_after=venus_app_scope_unchanged(&entry);
++    rc=parent_after&&scope_after?core_rc:78;
++    if(!venus_app_publish_binding(&entry,&options,core_rc,rc,parent_after,scope_after))return 74;
++    return rc;
+ }
+--- /dev/null
++++ b/native/app-entry-guard.h
+@@ -0,0 +1,229 @@
++#ifndef HEPTA_UI_VENUS_APP_ENTRY_GUARD_H
++#define HEPTA_UI_VENUS_APP_ENTRY_GUARD_H
++
++/* Included after the unchanged first-frame VLM worker. This file adds only an
++ * App execution boundary and a separate receipt; it does not change inference,
++ * model hashes, sampler, context, template, image handling or SDK calls. */
++#define VENUS_APP_PACKAGE "org.trillionnium.hepta.local"
++#define VENUS_APP_BINDING_FILE "app-process-binding.json"
++
++typedef struct {
++    unsigned long expected_uid;
++    pid_t expected_parent;
++    char files[PATH_MAX],model_directory[PATH_MAX],runs_directory[PATH_MAX],run_directory[PATH_MAX];
++    char binding_path[PATH_MAX];
++    struct stat directories[4];
++    char parent_cmdline_sha[2][65],parent_status_sha[2][65];
++    size_t parent_cmdline_bytes[2];
++    bool same_directory_bootstrap_verified;
++} VenusAppEntry;
++
++static bool venus_app_decimal(const char *text,unsigned long maximum,unsigned long *out){
++    if(!text||!*text||text[0]=='0')return false;
++    unsigned long value=0;
++    for(const unsigned char *p=(const unsigned char*)text;*p;p++){
++        if(*p<'0'||*p>'9'||value>(maximum-(unsigned long)(*p-'0'))/10)return false;
++        value=value*10+(unsigned long)(*p-'0');
++    }
++    *out=value;return true;
++}
++
++/* --expected-parent-pid has already been consumed by the unchanged guard.
++ * Exactly these two additional leading options are consumed by this wrapper. */
++static bool venus_app_take_arguments(int *argc,char **argv,VenusAppEntry *entry){
++    if(!argc||!argv||!entry||*argc<5||!argv[1]||!argv[2]||!argv[3]||!argv[4]||
++       strcmp(argv[1],"--expected-app-uid")||strcmp(argv[3],"--app-files-dir")||
++       !venus_app_decimal(argv[2],INT_MAX,&entry->expected_uid)||entry->expected_uid<10000||
++       !canonical(argv[4]))return false;
++    const size_t n=strlen(argv[4]);
++    if(n>=sizeof(entry->files))return false;
++    memcpy(entry->files,argv[4],n+1);
++    for(int i=5;i<*argc;i++)if(!argv[i]||!strcmp(argv[i],"--expected-app-uid")||
++       !strcmp(argv[i],"--app-files-dir"))return false;
++    memmove(argv+1,argv+5,(size_t)(*argc-4)*sizeof(*argv));
++    *argc-=4;return true;
++}
++
++static bool venus_app_uid_matches(const VenusAppEntry *entry){
++    return entry->expected_uid>=10000&&(unsigned long)getuid()==entry->expected_uid&&
++        (unsigned long)geteuid()==entry->expected_uid;
++}
++
++static bool venus_app_proc_file(pid_t parent,const char *name,unsigned char *buffer,size_t capacity,size_t *size){
++    char path[96];
++    int n=snprintf(path,sizeof(path),"/proc/%ld/%s",(long)parent,name);
++    if(n<0||(size_t)n>=sizeof(path)||capacity<2)return false;
++    int fd=open(path,O_RDONLY|O_CLOEXEC|O_NOFOLLOW);
++    if(fd<0)return false;
++    size_t used=0;bool ok=true;
++    while(used<capacity){
++        ssize_t got=read(fd,buffer+used,capacity-used);
++        if(got<0&&errno==EINTR)continue;
++        if(got<0){ok=false;break;}
++        if(!got)break;
++        used+=(size_t)got;
++    }
++    if(close(fd)!=0)ok=false;
++    if(!ok||!used||used>=capacity)return false;
++    *size=used;return true;
++}
++
++static bool venus_app_status_number(const char **cursor,const char *end,unsigned long *value){
++    const char *at=*cursor;
++    while(at<end&&(*at==' '||*at=='\t'))at++;
++    if(at==end||*at<'0'||*at>'9')return false;
++    unsigned long n=0;
++    do{
++        if(n>((unsigned long)INT_MAX-(unsigned long)(*at-'0'))/10)return false;
++        n=n*10+(unsigned long)(*at-'0');at++;
++    }while(at<end&&*at>='0'&&*at<='9');
++    if(at<end&&*at!=' '&&*at!='\t')return false;
++    *cursor=at;*value=n;return true;
++}
++
++static bool venus_app_status_tail(const char *at,const char *end){
++    while(at<end&&(*at==' '||*at=='\t'))at++;
++    return at==end;
++}
++
++static bool venus_app_parent_status(const unsigned char *data,size_t size,pid_t parent,unsigned long uid){
++    if(!size||memchr(data,0,size)||data[size-1]!='\n')return false;
++    const char *at=(const char*)data,*end=at+size;bool have_pid=false,have_uid=false;
++    while(at<end){
++        const char *line_end=memchr(at,'\n',(size_t)(end-at));
++        if(!line_end)return false;
++        size_t length=(size_t)(line_end-at);
++        if(length>=4&&!memcmp(at,"Pid:",4)){
++            const char *number=at+4;unsigned long value=0;
++            if(have_pid||!venus_app_status_number(&number,line_end,&value)||
++               !venus_app_status_tail(number,line_end)||value!=(unsigned long)parent)return false;
++            have_pid=true;
++        }else if(length>=4&&!memcmp(at,"Uid:",4)){
++            const char *number=at+4;unsigned long value=0;
++            if(have_uid)return false;
++            for(unsigned i=0;i<4;i++)if(!venus_app_status_number(&number,line_end,&value)||value!=uid)return false;
++            if(!venus_app_status_tail(number,line_end))return false;
++            have_uid=true;
++        }
++        at=line_end+1;
++    }
++    return have_pid&&have_uid;
++}
++
++static bool venus_app_parent_cmdline(const unsigned char *data,size_t size){
++    static const unsigned char package[]=VENUS_APP_PACKAGE;
++    const size_t n=sizeof(package)-1;
++    if(size<=n||memcmp(data,package,n))return false;
++    /* Android retains argv storage as NUL padding. No additional argument,
++     * shortened process name or package suffix is accepted. */
++    for(size_t i=n;i<size;i++)if(data[i])return false;
++    return true;
++}
++
++static bool venus_app_check_parent(VenusAppEntry *entry,bool after){
++    unsigned char status[16385],cmdline[4097];size_t status_size=0,cmdline_size=0;
++    if(!venus_app_uid_matches(entry)||getppid()!=entry->expected_parent||
++       !venus_app_proc_file(entry->expected_parent,"status",status,sizeof(status),&status_size)||
++       !venus_app_parent_status(status,status_size,entry->expected_parent,entry->expected_uid)||
++       !venus_app_proc_file(entry->expected_parent,"cmdline",cmdline,sizeof(cmdline),&cmdline_size)||
++       !venus_app_parent_cmdline(cmdline,cmdline_size)||getppid()!=entry->expected_parent)return false;
++    unsigned index=after?1u:0u;
++    hash_bytes(status,status_size,entry->parent_status_sha[index]);
++    hash_bytes(cmdline,cmdline_size,entry->parent_cmdline_sha[index]);
++    entry->parent_cmdline_bytes[index]=cmdline_size;return true;
++}
++
++static bool venus_app_directory(const char *path,struct stat *st){
++    if(!canonical(path))return false;
++    int fd=open(path,O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOFOLLOW);
++    if(fd<0)return false;
++    struct stat named;
++    bool ok=fstat(fd,st)==0&&lstat(path,&named)==0&&same_stat(st,&named)&&
++        S_ISDIR(st->st_mode)&&st->st_uid==getuid()&&(st->st_mode&0777)==0700;
++    if(close(fd)!=0)ok=false;
++    return ok;
++}
++
++static bool venus_app_small_file(const char *path){
++    struct stat st;
++    return canonical(path)&&lstat(path,&st)==0&&S_ISREG(st.st_mode)&&st.st_uid==getuid()&&
++        st.st_nlink==1&&(st.st_mode&0777)==0600;
++}
++
++static bool venus_app_expected_path(const char *actual,const char *directory,const char *name){
++    char expected[PATH_MAX];int n=snprintf(expected,sizeof(expected),"%s/%s",directory,name);
++    return n>=0&&(size_t)n<sizeof(expected)&&actual&&!strcmp(expected,actual);
++}
++
++static bool venus_app_bind_scope(VenusAppEntry *entry,const Options *o){
++    if(!o->id||!id_ok(o->id)||!o->system||!o->image||o->grammar||o->tokenizer)return false;
++    int n=snprintf(entry->model_directory,sizeof(entry->model_directory),"%s/ui-venus-model",entry->files);
++    if(n<0||(size_t)n>=sizeof(entry->model_directory))return false;
++    n=snprintf(entry->runs_directory,sizeof(entry->runs_directory),"%s/ui-venus-runs",entry->files);
++    if(n<0||(size_t)n>=sizeof(entry->runs_directory))return false;
++    n=snprintf(entry->run_directory,sizeof(entry->run_directory),"%s/%s",entry->runs_directory,o->id);
++    if(n<0||(size_t)n>=sizeof(entry->run_directory))return false;
++    n=snprintf(entry->binding_path,sizeof(entry->binding_path),"%s/" VENUS_APP_BINDING_FILE,entry->run_directory);
++    if(n<0||(size_t)n>=sizeof(entry->binding_path))return false;
++    const char *directories[]={entry->files,entry->model_directory,entry->runs_directory,entry->run_directory};
++    for(unsigned i=0;i<4;i++)if(!venus_app_directory(directories[i],&entry->directories[i]))return false;
++    if(!venus_app_expected_path(o->model,entry->model_directory,venus_weights[0].name)||
++       !venus_app_expected_path(o->mmproj,entry->model_directory,venus_weights[1].name))return false;
++    const char *paths[]={o->prompt,o->system,o->image,o->result,o->text};
++    static const char *names[]={"prompt.txt","system.txt","screen.png","native-result.json","raw.txt"};
++    for(unsigned i=0;i<5;i++)if(!venus_app_expected_path(paths[i],entry->run_directory,names[i]))return false;
++    for(unsigned i=0;i<3;i++)if(!venus_app_small_file(paths[i]))return false;
++    for(unsigned i=3;i<5;i++){
++        struct stat st;if(lstat(paths[i],&st)==0||errno!=ENOENT)return false;
++    }
++    struct stat unused;
++    return lstat(entry->binding_path,&unused)<0&&errno==ENOENT;
++}
++
++static bool venus_app_scope_unchanged(const VenusAppEntry *entry){
++    const char *paths[]={entry->files,entry->model_directory,entry->runs_directory,entry->run_directory};
++    for(unsigned i=0;i<4;i++){
++        struct stat now;const struct stat *before=&entry->directories[i];
++        if(!venus_app_directory(paths[i],&now)||now.st_dev!=before->st_dev||now.st_ino!=before->st_ino||
++           now.st_uid!=before->st_uid||now.st_gid!=before->st_gid||now.st_mode!=before->st_mode)return false;
++    }
++    return true;
++}
++
++static bool venus_app_publish_binding(const VenusAppEntry *entry,const Options *o,int core_rc,int wrapper_rc,
++                                      bool parent_after,bool scope_after){
++    Destination dest={.dir=-1,.fd=-1};
++    if(!reserve_destination(&dest,entry->binding_path,o->id)){destination_close(&dest);return false;}
++    int duplicate=dup(dest.fd);FILE *f=duplicate<0?NULL:fdopen(duplicate,"w");
++    if(!f){if(duplicate>=0)close(duplicate);destination_close(&dest);return false;}
++    fputs("{\"schema\":\"hepta.ui-venus.app-process-binding.v1\","
++          "\"worker_artifact_role\":\"ordinary-app-model-only-candidate\",\"request_id\":",f);json_string(f,o->id);
++    fprintf(f,",\"expected_app_uid\":%lu,\"uid\":%lu,\"euid\":%lu,\"pid\":%ld,"
++        "\"expected_parent_pid\":%ld,\"observed_parent_pid\":%ld,\"parent_package\":",
++        entry->expected_uid,(unsigned long)getuid(),(unsigned long)geteuid(),(long)getpid(),
++        (long)entry->expected_parent,(long)getppid());json_string(f,VENUS_APP_PACKAGE);
++    fprintf(f,",\"parent_death_signal\":%d,\"direct_parent_verified_before\":true,"
++        "\"direct_parent_verified_after\":%s,\"private_scope_verified_before\":true,"
++        "\"private_scope_verified_after\":%s,\"same_directory_bootstrap_verified\":%s,"
++        "\"core_return_code\":%d,\"wrapper_return_code\":%d,\"app_files_directory\":",
++        SIGKILL,parent_after?"true":"false",scope_after?"true":"false",
++        entry->same_directory_bootstrap_verified?"true":"false",core_rc,wrapper_rc);json_string(f,entry->files);
++    fputs(",\"run_directory\":",f);json_string(f,entry->run_directory);
++    fputs(",\"model_directory\":",f);json_string(f,entry->model_directory);
++    fputs(",\"native_result_path\":",f);json_string(f,o->result);
++    fputs(",\"raw_output_path\":",f);json_string(f,o->text);
++    fputs(",\"parent_cmdline_sha256_before\":",f);json_string(f,entry->parent_cmdline_sha[0]);
++    fputs(",\"parent_cmdline_sha256_after\":",f);json_string(f,parent_after?entry->parent_cmdline_sha[1]:NULL);
++    fputs(",\"parent_status_sha256_before\":",f);json_string(f,entry->parent_status_sha[0]);
++    fputs(",\"parent_status_sha256_after\":",f);json_string(f,parent_after?entry->parent_status_sha[1]:NULL);
++    fprintf(f,",\"parent_cmdline_bytes_before\":%zu,\"parent_cmdline_bytes_after\":%zu,"
++        "\"parent_cmdline_policy\":\"exact-package-followed-only-by-NUL-padding\","
++        "\"selinux_domain_proven\":false,\"ordinary_app_qualification_claimed\":false,"
++        "\"native_action_authorized\":false,\"actions_dispatched\":false}\n",
++        entry->parent_cmdline_bytes[0],entry->parent_cmdline_bytes[1]);
++    bool ok=!ferror(f)&&fflush(f)==0;
++    if(fclose(f)!=0)ok=false;
++    if(ok)ok=publish(&dest);
++    destination_close(&dest);return ok;
++}
++#endif

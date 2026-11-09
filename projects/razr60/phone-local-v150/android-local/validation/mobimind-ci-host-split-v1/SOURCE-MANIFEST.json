@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.mnn-ci-host-split-source.v1",
+  "app_source_modified": false,
+  "compiler_identity_overridden": false,
+  "runtime_pins_modified": false,
+  "files": {
+    "README.md": {
+      "bytes": 2087,
+      "sha256": "272f02f84fa384315a7094b145894648c56228bb1187d088f69b181dc04738c1"
+    },
+    "verify_ci_runtime_bundle.py": {
+      "bytes": 6965,
+      "sha256": "8f219340449c84a47a42e7ded58be669415d0495e71bd82d0ef48c67b734a879"
+    }
+  }
+}

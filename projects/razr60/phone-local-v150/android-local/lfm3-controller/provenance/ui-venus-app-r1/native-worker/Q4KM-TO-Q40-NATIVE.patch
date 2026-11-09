@@ -1,0 +1,24 @@
+--- frozen17/native/venus-runtime.inc
++++ q4_0/native/venus-runtime.inc
+@@ -15,9 +15,9 @@
+ } VenusWeight;
+ 
+ static VenusWeight venus_weights[2]={
+-    {.name="UI-Venus-2-9B-Q4_K_M.gguf",
+-     .expected_sha="f2a8533b4adf7dc92d0731c39bd910438d229593f2e524b8f6e0e0e83fd1ec8d",
+-     .expected_bytes=UINT64_C(5910782752),.fd=-1},
++    {.name="UI-Venus-2-9B-Q4_0.gguf",
++     .expected_sha="2e881d6e74899b47b1f0c9052abeeb0a7ff55913dfb18d942a3de3cadb3d1adb",
++     .expected_bytes=UINT64_C(5482832672),.fd=-1},
+     {.name="mmproj-UI-Venus-2-9B-f16.gguf",
+      .expected_sha="6ef77c3bf87391664be7cd71c595352e7281dabe52f24e961e2deace550f3af2",
+      .expected_bytes=UINT64_C(918165664),.fd=-1}
+@@ -178,7 +178,7 @@
+     for(unsigned i=0;i<2;i++){if(venus_weights[i].fd>=0)close(venus_weights[i].fd);venus_weights[i].fd=-1;}
+ }
+ static void venus_write_contract(FILE *f,const Options *options,const geniex_ProfileData *profile,bool generated){
+-    fputs("\"model_profile\":\"ui-venus2-9b-q4_k_m-f16-mmproj\","
++    fputs("\"model_profile\":\"ui-venus2-9b-q4_0-f16-mmproj\","
+           "\"model_repository\":\"bartowski/UI-Venus-2-9B-GGUF\","
+           "\"model_revision\":\"3d2022e8bbe1fb95f12ca530a9d6ef063807d593\","
+           "\"official_mobile_revision\":\"6d5f8baf3d28868b3e32fefa9da501e99964a8c5\","

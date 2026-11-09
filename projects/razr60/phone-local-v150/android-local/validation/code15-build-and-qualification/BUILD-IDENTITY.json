@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.code15.public-build-summary.v1",
+  "version_code": 15,
+  "version_name": "0.15.0-local-mnn-loader",
+  "source_manifest_sha256": "aaae9cd4505dc4c3dbbb0d8f246b1193f284ed18b2be1263f40445df466575db",
+  "source_archive_sha256": "533382e938debe57421ac9cc41fe2cbbad463060a8031edbfc0df84793c14747",
+  "frozen_manifest_members": 851,
+  "host_gates": 39,
+  "all_host_gates_passed": true,
+  "actual_android_java_dex_native_rebuilt": true,
+  "installed_candidate_apk": {
+    "bytes": 20604590,
+    "sha256": "0b5ac055a707cc0cda1b5fdc03a995d4ee5946e928aaeeee119cbe201d7ce59c"
+  },
+  "dex_sha256": "69427b90334009dd59ac92b46e90a811e3a193b58b3070fefdc9b5c5e6dd5267",
+  "geniex_worker_source_sha256": "605a080c42415bc461e050385da537d94af9a880c73b5d651c65e3a88c1f1c3a",
+  "geniex_worker_elf_sha256": "6a207fce674c95f2d588251861fa737004a54d124e7c244be1bd240df363e81d",
+  "all_16_native_members_unchanged_from_code14": true,
+  "native_closure": [
+    {
+      "name": "libc++_shared.so",
+      "bytes": 9236352,
+      "sha256": "77a34d3f03b17709f3f6473f37cb7795314e51fa3e5e652b5c37d53cfd05c754"
+    },
+    {
+      "name": "libgeniex_plugin_llama_cpp.so",
+      "bytes": 377040,
+      "sha256": "cc186649cc0dab10240395f89d14d007e62b3bc78283060027d37ee80a21604a"
+    },
+    {
+      "name": "libgeniex.so",
+      "bytes": 19781824,
+      "sha256": "99e2dbc8d95b08f8bb31b61b3c84219f4b70d6effeb38d224d54eeb621f28a56"
+    },
+    {
+      "name": "libggml-base.so",
+      "bytes": 3534496,
+      "sha256": "bdd15d0ea024fd34a64d2eba32de79f615d35b79253e25b27b1440944fa6df40"
+    },
+    {
+      "name": "libggml-cpu.so",
+      "bytes": 936328,
+      "sha256": "b603d578bb3beb0c3727be748f327c002619827df701bf0b894632272670943b"
+    },
+    {
+      "name": "libggml-hexagon.so",
+      "bytes": 3874328,
+      "sha256": "67b886eb9bcdd298268a8463d74f07da4213024fe7ed89911c2e76c9e0d1491f"
+    },
+    {
+      "name": "libggml-htp-v79.so",
+      "bytes": 858848,
+      "sha256": "110d9e6ff7cff02fa73b0a3c03d8259222758934bdbcae5c819dae6729f362d5"
+    },
+    {
+      "name": "libggml-opencl.so",
+      "bytes": 7886880,
+      "sha256": "e395cf83e695aa9d21dd90a89460f936742c7c8c706cfbbdfa647dd316dd0875"
+    },
+    {
+      "name": "libggml.so",
+      "bytes": 41088,
+      "sha256": "5dff1d15e528d1accb1704a1049a6556784cbfc32131fb64cef5c8847c171149"
+    },
+    {
+      "name": "libhepta_local_runner.so",
+      "bytes": 49048,
+      "sha256": "6a207fce674c95f2d588251861fa737004a54d124e7c244be1bd240df363e81d"
+    },
+    {
+      "name": "libhepta_mobimind_runner.so",
+      "bytes": 2186768,
+      "sha256": "b3899c03f88070e0042132dc9f17d81437d2b018c3406598f97939fc52ff9020"
+    },
+    {
+      "name": "libllama-common.so",
+      "bytes": 6242864,
+      "sha256": "8b05589a739339dd38ad524e9733d89650ef40b0a83fe3a95ff83716c98c6122"
+    },
+    {
+      "name": "libllama.so",
+      "bytes": 5642424,
+      "sha256": "4bb7bd0f4fe0bd24ac32a80f920838fd2f525430ad58c5d5742cc745f7d0b835"
+    },
+    {
+      "name": "libMNN.so",
+      "bytes": 6408488,
+      "sha256": "5019009bfc9b209afeb89d23db0f1c52985cc1111e3364a448f7c7ed7a4c457d"
+    },
+    {
+      "name": "libmtmd.so",
+      "bytes": 1643536,
+      "sha256": "ccf32e264cdccc6378d5e4e005f4aedae39eb3e9a198550c5f7f3a4583bcaa4d"
+    },
+    {
+      "name": "libomp.so",
+      "bytes": 1234864,
+      "sha256": "b0b507bb9e89360304272ba335d5fb2f6661f88842c2b3c749474cb7b8acda76"
+    }
+  ],
+  "same_existing_signer_verified": true,
+  "signer_sha256": "202d00f853589c753069189086e0c76cb308d11745c33e70200985e4de3129d5",
+  "new_signing_key_created": false,
+  "static_acceptance_sha256": "f401e952280c6614575aaf444c1a2ec09780101e6eb4d92090498dec46db36d1",
+  "compiler_build_host": "macOS",
+  "ci_result_not_inferred_from_code14": true,
+  "phone_private_evidence_included": false
+}

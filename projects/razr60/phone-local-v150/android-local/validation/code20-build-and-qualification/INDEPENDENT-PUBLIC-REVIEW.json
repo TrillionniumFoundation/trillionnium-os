@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.code20.public-source-independent-review.v1",
+  "reviewer": "latest_mobile_models",
+  "scope": "Read-only source/privacy/provenance review; no build, publish, phone operation or modification of either source tree.",
+  "frozen_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
+  "public_source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+  "source_equivalence_report_sha256_at_recording": "51eb53c276bf5649785251c50e5d34ec7477b201357b4a27eaee3f569e9f9a0f",
+  "changed_files_excluding_top_manifest": [
+    {
+      "path": "UI-VENUS-APP-PROBE.md",
+      "original_bytes": 11233,
+      "original_sha256": "e4df80e46eeaa4f68599f5024030dfab7a68d88496a37fb31ed39e27a5a6e536",
+      "public_bytes": 11967,
+      "public_sha256": "745eff0b670404ad682bca78000f8853fa28ccb07ae48ca155cca1da17b36ca8"
+    },
+    {
+      "path": "native/ui-venus-runtime-pins.json",
+      "original_bytes": 2184,
+      "original_sha256": "c3ec1a636c39ef2908239f948694faa36b20f75c141749edd2302ffa985a3793",
+      "public_bytes": 2184,
+      "public_sha256": "4902ad58283c5673d9932bc8a9d09eec24547a88435f4b3591151044582247f7"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+      "original_bytes": 7678,
+      "original_sha256": "d2b91f0e6425c896f3249b8eb156884c08cc31524dd76cd664e3c4455bd3e748",
+      "public_bytes": 7678,
+      "public_sha256": "8fcdc6c8edb378314f2afc74c574a2fd1037ccf49c8741484c9c484037666413"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+      "original_bytes": 3027,
+      "original_sha256": "9b893e4f222a3a5701d64dc5266dd89428797e5d8e079ee877cddcd3ad6f62e1",
+      "public_bytes": 3283,
+      "public_sha256": "c7316e8e8652039ee87caf61b800e8888eb8fb4551babbbb35d093126993857e"
+    }
+  ],
+  "production_java_count": 49,
+  "production_java_all_byte_identical": true,
+  "suffix_audit_set_count": 148,
+  "suffix_audit_set_description": "Previously independently checked code/resource suffix audit, including historical and test material; not the full build receipt source_inputs set.",
+  "actual_build_identity_input_count": 141,
+  "actual_build_identity_path_sets_equal": true,
+  "actual_build_identity_changed_inputs": [
+    {
+      "path": "native/ui-venus-runtime-pins.json",
+      "frozen_sha256": "c3ec1a636c39ef2908239f948694faa36b20f75c141749edd2302ffa985a3793",
+      "public_sha256": "4902ad58283c5673d9932bc8a9d09eec24547a88435f4b3591151044582247f7"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
+      "frozen_sha256": "d2b91f0e6425c896f3249b8eb156884c08cc31524dd76cd664e3c4455bd3e748",
+      "public_sha256": "8fcdc6c8edb378314f2afc74c574a2fd1037ccf49c8741484c9c484037666413"
+    },
+    {
+      "path": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+      "frozen_sha256": "9b893e4f222a3a5701d64dc5266dd89428797e5d8e079ee877cddcd3ad6f62e1",
+      "public_sha256": "c7316e8e8652039ee87caf61b800e8888eb8fb4551babbbb35d093126993857e"
+    }
+  ],
+  "actual_full_build_receipt_inputs_byte_identical": false,
+  "production_compilation_units_unchanged": true,
+  "fresh_public_build_and_new_receipt_required": true,
+  "privacy_scan_record": {
+    "scope": "Records the independently completed read-only scan preceding this report; no sensitive literal is reproduced here.",
+    "actual_device_serial_hits_frozen": 1,
+    "actual_device_serial_hits_public": 0,
+    "serial_original_location": "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py",
+    "known_private_capture_or_owner_digest_hits_public": 0,
+    "literal_private_keys_or_credentials_or_authenticated_signed_urls_observed": false,
+    "credential_or_keystore_files_observed": false,
+    "synthetic_png": {
+      "path": "tests/ui-venus/screen.png",
+      "bytes": 33,
+      "ihdr_only": true,
+      "idat_present": false,
+      "real_phone_capture": false
+    },
+    "historical_provenance_files_containing_build_host_absolute_user_paths": 12,
+    "historical_paths_note": "Observed build provenance, unchanged from the previously reviewed public19 derivative; not secrets or phone captures. Source owner was notified; historical receipts were not rewritten.",
+    "public_model_and_runtime_hashes_treated_as_secrets": false
+  },
+  "verdict": "No new blocking issue after documenting the 141-input/3-metadata-change boundary; this is a bounded review, not a guarantee that arbitrary undisclosed secrets cannot exist."
+}

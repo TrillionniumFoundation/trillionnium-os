@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.ui-venus.app-entry-test-source.v1",
+  "generated_from_exact_actual_functions": true,
+  "helper_sha256": "f9d8d6d4cc29257990c9a1d85dda5550157a473511f199683d63b7aa45f24bf5",
+  "original_core_sha256": "c029dc5b81f655f7f15eab158e4dc3f37ba70e9bd21b0abdd92ab0bd1cb4fa78",
+  "test_source_sha256": "f61c7c665281907b21bb49242a4697dfc126d6ac0e56fa060f275fbfec51f829",
+  "compiled": false,
+  "executed": false,
+  "compile_after_review": "cc -std=c11 -Wall -Wextra -Werror tests/app_entry_contract.c -o tests/app_entry_contract"
+}

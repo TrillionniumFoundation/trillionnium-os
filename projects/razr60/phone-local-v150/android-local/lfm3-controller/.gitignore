@@ -1,0 +1,12 @@
+/out/
+/keys/
+/stage/
+/control-sources/
+__pycache__/
+*.apk
+*.idsig
+*.so
+*.dex
+*.jks
+*.keystore
+*.bin
