@@ -15,17 +15,21 @@ public final class PhoneObservation {
         public final String id, packageName, className, viewId, text, description;
         public final ObservedChildText.Result childText;
         public final ObservedScrollActions scrollActions;
+        /** Classification of the full observed labels, before display truncation. */
+        public final PersistentActionPolicy.Decision clickPolicy;
         public final Rect bounds;
         public final boolean clickable, editable, scrollable, enabled, focused, password;
         Node(String id, String packageName, String className, String viewId, String text,
              String description, Rect bounds, boolean clickable, boolean editable,
              boolean scrollable, boolean enabled, boolean focused, boolean password,ObservedChildText.Result childText,
-             ObservedScrollActions scrollActions) {
+             ObservedScrollActions scrollActions,PersistentActionPolicy.Decision clickPolicy) {
             this.id=id; this.packageName=packageName; this.className=className; this.viewId=viewId;
             this.text=text; this.description=description; this.bounds=new Rect(bounds);
             this.childText=childText;
             if(scrollActions==null)throw new IllegalArgumentException("observed scroll action state required");
             this.scrollActions=scrollActions;
+            if(clickPolicy==null)throw new IllegalArgumentException("observed click policy required");
+            this.clickPolicy=clickPolicy;
             this.clickable=clickable; this.editable=editable; this.scrollable=scrollable;
             this.enabled=enabled; this.focused=focused; this.password=password;
         }
@@ -47,6 +51,8 @@ public final class PhoneObservation {
             }
             if (!viewId.isEmpty()) value.put("view_id",viewId);
             if (clickable) value.put("clickable",true);
+            if (clickable) value.put("click_policy_allowed",clickPolicy.allowed)
+                    .put("click_policy_reason",clickPolicy.reasonCode);
             if (editable) value.put("editable",true);
             if (scrollable) value.put("scrollable",true); // Platform isScrollable, not a direction grant.
             value.put("scroll_actions_observed",scrollActions.observed);

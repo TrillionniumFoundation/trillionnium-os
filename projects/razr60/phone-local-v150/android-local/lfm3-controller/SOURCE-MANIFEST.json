@@ -3,9 +3,9 @@
   "version_code": 20,
   "version_name": "0.20.0-local-stable-ui-venus-budget",
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
-  "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
+  "android_build": "Current derivative awaits its final Android build receipt; historical build receipts do not qualify changed compile inputs.",
   "phone_qualified": false,
-  "functional_scope": "complete observed action-domain and lossless scalar history; exact grammar-bound open packages; preserve fresh LFM3 NPU8192 default and explicit configurations; independent private Q4_0 UI-Venus model-only diagnostic; external fixed ten-second observation settling cap clipped to original caller/task deadline",
+  "functional_scope": "complete observed action-domain and lossless scalar history; exact grammar-bound open packages; preserve fresh LFM3 NPU8192 default and explicit configurations; independent private Q4_0 UI-Venus model-only diagnostic; external fixed ten-second observation settling cap clipped to original caller/task deadline; project existing persistent click policy from observed controls into prompt flags and the exact grammar click domain, with post-parse membership and fresh executor checks retained",
   "ui_venus_native_host_build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
   "ui_venus_phone_action_dispatch_connected": false,
   "ui_venus_ordinary_app_runtime_qualified": false,
@@ -16,7 +16,7 @@
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "frozen_host_qualified; Android and phone qualification tracked separately",
+  "candidate_status": "local_click_policy_source_derivative_host_checks_passed_not_installed",
   "merge_parents": {
     "actual_external19": {
       "source_manifest_sha256": "9817f2af3937a402b52176565233c763869495d203080deffd7e279f9f621b69",
@@ -157,6 +157,11 @@
       "sha256": "dca1f29ff9978ff3e99e0f9c02055247140bf01f086ac3231f6b63f160da706a"
     },
     {
+      "path": "docs/CLICK-POLICY-PROJECTION.md",
+      "bytes": 4059,
+      "sha256": "4b67db6b05f4a5b4f19a39bf23d9101cdd272698e93876f77a708c6c784ebcb0"
+    },
+    {
       "path": "docs/CODE14-WINDOWS.md",
       "bytes": 7437,
       "sha256": "225184467262114e190d1afe6541dc2993a131166e78cf804e3668805fba7c9d"
@@ -200,6 +205,11 @@
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
       "bytes": 4563,
       "sha256": "5c04459babc6a99d86d53fc0f460dcf8e48243526c29dbeef25bc6c1bda41ab4"
+    },
+    {
+      "path": "host-evidence/click-policy-projection-r1/PUBLIC-HOST-CHECKS.json",
+      "bytes": 43693,
+      "sha256": "2b1fc8d80cb5caa7ca38df255f89c358d4e34a3365d17638939dff28aacc0d55"
     },
     {
       "path": "host-evidence/code10-final-r2/ActionDecisionHostTest.stderr",
@@ -4432,6 +4442,11 @@
       "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
+      "path": "provenance/source-manifests/code20-public-before-click-policy.json",
+      "bytes": 199601,
+      "sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4"
+    },
+    {
       "path": "provenance/ui-venus-app-r1/BASELINE.json",
       "bytes": 607,
       "sha256": "77883966980c27614a5b80b5ae51f40c97f9ec6a0983ddfe7011cde9d02839ef"
@@ -4753,8 +4768,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
-      "bytes": 10712,
-      "sha256": "e620c88e4f92fcd40d85fed30e95f2f0314bf9b8edfb8a7dcb0c0978b627040a"
+      "bytes": 11046,
+      "sha256": "570fddf60c50c47bd4b032c2d088c491a6f2bd5ef4ca592dc9b18f62de0b33e3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/DiagnosticStartupGate.java",
@@ -4768,8 +4783,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 45712,
-      "sha256": "6a72f1020df59af49d9876af3dcfe550eb6320167ceb26512e36a06cd367df1e"
+      "bytes": 46054,
+      "sha256": "bb9e7bd23b7c2560b6cf43edc66714d40467e6155e43b54e90c2e0788d8710d3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -4798,8 +4813,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 43933,
-      "sha256": "3e52adc2b0dc926f15feee8ffc8376bd42cd8c20aefab5209317ed4048453757"
+      "bytes": 44886,
+      "sha256": "e338748e66b48fe40ecbd0a77d2ce6b75e6399ca8564953e401f8e178aa545b3"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -4898,8 +4913,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
-      "bytes": 7747,
-      "sha256": "2813b9a5d14834cdfb3ef6a2b1a8252e94fa877a767d617223f3385c38982eff"
+      "bytes": 8241,
+      "sha256": "420feca6fd4f16a4e488d769835a88456fb4d3c2aa0a850dc1accce7aff1d8f2"
     },
     {
       "path": "src/org/trillionnium/hepta/local/PrivateDebugTask.java",
@@ -5172,6 +5187,21 @@
       "sha256": "968c4be22dc5608e9571a48e8af43f58f5ba6a7533d11014d868b2a007962170"
     },
     {
+      "path": "tests/click-policy-projection/ClickProjectionProbe.java",
+      "bytes": 11853,
+      "sha256": "0eef4703093554c3214cc2fcb618156e2b4e3fd8d688228811f5d41bac95b67d"
+    },
+    {
+      "path": "tests/click-policy-projection/README.md",
+      "bytes": 3705,
+      "sha256": "8db5113235e80d88924a21222294705d4b05bdb95d1a3cad8a0b5afeb9e4df08"
+    },
+    {
+      "path": "tests/click-policy-projection/run.py",
+      "bytes": 21651,
+      "sha256": "7c36cbba7e3a05cd2d39a029552834e1023becd7c29232743d4ed2f8495b40b0"
+    },
+    {
       "path": "tests/test_ui_venus_q4_0_runtime.py",
       "bytes": 4938,
       "sha256": "9ec137a870aed4d02cf3c089119cbb07c508394f6f0758813e5e586aa21d58ac"
@@ -5248,8 +5278,8 @@
     },
     {
       "path": "tools/run_host_checks.py",
-      "bytes": 6535,
-      "sha256": "4c9d18901c2712aca1f1207e75b253f687ce181792123339dc461982d227305e"
+      "bytes": 6702,
+      "sha256": "81bf646321201f859b9a080b575bdb779d0ab088ab93b9287bf47c95086edffa"
     },
     {
       "path": "tools/suite-navigation-draft.json",
@@ -5334,9 +5364,52 @@
   ],
   "public_source_derivative": {
     "frozen_device_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
-    "android_compile_inputs_byte_identical": true,
+    "android_compile_inputs_byte_identical": false,
     "archival_scanner_generic_identifier_rule": true,
     "runtime_payload_pins_unchanged": true,
-    "fresh_public_ci_build_required": true
-  }
+    "fresh_public_ci_build_required": true,
+    "parent_public_source_manifest_sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+    "historical_manifest": {
+      "path": "provenance/source-manifests/code20-public-before-click-policy.json",
+      "sha256": "1873ca6ecf998b7f3d3e447de2c9af5004c53c870042e2faef28be94265b40f4",
+      "historical_only": true
+    },
+    "changed_android_compile_members": [
+      {
+        "path": "src/org/trillionnium/hepta/local/DecisionGrammar.java",
+        "sha256": "570fddf60c50c47bd4b032c2d088c491a6f2bd5ef4ca592dc9b18f62de0b33e3"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
+        "sha256": "bb9e7bd23b7c2560b6cf43edc66714d40467e6155e43b54e90c2e0788d8710d3"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
+        "sha256": "e338748e66b48fe40ecbd0a77d2ce6b75e6399ca8564953e401f8e178aa545b3"
+      },
+      {
+        "path": "src/org/trillionnium/hepta/local/PhoneObservation.java",
+        "sha256": "420feca6fd4f16a4e488d769835a88456fb4d3c2aa0a850dc1accce7aff1d8f2"
+      }
+    ],
+    "current_candidate_installed": false,
+    "phone_qualified": false,
+    "fresh_phone_acceptance_required": true,
+    "qualification_boundary": "Historical installed-code20 receipts and full9 results are retained as baseline evidence only; they do not demonstrate this patch succeeds.",
+    "historical_full9_result": {
+      "passed": 3,
+      "failed": 6,
+      "qualifies_this_derivative": false
+    },
+    "public_host_check_summary": {
+      "path": "host-evidence/click-policy-projection-r1/PUBLIC-HOST-CHECKS.json",
+      "sha256": "2b1fc8d80cb5caa7ca38df255f89c358d4e34a3365d17638939dff28aacc0d55",
+      "all_pass": true,
+      "named_checks": 57,
+      "click_policy_tests": 18,
+      "android_compiled_by_this_run": false,
+      "phone_tested": false
+    }
+  },
+  "current_candidate_installed": false
 }

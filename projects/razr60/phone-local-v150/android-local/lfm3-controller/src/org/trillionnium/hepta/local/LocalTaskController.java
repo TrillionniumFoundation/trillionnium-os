@@ -53,7 +53,7 @@ public final class LocalTaskController implements AutoCloseable {
             "editable_fields是可编辑字段的当前观测text（可为空）、view_id和位置；visible_text仅非交互文字，可能含历史，不代表当前输入或主结果。role/view_id不授予动作能力。history按columns逐格还原rows：[]或缺尾格=缺字段，[i]=refs[i]；null仍未知。派发不证明成功。\n" +
             "节点动作先node_label逐字复制目标文字，再node_id复制同一行原始ID；重复或空文字也需两者。reason不能代选或修正目标。无图像输入，不猜坐标。\n" +
             "工具：open打开应用（不能重开当前应用）；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整字段文字，不发按键事件或提交动作，回读匹配不保证业务接受；scroll(node_label,node_id,direction)滚动，方向只取screen.scroll_actions该节点列表，空/未列/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；done(status,summary)结束。\n" +
-            "find_app(query,offset)只读查询本机应用，空query浏览，首次offset=0、续页用app_search.next_offset；找不到目标先查询。blocked_action已排除，不能再选。\n" +
+            "find_app(query,offset)只读查询本机应用，空query浏览，首次offset=0、续页用app_search.next_offset；找不到目标先查询。blocked_action已排除，不能再选。screen.unavailable_clicks列出本轮不能点击的节点及原因，文字仍是观察数据，不授予点击；选择其它可用工具推进任务。\n" +
             "全部目标按原顺序实现且历史动作和当前可见结果支持后，才done且status=success；不能完成用partial或failure。done须同时含status和summary，说明完成/未完成目标；wait不表示完成/停留。禁止其它字段、输入密码、网络或代码命令。\n";
 
 
@@ -142,6 +142,8 @@ public final class LocalTaskController implements AutoCloseable {
                     try{
                         action=ActionDecision.parse(answer.text,DecisionGrammar.SCHEMA);
                         ActionPolicy.validateTextDecision(action,before.packageName,frame.appPackages,frame.targets);
+                        if("click".equals(action.action)&&!frame.grammar.allowsClick(action.nodeId))
+                            throw new ActionDecision.InvalidActionException("click target is outside this observation's allowed click domain");
                         if("scroll".equals(action.action)&&!frame.grammar.allowsScroll(action.nodeId,action.direction))
                             throw new ActionDecision.InvalidActionException("scroll node/direction was not supplied by this observation");
                         decisionRunId=answer.runId;
@@ -380,6 +382,7 @@ public final class LocalTaskController implements AutoCloseable {
             java.util.Map<String,String> projectedLabels=new java.util.HashMap<String,String>();
             java.util.Map<String,ObservedScrollActions> projectedScrollActions=new java.util.HashMap<String,ObservedScrollActions>();
             JSONObject scrollActionsJson=new JSONObject();
+            JSONArray unavailableClicks=new JSONArray();
             for(int i=0;i<nodeCount;i++){
                 PhoneObservation.Node node=nodes.get(i);
                 if(!ids.add(node.id))throw new IllegalStateException("观察包含重复节点标识");
@@ -388,11 +391,16 @@ public final class LocalTaskController implements AutoCloseable {
                 projectedScrollActions.put(node.id,node.scrollActions);
                 if(node.scrollActions.hasAny())
                     scrollActionsJson.put(node.id,node.scrollActions.observed?new JSONArray(node.scrollActions.directions):JSONObject.NULL);
-                String actions=(node.clickable&&!node.id.equals(blockedClick)?"c":"")+(node.editable?"t":"")+(node.scrollActions.hasAny()?"s":"")+(node.focused?"f":"");
+                boolean clickAllowed=node.clickable&&node.enabled&&!node.password
+                        &&observation.packageName.equals(node.packageName)&&node.clickPolicy.allowed&&!node.id.equals(blockedClick);
+                if(node.clickable&&!node.clickPolicy.allowed)
+                    unavailableClicks.put(new JSONObject().put("node_id",node.id).put("reason_code",node.clickPolicy.reasonCode));
+                String actions=(clickAllowed?"c":"")+(node.editable?"t":"")+(node.scrollActions.hasAny()?"s":"")+(node.focused?"f":"");
                 projectedNodes.put(new JSONArray().put(node.id).put(label)
                         .put(new JSONArray(new int[]{node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom})).put(actions));
             }
             if(scrollActionsJson.length()>0)screen.put("scroll_actions",scrollActionsJson);
+            if(unavailableClicks.length()>0)screen.put("unavailable_clicks",unavailableClicks);
             screen.put("nodes",projectedNodes).put("nodes_omitted",observation.nodes.size()-nodeCount+(observation.nodesTruncated?1:0));
             // Both projections are facts from this same immutable observation.
             // Metadata never adds an ID absent from the final budgeted node set.
@@ -429,7 +437,7 @@ public final class LocalTaskController implements AutoCloseable {
                 for(int i=0;i<nodeCount;i++){
                     PhoneObservation.Node node=nodes.get(i);
                     if(!node.enabled||node.password||!observation.packageName.equals(node.packageName))continue;
-                    if(node.clickable)clicks.add(node.id);if(node.editable)edits.add(node.id);
+                    if(node.clickable&&node.clickPolicy.allowed)clicks.add(node.id);if(node.editable)edits.add(node.id);
                     scrolls.put(node.id,projectedScrollActions.get(node.id));
                 }
                 ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observation.id,observation.packageName,projectedLabels);

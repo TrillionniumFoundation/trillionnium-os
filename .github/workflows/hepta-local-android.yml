@@ -53,7 +53,7 @@ jobs:
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
           "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'ndk;28.1.13356709'
           hepta_ndk="$hepta_sdk/ndk/28.1.13356709"
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/qualify_macos_compiler.py \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9/qualify_macos_compiler.py \
             --ndk "$hepta_ndk" --output "$RUNNER_TEMP/hepta-ndk-identity.json"
           printf '%s\n' "ANDROID_NDK_ROOT=$hepta_ndk" >> "$GITHUB_ENV"
       - name: Check out the fixed public MNN source
@@ -67,16 +67,16 @@ jobs:
           lfs: false
       - name: Rebuild and match all three original runtime files on macOS
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9/rebuild_exact_runtime.py \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
             --mnn-checkout "$GITHUB_WORKSPACE/hepta-mnn-upstream" \
             --ndk "$ANDROID_NDK_ROOT" \
             --output "$RUNNER_TEMP/hepta-mobimind-rebuild"
       - name: Bind the exact rebuilt runtime to this source and workflow attempt
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/verify_ci_runtime_bundle.py bind \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9/verify_ci_runtime_bundle.py bind \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
-            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py" \
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9/rebuild_exact_runtime.py" \
             --bundle "$RUNNER_TEMP/hepta-mobimind-rebuild" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json"
@@ -96,14 +96,14 @@ jobs:
         run: python -B tools/fetch_pinned_runtime.py --destination "$RUNNER_TEMP/hepta-ui-venus-geniex"
       - name: Freshly compile and match the pinned Q4_0 UI-Venus App worker
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v2/rebuild_exact_runtime.py \
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3/rebuild_exact_runtime.py \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
             --ndk "$ANDROID_NDK_ROOT" --sdk-libs "$RUNNER_TEMP/hepta-ui-venus-geniex/lib" \
             --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json" \
             --output "$RUNNER_TEMP/hepta-ui-venus-rebuild"
       - name: Bind the new UI-Venus build to this exact source and workflow attempt
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v2/verify_ci_runtime_bundle.py bind \
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3/verify_ci_runtime_bundle.py bind \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" --bundle "$RUNNER_TEMP/hepta-ui-venus-rebuild" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json"
@@ -219,7 +219,7 @@ jobs:
         working-directory: projects/razr60/phone-local-v150/android-local/validation/offline-network-v3-public
         run: python -B -m unittest -v test_offline_transaction.py
       - name: Verify public-source and fresh-build receipt identity boundaries
-        working-directory: projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v2
+        working-directory: projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3
         env:
           HEPTA_PUBLIC_SOURCE: ${{ github.workspace }}/projects/razr60/phone-local-v150/android-local/lfm3-controller
         run: python -B -m unittest -v test_identity.py
@@ -246,9 +246,9 @@ jobs:
           path: ${{ runner.temp }}/hepta-mobimind-from-macos
       - name: Reverify all original runtime bytes and the actual macOS build identity on Linux
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v8/verify_ci_runtime_bundle.py verify \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v9/verify_ci_runtime_bundle.py verify \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
-            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v8/rebuild_exact_runtime.py" \
+            --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v9/rebuild_exact_runtime.py" \
             --bundle "$RUNNER_TEMP/hepta-mobimind-from-macos" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-mobimind-consumer-verification.json"
@@ -260,7 +260,7 @@ jobs:
           path: ${{ runner.temp }}/hepta-ui-venus-from-macos
       - name: Reverify the exact UI-Venus bytes and actual macOS build identity on Linux
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v2/verify_ci_runtime_bundle.py verify \
+          python -B projects/razr60/phone-local-v150/android-local/validation/ui-venus-runtime-rebuild-v3/verify_ci_runtime_bundle.py verify \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" --bundle "$RUNNER_TEMP/hepta-ui-venus-from-macos" \
             --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
             > "$RUNNER_TEMP/hepta-ui-venus-consumer-verification.json"
