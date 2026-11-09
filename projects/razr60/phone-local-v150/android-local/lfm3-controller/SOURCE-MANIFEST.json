@@ -1,12 +1,12 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 18,
-  "version_name": "0.18.0-local-budget-continuation",
+  "version_code": 19,
+  "version_name": "0.19.0-local-stable-observation",
   "derived_from_code15_source_manifest_sha256": "aaae9cd4505dc4c3dbbb0d8f246b1193f284ed18b2be1263f40445df466575db",
   "reviewed_controller_merge_manifest_sha256": "19ea7449f35e76f86cc156c620a9dffbc2f46eff5bb5f45d4876e49da2f910dd",
   "android_build": "separate build receipt",
   "phone_qualified": false,
-  "functional_scope": "budget bounded factual text and dispatched action history before dropping current actionable nodes; preserve factual package transitions in retained history; constrain open targets to resolved app catalogue; fresh LFM3 configuration defaults to NPU8192 while explicit configurations remain unchanged",
+  "functional_scope": "allow fresh stable observation evidence within the existing ten-second caller window; two-sample identity, original task and observation deadlines, screenshot rechecks, cancellation, owner and native behavior unchanged",
   "visual_planner_merged": false,
   "native_tool_protocol_merged": false,
   "thinking_protocol_merged": false,
@@ -26,8 +26,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1871,
-      "sha256": "b578d29cfcba01afeed2f770451dd9a39a3aeaca1121bdc4bcee76ac7a321e7c"
+      "bytes": 1870,
+      "sha256": "a2a195390e6620c4d1e2e9b66b3c533ee75b74552ce135a1c184d89e762b0348"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -138,6 +138,11 @@
       "path": "docs/CODE16-OBSERVATION.md",
       "bytes": 3736,
       "sha256": "1cd86d22b0ae52ed7721a03e9b3effb3177f2ce7155926e0eefada35391e61a8"
+    },
+    {
+      "path": "docs/CODE19-STABLE-OBSERVATION.md",
+      "bytes": 5800,
+      "sha256": "9c7eafe810a8e8ae9e314df625ebab72c53ea55d61a0a2b3eca0c13bbcfe94ff"
     },
     {
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
@@ -3906,8 +3911,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/HeptaAccessibilityService.java",
-      "bytes": 45704,
-      "sha256": "52097e16d264552d3b88181002d5ddfa6397283b630f2144926742dd07c80f30"
+      "bytes": 45712,
+      "sha256": "6a72f1020df59af49d9876af3dcfe550eb6320167ceb26512e36a06cd367df1e"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ImeVisibility.java",
@@ -3996,8 +4001,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationStabilityGate.java",
-      "bytes": 3770,
-      "sha256": "cb57dd9daee483b62176ed26f7d2cc5a817627a4a4dfa98730c04e6229fd8c1c"
+      "bytes": 3870,
+      "sha256": "ba98c74a6b4c89e04338bb1965fba913a4039f840b8f1073f96f0c9bfcdd8fe8"
     },
     {
       "path": "src/org/trillionnium/hepta/local/ObservationState.java",
@@ -4126,8 +4131,8 @@
     },
     {
       "path": "tests/ObservationStabilityHostTest.java",
-      "bytes": 4702,
-      "sha256": "5220fa4e38c04b089ce84cb67a7c0c1a61c0bef15c8e99c90877d4820e09e26a"
+      "bytes": 8731,
+      "sha256": "28b07236e1e4483f7850e9a86b04ff4d25014eac7f9a430a606ec503b603080e"
     },
     {
       "path": "tests/ObservedChildTextHostTest.java",
@@ -4342,5 +4347,6 @@
   ],
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
   "observation_text_projection_schema": "hepta.observed-text-projection.v1",
-  "derived_from_code17_source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074"
+  "derived_from_code17_source_manifest_sha256": "3f7602f4c9ff73adfaabfdcf93496c043c10b59e6b5b75304bc13c473d3a2074",
+  "derived_from_code18_source_manifest_sha256": "2b32fd6c47cabd3c6fe778c3ebe18cb04933c19c4bd7f8289b9569e8c61a3954"
 }

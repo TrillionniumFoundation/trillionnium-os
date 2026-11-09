@@ -193,7 +193,7 @@ public final class HeptaAccessibilityService extends AccessibilityService {
         if(request.captured!=null){request.captured.close();request.captured=null;}
         request.gate.resetEvidence();
         if(!observationActive(request))return;
-        // This never renews the original two-second settling or caller deadline.
+        // This never renews the fixed settling deadline or the original caller deadline.
         main.postDelayed(new Runnable(){public void run(){sampleObservation(request);}},
                 Math.min(delay,request.gate.nextSampleDelay(SystemClock.elapsedRealtime())));
     }

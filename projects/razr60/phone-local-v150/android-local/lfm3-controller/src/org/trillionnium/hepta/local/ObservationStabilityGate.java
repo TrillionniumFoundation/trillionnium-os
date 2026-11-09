@@ -4,7 +4,8 @@ import java.util.Objects;
 
 /** Bounded stability of the complete observed graph; never authorizes an effect. */
 public final class ObservationStabilityGate {
-    public static final long SAMPLE_GAP_MS=200, SETTLE_LIMIT_MS=2000;
+    // Retries share the original caller deadline; this cap never grants a new observation window.
+    public static final long SAMPLE_GAP_MS=200, SETTLE_LIMIT_MS=10000;
     public enum Result { WAIT, READY, EXPIRED, CANCELLED }
 
     /** Existing active-window identity/digest plus its observation truncation state. */
