@@ -1,11 +1,11 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 21,
-  "version_name": "0.21.0-local-history-recovery",
+  "version_code": 24,
+  "version_name": "0.24.0-local-readable-actions",
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
   "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
   "phone_qualified": false,
-  "functional_scope": "complete observed action-domain and lossless scalar history; exact grammar-bound open packages; preserve fresh LFM3 NPU8192 default and explicit configurations; independent private Q4_0 UI-Venus model-only diagnostic; external fixed ten-second observation settling cap clipped to original caller/task deadline; complete compact ordered action/find provenance and cumulative same-observed-state guards; explicit owner-only interrupted-control recovery with hash-bound archives, actual-close shared-slot handoff, and app-visible same-UID stable quiescence; no automatic task replay",
+  "functional_scope": "Readable chronological recorded action objects and prompt capabilities from the same currently eligible action domain as the constrained grammar; pinned optional LFM2.5/Qwen3.5 profiles; preserve configured model, action-policy, native integrity, ownership, freshness and owner recovery; no external-model path or automatic visual action dispatch.",
   "ui_venus_native_host_build_receipt_sha256": "3dac4c0e91bd9c088e7330394953f6df74596feff04c7e815672ee8d3392e705",
   "ui_venus_phone_action_dispatch_connected": false,
   "ui_venus_ordinary_app_runtime_qualified": false,
@@ -16,7 +16,7 @@
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "public_profile_candidate_host_android_phone_qualification_pending",
+  "candidate_status": "public_code24_source_frozen_fresh_host_android_phone_qualification_pending",
   "merge_parents": {
     "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
     "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
@@ -44,7 +44,7 @@
     }
   },
   "fresh_default_preserved_from_actual_external18": true,
-  "git_ancestry_parent": "cc4a7035760383a126e4510002139d88667e0b97",
+  "git_ancestry_parent": "9229d5dacae4c8400ed99ddf9a1a231f2f042724",
   "derived_from_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
   "recovery_process_inventory_scope": "app_visible_procfs_same_uid",
   "old_native_cleanup_claim": "unknown",
@@ -64,7 +64,7 @@
     {
       "path": "AndroidManifest.xml",
       "bytes": 1868,
-      "sha256": "0fa7aba82d81c0f1c9d1dfa828a33c53ce60b3465c5afaaf91110851e8e9b8b7"
+      "sha256": "c9063299fe44748e9ca752d83d1723ff49bb106e98bd4d6024f0113ddd7fff92"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -133,13 +133,13 @@
     },
     {
       "path": "PUBLIC-BUILD.md",
-      "bytes": 7463,
-      "sha256": "0b32d944f5c2a868ed594ca6df2fd9b569982e0a9a65ad8c010123de3e2f6414"
+      "bytes": 7457,
+      "sha256": "13222df81ab9fe9a3931d8d2e66a657407209645c19978475b048749546ddf20"
     },
     {
       "path": "README.md",
-      "bytes": 8417,
-      "sha256": "010dde4854a8308e8e8345444cddda3ab23167a2d73b363d08b64ecfa73fe645"
+      "bytes": 9447,
+      "sha256": "acbc631b6e157fabc423134818d3e9a8cae0bfa2d8add6a302a6ca7f0998710a"
     },
     {
       "path": "SESSION-RECOVERY.md",
@@ -205,6 +205,11 @@
       "path": "docs/CODE20-QUALIFICATION.md",
       "bytes": 4081,
       "sha256": "9840b9b870fbba2d1f97046af7d51a33109b29484411f011d75f08057d28bd59"
+    },
+    {
+      "path": "docs/CODE24-QUALIFICATION.md",
+      "bytes": 2339,
+      "sha256": "e93a94b95e1841edc029d27c3628aa21fa2105b37549972528ade86dde9d3a3c"
     },
     {
       "path": "docs/CODE9-OBSERVED-CHILD-LABELS.md",
@@ -4818,8 +4823,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 48524,
-      "sha256": "efb519980f07e5a495cd982b92f6715a6014fcab35e7b2f9d88cb6426aaf1347"
+      "bytes": 47842,
+      "sha256": "43d3a32e2e20723c09c4b6c6633c4de15b56a085a76304b700aed71b0ef5f2c4"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -4938,13 +4943,13 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/PromptActionDomain.java",
-      "bytes": 1119,
-      "sha256": "79a3ec5459be43adac3c084b9346132cedb88f39a60b60c83eb545d12466340d"
+      "bytes": 2078,
+      "sha256": "6fd0be8a70763a8681412c0bd610907bb9c4166025b149454aeccad0a0b8b210"
     },
     {
       "path": "src/org/trillionnium/hepta/local/RecentActionProjection.java",
-      "bytes": 16995,
-      "sha256": "cb3f6da2250c59154acd29c7d549fdfd4649952ffee5f2f1ba32304d757202dc"
+      "bytes": 20418,
+      "sha256": "326ca2e0f75abbe929c09bc2fb4d2725352522e71d9f19254b153924ed4933b5"
     },
     {
       "path": "src/org/trillionnium/hepta/local/RecoveryDispatch.java",
@@ -5147,9 +5152,19 @@
       "sha256": "a1fef9fcc7eb07c920b95f480e888e842007e3ccc31be8ee209b7f1103ad21af"
     },
     {
+      "path": "tests/PromptCapabilityProjectionHostTest.java",
+      "bytes": 5241,
+      "sha256": "34aabe9f396787efcea8a403a7787f48b8440d35d153bf31332d638d19c203ef"
+    },
+    {
       "path": "tests/Qwen35ProfileHostTest.java",
       "bytes": 6521,
       "sha256": "d66f247aec9d56f61456e5efc48b04dfe3f587b1ba46a514f107ed35f02f60e7"
+    },
+    {
+      "path": "tests/ReadableActionHistoryHostTest.java",
+      "bytes": 6121,
+      "sha256": "cdebb165be2b8201fb15df2d32434b8244fd95fe21e674a39ca3bf5b0d0952aa"
     },
     {
       "path": "tests/RecentActionProjectionHostTest.java",
@@ -5605,5 +5620,16 @@
     "compiled_java_and_native_code_bytes_unchanged": false,
     "cleartext_identifier_guard_preserved": true,
     "retained_phone_evidence_reused_as_new_qualification": false
+  },
+  "derived_from_public_profile_manifest_sha256": "2b3a358de4655b8fa73dc97b4fda64eaf9e0c8fc4957c0a569008fc72645cc03",
+  "code24_change_inputs_sha256": "41149f60f085b31b8ec1dda9749e0c5b001268e506e297c0ea518df7577b1f00",
+  "host_qualified": false,
+  "android_qualified": false,
+  "code24_qualification": {
+    "host": "pending_exact_source_run",
+    "android": "pending_exact_source_build",
+    "phone": "pending_exact_installed_apk_run",
+    "historical_host_receipts_preserved": true,
+    "independent_goal_assertions_relaxed": false
   }
 }

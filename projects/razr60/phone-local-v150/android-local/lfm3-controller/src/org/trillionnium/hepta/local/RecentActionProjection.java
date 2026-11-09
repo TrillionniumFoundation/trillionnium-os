@@ -7,6 +7,57 @@ import java.util.Map;
 public final class RecentActionProjection {
     private RecentActionProjection() {}
 
+    public static final String READABLE_SCHEMA="hepta.readable-action-history.v1";
+    private static final String[] READABLE_FIELD_ORDER={
+            "step","action","node_label","node_id","type_text","direction","query","offset","duration_ms",
+            "before_package","target_package","package_after","model_issued","accepted","dispatched","stale",
+            "window_changed","ime_visible_before","ime_visible_after","exact_package_match","read_only",
+            "find_returned","find_matches","find_catalogue_sha256","observation_after","action_rejected","detail"};
+    private static final String[] READABLE_BOOLEAN_FIELDS={
+            "model_issued","accepted","dispatched","stale","window_changed","ime_visible_before",
+            "ime_visible_after","exact_package_match","read_only"};
+
+    /** Complete observed facts, in execution order, without dictionary references or text truncation. */
+    public static final class ReadableEvents {
+        public final java.util.List<Map<String,Object>> rows;
+        public final int observed;
+        private ReadableEvents(java.util.List<Map<String,Object>> rows){
+            this.rows=java.util.Collections.unmodifiableList(new java.util.ArrayList<Map<String,Object>>(rows));
+            observed=rows.size();
+        }
+    }
+
+    public static ReadableEvents readableEvents(java.util.List<Map<String,Object>> history){
+        if(history==null||history.size()>20)throw new IllegalArgumentException("Bounded complete history required");
+        java.util.List<Map<String,Object>> rows=new java.util.ArrayList<Map<String,Object>>();
+        int previous=0;
+        for(Map<String,Object> entry:history){
+            if(entry==null||!(entry.get("step") instanceof Integer))throw new IllegalArgumentException("Observed integer step required");
+            int step=((Integer)entry.get("step")).intValue();
+            if(step<=previous)throw new IllegalArgumentException("History order must be strictly increasing");
+            previous=step;
+            for(String key:READABLE_BOOLEAN_FIELDS){
+                Object value=entry.get(key);
+                if(value!=null&&!(value instanceof Boolean))throw new IllegalArgumentException("History status must be boolean or explicit null");
+            }
+            // The controller records scalar facts. Reject a new unsupported shape instead of
+            // silently summarizing it or manufacturing values for absent receipt fields.
+            for(Map.Entry<String,Object> field:entry.entrySet()){
+                Object value=field.getValue();
+                if(field.getKey()==null||!(value==null||value instanceof String||value instanceof Boolean
+                        ||value instanceof Integer||value instanceof Long))
+                    throw new IllegalArgumentException("History fact must be a named scalar");
+            }
+            Map<String,Object> row=new LinkedHashMap<String,Object>();
+            for(String key:READABLE_FIELD_ORDER)copy(entry,row,key);
+            // Preserve any additional recorded scalar facts, rather than silently losing a
+            // future controller field. Their stable order keeps prompt/evidence reproducible.
+            for(String key:new java.util.TreeSet<String>(entry.keySet()))if(!row.containsKey(key))copy(entry,row,key);
+            rows.add(java.util.Collections.unmodifiableMap(row));
+        }
+        return new ReadableEvents(rows);
+    }
+
     public static Map<String,Object> project(Map<String,Object> entry) {
         if (entry == null) throw new IllegalArgumentException("History row required");
         Map<String,Object> result = new LinkedHashMap<String,Object>();

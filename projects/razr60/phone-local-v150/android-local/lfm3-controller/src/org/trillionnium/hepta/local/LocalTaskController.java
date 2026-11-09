@@ -32,7 +32,6 @@ public final class LocalTaskController implements AutoCloseable {
         }
     }
     private static final int MAX_STEPS=20, MAX_TOTAL_REPAIRS=2;
-    private static final int HISTORY_PROJECTION_UTF8_LIMIT=1024;
     private static final long MAX_TASK_MS=480000, MODEL_TIMEOUT_MS=55000;
     private final HeptaAccessibilityService service;
     private final LocalInference inference;
@@ -51,7 +50,7 @@ public final class LocalTaskController implements AutoCloseable {
             "reason用1句、最多96字说明当前页面、剩余目标和下一步；只输出JSON，字段顺序reason,action,observation_id,package,动作参数。action必须是工具名字符串、不能null。observation_id复制screen.observation_id；open的package只取open_allowed_packages，其它动作复制screen.package。\n" +
             "节点[id,文字,边界,状态]中c可点击但未必是按键，t可替换字段，s可滚动，f仅已聚焦。节点动作先逐字复制node_label，再复制同一行node_id；重复/空文字也需两者。reason不能改目标，无图像输入，不猜坐标。符合OWNER方法时，t且f可直接type。\n" +
             "editable_fields是当前可编辑text（可为空）、view_id和位置；visible_text可含历史，不保证是当前输入或结果。role/view_id不授予能力。ime_visible true/false是已观察值，null未知；back可能先关输入法，须复查。window只描述活动根，未知字段不能推断页面或背景。\n" +
-            "events.rows按columns解读：action/target/from/to/state/arg分别索引actions/packages/packages/packages/states/args；state按state_columns解读。-1或absent是未记录，null是未知。rows保留全部已记录步骤和真实前后包名；detail_omitted_steps仅省参数，不能当成未执行。历史不授予当前目标，也不自动证明成功。\n" +
+            "events按step顺序列出全部已记录动作、参数和前后包名；accepted是策略接受，dispatched是已交给执行器，stale是观察已失效，均不证明目标完成。缺字段是未记录，null是未知。历史node_id/node_label只属于当时画面，不能当成当前可操作目标。\n" +
             "app_search.source=model_find_app且model_issued=true表示已执行该查询，step是来源，returned是实际返回数；本轮apps是其当前结果页，能打开的目标以open_allowed_packages为准。初始目录不等于已经调用find_app。blocked_action和blocked中的click_ids/open_packages禁选，后者只引用当前frame。\n" +
             "工具：open打开应用，不能重开当前应用；click(node_label,node_id)点击；type(node_label,node_id,text)替换完整文字，不提交或发按键，回读相同不保证业务接受；scroll(node_label,node_id,direction)只选screen.scroll_actions该节点已列方向，空/null不可滚动；back返回；home到桌面；wait(duration_ms)仅在加载时等100..2000毫秒；find_app(query,offset)只读查本机应用，空query浏览，首次offset=0，续页用app_search.next_offset；done(status,summary)结束。\n" +
             "启动应用可能恢复子页，用可见返回键/back回到目标页，勿为重试打开无关应用。全部目标按原顺序实现且历史动作和当前可见结果支持才done且status=success；不能完成用partial或failure。done须同时含status和summary；wait不表示完成/停留。禁止其它字段、输入密码、网络或代码命令。\n";
@@ -311,9 +310,9 @@ public final class LocalTaskController implements AutoCloseable {
         final AppCatalogueRanker.Page catalogue;
         final int nodesShown,nodesObserved,appsShown,historyShown;
         final int editableFieldsShown,editableFieldsObserved,visibleTextShown,visibleTextObserved,historyProjectionBytes,requiredNodes;
-        final RecentActionProjection.CompactEvents eventHistory;final JSONObject appSearch;
+        final RecentActionProjection.ReadableEvents eventHistory;final JSONObject appSearch;
         PromptFrame(String text,java.util.Set<String> ids,java.util.Set<String> packages,ConservativeTokenBudget budget,DecisionGrammar grammar,int shown,int observed,int apps,int history,AppCatalogueRanker.Page catalogue,
-                    int editableFieldsShown,int editableFieldsObserved,int visibleTextShown,int visibleTextObserved,RecentActionProjection.CompactEvents eventHistory,int historyProjectionBytes,JSONObject appSearch,int requiredNodes){
+                    int editableFieldsShown,int editableFieldsObserved,int visibleTextShown,int visibleTextObserved,RecentActionProjection.ReadableEvents eventHistory,int historyProjectionBytes,JSONObject appSearch,int requiredNodes){
             this.text=text;nodeIds=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(ids));
             appPackages=java.util.Collections.unmodifiableSet(new java.util.HashSet<String>(packages));
             this.budget=budget;this.grammar=grammar;targets=grammar.targets;nodesShown=shown;nodesObserved=observed;appsShown=apps;historyShown=history;this.catalogue=catalogue;
@@ -347,11 +346,12 @@ public final class LocalTaskController implements AutoCloseable {
                 .put("complete_observed_action_domain",true)
                 .put("app_page_entries_observed",catalogue.apps.size()).put("app_page_entries_shown",appsShown)
                 .put("complete_current_app_page",appsShown==catalogue.apps.size())
-                .put("event_history_schema",RecentActionProjection.EVENT_SCHEMA)
-                .put("history_projection_utf8_bytes",historyProjectionBytes).put("history_projection_utf8_limit",HISTORY_PROJECTION_UTF8_LIMIT)
+                .put("event_history_schema",RecentActionProjection.READABLE_SCHEMA)
+                .put("history_projection_utf8_bytes",historyProjectionBytes).put("history_projection_utf8_limit",JSONObject.NULL)
+                .put("history_budget_scope","complete_prompt_native_token_admission")
                 .put("event_history_rows",eventHistory.rows.size()).put("event_history_observed",eventHistory.observed)
-                .put("event_history_omitted",0).put("event_history_detail_level",eventHistory.detailLevel)
-                .put("event_history_detail_omitted_steps",new JSONArray(eventHistory.detailOmittedSteps))
+                .put("event_history_omitted",0).put("event_history_detail_level",2).put("event_history_details_complete",true)
+                .put("event_history_detail_omitted_steps",new JSONArray())
                 .put("original_instruction_unchanged",true);}
     }
     private static PromptFrame prompt(final String owner,AppCatalogueRanker.Page catalogue,PhoneObservation observation,JSONArray history,JSONObject repair,LocalRuntimeConfig config,RepeatActionGuard repeatGuard,SameStateNoEffectGuard noEffectGuard)throws Exception{
@@ -384,7 +384,10 @@ public final class LocalTaskController implements AutoCloseable {
         }
         java.util.List<java.util.Map<String,Object>> historyRows=new java.util.ArrayList<java.util.Map<String,Object>>();
         for(int i=0;i<history.length();i++)historyRows.add(historyFields(history.getJSONObject(i)));
-        int nodeCount=nodes.size(),appCount=allApps.size(),detailLevel=2;
+        final RecentActionProjection.ReadableEvents events=RecentActionProjection.readableEvents(historyRows);
+        final JSONArray eventJson=new JSONArray(events.rows);
+        final int historyBytes=ConservativeTokenBudget.bytesUpper(eventJson.toString());
+        int nodeCount=nodes.size(),appCount=allApps.size();
         int visibleTextLimit=Math.min(6,visibleTextObserved);
         final String blockedOpen=repeatGuard.blockedOpenPackage(observation.state);
         final String blockedClick=repeatGuard.blockedClickNodeId(observation.state);
@@ -396,17 +399,25 @@ public final class LocalTaskController implements AutoCloseable {
             screen.put("window",observation.windowPromptJson());
             JSONArray projectedNodes=new JSONArray();java.util.Set<String> ids=new java.util.HashSet<String>();
             java.util.Map<String,String> projectedLabels=new java.util.HashMap<String,String>();
-            java.util.Map<String,ObservedScrollActions> projectedScrollActions=new java.util.HashMap<String,ObservedScrollActions>();
+            java.util.Set<String> clicks=new java.util.HashSet<String>(),edits=new java.util.HashSet<String>();
+            java.util.Map<String,ObservedScrollActions> scrolls=new java.util.HashMap<String,ObservedScrollActions>();
+            for(int i=0;i<nodeCount;i++){
+                PhoneObservation.Node node=nodes.get(i);
+                if(!PromptActionDomain.eligible(observation.packageName,node.packageName,node.enabled,node.password))continue;
+                if(node.clickable)clicks.add(node.id);if(node.editable)edits.add(node.id);
+                scrolls.put(node.id,node.scrollActions);
+            }
+            clicks=noEffects.allowedClicks(repeatGuard.allowedClicks(clicks,observation.state));
             JSONObject scrollActionsJson=new JSONObject();
             for(int i=0;i<nodeCount;i++){
                 PhoneObservation.Node node=nodes.get(i);
                 if(!ids.add(node.id))throw new IllegalStateException("观察包含重复节点标识");
                 String label=ObservedTargetLabels.project(node.label());
                 projectedLabels.put(node.id,label);
-                projectedScrollActions.put(node.id,node.scrollActions);
-                if(node.scrollActions.hasAny())
-                    scrollActionsJson.put(node.id,node.scrollActions.observed?new JSONArray(node.scrollActions.directions):JSONObject.NULL);
-                String actions=(node.clickable&&!node.id.equals(blockedClick)&&!noEffects.blockedClickNodeIds.contains(node.id)?"c":"")+(node.editable?"t":"")+(node.scrollActions.hasAny()?"s":"")+(node.focused?"f":"");
+                ObservedScrollActions permittedScroll=scrolls.get(node.id);
+                if(permittedScroll!=null&&permittedScroll.hasAny())
+                    scrollActionsJson.put(node.id,new JSONArray(permittedScroll.directions));
+                String actions=PromptActionDomain.promptFlags(node.id,node.focused,clicks,edits,scrolls);
                 projectedNodes.put(new JSONArray().put(node.id).put(label)
                         .put(new JSONArray(new int[]{node.bounds.left,node.bounds.top,node.bounds.right,node.bounds.bottom})).put(actions));
             }
@@ -425,13 +436,6 @@ public final class LocalTaskController implements AutoCloseable {
             packages=noEffects.allowedOpenPackages(repeatGuard.allowedOpenPackages(packages,observation.state));
             // DecisionGrammar already excludes these. Expose the exact same set.
             packages.remove(observation.packageName);packages.remove("android");
-            RecentActionProjection.CompactEvents events=RecentActionProjection.compactEvents(historyRows,detailLevel);
-            JSONObject eventJson=new JSONObject(events.jsonFields());
-            int historyBytes=ConservativeTokenBudget.bytesUpper(eventJson.toString());
-            if(historyBytes>HISTORY_PROJECTION_UTF8_LIMIT){
-                if(detailLevel>0){detailLevel--;continue;}
-                throw new IllegalStateException("完整最小任务轨迹超过本地历史预算，任务已停止");
-            }
             JSONObject appSearch=searchMetadata(catalogue,appCount,historyRows);
             JSONObject data=new JSONObject().put("apps",apps)
                     .put("open_allowed_packages",new JSONArray(new java.util.TreeSet<String>(packages)))
@@ -456,23 +460,13 @@ public final class LocalTaskController implements AutoCloseable {
             ConservativeTokenBudget budget=ConservativeTokenBudget.estimate(SYSTEM,text,config);
             if(budget.admitted){
                 PromptActionDomain.requireComplete(requiredIds,ids);
-                java.util.Set<String> clicks=new java.util.HashSet<String>(),edits=new java.util.HashSet<String>();
-                java.util.Map<String,ObservedScrollActions> scrolls=new java.util.HashMap<String,ObservedScrollActions>();
-                for(int i=0;i<nodeCount;i++){
-                    PhoneObservation.Node node=nodes.get(i);
-                    if(!node.enabled||node.password||!observation.packageName.equals(node.packageName))continue;
-                    if(node.clickable)clicks.add(node.id);if(node.editable)edits.add(node.id);
-                    scrolls.put(node.id,projectedScrollActions.get(node.id));
-                }
                 ObservedTargetLabels targets=ObservedTargetLabels.create(ObservedTargetLabels.SCHEMA,observation.id,observation.packageName,projectedLabels);
-                clicks=noEffects.allowedClicks(repeatGuard.allowedClicks(clicks,observation.state));
                 DecisionGrammar grammar=DecisionGrammar.create(observation.id,observation.packageName,packages,clicks,edits,scrolls,targets);
                 return new PromptFrame(text,ids,packages,budget,grammar,nodeCount,observation.nodes.size(),appCount,history.length(),catalogue,
                         editableFields.size(),editableFieldsObserved,visibleText.size(),visibleTextObserved,events,historyBytes,appSearch,requiredIds.size());
             }
-            // A complete minimum trace and current action domain are both required.
-            // Drop optional arguments/text, never a past step or a current capability.
-            if(detailLevel>0){detailLevel--;continue;}
+            // Keep the complete readable action trace, including labels and typed text.
+            // Only optional current-screen context may be reduced; native checks exact tokens.
             if(visibleTextLimit>0){visibleTextLimit--;continue;}
             if(nodeCount>requiredIds.size()){nodeCount--;continue;}
             throw new IllegalStateException("完整任务事实与当前可操作目标超过本地上下文上限，请拆分任务");

@@ -1,4 +1,10 @@
-# Code20: complete observed actions and private UI-Venus Q4_0 qualification
+# Code24: readable action history and consistent observed capabilities
+
+The current candidate is versionCode 24 (`0.24.0-local-readable-actions`). It presents recorded action history as ordered, readable event objects and uses the same eligible action domain for prompt capabilities and the constrained decision grammar. Prior action arguments remain facts from their original observation; they do not grant permission to act on a current screen. Existing execution policy, model identity checks, recovery ownership and independent goal assertions remain required. See `docs/CODE24-QUALIFICATION.md` for the change and actual qualification boundary.
+
+The selected model is read from the existing app-private runtime configuration. Installation does not select or import a model. The APK has no INTERNET permission and does not fall back to an external model. The ordinary task controller remains text-based; the separate MobiMind and UI-Venus image diagnostics do not dispatch phone actions. A signed build or passing host tests does not establish production readiness.
+
+## Retained implementation history
 
 The current candidate is versionCode 20 (`0.20.0-local-stable-ui-venus-budget`). It combines the complete observed action domain and lossless recorded-history projection with the exact allowed open-package list and a stable-observation cap clipped to the original ten-second caller/task deadline. Fresh unconfigured LFM3 uses NPU / 8192 / four threads; existing explicit configuration is preserved. The separate UI-Venus Q4_0 first-frame diagnostic remains model-only and does not dispatch phone actions. See `docs/CODE20-QUALIFICATION.md`; older version-specific documents and host receipts are historical evidence.
 
