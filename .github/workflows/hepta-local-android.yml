@@ -53,7 +53,25 @@ jobs:
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
           "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'ndk;28.1.13356709'
           hepta_ndk="$hepta_sdk/ndk/28.1.13356709"
-          python -c 'import hashlib,pathlib,sys; actual=hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest(); assert actual=="ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6", "original macOS compiler bytes differ"' "$hepta_ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang"
+          python - "$hepta_ndk" "$RUNNER_TEMP/hepta-ndk-identity.json" <<'PY'
+          import hashlib, json, pathlib, platform, subprocess, sys
+          ndk = pathlib.Path(sys.argv[1])
+          clang = ndk / 'toolchains/llvm/prebuilt/darwin-x86_64/bin/clang'
+          actual = hashlib.sha256(clang.read_bytes()).hexdigest()
+          report = {'platform': platform.system(), 'machine': platform.machine(),
+                    'ndk': str(ndk), 'source_properties': (ndk / 'source.properties').read_text(),
+                    'clang': str(clang), 'clang_resolved': str(clang.resolve()),
+                    'clang_bytes': clang.stat().st_size, 'clang_sha256': actual}
+          for name, command in [('file', ['/usr/bin/file', str(clang)]),
+                                ('lipo', ['/usr/bin/lipo', '-info', str(clang)]),
+                                ('version', [str(clang), '--version'])]:
+              result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+              report[name] = {'exit_code': result.returncode, 'stdout': result.stdout, 'stderr': result.stderr}
+          payload = json.dumps(report, indent=2, sort_keys=True) + '\n'
+          pathlib.Path(sys.argv[2]).write_text(payload)
+          print(payload, flush=True)
+          assert actual == 'ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6', 'original macOS compiler bytes differ'
+          PY
           printf '%s\n' "ANDROID_NDK_ROOT=$hepta_ndk" >> "$GITHUB_ENV"
       - name: Check out the fixed public MNN source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -96,6 +114,7 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: |
+            ${{ runner.temp }}/hepta-ndk-identity.json
             ${{ runner.temp }}/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json
             ${{ runner.temp }}/hepta-mobimind-rebuild/three-elf-comparison.json
             ${{ runner.temp }}/hepta-mobimind-rebuild/source-qualification.json
