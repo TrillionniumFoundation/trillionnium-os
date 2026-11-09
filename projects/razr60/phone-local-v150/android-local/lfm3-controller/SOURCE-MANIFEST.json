@@ -16,7 +16,7 @@
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "public_source_derivative_not_the_retained_device_build",
+  "candidate_status": "public_profile_candidate_host_android_phone_qualification_pending",
   "merge_parents": {
     "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
     "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
@@ -44,12 +44,12 @@
     }
   },
   "fresh_default_preserved_from_actual_external18": true,
-  "git_ancestry_parent": "fdb7eca8d3a434c515da547365fcc47bb2f510d3",
+  "git_ancestry_parent": "cc4a7035760383a126e4510002139d88667e0b97",
   "derived_from_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
   "recovery_process_inventory_scope": "app_visible_procfs_same_uid",
   "old_native_cleanup_claim": "unknown",
   "recovery_ui_phone_qualified": false,
-  "native_source_unchanged_from_code20": true,
+  "native_source_unchanged_from_code20": false,
   "files": [
     {
       "path": ".gitignore",
@@ -1922,16 +1922,6 @@
       "sha256": "fa8c93f30ea6622aa3d70efe88a497bcdf84b1c039bf59d3e5f9662fd3308fbe"
     },
     {
-      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
-      "bytes": 1696,
-      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
-    },
-    {
-      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
-      "bytes": 0,
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-    },
-    {
       "path": "host-evidence/code5-r1/grammar/all.gbnf",
       "bytes": 3187,
       "sha256": "eb3a4ab7b3289e4742555499dd26e1998b7d03872db2cbb91d093201409790fb"
@@ -1970,6 +1960,16 @@
       "path": "host-evidence/code5-r1/grammar/system.gbnf",
       "bytes": 1882,
       "sha256": "5e844f20ef35b582bc40acd3557ebad7058267aad54d1bd12579a4158ec9e87e"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stderr",
+      "bytes": 1696,
+      "sha256": "eaa0f0277950d88598e26dec6bbd3f92a199b87aaddcda43ea4374ca6adb5e26"
+    },
+    {
+      "path": "host-evidence/code5-r1/grammar-recognition.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "path": "host-evidence/code5-r1/java-compile.stderr",
@@ -4038,8 +4038,8 @@
     },
     {
       "path": "native/model-profile.h",
-      "bytes": 2131,
-      "sha256": "16cdf95997a69dcbfdab4b3325dda0ee3adcbd97ee202b17fe290ef6adad0cda"
+      "bytes": 2438,
+      "sha256": "8ce5c2b337e71e376b5bb067271e96bdc5721945a662a71d03f32c7c010c9d91"
     },
     {
       "path": "native/model-runtime.inc",
@@ -4087,6 +4087,11 @@
       "sha256": "b614c97accb36faeda582918cbbbd7acd378285197e2def1557e4e3839379b1a"
     },
     {
+      "path": "native/tests/lfm25_profile_contract.c",
+      "bytes": 1434,
+      "sha256": "abafcecc5d7d2a87a8d579f39831d38c09c2f85bc498269bff9301765ca15821"
+    },
+    {
       "path": "native/tests/model_profile_contract.c",
       "bytes": 1669,
       "sha256": "c045929ef885803050275d3f206d25552121bd13a059dd4a7b2005105f7f1229"
@@ -4110,6 +4115,11 @@
       "path": "native/tests/publish_contract.c",
       "bytes": 2430,
       "sha256": "6476304205a10486c32d33214e657f6b320efbcbdc6867df66e86dde6c996d05"
+    },
+    {
+      "path": "native/tests/qwen35_profile_contract.c",
+      "bytes": 1772,
+      "sha256": "b5bb5cf9879215a757095632a5354d75b4b87eb0821bd6b8d67fe77957d4f8e4"
     },
     {
       "path": "native/tests/sha256_probe.c",
@@ -4327,11 +4337,6 @@
       "sha256": "50d0b9a73b4c2e08f0ce0dd5df953637bd69eb519bce0dcd4e5b9001fddfef14"
     },
     {
-      "path": "provenance/mobimind-worker-r4-build.json",
-      "bytes": 3066,
-      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
-    },
-    {
       "path": "provenance/mobimind-worker-r4/CMakeLists.txt",
       "bytes": 1257,
       "sha256": "25260a2133c91a849287e8b09211ead6524e0f56e9ba1685af1a3be1011a197f"
@@ -4440,6 +4445,11 @@
       "path": "provenance/mobimind-worker-r4/tests/util_contract.cpp",
       "bytes": 3372,
       "sha256": "bd2ac495f8dc7c5188dee6bbae71446b57e90edc054ce5ab8f5a0708037a1b3f"
+    },
+    {
+      "path": "provenance/mobimind-worker-r4-build.json",
+      "bytes": 3066,
+      "sha256": "86c25f372be4b47ce1b6563919434a035f5fd171a8a993e09ac08d7fba0bbbab"
     },
     {
       "path": "provenance/ui-venus-app-r1/BASELINE.json",
@@ -4858,8 +4868,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/ModelProfile.java",
-      "bytes": 3700,
-      "sha256": "f3c6ecedc02e6d321a80dfe449d407c6939cee8282e8c14e29998c8eb2e93840"
+      "bytes": 4803,
+      "sha256": "bed23b01822d14840cc0a04a67d2bd0d2d766e9a9967e0fc99e001f4312d9139"
     },
     {
       "path": "src/org/trillionnium/hepta/local/NativeBudgetVerifier.java",
@@ -5067,6 +5077,11 @@
       "sha256": "03d9442b184d772976dbf0a482f8576509112203fe4700abe4cfb20e67f7cdca"
     },
     {
+      "path": "tests/Lfm25MoeProfileHostTest.java",
+      "bytes": 6204,
+      "sha256": "7686a04d009c62483707f202e9d8d4ca2a594d5373dd156e888aec17d4e3420c"
+    },
+    {
       "path": "tests/LocalPolicyHostTest.java",
       "bytes": 5665,
       "sha256": "b05d1b82215ec82420e851d9e9940e9f45b7c76808437dafbfd4705f1bcb641e"
@@ -5130,6 +5145,11 @@
       "path": "tests/PromptActionDomainHostTest.java",
       "bytes": 2091,
       "sha256": "a1fef9fcc7eb07c920b95f480e888e842007e3ccc31be8ee209b7f1103ad21af"
+    },
+    {
+      "path": "tests/Qwen35ProfileHostTest.java",
+      "bytes": 6521,
+      "sha256": "d66f247aec9d56f61456e5efc48b04dfe3f587b1ba46a514f107ed35f02f60e7"
     },
     {
       "path": "tests/RecentActionProjectionHostTest.java",
@@ -5418,8 +5438,8 @@
     },
     {
       "path": "tools/model_profiles.py",
-      "bytes": 1659,
-      "sha256": "6e6822d1492de42a7b19555599eb25ff3ead480c0270458c8895b8279390d08f"
+      "bytes": 2076,
+      "sha256": "b3dd8b6062d988115e7e260cd75560621f8d81a7e1828134c8485d7d131484c2"
     },
     {
       "path": "tools/phone_acceptance.py",
@@ -5462,6 +5482,11 @@
       "sha256": "6a8dcb8745c610e1e1325e325fc25a918f29140096a12bb9def2f09d9e46762b"
     },
     {
+      "path": "tools/test_lfm25_profile.py",
+      "bytes": 2324,
+      "sha256": "954930b1d0db2a73b3b65c194150b2769e8d929207cda76a1405d6d1af51f617"
+    },
+    {
       "path": "tools/test_model_profiles.py",
       "bytes": 3293,
       "sha256": "99411bf66d49bc5a7679df7324efbfe3f8e33d726f2665ff7e29d7b5a50eaea5"
@@ -5480,6 +5505,11 @@
       "path": "tools/test_phone_suite.py",
       "bytes": 25678,
       "sha256": "790549d00157e8cade573acea4ac62e5ae5d875684a8c1473855c07f03184506"
+    },
+    {
+      "path": "tools/test_qwen35_profile.py",
+      "bytes": 1217,
+      "sha256": "b34d0ecfc96e770f6372c68a7528ec2c1a79e32757382a32a903a553a5cfefb0"
     },
     {
       "path": "tools/test_recovery_application.py",
@@ -5534,7 +5564,7 @@
   ],
   "derived_from_code21_initial_source_manifest_sha256": "f8bd05396037a7751857adec30e2128577995940f05000ac985b3e74e5266c20",
   "sdk_api_compatibility_fix": "Use the public Android Os.remove API after the unchanged canonical allowlist, regular-file and byte-equality checks; retain fsync and readback.",
-  "publication_derivation": {
+  "retained_code21_publication_derivation": {
     "private_original_source_manifest_sha256": "883821726a8ed90ea8f8d928017a371942ed238dff3796bce89ab0dfa712f310",
     "retained_device_apk_sha256": "c95378452e2754261825bbbdaa18115a52e11924851c4c59867f2af738fc960f",
     "public_source_is_retained_device_build_source": false,
@@ -5547,5 +5577,33 @@
       "provenance/ui-venus-app-r1/native-worker/DRAFT-MANIFEST.json",
       "provenance/ui-venus-app-r1/native-worker/provenance/ORIGINAL-APP-verify_source_boundary.py"
     ]
+  },
+  "derived_from_public_code21_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
+  "native_production_changes_from_code21": [
+    "native/model-profile.h"
+  ],
+  "host_checks_embedded_status": "retained historical receipts; no qualification of the new source is implied",
+  "profile_import": {
+    "source_manifest_sha256": "90be733a3eec1f76dcb4febe1eb9b19ce2add841c9811eb50265c306ff046e9c",
+    "source_manifest_recorded_version_code": 22,
+    "paths": [
+      "native/model-profile.h",
+      "src/org/trillionnium/hepta/local/ModelProfile.java",
+      "tools/model_profiles.py",
+      "native/tests/lfm25_profile_contract.c",
+      "native/tests/qwen35_profile_contract.c",
+      "tests/Lfm25MoeProfileHostTest.java",
+      "tests/Qwen35ProfileHostTest.java",
+      "tools/test_lfm25_profile.py",
+      "tools/test_qwen35_profile.py"
+    ],
+    "default_model_changed": false,
+    "phone_qualified": false
+  },
+  "publication_derivation": {
+    "public_code21_base_manifest_sha256": "f4af9855da4e62a2eeaa1cc8d734082c6c31d17f95d001b58b412dbd7604978a",
+    "compiled_java_and_native_code_bytes_unchanged": false,
+    "cleartext_identifier_guard_preserved": true,
+    "retained_phone_evidence_reused_as_new_qualification": false
   }
 }

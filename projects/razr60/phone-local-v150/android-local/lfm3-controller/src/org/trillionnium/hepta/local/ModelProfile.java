@@ -25,6 +25,16 @@ public final class ModelProfile {
     public static final ModelProfile BOLT_E4B=new ModelProfile("nemotron-3.5-bolt-e4b-q4_k_m","Nemotron 3.5 Bolt E4B（实验）",
             "nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB","1db54d5b12533ff1bcaa8e42cf4c667988a1f1be","Nemotron-3.5-Bolt-E4B-Q4_K_M.gguf",6180446208L,
             "c8af2b8aea10a690a1d9491db744a9446660173cb38fc489612b556615a69612","gemma4",true,8L<<30);
+    // Experimental text-only MoE. This 7 GiB qualification threshold is not a
+    // measured peak and does not treat active parameters as resident weight size.
+    public static final ModelProfile LFM25_8B_A1B=new ModelProfile("lfm2.5-8b-a1b-q4_0","LFM2.5-8B-A1B（实验）",
+            "LiquidAI/LFM2.5-8B-A1B-GGUF","49c14831707011e64d70b2ebd8462ba08d608434","LFM2.5-8B-A1B-Q4_0.gguf",4844678368L,
+            "48ed1465d761311b2fd57b7fb46cf969a20b3a8281945b04e10f52bd1609e715","lfm2moe",true,7L<<30);
+    // Experimental text-only Qwen candidate. The 5 GiB admission threshold is
+    // qualification headroom, not a measured peak. No projector is admitted.
+    public static final ModelProfile QWEN35_4B=new ModelProfile("qwen3.5-4b-q4_0","Qwen 3.5 4B（实验）",
+            "unsloth/Qwen3.5-4B-GGUF","e87f176479d0855a907a41277aca2f8ee7a09523","Qwen3.5-4B-Q4_0.gguf",2583221408L,
+            "298fcb5fe7a77ccc79745ae24751560c5ac56874caff4bb39b1f2055bd72b8bb","qwen35",true,5L<<30);
     public final String id,displayName,repository,revision,fileName,sha256,architecture;
     public final long bytes,minimumAvailableBytes;
     public final boolean exactTokenizationRequired;
@@ -36,11 +46,13 @@ public final class ModelProfile {
     }
     public static ModelProfile named(String id){
         if(LFM3.id.equals(id))return LFM3;
+        if(LFM25_8B_A1B.id.equals(id))return LFM25_8B_A1B;
         if(MINICPM5.id.equals(id))return MINICPM5;
         if(SPARK.id.equals(id))return SPARK;
         if(GEMMA4_E4B.id.equals(id))return GEMMA4_E4B;
         if(GEMMA4_E2B.id.equals(id))return GEMMA4_E2B;
         if(BOLT_E4B.id.equals(id))return BOLT_E4B;
+        if(QWEN35_4B.id.equals(id))return QWEN35_4B;
         throw new IllegalArgumentException("unknown pinned model_profile");
     }
 }
