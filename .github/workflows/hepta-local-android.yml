@@ -53,25 +53,8 @@ jobs:
           hepta_sdk="${ANDROID_HOME:?Android SDK missing on runner}"
           "$hepta_sdk/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$hepta_sdk" 'ndk;28.1.13356709'
           hepta_ndk="$hepta_sdk/ndk/28.1.13356709"
-          python - "$hepta_ndk" "$RUNNER_TEMP/hepta-ndk-identity.json" <<'PY'
-          import hashlib, json, pathlib, platform, subprocess, sys
-          ndk = pathlib.Path(sys.argv[1])
-          clang = ndk / 'toolchains/llvm/prebuilt/darwin-x86_64/bin/clang'
-          actual = hashlib.sha256(clang.read_bytes()).hexdigest()
-          report = {'platform': platform.system(), 'machine': platform.machine(),
-                    'ndk': str(ndk), 'source_properties': (ndk / 'source.properties').read_text(),
-                    'clang': str(clang), 'clang_resolved': str(clang.resolve()),
-                    'clang_bytes': clang.stat().st_size, 'clang_sha256': actual}
-          for name, command in [('file', ['/usr/bin/file', str(clang)]),
-                                ('lipo', ['/usr/bin/lipo', '-info', str(clang)]),
-                                ('version', [str(clang), '--version'])]:
-              result = subprocess.run(command, capture_output=True, text=True, timeout=30)
-              report[name] = {'exit_code': result.returncode, 'stdout': result.stdout, 'stderr': result.stderr}
-          payload = json.dumps(report, indent=2, sort_keys=True) + '\n'
-          pathlib.Path(sys.argv[2]).write_text(payload)
-          print(payload, flush=True)
-          assert actual == 'ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6', 'original macOS compiler bytes differ'
-          PY
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v2/qualify_macos_compiler.py \
+            --ndk "$hepta_ndk" --output "$RUNNER_TEMP/hepta-ndk-identity.json"
           printf '%s\n' "ANDROID_NDK_ROOT=$hepta_ndk" >> "$GITHUB_ENV"
       - name: Check out the fixed public MNN source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -91,11 +74,12 @@ jobs:
             --output "$RUNNER_TEMP/hepta-mobimind-rebuild"
       - name: Bind the exact rebuilt runtime to this source and workflow attempt
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v1/verify_ci_runtime_bundle.py bind \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v2/verify_ci_runtime_bundle.py bind \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
             --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v2/rebuild_exact_runtime.py" \
             --bundle "$RUNNER_TEMP/hepta-mobimind-rebuild" \
-            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
+            --source-head "$SOURCE_HEAD_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --compiler-identity "$RUNNER_TEMP/hepta-ndk-identity.json"
       - name: Transfer only the exact runtime within this workflow
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -106,6 +90,7 @@ jobs:
             ${{ runner.temp }}/hepta-mobimind-rebuild/runtime/*
             ${{ runner.temp }}/hepta-mobimind-rebuild/NEW-BUILD-RECEIPT.json
             ${{ runner.temp }}/hepta-mobimind-rebuild/CURRENT-CI-SOURCE.json
+            ${{ runner.temp }}/hepta-mobimind-rebuild/COMPILER-IDENTITY.json
       - name: Preserve actual macOS runtime build evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -210,7 +195,7 @@ jobs:
           path: ${{ runner.temp }}/hepta-mobimind-from-macos
       - name: Reverify all original runtime bytes and the actual macOS build identity on Linux
         run: |
-          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v1/verify_ci_runtime_bundle.py verify \
+          python -B projects/razr60/phone-local-v150/android-local/validation/mobimind-ci-host-split-v2/verify_ci_runtime_bundle.py verify \
             --app-source "$GITHUB_WORKSPACE/$HEPTA_SOURCE" \
             --rebuild-helper "$GITHUB_WORKSPACE/projects/razr60/phone-local-v150/android-local/validation/mobimind-runtime-rebuild-v2/rebuild_exact_runtime.py" \
             --bundle "$RUNNER_TEMP/hepta-mobimind-from-macos" \
