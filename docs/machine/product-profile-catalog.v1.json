@@ -109,6 +109,15 @@
         "L2 installed Root Linux",
         "L3 Android image",
         "L4 authorized physical device"
+      ],
+      "deferred_dependencies": [
+        {
+          "source_module": "MOD-ROOTLINUX",
+          "dependency_module": "MOD-GLOBAL-CONTROL",
+          "classification": "PLANNED_ONLY",
+          "blocking_gap": "GAP-ROOTLINUX-PLACEMENT-001",
+          "reason": "The default source profile does not select the planned control-plane implementation. Installed admission, lease and resource behavior remain unqualified; this declaration neither supplies a local lease substitute nor authorizes runtime activation."
+        }
       ]
     },
     {
@@ -160,7 +169,8 @@
         "privacy review",
         "compiled SELinux evidence",
         "authorized device evidence"
-      ]
+      ],
+      "deferred_dependencies": []
     }
   ]
 }

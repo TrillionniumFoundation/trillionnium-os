@@ -48,6 +48,16 @@ The provider remains the sole semantic principal. This module may reject malform
 
 Direct dependencies: `MOD-EXECUTION-CORE`, `MOD-PROVIDER`, `MOD-GLOBAL-CONTROL`.
 
+This logical graph includes the planned control-plane edge. The default source
+profile records that edge as `PLANNED_ONLY`, held by
+`GAP-ROOTLINUX-PLACEMENT-001`; see `docs/GLOBAL_ARCHITECTURE.md` section 2.1 and
+`docs/generated/PRODUCT_PROFILE_STATUS.md`. It does not select a controller,
+replace the `module_instance_lease` contract with an invented local lease, or
+establish an installed admission path. The profile verifier rejects a missing
+selected dependency without its explicit planned-edge declaration. Installed
+qualification must reconcile this edge by selecting the required implementation
+or by a separately reviewed contract change backed by target evidence.
+
 The normal data-flow boundary is: validate the versioned input; bind identity and ordering metadata; reserve finite capacity; make the minimal authoritative transition; execute or forward the exact mechanical action; retain bounded observations; publish one terminal or explicit unknown classification.
 
 Dependencies are consumed through their declared APIs. A dependency outage cannot be converted into success. Cycles are prohibited by the machine catalog, and slow external work remains outside broad registry or global-control locks.
