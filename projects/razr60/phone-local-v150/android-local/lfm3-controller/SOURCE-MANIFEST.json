@@ -1,7 +1,7 @@
 {
   "schema": "hepta.local-source.v3",
-  "version_code": 26,
-  "version_name": "0.26.0-local-observed-transitions",
+  "version_code": 27,
+  "version_name": "0.27.0-local-progress-reason",
   "derived_from_code16_source_manifest_sha256": "c75ab9b8aa01705e7dd0805baa45dfc41650837874ff8618e28442b73d77454f",
   "android_build": "separate actual build receipt; source and host results do not establish Android or phone qualification",
   "phone_qualified": false,
@@ -16,7 +16,7 @@
   "wake_permission_added": false,
   "execution_freshness_relaxed": false,
   "mobimind_phone_action_dispatch_connected": false,
-  "candidate_status": "code26_source_frozen_host_android_and_phone_validation_pending",
+  "candidate_status": "host_candidate_phone_pending",
   "merge_parents": {
     "frozen_code20_source_manifest_sha256": "6d3cc0ed4815dbf5a3f599c250da6e725bca1283acc777929a0b47c56ca209c6",
     "history_guard_source_inputs_sha256": "a42e176bb279aee8d398efcf36f532a7d92e48d86bb31aa7b18a505abca7dc74",
@@ -63,8 +63,8 @@
     },
     {
       "path": "AndroidManifest.xml",
-      "bytes": 1872,
-      "sha256": "8c44b8d46219a10b7c960e49fe2516116a7d41224b058b711c4d92492f4919a1"
+      "bytes": 1867,
+      "sha256": "91a6ff78b08027296b42cd83009db3b402999d8ecfea3e69010e4eda36ce51fc"
     },
     {
       "path": "CODE10-LABELS.md",
@@ -4833,8 +4833,8 @@
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskController.java",
-      "bytes": 50808,
-      "sha256": "b2626f4615f7710f64afa191f0189cce155248445a28d30bb6c09787f711981c"
+      "bytes": 51134,
+      "sha256": "8bef16f84d69dbcf2c080acc5bf38b05f1efb8d50c1ad93c63a457b60eccfb14"
     },
     {
       "path": "src/org/trillionnium/hepta/local/LocalTaskSession.java",
@@ -5735,5 +5735,21 @@
     "phone": "pending_exact_installed_apk_run",
     "new_model_phone_qualified": false,
     "historical_evidence_relabelled": false
+  },
+  "derived_from_public_code26_manifest_sha256": "ff5929cff3e63ed4877934576d5f4985a789c7dc721549c68d804fc5c24a8237",
+  "code27_qualification": {
+    "scope": "reason_system_span_only_plus_version",
+    "system_sha256": "bea4a05506f5e110bb746cf25f202ef6206393d310ac90614674675f3f00bc3c",
+    "source_system_delta_sha256": "4bbd5fc58c9b241e805fbad3beedfc0726bdd0198079051f1a7afffbdf2c9535",
+    "reason_prompt_fixture": "v26_step03_reason and v26_step10_reason",
+    "host_checks": "pending external report",
+    "android_build": "not_run",
+    "phone_task_qualification": "not_run",
+    "default_model_changed": false,
+    "native_source_changed": false,
+    "owner_format_changed": false,
+    "plan_memory_added": false,
+    "new_permissions": false,
+    "production_ready": false
   }
 }
