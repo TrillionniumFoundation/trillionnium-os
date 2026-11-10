@@ -86,15 +86,21 @@ public final class LocalModelEngine implements AutoCloseable {
         public final String runId;
         private RunHandle(){this(UUID.randomUUID().toString().replace("-", ""));}
         private RunHandle(String runId){this(runId,null);}
-        private RunHandle(String runId,RunHandle taskOwner){this.runId=runId;this.taskOwner=taskOwner;}
+        private RunHandle(String runId,RunHandle taskOwner){this.runId=runId;this.taskOwner=taskOwner;
+            this.parentTimeline=taskOwner==null?null:taskOwner.parentTimeline;}
         private final RunHandle taskOwner;
+        private WarmProcessTimeline parentTimeline;
         private final AtomicBoolean cancelRequested = new AtomicBoolean(false);
         private final AtomicReference<Process> child = new AtomicReference<>();
         public void cancel() {
+            WarmProcessTimeline.Source source=taskOwner==null?WarmProcessTimeline.Source.OWNER_HANDLE_CANCEL:WarmProcessTimeline.Source.REQUEST_HANDLE_CANCEL;
+            if(parentTimeline!=null)parentTimeline.cancelRequested(source);
             cancelRequested.set(true);
             if(taskOwner!=null)taskOwner.cancel();
             Process p = child.get();
-            if (p != null && p.isAlive()) p.destroy();
+            if (p != null && p.isAlive()) {
+                if(parentTimeline==null)p.destroy();else parentTimeline.destroy(p,source);
+            }
         }
         public boolean isCancellationRequested() { return cancelRequested.get()||(taskOwner!=null&&taskOwner.isCancellationRequested()); }
     }
@@ -103,13 +109,15 @@ public final class LocalModelEngine implements AutoCloseable {
     public final class WarmTask {
         public final String taskId;
         private final RunHandle owner=new RunHandle();
+        private final WarmProcessTimeline parentTimeline;
         private final AtomicReference<RunHandle> request=new AtomicReference<>();
         private final AtomicBoolean ending=new AtomicBoolean();
         private volatile WarmProcessSession session;
         private volatile LocalInference.TaskCleanup cleanup;
         private Future<LocalInference.TaskCleanup> finisher;
         private int acceptedRequests;
-        private WarmTask(String taskId){this.taskId=taskId;}
+        private WarmTask(String taskId){this.taskId=taskId;
+            parentTimeline=new WarmProcessTimeline(generation(),taskId);owner.parentTimeline=parentTimeline;}
         public String generation(){return owner.runId;}
         private File directory()throws IOException{return new File(new File(files,"runs"),generation()).getCanonicalFile();}
     }
@@ -162,8 +170,10 @@ public final class LocalModelEngine implements AutoCloseable {
         try{
             if(task.session!=null){WarmProcessSession.Cleanup result=task.session.finish();observed=result.exitObserved;exit=result.exitCode;force=result.forceSent;}
             else if(process!=null){
-                process.destroy();if(!process.waitFor(2000,TimeUnit.MILLISECONDS)){process.destroyForcibly();force=true;}
-                if(process.waitFor(8000,TimeUnit.MILLISECONDS)){observed=true;exit=process.exitValue();}
+                task.parentTimeline.destroy(process,WarmProcessTimeline.Source.FALLBACK_CLOSE);
+                if(!process.waitFor(2000,TimeUnit.MILLISECONDS)){task.parentTimeline.destroyForcibly(process,WarmProcessTimeline.Source.FORCE_WAIT_EXPIRED);force=true;}
+                if(process.waitFor(8000,TimeUnit.MILLISECONDS)){observed=true;exit=process.exitValue();
+                    task.parentTimeline.exitObserved(exit,WarmProcessTimeline.Source.FALLBACK_WAIT);}
             }
             privateDirectory(files.getCanonicalFile());privateDirectory(new File(files,"runs"));
             File directory=task.directory();privateDirectory(directory);
@@ -191,6 +201,7 @@ public final class LocalModelEngine implements AutoCloseable {
             put(receipt,"cleanup_known",process==null||observed);put(receipt,"native_session_binding_valid",valid);
             put(receipt,"native_session_receipt",nativeClose);put(receipt,"cancel_requested",task.owner.isCancellationRequested());
             put(receipt,"automatic_restart",false);put(receipt,"cross_task_reuse",false);
+            put(receipt,"parent_process_timeline",new JSONObject(task.parentTimeline.snapshot()));
             File appReceipt=new File(directory,"app-session-receipt.json");
             MobiMindPrivateFiles.writeNew(appReceipt,receipt.toString(2).getBytes(StandardCharsets.UTF_8));
             receiptHash=sha256(MobiMindPrivateFiles.read(appReceipt,OUTPUT_LIMIT,true).bytes);persisted=true;
@@ -528,7 +539,7 @@ public final class LocalModelEngine implements AutoCloseable {
             if(task!=null){
                 if(task.session==null){
                     process=builder.start();task.owner.child.set(process);
-                    task.session=new WarmProcessSession(process,task.generation(),task.taskId);
+                    task.session=new WarmProcessSession(process,task.generation(),task.taskId,task.parentTimeline);
                 }else process=task.owner.child.get();
                 h.child.set(process);
                 if(h.isCancellationRequested()||task.ending.get())task.session.cancel();
@@ -624,13 +635,18 @@ public final class LocalModelEngine implements AutoCloseable {
                 timedOut=failure.timedOut;observed=failure.cleanup.exitObserved;exit=failure.cleanup.exitCode;forceSent=failure.cleanup.forceSent;}
             error = e.getClass().getSimpleName() + ": " + String.valueOf(e.getMessage());
             if (process != null && process.isAlive()) {
-                process.destroy();
+                if(task==null)process.destroy();else task.parentTimeline.destroy(process,WarmProcessTimeline.Source.ENGINE_FAILURE);
                 try {
-                    if (!process.waitFor(2000, TimeUnit.MILLISECONDS)) { process.destroyForcibly(); forceSent = true; }
-                    if (process.waitFor(10000, TimeUnit.MILLISECONDS)) { observed = true; exit = process.exitValue(); }
+                    if (!process.waitFor(2000, TimeUnit.MILLISECONDS)) {
+                        if(task==null)process.destroyForcibly();else task.parentTimeline.destroyForcibly(process,WarmProcessTimeline.Source.FORCE_WAIT_EXPIRED);
+                        forceSent = true;
+                    }
+                    if (process.waitFor(10000, TimeUnit.MILLISECONDS)) { observed = true; exit = process.exitValue();
+                        if(task!=null)task.parentTimeline.exitObserved(exit,WarmProcessTimeline.Source.ENGINE_WAIT); }
                 } catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); }
             }
-            if (process != null && !observed && !process.isAlive()) { observed = true; exit = process.exitValue(); }
+            if (process != null && !observed && !process.isAlive()) { observed = true; exit = process.exitValue();
+                if(task!=null)task.parentTimeline.exitObserved(exit,WarmProcessTimeline.Source.ENGINE_EXIT_VALUE); }
             if (process != null && !observed) status = "termination_unknown";
             else if (process != null) status = h.isCancellationRequested() ? "cancelled" : "engine_failed";
             else if (h.isCancellationRequested()) status = "cancelled_before_start";

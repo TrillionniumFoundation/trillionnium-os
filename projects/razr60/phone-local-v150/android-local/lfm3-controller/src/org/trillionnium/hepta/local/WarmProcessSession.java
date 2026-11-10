@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class WarmProcessSession {
     public final String generation, taskId;
     private final Process process;
+    private final WarmProcessTimeline parentTimeline;
     private final OutputStream input;
     private final ArrayBlockingQueue<String> frames = new ArrayBlockingQueue<String>(4);
     private final AtomicReference<String> readerFailure = new AtomicReference<String>();
@@ -53,8 +54,13 @@ public final class WarmProcessSession {
         Deadline(String message){super(message);}
     }
     public WarmProcessSession(Process process, String generation, String taskId) {
+        this(process,generation,taskId,new WarmProcessTimeline(generation,taskId));
+    }
+    public WarmProcessSession(Process process, String generation, String taskId, WarmProcessTimeline parentTimeline) {
         if(process==null||!validId(generation)||!validId(taskId))
             throw new IllegalArgumentException("owned process and exact task/generation required");
+        if(parentTimeline==null)throw new IllegalArgumentException("parent timeline required");
+        parentTimeline.requireOwner(generation,taskId);this.parentTimeline=parentTimeline;
         this.process=process; this.generation=generation; this.taskId=taskId;
         input=process.getOutputStream();
         Thread reader=new Thread(new Runnable(){public void run(){readFrames();}},"hepta-warm-control-reader");
@@ -66,9 +72,11 @@ public final class WarmProcessSession {
     public Integer observedExitCode() { return observedExit; }
     public boolean isAlive() { return process.isAlive(); }
     public boolean isCancelled() { return cancelled.get()||closing.get(); }
-    public void cancel() {
+    public void cancel() { cancel(WarmProcessTimeline.Source.SESSION_CANCEL); }
+    private void cancel(WarmProcessTimeline.Source source) {
+        parentTimeline.cancelRequested(source);
         cancelled.set(true);
-        if(process.isAlive())process.destroy();
+        if(process.isAlive())parentTimeline.destroy(process,source);
     }
     private void readFrames() {
         try(InputStream output=process.getInputStream()) {
@@ -101,7 +109,8 @@ public final class WarmProcessSession {
             String failure=readerFailure.get();
             if(failure!=null)throw new IOException(failure);
             if(process.waitFor(1,TimeUnit.MILLISECONDS)) {
-                observedExit=process.exitValue(); throw new IOException("task worker exited before request completion");
+                observedExit=process.exitValue();parentTimeline.exitObserved(observedExit,WarmProcessTimeline.Source.REQUEST_WAIT);
+                throw new IOException("task worker exited before request completion");
             }
         }
     }
@@ -134,7 +143,8 @@ public final class WarmProcessSession {
             return new Reply(generation,taskId,requestId,expected,status);
         } catch(Exception error) {
             boolean timeout=error instanceof Deadline;
-            cancel(); Cleanup cleanup=terminate(false);
+            cancel(timeout?WarmProcessTimeline.Source.REQUEST_DEADLINE:WarmProcessTimeline.Source.REQUEST_FAILURE);
+            Cleanup cleanup=terminate(false);
             if(error instanceof InterruptedException)Thread.currentThread().interrupt();
             throw new Failure(error.getClass().getSimpleName()+": "+error.getMessage(),timeout,cleanup);
         } finally { inFlight.set(false); }
@@ -145,8 +155,8 @@ public final class WarmProcessSession {
         boolean graceful=!cancelled.get()&&!inFlight.get();
         if(graceful) {
             try { send("CLOSE "+generation+" "+taskId+"\n"); input.close(); }
-            catch(IOException error) { graceful=false; cancel(); }
-        } else cancel();
+            catch(IOException error) { graceful=false; cancel(WarmProcessTimeline.Source.CLOSE_WRITE_FAILURE); }
+        } else cancel(WarmProcessTimeline.Source.NON_GRACEFUL_CLOSE);
         return terminate(graceful);
     }
     private Cleanup terminate(boolean graceful) {
@@ -154,14 +164,16 @@ public final class WarmProcessSession {
         try {
             if(observedExit!=null)return new Cleanup(true,observedExit,forceEver.get());
             if(graceful&&process.waitFor(2000,TimeUnit.MILLISECONDS)) {
-                observedExit=process.exitValue(); return new Cleanup(true,observedExit,forceEver.get());
+                observedExit=process.exitValue();parentTimeline.exitObserved(observedExit,WarmProcessTimeline.Source.GRACEFUL_CLOSE_WAIT);
+                return new Cleanup(true,observedExit,forceEver.get());
             }
-            process.destroy();
+            parentTimeline.destroy(process,graceful?WarmProcessTimeline.Source.CLOSE_WAIT_EXPIRED:WarmProcessTimeline.Source.TERMINATION);
             if(!process.waitFor(2000,TimeUnit.MILLISECONDS)) {
-                process.destroyForcibly(); force=true;forceEver.set(true);
+                parentTimeline.destroyForcibly(process,WarmProcessTimeline.Source.FORCE_WAIT_EXPIRED); force=true;forceEver.set(true);
                 if(!process.waitFor(8000,TimeUnit.MILLISECONDS))return new Cleanup(false,null,true);
             }
-            observedExit=process.exitValue(); return new Cleanup(true,observedExit,forceEver.get());
+            observedExit=process.exitValue();parentTimeline.exitObserved(observedExit,WarmProcessTimeline.Source.TERMINATION_WAIT);
+            return new Cleanup(true,observedExit,forceEver.get());
         } catch(InterruptedException interrupted) {
             Thread.currentThread().interrupt(); return new Cleanup(false,null,force||forceEver.get());
         }

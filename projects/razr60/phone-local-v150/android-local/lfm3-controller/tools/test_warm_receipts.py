@@ -43,6 +43,25 @@ class WarmReceiptTest(unittest.TestCase):
         self.assertTrue(session_contract(*f))
         self.assertTrue(all(request_contract(a, n, T) for a, n in f[4]))
 
+    def test_parent_timeline_is_additive_not_acceptance_evidence(self):
+        f = fixture()
+        f[0]["parent_process_timeline"] = dict(
+            schema="hepta.parent-process-timeline.v1", task_id=T, worker_generation=G,
+            clock="System.nanoTime", units="nanoseconds",
+            origin="parent_warm_task_timeline_creation", clock_scope="same_parent_process_only",
+            first_cancel_requested=None, first_destroy_invoked=None,
+            first_destroy_forcibly_invoked=None,
+            first_exit_observed=dict(elapsed_ns=10, sequence=1, source="graceful_close_wait", exit_code=0),
+            snapshot_elapsed_ns=11, destroy_invocation_count=0, destroy_forcibly_invocation_count=0,
+            signal_delivery_proven=False, exit_cause_inferred=False)
+        self.assertTrue(session_contract(*f))
+        for key, value in (("process_exit_observed", False), ("exit_code", 134),
+                           ("cleanup_known", False), ("force_destroy_sent", True),
+                           ("cancel_requested", True), ("native_session_binding_valid", False)):
+            bad = copy.deepcopy(f)
+            bad[0][key] = value
+            self.assertFalse(session_contract(*bad), key)
+
     def test_request_exit_is_rejected_even_if_marked_success(self):
         for key, value in (("process_exit_observed", True), ("exit_code", 0), ("request_committed", False),
                            ("cancel_requested", True), ("timeout_observed", True)):
